@@ -9,12 +9,12 @@ import base64
 class DBOptionGroup(RDSOptionGroupResource):
     name = "mysql"
     engine_name = "mysql"
-    major_engine_version = "5.6"
+    major_engine_version = "5.7"
 
 
 class DBParameterGroup(RDSParameterGroupResource):
     name = "mysql"
-    family = "mysql5.6"
+    family = "mysql5.7"
 
 
 class DBSubnetGroup(RDSSubnetGroupResource):
@@ -28,7 +28,7 @@ class MySQLDatabase(RDSResource):
     identifier = "data"
     storage_type = "gp2"
     engine = "mysql"
-    engine_version = "5.6.40"
+    engine_version = "5.7.37"
     allocated_storage = 10
     username = "pacbot"
     password = "***REMOVED***"
@@ -52,7 +52,7 @@ class MySQLDatabase(RDSResource):
         rds_endpoint = cls.get_output_attr('endpoint')
         db_name = cls.get_input_attr('name')
 
-        return "jdbc:mysql://%s/%s" % (rds_endpoint, db_name)
+        return "jdbc:mysql://%s/%s?autoReconnect=true&useSSL=false" % (rds_endpoint, db_name)
 
     def render_output(self, outputs):
         if self.resource_in_tf_output(outputs):

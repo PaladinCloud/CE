@@ -54,22 +54,23 @@ build the application from the source code. The built JARs and Angular app are t
 PacBot installer is developed using Python and Terraform. For the installer to run, you will need to have below listed dependencies installed correctly.
 
 * Software Dependencies:
-   1. Python supported version is 3.4 or above
-   2. Following python packages are required.
-      * docker-py (1.10)]
-      * python-terraform (0.10)
-      * boto3 (1.9)
-      * gitpython
-   3. Install the latest version of Terraform from https://learn.hashicorp.com/terraform/getting-started/install.html
-   4. Install `node` version 8.15.0 or higher
-   5. Install `npm` version 6.4.1 or higher
-   6. Install the following npm packages
-      * Install `Angular-CLI` version 7.1.4 or higher
-      * Install `bower` version 1.8.4 or higher
-   7. Install `java` version openjdk1.8 or higher
-   8. Install `mvn`(Maven) version 3.0 or higher
-   9. Install `docker` version 18.06 or higher
-   10. Install `MySQL` version 15.1 or higher
+    1.  Python supported version is 3.4 or above
+    2.  Following python packages are required.
+        - docker-py (1.10)]
+        - python-terraform (0.10)
+        - boto3 (1.9)
+        - gitpython
+    3.  Install the Terraform from https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
+    4.  Install `node` version 8.15.0 or higher (max 14.x.x, https://lintut.com/install-node-js-14-on-centos-8-rhel-8/)
+    5.  Install `npm` version 6.4.1 or higher
+    6.  Install the following npm packages
+        - Install `Angular-CLI` version 7.1.4 or higher
+        - Install `bower` version 1.8.4 or higher
+        - Install `yarn` using `sudo npm install -g yarn`
+    7.  Install `java` version openjdk1.8 or higher
+    8.  Install `mvn`(Maven) version 3.0 or higher
+    9.  Install `docker` version 18.06 or higher
+    10. Install `MySQL` version 15.1 or higher
 
 * AWS IAM Permission Installer would need an IAM account to launch and configure the AWS resources. To keep it simple you can create an IAM account
 with full access to above listed AWS service or temporarily assign Poweruser/Administrator permission. After the installation, you can remove the
@@ -109,12 +110,17 @@ IAM account.
 
 6. To install terraform, download the latest version
 ```
-     wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip
-     unzip terraform_0.11.8_linux_amd64.zip
+     wget https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
      mv terraform /usr/bin/
 ```
 
-7. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
+7. To install yarn
+
+```
+     sudo npm install -g yarn
+```
+
+8. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
 
 
 
