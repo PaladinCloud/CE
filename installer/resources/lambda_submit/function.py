@@ -18,7 +18,7 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
     function_name = "datacollector"
     role = LambdaRole.get_output_attr('arn')
     handler = BATCH_JOB_FILE_NAME + ".lambda_handler"
-    runtime = "python2.7"
+    runtime = "python3.6"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaSubmitJobZipFile.get_output_attr('id')
     environment = {

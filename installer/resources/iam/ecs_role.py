@@ -66,7 +66,7 @@ class ECSCloudWatchLogsFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResourc
 
 class ECSAWSLambdaFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = ECSRole.get_output_attr('name')
-    policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
+    policy_arn = "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
 
 
 class ECSCloudWatchEventsFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):

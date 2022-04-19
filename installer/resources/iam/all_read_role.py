@@ -27,7 +27,7 @@ class AllReadOnlyAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
 
 class AllReadLambdaFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = AllReadRole.get_output_attr('name')
-    policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
+    policy_arn = "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
 
 
 class AllReadIAMFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):

@@ -25,7 +25,7 @@ class LambdaRole(iam.IAMRoleResource):
 
 class LambdaFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = LambdaRole.get_output_attr('name')
-    policy_arn = "arn:aws:iam::aws:policy/AWSLambdaFullAccess"
+    policy_arn = "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
 
 
 class LambdaBatchFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):

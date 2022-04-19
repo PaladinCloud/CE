@@ -82,7 +82,7 @@ RESOURCE_DESCRIPTION = "DO-NOT-DELETE-IT - This has been created as part of pacb
 AWS_POLICIES_REQUIRED = [
     "AmazonS3FullAccess",
     "AmazonRDSFullAccess",
-    "AWSLambdaFullAccess",
+    "AWSLambda_FullAccess",
     "AmazonEC2FullAccess",
     "IAMFullAccess",
     "AmazonESFullAccess"
