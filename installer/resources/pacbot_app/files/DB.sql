@@ -907,7 +907,7 @@ CREATE TABLE IF NOT EXISTS pac_config_audit
 
 
 CREATE TABLE IF NOT EXISTS `Recommendation_Mappings` (
-  `checkId` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `checkId` varchar(20) COLLATE utf8_bin NOT NULL,
   `type` varchar(50) COLLATE utf8_bin DEFAULT NULL,
   `resourceInfo` varchar(200) COLLATE utf8_bin DEFAULT NULL,
   `_resourceId` varchar(200) COLLATE utf8_bin DEFAULT NULL,
