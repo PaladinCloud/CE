@@ -22,7 +22,7 @@ PacBot Inventory Collector          : Cloudwatch Rules, AWS Batch, AWS ElasticSe
   * IAM Policies
   * S3 Bucket
   * RDS
-    * MySQL 5.6.X
+    * MySQL 5.7.X
   * Elasticsearch Service
     * Elasticsearch version 5.5
   * Redshift
@@ -111,6 +111,7 @@ IAM account.
 6. To install terraform, download the latest version
 ```
      wget https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
+     unzip terraform_0.11.15_linux_amd64.zip
      mv terraform /usr/bin/
 ```
 
