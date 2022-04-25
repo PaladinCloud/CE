@@ -61,12 +61,11 @@ PacBot installer is developed using Python and Terraform. For the installer to r
         - boto3 (1.9)
         - gitpython
     3.  Install the Terraform from https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
-    4.  Install `node` version 8.15.0 or higher (max 14.x.x, https://lintut.com/install-node-js-14-on-centos-8-rhel-8/)
+    4.  Install `node` version 8.15.0 or higher (max 14.x.x) )
     5.  Install `npm` version 6.4.1 or higher
     6.  Install the following npm packages
         - Install `Angular-CLI` version 7.1.4 or higher
-        - Install `bower` version 1.8.4 or higher
-        - Install `yarn` using `sudo npm install -g yarn`
+        - Install `yarn`
     7.  Install `java` version openjdk1.8 or higher
     8.  Install `mvn`(Maven) version 3.0 or higher
     9.  Install `docker` version 18.06 or higher
@@ -115,13 +114,20 @@ IAM account.
      mv terraform /usr/bin/
 ```
 
-7. To install yarn
+7. To install Node 14.X (instructions for Amazon Linux 2)
+```
+     sudo yum -y install curl
+     curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
+     sudo yum install -y nodejs
+```
+
+8. To install yarn
 
 ```
      sudo npm install -g yarn
 ```
 
-8. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
+9. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
 
 
 
