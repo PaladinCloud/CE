@@ -3562,5 +3562,27 @@
     "modifiedDate": "2019-11-06",
     "severity": "high",
     "category": "security"
-  }  
+  },
+  {
+    "ruleId": "PacMan_SGNamingConventionRule_version-1",
+    "ruleUUID": "aws_sg_should_follow_naming_conventions",
+    "policyId": "PacMan_SGNamingConvention_version-1",
+    "ruleName": "SgNamingConvention",
+    "targetType": "sg",
+    "assetGroup": "aws",
+    "alexaKeyword": "SgNamingConvention",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"0.0.0.0/0\",\"key\":\"cidrIp\"},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"workerThreadCount\",\"value\":\"50\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"ANY\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"ruleKey\",\"value\":\"check-for-security-group-naming-convention\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"ruleId\":\"PacMan_SGNamingConventionRule_version-1\",\"autofix\":false,\"alexaKeyword\":\"SgNamingConvention\",\"ruleRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_SGNamingConvention_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_sg_should_not_have_anywhere_access_with_anyport\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 * * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_sg_should_not_have_anywhere_access_with_anyport",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Security groups should follow naming conventions for region,enviornment and application name.",
+    "createdDate": "2022-04-21",
+    "modifiedDate": "2022-04-21",
+    "severity": "medium",
+    "category": "security"
+  }
 ]
