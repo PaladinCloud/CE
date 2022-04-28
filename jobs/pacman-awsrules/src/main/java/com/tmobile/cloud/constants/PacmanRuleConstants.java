@@ -361,4 +361,6 @@ public class PacmanRuleConstants {
 	public static final String DETAILS = "details";
 	public static final String AZURE_SUBSCRIPTION = "subscription";
     public static final String AZURE_SUBSCRIPTION_NAME = "subscriptionName";
+
+    public static final String DDSOS_PROTECTION_FLAG="ddosProtectionEnabled";
 }

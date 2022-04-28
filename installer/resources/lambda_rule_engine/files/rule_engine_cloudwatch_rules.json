@@ -3584,5 +3584,27 @@
     "modifiedDate": "2022-04-21",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Vnet_DDoSProtectionRule_version-1",
+    "ruleUUID": "azure_vnet_should_enable_ddos_protection",
+    "policyId": "PacMan_Vnet_DDoSProtection_version-1",
+    "ruleName": "VnetDDosProtectionRule",
+    "targetType": "vnet",
+    "assetGroup": "azure",
+    "alexaKeyword": "VnetDDosProtectionRule",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-ddos-protection-flag-on-azure-virtual-network\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Vnet_DDoSProtectionRule_version-1\",\"autofix\":false,\"alexaKeyword\":\"VnetDDosProtectionRule\",\"ruleRestUrl\":\"\",\"targetType\":\"vnet\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Vnet_DDoSProtection_version-1\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_vnet_should_enable_ddos_protection\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 * * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_vnet_should_enable_ddos_protection",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Vnet should be enabled with DDoS protection",
+    "createdDate": "2022-04-28",
+    "modifiedDate": "2022-04-28",
+    "severity": "high",
+    "category": "security"
   }
 ]

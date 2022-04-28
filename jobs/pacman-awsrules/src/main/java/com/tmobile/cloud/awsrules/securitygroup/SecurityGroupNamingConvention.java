@@ -58,7 +58,7 @@ public class SecurityGroupNamingConvention extends BaseRule {
 
         logger.debug("Rule parameters:  {}",ruleParam );
         logger.debug("Resource attributes: {}", resourceAttributes);
-        String resourceId = null;
+        String groupName = null;
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -69,7 +69,7 @@ public class SecurityGroupNamingConvention extends BaseRule {
         }
 
         if(resourceAttributes!=null){
-            resourceId=resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID);
+            groupName=resourceAttributes.get(PacmanRuleConstants.GROUP_NAME);
 
             Annotation annotation = null;
             annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
@@ -79,7 +79,7 @@ public class SecurityGroupNamingConvention extends BaseRule {
 
             logger.debug("Before ValidateSecurityGroup Method.");
 
-            boolean isValidName = validateSecurityGroupName(resourceId);
+            boolean isValidName = validateSecurityGroupName(groupName);
             logger.debug("After ValidateSecurityGroup Method.");
             logger.debug("Value of isValidName is: " + isValidName);
 
