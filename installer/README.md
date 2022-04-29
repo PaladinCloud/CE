@@ -242,6 +242,12 @@ New AWS account management page with features to add remove accounts is being de
 Till then you have to configure it manually
 ```
 
+## ELB Settings
+By default, pacbot creates an internal ELB. If you want to use an external ELB then you have to configure it.
+Please follow the below steps to configure external ELB:
+* Update value of a variable MAKE_ALB_INTERNAL to False in settings/local.py file
+* Either you can enable all the incoming traffic or allow them from specific IPs and all the container IPs.
+* All the API services will hit the config service, in this case incoming request will be from a specific container IP. So you need to allow incoming traffic for all the container IPs in the security group.
 
 ## Limitations:
    * Current version supports only AWS stack.
