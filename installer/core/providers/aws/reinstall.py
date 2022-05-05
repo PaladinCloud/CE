@@ -74,6 +74,7 @@ class ReInstall(Install):  # Do not inherit Destroy
             dry_run (boolean): Decides whether original install should be done
         """
         try:
+            destroysuccessful = True
             if not dry_run:
                 #PyTerraform().terraform_destroy(resources_to_destroy)
                 #if destory fails it iterates for 3 times 
@@ -82,13 +83,15 @@ class ReInstall(Install):  # Do not inherit Destroy
                     self.exception = None
                     try:
                         PyTerraform().terraform_destroy(resources_to_destroy)
+                        destroysuccessful = True
                         break
                     except Exception as e:
+                        destroysuccessful = False
                         self.executed_with_error = True
                         self.exception = e
-
-            self.destroy = True
-            self.terraform_apply(resources_to_install, terraform_with_targets, dry_run)
+            if not destroysuccessful:
+                self.destroy = True
+                self.terraform_apply(resources_to_install, terraform_with_targets, dry_run)
         except Exception as e:
             self.executed_with_error = True
             self.exception = e
