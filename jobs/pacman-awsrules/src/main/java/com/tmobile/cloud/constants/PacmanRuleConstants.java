@@ -361,4 +361,7 @@ public class PacmanRuleConstants {
 	public static final String DETAILS = "details";
 	public static final String AZURE_SUBSCRIPTION = "subscription";
     public static final String AZURE_SUBSCRIPTION_NAME = "subscriptionName";
+
+    public static final String START_IP_ADDRESS="startIPAddress";
+    public static final String FIREWALL_RULE_DETAILS="firewallRuleDetails";
 }
