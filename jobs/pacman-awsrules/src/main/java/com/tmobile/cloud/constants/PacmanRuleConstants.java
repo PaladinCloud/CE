@@ -369,6 +369,8 @@ public class PacmanRuleConstants {
     public static final String PROTOCOL = "protocol";
     public static final String DESTINATIONPORTRANGES = "destinationPortRanges";
     public static final String PORT_1433 = "1433";
+
+    public static final String PORT_3306 = "3306";
     public static final String PORT_ANY = "*";
     public static final String INTERNET = "internet";
     public static final String ANY = "any";
