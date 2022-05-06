@@ -3607,27 +3607,7 @@
     "severity": "high",
     "category": "security"
   },
-{
-    "ruleId": "PacMan_Azure_Enable_Network_Security_to_PostgreSql",
-    "ruleUUID": "azure_enable_network_security_PostgreSql",
-    "policyId": "PacMan_Azure_Enable_Network_Security_to_PostgreSql",
-    "ruleName": "Enable_Network_Security_for_PostgreSql",
-    "targetType": "postgresql",
-   "assetGroup": "Azure",
-    "alexaKeyword": "Enable Network Security for PostgreSql",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-rule-for-postgresql\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"tcp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"5432\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Access@should@be@restricted@for@permissive@Network@Security@Groups@with@Internet-facing@postgesql\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Enable_Network_Security_to_PostgreSql\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for PostgreSql\",\"ruleRestUrl\":\"\",\"targetType\":\"postgresql\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Enable_Network_Security_to_PostgreSql\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_PostgreSql\",\"ruleType\":\"ManageRule\"}",     "ruleFrequency": "0 0/6 * * ? *",
-    "ruleExecutable": "",
-    "ruleRestUrl": "",
-    "ruleType": "ManageRule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_virtualmachine_enable_network_security_PostgreSql",
-    "status": "ENABLED",
-    "userId": "ASGC",
-    "displayName": "Enable Network Security Groups on postgreesql server",
-    "createdDate": "2022-05-02",
-    "modifiedDate": "2022-05-02",
-    "severity": "high",
-    "category": "security"
-  },
+
   {
     "ruleId": "PacMan_Azure_Enable_Network_Security_for_SQLSERVER",
     "ruleUUID": "azure_enable_network_security_SQLSERVER",
