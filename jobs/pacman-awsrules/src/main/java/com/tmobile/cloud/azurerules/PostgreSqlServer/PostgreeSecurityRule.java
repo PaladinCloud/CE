@@ -195,13 +195,5 @@ public class PostgreeSecurityRule extends BaseRule {
         return "This rule will check Postgre sql server has restricted Access ";
     }
 
-    public static void main(String[] args) {
-        PostgreeSecurityRule demo = new PostgreeSecurityRule();
-        try {
-            boolean result = demo.validatePostgresqlServerAccess("", null);
-            System.out.println("Result= " + result);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 }
