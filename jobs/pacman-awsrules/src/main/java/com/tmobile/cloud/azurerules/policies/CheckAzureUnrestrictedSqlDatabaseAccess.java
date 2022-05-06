@@ -83,7 +83,8 @@ public class CheckAzureUnrestrictedSqlDatabaseAccess extends BaseRule {
 
     private boolean checkUnrestrictedSqlDatabaseAccess(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = false;
+        String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
+        boolean validationResult = true;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter, new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
@@ -111,27 +112,23 @@ public class CheckAzureUnrestrictedSqlDatabaseAccess extends BaseRule {
                     JsonElement jsonValue = fireRuleDetailsJsonArray.get(index).getAsJsonObject().get(PacmanRuleConstants.START_IP_ADDRESS);
                     if (jsonValue != null && jsonValue.getAsString().equals("0.0.0.0")){
                         logger.debug("Sql servers have unrestricted access for the resource");
-                        validationResult = true;
+                        validationResult = false;
                         break;
                     }
 
                 } else {
-                    logger.debug("Sql servers does not have unrestricted access for resource.");
-                    validationResult = false;
+                    logger.debug(RESOURCE_DATA_NOT_FOUND);
                 }
             }
             }
             else{
-                logger.debug("Sql servers does not have unrestricted access for resource.");
-                validationResult = false;
+                logger.debug(RESOURCE_DATA_NOT_FOUND);
             }
             } else {
-                logger.info("Resource data not found!! Skipping this validation");
-                validationResult = true;
+                logger.info(RESOURCE_DATA_NOT_FOUND);
             }
         } else {
-            logger.info("Resource data not found!! Skipping this validation");
-            validationResult = true;
+            logger.info(RESOURCE_DATA_NOT_FOUND);
         }
 
         return validationResult;
