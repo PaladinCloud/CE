@@ -373,5 +373,7 @@ public class PacmanRuleConstants {
     public static final String INTERNET = "internet";
     public static final String ANY = "any";
     public static final String PROTOCOL_TCP = "TCP";
+    public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
+
 
 }

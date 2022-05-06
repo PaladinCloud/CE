@@ -83,7 +83,6 @@ public class CheckAzureUnrestrictedSqlDatabaseAccess extends BaseRule {
 
     private boolean checkUnrestrictedSqlDatabaseAccess(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
         boolean validationResult = true;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter, new HashMap<>(),
@@ -117,18 +116,18 @@ public class CheckAzureUnrestrictedSqlDatabaseAccess extends BaseRule {
                     }
 
                 } else {
-                    logger.debug(RESOURCE_DATA_NOT_FOUND);
+                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
             }
             }
             else{
-                logger.debug(RESOURCE_DATA_NOT_FOUND);
+                logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
             } else {
-                logger.info(RESOURCE_DATA_NOT_FOUND);
+                logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
         } else {
-            logger.info(RESOURCE_DATA_NOT_FOUND);
+            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
 
         return validationResult;
