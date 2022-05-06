@@ -34,7 +34,8 @@ public class UnrestrictedSqlDatabaseAccessRule extends BaseRule {
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-
+        String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
+        logger.info("The target type is:{}",targetType);
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -47,7 +48,7 @@ public class UnrestrictedSqlDatabaseAccessRule extends BaseRule {
         }
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-
+        logger.info("The resourceId is :{}",resourceId);
         boolean isValid = false;
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
@@ -170,7 +171,7 @@ public class UnrestrictedSqlDatabaseAccessRule extends BaseRule {
 
     @Override
     public String getHelpText() {
-        return "This rule will check Microsoft SQl server has unrestricted Acess ";
+        return "This rule will check Microsoft SQl database has unrestricted Acess ";
     }
 
     public static void main(String[] args) {
