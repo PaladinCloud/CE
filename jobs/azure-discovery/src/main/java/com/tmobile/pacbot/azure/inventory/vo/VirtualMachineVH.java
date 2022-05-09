@@ -30,6 +30,7 @@ public class VirtualMachineVH extends AzureVH {
 	private boolean isBootDiagnosticsEnabled;
 	private String bootDiagnosticsStorageUri;
 	private boolean isManagedServiceIdentityEnabled;
+	private boolean isPasswordBasedAuthenticationDisabled;
 	private String systemAssignedManagedServiceIdentityTenantId;
 	private String systemAssignedManagedServiceIdentityPrincipalId;
 	private Set<String> userAssignedManagedServiceIdentityIds;
@@ -55,6 +56,14 @@ public class VirtualMachineVH extends AzureVH {
 
 	public void setOsType(String osType) {
 		this.osType = osType;
+	}
+
+	public void setPasswordBasedAuthenticationDisabled(boolean isPasswordBasedAuthenticationDisabled){
+          this.isPasswordBasedAuthenticationDisabled = isPasswordBasedAuthenticationDisabled;
+	}
+
+	public boolean getPasswordBasedAuthenticationDisabled(){
+		return this.isPasswordBasedAuthenticationDisabled;
 	}
 
 	public String getPrimaryNCIMacAddress() {
