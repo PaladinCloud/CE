@@ -3665,7 +3665,7 @@
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "ManageRule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aazure_enable_network_security_SQLSERVER",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_SSH_virtualmachine",
     "status": "ENABLED",
     "userId": "ASGC",
     "displayName": "Disable Password Based Authentication Type",
