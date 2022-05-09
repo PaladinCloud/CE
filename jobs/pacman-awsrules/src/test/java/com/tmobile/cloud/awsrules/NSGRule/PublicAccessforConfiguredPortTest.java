@@ -18,7 +18,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.azurerules.NSGRule.PublicAcessforConfiguredPort;
+import com.tmobile.cloud.azurerules.NSGRule.PublicAccessforConfiguredPort;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.rule.BaseRule;
@@ -26,9 +26,9 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ PacmanUtils.class, BaseRule.class })
-public class PublicAcessforConfiguredPortTest {
+public class PublicAccessforConfiguredPortTest {
         @InjectMocks
-        PublicAcessforConfiguredPort postgreeSecurityRule;
+        PublicAccessforConfiguredPort postgreeSecurityRule;
 
         @Test
         public void executeTest() throws Exception {

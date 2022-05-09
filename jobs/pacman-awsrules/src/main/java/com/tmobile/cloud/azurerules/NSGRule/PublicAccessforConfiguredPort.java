@@ -35,10 +35,10 @@ import com.google.gson.JsonParser;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 
-@PacmanRule(key = "check-for-azure-nsg-rule", desc = "Deny unrestricted Acess to Azure Resources", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class PublicAcessforConfiguredPort extends BaseRule {
+@PacmanRule(key = "check-for-azure-nsg-rule", desc = "Deny unrestricted Access to Azure Resources", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class PublicAccessforConfiguredPort extends BaseRule {
     private static final Logger logger = LoggerFactory
-            .getLogger(PublicAcessforConfiguredPort.class);
+            .getLogger(PublicAccessforConfiguredPort.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -84,7 +84,7 @@ public class PublicAcessforConfiguredPort extends BaseRule {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Azure Database with port has restricted Access");
+                        "Azure   had unrestricted Access");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
@@ -92,14 +92,14 @@ public class PublicAcessforConfiguredPort extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug(
-                        "Azure resource Acesses was  restricted for port :{} Rule completed with FAILURE isValid flag {} : ",
+                        "had restricted  Access for the  port :{} Rule completed with FAILURE isValid flag {} : ",
                         port, isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
-        logger.debug("Azure resource Acesses was  restricted for port :{} Rule completed with Success isValid flag {}",
+        logger.debug("had unrestricted for port :{} Rule completed with Success isValid flag {}",
                 port, isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
