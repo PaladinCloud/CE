@@ -1,4 +1,4 @@
-package com.tmobile.cloud.azurerules.PostgreSqlServer;
+package com.tmobile.cloud.azurerules.NSGRule;
 
 import java.util.Map;
 
@@ -34,26 +34,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
-//check-for-azure-security-rule-for-postgresql
 
-@PacmanRule(key = "check-for-azure-security-rule-for-postgresql", desc = "Access should be restricted for permissive Network Security Groups with Internet-facing postgesql", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class PostgreeSecurityRule extends BaseRule {
+@PacmanRule(key = "check-for-azure-nsg-rule", desc = "Deny unrestricted Acess to Azure Resources", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class PublicAcessforConfiguredPort extends BaseRule {
     private static final Logger logger = LoggerFactory
-            .getLogger(PostgreeSecurityRule.class);
-
-    private static final String RESOURCE_NOT_FOUND = "Resource data not found!!Skipping this validation";
+            .getLogger(PublicAcessforConfiguredPort.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.info("Executing Azure Postgree Sql server rule for public virtual networks.");
+        logger.info("Executing Azure Security rule");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String port = ruleParam.get(PacmanRuleConstants.PORT);
         String protocol = ruleParam.get(PacmanRuleConstants.PROTOCOL);
 
-        logger.info("Azure security port: ", port);
-        logger.info("Azure security Protocol : ", protocol);
+        logger.info("check Public Access for the   port: {} ", port);
+        logger.info("check Public Access for the Protocol : {} ", protocol);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -87,21 +84,23 @@ public class PostgreeSecurityRule extends BaseRule {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Azure Microsoft SQL server  has restricted Access");
+                        "Azure Database with port :{} has restricted Access", port);
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug("Azure restricted Postgree Sql Server Rule completed with FAILURE isValid flag {} : ",
-                        isValid);
+                logger.debug(
+                        "Azure resource Acesses was  restricted for port :{} Rule completed with FAILURE isValid flag {} : ",
+                        port, isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
-        logger.debug("Azure Postgree Sql Server Rule completed with Success isValid flag {}", isValid);
+        logger.debug("Azure resource Acesses was  restricted for port :{} Rule completed with Success isValid flag {}",
+                port, isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
@@ -146,7 +145,7 @@ public class PostgreeSecurityRule extends BaseRule {
                                                 .equals(PacmanRuleConstants.ANY)
                                         || sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                                 .equals(PacmanRuleConstants.INTERNET)) {
-                                    logger.info("Postgre SQl server has unrestricted Access");
+                                    logger.info("Port: {} has unrestricted Access", validatePort);
                                     validationResult = false;
                                     break;
 
@@ -154,22 +153,22 @@ public class PostgreeSecurityRule extends BaseRule {
                             }
 
                         } else {
-                            logger.info(RESOURCE_NOT_FOUND);
+                            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
 
                         }
 
                     }
                     if (validationResult == true) {
-                        logger.info(" Postgre SQL Server has Restricted Access");
+                        logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                     }
 
                 } else {
-                    logger.info(RESOURCE_NOT_FOUND);
+                    logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                     validationResult = false;
                 }
 
             } else {
-                logger.info(RESOURCE_NOT_FOUND);
+                logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
         }
 
@@ -194,6 +193,5 @@ public class PostgreeSecurityRule extends BaseRule {
     public String getHelpText() {
         return "This rule will check Postgre sql server has restricted Access ";
     }
-
 
 }
