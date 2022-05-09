@@ -3616,7 +3616,7 @@
     "targetType": "nsg",
    "assetGroup": "Azure",
     "alexaKeyword": "Enable Network Security for SQLSERVER",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"tcp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1433\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Restrict TCP for 1433 to trust IPs only on SQL servers\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for SQLSERVER\",\"ruleRestUrl\":\"\",\"targetType\":\"sqlserver\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Enable_Network_Security_for_SQLSERVER\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_SQLSERVER\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"tcp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1433\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Restrict TCP for 1433 to trust IPs only on SQL servers\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for SQLSERVER\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Enable_Network_Security_for_SQLSERVER\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_SQLSERVER\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -3652,5 +3652,30 @@
     "modifiedDate": "2022-05-02",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Azure_Enable_Network_Security_for_RPC",
+    "ruleUUID": "azure_enable_network_security_RPC",
+    "policyId": "PacMan_Azure_Enable_Network_Security_for_RPC",
+    "ruleName": "Enable_Network_Security_for_RPC",
+    "targetType": "nsg",
+   "assetGroup": "Azure",
+    "alexaKeyword": "Enable Network Security for RPC",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"tcp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"135\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny unresticted access to RPC port 135\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Enable_Network_Security_for_RPC\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for RPC\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Enable_Network_Security_for_RPC\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_RPC\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_enable_network_security_RPC",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Network Security Groups on RPC",
+    "createdDate": "2022-05-02",
+    "modifiedDate": "2022-05-02",
+    "severity": "high",
+    "category": "security"
   }
+
+
+
 ]
