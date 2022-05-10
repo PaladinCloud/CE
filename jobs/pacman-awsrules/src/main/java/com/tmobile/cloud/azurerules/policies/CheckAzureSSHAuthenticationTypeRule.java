@@ -106,8 +106,8 @@ public class CheckAzureSSHAuthenticationTypeRule extends BaseRule {
                 logger.debug("Validating the data item: {}", isPasswordAuthenticationDisabled);
 
                 if (isPasswordAuthenticationDisabled != null){
-                    logger.debug("SSH authentication type for the selected Microsoft Azure virtual machine is password-based");
                     validationResult = isPasswordAuthenticationDisabled.getAsBoolean();
+                    logger.debug("SSH authentication type for the selected Microsoft Azure virtual machine is password-based - Validation Result: "+validationResult);
                 }
               }
             else{
