@@ -22,15 +22,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-for-ssh-authentication-type", desc = "Azure policy for checking azure virtual machines are configured to use SSH keys instead of username/password credentials for SSH authentication", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckAzureSSHAuthenticationType extends BaseRule {
+@PacmanRule(key = "check-for-unrestricted-sql-database-access", desc = "Azure policy for checking SQL servers allow unrestricted inbound access for all sql databases hosted on server", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckAzureUnrestrictedSqlDatabaseAccessRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(CheckAzureSSHAuthenticationType.class);
+    private static final Logger logger = LoggerFactory.getLogger(CheckAzureUnrestrictedSqlDatabaseAccessRule.class);
     //private static final String SAMPLE_RESULT=  "{\n  \"took\": 0,\n  \"timed_out\": false,\n  \"_shards\": {\n    \"total\": 3,\n    \"successful\": 3,\n    \"failed\": 0\n  },\n  \"hits\": {\n    \"total\": 2,\n    \"max_score\": 1,\n    \"hits\": [\n      {\n        \"_index\": \"azure_vnet\",\n        \"_type\": \"vnet\",\n        \"_id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n        \"_score\": 1,\n        \"_source\": {\n          \"discoverydate\": \"2022-04-28 08:00:00+0000\",\n          \"_cloudType\": \"Azure\",\n          \"subscription\": \"17c68d9d-c216-4e06-80ae-22c110ca4cfb\",\n          \"region\": \"eastus\",\n          \"subscriptionName\": \"Free Trial\",\n          \"resourceGroupName\": \"myTest\",\n          \"id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"ddosProtectionPlanId\": null,\n          \"hashCode\": 1252357563,\n          \"key\": \"ccb0a4ce-e5e2-4d20-b5be-eeae804b3022\",\n          \"name\": \"myVnet\",\n          \"addressSpaces\": [\n            \"192.168.0.0/16\"\n          ],\n          \"dnsServerIPs\": [],\n          \"subnets\": null,\n          \"tags\": {},\n          \"ddosProtectionEnabled\": true,\n          \"vmProtectionEnabled\": false,\n          \"_resourceid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_docid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_entity\": \"true\",\n          \"_entitytype\": \"vnet\",\n          \"firstdiscoveredon\": \"2022-04-28 08:00:00+0000\",\n          \"latest\": true,\n          \"_loaddate\": \"2022-04-28 10:02:00+0000\"\n        }\n      },\n      {\n        \"_index\": \"azure_vnet\",\n        \"_type\": \"vnet\",\n        \"_id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n        \"_score\": 1,\n        \"_source\": {\n          \"discoverydate\": \"2022-04-28 08:00:00+0000\",\n          \"_cloudType\": \"Azure\",\n          \"subscription\": \"17c68d9d-c216-4e06-80ae-22c110ca4cfb\",\n          \"region\": \"centralus\",\n          \"subscriptionName\": \"Free Trial\",\n          \"resourceGroupName\": \"myTest2\",\n          \"id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"ddosProtectionPlanId\": null,\n          \"hashCode\": 2113784549,\n          \"key\": \"c4b5e889-b5da-4f6c-ae0c-5c90d29d796a\",\n          \"name\": \"myVnet\",\n          \"addressSpaces\": [\n            \"192.168.0.0/16\"\n          ],\n          \"dnsServerIPs\": [],\n          \"subnets\": null,\n          \"tags\": {},\n          \"ddosProtectionEnabled\": true,\n          \"vmProtectionEnabled\": false,\n          \"_resourceid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_docid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_entity\": \"true\",\n          \"_entitytype\": \"vnet\",\n          \"firstdiscoveredon\": \"2022-04-28 08:00:00+0000\",\n          \"latest\": true,\n          \"_loaddate\": \"2022-04-28 10:02:00+0000\"\n        }\n      }\n    ]\n  }\n}";
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.info("Executing SSH Authentication Type Rule for azure virtual machines");
+        logger.info("Executing Unrestricted Sql Database Access Rule for Sql Servers");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -44,7 +44,7 @@ public class CheckAzureSSHAuthenticationType extends BaseRule {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/azure_virtualmachine/_search";
+            esUrl = url + "/azure_sqldatabase/_search";
         }
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
@@ -56,7 +56,7 @@ public class CheckAzureSSHAuthenticationType extends BaseRule {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = checkIsPasswordAuthenticationDisbaled(esUrl, mustFilter);
+                isValid = checkUnrestrictedSqlDatabaseAccess(esUrl, mustFilter);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
@@ -67,21 +67,21 @@ public class CheckAzureSSHAuthenticationType extends BaseRule {
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION, "SSH Authentication is password-based");
+                annotation.put(PacmanSdkConstants.DESCRIPTION, "Azure Sql Servers allow unrestricted access");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON, ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug("checkIsPasswordAuthenticationDisbaled completed with FAILURE isValid flag {} : ", isValid);
+                logger.debug("CheckAzureUnrestrictedSqlDatabaseAccess completed with FAILURE isValid flag {} : ", isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
         }
-        logger.debug("checkIsPasswordAuthenticationDisbaled completed with SUCCESS. isValid flag: {}", isValid);
+        logger.debug("CheckAzureUnrestrictedSqlDatabaseAccess completed with SUCCESS. isValid flag: {}", isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean checkIsPasswordAuthenticationDisbaled(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean checkUnrestrictedSqlDatabaseAccess(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
         JsonParser parser = new JsonParser();
@@ -99,17 +99,27 @@ public class CheckAzureSSHAuthenticationType extends BaseRule {
                 Object item =  hitsJsonArray.get(0);
                 JsonObject sourceJsonObject= (JsonObject) ((JsonObject) hitsJsonArray.get(0)).get(PacmanRuleConstants.SOURCE);
 
-                if(sourceJsonObject!=null && sourceJsonObject.get(PacmanRuleConstants.IS_PASSWORD_BASED_AUTHENTICATION_DISABLED) != null)
+                if(sourceJsonObject!=null && sourceJsonObject.get(PacmanRuleConstants.FIREWALL_RULE_DETAILS) != null)
                 {
-                JsonElement isPasswordAuthenticationDisabled = sourceJsonObject.get(PacmanRuleConstants.IS_PASSWORD_BASED_AUTHENTICATION_DISABLED);
+                JsonArray fireRuleDetailsJsonArray = (JsonArray) (sourceJsonObject.get(PacmanRuleConstants.FIREWALL_RULE_DETAILS).getAsJsonArray());
 
-                logger.debug("Validating the data item: {}", isPasswordAuthenticationDisabled);
+                for(int index=0;index<fireRuleDetailsJsonArray.size();index++){
+                logger.debug("Validating the data item: {}", fireRuleDetailsJsonArray.get(index).getAsJsonObject().toString());
 
-                if (isPasswordAuthenticationDisabled != null && isPasswordAuthenticationDisabled.getAsBoolean()==false){
-                    logger.debug("SSH authentication type for the selected Microsoft Azure virtual machine is password-based");
-                    validationResult = false;
+                if ((null != fireRuleDetailsJsonArray.get(index).getAsJsonObject().get(PacmanRuleConstants.START_IP_ADDRESS))
+                        && (!fireRuleDetailsJsonArray.get(index).getAsJsonObject().get(PacmanRuleConstants.START_IP_ADDRESS).isJsonNull())) {
+                    JsonElement jsonValue = fireRuleDetailsJsonArray.get(index).getAsJsonObject().get(PacmanRuleConstants.START_IP_ADDRESS);
+                    if (jsonValue != null && jsonValue.getAsString().equals("0.0.0.0")){
+                        logger.debug("Sql servers have unrestricted access for the resource");
+                        validationResult = false;
+                        break;
+                    }
+
+                } else {
+                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
-              }
+            }
+            }
             else{
                 logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
@@ -125,16 +135,6 @@ public class CheckAzureSSHAuthenticationType extends BaseRule {
 
     @Override
     public String getHelpText() {
-        return "This rule will check if the SSH authentication type for the selected Microsoft Azure virtual machine is password-based or SSH keys";
-    }
-
-    public static void main(String[] args) {
-        CheckAzureSSHAuthenticationType demo=new CheckAzureSSHAuthenticationType();
-        try {
-            boolean result=demo.checkIsPasswordAuthenticationDisbaled("",null);
-            System.out.println("Result= "+result);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return "This rule will check if the Sql Server allows unrestricted Access for all the sql databases  hosted on server";
     }
 }
