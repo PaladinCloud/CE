@@ -3739,6 +3739,29 @@
     "modifiedDate": "2022-05-02",
     "severity": "high",
     "category": "security"
+  },
+
+  {
+    "ruleId": "PacMan_Azure_Enable_Network_Security_for_FTP",
+    "ruleUUID": "azure_enable_network_security_FTP",
+    "policyId": "PacMan_Azure_Enable_Network_Security_for_FTP",
+    "ruleName": "Enable_Network_Security_for_FTP",
+    "targetType": "nsg",
+   "assetGroup": "Azure",
+    "alexaKeyword": "Enable Network Security for FTP",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"tcp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"20,21\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny unresticted access to FTP port 22\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Enable_Network_Security_for_FTP\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for FTP\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Enable_Network_Security_for_FTP\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_FTP\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_enable_network_security_FTP",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Network Security Groups on FTP",
+    "createdDate": "2022-05-02",
+    "modifiedDate": "2022-05-02",
+    "severity": "high",
+    "category": "security"
   }
 
 ]
