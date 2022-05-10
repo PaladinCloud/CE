@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 @PacmanRule(key = "check-for-unrestricted-sql-database-access", desc = "Azure policy for checking SQL servers allow unrestricted inbound access for all sql databases hosted on server", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckAzureUnrestrictedSqlDatabaseAccess extends BaseRule {
+public class CheckAzureUnrestrictedSqlDatabaseAccessRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(CheckAzureUnrestrictedSqlDatabaseAccess.class);
+    private static final Logger logger = LoggerFactory.getLogger(CheckAzureUnrestrictedSqlDatabaseAccessRule.class);
     //private static final String SAMPLE_RESULT=  "{\n  \"took\": 0,\n  \"timed_out\": false,\n  \"_shards\": {\n    \"total\": 3,\n    \"successful\": 3,\n    \"failed\": 0\n  },\n  \"hits\": {\n    \"total\": 2,\n    \"max_score\": 1,\n    \"hits\": [\n      {\n        \"_index\": \"azure_vnet\",\n        \"_type\": \"vnet\",\n        \"_id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n        \"_score\": 1,\n        \"_source\": {\n          \"discoverydate\": \"2022-04-28 08:00:00+0000\",\n          \"_cloudType\": \"Azure\",\n          \"subscription\": \"17c68d9d-c216-4e06-80ae-22c110ca4cfb\",\n          \"region\": \"eastus\",\n          \"subscriptionName\": \"Free Trial\",\n          \"resourceGroupName\": \"myTest\",\n          \"id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"ddosProtectionPlanId\": null,\n          \"hashCode\": 1252357563,\n          \"key\": \"ccb0a4ce-e5e2-4d20-b5be-eeae804b3022\",\n          \"name\": \"myVnet\",\n          \"addressSpaces\": [\n            \"192.168.0.0/16\"\n          ],\n          \"dnsServerIPs\": [],\n          \"subnets\": null,\n          \"tags\": {},\n          \"ddosProtectionEnabled\": true,\n          \"vmProtectionEnabled\": false,\n          \"_resourceid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_docid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_entity\": \"true\",\n          \"_entitytype\": \"vnet\",\n          \"firstdiscoveredon\": \"2022-04-28 08:00:00+0000\",\n          \"latest\": true,\n          \"_loaddate\": \"2022-04-28 10:02:00+0000\"\n        }\n      },\n      {\n        \"_index\": \"azure_vnet\",\n        \"_type\": \"vnet\",\n        \"_id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n        \"_score\": 1,\n        \"_source\": {\n          \"discoverydate\": \"2022-04-28 08:00:00+0000\",\n          \"_cloudType\": \"Azure\",\n          \"subscription\": \"17c68d9d-c216-4e06-80ae-22c110ca4cfb\",\n          \"region\": \"centralus\",\n          \"subscriptionName\": \"Free Trial\",\n          \"resourceGroupName\": \"myTest2\",\n          \"id\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"ddosProtectionPlanId\": null,\n          \"hashCode\": 2113784549,\n          \"key\": \"c4b5e889-b5da-4f6c-ae0c-5c90d29d796a\",\n          \"name\": \"myVnet\",\n          \"addressSpaces\": [\n            \"192.168.0.0/16\"\n          ],\n          \"dnsServerIPs\": [],\n          \"subnets\": null,\n          \"tags\": {},\n          \"ddosProtectionEnabled\": true,\n          \"vmProtectionEnabled\": false,\n          \"_resourceid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_docid\": \"subscriptions/17c68d9d-c216-4e06-80ae-22c110ca4cfb/resourceGroups/myTest2/providers/Microsoft.Network/virtualNetworks/myVnet\",\n          \"_entity\": \"true\",\n          \"_entitytype\": \"vnet\",\n          \"firstdiscoveredon\": \"2022-04-28 08:00:00+0000\",\n          \"latest\": true,\n          \"_loaddate\": \"2022-04-28 10:02:00+0000\"\n        }\n      }\n    ]\n  }\n}";
 
     @Override
@@ -136,15 +136,5 @@ public class CheckAzureUnrestrictedSqlDatabaseAccess extends BaseRule {
     @Override
     public String getHelpText() {
         return "This rule will check if the Sql Server allows unrestricted Access for all the sql databases  hosted on server";
-    }
-
-    public static void main(String[] args) {
-        CheckAzureUnrestrictedSqlDatabaseAccess demo=new CheckAzureUnrestrictedSqlDatabaseAccess();
-        try {
-            boolean result=demo.checkUnrestrictedSqlDatabaseAccess("",null);
-            System.out.println("Result= "+result);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

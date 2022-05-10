@@ -102,7 +102,12 @@ public class VMInventoryCollector {
 				setVnetInfo(virtualMachine, vmVH);
 				setOtherVnets(virtualMachine, vmVH, networkInterfaces);
 				
-	
+				if(virtualMachine.osProfile()!=null){
+					if(virtualMachine.osProfile().linuxConfiguration()!=null){
+							vmVH.setPasswordBasedAuthenticationDisabled(virtualMachine.osProfile().linuxConfiguration().disablePasswordAuthentication());
+					}
+				}
+				
 				vmList.add(vmVH);
 			}catch(Exception e) {
 				e.printStackTrace();
