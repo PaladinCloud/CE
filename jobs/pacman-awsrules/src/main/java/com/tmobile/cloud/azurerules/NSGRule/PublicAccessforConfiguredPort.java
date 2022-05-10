@@ -134,7 +134,8 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                                 .get(PacmanRuleConstants.SECURITY_RULE_SOURCEADDRESSPREFIXES).getAsJsonArray();
                         String protocol = nBoundarySecurityDataItem.getAsJsonObject()
                                 .get(PacmanRuleConstants.PROTOCOL).getAsString();
-                        if (sourceAddressPrefixes != null && protocol.equalsIgnoreCase(validateProtocol)
+                        if (sourceAddressPrefixes != null
+                                && (protocol.equalsIgnoreCase(validateProtocol) || protocol.equals("*"))
                                 && checkDestinationPort(nBoundarySecurityDataItem.getAsJsonObject()
                                         .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray(),
                                         validatePort)) {
