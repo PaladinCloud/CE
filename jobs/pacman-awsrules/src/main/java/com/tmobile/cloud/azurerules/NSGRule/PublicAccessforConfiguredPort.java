@@ -14,6 +14,8 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.rule.PacmanRule;
+
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -43,28 +45,23 @@ public class PublicAccessforConfiguredPort extends BaseRule {
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing Azure Security rule");
-
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String port = ruleParam.get(PacmanRuleConstants.PORT);
+        String[] port = ruleParam.get(PacmanRuleConstants.PORT).split(",");
         String protocol = ruleParam.get(PacmanRuleConstants.PROTOCOL);
-
-        logger.info("check Public Access for the   port: {} ", port);
+        logger.info("check Public Access for the   port: {} ", ((Object[]) port));
         logger.info("check Public Access for the Protocol : {} ", protocol);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
-
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
             esUrl = url + "/azure_nsg/_search";
         }
-
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-
         boolean isValid = false;
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
@@ -84,7 +81,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Azure   had unrestricted Access");
+                        "Azure   has unrestricted Access");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
@@ -92,20 +89,19 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug(
-                        "had restricted  Access for the  port :{} Rule completed with FAILURE isValid flag {} : ",
+                        "has restricted  Access for the  port :{} Rule completed with FAILURE isValid flag {} : ",
                         port, isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
-        logger.debug("had unrestricted for port :{} Rule completed with Success isValid flag {}",
+        logger.debug("has unrestricted for port :{} Rule completed with Success isValid flag {}",
                 port, isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
-
     }
 
-    private boolean validatePostgresqlServerAccess(String esUrl, Map<String, Object> mustFilter, String validatePort,
+    private boolean validatePostgresqlServerAccess(String esUrl, Map<String, Object> mustFilter, String[] validatePort,
             String validateProtocol) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
@@ -134,10 +130,10 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                                 .get(PacmanRuleConstants.SECURITY_RULE_SOURCEADDRESSPREFIXES).getAsJsonArray();
                         String protocol = nBoundarySecurityDataItem.getAsJsonObject()
                                 .get(PacmanRuleConstants.PROTOCOL).getAsString();
-                        if (sourceAddressPrefixes != null && protocol.equalsIgnoreCase(validateProtocol)
+                        if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol)||protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY)
                                 && checkDestinationPort(nBoundarySecurityDataItem.getAsJsonObject()
                                         .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray(),
-                                        validatePort)) {
+                                        validatePort))) {
                             for (int srcAdsIndex = 0; srcAdsIndex < sourceAddressPrefixes.size(); srcAdsIndex++) {
                                 if (sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                         .equals(PacmanRuleConstants.PORT_ANY)
@@ -145,7 +141,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                                                 .equals(PacmanRuleConstants.ANY)
                                         || sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                                 .equals(PacmanRuleConstants.INTERNET)) {
-                                    logger.info("Port: {} has unrestricted Access", validatePort);
+                                    logger.info("Port: {} has unrestricted Access", ((Object[]) validatePort));
                                     validationResult = false;
                                     break;
 
@@ -171,22 +167,18 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
         }
-
         return validationResult;
-
     }
 
-    private boolean checkDestinationPort(JsonArray destinationPorts, String validatePort) {
-
+    private boolean checkDestinationPort(JsonArray destinationPorts, String[] validatePorts) {
+        logger.info("checkDestinationPort");
         for (int i = 0; i < destinationPorts.size(); i++) {
-            if (destinationPorts.get(i).toString().equals(PacmanRuleConstants.PORT_ANY)
-                    || destinationPorts.get(i).toString().equals(validatePort)) {
+            if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).toString())
+                    || ArrayUtils.contains(validatePorts, PacmanRuleConstants.PORT_ANY)) {
                 return true;
             }
         }
-
         return false;
-
     }
 
     @Override
