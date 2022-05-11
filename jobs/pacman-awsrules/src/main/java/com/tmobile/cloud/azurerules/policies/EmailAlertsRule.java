@@ -104,7 +104,7 @@ public class EmailAlertsRule extends BaseRule {
 
                 logger.debug("Validating the data item: {}", recepientList);
 
-                if (recepientList != null && recepientList.getAsString().equals("")){
+                if (recepientList.getAsString().equals("")){
                     validationResult = false;
                     logger.debug("SQL Threat detection email notification alerts are disabled - Validation Result: "+validationResult);
                 }
