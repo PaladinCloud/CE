@@ -7,7 +7,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 11
@@ -16,7 +15,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: update
+    - name: running update 
       run: apt update
     - name: install maven
       run: apt install maven -y
