@@ -1,4 +1,6 @@
-package com.tmobile.cloud.azurerules.MicrosoftSqlDatabase.sqlDatabase;
+package com.tmobile.cloud.azurerules.sqlDatabase;
+
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -17,7 +19,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.azurerules.policies.CheckAzureUnrestrictedSqlDatabaseAccessRule;
+import com.tmobile.cloud.azurerules.policies.CheckAzureSSHAuthenticationTypeRule;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.rule.BaseRule;
@@ -25,10 +27,9 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PacmanUtils.class, BaseRule.class})
-public class CheckAzureUnrestrictedSqlDatabaseAccessRuleTest {
-    
+public class CheckAzureSSHAuthenticationTypeRuleTest {
     @InjectMocks
-    CheckAzureUnrestrictedSqlDatabaseAccessRule checkAzureUnrestrictedSqlDatabaseAccess;
+    CheckAzureSSHAuthenticationTypeRule checkAzureSSHAuthenticationTypeRule;
 
     @Test
     public void executeTest() throws Exception {
@@ -39,23 +40,23 @@ public class CheckAzureUnrestrictedSqlDatabaseAccessRuleTest {
         when(PacmanUtils.formatUrl(anyObject(), anyString())).thenReturn("host");
         when(PacmanUtils.checkAccessibleToAll(anyObject(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenReturn(CommonTestUtils.getMapBoolean("r_123 "));
-        assertThat(checkAzureUnrestrictedSqlDatabaseAccess.execute(CommonTestUtils.getMapString("r_123 "),
+        assertThat(checkAzureSSHAuthenticationTypeRule.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
 
         when(PacmanUtils.checkAccessibleToAll(anyObject(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenReturn(CommonTestUtils.getEmptyMapBoolean("r_123 "));
-        assertThat(checkAzureUnrestrictedSqlDatabaseAccess.execute(CommonTestUtils.getMapString("r_123 "),
+        assertThat(checkAzureSSHAuthenticationTypeRule.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
 
         when(PacmanUtils.checkAccessibleToAll(anyObject(), anyString(), anyString(), anyString(), anyString(),
                 anyString())).thenThrow(new Exception());
         assertThatThrownBy(
-                () -> checkAzureUnrestrictedSqlDatabaseAccess.execute(CommonTestUtils.getMapString("r_123 "),
+                () -> checkAzureSSHAuthenticationTypeRule.execute(CommonTestUtils.getMapString("r_123 "),
                         CommonTestUtils.getMapString("r_123 ")))
                 .isInstanceOf(RuleExecutionFailedExeption.class);
 
         assertThatThrownBy(
-                () -> checkAzureUnrestrictedSqlDatabaseAccess.execute(CommonTestUtils.getOneMoreMapString("r_123 "),
+                () -> checkAzureSSHAuthenticationTypeRule.execute(CommonTestUtils.getOneMoreMapString("r_123 "),
                         CommonTestUtils.getMapString("r_123 ")))
                 .isInstanceOf(RuleExecutionFailedExeption.class);
 
@@ -63,14 +64,14 @@ public class CheckAzureUnrestrictedSqlDatabaseAccessRuleTest {
                 .thenReturn(
                         false);
         assertThatThrownBy(
-                () -> checkAzureUnrestrictedSqlDatabaseAccess.execute(CommonTestUtils.getMapString("r_123 "),
+                () -> checkAzureSSHAuthenticationTypeRule.execute(CommonTestUtils.getMapString("r_123 "),
                         CommonTestUtils.getMapString("r_123 ")))
                 .isInstanceOf(InvalidInputException.class);
     }
 
     @Test
     public void getHelpTextTest() {
-        assertThat(checkAzureUnrestrictedSqlDatabaseAccess.getHelpText(), is(notNullValue()));
+        assertThat(checkAzureSSHAuthenticationTypeRule.getHelpText(), is(notNullValue()));
     }
 
 }

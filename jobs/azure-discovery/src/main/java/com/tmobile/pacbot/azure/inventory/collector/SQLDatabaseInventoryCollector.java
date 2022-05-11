@@ -64,6 +64,9 @@ public class SQLDatabaseInventoryCollector {
 					sqlDatabaseVH.setSubscriptionName(subscription.getSubscriptionName());
 					sqlDatabaseVH.setServerName(sqlDatabase.sqlServerName());
 					sqlDatabaseVH.setResourceGroupName(sqlDatabase.resourceGroupName());
+					if(sqlDatabase.getThreatDetectionPolicy() != null){
+					         sqlDatabaseVH.setNotificationRecipientsEmails(sqlDatabase.getThreatDetectionPolicy().emailAddresses());
+					}
 
 					for (Map.Entry<String, Map<String, String>> resourceGroupTag : tagMap.entrySet()) {
 
