@@ -104,12 +104,13 @@ public class EmailAlertsRule extends BaseRule {
 
                 logger.debug("Validating the data item: {}", recepientList);
 
-                if (recepientList != null && !recepientList.getAsString().equals("")){
+                if (recepientList != null && recepientList.getAsString().equals("")){
                     validationResult = false;
                     logger.debug("SQL Threat detection email notification alerts are disabled - Validation Result: "+validationResult);
                 }
               }
             else{
+                validationResult = false;
                 logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
             } else {
