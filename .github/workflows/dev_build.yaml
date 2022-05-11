@@ -15,9 +15,5 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: running update 
-      run: apt update
-    - name: install maven
-      run: apt install maven -y
     - name: Build with Maven
       run: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
