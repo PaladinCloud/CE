@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -85,11 +86,11 @@ public class CloudTrailGlobalServicesRule extends BaseRule {
         List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
 		
-        if (!PacmanUtils.doesAllHaveValue(severity, category,isGlobalServicesEventEnabled)) {
+        if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 		}
-		if (!Boolean.parseBoolean(isGlobalServicesEventEnabled)) {
+		if (StringUtils.isNotEmpty(isGlobalServicesEventEnabled) && !Boolean.parseBoolean(isGlobalServicesEventEnabled)) {
 			annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 			annotation.put(PacmanSdkConstants.DESCRIPTION, "Cloudtrail global service event is not enabled!!");
 			annotation.put(PacmanRuleConstants.SEVERITY, severity);
