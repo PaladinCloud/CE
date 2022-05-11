@@ -24,6 +24,8 @@ package com.tmobile.cloud.constants;
 
 public class PacmanRuleConstants {
 
+    public static final String UDP = "UDP";
+
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
     }
