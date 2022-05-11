@@ -3784,6 +3784,28 @@
     "severity": "high",
     "category": "security"
   },
+  {
+    "ruleId": "PacMan_Azure_Enable_Network_Security_for_UDP",
+    "ruleUUID": "azure_enable_network_security_UDP",
+    "policyId": "PacMan_Azure_Enable_Network_Security_for_UDP",
+    "ruleName": "Enable_Network_Security_for_UDP",
+    "targetType": "nsg",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Enable Network Security for UDP",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"UDP\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"*\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure that no network security groups allow unrestricted inbound access on UDP\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Enable_Network_Security_for_UDP\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for UDP\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Enable_Network_Security_for_UDP\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_UDP\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_enable_network_security_UDP",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Network Security Groups on UDP",
+    "createdDate": "2022-05-10",
+    "modifiedDate": "2022-05-10",
+     "severity": "high",
+    "category": "security"
+  },
    {
     "ruleId": "PacMan_Attached-EBS-volumes-are-encrypted_version-1_Attached_EBS_volumes_should_be_encrypted",
     "ruleUUID": "AWS_Attached_EBS_volumes_should_be_encrypted",
@@ -3806,5 +3828,4 @@
     "severity": "high",
     "category": "security"
   }
-
 ]
