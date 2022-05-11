@@ -388,6 +388,29 @@ public class PacmanUtils {
         return false;
     }
 
+    
+    public static boolean checkISResourceIdExistsFromElasticSearch(String id, String esUrl, String attributeName, String region)
+            throws Exception {
+        JsonParser jsonParser = new JsonParser();
+
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(attributeName), id);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.REGION), region);
+
+        JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
+                mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null,null);
+        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+            String hitsJsonString = resultJson.get(PacmanRuleConstants.HITS).toString();
+            JsonObject hitsJson = (JsonObject) jsonParser.parse(hitsJsonString);
+            JsonArray jsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+            return isInstanceExists(jsonArray);
+
+        }
+        return false;
+    }
     private static boolean isInstanceExists(JsonArray jsonArray) {
         if (jsonArray.size() > 0) {
             for (int i = 0; i < jsonArray.size(); i++) {

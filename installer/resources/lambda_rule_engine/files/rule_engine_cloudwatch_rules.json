@@ -3762,6 +3762,28 @@
     "modifiedDate": "2022-05-02",
     "severity": "high",
     "category": "security"
+  },
+   {
+    "ruleId": "PacMan_Attached-EBS-volumes-are-encrypted_version-1_Attached_EBS_volumes_should_be_encrypted",
+    "ruleUUID": "AWS_Attached_EBS_volumes_should_be_encrypted",
+    "policyId": "PacMan_Attached_EBS_volumes_are_encrypted_version-1",
+    "ruleName": "Attached_EBS_volumes_should_be_encrypted",
+    "targetType": "volume",
+   "assetGroup": "aws",
+    "alexaKeyword": "EBSVolumeEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-ebs-snapshot-should-be-encrypted\",\"encrypt\":false},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"/aws/volume_attachments/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Attached-EBS-volumes-are-encrypted_version-1_Attached_EBS_volumes_should_be_encrypted_volume\",\"autofix\":false,\"alexaKeyword\":\"EBSVolumeEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_Attached_EBS_volumes_are_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"972bb158-f08b-4198-aec6-fb01d99e5b2e\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/AWS_Attached_EBS_volumes_should_be_encrypted",
+    "status": "ENABLED",
+    "userId": "arun.kotratil@paladincloud.io",
+    "displayName": "Attached EBS volumes are encrypted",
+    "createdDate": "2022-05-11",
+    "modifiedDate": "2022-05-11",
+    "severity": "high",
+    "category": "security"
   }
 
 ]
