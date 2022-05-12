@@ -3871,6 +3871,28 @@
     "modifiedDate": "2022-05-11",
     "severity": "high",
     "category": "security"
+},
+{
+  "ruleId": "PacMan_Azure_Threat_Detection_on_SQL_Server",
+  "ruleUUID": "azure_enable_threat_detection_on_sql_server",
+  "policyId": "PacMan_Azure_Threat_Detection_on_SQL_Server",
+  "ruleName": "enable_threat_detection_on_sql_server",
+  "targetType": "sqldatabase",
+ "assetGroup": "Azure",
+  "alexaKeyword": "Enable Threat Detection on SQL Server",
+  "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-threat-detection-on-sql-server\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"azure enable threat detection on sql server\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Threat_Detection_on_SQL_Server\",\"autofix\":false,\"alexaKeyword\":\"Enable Threat Detection on SQL Server\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Threat_Detection_on_SQL_Server\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_azure_threat_detection_on_sql_server\",\"ruleType\":\"ManageRule\"}",   
+  "ruleFrequency": "0 0/6 * * ? *",
+  "ruleExecutable": "",
+  "ruleRestUrl": "",
+  "ruleType": "ManageRule",
+  "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_enable_azure_threat_detection_on_sql_server",
+  "status": "ENABLED",
+  "userId": "ASGC",
+  "displayName": "Enable Azure Threat Detection on SQL server",
+  "createdDate": "2022-05-02",
+  "modifiedDate": "2022-05-02",
+  "severity": "high",
+  "category": "security"
 }
 ,{
     "ruleId": "PacMan_AWS_ElastiCache_Clusters_Enabled_Encryption_version-1_Enable_CloudTrail_Global_Services_cloudtrail",
@@ -3894,4 +3916,5 @@
     "severity": "high",
     "category": "security"
 }
+
 ]
