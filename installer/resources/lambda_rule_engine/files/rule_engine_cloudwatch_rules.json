@@ -3821,7 +3821,7 @@
     "ruleType": "ManageRule",
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/AWS_Attached_EBS_volumes_should_be_encrypted",
     "status": "ENABLED",
-    "userId": "arun.kotratil@paladincloud.io",
+    "userId": "ASGC",
     "displayName": "Attached EBS volumes are encrypted",
     "createdDate": "2022-05-11",
     "modifiedDate": "2022-05-11",
