@@ -3784,6 +3784,28 @@
     "modifiedDate": "2022-05-11",
     "severity": "high",
     "category": "security"
-  }
-
+  },
+  {
+    "ruleId": "PacMan_AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail",
+    "ruleUUID": "aws_enable_cloudtrail_global_services",
+    "policyId": "PacMan_AWS_CloudTrail_Global_Services_version-1",
+    "ruleName": "Enable_CloudTrail_Global_Services",
+    "targetType": "cloudtrail",
+    "assetGroup": "aws",
+    "alexaKeyword": "CloudtrailGlobalServices",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"alexaKeyword\":\"CloudtrailGlobalServices\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AWS_CloudTrail_Global_Services_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_cloudtrail_global_services\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_cloudtrail_global_services",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable cloudtrail global services",
+    "createdDate": "2022-05-11",
+    "modifiedDate": "2022-05-11",
+    "severity": "high",
+    "category": "security"
+}
 ]
+
