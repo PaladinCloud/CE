@@ -3843,7 +3843,7 @@
     "ruleType": "ManageRule",
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_cloudtrail_global_services",
     "status": "ENABLED",
-    "userId": "amisha.vijayakumar@paladincloud.io",
+    "userId": "ASGC",
     "displayName": "Enable cloudtrail global services",
     "createdDate": "2022-05-11",
     "modifiedDate": "2022-05-11",

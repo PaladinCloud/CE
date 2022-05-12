@@ -52,10 +52,10 @@ public class CloudTrailGlobalServicesRuleTest{
 	@Test
 	public void executeTest() throws Exception{
 		mockStatic(PacmanUtils.class);
-		when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(
+		when(PacmanUtils.doesAllHaveValue(anyString(),anyString())).thenReturn(
 	                true);
 		assertThat(cloudTrailGlobalServicesRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
-		when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(
+		when(PacmanUtils.doesAllHaveValue(anyString(),anyString())).thenReturn(
                 false);
 		assertThatThrownBy(
                 () -> cloudTrailGlobalServicesRule.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
