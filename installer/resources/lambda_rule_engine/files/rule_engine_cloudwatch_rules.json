@@ -3872,4 +3872,26 @@
     "severity": "high",
     "category": "security"
 }
+,{
+    "ruleId": "PacMan_AWS_ElastiCache_Clusters_Enabled_Encryption_version-1_Enable_CloudTrail_Global_Services_cloudtrail",
+    "ruleUUID": "aws_enable_elasticache_redis_clusters_encryption",
+    "policyId": "PacMan_AWS_ElastiCache_Clusters_Enabled_Encryption_version-1",
+    "ruleName": "Enable_ElastiCache_Redis_clusters_encryption",
+    "targetType": "elasticache",
+    "assetGroup": "aws",
+    "alexaKeyword": "RedisClusterEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-elasticache-clusters-encrypted\",\"encrypt\":false},{\"key\":\"engineType\",\"value\":\"redis\",\"encrypt\":false},{\"key\":\"engineVersion\",\"value\":\"3.2.6\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AWS_ElastiCache_Clusters_Enabled_Encryption_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"alexaKeyword\":\"RedisClusterEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"elasticache\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AWS_ElastiCache_Clusters_Enabled_Encryption_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_elasticache_redis_clusters_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_elasticache_redis_clusters_encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable ElastiCache Redis clusters encryption",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "high",
+    "category": "security"
+}
 ]
