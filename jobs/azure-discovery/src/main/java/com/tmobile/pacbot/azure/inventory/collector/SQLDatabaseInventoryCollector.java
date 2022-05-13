@@ -2,6 +2,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,10 @@ import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
 @Component
 public class SQLDatabaseInventoryCollector {
-	
+
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
-	
+
 	private static Logger log = LoggerFactory.getLogger(SQLDatabaseInventoryCollector.class);
 
 	public List<SQLDatabaseVH> fetchSQLDatabaseDetails(SubscriptionVH subscription,
@@ -34,7 +35,7 @@ public class SQLDatabaseInventoryCollector {
 
 		List<SQLDatabaseVH> sqlDatabaseList = new ArrayList<SQLDatabaseVH>();
 
-		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
+		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
 		PagedList<SqlServer> sqlServers = azure.sqlServers().list();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		for (SqlServer sqlServer : sqlServers) {
@@ -64,8 +65,12 @@ public class SQLDatabaseInventoryCollector {
 					sqlDatabaseVH.setSubscriptionName(subscription.getSubscriptionName());
 					sqlDatabaseVH.setServerName(sqlDatabase.sqlServerName());
 					sqlDatabaseVH.setResourceGroupName(sqlDatabase.resourceGroupName());
-					if(sqlDatabase.getThreatDetectionPolicy() != null){
-					         sqlDatabaseVH.setNotificationRecipientsEmails(sqlDatabase.getThreatDetectionPolicy().emailAddresses());
+					if (sqlDatabase.getThreatDetectionPolicy() != null) {
+						sqlDatabaseVH.setNotificationRecipientsEmails(
+								sqlDatabase.getThreatDetectionPolicy().emailAddresses());
+						sqlDatabaseVH.setExcludedDetectionTypes(new ArrayList<>(
+								Arrays.asList(sqlDatabase.getThreatDetectionPolicy().disabledAlerts().split(","))));
+
 					}
 
 					for (Map.Entry<String, Map<String, String>> resourceGroupTag : tagMap.entrySet()) {
@@ -84,11 +89,10 @@ public class SQLDatabaseInventoryCollector {
 			}
 
 		}
-		log.info("Target Type : {}  Total: {} ","Sql Databse",sqlDatabaseList.size());
+		log.info("Target Type : {}  Total: {} ", "Sql Databse", sqlDatabaseList.size());
 		return sqlDatabaseList;
 
 	}
-
 
 	private void firewallRule(SqlServer sqlServer, SQLDatabaseVH sqlDatabaseVH) {
 		List<Map<String, String>> firewallRuleList = new ArrayList<>();

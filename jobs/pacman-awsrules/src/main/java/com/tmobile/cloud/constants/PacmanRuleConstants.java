@@ -363,8 +363,8 @@ public class PacmanRuleConstants {
     public static final String DETAILS = "details";
     public static final String AZURE_SUBSCRIPTION = "subscription";
     public static final String AZURE_SUBSCRIPTION_NAME = "subscriptionName";
-    public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED="isPasswordBasedAuthenticationDisabled";
-    public static final String NOTIFICATION_RECEPIENTS_EMAILS="notificationRecipientsEmails";
+    public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED = "isPasswordBasedAuthenticationDisabled";
+    public static final String NOTIFICATION_RECEPIENTS_EMAILS = "notificationRecipientsEmails";
     public static final String START_IP_ADDRESS = "startIPAddress";
     public static final String FIREWALL_RULE_DETAILS = "firewallRuleDetails";
     public static final String AZURE_INBOUNDARYSECURITYRULES = "inBoundSecurityRules";
@@ -383,5 +383,6 @@ public class PacmanRuleConstants {
     public static final String PORT_5432 = "5432";
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
     public static final String INCLUDE_GLOBAL_SERVICE_EVENTS = "includeglobalserviceevents";
+    public static final String EXCLUDEDDETECTIONTYPES = "excludedDetectionTypes";
 
 }
