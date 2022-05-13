@@ -368,6 +368,8 @@ public class PacmanRuleConstants {
     public static final String START_IP_ADDRESS = "startIPAddress";
     public static final String FIREWALL_RULE_DETAILS = "firewallRuleDetails";
     public static final String AZURE_INBOUNDARYSECURITYRULES = "inBoundSecurityRules";
+
+    public static final String AZURE_NONSSLPORT = "nonSslPort";
     public static final String SECURITY_RULE_SOURCEADDRESSPREFIXES = "sourceAddressPrefixes";
     public static final String PROTOCOL = "protocol";
     public static final String DESTINATIONPORTRANGES = "destinationPortRanges";
