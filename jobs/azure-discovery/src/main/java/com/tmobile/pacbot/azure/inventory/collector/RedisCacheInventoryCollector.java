@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.microsoft.azure.management.monitor.LocalizableString;
 import com.microsoft.azure.management.redis.RedisCache;
 import com.tmobile.pacbot.azure.inventory.vo.RedisCacheVH;
 import org.slf4j.Logger;
@@ -31,9 +32,13 @@ public class RedisCacheInventoryCollector {
         for (RedisCache redisCache : caches) {
             RedisCacheVH redisCacheVH = new RedisCacheVH();
             redisCacheVH.setNonSslPort(redisCache.nonSslPort());
+            redisCacheVH.setSubscription(subscription.getSubscriptionId());
+            redisCacheVH.setSubscriptionName(subscription.getSubscriptionName());
+            redisCacheVH.setName(redisCache.name());
+            redisCacheVH.setPort(redisCache.port());
             redisCacheList.add(redisCacheVH);
         }
-        log.info("Target Type : {}  Total: {} ","vnet",redisCacheList.size());
+        log.info("Target Type : {}  Total: {} ","redis cache",redisCacheList.size());
         return redisCacheList;
     }
 }

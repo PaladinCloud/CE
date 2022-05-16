@@ -28,6 +28,7 @@ public class EncryptionforDatainRedisCache extends BaseRule {
 
     private static final Logger logger = LoggerFactory
             .getLogger(EncryptionforDatainRedisCache.class);
+
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing Azure Security rule for redis cache in transit encryption");
@@ -73,16 +74,17 @@ public class EncryptionforDatainRedisCache extends BaseRule {
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug(
                         "The data-in-transit encryption is not enabled. Rule completed with FAILURE isValid flag {} : ",
-                         isValid);
+                        isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
         logger.debug("The data-in-transit encryption is enabled.Rule completed with Success isValid flag {}",
-                 isValid);
+                isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
+
     private boolean validateRedisCacheServerEncryption(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
@@ -108,13 +110,10 @@ public class EncryptionforDatainRedisCache extends BaseRule {
                         JsonObject nonSSLPortDataItem = ((JsonObject) nonSSLPortJsonArray
                                 .get(i));
 
-                                if (nonSSLPortDataItem.getAsBoolean()) {
-                                    logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
-                                    validationResult = false;
-                                    break;
-
-
-
+                        if (nonSSLPortDataItem.getAsBoolean()) {
+                            logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
+                            validationResult = false;
+                            break;
                         } else {
                             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
 
