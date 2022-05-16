@@ -1,7 +1,7 @@
 name: ci_dev
 on:  
   pull_request:
-    branches: [ dev ]
+    branches: [ master, dev, ]
 
 jobs:
   build:
@@ -14,10 +14,19 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        cache: maven
+        
     - name: running update
       run: sudo apt update
+
     - name: install maven
       run: sudo apt install maven -y
+
+    - name: Cache the Maven packages to speed up build
+      uses: actions/cache@v1
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
     - name: Build with Maven
       run: sudo mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
