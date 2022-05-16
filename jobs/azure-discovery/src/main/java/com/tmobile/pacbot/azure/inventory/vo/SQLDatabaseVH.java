@@ -23,6 +23,15 @@ public class SQLDatabaseVH extends AzureVH {
 	private String notificationRecipientsEmails;
 	private List<Map<String, String>> firewallRuleDetails;
 	private Map<String, String> tags;
+	private List<String> excludedDetectionTypes;
+
+	public List<String> getExcludedDetectionTypes() {
+		return excludedDetectionTypes;
+	}
+
+	public void setExcludedDetectionTypes(List<String> excludedDetectionTypes) {
+		this.excludedDetectionTypes = excludedDetectionTypes;
+	}
 
 	public UUID getCurrentServiceObjectiveId() {
 		return currentServiceObjectiveId;
