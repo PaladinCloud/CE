@@ -1,7 +1,7 @@
 name: ci_dev
 on:  
   pull_request:
-    branches: [ master, dev, ]
+    branches: [ master, dev ]
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-        
+
     - name: running update
       run: sudo apt update
 
