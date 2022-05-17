@@ -3937,5 +3937,51 @@
     "modifiedDate": "2022-05-13",
     "severity": "critical",
     "category": "security"
+
+  },
+  {
+    "ruleId": "PacMan_Azure_Encryption_for_Data_in_RedisCache",
+    "ruleUUID": "azure_encryption_for_data_in_RedisCache",
+    "policyId": "PacMan_Azure_Encryption_for_Data_in_RedisCache",
+    "ruleName": "Encryption_for_Data_in_RedisCache",
+    "targetType": "rediscache",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Enable Encryption for Data in RedisCache",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-rediscache-rule\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enable Encryption for Data in RedisCache\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Encryption_for_Data_in_RedisCache\",\"autofix\":false,\"alexaKeyword\":\"Enable Encryption for Data in RedisCache\",\"ruleRestUrl\":\"\",\"targetType\":\"rediscache\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Encryption_for_Data_in_RedisCache\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_encryption_for_data_in_RedisCache\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_encryption_for_data_in_RedisCache",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Redis Cache Server In-Transit Encryption",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible",
+    "ruleUUID": "azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible",
+    "policyId": "PacMan_Azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible",
+    "ruleName": "Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible",
+    "targetType": "nsg",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Security_for_RDP_port_3889_should_not_be_acessed_publicly",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"TCP\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"3389\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Security Groups with RDP port 3389 should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible\",\"autofix\":false,\"alexaKeyword\":\"Security_for_RDP_port_3889_should_not_be_acessed_publicly\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Security_Groups_with_RDP_port_3389_should_not_be_publicly_accessible",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Security Groups with RDP port 3389 should not be publicly accessible",
+    "createdDate": "2022-05-16",
+    "modifiedDate": "2022-05-16",
+    "severity": "critical",
+    "category": "security"
   }
+
 ]

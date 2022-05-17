@@ -19,37 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.tmobile.pacbot.azure.inventory.vo.BatchAccountVH;
-import com.tmobile.pacbot.azure.inventory.vo.BlobContainerVH;
-import com.tmobile.pacbot.azure.inventory.vo.CosmosDBVH;
-import com.tmobile.pacbot.azure.inventory.vo.DataDiskVH;
-import com.tmobile.pacbot.azure.inventory.vo.DatabricksVH;
-import com.tmobile.pacbot.azure.inventory.vo.LoadBalancerVH;
-import com.tmobile.pacbot.azure.inventory.vo.MariaDBVH;
-import com.tmobile.pacbot.azure.inventory.vo.MySQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.NamespaceVH;
-import com.tmobile.pacbot.azure.inventory.vo.NetworkInterfaceVH;
-import com.tmobile.pacbot.azure.inventory.vo.NetworkVH;
-import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
-import com.tmobile.pacbot.azure.inventory.vo.PolicyStatesVH;
-import com.tmobile.pacbot.azure.inventory.vo.PostgreSQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.PublicIpAddressVH;
-import com.tmobile.pacbot.azure.inventory.vo.RecommendationVH;
-import com.tmobile.pacbot.azure.inventory.vo.RegisteredApplicationVH;
-import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
-import com.tmobile.pacbot.azure.inventory.vo.RouteTableVH;
-import com.tmobile.pacbot.azure.inventory.vo.SQLDatabaseVH;
-import com.tmobile.pacbot.azure.inventory.vo.SQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.SearchServiceVH;
-import com.tmobile.pacbot.azure.inventory.vo.SecurityAlertsVH;
-import com.tmobile.pacbot.azure.inventory.vo.SecurityGroupVH;
-import com.tmobile.pacbot.azure.inventory.vo.SitesVH;
-import com.tmobile.pacbot.azure.inventory.vo.SnapshotVH;
-import com.tmobile.pacbot.azure.inventory.vo.StorageAccountVH;
-import com.tmobile.pacbot.azure.inventory.vo.SubnetVH;
-import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
-import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineVH;
-import com.tmobile.pacbot.azure.inventory.vo.WorkflowVH;;
+import com.tmobile.pacbot.azure.inventory.vo.*;
+;
 
 /**
  * The Class FileManager.
@@ -293,5 +264,10 @@ public class FileManager {
 		FileGenerator.generateJson(subnetList, "azure-subnets.data");
 
 	}
+	public static void generateRedisCacheFiles(List<RedisCacheVH> redisCacheList) throws IOException {
+		FileGenerator.generateJson(redisCacheList, "azure-rediscache.data");
+
+	}
+
 	
 }
