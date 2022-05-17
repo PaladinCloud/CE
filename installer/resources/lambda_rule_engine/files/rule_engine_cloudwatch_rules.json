@@ -3850,6 +3850,28 @@
     "category": "security"
   },
   {
+    "ruleId": "PacMan_AwsEc2WithDefaultSecurityGroup_version-1_AwsEc2WithDefaultSecurityGroup_ec2",
+    "ruleUUID": "aws_ec2_should_not_be_associated_with_default_security_group",
+    "policyId": "PacMan_AwsEc2WithDefaultSecurityGroup_version-1",
+    "ruleName": "AwsEc2WithDefaultSecurityGroup",
+    "targetType": "ec2",
+    "assetGroup": "aws",
+    "alexaKeyword": "AwsEc2WithDefaultSecurityGroup",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"default\",\"key\":\"securityGroupName\"},{\"encrypt\":false,\"value\":\"check-for-ec2-with-default-security-group\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"key\":\"esEc2SgURL\",\"value\":\"\/aws\/ec2_secgroups\/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AwsEc2WithDefaultSecurityGroup_version-1_AwsEc2WithDefaultSecurityGroup_ec2\",\"autofix\":false,\"alexaKeyword\":\"AwsEc2WithDefaultSecurityGroup\",\"ruleRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AwsEc2WithDefaultSecurityGroup_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_ec2_should_not_be_associated_with_default_security_group\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_ec2_should_not_be_associated_with_default_security_group",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "EC2 - Default Security Groups In Use",
+    "createdDate": "2022-05-16",
+    "modifiedDate": "2022-05-16",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "PacMan_AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail",
     "ruleUUID": "aws_enable_cloudtrail_global_services",
     "policyId": "PacMan_AWS_CloudTrail_Global_Services_version-1",
