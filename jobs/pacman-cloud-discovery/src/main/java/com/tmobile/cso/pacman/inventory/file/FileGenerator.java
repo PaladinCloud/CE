@@ -15,10 +15,7 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.file;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -129,6 +126,7 @@ public class FileGenerator {
 		        bw.close();
 		    }
 		}
+		//log.debug("Data written : {}",data);
 	}
 	
 	/**
@@ -364,6 +362,40 @@ public class FileGenerator {
 			}
 		}
 		return true;
+	}
+
+	public static void removeTrailingChar(String filePath) throws IOException {
+		log.info("Removing the trailing char from file: {}", filePath);
+		StringBuilder sb=new StringBuilder();
+		String content=null;
+		try(BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+			String line1 = bufferedReader.readLine();
+			String line2=null;
+			while(line1 != null) {
+				line2=line1;
+				line1 = bufferedReader.readLine();
+				if(line1!=null){
+					sb.append(line2);
+				}else{
+					sb.append(line2.substring(0,line2.length()-1));
+				}
+			}
+			content=sb.toString();
+		} catch (IOException e) {
+			log.error("Write to File :{} failed",filePath,e);
+			throw e;
+		}
+
+		log.info("Data to be written on file: {}. Content: {} ",filePath,content);
+
+		try(BufferedWriter bufferedWriter=new BufferedWriter(new FileWriter(filePath))) {
+			bufferedWriter.write(content);
+			bufferedWriter.flush();
+		} catch (IOException e) {
+			log.error("Write to File :{} failed",filePath,e);
+			throw e;
+		}
+
 	}
 	
 }

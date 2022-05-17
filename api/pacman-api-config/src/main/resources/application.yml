@@ -15,11 +15,11 @@ spring:
       maximum-pool-size: 10
       connection-timeout: 5000
   profiles:
-    active: ${CONFIG_SOURCE:jdbc}          
+    active: ${CONFIG_SOURCE:native}
   security:
     user:
       name: user
-      password: ${CONFIG_PASSWORD}
+      password: ${CONFIG_PASSWORD:password}
 
 server:  
   port: 8888

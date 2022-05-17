@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.tmobile.cso.pacman.inventory.file.LocalStackCollector;
+import com.tmobile.cso.pacman.inventory.localstack.LocalstackGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +79,12 @@ public class InventoryFetchOrchestrator {
 	/** The s 3 uploader. */
 	@Autowired
 	RDSDBManager rdsDBManager;
+
+	@Autowired
+	LocalstackGenerator localStackGenerator;
+
+	@Autowired
+	LocalStackCollector localStackCollector;
 	
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(InventoryFetchOrchestrator.class);
@@ -122,7 +130,11 @@ public class InventoryFetchOrchestrator {
 			log.info("Start : Asset Discovery and File Creation");
 			fileGenerator.generateFiles(accounts,skipRegions,filePath);
 			log.info("End : Asset Discovery and File Creation");
-			
+
+			log.info("Creating localstack resources");
+			localStackGenerator.generateEC2Data();
+			localStackCollector.runCollector(filePath);
+
 			log.info("Start : Backup Current Files");
 			s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed+ "/"+ new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
 			log.info("End : Backup Current Files");
