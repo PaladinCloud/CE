@@ -1,4 +1,4 @@
-package com.tmobile.cloud.azurerules.policies;
+package com.tmobile.cloud.azurerules.SQLDatabase;
 
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-encryption-enabled-for-boot-disk-volumes", desc = "Azure policy for checking azure virtual machines boot volumes are encrypted ", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class BootDiskVolumesEncryptionRule extends BaseRule {
+@PacmanRule(key = "check-for-threat-detection-on-sql-server", desc = "Enable all types of threat detection for your Microsoft Azure SQL database servers", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckThreatDetectionRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(BootDiskVolumesEncryptionRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(CheckThreatDetectionRule.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.info("Executing Boot Disk Volumes Encryption Rule for azure virtual machines");
+        logger.info("Executing Sql Thread Detection Rule");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -40,9 +40,9 @@ public class BootDiskVolumesEncryptionRule extends BaseRule {
         }
 
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
-
-        if (!StringUtils.isNullOrEmpty(esUrl)) {
-            esUrl = esUrl + "/azure_virtualmachine/_search";
+        String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
+        if (!StringUtils.isNullOrEmpty(url)) {
+            esUrl = url + "/azure_sqldatabase/_search";
         }
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
@@ -54,37 +54,36 @@ public class BootDiskVolumesEncryptionRule extends BaseRule {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = checkIsEncryptionEnabled(esUrl, mustFilter);
+                isValid = isSQLdbThreatExcluded(esUrl, mustFilter);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
-            if (!isValid) {
+            if (isValid) {
                 List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Azure virtual machine Boot disk volumes are not encrypted");
+                annotation.put(PacmanSdkConstants.DESCRIPTION, "threat detection is  excluded on sql database");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug("checkIsEncryptionEnabled completed with FAILURE isValid flag {} : ", isValid);
+                logger.debug("threat detection-on-sql database server Failed. isValid flag {} : ",
+                        isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
-        logger.debug("checkIsEncryptionEnabled completed with SUCCESS. isValid flag: {}", isValid);
+        logger.debug("threat detection on sql database server  SUCCESS. isValid flag: {}", isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean checkIsEncryptionEnabled(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean isSQLdbThreatExcluded(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = true;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
@@ -97,44 +96,29 @@ public class BootDiskVolumesEncryptionRule extends BaseRule {
             JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
             if (hitsJsonArray.size() > 0) {
-                JsonObject sourceJsonObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                if (sourceJsonObject != null && sourceJsonObject.get(PacmanRuleConstants.DISKS) != null) {
-                    JsonArray disksJsonArray = sourceJsonObject.get(PacmanRuleConstants.DISKS).getAsJsonArray();
-                    for (int i = 0; i < disksJsonArray.size(); i++) {
-                        JsonObject diskObject = disksJsonArray.get(i).getAsJsonObject();
-                        if (diskObject.get(PacmanRuleConstants.DISK_TYPE).getAsString()
-                                .equals(PacmanRuleConstants.OSDISK)) {
-                            JsonElement isEncryptionEnabled = diskObject
-                                    .get(PacmanRuleConstants.IS_ENCRYPTION_ENABLED);
+                logger.debug("Validating the data item: {}", jsonDataItem.toString());
+                JsonArray excludedDetectionTypes = jsonDataItem.getAsJsonObject()
+                        .get(PacmanRuleConstants.EXCLUDEDDETECTIONTYPES).getAsJsonArray();
+                if (excludedDetectionTypes.size() > 0) {
+                    logger.info("excluded Detetectio types: {}", excludedDetectionTypes);
+                    return true;
 
-                            logger.debug("Validating the data item: {}", isEncryptionEnabled);
-
-                            validationResult = isEncryptionEnabled.getAsBoolean();
-                            logger.debug(
-                                    "Boot Disk Volume for selected Microsoft Azure virtual machine is not encrypted - Validation Result: "
-                                            + validationResult);
-
-                            if (!validationResult)
-                                break;
-                        }
-                    }
-                } else {
-                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
-            } else {
-                logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-            }
-        } else {
-            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-        }
 
-        return validationResult;
+            }
+
+        }
+        logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+
+        return false;
+
     }
 
     @Override
     public String getHelpText() {
-        return "This rule will check if the Boot Disk Volume for selected Microsoft Azure virtual machine is encrypted or not";
+        return "This rule will check if the Sql DataBase Server Enable all the Thread Detection";
     }
 
 }

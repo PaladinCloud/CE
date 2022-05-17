@@ -1,13 +1,13 @@
-package com.tmobile.cloud.azurerules.policies;
+package com.tmobile.cloud.azurerules.RedisCache;
 
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
+import com.tmobile.cloud.azurerules.NSGRule.PublicAccessforConfiguredPort;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -22,31 +22,30 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-encryption-enabled-for-boot-disk-volumes", desc = "Azure policy for checking azure virtual machines boot volumes are encrypted ", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class BootDiskVolumesEncryptionRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(BootDiskVolumesEncryptionRule.class);
+@PacmanRule(key = "check-for-azure-rediscache-rule", desc = "Ensure that in-transit encryption is enabled for all Microsoft Azure Redis Cache servers", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EncryptionforDatainRedisCache extends BaseRule {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(EncryptionforDatainRedisCache.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.info("Executing Boot Disk Volumes Encryption Rule for azure virtual machines");
-
+        logger.info("Executing Azure Security rule for redis cache in transit encryption");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
-
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
-
-        if (!StringUtils.isNullOrEmpty(esUrl)) {
-            esUrl = esUrl + "/azure_virtualmachine/_search";
+        String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
+        if (!StringUtils.isNullOrEmpty(url)) {
+            esUrl = url + "/azure_rediscache/_search";
         }
-
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-
         boolean isValid = false;
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
@@ -54,7 +53,7 @@ public class BootDiskVolumesEncryptionRule extends BaseRule {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = checkIsEncryptionEnabled(esUrl, mustFilter);
+                isValid = validateRedisCacheServerEncryption(esUrl, mustFilter);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
@@ -66,23 +65,27 @@ public class BootDiskVolumesEncryptionRule extends BaseRule {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Azure virtual machine Boot disk volumes are not encrypted");
+                        "The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug("checkIsEncryptionEnabled completed with FAILURE isValid flag {} : ", isValid);
+                logger.debug(
+                        "The data-in-transit encryption is not enabled. Rule completed with FAILURE isValid flag {} : ",
+                        isValid);
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
-        logger.debug("checkIsEncryptionEnabled completed with SUCCESS. isValid flag: {}", isValid);
+
+        logger.debug("The data-in-transit encryption is enabled.Rule completed with Success isValid flag {}",
+                isValid);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean checkIsEncryptionEnabled(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean validateRedisCacheServerEncryption(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
         JsonParser parser = new JsonParser();
@@ -97,44 +100,44 @@ public class BootDiskVolumesEncryptionRule extends BaseRule {
             JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
             if (hitsJsonArray.size() > 0) {
-                JsonObject sourceJsonObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                if (sourceJsonObject != null && sourceJsonObject.get(PacmanRuleConstants.DISKS) != null) {
-                    JsonArray disksJsonArray = sourceJsonObject.get(PacmanRuleConstants.DISKS).getAsJsonArray();
-                    for (int i = 0; i < disksJsonArray.size(); i++) {
-                        JsonObject diskObject = disksJsonArray.get(i).getAsJsonObject();
-                        if (diskObject.get(PacmanRuleConstants.DISK_TYPE).getAsString()
-                                .equals(PacmanRuleConstants.OSDISK)) {
-                            JsonElement isEncryptionEnabled = diskObject
-                                    .get(PacmanRuleConstants.IS_ENCRYPTION_ENABLED);
+                logger.debug("Validating the data item: {}", jsonDataItem.toString());
+                JsonArray nonSSLPortJsonArray = jsonDataItem.getAsJsonObject()
+                        .get(PacmanRuleConstants.AZURE_NONSSLPORT).getAsJsonArray();
+                if (nonSSLPortJsonArray.size() > 0) {
+                    for (int i = 0; i < nonSSLPortJsonArray.size(); i++) {
+                        JsonObject nonSSLPortDataItem = ((JsonObject) nonSSLPortJsonArray
+                                .get(i));
 
-                            logger.debug("Validating the data item: {}", isEncryptionEnabled);
+                        if (nonSSLPortDataItem.getAsBoolean()) {
+                            logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
+                            validationResult = false;
+                            break;
+                        } else {
+                            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
 
-                            validationResult = isEncryptionEnabled.getAsBoolean();
-                            logger.debug(
-                                    "Boot Disk Volume for selected Microsoft Azure virtual machine is not encrypted - Validation Result: "
-                                            + validationResult);
-
-                            if (!validationResult)
-                                break;
                         }
+
                     }
+                    if (validationResult == true) {
+                        logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                    }
+
                 } else {
-                    logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                    logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                    validationResult = false;
                 }
+
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
-        } else {
-            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
-
         return validationResult;
     }
 
     @Override
     public String getHelpText() {
-        return "This rule will check if the Boot Disk Volume for selected Microsoft Azure virtual machine is encrypted or not";
+        return "This rule will check that in-transit encryption is enabled for all Microsoft Azure Redis Cache servers";
     }
-
 }
