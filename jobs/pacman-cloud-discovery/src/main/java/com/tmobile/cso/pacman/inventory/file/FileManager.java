@@ -1615,8 +1615,8 @@ public class FileManager {
 	public static void generateACMCertificateFiles(Map<String,List<SSLCertificateVH>> acmCertificate) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "domainName`certificateARN`expiryDate";
-		keys = "discoverydate`accountid`accountname`region`domainname`certificatearn`expirydate";
+		fieldNames = "domainName`certificateARN`expiryDate`status";
+		keys = "discoverydate`accountid`accountname`region`domainname`certificatearn`expirydate`status";
 		FileGenerator.generateJson(acmCertificate, fieldNames, "aws-acmcertificate.data", keys);
 	}
 

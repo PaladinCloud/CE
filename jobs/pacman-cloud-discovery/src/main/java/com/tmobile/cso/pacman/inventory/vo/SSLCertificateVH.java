@@ -14,6 +14,8 @@ public class SSLCertificateVH {
 	/** The expiryDate. */
 	Date expiryDate;
 
+	String status;
+	
 	List<String> issuerDetails;
 
 	public String getDomainName() {
@@ -48,4 +50,13 @@ public class SSLCertificateVH {
 		this.issuerDetails = issuerDetails;
 	}
 
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	
 }

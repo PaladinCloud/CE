@@ -1953,6 +1953,7 @@ public class InventoryUtil {
 						sslCertificate.setCertificateARN(certificateARN);
 						sslCertificate.setExpiryDate(expiryDate);
 						sslCertificate.setIssuerDetails(issuerDetails);
+						sslCertificate.setStatus(certificateDetail.getStatus());
 						sslCertList.add(sslCertificate);
 					}
 					sslVH.put(account+delimiter+accountName+delimiter+region.getName(), sslCertList);
