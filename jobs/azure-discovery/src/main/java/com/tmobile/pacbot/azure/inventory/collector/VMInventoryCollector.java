@@ -208,6 +208,10 @@ public class VMInventoryCollector {
 			vmDisk.setStorageAccountType("Unknown");
 		}
 		vmDisk.setType("OSDisk");
+
+		if(osDisk.encryptionSettings() != null){
+			vmDisk.setisEncryptionEnabled(osDisk.encryptionSettings().enabled());
+		}
 		vmDisks.add(vmDisk);
 
 		List<DataDisk> dataDisks = vm.storageProfile().dataDisks();
