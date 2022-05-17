@@ -6,7 +6,14 @@ public class VMDiskVH {
 	Integer sizeInGB;
 	String type;
 	String cachingType;
-	
+	boolean isEncryptionEnabled;
+
+	public void setisEncryptionEnabled(boolean isEncryptionEnabled){
+		this.isEncryptionEnabled = isEncryptionEnabled;
+	}
+	public boolean getisEncryptionEnabled(){
+		return this.isEncryptionEnabled;
+	}
 	public String getType() {
 		return type;
 	}

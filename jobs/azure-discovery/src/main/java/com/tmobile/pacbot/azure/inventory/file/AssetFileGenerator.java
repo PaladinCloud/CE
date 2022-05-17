@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import com.tmobile.pacbot.azure.inventory.collector.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,37 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.microsoft.azure.management.Azure;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.collector.BatchAccountInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.BlobContainerInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.CosmosDBInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.DatabricksInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.DiskInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.LoadBalancerInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.MariaDBInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.MySQLInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NSGInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NamespaceInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NetworkInterfaceInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NetworkInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PolicyDefinitionInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PolicyStatesInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PostgreSQLInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PublicIpAddressInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.RegisteredApplicationInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.ResourceGroupInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.RouteTableInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SCRecommendationsCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SQLDatabaseInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SQLServerInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SearchServiceInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SecurityAlertsInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SitesInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SnapshotInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.StorageAccountInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SubnetInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.VMInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.VaultInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.WorkflowInventoryCollector;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
@@ -156,6 +126,9 @@ public class AssetFileGenerator {
 	
 	@Autowired
 	SubnetInventoryCollector subnetInventoryCollector;
+
+	@Autowired
+	RedisCacheInventoryCollector redisCacheInventoryCollector;
 
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
@@ -566,6 +539,18 @@ public class AssetFileGenerator {
 				try {
 					FileManager.generateSubnetFiles(
 							subnetInventoryCollector.fetchSubnetDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("rediscache"))) {
+					return;
+				}
+
+				try {
+					FileManager.generateRedisCacheFiles(
+							redisCacheInventoryCollector.fetchRedisCacheDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
