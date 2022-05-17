@@ -4002,5 +4002,28 @@
     "modifiedDate": "2022-05-16",
     "severity": "critical",
     "category": "security"
-  }
+  },
+  {
+    "ruleId": "PacMan_AWS_ACM_Certificate_Expired_version-1_AWS_ACM_Certificate_Expired",
+    "ruleUUID": "aws_check_for_expired_acm_certificate",
+    "policyId": "PacMan_AWS_ACM_Certificate_Expired_version-1",
+    "ruleName": "AWS_ACM_Certificate_Expired",
+    "targetType": "acmcertificate",
+    "assetGroup": "aws",
+    "alexaKeyword": "ExpiredACMCertificate",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-expired-acm-certificate\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AWS_ACM_Certificate_Expired_version-1_AWS_ACM_Certificate_Expired\",\"autofix\":false,\"alexaKeyword\":\"ExpiredACMCertificate\",\"ruleRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AWS_ACM_Certificate_Expired_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_check_for_expired_acm_certificate\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_check_for_expired_acm_certificate",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Check for expired ACM certificate",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "high",
+    "category": "security"
+}
+
 ]
