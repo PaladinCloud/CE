@@ -1015,7 +1015,7 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f10','cdffb9cd-71de-4e29-9cae-783c2aa211ac','workflows','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f11','cdffb9cd-71de-4e29-9cae-783c2aa211ac','batchaccounts','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f12','cdffb9cd-71de-4e29-9cae-783c2aa211ac','loadbalancer','all','all');
-
+INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('f043449a-3f6d-472c-8537-534a2e5a50ff','cdffb9cd-71de-4e29-9cae-783c2aa211ac','rediscache','all','all');
 
 
 
