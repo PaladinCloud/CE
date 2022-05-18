@@ -1,5 +1,6 @@
 from core.terraform.resources.misc import NullResource
-from core.terraform.utils import get_terraform_scripts_and_files_dir, get_terraform_scripts_dir, get_terraform_provider_file
+from core.terraform.utils import get_terraform_scripts_and_files_dir, get_terraform_scripts_dir, \
+    get_terraform_provider_file
 from core.config import Settings
 from resources.datastore.db import MySQLDatabase
 from resources.datastore.es import ESDomain
@@ -14,10 +15,10 @@ from resources.iam.base_role import BaseRole
 from resources.lambda_submit.function import SubmitJobLambdaFunction
 from resources.lambda_rule_engine.function import RuleEngineLambdaFunction
 from resources.s3.bucket import BucketStorage
-from resources.pacbot_app.utils import need_to_enable_azure
-
+from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 from shutil import copy2
 import os
+import json
 
 
 class ReplaceSQLPlaceHolder(NullResource):
@@ -40,12 +41,24 @@ class ReplaceSQLPlaceHolder(NullResource):
 
         return credential_string
 
+    def prepare_gcp_credential_string(self):
+        credential_json = Settings.get('GCP_CREDENTIALS', [])
+        credential_string = ""
+        # if need_to_enable_gcp():
+        #     with open(GCP_CREDENTIALS, 'r') as f:
+        #         data = json.load(f)
+        #         credential_string = json.dumps(data)
+        if need_to_enable_gcp():
+            credential_string = json.dumps(credential_json)
+        return credential_string
+
     def get_provisioners(self):
         script = os.path.join(get_terraform_scripts_dir(), 'sql_replace_placeholder.py')
         db_user_name = MySQLDatabase.get_input_attr('username')
         db_password = MySQLDatabase.get_input_attr('password')
         db_host = MySQLDatabase.get_output_attr('endpoint')
         azure_credentails = self.prepare_azure_tenants_credentias()
+        gcp_credentials = self.prepare_gcp_credential_string()
         local_execs = [
             {
                 'local-exec': {
@@ -88,7 +101,8 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_SVC_CORP_PASSWORD': "password",
                         'ENV_CERTIFICATE_FEATURE_ENABLED': "false",
                         'ENV_PATCHING_FEATURE_ENABLED': "false",
-                        'ENV_VULNERABILITY_FEATURE_ENABLED': str(Settings.get('ENABLE_VULNERABILITY_FEATURE', False)).lower(),
+                        'ENV_VULNERABILITY_FEATURE_ENABLED': str(
+                            Settings.get('ENABLE_VULNERABILITY_FEATURE', False)).lower(),
                         'ENV_MAIL_SERVER': Settings.MAIL_SERVER,
                         'ENV_PACMAN_S3': "pacman-email-templates",
                         'ENV_DATA_IN_DIR': "inventory",
@@ -113,6 +127,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_QUALYS_INFO': Settings.get('QUALYS_INFO', ""),
                         'ENV_QUALYS_API_URL': Settings.get('QUALYS_API_URL', ""),
                         'ENV_AZURE_CREDENTIALS': azure_credentails,
+                        'ENV_GCP_CREDENTIALS': gcp_credentials,
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }
@@ -138,7 +153,8 @@ class ImportDbSql(NullResource):
         local_execs = [
             {
                 'local-exec': {
-                    'command': "mysql -u %s --password=%s -h %s < %s" % (db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.dest_file)
+                    'command': "mysql -u %s --password=%s -h %s < %s" % (
+                    db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.dest_file)
                 }
             }
 
