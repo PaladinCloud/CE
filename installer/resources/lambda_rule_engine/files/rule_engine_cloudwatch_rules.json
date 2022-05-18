@@ -3850,6 +3850,28 @@
     "category": "security"
   },
   {
+    "ruleId": "PacMan_AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection",
+    "ruleUUID": "aws_vpc_should_not_be_associated_with_external_peering",
+    "policyId": "PacMan_AwsVpcExternalPeeringConnection_version-1",
+    "ruleName": "Disable_VPC_External_Peering_Connections",
+    "targetType": "peeringconnection",
+    "assetGroup": "aws",
+    "alexaKeyword": "ExternalPeeringVPC",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-external-vpc-peering-connections\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"key\":\"accountEsURL\",\"value\":\"\/aws\/account\/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection\",\"autofix\":false,\"alexaKeyword\":\"ExternalPeeringVPC\",\"ruleRestUrl\":\"\",\"targetType\":\"peeringconnection\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AwsVpcExternalPeeringConnection_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_vpc_should_not_be_associated_with_external_peering\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_vpc_should_not_be_associated_with_external_peering",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VPC Peering Connections To Accounts Outside AWS Organization",
+    "createdDate": "2022-05-18",
+    "modifiedDate": "2022-05-18",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "PacMan_AwsEc2WithDefaultSecurityGroup_version-1_AwsEc2WithDefaultSecurityGroup_ec2",
     "ruleUUID": "aws_ec2_should_not_be_associated_with_default_security_group",
     "policyId": "PacMan_AwsEc2WithDefaultSecurityGroup_version-1",
