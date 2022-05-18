@@ -1062,6 +1062,34 @@ public class PacmanUtils {
         }
         return list;
     }
+    
+    public static List<GroupIdentifier> getDefaultSecurityGroupsByInstanceId(String instanceId, String esUrl, String securityGroupName) throws Exception {
+        List<GroupIdentifier> list = new ArrayList<>();
+        JsonParser jsonParser = new JsonParser();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.INSTANCEID), instanceId);
+        mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_SECURITY_GROUP_NAME), securityGroupName);
+        JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
+                mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null,null);
+        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+            JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get(PacmanRuleConstants.HITS).toString());
+            JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+            for (int i = 0; i < hitsArray.size(); i++) {
+                JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
+                        .getAsJsonObject();
+                String securitygroupid = source.get(PacmanRuleConstants.EC2_WITH_SECURITYGROUP_ID).getAsString();
+                GroupIdentifier groupIdentifier = new GroupIdentifier();
+                if (!com.amazonaws.util.StringUtils.isNullOrEmpty(securitygroupid)) {
+                    groupIdentifier.setGroupId(securitygroupid);
+                    list.add(groupIdentifier);
+                }
+            }
+        }
+        return list;
+    }
 
     public static Set<String> getRouteTableId(String subnetId, String vpcId, String routetableEsURL, String type)
             throws Exception {
