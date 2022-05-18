@@ -4047,6 +4047,27 @@
     "severity": "high",
     "category": "security"
 }
-
+,{
+    "ruleId": "PacMan_AWS_EMR_Clusters_Enabled_Encryption_version-1_Enable_Amazon_EMR_clusters_encryption",
+    "ruleUUID": "aws_enable_emr_clusters_encryption",
+    "policyId": "PacMan_AWS_EMR_Clusters_Enabled_Encryption_version-1",
+    "ruleName": "Enable_Amazon_EMR_clusters_encryption",
+    "targetType": "emr",
+    "assetGroup": "aws",
+    "alexaKeyword": "AmazonEMREncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-emr-clusters-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AWS_EMR_Clusters_Enabled_Encryption_version-1_Enable_Amazon_EMR_clusters_encryption\",\"autofix\":false,\"alexaKeyword\":\"AmazonEMREncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AWS_EMR_Clusters_Enabled_Encryption_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_emr_clusters_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_emr_clusters_encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable AWS EMR clusters encryption",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "high",
+    "category": "security"
+}
 
 ]
