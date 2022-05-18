@@ -58,14 +58,18 @@ class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         'jobType': "jar",
         'jobDesc': "AWS-Data-Collection",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,inventory/prd/latest"},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,inventory/prd/latest"},
             {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
-            {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"}
+            {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url(
+            ) + "/api/config/rule/prd/latest"}
         ],
         'params': [
-            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile.cso.pacman"},
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.cso.pacman"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
-            {'encrypt': False, 'key': "accountinfo", 'value': AwsAccount.get_output_attr('account_id')},
+            {'encrypt': False, 'key': "accountinfo",
+                'value': AwsAccount.get_output_attr('account_id')},
         ]
     })
 
@@ -94,16 +98,21 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         'jobType': "jar",
         'jobDesc': "Ship aws data periodically from redshfit to ES",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,data-shipper/prd/latest"},
-            {'name': "ASSET_API_URL", 'value': ApplicationLoadBalancer.get_api_version_url('asset')},
-            {'name': "CMPL_API_URL", 'value': ApplicationLoadBalancer.get_api_version_url('compliance')},
-            {'name': "AUTH_API_URL", 'value': ApplicationLoadBalancer.get_api_version_url('auth')},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,data-shipper/prd/latest"},
+            {'name': "ASSET_API_URL",
+                'value': ApplicationLoadBalancer.get_api_version_url('asset')},
+            {'name': "CMPL_API_URL",
+                'value': ApplicationLoadBalancer.get_api_version_url('compliance')},
+            {'name': "AUTH_API_URL",
+                'value': ApplicationLoadBalancer.get_api_version_url('auth')},
             {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
-            {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"}
+            {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url(
+            ) + "/api/config/rule/prd/latest"}
         ] + ([{
-                'name': "VULN_API_URL",
-                'value': ApplicationLoadBalancer.get_api_version_url('vulnerability')}
-            ] if need_to_deploy_vulnerability_service() else []),
+            'name': "VULN_API_URL",
+            'value': ApplicationLoadBalancer.get_api_version_url('vulnerability')}
+        ] if need_to_deploy_vulnerability_service() else []),
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
             {'encrypt': False, 'key': "datasource", 'value': "aws"},
@@ -138,18 +147,23 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
         'jobType': "jar",
         'jobDesc': "Index trusted advisor checks as recommendations",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,recommendation-enricher/prd/latest"},
-            {'name': "PACMAN_API_URI", 'value': ApplicationLoadBalancer.get_api_base_url()},
-            {'name': "LOGGING_ES_HOST_NAME", 'value': ESDomain.get_http_url_with_port()},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,recommendation-enricher/prd/latest"},
+            {'name': "PACMAN_API_URI",
+                'value': ApplicationLoadBalancer.get_api_base_url()},
+            {'name': "LOGGING_ES_HOST_NAME",
+                'value': ESDomain.get_http_url_with_port()},
             {'name': "ES_URI", 'value': ESDomain.get_http_url_with_port()},
             {'name': "ENVIRONMENT", 'value': "prd"},
             {'name': "APP_NAME", 'value': "aws-recommendations-collector"},
             {'name': "APP_TYPE", 'value': "etl"},
             {'name': "HEIMDALL_URI", 'value': ESDomain.get_http_url_with_port()},
-            {'name': "BASE_AWS_ACCOUNT", 'value': AwsAccount.get_output_attr('account_id')},
+            {'name': "BASE_AWS_ACCOUNT",
+                'value': AwsAccount.get_output_attr('account_id')},
         ],
         'params': [
-            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile.cso.pacbot"},
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.cso.pacbot"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
         ]
     })
@@ -179,19 +193,24 @@ class CloudNotificationCollectorCloudWatchEventTarget(CloudWatchEventTargetResou
         'jobType': "jar",
         'jobDesc': "Health Notification Collector",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/api/prd/latest"},
-            {'name': "PACMAN_API_URI", 'value': ApplicationLoadBalancer.get_api_base_url()},
-            {'name': "LOGGING_ES_HOST_NAME", 'value': ESDomain.get_http_url_with_port()},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/api/prd/latest"},
+            {'name': "PACMAN_API_URI",
+                'value': ApplicationLoadBalancer.get_api_base_url()},
+            {'name': "LOGGING_ES_HOST_NAME",
+                'value': ESDomain.get_http_url_with_port()},
             {'name': "ES_URI", 'value': ESDomain.get_http_url_with_port()},
             {'name': "ENVIRONMENT", 'value': "prd"},
             {'name': "APP_NAME", 'value': "aws-cloud-notification-collector"},
             {'name': "APP_TYPE", 'value': "etl"},
-            {'name': "BASE_AWS_ACCOUNT", 'value': AwsAccount.get_output_attr('account_id')},
+            {'name': "BASE_AWS_ACCOUNT",
+                'value': AwsAccount.get_output_attr('account_id')},
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
-            {'encrypt': False, 'key': "conf_src", 'value': "api-prd,application-prd"},
+            {'encrypt': False, 'key': "conf_src",
+                'value': "api-prd,application-prd"},
         ]
     })
 
@@ -222,7 +241,8 @@ class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         'jobType': "jar",
         'jobDesc': "Qualys KB Collector",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,qualys-enricher/prd/latest"},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,qualys-enricher/prd/latest"},
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
@@ -260,7 +280,8 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
         'jobType': "jar",
         'jobDesc': "Qualys Asset Data Importer",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,qualys-enricher/prd/latest"},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,qualys-enricher/prd/latest"},
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
@@ -299,11 +320,14 @@ class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         'jobType': "jar",
         'jobDesc': "Collects azure data and upload to S3",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,azure-discovery/prd/latest"},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,azure-discovery/prd/latest"},
         ],
         'params': [
-            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile.pacbot"},
-            {'encrypt': False, 'key': "file.path", 'value': "/home/ec2-user/azure-data"},
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.pacbot"},
+            {'encrypt': False, 'key': "file.path",
+                'value': "/home/ec2-user/azure-data"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
             {'encrypt': False, 'key': "tenants", 'value': get_azure_tenants()}
         ]
@@ -337,13 +361,96 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         'jobType': "jar",
         'jobDesc': "Ship Azure Data from S3 to PacBot ES",
         'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,azure-discovery/prd/latest"},
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,azure-discovery/prd/latest"},
         ],
         'params': [
-            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile.cso.pacman"},
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.cso.pacman"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
             {'encrypt': False, 'key': "datasource", 'value': "azure"},
             {'encrypt': False, 'key': "s3.data", 'value': "azure-inventory"}
         ]
     })
     PROCESS = need_to_enable_azure()
+
+
+class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
+    name = "gcp-discovery"
+    schedule_expression = "cron(10 */6 * * ? *)"
+    DEPENDS_ON = [SubmitJobLambdaFunction]
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromGCPDataCollectorEvent"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = GCPDataCollectorEventRule.get_output_attr('arn')
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = GCPDataCollectorEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    target_id = 'GCPDataCollectorTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "pacbot-gcp-discovery",
+        'jobUuid': "pacbot-gcp-discovery",
+        'jobType': "jar",
+        'jobDesc': "Collects gcp data and upload to S3",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,gcp-discovery/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.pacbot"},
+            {'encrypt': False, 'key': "file.path",
+                'value': "/home/ec2-user/gcp-data"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "project_ids", 'value': get_gcp_project_ids()}
+        ]
+    })
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataShipperEventRule(CloudWatchEventRuleResource):
+    name = "data-shipper-gcp"
+    schedule_expression = "cron(11 */6 * * ? *)"
+    DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromgcpDataShipper"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = GCPDataShipperEventRule.get_output_attr('arn')
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = GCPDataShipperEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    target_id = 'GCPDataShipperTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "data-shipper-gcp",
+        'jobUuid': "data-shipper-gcp",
+        'jobType': "jar",
+        'jobDesc': "Ship GCP Data from S3 to PacBot ES",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,gcp-discovery/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.cso.pacman"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "datasource", 'value': "gcp"},
+            {'encrypt': False, 'key': "s3.data", 'value': "gcp-inventory"}
+        ]
+    })
+    PROCESS = need_to_enable_gcp()

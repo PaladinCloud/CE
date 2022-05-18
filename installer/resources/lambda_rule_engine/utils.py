@@ -12,12 +12,15 @@ def get_rule_engine_cloudwatch_rules_var():
     """
     with open("resources/lambda_rule_engine/files/rule_engine_cloudwatch_rules.json", "r") as fp:
         data = fp.read()
-    data = data.replace("role/pacman_ro", "role/" + BaseRole.get_input_attr('name'))
+    data = data.replace("role/pacman_ro", "role/" +
+                        BaseRole.get_input_attr('name'))
 
     variable_dict_input = json.loads(data)
     required_rules = []
     for index in range(len(variable_dict_input)):
         if variable_dict_input[index]['assetGroup'] == "azure" and not need_to_enable_azure():
+            continue
+        elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
             continue
         mod = int(index % 20 + 5)
         item = {
