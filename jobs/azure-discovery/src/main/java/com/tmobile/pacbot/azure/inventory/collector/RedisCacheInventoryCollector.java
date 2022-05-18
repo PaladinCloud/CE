@@ -17,6 +17,7 @@ import com.microsoft.azure.management.network.Network;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.NetworkVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+@Component
 public class RedisCacheInventoryCollector {
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
