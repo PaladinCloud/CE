@@ -4046,8 +4046,8 @@
     "modifiedDate": "2022-05-12",
     "severity": "high",
     "category": "security"
-}
-,{
+},
+{
     "ruleId": "PacMan_AWS_EMR_Clusters_Enabled_Encryption_version-1_Enable_Amazon_EMR_clusters_encryption",
     "ruleUUID": "aws_enable_emr_clusters_encryption",
     "policyId": "PacMan_AWS_EMR_Clusters_Enabled_Encryption_version-1",
