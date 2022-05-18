@@ -1,5 +1,5 @@
 from resources.iam.base_role import BaseRole
-from resources.pacbot_app.utils import need_to_enable_azure
+from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 import json
 
 
@@ -18,6 +18,8 @@ def get_rule_engine_cloudwatch_rules_var():
     required_rules = []
     for index in range(len(variable_dict_input)):
         if variable_dict_input[index]['assetGroup'] == "azure" and not need_to_enable_azure():
+            continue
+        if variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
             continue
         mod = int(index % 20 + 5)
         item = {

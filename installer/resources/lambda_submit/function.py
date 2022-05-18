@@ -10,7 +10,7 @@ from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue
 from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
-from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants
+from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_tenants
 import json
 
 
@@ -347,3 +347,84 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         ]
     })
     PROCESS = need_to_enable_azure()
+
+
+class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
+    name = "GCP-discovery"
+    schedule_expression = "cron(10 */6 * * ? *)"
+    DEPENDS_ON = [SubmitJobLambdaFunction]
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromGCPDataCollectorEvent"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = GCPDataCollectorEventRule.get_output_attr('arn')
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = GCPDataCollectorEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    target_id = 'GCPDataCollectorTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "pacbot-gcp-discovery",
+        'jobUuid': "pacbot-gcp-discovery",
+        'jobType': "jar",
+        'jobDesc': "Collects gcp data and upload to S3",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,gcp-discovery/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.pacbot"},
+            {'encrypt': False, 'key': "file.path",
+                'value': "/home/ec2-user/gcp-data"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "project_ids", 'value': get_gcp_project_ids()}
+        ]
+    })
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataShipperEventRule(CloudWatchEventRuleResource):
+    name = "data-shipper-gcp"
+    schedule_expression = "cron(11 */6 * * ? *)"
+    DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromGCPDataShipper"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = GCPDataShipperEventRule.get_output_attr('arn')
+    PROCESS = need_to_enable_gcp()
+
+
+class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = GCPDataShipperEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    target_id = 'GCPDataShipperTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "data-shipper-gcp",
+        'jobUuid': "data-shipper-gcp",
+        'jobType': "jar",
+        'jobDesc': "Ship gcp Data from S3 to PacBot ES",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,gcp-discovery/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint",
+                'value': "com.tmobile.cso.pacman"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "datasource", 'value': "gcp"},
+            {'encrypt': False, 'key': "s3.data", 'value': "gcp-inventory"}
+        ]
+    })
+    PROCESS = need_to_enable_gcp()

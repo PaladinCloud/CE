@@ -71,3 +71,9 @@ AZURE_TENANTS = [
         'secretId': "s222"
     },
 ]
+# This settings enable Vulnerability freature and service for GCP
+ENABLE_GCP = False
+#List of project id
+GCP_PROJECT_IDS=[]
+#Path to json file containing gcp credentials 
+GCP_CREDENTIAL_PATH="gcp_credential_path"

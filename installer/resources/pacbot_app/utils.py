@@ -21,3 +21,17 @@ def get_azure_tenants():
         return ",".join(tenant_ids)
     else:
         return ""
+
+
+def need_to_enable_gcp():
+    feature_status = Settings.get('ENABLE_GCP', False)
+
+    return feature_status
+
+
+def get_gcp_project_ids():
+    if need_to_enable_gcp():
+        project_ids = Settings.get('GCP_PROJECT_IDS', [])
+        return ",".join(project_ids)
+    else:
+        return ""
