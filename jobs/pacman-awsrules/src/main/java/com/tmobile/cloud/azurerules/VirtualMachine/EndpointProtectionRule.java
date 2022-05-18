@@ -29,7 +29,7 @@ public class EndpointProtectionRule extends BaseRule {
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.info("Executing Boot Disk Volumes Encryption Rule for azure virtual machines");
+        logger.info("Executing end point protection rule for azure virtual machines");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -84,8 +84,10 @@ public class EndpointProtectionRule extends BaseRule {
 
     private boolean checkIsEndpointProtectionInstalled(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = true;
+        boolean validationResult = false;
         JsonParser parser = new JsonParser();
+        List<String> antiMalwareExtensionList = new ArrayList<>(
+                Arrays.asList("EndpointSecurity", "TrendMicroDSA", "Antimalware", "EndpointProtection", "SCWPAgent", "PortalProtectExtension","FileSecurity"));
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
@@ -99,24 +101,24 @@ public class EndpointProtectionRule extends BaseRule {
             if (hitsJsonArray.size() > 0) {
                 JsonObject sourceJsonObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                if (sourceJsonObject != null && sourceJsonObject.get(PacmanRuleConstants.DISKS) != null) {
-                    JsonArray disksJsonArray = sourceJsonObject.get(PacmanRuleConstants.DISKS).getAsJsonArray();
-                    for (int i = 0; i < disksJsonArray.size(); i++) {
-                        JsonObject diskObject = disksJsonArray.get(i).getAsJsonObject();
-                        if (diskObject.get(PacmanRuleConstants.DISK_TYPE).getAsString()
-                                .equals(PacmanRuleConstants.OSDISK)) {
-                            JsonElement isEncryptionEnabled = diskObject
-                                    .get(PacmanRuleConstants.IS_ENCRYPTION_ENABLED);
+                if (sourceJsonObject != null && sourceJsonObject.get(PacmanRuleConstants.VM_EXTENSIONS) != null) {
+                    JsonArray vmExtensions = sourceJsonObject.get(PacmanRuleConstants.VM_EXTENSIONS).getAsJsonArray();
+                    for (int i = 0; i < vmExtensions.size(); i++) {
+                        JsonObject vmExtension = vmExtensions.get(i).getAsJsonObject();
+                        String vmExtensionName=vmExtension.get(PacmanRuleConstants.NAME).getAsString();
+                        for(String antiMalwareExtension:antiMalwareExtensionList) {
+                            logger.debug("WM extension name : {}", vmExtensionName);
+                            if (vmExtensionName.contains(antiMalwareExtension)) {
+                                validationResult = true;
+                                logger.debug(
+                                        "Azure virtual machine has endpoint protection installed - as the extension has keyword:{} ",antiMalwareExtension);
 
-                            logger.debug("Validating the data item: {}", isEncryptionEnabled);
 
-                            validationResult = isEncryptionEnabled.getAsBoolean();
-                            logger.debug(
-                                    "Azure virtual machine does not have endpoint protection installed - Validation Result: "
-                                            + validationResult);
-
-                            if (!validationResult)
                                 break;
+
+
+
+                            }
                         }
                     }
                 } else {

@@ -25,6 +25,7 @@ package com.tmobile.cloud.constants;
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
+    public static final String NAME ="name" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -366,8 +367,11 @@ public class PacmanRuleConstants {
     public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED = "passwordBasedAuthenticationDisabled";
     public static final String IS_ENCRYPTION_ENABLED = "encryptionEnabled";
     public static final String DISKS = "disks";
+
+    public static final String VM_EXTENSIONS = "extensionList";
     public static final String DISK_TYPE = "type";
     public static final String OSDISK = "OSDisk";
+
     public static final String NOTIFICATION_RECEPIENTS_EMAILS = "notificationRecipientsEmails";
     public static final String START_IP_ADDRESS = "startIPAddress";
     public static final String FIREWALL_RULE_DETAILS = "firewallRuleDetails";

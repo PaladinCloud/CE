@@ -112,7 +112,7 @@ public class VMInventoryCollector {
 			
 				
 				if (virtualMachine.listExtensions() != null)
-					vmVH.setExtensionList(virtualMachine.listExtensions());
+					vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());
 					
 				
 				vmList.add(vmVH);
@@ -172,7 +172,7 @@ public class VMInventoryCollector {
 			Optional<Subnet> subnetOptional = ipConfiguration.getNetwork().subnets().values().stream()
 					.filter(subnetObj -> subnet.equals(subnetObj.name())).findAny();
 			Subnet subnetObj = null;
-			;
+
 			if (subnetOptional.isPresent()) {
 				subnetObj = subnetOptional.get();
 			}

@@ -44,7 +44,7 @@ public class VirtualMachineVH extends AzureVH {
 	private String publicIpAddress;
 
 	private List<Map<String, String>> networkSecurityGroups;
-	private Map<String, VirtualMachineExtension> extensionList;
+	private List<VirtualMachineExtension> extensionList;
 
 	private String vnet;
 	private String subnet;
@@ -56,11 +56,11 @@ public class VirtualMachineVH extends AzureVH {
 		return osType;
 	}
 
-	public Map<String, VirtualMachineExtension> getExtensionList() {
+	public List< VirtualMachineExtension> getExtensionList() {
 		return extensionList;
 	}
 
-	public void setExtensionList(Map<String, VirtualMachineExtension> extensionList) {
+	public void setExtensionList(List<VirtualMachineExtension> extensionList) {
 		this.extensionList = extensionList;
 	}
 
