@@ -1090,6 +1090,35 @@ public class PacmanUtils {
         }
         return list;
     }
+    
+    /**
+     * @param esUrl
+     * @return
+     * @throws Exception
+     */
+    public static List<String> getAccountIds(String esUrl) throws Exception {
+        List<String> list = new ArrayList<>();
+        JsonParser jsonParser = new JsonParser();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
+                mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null,null);
+        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+            JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get(PacmanRuleConstants.HITS).toString());
+            JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+            for (int i = 0; i < hitsArray.size(); i++) {
+                JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
+                        .getAsJsonObject();
+                String accountId = source.get(PacmanRuleConstants.ACCOUNTID).getAsString();
+                if (!com.amazonaws.util.StringUtils.isNullOrEmpty(accountId)) {
+                    list.add(accountId);
+                }
+            }
+        }
+        return list;
+    }
 
     public static Set<String> getRouteTableId(String subnetId, String vpcId, String routetableEsURL, String type)
             throws Exception {
