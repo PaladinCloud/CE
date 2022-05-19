@@ -3850,6 +3850,28 @@
     "category": "security"
   },
   {
+    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_memcached_port_11211_open_to_internet_access",
+    "ruleUUID": "aws_sg_should_not_have_public_access_to_memcached_port_11211",
+    "policyId": "PacMan_SGWithAnywhereAccess_version-1",
+    "ruleName": "Sg_with_memcached_port_11211_open_to_internet_access",
+    "targetType": "sg",
+    "assetGroup": "aws",
+    "alexaKeyword": "Sg_with_memcached_port_11211_open_to_internet_access",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"1211\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_SGWithAnywhereAccess_version-1_Sg_with_memcached_port_11211_open_to_internet_access\",\"autofix\":false,\"alexaKeyword\":\"Sg_with_memcached_port_11211_open_to_internet_access\",\"ruleRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_SGWithAnywhereAccess_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_sg_should_not_have_public_access_to_memcached_port_11211\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_sg_should_not_have_public_access_to_memcached_port_11211",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Security group with Memcached port 1211 should not be open to the internet",
+    "createdDate": "2022-05-19",
+    "modifiedDate": "2022-05-19",
+    "severity": "critical",
+    "category": "security"
+  },
+  {
     "ruleId": "PacMan_AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection",
     "ruleUUID": "aws_vpc_should_not_be_associated_with_external_peering",
     "policyId": "PacMan_AwsVpcExternalPeeringConnection_version-1",
@@ -3901,7 +3923,7 @@
     "targetType": "cloudtrail",
     "assetGroup": "aws",
     "alexaKeyword": "CloudtrailGlobalServices",
-    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"alexaKeyword\":\"CloudtrailGlobalServices\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AWS_CloudTrail_Global_Services_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_cloudtrail_global_services\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"alexaKeyword\":\"CloudtrailGlobalServices\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_AWS_CloudTrail_Global_Services_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_cloudtrail_global_services\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0 1/1 * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -3912,7 +3934,7 @@
     "displayName": "Enable cloudtrail global services",
     "createdDate": "2022-05-11",
     "modifiedDate": "2022-05-11",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
