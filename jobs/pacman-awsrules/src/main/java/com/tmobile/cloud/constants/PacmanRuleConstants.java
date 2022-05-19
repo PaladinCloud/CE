@@ -392,5 +392,10 @@ public class PacmanRuleConstants {
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
     public static final String INCLUDE_GLOBAL_SERVICE_EVENTS = "includeglobalserviceevents";
     public static final String EXCLUDEDDETECTIONTYPES = "excludedDetectionTypes";
+    public static final String FIELD = "field";
+    public static final String EQUALS_STRING = "equals";
+    public static final String SUCESS = "SUCESS";
+    public static final String FAILURE = "failure";
+    public static final String ALLOF = "allof";
 
 }
