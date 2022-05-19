@@ -387,6 +387,7 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_ACCOUNT_URL = "accountEsURL";
     public static final String ES_SECURITY_GROUP_NAME = "securitygroupname";
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
     public static final String INCLUDE_GLOBAL_SERVICE_EVENTS = "includeglobalserviceevents";
