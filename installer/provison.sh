@@ -3,7 +3,6 @@
 ## Install git
 sudo yum -y install git
 
-
 ## Install python3
 sudo yum -y update
 sudo amazon-linux-extras install epel -y
@@ -24,13 +23,11 @@ sudo npm install -g yarn
 sudo npm install -g @angular/cli
 sudo npm install -g bower
 
-
 ## Install openjdk 
 sudo yum -y install java-1.8.0-openjdk
 
 ## iNSTALL MAVEN
 sudo yum install -y maven
-
 
 ## Install docker
 sudo yum -y docker
@@ -42,12 +39,10 @@ sudo yum -y install mysql
 #installing python packages
 sudo pip3 install -r requirements.txt
 
-
 # echo alias cdd=\"cd $(pwd)\" >> ~/.bashrc
 # echo alias cdt=\"cd $(pwd)/data/terraform\" >> ~/.bashrc
 # echo alias cdl=\"cd $(pwd)/log\" >> ~/.bashrc
 # source ~/.bashrc
-
 
 # ## Install virtualenv
 # mkdirs ~/envs/
@@ -70,6 +65,7 @@ sudo  update-java-alternatives --set openjdk-8-jdk
 
 #install maven
 sudo apt install -y maven
+
 #install docker
 sudo apt install -y docker
 sudo apt install -y docker.io
