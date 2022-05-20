@@ -76,6 +76,8 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "[", false);
 		FileGenerator.writeToFile("azure-searchservices.data", "[", false);
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
+		FileGenerator.writeToFile("azure-activityLog.data", "]", true);
+
 	}
 
 	public static void finalise() throws IOException {
@@ -111,6 +113,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "]", true);
 		FileGenerator.writeToFile("azure-searchservices.data", "]", true);
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
+		FileGenerator.writeToFile("azure-activityLog.data", "]", true);
 
 	}
 
