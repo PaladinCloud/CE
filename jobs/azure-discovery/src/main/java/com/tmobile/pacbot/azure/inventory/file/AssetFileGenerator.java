@@ -101,6 +101,9 @@ public class AssetFileGenerator {
 	SecurityAlertsInventoryCollector securityAlertsInventoryCollector;
 
 	@Autowired
+	SecurityPricingsInventoryCollector securityPricingsInventoryCollector;
+
+	@Autowired
 	PolicyStatesInventoryCollector policyStatesInventoryCollector;
 
 	@Autowired
@@ -129,6 +132,7 @@ public class AssetFileGenerator {
 
 	@Autowired
 	RedisCacheInventoryCollector redisCacheInventoryCollector;
+
 	@Autowired
 	ActivityLogsCollector activityLogsCollector;
 
@@ -567,6 +571,21 @@ public class AssetFileGenerator {
 
 					FileManager
 							.generateActivityLogFiles(activityLogsCollector.fetchActivityLogAlertDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("securitypricings"))) {
+					return;
+				}
+
+				try {
+
+					FileManager
+							.generateSecurityPricingsFiles(
+									securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
