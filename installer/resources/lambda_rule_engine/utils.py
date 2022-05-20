@@ -1,5 +1,5 @@
 from resources.iam.base_role import BaseRole
-from resources.pacbot_app.utils import need_to_enable_azure
+from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 import json
 
 
