@@ -20,17 +20,17 @@ import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
 @Component
 public class StorageAccountInventoryCollector {
-	
+
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
-	
+
 	private static Logger log = LoggerFactory.getLogger(StorageAccountInventoryCollector.class);
 
 	public List<StorageAccountVH> fetchStorageAccountDetails(SubscriptionVH subscription,
 			Map<String, Map<String, String>> tagMap) {
 		List<StorageAccountVH> storageAccountList = new ArrayList<StorageAccountVH>();
 
-		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
+		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
 		PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
 		for (StorageAccount storageAccount : storageAccounts) {
 			StorageAccountVH storageAccountVH = new StorageAccountVH();
@@ -54,9 +54,16 @@ public class StorageAccountInventoryCollector {
 			storageAccountVH.setSubscription(subscription.getSubscriptionId());
 			storageAccountVH.setSubscriptionName(subscription.getSubscriptionName());
 			endPointDetails(storageAccount.endPoints(), storageAccountVH);
+			if (storageAccount.inner() != null) {
+				if (storageAccount.inner().encryption() != null
+						&& storageAccount.inner().encryption().keyVaultProperties() != null) {
+					storageAccountVH
+							.setCustomerManagedKey(storageAccount.inner().encryption().keyVaultProperties().keyName());
+				}
+			}
 			storageAccountList.add(storageAccountVH);
 		}
-		log.info("Target Type : {}  Total: {} ","Storage Account",storageAccountList.size());
+		log.info("Target Type : {}  Total: {} ", "Storage Account", storageAccountList.size());
 		return storageAccountList;
 	}
 
