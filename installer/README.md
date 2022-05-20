@@ -130,6 +130,15 @@ IAM account.
 9. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
 
 
+## we can either install the above dependencies using provison.sh script"
+
+
+1. Run the shell script 
+```
+   chmod +x provison.sh
+   ./provison.sh
+```
+2.  To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
 
 ## Install and Deploy PacBot
 
