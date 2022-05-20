@@ -590,6 +590,21 @@ public class AssetFileGenerator {
 				}
 			});
 
+			executor.execute(() -> {
+				if (!(isTypeInScope("securitypricings"))) {
+					return;
+				}
+
+				try {
+
+					FileManager
+							.generateSecurityPricingsFiles(
+									securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
