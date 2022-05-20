@@ -20,7 +20,7 @@ sudo yum -y update
 curl -sL https://rpm.nodesource.com/setup_14.x | sudo -E bash -
 sudo yum install -y nodejs
 sudo npm install -g yarn
-sudo npm install -g @angular/cli
+sudo npm install -g @angular/cli -y
 sudo npm install -g bower
 
 ## Install openjdk 
@@ -89,7 +89,7 @@ curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
 sudo apt -y update
 sudo apt install -y nodejs
 sudo npm install -g yarn
-sudo npm install -g @angular/cli
+sudo npm install -g @angular/cli -y
 sudo npm install -g bower
 
 #installing python packages
