@@ -30,7 +30,7 @@ sudo yum -y install java-1.8.0-openjdk
 sudo yum install -y maven
 
 ## Install docker
-sudo yum -y docker
+sudo yum -y install docker
 sudo systemctl start docker
 
 # Install mysql
