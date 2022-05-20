@@ -19,8 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.tmobile.pacbot.azure.inventory.vo.*;
-;
+import com.tmobile.pacbot.azure.inventory.vo.*;;
 
 /**
  * The Class FileManager.
@@ -38,9 +37,9 @@ public class FileManager {
 	 * Initialise.
 	 *
 	 * @param folderName
-	 *            the folder name
+	 *                   the folder name
 	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *                     Signals that an I/O exception has occurred.
 	 */
 	public static void initialise(String folderName) throws IOException {
 		FileGenerator.folderName = folderName;
@@ -112,7 +111,6 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "]", true);
 		FileGenerator.writeToFile("azure-searchservices.data", "]", true);
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
-		
 
 	}
 
@@ -249,25 +247,30 @@ public class FileManager {
 		FileGenerator.generateJson(batchAccountList, "azure-batchaccounts.data");
 
 	}
-	
+
 	public static void generateNamespaceFiles(List<NamespaceVH> namespaceList) throws IOException {
 		FileGenerator.generateJson(namespaceList, "azure-namespaces.data");
 
 	}
-	
+
 	public static void generateSearchServiceFiles(List<SearchServiceVH> searchServiceList) throws IOException {
 		FileGenerator.generateJson(searchServiceList, "azure-searchservices.data");
 
 	}
-	
+
 	public static void generateSubnetFiles(List<SubnetVH> subnetList) throws IOException {
 		FileGenerator.generateJson(subnetList, "azure-subnets.data");
 
 	}
+
 	public static void generateRedisCacheFiles(List<RedisCacheVH> redisCacheList) throws IOException {
 		FileGenerator.generateJson(redisCacheList, "azure-rediscache.data");
 
 	}
 
-	
+	public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) throws IOException {
+		FileGenerator.generateJson(activityLogVHList, "azure-activityLog.data");
+
+	}
+
 }
