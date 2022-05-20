@@ -14,10 +14,10 @@ from resources.iam.base_role import BaseRole
 from resources.lambda_submit.function import SubmitJobLambdaFunction
 from resources.lambda_rule_engine.function import RuleEngineLambdaFunction
 from resources.s3.bucket import BucketStorage
-from resources.pacbot_app.utils import need_to_enable_azure
-
+from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 from shutil import copy2
 import os
+import json
 
 
 class ReplaceSQLPlaceHolder(NullResource):
@@ -40,12 +40,24 @@ class ReplaceSQLPlaceHolder(NullResource):
 
         return credential_string
 
+    def prepare_gcp_credential_string(self):
+        credential_json = Settings.get('GCP_CREDENTIALS', [])
+        credential_string = ""
+        # if need_to_enable_gcp():
+        #     with open(GCP_CREDENTIALS, 'r') as f:
+        #         data = json.load(f)
+        #         credential_string = json.dumps(data)
+        if need_to_enable_gcp():
+            credential_string = json.dumps(credential_json)
+        return credential_string
+
     def get_provisioners(self):
         script = os.path.join(get_terraform_scripts_dir(), 'sql_replace_placeholder.py')
         db_user_name = MySQLDatabase.get_input_attr('username')
         db_password = MySQLDatabase.get_input_attr('password')
         db_host = MySQLDatabase.get_output_attr('endpoint')
         azure_credentails = self.prepare_azure_tenants_credentias()
+        gcp_credentials = self.prepare_gcp_credential_string()
         local_execs = [
             {
                 'local-exec': {
@@ -113,6 +125,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_QUALYS_INFO': Settings.get('QUALYS_INFO', ""),
                         'ENV_QUALYS_API_URL': Settings.get('QUALYS_API_URL', ""),
                         'ENV_AZURE_CREDENTIALS': azure_credentails,
+                        'ENV_GCP_CREDENTIALS': gcp_credentails,
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

@@ -83,6 +83,8 @@ SET @PACBOT_AUTOFIX_RESOURCEOWNER_FALLBACK_MAILID='$PACBOT_AUTOFIX_RESOURCEOWNER
 SET @QUALYS_INFO='$QUALYS_INFO';
 SET @QUALYS_API_URL='$QUALYS_API_URL';
 SET @AZURE_CREDENTIALS='$AZURE_CREDENTIALS';
+SET @GCP_CREDENTIALS='$GCP_CREDENTIALS';
+
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2309,6 +2311,9 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.data','azure-inventory','azure-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.processed','backup-azure','azure-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.credentials',concat(@AZURE_CREDENTIALS,''),'azure-discovery','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.data','gcp-inventory','gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.processed','backup-gcp','gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.credentials',concat(@GCP_CREDENTIALS,''),'gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
 
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.occurance','severity,_resourceid,pciflag,_vulnage,vulntype,title,classification,_firstFound,_lastFound,qid,patchable,category','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);

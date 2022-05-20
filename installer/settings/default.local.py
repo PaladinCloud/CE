@@ -77,4 +77,4 @@ AZURE_TENANTS = [
 ]
 ENABLE_GCP = False
 GCP_PROJECT_IDS = []
-GCP_CREDENTIAL_PATH = "gcp_credential_path"
+GCP_CREDENTIALS = [{}]
