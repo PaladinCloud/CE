@@ -112,12 +112,7 @@ public class EndpointProtectionRule extends BaseRule {
                                 validationResult = true;
                                 logger.debug(
                                         "Azure virtual machine has endpoint protection installed - as the extension has keyword:{} ",antiMalwareExtension);
-
-
                                 break;
-
-
-
                             }
                         }
                     }
