@@ -549,6 +549,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("rediscache"))) {
 					return;
@@ -568,9 +569,8 @@ public class AssetFileGenerator {
 				}
 
 				try {
-
-					FileManager
-							.generateActivityLogFiles(activityLogsCollector.fetchActivityLogAlertDetails(subscription));
+					FileManager.generateActivityLogFiles(
+							activityLogsCollector.fetchActivityLogAlertDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -582,10 +582,8 @@ public class AssetFileGenerator {
 				}
 
 				try {
-
-					FileManager
-							.generateSecurityPricingsFiles(
-									securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
+					FileManager.generateSecurityPricingsFiles(
+							securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

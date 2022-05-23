@@ -4092,6 +4092,28 @@
     "category": "security"
   },
   {
+    "ruleId": "PacMan_Azure_Virtual_Machine_Endpoint_Protection",
+    "ruleUUID": "azure_Virtual_Machine_Endpoint_Protection",
+    "policyId": "PacMan_Azure_Virtual_Machine_Endpoint_Protection",
+    "ruleName": "End point protection for VM",
+    "targetType": "virtualmachine",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Virtual Machine Endpoint Protection",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-endpoint-protection-installed-for-virtual-machines\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Virtual_Machine_Endpoint_Protection\",\"autofix\":false,\"alexaKeyword\":\"End point protection for VM\",\"ruleRestUrl\":\"\",\"targetType\":\"virtualmachine\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Virtual_Machine_Endpoint_Protection\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Virtual_Machine_Endpoint_Protection\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Virtual_Machine_Endpoint_Protection",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "End point protection for VM",
+    "createdDate": "2022-05-18",
+    "modifiedDate": "2022-05-18",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6739_open_to_internet_access",
     "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6739",
     "policyId": "PacMan_SGWithAnywhereAccess_version-1",
