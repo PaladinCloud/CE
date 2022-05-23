@@ -76,7 +76,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "[", false);
 		FileGenerator.writeToFile("azure-searchservices.data", "[", false);
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
-		FileGenerator.writeToFile("azure-activityLog.data", "]", true);
+		FileGenerator.writeToFile("azure-activityLog.data", "]", false);
 
 	}
 
