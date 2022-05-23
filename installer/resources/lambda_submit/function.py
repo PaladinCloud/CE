@@ -11,7 +11,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids
-from resources.pacbot_app.import_db import prepare_gcp_credential_string
+from resources.pacbot_app.import_db import ReplaceSQLPlaceHolder
 import json
 
 
@@ -414,7 +414,7 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "project_ids",
                 'value': get_gcp_project_ids()},
             {'encrypt': False, 'key': "gcp_credential_string",
-                'value': prepare_gcp_credential_string()}
+                'value': ReplaceSQLPlaceHolder.prepare_gcp_credential_string()}
         ]
     })
     PROCESS = need_to_enable_gcp()
