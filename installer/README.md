@@ -126,10 +126,15 @@ IAM account.
 ```
      sudo npm install -g yarn
 ```
+9. we can either install the above dependencies individually or using provision.sh script
 
-9. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
+   Run the shell script
+```
+   chmod +x provison.sh
+   ./provison.sh
+```
 
-
+10. To install UI build dependencies, please click [here](https://github.com/tmobile/pacbot/wiki/UI-Development-&-Build)
 
 ## Install and Deploy PacBot
 
