@@ -3,8 +3,6 @@ package com.tmobile.pacbot.azure.inventory.vo;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize
@@ -17,6 +15,7 @@ public class StorageAccountVH extends AzureVH {
 	private boolean isHnsEnabled;
 	private String name;
 	private String regionName;
+	private String customerManagedKey;
 	private String systemAssignedManagedServiceIdentityPrincipalId;
 	private String systemAssignedManagedServiceIdentityTenantId;
 	private List<String> endPoints;
@@ -32,6 +31,21 @@ public class StorageAccountVH extends AzureVH {
 	 */
 	public String getResourceGroupName() {
 		return resourceGroupName;
+	}
+
+	/**
+	 * @return the customerManagedKey
+	 */
+	public String getCustomerManagedKey() {
+		return customerManagedKey;
+	}
+
+	/**
+	 * @param customerManagedKey
+	 *            the customerManagedKey to set
+	 */
+	public void setCustomerManagedKey(String customerManagedKey) {
+		this.customerManagedKey = customerManagedKey;
 	}
 
 	/**

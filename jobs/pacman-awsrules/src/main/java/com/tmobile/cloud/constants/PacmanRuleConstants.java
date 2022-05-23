@@ -376,6 +376,7 @@ public class PacmanRuleConstants {
     public static final String START_IP_ADDRESS = "startIPAddress";
     public static final String FIREWALL_RULE_DETAILS = "firewallRuleDetails";
     public static final String AZURE_INBOUNDARYSECURITYRULES = "inBoundSecurityRules";
+    public static final String CUSTOMER_MANAGED_KEY = "customerManagedKey";
 
     public static final String AZURE_NONSSLPORT = "nonSslPort";
     public static final String SECURITY_RULE_SOURCEADDRESSPREFIXES = "sourceAddressPrefixes";
@@ -391,8 +392,16 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_TRAFFIC_TYPE = "type";
+    public static final String ES_SG_URL = "esSgURL";
+    public static final String ES_ACCOUNT_URL = "accountEsURL";
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
     public static final String INCLUDE_GLOBAL_SERVICE_EVENTS = "includeglobalserviceevents";
     public static final String EXCLUDEDDETECTIONTYPES = "excludedDetectionTypes";
+    public static final String FIELD = "field";
+    public static final String EQUALS_STRING = "equals";
+    public static final String SUCESS = "SUCESS";
+    public static final String FAILURE = "failure";
+    public static final String ALLOF = "allof";
 
 }
