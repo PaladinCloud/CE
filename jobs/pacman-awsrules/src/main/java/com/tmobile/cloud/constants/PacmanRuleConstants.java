@@ -403,7 +403,6 @@ public class PacmanRuleConstants {
     public static final String SUCESS = "SUCESS";
     public static final String FAILURE = "failure";
     public static final String ALLOF = "allof";
-    public static final String NAME = "name";
     public static final String PRICING_TIER = "pricingTier";
     public static final String PROPERTIES = "properties";
 
