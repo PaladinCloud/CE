@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -70,7 +70,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Autowired
     private AssetRepository repository;
-    
+
     @Value("${cloudinsights.tokenurl}")
     String insightsTokenUrl;
 
@@ -84,72 +84,72 @@ public class AssetServiceImpl implements AssetService {
     String svcCorpPassword;
 
     @Override
-	public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
-			String application, String provider) {
-    	
-		LOGGER.debug("Fetch counts from elastic search");
+    public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
+                                                               String application, String provider) {
 
-		// ES query may possibly return other types as well.
-		Map<String, Long> countMap = repository.getAssetCountByAssetGroup(assetGroup, type, application);
-		List<String> validTypes = Lists.newArrayList();
-		if (AssetConstants.ALL.equals(type)) {
-			LOGGER.debug("Remove the entries which are not valid types");
-			List<Map<String, Object>> targetTypes = getTargetTypesForAssetGroup(assetGroup, domain, provider);
-			validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
-					.collect(Collectors.toList());
-			List<String> countTypes = new ArrayList<>(countMap.keySet());
-			for (String _type : validTypes) {
-				if (!countMap.containsKey(_type)) {
-					countMap.put(_type, 0L);
-				}
-			}
-			for (String _type : countTypes) {
-				if (!validTypes.contains(_type)) {
-					countMap.remove(_type);
-				}
-			}
-		}else {
-			validTypes.add(type);
-		}
+        LOGGER.debug("Fetch counts from elastic search");
 
-		List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
+        // ES query may possibly return other types as well.
+        Map<String, Long> countMap = repository.getAssetCountByAssetGroup(assetGroup, type, application);
+        List<String> validTypes = Lists.newArrayList();
+        if (AssetConstants.ALL.equals(type)) {
+            LOGGER.debug("Remove the entries which are not valid types");
+            List<Map<String, Object>> targetTypes = getTargetTypesForAssetGroup(assetGroup, domain, provider);
+            validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
+                    .collect(Collectors.toList());
+            List<String> countTypes = new ArrayList<>(countMap.keySet());
+            for (String _type : validTypes) {
+                if (!countMap.containsKey(_type)) {
+                    countMap.put(_type, 0L);
+                }
+            }
+            for (String _type : countTypes) {
+                if (!validTypes.contains(_type)) {
+                    countMap.remove(_type);
+                }
+            }
+        } else {
+            validTypes.add(type);
+        }
 
-		LOGGER.debug("Creating response objects ");
-		List<Map<String, Object>> countList = new ArrayList<>();
-		countMap.entrySet().stream().forEach(entry -> {
-			if (!Integer.valueOf(entry.getValue().toString()).equals(0)) {
-				Map<String, Object> typeMap = new HashMap<>();
+        List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
 
-				String providerInfo = datasourceForAssettypes.stream()
-						.filter(data -> data.get(Constants.TYPE).equals(entry.getKey())).findFirst().get()
-						.get(Constants.PROVIDER).toString();
+        LOGGER.debug("Creating response objects ");
+        List<Map<String, Object>> countList = new ArrayList<>();
+        countMap.entrySet().stream().forEach(entry -> {
+            if (!Integer.valueOf(entry.getValue().toString()).equals(0)) {
+                Map<String, Object> typeMap = new HashMap<>();
 
-				typeMap.put(Constants.TYPE, entry.getKey());
-				typeMap.put(Constants.COUNT, entry.getValue());
-				typeMap.put(Constants.PROVIDER, providerInfo);
-				countList.add(typeMap);
-			}
-		});
+                String providerInfo = datasourceForAssettypes.stream()
+                        .filter(data -> data.get(Constants.TYPE).equals(entry.getKey())).findFirst().get()
+                        .get(Constants.PROVIDER).toString();
 
-		return countList;
-	}
+                typeMap.put(Constants.TYPE, entry.getKey());
+                typeMap.put(Constants.COUNT, entry.getValue());
+                typeMap.put(Constants.PROVIDER, providerInfo);
+                countList.add(typeMap);
+            }
+        });
+
+        return countList;
+    }
 
     @Override
-	@Cacheable(cacheNames = "assets", unless = "#result == null")
-	public List<Map<String, Object>> getTargetTypesForAssetGroup(String assetGroup, String domain, String provider) {
-		if (Constants.AWS.equals(assetGroup) || Constants.AZURE.equals(assetGroup) ) {
-			return repository.getAllTargetTypes(assetGroup);
-		} else if (Constants.MASTER_ALIAS.equals(assetGroup) || Constants.ROOT_ALIAS.equals(assetGroup)) {
-			return repository.getAllTargetTypes(null);
-		}else {
-			return repository.getTargetTypesByAssetGroup(assetGroup, domain, provider);
-		}
-	}
+    @Cacheable(cacheNames = "assets", unless = "#result == null")
+    public List<Map<String, Object>> getTargetTypesForAssetGroup(String assetGroup, String domain, String provider) {
+        if (Constants.AWS.equals(assetGroup) || Constants.AZURE.equals(assetGroup) || Constants.GCP.equals(assetGroup)) {
+            return repository.getAllTargetTypes(assetGroup);
+        } else if (Constants.MASTER_ALIAS.equals(assetGroup) || Constants.ROOT_ALIAS.equals(assetGroup)) {
+            return repository.getAllTargetTypes(null);
+        } else {
+            return repository.getTargetTypesByAssetGroup(assetGroup, domain, provider);
+        }
+    }
 
     @Override
     public List<Map<String, Object>> getApplicationsByAssetGroup(String assetGroup, String domain) throws DataException {
 
-        List<String> applications ;
+        List<String> applications;
         if (StringUtils.isEmpty(domain)) {
             applications = repository.getApplicationByAssetGroup(assetGroup);
         } else {
@@ -198,53 +198,53 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-	public Map<String, Object> getAssetGroupInfo(String assetGroup) {
-		Map<String, Object> assetGroupInfoMap = repository.getAssetGroupInfo(assetGroup);
-		if (!assetGroupInfoMap.isEmpty()) {
-			List<String> applications = new ArrayList<>();
-			try {
-				applications = repository.getApplicationByAssetGroup(assetGroup, null);
-			} catch (Exception e) {
-				LOGGER.error("Error in getAssetGroupInfo ", e);
-			}
-			assetGroupInfoMap.put("appcount", applications.size());
-			List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup, AssetConstants.ALL, null, null, null);
-			assetGroupInfoMap.put("assetcount",
-					countMap.stream().mapToLong(obj -> Long.valueOf(obj.get(Constants.COUNT).toString())).sum());
-			assetGroupInfoMap.put("domains", getDomains(assetGroup));
-			assetGroupInfoMap.put(Constants.PROVIDERS, getProviderWithTypeCount(assetGroup,countMap));
-		}
-		return assetGroupInfoMap;
-	}
-    
+    public Map<String, Object> getAssetGroupInfo(String assetGroup) {
+        Map<String, Object> assetGroupInfoMap = repository.getAssetGroupInfo(assetGroup);
+        if (!assetGroupInfoMap.isEmpty()) {
+            List<String> applications = new ArrayList<>();
+            try {
+                applications = repository.getApplicationByAssetGroup(assetGroup, null);
+            } catch (Exception e) {
+                LOGGER.error("Error in getAssetGroupInfo ", e);
+            }
+            assetGroupInfoMap.put("appcount", applications.size());
+            List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup, AssetConstants.ALL, null, null, null);
+            assetGroupInfoMap.put("assetcount",
+                    countMap.stream().mapToLong(obj -> Long.valueOf(obj.get(Constants.COUNT).toString())).sum());
+            assetGroupInfoMap.put("domains", getDomains(assetGroup));
+            assetGroupInfoMap.put(Constants.PROVIDERS, getProviderWithTypeCount(assetGroup, countMap));
+        }
+        return assetGroupInfoMap;
+    }
+
     /**
-	 * Function for getting the provider details along with the target type count
-	 * 
-	 * @param countMap
-	 * @return
-	 */
-	private List<Map<String, Object>> getProviderWithTypeCount (String assetGroup,List<Map<String, Object>> countMap) {
-		List<Map<String, Object>> providersData = new ArrayList<>();
-		
-		Map<String, Long> providerMap = countMap.stream().collect(Collectors.groupingBy(countObj-> countObj.get(Constants.PROVIDER).toString(), Collectors.counting()));
-		
-		if(providerMap.isEmpty()) {
-			List<Map<String, Object>> targetTypes = repository.getTargetTypesByAssetGroup(assetGroup, "Infra & Platforms", null);
-			List<String> validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
-					.collect(Collectors.toList());
-			List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
-			Set<String>	mappedProviders =	datasourceForAssettypes.stream().map(obj->obj.get(Constants.PROVIDER).toString()).collect(Collectors.toSet());
-			mappedProviders.forEach(provider->providerMap.put(provider,0L));
-		}
-		
-		providerMap.forEach((k,v)-> {
-			Map<String, Object> newProvider = new HashMap<String, Object>();
-			newProvider.put(Constants.PROVIDER,k);
-			newProvider.put(Constants.TYPE_COUNT, v);
-			providersData.add(newProvider);
-		});
-		return providersData;
-	}
+     * Function for getting the provider details along with the target type count
+     *
+     * @param countMap
+     * @return
+     */
+    private List<Map<String, Object>> getProviderWithTypeCount(String assetGroup, List<Map<String, Object>> countMap) {
+        List<Map<String, Object>> providersData = new ArrayList<>();
+
+        Map<String, Long> providerMap = countMap.stream().collect(Collectors.groupingBy(countObj -> countObj.get(Constants.PROVIDER).toString(), Collectors.counting()));
+
+        if (providerMap.isEmpty()) {
+            List<Map<String, Object>> targetTypes = repository.getTargetTypesByAssetGroup(assetGroup, "Infra & Platforms", null);
+            List<String> validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
+                    .collect(Collectors.toList());
+            List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
+            Set<String> mappedProviders = datasourceForAssettypes.stream().map(obj -> obj.get(Constants.PROVIDER).toString()).collect(Collectors.toSet());
+            mappedProviders.forEach(provider -> providerMap.put(provider, 0L));
+        }
+
+        providerMap.forEach((k, v) -> {
+            Map<String, Object> newProvider = new HashMap<String, Object>();
+            newProvider.put(Constants.PROVIDER, k);
+            newProvider.put(Constants.TYPE_COUNT, v);
+            providersData.add(newProvider);
+        });
+        return providersData;
+    }
 
     @Override
     public List<Map<String, Object>> getAssetCountByApplication(String assetGroup, String type) throws DataException {
@@ -288,7 +288,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
-            String searchText) {
+                                                   String searchText) {
         return repository.getListAssets(assetGroup, filter, from, size, searchText);
     }
 
@@ -298,39 +298,36 @@ public class AssetServiceImpl implements AssetService {
     }
 
     /**
-     * 
-     * @author Kanchana
      * @param assetGroup
      * @param instanceId
      * @return
      * @throws Exception
+     * @author Kanchana
      */
     public List<Map<String, Object>> getInstanceCPUUtilization(String instanceId) throws DataException {
         return repository.getCpuUtilizationByAssetGroupAndInstanceId(instanceId);
     }
 
     /**
-     * 
-     * @author Kanchana
      * @param assetGroup
      * @param instanceId
      * @return
      * @throws Exception
+     * @author Kanchana
      */
     public List<Map<String, Object>> getInstanceDiskUtilization(String instanceId) throws DataException {
         return repository.getDiskUtilizationByAssetGroupAndInstanceId(instanceId);
     }
 
     /**
-     * 
-     * @author Kanchana
      * @param assetGroup
      * @param instanceId
      * @return
      * @throws Exception
+     * @author Kanchana
      */
     public List<Map<String, Object>> getInstanceSoftwareInstallDetails(String instanceId, Integer from, Integer size,
-            String searchText) throws DataException {
+                                                                       String searchText) throws DataException {
         return repository.getSoftwareInstalledDetailsByAssetGroupAndInstanceId(instanceId, from, size, searchText);
     }
 
@@ -341,7 +338,7 @@ public class AssetServiceImpl implements AssetService {
             Map<String, Object> attribute = new LinkedHashMap<>();
             attribute.put(Constants.NAME, field);
             String strValue = data.get(field).toString();
-            attribute.put(Constants.VALUE, new String[] { strValue });
+            attribute.put(Constants.VALUE, new String[]{strValue});
             attribute.put(Constants.CATEGORY, category);
             if (StringUtils.isNotEmpty(strValue) && StringUtils.isNotBlank(strValue)) {
                 attributes.add(attribute);
@@ -379,13 +376,13 @@ public class AssetServiceImpl implements AssetService {
 
         List<Map<String, Object>> attributesList = new ArrayList<>();
 
-        String[] fields1 = { "imageid", "subnetid", "instancetype", "accountname", "vpcid", "availabilityzone" };
+        String[] fields1 = {"imageid", "subnetid", "instancetype", "accountname", "vpcid", "availabilityzone"};
         attributesList.addAll(createAttributes(ec2Data, fields1, "AWS Metadata"));
-        String[] fields2 = { AssetConstants.PUBLIC_IP_ADDRESS, AssetConstants.PRIVATE_IP_ADDRESS };
+        String[] fields2 = {AssetConstants.PUBLIC_IP_ADDRESS, AssetConstants.PRIVATE_IP_ADDRESS};
         attributesList.addAll(createAttributes(ec2Data, fields2, "IP Address"));
-        String[] fields3 = { Constants.STATE_NAME, "monitoringstate", "hostid", "statereasoncode",
+        String[] fields3 = {Constants.STATE_NAME, "monitoringstate", "hostid", "statereasoncode",
                 "virtualizationtype", "rootdevicename", "keyname", "kernelid", Constants.STATE_NAME, "hypervisor",
-                "architecture", "tenancy" };
+                "architecture", "tenancy"};
         attributesList.addAll(createAttributes(ec2Data, fields3, "AWS Attributes"));
 
         Map<String, String> ipAddressKvPairs = new LinkedHashMap<>();
@@ -463,11 +460,11 @@ public class AssetServiceImpl implements AssetService {
         try {
             Map<String, Object> createInfo = repository.getResourceCreateInfo(resourceId);
             if (createInfo != null) {
-                String[] attrFields = { AssetConstants.CREATED_BY, AssetConstants.CREATION_DATE, AssetConstants.EMAIL };
+                String[] attrFields = {AssetConstants.CREATED_BY, AssetConstants.CREATION_DATE, AssetConstants.EMAIL};
                 attributesList.addAll(createAttributes(createInfo, attrFields, "Creators"));
             }
         } catch (Exception e) {
-            LOGGER.error("Error Fetching created info for resource " + resourceId , e);
+            LOGGER.error("Error Fetching created info for resource " + resourceId, e);
             throw new ServiceException(e);
         }
 
@@ -476,7 +473,7 @@ public class AssetServiceImpl implements AssetService {
         try {
             attributesList.addAll(getResourceQualysDetail(resourceId));
         } catch (Exception e) {
-            LOGGER.error("Exception in getEc2ResourceDetail ",e);
+            LOGGER.error("Exception in getEc2ResourceDetail ", e);
             throw new ServiceException(e);
         }
 
@@ -537,7 +534,7 @@ public class AssetServiceImpl implements AssetService {
 
                     Map<String, Object> attribute = new LinkedHashMap<>();
                     attribute.put(Constants.NAME, key);
-                    attribute.put(Constants.VALUE, new String[] { value.toString() });
+                    attribute.put(Constants.VALUE, new String[]{value.toString()});
                     attribute.put(Constants.CATEGORY, "");
                     attributesList.add(attribute);
                 }
@@ -547,11 +544,11 @@ public class AssetServiceImpl implements AssetService {
         try {
             Map<String, Object> createInfo = repository.getResourceCreateInfo(resourceId);
             if (createInfo != null) {
-                String[] attrFields = { AssetConstants.CREATED_BY, AssetConstants.CREATION_DATE, AssetConstants.EMAIL };
+                String[] attrFields = {AssetConstants.CREATED_BY, AssetConstants.CREATION_DATE, AssetConstants.EMAIL};
                 attributesList.addAll(createAttributes(createInfo, attrFields, "Creators"));
             }
         } catch (Exception e) {
-            LOGGER.error("Error Fetching created info for resrouce " + resourceId , e);
+            LOGGER.error("Error Fetching created info for resrouce " + resourceId, e);
         }
         assetDetailMap.put("tags", tagsKvPairs);
         assetDetailMap.put("attributes", attributesList);
@@ -598,7 +595,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     private void addStatusCountsForStatus(List<Map<String, Object>> sevList, Map<String, Long> summaryAggregationMap,
-            String status) {
+                                          String status) {
         Map<String, Object> sevInfo = new LinkedHashMap<>();
 
         sevInfo.put("status", status);
@@ -659,7 +656,7 @@ public class AssetServiceImpl implements AssetService {
 
                 Map<String, Object> attribute = new LinkedHashMap<>();
                 attribute.put(Constants.NAME, key);
-                attribute.put(Constants.VALUE, new String[] { value.toString() });
+                attribute.put(Constants.VALUE, new String[]{value.toString()});
                 attribute.put(Constants.CATEGORY, "QUALYS INFO");
 
                 if ("list".equals(key) && value.toString().contains(AssetConstants.USERNAME)) {
@@ -714,11 +711,11 @@ public class AssetServiceImpl implements AssetService {
             nameTagValue = nameTagValueObj.toString();
         }
 
-        LOGGER.info("EC2 Tag value is: {}" , nameTagValue);
+        LOGGER.info("EC2 Tag value is: {}", nameTagValue);
 
         String platform = ec2Data.get("platform").toString();
 
-        LOGGER.info("EC2 Tag value is: {}" , nameTagValue);
+        LOGGER.info("EC2 Tag value is: {}", nameTagValue);
 
         StringTokenizer stTknzr = new StringTokenizer(nameTagValue, "-");
         String envSectionOfTag = "";
@@ -731,12 +728,12 @@ public class AssetServiceImpl implements AssetService {
             ouSectionOfTag = stTknzr.nextToken();
             ouAndEnvOfTag = ouSectionOfTag + "_" + envSectionOfTag + "_";
         } catch (NoSuchElementException e) {
-            LOGGER.error("Error in getAdGroupsDetail" , e);
+            LOGGER.error("Error in getAdGroupsDetail", e);
             ouAndEnvOfTag = "";
         }
 
-        LOGGER.info("Resource id : {}",resourceId);
-        LOGGER.info("OU and ENV section of Name Tag of EC2 instance is: {}" , ouAndEnvOfTag);
+        LOGGER.info("Resource id : {}", resourceId);
+        LOGGER.info("OU and ENV section of Name Tag of EC2 instance is: {}", ouAndEnvOfTag);
 
         String tagValue = ouAndEnvOfTag;
 
@@ -745,7 +742,7 @@ public class AssetServiceImpl implements AssetService {
         if (null == adDataList || adDataList.isEmpty()) {
             return matchingAdGroups;
         }
-        
+
         adDataList.forEach(adMap -> {
 
             String osString = "";
@@ -755,34 +752,34 @@ public class AssetServiceImpl implements AssetService {
             // if platform is blank, it denotes linux. So look for group
             // names which have
             // 'r_rhel'
-                if ("windows".equalsIgnoreCase(platform)) {
-                    osString = "r_win";
-                } else {
-                    osString = "r_rhel";
-                }
-                Map<String, String> adOutputMap = new LinkedHashMap<>();
+            if ("windows".equalsIgnoreCase(platform)) {
+                osString = "r_win";
+            } else {
+                osString = "r_rhel";
+            }
+            Map<String, String> adOutputMap = new LinkedHashMap<>();
 
-                String groupNameStr = adMap.get(Constants.NAME) == null ? "" : adMap.get(Constants.NAME).toString();
-                String ownerNameStr = adMap.get(AssetConstants.MANAGED_BY) == null ? "" : adMap.get(
-                        AssetConstants.MANAGED_BY).toString();
+            String groupNameStr = adMap.get(Constants.NAME) == null ? "" : adMap.get(Constants.NAME).toString();
+            String ownerNameStr = adMap.get(AssetConstants.MANAGED_BY) == null ? "" : adMap.get(
+                    AssetConstants.MANAGED_BY).toString();
 
-                LOGGER.debug("Comparing the groupNameStr: {}  with the value from tag:{}",groupNameStr,tagValue);
-                if (!StringUtils.isEmpty(tagValue) && groupNameStr.contains(tagValue)
-                        && groupNameStr.contains(osString)) {
-                    adOutputMap.put(Constants.NAME, groupNameStr);
-                    adOutputMap.put(AssetConstants.MANAGED_BY, ownerNameStr);
+            LOGGER.debug("Comparing the groupNameStr: {}  with the value from tag:{}", groupNameStr, tagValue);
+            if (!StringUtils.isEmpty(tagValue) && groupNameStr.contains(tagValue)
+                    && groupNameStr.contains(osString)) {
+                adOutputMap.put(Constants.NAME, groupNameStr);
+                adOutputMap.put(AssetConstants.MANAGED_BY, ownerNameStr);
 
-                    matchingAdGroups.add(adOutputMap);
-                }
+                matchingAdGroups.add(adOutputMap);
+            }
 
-            });
+        });
 
         return matchingAdGroups;
     }
 
     @Override
     public List<Map<String, Object>> getNotificationDetails(String instanceId, Map<String, String> filters,
-            String searchText) throws DataException {
+                                                            String searchText) throws DataException {
 
         List<Map<String, Object>> processedNotificationList = new ArrayList<>();
 
@@ -828,7 +825,7 @@ public class AssetServiceImpl implements AssetService {
             return creatorReturnObj;
 
         } catch (Exception e) {
-            LOGGER.error("Error Fetching created info for resource " + resourceId , e);
+            LOGGER.error("Error Fetching created info for resource " + resourceId, e);
         }
 
         return null;
@@ -848,33 +845,33 @@ public class AssetServiceImpl implements AssetService {
         String endDate = endDateObj.format(DateTimeFormatter.ISO_DATE);
 
         String requestBodyStr = "{\"username\": \"" + corpUserId + "\",\"password\": \"" + corpPassword + "\"}";
-        LOGGER.info("Invoking JWT Token Generator URL: {} with requestBody as: {}",jwtTokenGeneratorUrl, requestBodyStr);
+        LOGGER.info("Invoking JWT Token Generator URL: {} with requestBody as: {}", jwtTokenGeneratorUrl, requestBodyStr);
         String jwtTokenJsonString;
         try {
             jwtTokenJsonString = PacHttpUtils.doHttpPost(jwtTokenGeneratorUrl, requestBodyStr);
         } catch (Exception e) {
-            LOGGER.error("Exception in getEC2AvgAndTotalCost ",e);
+            LOGGER.error("Exception in getEC2AvgAndTotalCost ", e);
             throw new DataException(e);
         }
         Gson serializer = new GsonBuilder().create();
         Map<String, String> tokenMap = (Map<String, String>) serializer.fromJson(jwtTokenJsonString, Object.class);
         String jwtToken = tokenMap.get("token");
-        LOGGER.info("Received JWT Token back successfully: {}" , jwtToken);
+        LOGGER.info("Received JWT Token back successfully: {}", jwtToken);
 
         String cloudInsightsCostMonthlyUrl = cloudInsightsBaseUrl + resourceId + "/cost?" + "startDate=" + startDate
                 + "&endDate=" + endDate;
         Map<String, String> headers = new HashMap<>();
         headers.put("Authorization", "Bearer " + jwtToken);
-        LOGGER.info("Invoking Insights URL for monthly data: {}" , cloudInsightsCostMonthlyUrl);
+        LOGGER.info("Invoking Insights URL for monthly data: {}", cloudInsightsCostMonthlyUrl);
         String costResponseMonthlyStr;
         try {
             costResponseMonthlyStr = PacHttpUtils.getHttpGet(cloudInsightsCostMonthlyUrl, headers);
         } catch (ParseException | IOException e) {
-            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG,e);
+            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
             throw new DataException();
         }
 
-        LOGGER.info("Received cost response monthly as: {}" , costResponseMonthlyStr);
+        LOGGER.info("Received cost response monthly as: {}", costResponseMonthlyStr);
         Map<String, Object> costResponseMonthlyMap = (Map<String, Object>) serializer.fromJson(costResponseMonthlyStr,
                 Object.class);
 
@@ -890,14 +887,14 @@ public class AssetServiceImpl implements AssetService {
 
         String cloudInsightsCostDailyUrl = cloudInsightsBaseUrl + resourceId + "/cost?" + "startDate=" + startDate
                 + "&endDate=" + endDate;
-        LOGGER.info("Invoking Insights URL for daily data: {}" , cloudInsightsCostDailyUrl);
+        LOGGER.info("Invoking Insights URL for daily data: {}", cloudInsightsCostDailyUrl);
         String costResponseDailyStr;
         try {
             costResponseDailyStr = PacHttpUtils.getHttpGet(cloudInsightsCostDailyUrl, headers);
         } catch (ParseException | IOException e) {
             throw new DataException(e);
         }
-        LOGGER.info("Received cost response daily as: {}" , costResponseDailyStr);
+        LOGGER.info("Received cost response daily as: {}", costResponseDailyStr);
 
         Map<String, Object> costResponseDailyMap = (Map<String, Object>) serializer.fromJson(costResponseDailyStr,
                 Object.class);
@@ -910,18 +907,18 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public int updateAsset(String assetGroup, String targettype, Map<String, Object> resources, String updatedBy,
-            List<Map<String, Object>> updates) throws DataException {
+                           List<Map<String, Object>> updates) throws DataException {
         try {
             return repository.updateAsset(assetGroup, targettype, resources, updatedBy, updates);
         } catch (NoDataFoundException e) {
-            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG,e);
+            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
             throw new DataException(e);
         }
     }
 
     @Override
     public List<Map<String, Object>> getAssetLists(String assetGroup, Map<String, String> filter, int from, int size,
-            String searchText) {
+                                                   String searchText) {
         return repository.getAssetLists(assetGroup, filter, from, size, searchText);
     }
 
@@ -995,136 +992,136 @@ public class AssetServiceImpl implements AssetService {
         }
         return dataTypeList;
     }
-    
+
     @Override
-	public List<Map<String, Object>> getAssetCountAndEnvDistributionByAssetGroup(String assetGroup, String type,
-			String domain, String application, String provider) {
+    public List<Map<String, Object>> getAssetCountAndEnvDistributionByAssetGroup(String assetGroup, String type,
+                                                                                 String domain, String application, String provider) {
 
-		LOGGER.debug("Fetch counts from elastic search");
+        LOGGER.debug("Fetch counts from elastic search");
 
-		// ES query may possibly return other types as well.
-		Map<String, Object> distribution = repository.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type, application);
-		
-		Map<String, Long> countMap = (Map<String, Long>) distribution.get(Constants.ASSET_COUNT);
-		Map<String, Object> envMap = (Map<String, Object>) distribution.get(Constants.ENV_COUNT);
-		
-		List<String> validTypes = Lists.newArrayList();
-		if (AssetConstants.ALL.equals(type)) {
-			LOGGER.debug("Remove the entries which are not valid types");
-			List<Map<String, Object>> targetTypes = getTargetTypesForAssetGroup(assetGroup, domain, provider);
-			validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
-					.collect(Collectors.toList());
-			List<String> countTypes = new ArrayList<>(countMap.keySet());
-			for (String _type : validTypes) {
-				if (!countMap.containsKey(_type)) {
-					countMap.put(_type, 0L);
-				}
-			}
-			for (String _type : countTypes) {
-				if (!validTypes.contains(_type)) {
-					countMap.remove(_type);
-				}
-			}
-		}else {
-			validTypes.add(type);
-		}
+        // ES query may possibly return other types as well.
+        Map<String, Object> distribution = repository.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type, application);
 
-		List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
+        Map<String, Long> countMap = (Map<String, Long>) distribution.get(Constants.ASSET_COUNT);
+        Map<String, Object> envMap = (Map<String, Object>) distribution.get(Constants.ENV_COUNT);
 
-		LOGGER.debug("Creating response objects ");
-		List<Map<String, Object>> countList = new ArrayList<>();
-		countMap.entrySet().stream().forEach(entry -> {
-			if (!Integer.valueOf(entry.getValue().toString()).equals(0)) {
-				Map<String, Object> typeMap = new HashMap<>();
+        List<String> validTypes = Lists.newArrayList();
+        if (AssetConstants.ALL.equals(type)) {
+            LOGGER.debug("Remove the entries which are not valid types");
+            List<Map<String, Object>> targetTypes = getTargetTypesForAssetGroup(assetGroup, domain, provider);
+            validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
+                    .collect(Collectors.toList());
+            List<String> countTypes = new ArrayList<>(countMap.keySet());
+            for (String _type : validTypes) {
+                if (!countMap.containsKey(_type)) {
+                    countMap.put(_type, 0L);
+                }
+            }
+            for (String _type : countTypes) {
+                if (!validTypes.contains(_type)) {
+                    countMap.remove(_type);
+                }
+            }
+        } else {
+            validTypes.add(type);
+        }
 
-				String providerInfo = datasourceForAssettypes.stream()
-						.filter(data -> data.get(Constants.TYPE).equals(entry.getKey())).findFirst().get()
-						.get(Constants.PROVIDER).toString();
-				
-				Long totalCount = entry.getValue();
+        List<Map<String, Object>> datasourceForAssettypes = repository.getDataSourceForTargetTypes(validTypes);
 
-				typeMap.put(Constants.TYPE, entry.getKey());
-				typeMap.put(Constants.COUNT, totalCount);
-				typeMap.put(Constants.PROVIDER, providerInfo);
-				
-				List<Map<String, String>> envDistribution = calculateEnvironmentDistribution((Map<String, Long>) envMap.get(entry.getKey()), totalCount);
-				
-				typeMap.put(Constants.ENVIRONMENTS, envDistribution);
-												
-				countList.add(typeMap);
-			}
-		});
+        LOGGER.debug("Creating response objects ");
+        List<Map<String, Object>> countList = new ArrayList<>();
+        countMap.entrySet().stream().forEach(entry -> {
+            if (!Integer.valueOf(entry.getValue().toString()).equals(0)) {
+                Map<String, Object> typeMap = new HashMap<>();
 
-		return countList;
-	}
-    
+                String providerInfo = datasourceForAssettypes.stream()
+                        .filter(data -> data.get(Constants.TYPE).equals(entry.getKey())).findFirst().get()
+                        .get(Constants.PROVIDER).toString();
+
+                Long totalCount = entry.getValue();
+
+                typeMap.put(Constants.TYPE, entry.getKey());
+                typeMap.put(Constants.COUNT, totalCount);
+                typeMap.put(Constants.PROVIDER, providerInfo);
+
+                List<Map<String, String>> envDistribution = calculateEnvironmentDistribution((Map<String, Long>) envMap.get(entry.getKey()), totalCount);
+
+                typeMap.put(Constants.ENVIRONMENTS, envDistribution);
+
+                countList.add(typeMap);
+            }
+        });
+
+        return countList;
+    }
+
     /*
-	 * categorise the environment tags to different env like dev, stg, prod and calculate the percentage for each env
-	 * 
-	 * assets for which the tag is not present will be categoried under Nil category
-	 * 
-	 * asset types for which tag is not applicable will return empty list
-	 * 
-	 */
-	private List<Map<String, String>> calculateEnvironmentDistribution(Map<String, Long> envDetails, Long totalCount){
-		List<Map<String, String>> envDistribution = new ArrayList<>();
-		
-		if (!envDetails.isEmpty()) {
-			//categorise env based on env tag
-			Map<String, Long> envCategories = new HashMap<>();
-			envDetails.entrySet().stream().forEach(environment -> {
-				String env = CommonUtils.getEnvironmentForTag(environment.getKey());
-				Long count = environment.getValue();
-				if (envCategories.containsKey(env)) {
-					count = count + envCategories.get(env);
-				}
-				envCategories.put(env, count);
-			});
-			//calculate % for each env
-			envCategories.entrySet().stream().forEach(environment -> {
-				Map<String, String> map = new HashMap<>();
-				map.put(Constants.ENV, environment.getKey());
-				String percentage = String.format("%2.1f%%", ((float) environment.getValue() / totalCount * 100));
-				map.put(Constants.PERCENTAGE, percentage);
-				envDistribution.add(map);
-			});
-			
-			//get untagged asset count
-			Long bucketTotal = envDetails.entrySet().stream()
-					.collect(Collectors.summarizingLong(map -> (Long) map.getValue())).getSum();
+     * categorise the environment tags to different env like dev, stg, prod and calculate the percentage for each env
+     *
+     * assets for which the tag is not present will be categoried under Nil category
+     *
+     * asset types for which tag is not applicable will return empty list
+     *
+     */
+    private List<Map<String, String>> calculateEnvironmentDistribution(Map<String, Long> envDetails, Long totalCount) {
+        List<Map<String, String>> envDistribution = new ArrayList<>();
 
-			if ((totalCount - bucketTotal) > 0) {
-				Map<String, String> map = new HashMap<>();
-				map.put(Constants.ENV, Constants.UNTAGGED_ENV);
-				String percentage = String.format("%2.1f%%", ((float) (totalCount - bucketTotal) / totalCount * 100));
-				map.put(Constants.PERCENTAGE, percentage);
-				envDistribution.add(map);
-			}
-			
-			Map<String, Integer> envOrder = getEnvDistributionOrder();
-			
-			envDistribution.sort(Comparator.comparing((Map<String, String> env) -> envOrder.get(env.get(Constants.ENV))));
-		}
-		return envDistribution;
-	}
+        if (!envDetails.isEmpty()) {
+            //categorise env based on env tag
+            Map<String, Long> envCategories = new HashMap<>();
+            envDetails.entrySet().stream().forEach(environment -> {
+                String env = CommonUtils.getEnvironmentForTag(environment.getKey());
+                Long count = environment.getValue();
+                if (envCategories.containsKey(env)) {
+                    count = count + envCategories.get(env);
+                }
+                envCategories.put(env, count);
+            });
+            //calculate % for each env
+            envCategories.entrySet().stream().forEach(environment -> {
+                Map<String, String> map = new HashMap<>();
+                map.put(Constants.ENV, environment.getKey());
+                String percentage = String.format("%2.1f%%", ((float) environment.getValue() / totalCount * 100));
+                map.put(Constants.PERCENTAGE, percentage);
+                envDistribution.add(map);
+            });
 
-	private Map<String, Integer> getEnvDistributionOrder() {
-		Map<String,Integer> envOrder = new HashMap<>();
-		envOrder.put(Constants.PRODUCTION_ENV, 1);
-		envOrder.put(Constants.STAGE_ENV, 2);
-		envOrder.put(Constants.DEV_ENV, 3);
-		envOrder.put(Constants.NPE_ENV, 4);
-		envOrder.put(Constants.OTHER_ENV, 5);
-		envOrder.put(Constants.UNTAGGED_ENV, 6);
-		return envOrder;
-	}
+            //get untagged asset count
+            Long bucketTotal = envDetails.entrySet().stream()
+                    .collect(Collectors.summarizingLong(map -> (Long) map.getValue())).getSum();
 
-	@Override
-	public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException {
-		try {
-			return repository.getProvidersForAssetGroup(assetGroup);
-		} catch (Exception e) {
-			throw new DataException(e);
-		}
-	}
+            if ((totalCount - bucketTotal) > 0) {
+                Map<String, String> map = new HashMap<>();
+                map.put(Constants.ENV, Constants.UNTAGGED_ENV);
+                String percentage = String.format("%2.1f%%", ((float) (totalCount - bucketTotal) / totalCount * 100));
+                map.put(Constants.PERCENTAGE, percentage);
+                envDistribution.add(map);
+            }
+
+            Map<String, Integer> envOrder = getEnvDistributionOrder();
+
+            envDistribution.sort(Comparator.comparing((Map<String, String> env) -> envOrder.get(env.get(Constants.ENV))));
+        }
+        return envDistribution;
+    }
+
+    private Map<String, Integer> getEnvDistributionOrder() {
+        Map<String, Integer> envOrder = new HashMap<>();
+        envOrder.put(Constants.PRODUCTION_ENV, 1);
+        envOrder.put(Constants.STAGE_ENV, 2);
+        envOrder.put(Constants.DEV_ENV, 3);
+        envOrder.put(Constants.NPE_ENV, 4);
+        envOrder.put(Constants.OTHER_ENV, 5);
+        envOrder.put(Constants.UNTAGGED_ENV, 6);
+        return envOrder;
+    }
+
+    @Override
+    public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException {
+        try {
+            return repository.getProvidersForAssetGroup(assetGroup);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
 }

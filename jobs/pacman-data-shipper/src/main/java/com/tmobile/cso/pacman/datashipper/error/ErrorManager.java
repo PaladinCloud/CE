@@ -89,6 +89,10 @@ public abstract class ErrorManager implements Constants {
 					errorManager = new AzureErrorManager(); 
 					errorManager.dataSource ="azure";
 					break;
+				case "gcp":
+					errorManager = new GCPErrorManager();
+					errorManager.dataSource ="gcp";
+					break;
 				default:
 			}
 			
