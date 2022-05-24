@@ -101,34 +101,40 @@ public class AssetFileGenerator {
 	SecurityAlertsInventoryCollector securityAlertsInventoryCollector;
 
 	@Autowired
+	SecurityPricingsInventoryCollector securityPricingsInventoryCollector;
+
+	@Autowired
 	PolicyStatesInventoryCollector policyStatesInventoryCollector;
 
 	@Autowired
 	PolicyDefinitionInventoryCollector policyDefinitionInventoryCollector;
-	
+
 	@Autowired
 	SitesInventoryCollector sitesInventoryCollector;
-	
+
 	@Autowired
 	VaultInventoryCollector vaultInventoryCollector;
-	
+
 	@Autowired
 	WorkflowInventoryCollector workflowInventoryCollector;
-	
+
 	@Autowired
 	BatchAccountInventoryCollector batchAccountInventoryCollector;
 
 	@Autowired
 	NamespaceInventoryCollector namespaceInventoryCollector;
-	
+
 	@Autowired
 	SearchServiceInventoryCollector searchServiceInventoryCollector;
-	
+
 	@Autowired
 	SubnetInventoryCollector subnetInventoryCollector;
 
 	@Autowired
 	RedisCacheInventoryCollector redisCacheInventoryCollector;
+
+	@Autowired
+	ActivityLogsCollector activityLogsCollector;
 
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
@@ -141,18 +147,18 @@ public class AssetFileGenerator {
 
 		for (SubscriptionVH subscription : subscriptions) {
 			log.info("Started Discovery for sub {}", subscription);
-		
+
 			try {
 				String accessToken = azureCredentialProvider.getAuthToken(subscription.getTenant());
-				Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),subscription.getSubscriptionId());
-				azureCredentialProvider.putClient(subscription.getTenant(),subscription.getSubscriptionId(), azure);
+				Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
+						subscription.getSubscriptionId());
+				azureCredentialProvider.putClient(subscription.getTenant(), subscription.getSubscriptionId(), azure);
 				azureCredentialProvider.putToken(subscription.getTenant(), accessToken);
 
 			} catch (Exception e) {
-				log.error("Error authenticating for {}",subscription,e);
+				log.error("Error authenticating for {}", subscription, e);
 				continue;
 			}
-		
 
 			List<ResourceGroupVH> resourceGroupList = new ArrayList<ResourceGroupVH>();
 			try {
@@ -452,7 +458,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("sites"))) {
 					return;
@@ -465,7 +471,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("vaults"))) {
 					return;
@@ -478,7 +484,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("workflows"))) {
 					return;
@@ -491,7 +497,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("batchaccounts"))) {
 					return;
@@ -517,7 +523,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("searchservices"))) {
 					return;
@@ -530,7 +536,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("subnets"))) {
 					return;
@@ -543,6 +549,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("rediscache"))) {
 					return;
@@ -555,8 +562,33 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
-			
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("activityLog"))) {
+					return;
+				}
+
+				try {
+					FileManager.generateActivityLogFiles(
+							activityLogsCollector.fetchActivityLogAlertDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("securitypricings"))) {
+					return;
+				}
+
+				try {
+					FileManager.generateSecurityPricingsFiles(
+							securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
