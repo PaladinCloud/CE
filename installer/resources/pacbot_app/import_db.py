@@ -14,7 +14,7 @@ from resources.iam.base_role import BaseRole
 from resources.lambda_submit.function import SubmitJobLambdaFunction
 from resources.lambda_rule_engine.function import RuleEngineLambdaFunction
 from resources.s3.bucket import BucketStorage
-from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
+from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp, prepare_gcp_credential_string
 from shutil import copy2
 import os
 import json
@@ -57,7 +57,7 @@ class ReplaceSQLPlaceHolder(NullResource):
         db_password = MySQLDatabase.get_input_attr('password')
         db_host = MySQLDatabase.get_output_attr('endpoint')
         azure_credentails = self.prepare_azure_tenants_credentias()
-        gcp_credentials = self.prepare_gcp_credential_string()
+        gcp_credentials = prepare_gcp_credential_string()
         local_execs = [
             {
                 'local-exec': {
@@ -125,7 +125,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_QUALYS_INFO': Settings.get('QUALYS_INFO', ""),
                         'ENV_QUALYS_API_URL': Settings.get('QUALYS_API_URL', ""),
                         'ENV_AZURE_CREDENTIALS': azure_credentails,
-                        'ENV_GCP_CREDENTIALS': gcp_credentails,
+                        'ENV_GCP_CREDENTIALS': gcp_credentials,
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }
