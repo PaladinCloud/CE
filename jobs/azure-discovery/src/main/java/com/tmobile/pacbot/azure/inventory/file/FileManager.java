@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.tmobile.pacbot.azure.inventory.vo.*;;
+import com.tmobile.pacbot.azure.inventory.vo.*;
 
 /**
  * The Class FileManager.
@@ -76,8 +76,8 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "[", false);
 		FileGenerator.writeToFile("azure-searchservices.data", "[", false);
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
-		FileGenerator.writeToFile("azure-activityLog.data", "]", true);
-
+		FileGenerator.writeToFile("azure-activityLog.data", "[", false);
+		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
@@ -114,6 +114,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-searchservices.data", "]", true);
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
 		FileGenerator.writeToFile("azure-activityLog.data", "]", true);
+		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
 
 	}
 
@@ -273,6 +274,11 @@ public class FileManager {
 
 	public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) throws IOException {
 		FileGenerator.generateJson(activityLogVHList, "azure-activityLog.data");
+
+	}
+
+	public static void generateSecurityPricingsFiles(List<SecurityPricingsVH> securityPricingsVH) throws IOException {
+		FileGenerator.generateJson(securityPricingsVH, "azure-securitypricings.data");
 
 	}
 
