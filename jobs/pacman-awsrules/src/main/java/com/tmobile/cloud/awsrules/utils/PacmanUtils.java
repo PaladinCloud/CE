@@ -1098,6 +1098,85 @@ public class PacmanUtils {
 		}
 		return securedProtocols;
 	}
+	
+	public static Map<String, String> checkUnrestrictedSgAccess(Set<GroupIdentifier> securityGroupsSet, List<Map<String,String>> listenerPorts, String sgRulesUrl) throws Exception {
+        JsonObject resultJsonCidrip = null;
+        Map<String, String> invalidSgMap = new HashMap<>();
+        for (GroupIdentifier securityGrp : securityGroupsSet) {
+            Map<String, Object> mustFilter = new HashMap<>();
+            Map<String, Object> mustNotFilter = new HashMap<>();
+            HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+            Map<String, Object> mustTermsFilter = new HashMap<>();
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_ID), securityGrp.getGroupId());
+            mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.TYPE), PacmanRuleConstants.INBOUND);
+            resultJsonCidrip = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(sgRulesUrl, mustFilter,
+                    mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null,null);
+            proccessPortsData(resultJsonCidrip, invalidSgMap, listenerPorts);
+        }
+
+        return invalidSgMap;
+    }
+	
+
+	private static void proccessPortsData(JsonObject resultJson, Map<String, String> invalidSgMap,
+			List<Map<String, String>> listenerPorts) {
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser
+					.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				hitsArray.forEach(item -> {
+					Map<String,String> portMap = new HashMap<>();
+					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String port = source.get(PacmanRuleConstants.PORT).getAsString();
+					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
+					if (StringUtils.isNotEmpty(port) && StringUtils.isNotEmpty(protocol)) {
+						portMap.put(PacmanRuleConstants.ELB_PROTOCOL, protocol);
+						portMap.put(PacmanRuleConstants.PORT, port);
+					}
+					//ports.add(portMap);
+				});
+			}
+
+		}
+		
+		
+	}
+
+	public static List<Map<String, String>> getListenerPortsByElbArn(String esListenerURL, String loadBalancerArn) throws Exception {
+
+		List<Map<String,String>> ports = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ELB_V2_ARN_ATTRIBUTE), loadBalancerArn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
+				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser
+					.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				hitsArray.forEach(item -> {
+					Map<String,String> portMap = new HashMap<>();
+					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String port = source.get(PacmanRuleConstants.PORT).getAsString();
+					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
+					if (StringUtils.isNotEmpty(port) && StringUtils.isNotEmpty(protocol)) {
+						portMap.put(PacmanRuleConstants.ELB_PROTOCOL, protocol);
+						portMap.put(PacmanRuleConstants.PORT, port);
+					}
+					ports.add(portMap);
+				});
+			}
+
+		}
+		return ports;
+	}
     
     /**
      * @param vpcId
