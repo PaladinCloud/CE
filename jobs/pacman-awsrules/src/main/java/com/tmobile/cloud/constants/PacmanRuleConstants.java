@@ -395,7 +395,7 @@ public class PacmanRuleConstants {
     public static final String ELB_V2_ARN_ATTRIBUTE = "loadBalancerarn";
     public static final String ELB_PROTOCOL = "protocol";
     public static final String PROTOCOL_HTTPS = "HTTPS";
-    public static final String PROTOCOL_SSL = "SSL";
+    public static final String PROTOCOL_TLS = "TLS";
     public static final String ES_ELB_V2_LISTENER_URL = "esElbV2ListenerURL";
     public static final String ES_SG_URL = "esSgURL";
     public static final String ES_ACCOUNT_URL = "accountEsURL";
