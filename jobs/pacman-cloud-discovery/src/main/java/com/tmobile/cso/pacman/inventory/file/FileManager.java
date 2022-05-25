@@ -248,7 +248,9 @@ public class FileManager {
         FileGenerator.writeToFile("aws-account.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-iamgroup.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-cloudtrail.data",InventoryConstants.OPEN_ARRAY, false);
-
+        FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.OPEN_ARRAY,false);
+        FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.OPEN_ARRAY, false);
 	}
 
 	public static void finalise() throws IOException{
@@ -387,7 +389,9 @@ public class FileManager {
         FileGenerator.writeToFile("aws-account.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-iamgroup.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-cloudtrail.data",InventoryConstants.CLOSE_ARRAY, true);
-
+        FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.CLOSE_ARRAY,true);
+        FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -605,6 +609,9 @@ public class FileManager {
 		fieldNames ="elb.LoadBalancerName`elb.securityGroups";
 		keys ="discoverydate`accountid`accountname`region`loadbalancername`securitygroupid";
 		FileGenerator.generateJson(elbMap, fieldNames, "aws-classicelb-secgroups.data",keys);
+		fieldNames ="elb.LoadBalancerName`listnerDesc.Listener.Protocol`listnerDesc.Listener.LoadBalancerPort";
+		keys ="discoverydate`accountid`accountname`region`loadbalancername`protocol`port";
+		FileGenerator.generateJson(elbMap, fieldNames, "aws-classicelb-listeners.data",keys);
 	}
 
 	/**
@@ -622,9 +629,15 @@ public class FileManager {
 		fieldNames ="lb.LoadBalancerName`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`loadbalancername`key`value";
 		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-tags.data",keys);
-		fieldNames ="lb.LoadBalancerName`lb.securityGroups";
-		keys ="discoverydate`accountid`accountname`region`loadbalancername`securitygroupid";
+		fieldNames ="lb.LoadBalancerArn`lb.LoadBalancerName`lb.securityGroups";
+		keys ="discoverydate`accountid`accountname`region`loadbalancerarn`loadbalancername`securitygroupid";
 		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-secgroups.data",keys);
+		fieldNames ="lb.LoadBalancerName`listenersList.listenerArn`listenersList.loadBalancerArn`listenersList.port`listenersList.protocol";
+		keys ="discoverydate`accountid`accountname`region`loadbalancername`listenerArn`loadBalancerarn`port`protocol";
+		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-listeners.data",keys);
+		fieldNames ="lb.LoadBalancerName`listenersList.listenerArn`rules.RuleArn`rules.IsDefault`rules.Priority";
+		keys ="discoverydate`accountid`accountname`region`loadbalancername`listenerArn`rulearn`isdefault`priority";
+		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-rules.data",keys);
 	}
 
 	/**
