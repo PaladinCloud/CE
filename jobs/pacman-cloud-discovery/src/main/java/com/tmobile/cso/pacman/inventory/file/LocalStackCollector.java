@@ -31,6 +31,9 @@ public class LocalStackCollector {
     @Value( "${localstack.region}" )
     private String region;
 
+    @Value( "${localstack.accounts}" )
+    private String accounts;
+
     private static final String OPEN_ARRAY="[";
     private static final String CLOSE_ARRAY="]";
 
@@ -51,7 +54,7 @@ public class LocalStackCollector {
         for (Map.Entry<String,List<Instance>> entry : instancesMap.entrySet())
             logger.info("Key = {}, Value = " ,entry.getKey(),entry.getValue());
         try {
-            generateInstanceFiles(instancesMap);
+            FileManager.generateInstanceFiles(instancesMap);
         } catch (IOException e) {
             logger.error("Exception : {}",e);
         }
@@ -67,7 +70,10 @@ public class LocalStackCollector {
         Region r=RegionUtils.getRegion("us-east-1");
         regionList.add(r);
         //BasicSessionCredentials temporaryCredentials=localStackClient.getBaseCredentials();
-        for(Region region : regionList) {
+
+        List<String> accountList=Arrays.asList(accounts.split(","));
+        //BasicSessionCredentials temporaryCredentials=localStackClient.getBaseCredentials();
+        for(String acc : accountList) {
             try{
 
                 //ec2Client = AmazonEC2ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
@@ -82,8 +88,10 @@ public class LocalStackCollector {
                 }while(nextToken!=null);
 
                 if(!instanceList.isEmpty() ) {
-                    logger.info("EC2 Instance:  region: {}  >> ", region, instanceList.size());
-                    instanceMap.put("A000000`DemoAccount`"+region.getName(), instanceList);
+                    String accountId=acc.split(":")[0];
+                    String accountName=acc.split(":")[1];
+                    logger.info("EC2 Instance:  region: {}  >> ", r, instanceList.size());
+                    instanceMap.put(accountId+"`"+accountName+"`"+r.getName(), instanceList);
                 }
 
             }catch(Exception e){
@@ -110,25 +118,41 @@ public class LocalStackCollector {
 
     }
 
+
     public void initialise(String folderName) {
+        initialzeFile(folderName,"aws-ec2.data");
+        initialzeFile(folderName,"aws-ec2-tags.data");
+        initialzeFile(folderName,"aws-ec2-secgroups.data");
+        initialzeFile(folderName,"aws-ec2-productcodes.data");
+        initialzeFile(folderName,"aws-ec2-blockdevices.data");
+        initialzeFile(folderName,"aws-ec2-nwinterfaces.data");
+    }
+
+    private void initialzeFile(String folderName, String fileName) {
         FileGenerator.folderName = folderName;
         try {
             new File(folderName).mkdirs();
-            File file=new File(folderName+File.separator+"aws-ec2.data");
+            File file=new File(folderName +File.separator+fileName);
             if(!file.exists()) {
                 logger.info("File not created earlier. New File will be created.");
-                FileGenerator.writeToFile("aws-ec2.data", OPEN_ARRAY, false);
+                FileGenerator.writeToFile(fileName, OPEN_ARRAY, false);
             }else{
                 logger.info("File already created earlier. Data will be appended.");
-                FileGenerator.removeTrailingChar(folderName+File.separator+"aws-ec2.data");
+                FileGenerator.removeTrailingChar(folderName +File.separator+fileName);
             }
         }catch ( IOException e){
             System.out.println("Exception: "+e);
         }
     }
+
     public void finalizeFiles() {
         try {
             FileGenerator.writeToFile("aws-ec2.data",CLOSE_ARRAY,true);
+            FileGenerator.writeToFile("aws-ec2-tags.data",CLOSE_ARRAY,true);
+            FileGenerator.writeToFile("aws-ec2-secgroups.data",CLOSE_ARRAY,true);
+            FileGenerator.writeToFile("aws-ec2-productcodes.data",CLOSE_ARRAY,true);
+            FileGenerator.writeToFile("aws-ec2-blockdevices.data",CLOSE_ARRAY,true);
+            FileGenerator.writeToFile("aws-ec2-nwinterfaces.data",CLOSE_ARRAY,true);
         }catch ( IOException e){
             System.out.println("Exception: "+e);
         }

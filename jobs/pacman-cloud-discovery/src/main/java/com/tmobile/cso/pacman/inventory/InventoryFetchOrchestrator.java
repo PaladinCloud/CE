@@ -65,6 +65,9 @@ public class InventoryFetchOrchestrator {
 	@Value("${file.path}")
 	private String filePath ;
 
+	@Value("${localstack.enabled}")
+	private String enableLocalstack;
+
 	/** The accounts. */
 	private List<Map<String,String>> accounts;
 	
@@ -131,9 +134,14 @@ public class InventoryFetchOrchestrator {
 			fileGenerator.generateFiles(accounts,skipRegions,filePath);
 			log.info("End : Asset Discovery and File Creation");
 
-			log.info("Creating localstack resources");
-			localStackGenerator.generateEC2Data();
-			localStackCollector.runCollector(filePath);
+			if(enableLocalstack!=null && Boolean.parseBoolean(enableLocalstack)){
+				log.info("Localstack data generation enabled. Creating localstack resources");
+				localStackGenerator.generateLocalStackData();
+				localStackCollector.runCollector(filePath);
+
+			}else{
+				log.info("LocalStack data generation not enabled!!");
+			}
 
 			log.info("Start : Backup Current Files");
 			s3Uploader.backUpFiles(s3Bucket, s3Region, s3Data, s3Processed+ "/"+ new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date()));
