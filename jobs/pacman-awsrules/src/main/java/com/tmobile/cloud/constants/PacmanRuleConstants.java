@@ -392,7 +392,11 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
-    public static final String ES_TRAFFIC_TYPE = "type";
+    public static final String ELB_V2_ARN_ATTRIBUTE = "loadBalancerarn";
+    public static final String ELB_PROTOCOL = "protocol";
+    public static final String PROTOCOL_HTTPS = "HTTPS";
+    public static final String PROTOCOL_TLS = "TLS";
+    public static final String ES_ELB_V2_LISTENER_URL = "esElbV2ListenerURL";
     public static final String ES_SG_URL = "esSgURL";
     public static final String ES_ACCOUNT_URL = "accountEsURL";
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
