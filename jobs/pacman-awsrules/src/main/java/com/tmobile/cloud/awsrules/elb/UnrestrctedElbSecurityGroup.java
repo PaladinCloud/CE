@@ -23,8 +23,6 @@
 package com.tmobile.cloud.awsrules.elb;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.amazonaws.services.ec2.model.GroupIdentifier;
-import com.amazonaws.util.CollectionUtils;
+import com.amazonaws.services.elasticloadbalancingv2.model.Listener;
 import com.amazonaws.util.StringUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -48,9 +46,9 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.PacmanRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 
-@PacmanRule(key = "check-for-elb-v2-unrestrcted-security-group", desc = "This rule checks for elb port which is not configured in the listener security", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class InsecureAppElbSecurityGroup extends BaseRule {
-	private static final Logger logger = LoggerFactory.getLogger(InsecureAppElbSecurityGroup.class);
+@PacmanRule(key = "check-for-elb-unrestrcted-security-group", desc = "This rule checks for elb security group port which is not configured in the listener security", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class UnrestrctedElbSecurityGroup extends BaseRule {
+	private static final Logger logger = LoggerFactory.getLogger(UnrestrctedElbSecurityGroup.class);
 
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -61,24 +59,12 @@ public class InsecureAppElbSecurityGroup extends BaseRule {
 	 *
 	 *	ruleKey : check-for-elb-public-access<br><br>
 	 *
-	 *	internetGateWay : The value 'igw' is used to identify the security group with Internet gateway <br><br>
-	 *
 	 *	esElbWithSGUrl : Enter the appELB/classicELB with SG URL <br><br>
-     * 
-     *	esRoutetableAssociationsURL : Enter the route table association ES URL <br><br>
-     * 
-     *	esRoutetableRoutesURL : Enter the route table routes ES URL <br><br>
-     * 
-     *	esRoutetableURL : Enter the route table ES URL <br><br>
      * 
      *	esSgRulesUrl : Enter the SG rules ES URL <br><br>
      *
      *	esElbV2ListenerURL : Enter the ELB listener url <br><br>
      * 
-     *	cidrIp : Enter the ip as 0.0.0.0/0 <br><br>
-     *
-     *	cidripv6 : Enter the ip as ::/0 <br><br>
-	 * 
 	 *	severity : Enter the value of severity <br><br>
 	 * 
 	 *	ruleCategory : Enter the value of category <br><br>
@@ -88,25 +74,26 @@ public class InsecureAppElbSecurityGroup extends BaseRule {
 	 */
 
 	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-		logger.debug("========InsecureAppElbSecurityGroup started=========");
-		Annotation annotation = null;
-		String subnet = null;
-		String sgRulesUrl = null;
+
+		logger.debug("========UnrestrctedElbSecurityGroup started=========");
 		String elbSgUrl = null;
-		Set<GroupIdentifier> securityGroupsSet = new HashSet<>();
-		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
-		Map<String, String> invalidSgMap = new HashMap<>();
+		String sgRulesUrl = null;
+		Annotation annotation = null;
 		String esElbV2ListenerURL = null;
 
-		String scheme = resourceAttributes.get(PacmanRuleConstants.SCHEME);
+		Set<GroupIdentifier> securityGroupsSet = new HashSet<>();
+		List<Map<String, String>> invalidSgMap = new ArrayList<>();
+		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+		List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+		String scheme = resourceAttributes.get(PacmanRuleConstants.SCHEME);
 		String loadBalncerId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+		String elbType = resourceAttributes.get(PacmanRuleConstants.ELB_TYPE);
 		String region = resourceAttributes.get(PacmanRuleConstants.REGION_ATTR);
 		String accountId = resourceAttributes.get(PacmanRuleConstants.ACCOUNTID);
 		String targetType = resourceAttributes.get(PacmanRuleConstants.ENTITY_TYPE);
-		String description = targetType + " Elb has publicly accessible ports which is not configured in elb security listeners";
-		String elbType = resourceAttributes.get(PacmanRuleConstants.ELB_TYPE);
 		String loadBalancerArn = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.APP_LOAD_BALANCER_ARN_ATTRIBUTE));
 
 		String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
@@ -125,7 +112,7 @@ public class InsecureAppElbSecurityGroup extends BaseRule {
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
 
-		if (!PacmanUtils.doesAllHaveValue(severity, category, elbSgUrl, sgRulesUrl)) {
+		if (!PacmanUtils.doesAllHaveValue(severity, category, elbSgUrl, sgRulesUrl, esElbV2ListenerURL)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 			throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 		}
@@ -133,43 +120,45 @@ public class InsecureAppElbSecurityGroup extends BaseRule {
 		try {
 
 			logger.debug("======loadBalncerId : {}", loadBalncerId);
-			List<GroupIdentifier> listSecurityGroupID = PacmanUtils.getSecurityBroupIdByElb(loadBalncerId, elbSgUrl,
-					accountId, region);
+			List<GroupIdentifier> listSecurityGroupID = PacmanUtils.getSecurityBroupIdByElb(loadBalncerId, elbSgUrl, accountId, region);
 			securityGroupsSet.addAll(listSecurityGroupID);
-			logger.info("calling Global IP method");
-			if (!securityGroupsSet.isEmpty()) {
 
-				List<Map<String,String>> listenerPorts = PacmanUtils.getListenerPortsByElbArn(esElbV2ListenerURL, loadBalancerArn);
+			if (!securityGroupsSet.isEmpty()) {
+				List<Listener> listenerPorts = PacmanUtils.getListenerPortsByElbArn(esElbV2ListenerURL, loadBalancerArn);
 				invalidSgMap = PacmanUtils.checkUnrestrictedSgAccess(securityGroupsSet, listenerPorts, sgRulesUrl);
 			} else {
 				logger.error("sg not associated to the resource");
+				issue.put(PacmanRuleConstants.SEC_GRP, org.apache.commons.lang3.StringUtils.join(listSecurityGroupID, "/"));
 				throw new RuleExecutionFailedExeption("sg not associated to the resource");
 			}
 
-			issue.put(PacmanRuleConstants.SEC_GRP, org.apache.commons.lang3.StringUtils.join(listSecurityGroupID, "/"));
 			if (!invalidSgMap.isEmpty()) {
-				//annotation = PacmanUtils.setAnnotation(invalidSgMap, ruleParam, subnet, description, issue);
+
+				String description = "Elb security groups with the configuration " + invalidSgMap.toString() + "  are found having unrestricted access ";
+				annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+				annotation.put(PacmanSdkConstants.DESCRIPTION, description);
+				annotation.put(PacmanRuleConstants.SEVERITY, severity);
+				annotation.put(PacmanRuleConstants.CATEGORY, category);
+				annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID, resourceAttributes.get("loadbalancerarn"));
 				annotation.put(PacmanRuleConstants.SCHEME, scheme);
-				if (null != annotation) {
-					if ("appelb".equals(targetType)) {
-						annotation.put(PacmanRuleConstants.TYPE_OF_ELB, elbType);
-						annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID,
-								resourceAttributes.get("loadbalancerarn"));
-					}
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
-							annotation);
-				}
+				if ("appelb".equals(targetType))
+					annotation.put(PacmanRuleConstants.TYPE_OF_ELB, elbType);
+				issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
+				issueList.add(issue);
+				annotation.put("issueDetails", issueList.toString());
+				logger.debug("========UnrestrctedElbSecurityGroup ended with an annotation {} : =========", annotation);
+				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			logger.error("error: ", e);
 			throw new RuleExecutionFailedExeption(e.getMessage());
 		}
-		logger.debug("========InsecureAppElbSecurityGroup ended=========");
+		logger.debug("========UnrestrctedElbSecurityGroup ended=========");
 		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override
 	public String getHelpText() {
-		return "This rule check for elb port which is not configured in the listener security";
+		return "This rule check for elb security group port which is not configured in the listener security";
 	}
 }

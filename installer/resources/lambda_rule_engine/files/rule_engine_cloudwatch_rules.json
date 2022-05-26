@@ -3894,6 +3894,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_appelb",
+    "ruleUUID": "aws_elb_with_unrestricted_sg",
+    "policyId": "AwsElbWithUnrestrictedSecurityGroup_version-1",
+    "ruleName": "aws_elb_should_have_secured_sg",
+    "targetType": "appelb",
+    "assetGroup": "aws",
+    "alexaKeyword": "AwsElbWithUnrestrictedSG",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-elb-unrestrcted-security-group\",\"encrypt\":false},{\"key\":\"esElbWithSGUrl\",\"value\":\"\/aws\/appelb_secgroups\/_search\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/aws_sg\/sg_rules\/_search\",\"encrypt\":false},{\"key\":\"esElbV2ListenerURL\",\"value\":\"\/aws\/appelb_listeners\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_appelb\",\"autofix\":false,\"alexaKeyword\":\"AwsElbWithUnrestrictedSG\",\"ruleRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"policyId\":\"AwsElbWithUnrestrictedSecurityGroup_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_elb_with_unrestricted_sg\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elb_with_unrestricted_sg",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "ELBv2 ALB Security Group",
+    "createdDate": "2022-05-26",
+    "modifiedDate": "2022-05-26",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "AwsElbV2ListenerSecurity_version-1_AwsListenerSecurity_appelb",
     "ruleUUID": "aws_elb_v2_listener_security",
     "policyId": "AwsElbV2ListenerSecurity_version-1",
