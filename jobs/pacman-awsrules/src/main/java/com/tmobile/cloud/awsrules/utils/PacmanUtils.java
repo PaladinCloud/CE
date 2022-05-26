@@ -1063,6 +1063,42 @@ public class PacmanUtils {
         return list;
     }
     
+	/**
+	 * @param esListenerURL
+	 * @param loadBalancerArn
+	 * @return
+	 * @throws Exception
+	 */
+	public static Set<String> checkElbUsingSecuredProtocol(String esListenerURL, String loadBalancerArn) throws Exception {
+
+		Set<String> securedProtocols = new HashSet<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ELB_V2_ARN_ATTRIBUTE), loadBalancerArn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
+				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				hitsArray.forEach(item -> {
+					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
+
+					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_TLS)) {
+						securedProtocols.add(protocol);
+					}
+				});
+			}
+
+		}
+		return securedProtocols;
+	}
+    
     /**
      * @param vpcId
      * @param esUrl
