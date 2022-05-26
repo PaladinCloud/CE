@@ -397,6 +397,7 @@ public class PacmanRuleConstants {
     public static final String PROTOCOL_HTTPS = "HTTPS";
     public static final String PROTOCOL_TLS = "TLS";
     public static final String ES_ELB_V2_LISTENER_URL = "esElbV2ListenerURL";
+    public static final String ES_CLASSIC_ELB_LISTENER_URL = "esClassicELBListenerURL";
     public static final String ES_SG_URL = "esSgURL";
     public static final String ES_ACCOUNT_URL = "accountEsURL";
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
