@@ -4598,7 +4598,28 @@
     "modifiedDate": "2022-05-25",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Azure_Create_Network_Security_Group_log_alert",
+    "ruleUUID": "Azure_Account_Create_Network_Security_Group_log_alert",
+    "policyId": "Azure_Create_Network_Security_Group_log_alert",
+    "ruleName": "Azure_Create_Network_Security_Group_log_alert",
+    "targetType": "activityLog",
+    "assetGroup": "azure",
+    "alexaKeyword": "Create_Network_Security_Group",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to create or  Update Network Security Group\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to create or  Update Network Security Group\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Network/networkSecurityGroups/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Create or Update Network Security Group log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Azure_Create_Network_Security_Group_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Create_Network_Security_Group\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Azure_Create_Network_Security_Group_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_Account_Create_Network_Security_Group_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Account_Create_Network_Security Group_log_alert",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Create or Update Network Security Group log alert",
+    "createdDate": "2022-05-24",
+    "modifiedDate": "2022-05-24",
+    "severity": "high",
+    "category": "security"
   }
-
 
 ]
