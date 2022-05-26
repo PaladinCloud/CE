@@ -4204,6 +4204,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AwsClassicELBListenerSecurity_version-1_AwsListenerSecurity_classicelb",
+    "ruleUUID": "aws_classic_elb_listener_security",
+    "policyId": "AwsClassicELBListenerSecurity_version-1",
+    "ruleName": "aws_classic_elb_should_use_secured_protocols",
+    "targetType": "classicelb",
+    "assetGroup": "aws",
+    "alexaKeyword": "AwsClassicElbListenerSecurity",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-secured-classic-elb-listener-protocols\",\"encrypt\":false},{\"key\":\"esClassicELBListenerURL\",\"value\":\"\/aws\/classicelb_listeners\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AwsClassicELBListenerSecurity_version-1_AwsListenerSecurity_classicelb\",\"autofix\":false,\"alexaKeyword\":\"AwsClassicElbListenerSecurity\",\"ruleRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"policyId\":\"AwsClassicELBListenerSecurity_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_classic_elb_listener_security\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_classic_elb_listener_security",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Classic ELB Listener Security",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "critical",
+    "category": "security"
+},
+  {
     "ruleId": "PacMan_Enable_Azure_Account_Create_Policy_Assignment_log_alert",
     "ruleUUID": "azure_Enable_Azure_Account_Create_Policy_Assignment_log_alert",
     "policyId": "PacMan_Enable_Azure_Account_Create_Policy_Assignment_log_alert",
