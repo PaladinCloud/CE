@@ -4400,5 +4400,28 @@
     "modifiedDate": "2022-05-25",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "ruleUUID": "Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "policyId": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "ruleName": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "targetType": "activityLog",
+    "assetGroup": "azure",
+    "alexaKeyword": "Create_Update_Azure_SQL_Database_log_alert",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Update Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to Create or Update Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Sql/servers/databases/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable  Azure Account Create Policy Assignment log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Create_Update_Azure_SQL_Database_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_Account_Create_Update_Azure_SQL_Database_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Azure Account Create Update Azure SQL Database log alert",
+    "createdDate": "2022-05-16",
+    "modifiedDate": "2022-05-16",
+    "severity": "high",
+    "category": "security"
   }
+
 ]
