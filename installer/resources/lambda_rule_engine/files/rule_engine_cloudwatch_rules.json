@@ -4134,8 +4134,7 @@
     "modifiedDate": "2022-05-12",
     "severity": "high",
     "category": "security"
-},
-
+  },
   {
     "ruleId": "PacMan_Azure_Virtual_Machine_Endpoint_Protection",
     "ruleUUID": "azure_Virtual_Machine_Endpoint_Protection",
@@ -4159,9 +4158,8 @@
     "category": "security"
   },
   {
-
-    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access",
-    "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6379",
+    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6739_open_to_internet_access",
+    "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6739",
     "policyId": "PacMan_SGWithAnywhereAccess_version-1",
     "ruleName": "Sg_with_redis_port_6379_open_to_internet_access",
     "targetType": "sg",
@@ -4180,7 +4178,7 @@
     "modifiedDate": "2022-05-12",
     "severity": "critical",
     "category": "security"
-},
+  },
   {
     "ruleId": "PacMan_Azure_Enable_CMK_Encryption_For_Storage_Account_version-1_storageaccount",
     "ruleUUID": "azure_enable_storage_account_customer_managed_key_encryption",
@@ -4246,7 +4244,7 @@
     "modifiedDate": "2022-05-12",
     "severity": "critical",
     "category": "security"
-},
+  },
   {
     "ruleId": "PacMan_Enable_Azure_Account_Create_Policy_Assignment_log_alert",
     "ruleUUID": "azure_Enable_Azure_Account_Create_Policy_Assignment_log_alert",
@@ -4357,7 +4355,7 @@
     "severity": "high",
     "category": "security"
   },
-   {
+  {
     "ruleId": "PacMan_Enable_Azure_Account_Create_or_Update_Virtual_Machine_log_alert",
     "ruleUUID": "azure_Enable_Account_Create_Update_Virtual_Machine_log_alert",
     "policyId": "PacMan_Enable_Azure_Account_Create_or_Update_Virtual_Machine_log_alert",
@@ -4448,14 +4446,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
+    "ruleId": "Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
     "ruleUUID": "azure_Enable_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
+    "policyId": "Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
+    "ruleName": "Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Sql/servers/firewallRules/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable  Azure Account Create Policy Assignment log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create or update sql server firewall events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create or update sql server firewall events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Sql/servers/firewallRules/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable  Azure Account Create Policy Assignment log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_Delete_SQL_Server_Firewall_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4470,14 +4468,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Update_KeyVault_log_alert",
+    "ruleId": "Enable_Azure_Account_Update_KeyVault_log_alert",
     "ruleUUID": "azure_Enable_Account_Update_KeyVault_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Update_KeyVault_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Update_KeyVault_log_alert",
+    "policyId": "Enable_Azure_Account_Update_KeyVault_log_alert",
+    "ruleName": "Enable_Azure_Account_Update_KeyVault_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Update_KeyVault_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.KeyVault/vaults/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Update Key Vault log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Update_KeyVault_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Update_KeyVault_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Update_KeyVault_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Update_KeyVault_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.KeyVault/vaults/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Update Key Vault log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Update_KeyVault_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Update_KeyVault_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Update_KeyVault_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Update_KeyVault_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4492,14 +4490,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Update_SecurityPolicy_log_alert",
+    "ruleId": "Enable_Azure_Account_Update_SecurityPolicy_log_alert",
     "ruleUUID": "azure_Enable_Account_Update_SecurityPolicy_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Update_SecurityPolicy_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Update_SecurityPolicy_log_alert",
+    "policyId": "Enable_Azure_Account_Update_SecurityPolicy_log_alert",
+    "ruleName": "Enable_Azure_Account_Update_SecurityPolicy_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Update_SecurityPolicy_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Security/policies/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Update Security Policy log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Update_SecurityPolicy_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Update_SecurityPolicy_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Update_SecurityPolicy_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Update_SecurityPolicy_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Security/policies/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Update Security Policy log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Update_SecurityPolicy_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Update_SecurityPolicy_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Update_SecurityPolicy_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Update_SecurityPolicy_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4514,14 +4512,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
+    "ruleId": "Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
     "ruleUUID": "azure_Enable_Account_Create_Update_MySQLDatabase_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
+    "policyId": "Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
+    "ruleName": "Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforMySQL/servers/databases/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Create or Update MySQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_MySQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforMySQL/servers/databases/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Create or Update MySQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Create_Update_MySQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_MySQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4536,36 +4534,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Create_Update_NSG_log_alert",
-    "ruleUUID": "azure_Enable_Account_Create_Update_NSG_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Create_Update_NSG_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Create_Update_NSG_log_alert",
-    "targetType": "activityLog",
-    "assetGroup": "Azure",
-    "alexaKeyword": "Enable_Azure_Account_Create_Update_NSG_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Network/networkSecurityGroups/securityRules/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Create or Update Network Security Group Rule log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Create_Update_NSG_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_NSG_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Create_Update_NSG_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_NSG_log_alert\",\"ruleType\":\"ManageRule\"}",
-    "ruleFrequency": "0 0/6 * * ? *",
-    "ruleExecutable": "",
-    "ruleRestUrl": "",
-    "ruleType": "ManageRule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Account_Create_Update_NSG_log_alert",
-    "status": "ENABLED",
-    "userId": "ASGC",
-    "displayName": "Enable Azure Account Create or Update Network Security Group Rule log alert",
-    "createdDate": "2022-05-25",
-    "modifiedDate": "2022-05-25",
-    "severity": "high",
-    "category": "security"
-  },
-  {
-    "ruleId": "PacMan_Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
+    "ruleId": "Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
     "ruleUUID": "azure_Enable_Account_Create_Update_PostgreSQLDatabase_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
+    "policyId": "Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
+    "ruleName": "Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforPostgreSQL/servers/databases/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Create or Update PostgreSQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy postgress events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create postgress  events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforPostgreSQL/servers/databases/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Create or Update PostgreSQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Create_Update_PostgreSQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4580,14 +4556,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
+    "ruleId": "Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
     "ruleUUID": "azure_Enable_Account_Delete_MySQLDatabase_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
+    "policyId": "Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
+    "ruleName": "Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Delete_MySQLDatabase_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforMySQL/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Delete MySQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Delete_MySQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Delete_MySQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Delete_MySQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Delete_MySQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect delete SQL DB  events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect delete SQL DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforMySQL/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Delete MySQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Delete_MySQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Delete_MySQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Delete_MySQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Delete_MySQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4602,14 +4578,14 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
+    "ruleId": "Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
     "ruleUUID": "azure_Enable_Account_Delete_PostgreSQLDatabase_log_alert",
-    "policyId": "PacMan_Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
-    "ruleName": "PacMan_Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
+    "policyId": "Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
+    "ruleName": "Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Create Policy Assignment events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforPostgreSQL/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Delete PostgreSQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Delete_PostgreSQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect delete Postgress DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect delete POstgress DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforPostgreSQL/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Account Delete PostgreSQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Delete_PostgreSQLDatabase_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
