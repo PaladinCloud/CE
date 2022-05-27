@@ -9,7 +9,7 @@ spring:
       enabled: true
       fail-fast: true
       name: api,auth-service
-      password: ${CONFIG_PASSWORD}
+      password: pacman
       username: user
       label: latest
   profiles:
@@ -24,3 +24,6 @@ logging:
      com.tmobile: DEBUG
      com.unboundid.ldap.sdk: DEBUG
 pacman.api.oauth2.client-secret: csrWpc5p7JFF4vEZBkwGCAh67kGQGwXv46qug7v5ZwtKg
+
+server:
+  port: 8082

@@ -47,7 +47,7 @@
     "ngx-select-dropdown": "1.0.0",
     "offline-js": "^0.7.19",
     "rxjs": "^5.4.2",
-    "zone.js": "^0.8.14" 
+    "zone.js": "^0.8.14"
   },
   "devDependencies": {
     "@angular/cli": "1.6.8",

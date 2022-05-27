@@ -7,10 +7,10 @@ spring:
         native:
           search-locations: classpath:/shared
   datasource:
-    url: ${RDS_URL}
+    url: jdbc:mysql://pacbot-data.ca1f8qf1livk.us-east-1.rds.amazonaws.com:3306/pacmandata?autoReconnect=true&useSSL=false
     driver-class-name: com.mysql.jdbc.Driver
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
+    username: pacbot
+    password: "***REMOVED***"
     hikari:
       maximum-pool-size: 10
       connection-timeout: 5000
@@ -19,7 +19,7 @@ spring:
   security:
     user:
       name: user
-      password: ${CONFIG_PASSWORD}
+      password: pacman
 
 server:  
   port: 8888

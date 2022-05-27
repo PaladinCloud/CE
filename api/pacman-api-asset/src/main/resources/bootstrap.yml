@@ -9,7 +9,7 @@ spring:
       enabled: true
       fail-fast: true
       name: api,asset-service
-      password: ${CONFIG_PASSWORD}
+      password: pacman
       username: user
       label: latest
 
@@ -19,4 +19,7 @@ spring:
 security: 
   oauth2:
     resource:
-      user-info-uri: ${PACMAN_HOST_NAME}/api/auth/user
+      user-info-uri: ${PACMAN_HOST_NAME:http://localhost}/api/auth/user
+
+server:
+  port: 8081

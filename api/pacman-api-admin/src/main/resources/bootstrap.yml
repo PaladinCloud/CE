@@ -1,7 +1,7 @@
 security: 
   oauth2:
     resource:
-      user-info-uri: ${PACMAN_HOST_NAME}/api/auth/user
+      user-info-uri: ${PACMAN_HOST_NAME:http://localhost}/api/auth/user
 spring:
   application:
     name: admin-service
@@ -13,7 +13,7 @@ spring:
       enabled: true
       fail-fast: true
       name: api,admin-service
-      password: ${CONFIG_PASSWORD}
+      password: ${CONFIG_PASSWORD:pacman}
       username: user
       label: latest
   jpa: 
@@ -26,3 +26,4 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+
