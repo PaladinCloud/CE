@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amazonaws.services.elasticloadbalancing.model.Instance;
+import com.amazonaws.services.elasticloadbalancingv2.model.Listener;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
+import com.amazonaws.services.elasticloadbalancingv2.model.Rule;
 import com.amazonaws.services.elasticloadbalancingv2.model.Tag;
 
 
@@ -49,7 +51,10 @@ public class LoadBalancerVH {
 	 /** The accessLog. */
 	 boolean accessLog;
 
-
+	 /** load balancer lister list */
+		private List<Listener> listenersList;
+		
+		List<Rule> rules;
 	/**
 	 * Instantiates a new load balancer VH.
 	 *
@@ -71,7 +76,8 @@ public class LoadBalancerVH {
 	 * @param elb the elb
 	 * @param tags the tags
 	 */
-	public LoadBalancerVH(LoadBalancer elb,List<Tag> tags, String accessLogBucketName, boolean accessLog){
+	public LoadBalancerVH(LoadBalancer elb,List<Tag> tags, String accessLogBucketName, boolean accessLog,
+			List<Listener> listenersList, List<Rule> rules){
 		lb = elb;
 		this.tags = tags;
 		this.accessLog = accessLog;
@@ -83,6 +89,8 @@ public class LoadBalancerVH {
 		    lb.getAvailabilityZones().forEach(e-> { availabilityZones.add(e.getZoneName());
 			                                        subnets.add(e.getSubnetId());});
 		}
+		this.listenersList = listenersList;
+		this.rules = rules;
 
 	}
 
@@ -94,6 +102,23 @@ public class LoadBalancerVH {
 	public void setInstances( List<Instance> instances){
 		this.instances = instances;
 	}
+
+	public List<Listener> getListenersList() {
+		return listenersList;
+	}
+
+	public void setListenersList(List<Listener> listenersList) {
+		this.listenersList = listenersList;
+	}
+
+	public List<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(List<Rule> rules) {
+		this.rules = rules;
+	}
+	
 
 }
 
