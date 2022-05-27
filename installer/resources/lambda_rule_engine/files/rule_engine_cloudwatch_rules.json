@@ -3865,7 +3865,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_sg_should_not_have_public_access_to_memcached_port_11211",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Security group with Memcached port 1211 should not be open to the internet",
+    "displayName": "Security group with Memcached port 11211 should not be open to the internet",
     "createdDate": "2022-05-19",
     "modifiedDate": "2022-05-19",
     "severity": "critical",
@@ -4160,25 +4160,25 @@
   },
   {
 
-    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6739_open_to_internet_access",
-    "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6739",
+    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access",
+    "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6379",
     "policyId": "PacMan_SGWithAnywhereAccess_version-1",
-    "ruleName": "Sg_with_redis_port_6739_open_to_internet_access",
+    "ruleName": "Sg_with_redis_port_6379_open_to_internet_access",
     "targetType": "sg",
     "assetGroup": "aws",
-    "alexaKeyword": "Sg_with_redis_port_6739_open_to_internet_access",
-    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6739\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6739_open_to_internet_access\",\"autofix\":false,\"alexaKeyword\":\"Sg_with_redis_port_6739_open_to_internet_access\",\"ruleRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_SGWithAnywhereAccess_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6739\",\"ruleType\":\"ManageRule\"}",
+    "alexaKeyword": "Sg_with_redis_port_6379_open_to_internet_access",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6379\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access\",\"autofix\":false,\"alexaKeyword\":\"Sg_with_redis_port_6379_open_to_internet_access\",\"ruleRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"policyId\":\"PacMan_SGWithAnywhereAccess_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6379\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0 1/1 * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "ManageRule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_sg_should_not_have_public_access_to_redis_port_6739",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_sg_should_not_have_public_access_to_redis_port_6379",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Security group with Redis port 6739 should not be open to the internet",
+    "displayName": "Security group with Redis port 6379 should not be open to the internet",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
 },
   {
@@ -4402,6 +4402,7 @@
     "category": "security"
   },
   {
+
     "ruleId": "AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_classicelb",
     "ruleUUID": "aws_classic_elb_with_unrestricted_sg",
     "policyId": "AwsElbWithUnrestrictedSecurityGroup_version-1",
@@ -4422,5 +4423,30 @@
     "modifiedDate": "2022-05-12",
     "severity": "high",
     "category": "security"
-}
+},
+  {
+
+    "ruleId": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "ruleUUID": "Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "policyId": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "ruleName": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "targetType": "activityLog",
+    "assetGroup": "azure",
+    "alexaKeyword": "Create_Update_Azure_SQL_Database_log_alert",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Create Update Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to Create or Update Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Sql/servers/databases/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable  Azure Account Create Policy Assignment log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Create_Update_Azure_SQL_Database_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_Account_Create_Update_Azure_SQL_Database_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Azure Account Create Update Azure SQL Database log alert",
+    "createdDate": "2022-05-16",
+    "modifiedDate": "2022-05-16",
+    "severity": "high",
+    "category": "security"
+  }
+
+
 ]
