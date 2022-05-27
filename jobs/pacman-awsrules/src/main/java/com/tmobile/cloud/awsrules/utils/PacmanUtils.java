@@ -77,6 +77,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.ec2.model.GroupIdentifier;
+import com.amazonaws.services.elasticloadbalancingv2.model.Listener;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -1035,7 +1036,122 @@ public class PacmanUtils {
             throw exception;
         }
     }
+	
+	/**
+	 * @param securityGroupsSet
+	 * @param listenerPorts
+	 * @param sgRulesUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<Map<String, String>> checkUnrestrictedSgAccess(Set<GroupIdentifier> securityGroupsSet, List<Listener> listenerPorts, String sgRulesUrl) throws Exception {
+		JsonObject resultJsonSecGrpRules = null;
+		List<Map<String, String>> invalidSgMap = new ArrayList<>();
+		if (!CollectionUtils.isNullOrEmpty(securityGroupsSet)) {
+			for (GroupIdentifier securityGrp : securityGroupsSet) {
+				Map<String, Object> mustFilter = new HashMap<>();
+				Map<String, Object> mustNotFilter = new HashMap<>();
+				HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+				Map<String, Object> mustTermsFilter = new HashMap<>();
+				mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_ID), securityGrp.getGroupId());
+				mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.TYPE), PacmanRuleConstants.INBOUND);
+				mustNotFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_SG_IP_PROTOCOL_ATTRIBUTE), PacmanRuleConstants.PROTOCOL_ICMP);
+				resultJsonSecGrpRules = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(sgRulesUrl, mustFilter,
+						mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+				proccessPortsData(resultJsonSecGrpRules, invalidSgMap, listenerPorts);
+			}
+		}
+		return invalidSgMap;
+	}
+	
 
+	/**
+	 * @param resultJsonSecGrpRules
+	 * @param invalidSgMap
+	 * @param listenerPorts
+	 */
+	private static void proccessPortsData(JsonObject resultJsonSecGrpRules, List<Map<String, String>> invalidSgMap, List<Listener> listenerPorts) {
+
+		if (resultJsonSecGrpRules != null && resultJsonSecGrpRules.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJsonSecGrpRules.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				hitsArray.forEach(item -> {
+					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+
+					Map<String, String> secGrpMap = new HashMap<>();
+					String secGrpId = source.get(PacmanRuleConstants.GROUP_ID).getAsString();
+					String toPort = source.get(PacmanRuleConstants.ES_SG_TO_PORT_ATTRIBUTE).getAsString();
+					String fromPort = source.get(PacmanRuleConstants.ES_SG_FROM_PORT_ATTRIBUTE).getAsString();
+					String protocol = source.get(PacmanRuleConstants.ES_SG_IP_PROTOCOL_ATTRIBUTE).getAsString();
+
+					secGrpMap.put(PacmanRuleConstants.GROUP_ID, secGrpId);
+					secGrpMap.put(PacmanRuleConstants.ES_SG_TO_PORT_ATTRIBUTE, toPort);
+					secGrpMap.put(PacmanRuleConstants.ES_SG_FROM_PORT_ATTRIBUTE, fromPort);
+					secGrpMap.put(PacmanRuleConstants.ES_SG_IP_PROTOCOL_ATTRIBUTE, protocol);
+
+					if (StringUtils.isNotEmpty(protocol) && protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_ALL)) 
+						invalidSgMap.add(secGrpMap);
+					else {
+						List<String> grpId = new ArrayList<>();
+						if (!CollectionUtils.isNullOrEmpty(listenerPorts)) {
+							listenerPorts.stream().forEach(eachListener -> {
+								if (protocol.equalsIgnoreCase(eachListener.getProtocol()) && fromPort.equalsIgnoreCase(String.valueOf(eachListener.getPort())) && toPort.equalsIgnoreCase(String.valueOf(eachListener.getPort()))) {
+									grpId.add(secGrpId);
+								}
+							});
+							if (CollectionUtils.isNullOrEmpty(grpId))
+								invalidSgMap.add(secGrpMap);
+						}
+					}
+
+				});
+			}
+
+		}
+
+	}
+
+	/**
+	 * @param esListenerURL
+	 * @param loadBalancerArn
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<Listener> getListenerPortsByElbArn(String esListenerURL, String loadBalancerArn) throws Exception {
+
+		List<Listener> listeners = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ELB_V2_ARN_ATTRIBUTE), loadBalancerArn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
+				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser
+					.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				hitsArray.forEach(item -> {
+					Listener listener = new Listener();
+					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String port = source.get(PacmanRuleConstants.PORT).getAsString();
+					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
+					if (StringUtils.isNotEmpty(port) && StringUtils.isNotEmpty(protocol)) {
+						listener.setProtocol(protocol);
+						listener.setPort(Integer.valueOf(port));
+					}
+					listeners.add(listener);
+				});
+			}
+
+		}
+		return listeners;
+	}
     public static List<GroupIdentifier> getSecurityGroupsByInstanceId(String instanceId, String esUrl) throws Exception {
         List<GroupIdentifier> list = new ArrayList<>();
         JsonParser jsonParser = new JsonParser();
@@ -1098,6 +1214,7 @@ public class PacmanUtils {
 		}
 		return securedProtocols;
 	}
+
     
 	
 	/**

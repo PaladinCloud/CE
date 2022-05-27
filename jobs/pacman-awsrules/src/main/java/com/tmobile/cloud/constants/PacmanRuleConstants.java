@@ -392,6 +392,11 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_SG_FROM_PORT_ATTRIBUTE = "fromport";
+    public static final String ES_SG_TO_PORT_ATTRIBUTE = "toport";
+    public static final String PROTOCOL_ALL = "All";
+    public static final String PROTOCOL_ICMP = "ICMP";
+    public static final String ES_SG_IP_PROTOCOL_ATTRIBUTE = "ipprotocol";
     public static final String ELB_V2_ARN_ATTRIBUTE = "loadBalancerarn";
     public static final String ELB_PROTOCOL = "protocol";
     public static final String PROTOCOL_HTTPS = "HTTPS";
