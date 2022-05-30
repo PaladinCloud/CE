@@ -25,6 +25,7 @@ package com.tmobile.cloud.constants;
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
+    public static final String NAME ="name" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -336,6 +337,7 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DISPLAY_ID = "resourceDisplayId";
     public static final String SCHEME = "scheme";
     public static final String ES_ELB_WITH_SECURITYGROUP_URL = "esElbWithSGUrl";
+    public static final String ES_CLASSIC_ELB_WITH_SECURITYGROUP_URL = "esClassicElbWithSGUrl";
     public static final String SUBNETS_LIST = "subnets";
     public static final String INTERNET_FACING = "internet-facing";
     public static final String WEB_SITE_CONFIGURATION = "websiteConfiguration";
@@ -366,8 +368,11 @@ public class PacmanRuleConstants {
     public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED = "passwordBasedAuthenticationDisabled";
     public static final String IS_ENCRYPTION_ENABLED = "encryptionEnabled";
     public static final String DISKS = "disks";
+
+    public static final String VM_EXTENSIONS = "extensionList";
     public static final String DISK_TYPE = "type";
     public static final String OSDISK = "OSDisk";
+
     public static final String NOTIFICATION_RECEPIENTS_EMAILS = "notificationRecipientsEmails";
     public static final String START_IP_ADDRESS = "startIPAddress";
     public static final String FIREWALL_RULE_DETAILS = "firewallRuleDetails";
@@ -388,7 +393,17 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
-    public static final String ES_TRAFFIC_TYPE = "type";
+    public static final String ES_SG_FROM_PORT_ATTRIBUTE = "fromport";
+    public static final String ES_SG_TO_PORT_ATTRIBUTE = "toport";
+    public static final String PROTOCOL_ALL = "All";
+    public static final String PROTOCOL_ICMP = "ICMP";
+    public static final String ES_SG_IP_PROTOCOL_ATTRIBUTE = "ipprotocol";
+    public static final String ELB_V2_ARN_ATTRIBUTE = "loadBalancerarn";
+    public static final String ELB_PROTOCOL = "protocol";
+    public static final String PROTOCOL_HTTPS = "HTTPS";
+    public static final String PROTOCOL_TLS = "TLS";
+    public static final String ES_ELB_V2_LISTENER_URL = "esElbV2ListenerURL";
+    public static final String ES_CLASSIC_ELB_LISTENER_URL = "esClassicELBListenerURL";
     public static final String ES_SG_URL = "esSgURL";
     public static final String ES_ACCOUNT_URL = "accountEsURL";
     public static final String STORAGE_ENCRYPTED = "storageencrypted";
@@ -399,5 +414,7 @@ public class PacmanRuleConstants {
     public static final String SUCESS = "SUCESS";
     public static final String FAILURE = "failure";
     public static final String ALLOF = "allof";
+    public static final String PRICING_TIER = "pricingTier";
+    public static final String PROPERTIES = "properties";
 
 }

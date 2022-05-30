@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.microsoft.azure.management.compute.StorageAccountTypes;
+import com.microsoft.azure.management.compute.VirtualMachineExtension;
 import com.microsoft.azure.management.resources.fluentcore.arm.AvailabilityZoneId;
 
 @JsonSerialize
@@ -43,6 +44,7 @@ public class VirtualMachineVH extends AzureVH {
 	private String publicIpAddress;
 
 	private List<Map<String, String>> networkSecurityGroups;
+	private List<VirtualMachineExtension> extensionList;
 
 	private String vnet;
 	private String subnet;
@@ -52,6 +54,14 @@ public class VirtualMachineVH extends AzureVH {
 	
 	public String getOsType() {
 		return osType;
+	}
+
+	public List< VirtualMachineExtension> getExtensionList() {
+		return extensionList;
+	}
+
+	public void setExtensionList(List<VirtualMachineExtension> extensionList) {
+		this.extensionList = extensionList;
 	}
 
 	public void setOsType(String osType) {
