@@ -25,7 +25,7 @@ package com.tmobile.cloud.constants;
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
-    public static final String NAME ="name" ;
+    public static final String NAME = "name";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -416,5 +416,8 @@ public class PacmanRuleConstants {
     public static final String ALLOF = "allof";
     public static final String PRICING_TIER = "pricingTier";
     public static final String PROPERTIES = "properties";
+    public static final String KEYVAULTNAMES = "keyValutName";
+    public static final String KEYVAULTKEY = "keyVaultKey";
+    public static final String KEYVAULTVALUE = "keyVaultValue";
 
 }
