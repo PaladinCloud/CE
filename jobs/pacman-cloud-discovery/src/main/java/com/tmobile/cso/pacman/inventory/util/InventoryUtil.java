@@ -121,6 +121,7 @@ import com.amazonaws.services.elasticloadbalancingv2.model.DescribeTargetHealthR
 import com.amazonaws.services.elasticloadbalancingv2.model.DescribeTargetHealthResult;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancerAttribute;
+import com.amazonaws.services.elasticloadbalancingv2.model.Rule;
 import com.amazonaws.services.elasticloadbalancingv2.model.TargetGroup;
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduce;
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClientBuilder;
@@ -835,10 +836,16 @@ public class InventoryUtil {
 									accessLogBucketName = attributeBucketValue;
 								}
 							}
+							List<com.amazonaws.services.elasticloadbalancingv2.model.Listener> listenersList = new ArrayList<>();
+							listenersList = appElbClient.describeListeners(new com.amazonaws.services.elasticloadbalancingv2.model.DescribeListenersRequest().withLoadBalancerArn(name)).getListeners();
+							List<Rule> rulesList = new ArrayList<Rule>();
+							for( com.amazonaws.services.elasticloadbalancingv2.model.Listener ls : listenersList){
+								rulesList.addAll( appElbClient.describeRules(new com.amazonaws.services.elasticloadbalancingv2.model.DescribeRulesRequest().withListenerArn(ls.getListenerArn())).getRules());
+							}
 							//****** Changes For Federated Rules End ******
 							if(!tagsInfo.isEmpty())
 								tags = tagsInfo.get(0);
-							LoadBalancerVH elbTemp = new LoadBalancerVH(elb, tags, accessLogBucketName, accessLog);
+							LoadBalancerVH elbTemp = new LoadBalancerVH(elb, tags, accessLogBucketName, accessLog, listenersList, rulesList);
 							synchronized(elbListTemp){
 								elbListTemp.add(elbTemp);
 							}

@@ -59,7 +59,7 @@ public class RuleResult  {
 	 */
 	public RuleResult(String status,String desc)  {
 		if(PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(status)){
-			throw new RuntimeException("annotation expecetd in case of success, please use the other constructor");
+			throw new RuntimeException("annotation expected in case of success, please use the other constructor");
 		}
 		this.status=status;
 		this.desc=desc;
@@ -74,7 +74,7 @@ public class RuleResult  {
 	 */
 	public RuleResult(String status,String desc, Annotation annotation)  {
 		if(PacmanSdkConstants.STATUS_SUCCESS.equalsIgnoreCase(status)){
-			throw new RuntimeException("annotation not expecetd in case of success");
+			throw new RuntimeException("annotation not expected in case of success");
 		}
 		this.status=status;
 		this.desc=desc;
