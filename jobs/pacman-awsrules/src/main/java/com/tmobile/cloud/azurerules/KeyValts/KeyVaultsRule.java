@@ -39,7 +39,7 @@ public class KeyVaultsRule extends BaseRule {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String[] keyValutNames = ruleParam.get(PacmanRuleConstants.KEYVAULTNAMES).split(",");
-        String sucessMSG = ruleParam.get(PacmanRuleConstants.SUCESS);
+        String successMSG = ruleParam.get(PacmanRuleConstants.SUCCESS);
         String failureMsg = ruleParam.get(PacmanRuleConstants.FAILURE);
         String keyValutKey = ruleParam.get(PacmanRuleConstants.KEYVAULTKEY);
         String keyValutValue = ruleParam.get(PacmanRuleConstants.KEYVAULTVALUE);
@@ -88,7 +88,7 @@ public class KeyVaultsRule extends BaseRule {
 
         }
 
-        logger.debug(sucessMSG);
+        logger.debug(successMSG);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
