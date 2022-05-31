@@ -419,5 +419,6 @@ public class PacmanRuleConstants {
     public static final String KEYVAULTNAMES = "keyValutName";
     public static final String KEYVAULTKEY = "keyVaultKey";
     public static final String KEYVAULTVALUE = "keyVaultValue";
+    public static final String SUCCESS = "SUCCESS";
 
 }
