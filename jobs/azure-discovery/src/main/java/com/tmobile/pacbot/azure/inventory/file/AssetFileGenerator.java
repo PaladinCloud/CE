@@ -135,6 +135,8 @@ public class AssetFileGenerator {
 
 	@Autowired
 	ActivityLogsCollector activityLogsCollector;
+	@Autowired
+	WebAppInventoryCollector webAppInventoryCollector;
 
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
@@ -589,6 +591,19 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+
+            executor.execute(() -> {
+                if (!(isTypeInScope("webApp"))) {
+                    return;
+                }
+                try {
+
+                    FileManager
+                            .generateWebAppFiles(webAppInventoryCollector.fetchWebAppDetails(subscription));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
 			executor.shutdown();
 			while (!executor.isTerminated()) {
