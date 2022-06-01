@@ -5303,8 +5303,27 @@
     "modifiedDate": "2022-05-19",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Disable_Remote_Debugging_For_WebApp",
+    "ruleUUID": "azure_Disable_Remote_Debugging_For_WebApp",
+    "policyId": "Disable_Remote_Debugging_For_WebApp",
+    "ruleName": "Disable_Remote_Debugging_For_WebApp",
+    "targetType": "webapp",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Disable_Remote_Debugging_For_WebApp",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-remote-debugging-app-service\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Disable remote debugging for web apps\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_Remote_Debugging_For_WebApp\",\"autofix\":false,\"alexaKeyword\":\"Disable_Remote_Debugging_For_WebApp\",\"ruleRestUrl\":\"\",\"targetType\":\"webapp\",\"pac_ds\":\"azure\",\"policyId\":\"Disable_Remote_Debugging_For_WebApp\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Disable_Remote_Debugging_For_WebApp\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Disable_Remote_Debugging_For_WebApp",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable Remote Debugging feature for your Microsoft Azure App Services web applications",
+    "createdDate": "2022-06-31",
+    "modifiedDate": "2022-06-31",
+    "severity": "high",
+    "category": "security"
   }
-
-
-
 ]

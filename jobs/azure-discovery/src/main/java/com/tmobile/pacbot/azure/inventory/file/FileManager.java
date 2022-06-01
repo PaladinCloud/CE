@@ -78,6 +78,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
 		FileGenerator.writeToFile("azure-activitylogalert.data", "[", false);
 		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
+		FileGenerator.writeToFile("azure-webApp.data", "]", true);
 	}
 
 	public static void finalise() throws IOException {
@@ -115,7 +116,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
 		FileGenerator.writeToFile("azure-activitylogalert.data", "]", true);
 		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
-
+		FileGenerator.writeToFile("azure-webApp.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -282,4 +283,8 @@ public class FileManager {
 
 	}
 
+	public static void generateWebAppFiles(List<WebAppVH> webAppVHList) throws IOException {
+		FileGenerator.generateJson(webAppVHList, "azure-webApp.data");
+
+	}
 }
