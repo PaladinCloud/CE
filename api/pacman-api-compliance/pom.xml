@@ -112,25 +112,25 @@
 		<dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch</artifactId>
-			<version>5.6.2</version>
+			<version>5.6.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.elasticsearch.client</groupId>
 			<artifactId>transport</artifactId>
-			<version>5.6.2</version>
+			<version>5.6.8</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.9.0</version>
+			<version>2.12.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.9.0</version>
+			<version>2.12.3</version>
 		</dependency>
 
 		<dependency>
