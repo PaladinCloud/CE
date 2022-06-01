@@ -30,6 +30,7 @@ public class PacmanRuleConstants {
     public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
     public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
     public static final String GCP_NAT_IP = "natIP";
+    public static String BLOB_PUBLIC_ACCESS_ALLOWED="blobPublicAccessAllowed";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");

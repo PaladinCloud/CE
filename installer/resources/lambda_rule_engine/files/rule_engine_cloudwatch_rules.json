@@ -5126,7 +5126,7 @@
     "category": "security"
   },
 
-  
+
   {
     "ruleId": "Azure_Enable_key_Vault_Customer_Managed_Key",
     "ruleUUID": "Azure_Enable_key_Vault_Customer_Managed_Key",
@@ -5455,6 +5455,28 @@
     "displayName": "Enable Rename Azure SQL Database Event log alert",
     "createdDate": "2022-05-25",
     "modifiedDate": "2022-05-25",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "Azure_Check_Public_Access_For_Storage_Account",
+    "ruleUUID": "azure_check_public_access_for_storage_account",
+    "policyId": "Azure_Check_Public_Access_For_Storage_Account",
+    "ruleName": "Azure_Check_Public_Access_For_Storage_Account",
+    "targetType": "storageaccount",
+    "assetGroup": "Azure",
+    "alexaKeyword": "CheckStorageAccountPublicAccess",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-public-access-for-storage-account\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Azure_Check_Public_Access_For_Storage_Account\",\"autofix\":false,\"alexaKeyword\":\"CheckStorageAccountPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"storageaccount\",\"pac_ds\":\"azure\",\"policyId\":\"Azure_Check_Public_Access_For_Storage_Account\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_check_public_access_for_storage_account\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_check_public_access_for_storage_account",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Check if access for Azure Storage Account is public",
+    "createdDate": "2022-06-03",
+    "modifiedDate": "2022-06-03",
     "severity": "high",
     "category": "security"
   }
