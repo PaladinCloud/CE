@@ -393,6 +393,9 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_KMS_ALIAS_ATTRIBUTE = "aliasname";
+    public static final String ES_KMS_URL = "esKmsUrl";
+    public static final String ES_KMS_KEY_ID_ATTRIBUTE = "kmskeyid";
     public static final String ES_SG_FROM_PORT_ATTRIBUTE = "fromport";
     public static final String ES_SG_TO_PORT_ATTRIBUTE = "toport";
     public static final String PROTOCOL_ALL = "All";

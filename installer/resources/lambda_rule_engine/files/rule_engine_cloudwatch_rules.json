@@ -3894,6 +3894,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1_Attached_EBS_volumes_should_be_custom_kms_key_encrypted",
+    "ruleUUID": "aws_attached_ebs_volumes_should_be_custom_kms_key_encrypted",
+    "policyId": "Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1",
+    "ruleName": "aws_ebs_should_be_kms_custom_encrypted",
+    "targetType": "volume",
+    "assetGroup": "aws",
+    "alexaKeyword": "EBSVolumeCustomKmsKeyEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-ebs-volume-should-be-encrypted-with-kms-keys\",\"encrypt\":false},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"\/aws\/volume_attachments\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esKmsUrl\",\"value\":\"\/aws\/kms\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1_Attached_EBS_volumes_should_be_custom_kms_key_encrypted\",\"autofix\":false,\"alexaKeyword\":\"EBSVolumeCustomKmsKeyEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_attached_ebs_volumes_should_be_custom_kms_key_encrypted\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_attached_ebs_volumes_should_be_custom_kms_key_encrypted",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "EBS Encrypted With KMS Customer Master Keys",
+    "createdDate": "2022-06-01",
+    "modifiedDate": "2022-06-01",
+    "severity": "critical",
+    "category": "security"
+  },
+  {
     "ruleId": "AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_appelb",
     "ruleUUID": "aws_elb_with_unrestricted_sg",
     "policyId": "AwsElbWithUnrestrictedSecurityGroup_version-1",

@@ -1036,6 +1036,39 @@ public class PacmanUtils {
             throw exception;
         }
     }
+    
+	public static Boolean checkIfEbsVolumeEncryptedWithCustomKMSKeys(String kmsKeyId, String esKmsUrl,
+			String defaultKmsKeyAlias) throws Exception {
+
+		List<String> customKeys = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ARN), kmsKeyId);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esKmsUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String aliasName = source.get(PacmanRuleConstants.ES_KMS_ALIAS_ATTRIBUTE).getAsString();
+					String keyArn = source.get(PacmanRuleConstants.ARN).getAsString();
+
+					if (!aliasName.equalsIgnoreCase(defaultKmsKeyAlias)) {
+						customKeys.add(keyArn);
+					}
+				}
+			}
+
+		}
+		if (!CollectionUtils.isNullOrEmpty(customKeys))
+			return true;
+		return false;
+	}
 	
 	/**
 	 * @param securityGroupsSet
@@ -1098,15 +1131,16 @@ public class PacmanUtils {
 	 * @param invalidSgMap
 	 * @param listenerPorts
 	 */
-	private static void proccessPortsData(JsonObject resultJsonSecGrpRules, List<Map<String, String>> invalidSgMap, List<Listener> listenerPorts) {
+	private static void proccessPortsData(JsonObject resultJsonSecGrpRules, List<Map<String, String>> invalidSgMap,
+			List<Listener> listenerPorts) {
 
 		if (resultJsonSecGrpRules != null && resultJsonSecGrpRules.has(PacmanRuleConstants.HITS)) {
 			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJsonSecGrpRules.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 
 			if (null != hitsArray && !hitsArray.isEmpty()) {
-				hitsArray.forEach(item -> {
-					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 
 					Map<String, String> secGrpMap = new HashMap<>();
 					String secGrpId = source.get(PacmanRuleConstants.GROUP_ID).getAsString();
@@ -1119,7 +1153,7 @@ public class PacmanUtils {
 					secGrpMap.put(PacmanRuleConstants.ES_SG_FROM_PORT_ATTRIBUTE, fromPort);
 					secGrpMap.put(PacmanRuleConstants.ES_SG_IP_PROTOCOL_ATTRIBUTE, protocol);
 
-					if (StringUtils.isNotEmpty(protocol) && protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_ALL)) 
+					if (StringUtils.isNotEmpty(protocol) && protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_ALL))
 						invalidSgMap.add(secGrpMap);
 					else {
 						List<String> grpId = new ArrayList<>();
@@ -1134,7 +1168,7 @@ public class PacmanUtils {
 						}
 					}
 
-				});
+				}
 			}
 
 		}
@@ -1146,15 +1180,17 @@ public class PacmanUtils {
 	 * @param invalidSgMap
 	 * @param listenerPorts
 	 */
-	private static void proccessPortsDataForClassicLB(JsonObject resultJsonSecGrpRules, List<Map<String, String>> invalidSgMap, List<com.amazonaws.services.elasticloadbalancing.model.Listener> listenerPorts) {
+	private static void proccessPortsDataForClassicLB(JsonObject resultJsonSecGrpRules,
+			List<Map<String, String>> invalidSgMap,
+			List<com.amazonaws.services.elasticloadbalancing.model.Listener> listenerPorts) {
 
 		if (resultJsonSecGrpRules != null && resultJsonSecGrpRules.has(PacmanRuleConstants.HITS)) {
 			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJsonSecGrpRules.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 
 			if (null != hitsArray && !hitsArray.isEmpty()) {
-				hitsArray.forEach(item -> {
-					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 
 					Map<String, String> secGrpMap = new HashMap<>();
 					String secGrpId = source.get(PacmanRuleConstants.GROUP_ID).getAsString();
@@ -1167,7 +1203,7 @@ public class PacmanUtils {
 					secGrpMap.put(PacmanRuleConstants.ES_SG_FROM_PORT_ATTRIBUTE, fromPort);
 					secGrpMap.put(PacmanRuleConstants.ES_SG_IP_PROTOCOL_ATTRIBUTE, protocol);
 
-					if (StringUtils.isNotEmpty(protocol) && protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_ALL)) 
+					if (StringUtils.isNotEmpty(protocol) && protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_ALL))
 						invalidSgMap.add(secGrpMap);
 					else {
 						List<String> grpId = new ArrayList<>();
@@ -1182,7 +1218,7 @@ public class PacmanUtils {
 						}
 					}
 
-				});
+				}
 			}
 
 		}
@@ -1194,7 +1230,8 @@ public class PacmanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Listener> getListenerPortsByElbArn(String esListenerURL, String loadBalancerArn) throws Exception {
+	public static List<Listener> getListenerPortsByElbArn(String esListenerURL, String loadBalancerArn)
+			throws Exception {
 
 		List<Listener> listeners = new ArrayList<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1203,17 +1240,15 @@ public class PacmanUtils {
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ELB_V2_ARN_ATTRIBUTE), loadBalancerArn);
-		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
-				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
-			JsonObject hitsJson = (JsonObject) JsonParser
-					.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 			if (null != hitsArray && !hitsArray.isEmpty()) {
-				hitsArray.forEach(item -> {
+				for (int i = 0; i < hitsArray.size(); i++) {
 					Listener listener = new Listener();
-					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 					String port = source.get(PacmanRuleConstants.PORT).getAsString();
 					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
 					if (StringUtils.isNotEmpty(port) && StringUtils.isNotEmpty(protocol)) {
@@ -1221,7 +1256,7 @@ public class PacmanUtils {
 						listener.setPort(Integer.valueOf(port));
 					}
 					listeners.add(listener);
-				});
+				}
 			}
 
 		}
@@ -1246,17 +1281,15 @@ public class PacmanUtils {
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.LOAD_BALANCER_ID_ATTRIBUTE), lbName);
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ACCOUNTID), accountID);
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.REGION), region);
-		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
-				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
-			JsonObject hitsJson = (JsonObject) JsonParser
-					.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 			if (null != hitsArray && !hitsArray.isEmpty()) {
-				hitsArray.forEach(item -> {
+				for (int i = 0; i < hitsArray.size(); i++) {
 					com.amazonaws.services.elasticloadbalancing.model.Listener listener = new com.amazonaws.services.elasticloadbalancing.model.Listener();
-					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 					String port = source.get(PacmanRuleConstants.PORT).getAsString();
 					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
 					if (StringUtils.isNotEmpty(port) && StringUtils.isNotEmpty(protocol)) {
@@ -1264,7 +1297,7 @@ public class PacmanUtils {
 						listener.setLoadBalancerPort(Integer.valueOf(port));
 					}
 					listeners.add(listener);
-				});
+				}
 			}
 
 		}
@@ -1303,7 +1336,8 @@ public class PacmanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Set<String> checkElbUsingSecuredProtocol(String esListenerURL, String loadBalancerArn) throws Exception {
+	public static Set<String> checkElbUsingSecuredProtocol(String esListenerURL, String loadBalancerArn)
+			throws Exception {
 
 		Set<String> securedProtocols = new HashSet<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1312,21 +1346,20 @@ public class PacmanUtils {
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
 
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ELB_V2_ARN_ATTRIBUTE), loadBalancerArn);
-		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
-				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
 			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 			if (null != hitsArray && !hitsArray.isEmpty()) {
-				hitsArray.forEach(item -> {
-					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
 
 					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_TLS)) {
 						securedProtocols.add(protocol);
 					}
-				});
+				}
 			}
 
 		}
@@ -1341,7 +1374,8 @@ public class PacmanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Set<String> checkClassicElbUsingSecuredProtocol(String esListenerURL, String loadBalancerName, String accountID, String region) throws Exception {
+	public static Set<String> checkClassicElbUsingSecuredProtocol(String esListenerURL, String loadBalancerName,
+			String accountID, String region) throws Exception {
 
 		Set<String> securedProtocols = new HashSet<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1352,21 +1386,20 @@ public class PacmanUtils {
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.LOAD_BALANCER_ID_ATTRIBUTE), loadBalancerName);
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ACCOUNTID), accountID);
 		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.REGION), region);
-		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter,
-				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esListenerURL, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
 
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
 			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 			if (null != hitsArray && !hitsArray.isEmpty()) {
-				hitsArray.forEach(item -> {
-					JsonObject source = item.getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
 
 					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_TLS)) {
 						securedProtocols.add(protocol);
 					}
-				});
+				}
 			}
 
 		}
@@ -3440,6 +3473,7 @@ public class PacmanUtils {
 		}
 		return policyEvaluationResultsMap;
 	}
+
 
 
 }
