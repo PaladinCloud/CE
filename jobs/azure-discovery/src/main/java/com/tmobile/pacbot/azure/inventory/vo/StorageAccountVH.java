@@ -25,6 +25,15 @@ public class StorageAccountVH extends AzureVH {
 	private Map<String, String> tags;
 	private String kind;
 	private Map<String, String> endpointsMap;
+	private boolean isBlobPublicAccessAllowed;
+
+	public boolean isBlobPublicAccessAllowed() {
+		return isBlobPublicAccessAllowed;
+	}
+
+	public void setBlobPublicAccessAllowed(boolean blobPublicAccessAllowed) {
+		isBlobPublicAccessAllowed = blobPublicAccessAllowed;
+	}
 
 	/**
 	 * @return the resourceGroupName
