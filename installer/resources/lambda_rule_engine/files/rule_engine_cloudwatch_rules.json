@@ -4202,8 +4202,8 @@
     "category": "security"
   },
   {
-    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6739_open_to_internet_access",
-    "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6739",
+    "ruleId": "PacMan_SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access",
+    "ruleUUID": "aws_sg_should_not_have_public_access_to_redis_port_6379",
     "policyId": "PacMan_SGWithAnywhereAccess_version-1",
     "ruleName": "Sg_with_redis_port_6379_open_to_internet_access",
     "targetType": "sg",
