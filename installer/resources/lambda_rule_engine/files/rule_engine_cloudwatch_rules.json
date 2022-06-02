@@ -3916,6 +3916,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Aws_DynamoDB_should_use_aws_managed_cmk_for_sse_version-1_aws_managed_cmk_for_sse_dynamodb",
+    "ruleUUID": "aws_dynamodb_should_use_aws_managed_cmk_for_sse",
+    "policyId": "Aws_DynamoDB_should_use_aws_managed_cmk_for_sse_version-1",
+    "ruleName": "DynamoDB_should_use_aws_managed_CMK_for_SSE",
+    "targetType": "dynamodb",
+    "assetGroup": "aws",
+    "alexaKeyword": "DynamoDBAwsManagedCmkServerSideEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-dynamodb-uses-aws-managed-cmks-for-sse\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_DynamoDB_should_use_aws_managed_cmk_for_sse_version-1_aws_managed_cmk_for_sse_dynamodb\",\"autofix\":false,\"alexaKeyword\":\"DynamoDBAwsManagedCmkServerSideEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"dynamodb\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_DynamoDB_should_use_aws_managed_cmk_for_sse_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_dynamodb_should_use_aws_managed_cmk_for_sse\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_dynamodb_should_use_aws_managed_cmk_for_sse",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "DynamoDB should use AWS KMS Customer Master Keys for Table Encryption",
+    "createdDate": "2022-06-02",
+    "modifiedDate": "2022-06-02",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_appelb",
     "ruleUUID": "aws_elb_with_unrestricted_sg",
     "policyId": "AwsElbWithUnrestrictedSecurityGroup_version-1",
