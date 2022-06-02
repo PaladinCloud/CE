@@ -3894,6 +3894,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1_Attached_EBS_volumes_should_be_custom_kms_key_encrypted",
+    "ruleUUID": "aws_attached_ebs_volumes_should_be_custom_kms_key_encrypted",
+    "policyId": "Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1",
+    "ruleName": "aws_ebs_should_be_kms_custom_encrypted",
+    "targetType": "volume",
+    "assetGroup": "aws",
+    "alexaKeyword": "EBSVolumeCustomKmsKeyEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-ebs-volume-should-be-encrypted-with-kms-keys\",\"encrypt\":false},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"\/aws\/volume_attachments\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esKmsUrl\",\"value\":\"\/aws\/kms\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1_Attached_EBS_volumes_should_be_custom_kms_key_encrypted\",\"autofix\":false,\"alexaKeyword\":\"EBSVolumeCustomKmsKeyEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_Attached_EBS_volumes_are_custom_kms_key_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_attached_ebs_volumes_should_be_custom_kms_key_encrypted\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_attached_ebs_volumes_should_be_custom_kms_key_encrypted",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "EBS Encrypted With KMS Customer Master Keys",
+    "createdDate": "2022-06-01",
+    "modifiedDate": "2022-06-01",
+    "severity": "critical",
+    "category": "security"
+  },
+  {
     "ruleId": "AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_appelb",
     "ruleUUID": "aws_elb_with_unrestricted_sg",
     "policyId": "AwsElbWithUnrestrictedSecurityGroup_version-1",
@@ -4667,13 +4689,13 @@
   },
   {
     "ruleId": "Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert",
-    "ruleUUID": "azure_Enable_Account_Delete_Network_Security_Group_Rule_log_alert",
+    "ruleUUID": "azure_Enable_Acc_Delete_Network_Security_Group_Rule_log_alert",
     "policyId": "Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert",
     "ruleName": "Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert",
     "targetType": "activityLog",
     "assetGroup": "Azure",
     "alexaKeyword": "Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Delete Network Security Group Rule events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Delete Network Security Group Rule  events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Network/networkSecurityGroups/securityRules/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Delete Network Security Group Rule log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Account_Delete_Network_Security_Group_Rule_log_alert\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Delete Network Security Group Rule events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"selected alert rule is  configured to detect Delete Network Security Group Rule  events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Network/networkSecurityGroups/securityRules/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Delete Network Security Group Rule log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert\",\"ruleRestUrl\":\"\",\"targetType\":\"activitylog\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Acc_Delete_Network_Security_Group_Rule_log_alert\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -4840,5 +4862,78 @@
     "modifiedDate": "2022-05-25",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Azure_Enable_key_Vault_Customer_Managed_Key",
+    "ruleUUID": "Azure_Enable_key_Vault_Customer_Managed_Key",
+    "policyId": "Azure_Enable_key_Vault_Customer_Managed_Key",
+    "ruleName": "Azure_Enable_key_Vault_Customer_Managed_Key",
+    "targetType": "vaults",
+    "assetGroup": "azure",
+    "alexaKeyword": "Enable_key_Vault_Customer_Managed_Key",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-keyvault-rule-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected Customer Master Key  is not an app-tier resource\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected Customer Master Key  is an app-tier resource\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyValutName\",\"value\":\"cc-project5-key-vault,cc-user-access-vault\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyVaultKey\",\"value\":\"ProjectName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyVaultValue\",\"value\":\"Project5\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure key Vault Customer-Managed Key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Azure_Enable_key_Vault_Customer_Managed_Key\",\"autofix\":false,\"alexaKeyword\":\"Enable_key_Vault_Customer_Managed_Key\",\"ruleRestUrl\":\"\",\"targetType\":\"vaults\",\"pac_ds\":\"azure\",\"policyId\":\"Azure_Enable_key_Vault_Customer_Managed_Key\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_Enable_key_Vault_Customer_Managed_Key\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Enable_key_Vault_Customer_Managed_Key",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Azure key Vault Customer-Managed Key",
+    "createdDate": "2022-05-25",
+    "modifiedDate": "2022-05-25",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "Azure_Enable_Web_Tier_Customer_Managed_Key",
+    "ruleUUID": "Azure_Enable_Web_Tier_Customer_Managed_Key",
+    "policyId": "Azure_Enable_Web_Tier_Customer_Managed_Key",
+    "ruleName": "Azure_Enable_Web_Tier_Customer_Managed_Key",
+    "targetType": "vaults",
+    "assetGroup": "azure",
+    "alexaKeyword": "Enable_Web_Tier_Customer_Managed_Key",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-keyvault-rule-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected Customer Master Key  is not an web-tier resource\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected Customer Master Key  is an Web-tier resource\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyValutName\",\"value\":\"cc-main-key-vault,cc-user-access-vault\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyVaultKey\",\"value\":\"Environment\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyVaultValue\",\"value\":\"Production\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure web Tier Customer-Managed Key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Azure_Enable_web_Tier_Customer_Managed_Key\",\"autofix\":false,\"alexaKeyword\":\"Enable_web_Tier_Customer_Managed_Key\",\"ruleRestUrl\":\"\",\"targetType\":\"vaults\",\"pac_ds\":\"azure\",\"policyId\":\"Azure_Enable_web_Tier_Customer_Managed_Key\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_Enable_web_Tier_Customer_Managed_Key\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Enable_Web_Tier_Customer_Managed_Key",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure that a Customer-Managed Key is created for your Microsoft Azure cloud Web tier",
+    "createdDate": "2022-05-25",
+    "modifiedDate": "2022-05-25",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "Azure_Enable_Database_Tier_Customer_Managed_Key",
+    "ruleUUID": "Azure_Enable_Database_Tier_Customer_Managed_Key",
+    "policyId": "Azure_Enable_Database_Tier_Customer_Managed_Key",
+    "ruleName": "Azure_Enable_Database_Tier_Customer_Managed_Key",
+    "targetType": "vaults",
+    "assetGroup": "azure",
+    "alexaKeyword": "Enable_Database_Tier_Customer_Managed_Key",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-keyvault-rule-alert\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"selected Customer Master Key  is not an Database-tier resource\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected Customer Master Key  is an Database-tier resource\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyValutName\",\"value\":\"cc-production-vault,cc-user-access-vault\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyVaultKey\",\"value\":\"Owner\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"keyVaultValue\",\"value\":\"AzSQLManager\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure Database Tier Customer-Managed Key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Azure_Enable_Database_Tier_Customer_Managed_Key\",\"autofix\":false,\"alexaKeyword\":\"Enable_Database_Tier_Customer_Managed_Key\",\"ruleRestUrl\":\"\",\"targetType\":\"vaults\",\"pac_ds\":\"azure\",\"policyId\":\"Azure_Enable_Database_Tier_Customer_Managed_Key\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_Enable_Database_Tier_Customer_Managed_Key\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Enable_Database_Tier_Customer_Managed_Key",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure that a Customer-Managed Key is created for your Microsoft Azure cloud database tier",
+    "createdDate": "2022-05-25",
+    "modifiedDate": "2022-05-25",
+    "severity": "high",
+    "category": "security"
   }
+
+
+
+
+
+
+
 ]

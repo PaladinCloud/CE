@@ -25,7 +25,7 @@ package com.tmobile.cloud.constants;
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
-    public static final String NAME ="name" ;
+    public static final String NAME = "name";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -393,6 +393,9 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_KMS_ALIAS_ATTRIBUTE = "aliasname";
+    public static final String ES_KMS_URL = "esKmsUrl";
+    public static final String ES_KMS_KEY_ID_ATTRIBUTE = "kmskeyid";
     public static final String ES_SG_FROM_PORT_ATTRIBUTE = "fromport";
     public static final String ES_SG_TO_PORT_ATTRIBUTE = "toport";
     public static final String PROTOCOL_ALL = "All";
@@ -416,5 +419,9 @@ public class PacmanRuleConstants {
     public static final String ALLOF = "allof";
     public static final String PRICING_TIER = "pricingTier";
     public static final String PROPERTIES = "properties";
+    public static final String KEYVAULTNAMES = "keyValutName";
+    public static final String KEYVAULTKEY = "keyVaultKey";
+    public static final String KEYVAULTVALUE = "keyVaultValue";
+    public static final String SUCCESS = "SUCCESS";
 
 }
