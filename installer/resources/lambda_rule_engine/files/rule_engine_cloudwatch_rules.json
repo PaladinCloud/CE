@@ -4928,7 +4928,29 @@
     "modifiedDate": "2022-05-25",
     "severity": "high",
     "category": "security"
-  }
+  },
+  {
+    "ruleId": "AWS_ElasticSearch_Domain_At_Rest_Encryption_version-1_ElasticSearchDomainAtRestEncryption",
+    "ruleUUID": "aws_elasticsearch_domain_at_rest_encryption",
+    "policyId": "AWS_ElasticSearch_Domain_At_Rest_Encryption_version-1",
+    "ruleName": "ElasticSearchDomainAtRestEncryption",
+    "targetType": "elasticsearch",
+    "assetGroup": "aws",
+    "alexaKeyword": "ESDomainEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-es-encrypted-at-rest\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_ElasticSearch_Domain_At_Rest_Encryption_version-1_ElasticSearchDomainAtRestEncryption\",\"autofix\":false,\"alexaKeyword\":\"ESDomainEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_ElasticSearch_Domain_At_Rest_Encryption_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_elasticsearch_domain_at_rest_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticsearch_domain_at_rest_encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Amazon ElasticSearch (ES) domains Encryption At Rest",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "critical",
+    "category": "security"
+   }
 
 
 
