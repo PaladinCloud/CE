@@ -524,8 +524,8 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 
-		fieldNames ="table.TableArn`table.TableName`table.CreationDateTime`table.ItemCount`table.LatestStreamArn`table.LatestStreamLabel`table.TableSizeBytes`table.TableStatus`table.ProvisionedThroughput.ReadCapacityUnits`table.ProvisionedThroughput.WriteCapacityUnits`table.StreamSpecification.StreamEnabled`table.StreamSpecification.StreamViewType";
-		keys ="discoverydate`accountid`accountname`region`tablearn`tablename`creationdatetime`itemcount`lateststreamarn`lateststreamlabel`tablesizebytes`tablestatus`readcapacityunits`writecapacityunits`streamenabled`streamviewtype";
+		fieldNames ="table.TableArn`table.TableName`table.CreationDateTime`table.ItemCount`table.LatestStreamArn`table.LatestStreamLabel`table.TableSizeBytes`table.TableStatus`table.ProvisionedThroughput.ReadCapacityUnits`table.ProvisionedThroughput.WriteCapacityUnits`table.StreamSpecification.StreamEnabled`table.StreamSpecification.StreamViewType`table.sSEDescription.SSEType";
+		keys ="discoverydate`accountid`accountname`region`tablearn`tablename`creationdatetime`itemcount`lateststreamarn`lateststreamlabel`tablesizebytes`tablestatus`readcapacityunits`writecapacityunits`streamenabled`streamviewtype`ssetype";
 		FileGenerator.generateJson(dynamoMap, fieldNames, "aws-dynamodb.data",keys);
 		fieldNames ="table.TableArn`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`tablearn`key`value";
