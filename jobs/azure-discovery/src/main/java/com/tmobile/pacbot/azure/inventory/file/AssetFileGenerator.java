@@ -564,7 +564,8 @@ public class AssetFileGenerator {
 			});
 
 			executor.execute(() -> {
-				if (!(isTypeInScope("activityLog"))) {
+
+				if (!(isTypeInScope("activitylog"))) {
 					return;
 				}
 

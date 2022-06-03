@@ -50,7 +50,7 @@ public class ActivityLogRule extends BaseRule {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/azure_activityLog/_search";
+            esUrl = url + "/azure_activitylog/_search";
         }
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         boolean isValid = false;
