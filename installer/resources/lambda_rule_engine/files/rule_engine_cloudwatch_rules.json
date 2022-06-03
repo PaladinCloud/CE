@@ -4444,7 +4444,6 @@
     "category": "security"
   },
   {
-
     "ruleId": "AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_classicelb",
     "ruleUUID": "aws_classic_elb_with_unrestricted_sg",
     "policyId": "AwsElbWithUnrestrictedSecurityGroup_version-1",
@@ -4465,9 +4464,8 @@
     "modifiedDate": "2022-05-12",
     "severity": "high",
     "category": "security"
-},
-{
-
+  },
+  {
     "ruleId": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
     "ruleUUID": "Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
     "policyId": "PacMan_Azure_Account_Create_Update_Azure_SQL_Database_log_alert",
@@ -4488,8 +4486,8 @@
     "modifiedDate": "2022-05-16",
     "severity": "high",
     "category": "security"
- },
- {
+  },
+  {
     "ruleId": "Enable_Create_Update_Delete_SQL_Server_Firewall_log_alert",
     "ruleUUID": "Azure_Enable_Create_Update_Delete_SQL_Server_Firewall_log_alert",
     "policyId": "Enable_Create_Update_Delete_SQL_Server_Firewall_log_alert",
@@ -4928,12 +4926,93 @@
     "modifiedDate": "2022-05-25",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing",
+    "ruleUUID": "azure_Enable_Azure_Defender_for_App_Service",
+    "policyId": "PacMan_Enable_Azure_Defender_for_App_Service_version-1",
+    "ruleName": "AppServiceAzureDefender",
+    "targetType": "securitypricings",
+    "assetGroup": "Azure",
+    "alexaKeyword": "AppServiceAzureDefender",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-pricing-rule\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"Microsoft Defender for Cloud is not enabled for the Azure App Service instances \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"Microsoft Defender for Cloud is enabled for the Azure App Service instances \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"AppServices\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"pricingTier\",\"value\":\"Standard\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Defender for App Service\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Defender_for_App_Service_version-1_SecurityPricing\",\"autofix\":false,\"alexaKeyword\":\"AppServiceAzureDefender\",\"ruleRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Defender_for_App_Service_version-1\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Azure_Defender_for_App_Service\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Azure_Defender_for_App_Service",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Azure Defender for App Service",
+    "createdDate": "2022-05-19",
+    "modifiedDate": "2022-05-19",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing",
+    "ruleUUID": "azure_Enable_Azure_Defender_for_SQL_Database",
+    "policyId": "PacMan_Enable_Azure_Defender_for_SQL_Database_version-1",
+    "ruleName": "SQLDatabaseAzureDefender",
+    "targetType": "securitypricings",
+    "assetGroup": "Azure",
+    "alexaKeyword": "SQLDatabaseAzureDefender",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-pricing-rule\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"Microsoft Defender for Cloud is not enabled for the Azure SQL databases \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"Microsoft Defender for Cloud is enabled for the Azure SQL databases \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"SqlServers\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"pricingTier\",\"value\":\"Standard\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Defender for SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Defender_for_SQL_Database_version-1_SecurityPricing\",\"autofix\":false,\"alexaKeyword\":\"SQLDatabaseAzureDefender\",\"ruleRestUrl\":\"\",\"targetType\":\"securitypricings\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Defender_for_SQL_Database_version-1\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Azure_Defender_for_SQL_Database\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Azure_Defender_for_SQL_Database",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Azure Defender for SQL Database",
+    "createdDate": "2022-05-19",
+    "modifiedDate": "2022-05-19",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Enable_Azure_Defender_for_Storage_Account_version-1_SecurityPricing",
+    "ruleUUID": "azure_Enable_Azure_Defender_for_Storage_Account",
+    "policyId": "PacMan_Enable_Azure_Defender_for_Storage_Account_version-1",
+    "ruleName": "StorageAccountAzureDefender",
+    "targetType": "securitypricings",
+    "assetGroup": "Azure",
+    "alexaKeyword": "StorageAccountAzureDefender",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-pricing-rule\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"Microsoft Defender for Cloud is not enabled for Storage Account \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"Microsoft Defender for Cloud is enabled for Storage Account \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"StorageAccounts\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"pricingTier\",\"value\":\"Standard\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Defender for Storage Account\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Defender_for_Storage_Account_version-1_SecurityPricing\",\"autofix\":false,\"alexaKeyword\":\"StorageAccountAzureDefender\",\"ruleRestUrl\":\"\",\"targetType\":\"securitypricings\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Defender_for_Storage_Account_version-1\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Azure_Defender_for_Storage_Account\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Azure_Defender_for_Storage_Account",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Azure Defender for Storage Account",
+    "createdDate": "2022-05-19",
+    "modifiedDate": "2022-05-19",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "PacMan_Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing",
+    "ruleUUID": "azure_Enable_Azure_Defender_for_Virtual_Machine",
+    "policyId": "PacMan_Enable_Azure_Defender_for_Virtual_Machine_version-1",
+    "ruleName": "VirtualMachineAzureDefender",
+    "targetType": "securitypricings",
+    "assetGroup": "Azure",
+    "alexaKeyword": "VirtualMachineAzureDefender",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-pricing-rule\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"Microsoft Defender for Cloud is not enabled for Virtual Machine \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"Microsoft Defender for Cloud is enabled for Virtual Machine \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"pricingTier\",\"value\":\"Standard\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Azure Defender for Virtual Machine\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_Enable_Azure_Defender_for_Virtual_Machine_version-1_SecurityPricing\",\"autofix\":false,\"alexaKeyword\":\"VirtualMachineAzureDefender\",\"ruleRestUrl\":\"\",\"targetType\":\"securitypricings\",\"pac_ds\":\"azure\",\"policyId\":\"PacMan_Enable_Azure_Defender_for_Virtual_Machine_version-1\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Azure_Defender_for_Virtual_Machine\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Azure_Defender_for_Virtual_Machine",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Azure Defender for Virtual Machine",
+    "createdDate": "2022-05-19",
+    "modifiedDate": "2022-05-19",
+    "severity": "high",
+    "category": "security"
   }
-
-
-
-
-
-
-
 ]
