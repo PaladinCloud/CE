@@ -4928,6 +4928,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1_ElasticSearchDomainNodeToNodeEncryption",
+    "ruleUUID": "aws_elasticsearch_domain_node_to_node_encryption",
+    "policyId": "AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1",
+    "ruleName": "ElasticSearchDomainNodeToNodeEncryption",
+    "targetType": "elasticsearch",
+    "assetGroup": "aws",
+    "alexaKeyword": "ESNodeToNodeEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-es-node-to-node-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1_ElasticSearchDomainNodeToNodeEncryption\",\"autofix\":false,\"alexaKeyword\":\"ESNodeToNodeEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_elasticsearch_domain_node_to_node_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticsearch_domain_node_to_node_encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Amazon ElasticSearch Node To Node Encryption",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "high",
+    "category": "security"
+},
+  {
     "ruleId": "Azure_Enable_Database_Tier_Customer_Managed_Key",
     "ruleUUID": "Azure_Enable_Database_Tier_Customer_Managed_Key",
     "policyId": "Azure_Enable_Database_Tier_Customer_Managed_Key",
