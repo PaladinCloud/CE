@@ -1482,10 +1482,10 @@ public class FileManager {
 		fieldNames = "domain.domainId`domain.domainName`domain.aRN`domain.created`domain.deleted`domain.endpoint`domain.processing`domain.elasticsearchVersion`domain.accessPolicies`domain.endpoints"
 				+ "`domain.elasticsearchClusterConfig.instanceType`domain.elasticsearchClusterConfig.instanceCount`domain.elasticsearchClusterConfig.dedicatedMasterEnabled`domain.elasticsearchClusterConfig.zoneAwarenessEnabled"
 				+ "`domain.elasticsearchClusterConfig.dedicatedMasterType`domain.elasticsearchClusterConfig.dedicatedMasterCount`domain.vPCOptions.vPCId`domain.vPCOptions.subnetIds`domain.vPCOptions.availabilityZones"
-				+ "`domain.vPCOptions.securityGroupIds`domain.advancedOptions";
+				+ "`domain.vPCOptions.securityGroupIds`domain.advancedOptions`domain.encryptionAtRestOptions.enabled`domain.encryptionAtRestOptions.kmsKeyId`domain.nodeToNodeEncryptionOptions.enabled";
 		keys = "discoverydate`accountid`accountname`region`domainid`domainname`arn`created`deleted`endpoint`processing`elasticsearchversion`accesspolicies`endpoints"
 				+ "`clusterinstancetype`clusterinstancecount`clusterdedicatedmasterenabled`clusterzoneawarenessenabled"
-				+ "`clusterdedicatedmastertype`clusterdedicatedmastercount`vpcid`subnetid`availabilityzone`securitygroupid`advancedoptions";
+				+ "`clusterdedicatedmastertype`clusterdedicatedmastercount`vpcid`subnetid`availabilityzone`securitygroupid`advancedoptions`encryptionenabled`encryptionkmskey`nodetonodeencryption";
 		FileGenerator.generateJson(esDomainMap, fieldNames, "aws-elasticsearch.data",keys);
 
 		fieldNames = "domain.domainId`tags.key`tags.value";
