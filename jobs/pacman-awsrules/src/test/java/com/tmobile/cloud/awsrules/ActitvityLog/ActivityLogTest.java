@@ -35,7 +35,7 @@ public class ActivityLogTest {
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
 
-        when(PacmanUtils.checkISResourceIdExistsFromElasticSearch("_resourceid", "azure_activityLog/_search", "", ""))
+        when(PacmanUtils.checkISResourceIdExistsFromElasticSearch("_resourceid", "azure_activitylog/_search", "", ""))
                 .thenReturn(true);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(false);
         assertThatThrownBy(

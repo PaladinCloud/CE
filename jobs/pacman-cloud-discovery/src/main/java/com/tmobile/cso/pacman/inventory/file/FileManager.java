@@ -524,8 +524,8 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 
-		fieldNames ="table.TableArn`table.TableName`table.CreationDateTime`table.ItemCount`table.LatestStreamArn`table.LatestStreamLabel`table.TableSizeBytes`table.TableStatus`table.ProvisionedThroughput.ReadCapacityUnits`table.ProvisionedThroughput.WriteCapacityUnits`table.StreamSpecification.StreamEnabled`table.StreamSpecification.StreamViewType";
-		keys ="discoverydate`accountid`accountname`region`tablearn`tablename`creationdatetime`itemcount`lateststreamarn`lateststreamlabel`tablesizebytes`tablestatus`readcapacityunits`writecapacityunits`streamenabled`streamviewtype";
+		fieldNames ="table.TableArn`table.TableName`table.CreationDateTime`table.ItemCount`table.LatestStreamArn`table.LatestStreamLabel`table.TableSizeBytes`table.TableStatus`table.ProvisionedThroughput.ReadCapacityUnits`table.ProvisionedThroughput.WriteCapacityUnits`table.StreamSpecification.StreamEnabled`table.StreamSpecification.StreamViewType`table.sSEDescription.SSEType";
+		keys ="discoverydate`accountid`accountname`region`tablearn`tablename`creationdatetime`itemcount`lateststreamarn`lateststreamlabel`tablesizebytes`tablestatus`readcapacityunits`writecapacityunits`streamenabled`streamviewtype`ssetype";
 		FileGenerator.generateJson(dynamoMap, fieldNames, "aws-dynamodb.data",keys);
 		fieldNames ="table.TableArn`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`tablearn`key`value";
@@ -1482,10 +1482,10 @@ public class FileManager {
 		fieldNames = "domain.domainId`domain.domainName`domain.aRN`domain.created`domain.deleted`domain.endpoint`domain.processing`domain.elasticsearchVersion`domain.accessPolicies`domain.endpoints"
 				+ "`domain.elasticsearchClusterConfig.instanceType`domain.elasticsearchClusterConfig.instanceCount`domain.elasticsearchClusterConfig.dedicatedMasterEnabled`domain.elasticsearchClusterConfig.zoneAwarenessEnabled"
 				+ "`domain.elasticsearchClusterConfig.dedicatedMasterType`domain.elasticsearchClusterConfig.dedicatedMasterCount`domain.vPCOptions.vPCId`domain.vPCOptions.subnetIds`domain.vPCOptions.availabilityZones"
-				+ "`domain.vPCOptions.securityGroupIds`domain.advancedOptions";
+				+ "`domain.vPCOptions.securityGroupIds`domain.advancedOptions`domain.encryptionAtRestOptions.enabled`domain.encryptionAtRestOptions.kmsKeyId`domain.nodeToNodeEncryptionOptions.enabled";
 		keys = "discoverydate`accountid`accountname`region`domainid`domainname`arn`created`deleted`endpoint`processing`elasticsearchversion`accesspolicies`endpoints"
 				+ "`clusterinstancetype`clusterinstancecount`clusterdedicatedmasterenabled`clusterzoneawarenessenabled"
-				+ "`clusterdedicatedmastertype`clusterdedicatedmastercount`vpcid`subnetid`availabilityzone`securitygroupid`advancedoptions";
+				+ "`clusterdedicatedmastertype`clusterdedicatedmastercount`vpcid`subnetid`availabilityzone`securitygroupid`advancedoptions`encryptionenabled`encryptionkmskey`nodetonodeencryption";
 		FileGenerator.generateJson(esDomainMap, fieldNames, "aws-elasticsearch.data",keys);
 
 		fieldNames = "domain.domainId`tags.key`tags.value";
