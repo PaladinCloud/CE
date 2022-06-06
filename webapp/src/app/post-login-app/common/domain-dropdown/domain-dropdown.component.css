@@ -58,7 +58,7 @@
     flex-shrink: 0;
 }
 .dropdown-selected-active{
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     background-color: #F6F6F7;
 }
 .dropdown-selected-active .dropdown-select-box{

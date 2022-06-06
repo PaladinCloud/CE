@@ -13,9 +13,10 @@
  */
 
 .sub-head-title {
-    font-size: 1em;
-    font-family: ex2-medium;
-    font-weight: bolder;
+    font-size: var(--text-body-2-font-size);
+    font-family: var(--text-medium-font-family);
+    font-weight: var(--text-font-weight);
+    color: var(--text-high-emphasis);
     opacity: 0.4;
     letter-spacing: 2px;
     transition-delay: 0.2s;
@@ -30,9 +31,6 @@
     transform: translateX(0em);
 }
 
-.sub-head-title:hover {
-    letter-spacing: 0.5px;
-}
 
 .bulb-img {
     margin-right: 0.7em;
@@ -41,7 +39,7 @@
 .drop-options {
     height: 2em;
     width: 11.25em;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     border: solid 1px #c3cbd7;
     position: relative;
@@ -53,7 +51,7 @@
 .drop-search-box {
     height: 2em;
     width: 21em;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     border: solid 1px #c3cbd7;
     position: relative;
@@ -137,7 +135,7 @@
 }
 
 .each-pop-row:hover {
-    background-color: #ed0295;
+    background-color: var(--primary-500);
     color: white;
 }
 

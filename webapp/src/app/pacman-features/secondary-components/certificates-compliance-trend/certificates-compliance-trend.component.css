@@ -27,8 +27,7 @@
 
 .sub-header {
     padding: 0.8em;
-    background-color: #ffffff;
-    border: solid 1px #d6e2f1;
+    background-color: none !important;
     color: #555;
     font-size: 1em;
 }

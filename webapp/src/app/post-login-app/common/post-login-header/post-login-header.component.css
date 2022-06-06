@@ -102,7 +102,7 @@ nav .nav-icon:last-child {
 }
 
 .username {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-size: 1.1em;
     color: #ffffff;
     padding: 0 5px 0 0;
@@ -155,7 +155,7 @@ nav .nav-icon:last-child {
 
 .menu-head {
     text-transform: uppercase;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding-left: 0.83em;
 }
 
@@ -189,7 +189,7 @@ nav .nav-icon:last-child {
 }
 
 .menu-content-item.active {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     opacity: 1;
 }
 
@@ -225,7 +225,7 @@ nav .nav-icon:last-child {
     left: 50%;
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-size: 1em;
     color: #999999;
 }
@@ -269,7 +269,7 @@ nav .nav-icon:last-child {
     transform: translateY(100%);
     background: #fff;
     box-shadow: 0 2px 5px 0px rgba(0,0,0,0.2);
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     max-height: 0px;
     overflow: hidden;
     transition: 0.6s ease;
@@ -294,8 +294,8 @@ nav .nav-icon:last-child {
     padding: 0.9em 1em;
     font-size: 1em;
     color: #fff;
-    background: #ed0274;
-    font-family: ex2-bold;
+    background: var(--primary-400);
+    font-family: var(--text-medium-font-family);
     text-align: center;
     border-radius: 2px;
     cursor: pointer;

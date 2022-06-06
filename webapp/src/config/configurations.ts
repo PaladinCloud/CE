@@ -36,7 +36,7 @@ export const CONFIGURATIONS = {
     optional: {
         auth: {
             AUTH_TYPE: DB, // AZURE_SSO | DB | LDAP
-            adConfig : {
+            adConfig: {
                 tenant: '', // Expected values: Value expected if 'AD_AUTHENTICATION' is true
                 clientId: '' // Expected values: Value expected if 'AD_AUTHENTICATION' is true
             }

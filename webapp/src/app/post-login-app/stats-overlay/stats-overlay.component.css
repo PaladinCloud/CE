@@ -99,7 +99,7 @@
 .events {
     font-size: 1.2em;
     text-align: center;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     margin: 0 1em;
     min-height: 16em;
     display: flex;
@@ -117,7 +117,7 @@
 }
 
 .events-text {
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
     margin-bottom: 0.5em;
     font-size: 1.1em;
     letter-spacing: .5px;
@@ -182,7 +182,7 @@
 }
 
 .year-inner-wrapper .year {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: .5px;
 }
 

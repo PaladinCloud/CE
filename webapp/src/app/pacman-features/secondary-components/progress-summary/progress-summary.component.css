@@ -57,7 +57,7 @@
     position: absolute;
     color: #f2425f;
     font-size: 1em;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 .progress-barright-value{
     position: absolute;
@@ -66,5 +66,5 @@
     transform: translateY(150%);
     color: #f2425f;
     font-size: 1em;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }

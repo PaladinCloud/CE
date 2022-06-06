@@ -17,7 +17,7 @@
     height: 0;
     border-left: 0.3em solid transparent;
     border-right: 0.3em solid transparent;
-    border-top: 0.4em solid #e20074;
+    border-top: 0.4em solid var(--primary-400);
     margin-left: 0.4em;
     cursor: pointer;
     pointer-events: none;
@@ -81,16 +81,16 @@
 }
 
 /deep/ .ui-select-choices-row>a:hover {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
     padding: 3px 0.6em!important;
 }
 
 /deep/ .ui-select-choices-row.active>a {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
 }
 
 /deep/ ul.ui-select-choices {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 2px 4px 0 #00000050;
     border: solid 1px #c3cbd7;

@@ -70,7 +70,7 @@
 }
 
 .search-card-name span:first-child {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .seach-card-desc-top {
@@ -86,7 +86,7 @@
 }
 
 .seach-card-desc-top span:first-child {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding-left: 0;
 }
 
@@ -108,7 +108,7 @@
 }
 
 .search-card-type span:first-child {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .search-card-category {
@@ -264,7 +264,7 @@
 
 .header-text {
     font-size: 1.1em;
-    font-family: 'ex2-bold';
+    font-family: 'var(--text-medium-font-family)';
     letter-spacing: 0.5px;
 }
 
@@ -407,7 +407,7 @@
 .circle-loader {
     margin: 0 0 30px 10px;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    border-left-color: #ed0295;
+    border-left-color: var(--primary-500);
     animation-name: loader-spin;
     animation-duration: 1s;
     animation-iteration-count: infinite;
@@ -602,7 +602,7 @@
 .exception-btn {
     border: none;
     border-radius: 4px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
     padding: 0.5em;
@@ -626,7 +626,7 @@
 .exception-btn:hover, .exception-btn:focus {
     -webkit-box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    background-color: #c20064;
+    background-color: var(--primary-500);
 }
 
 .textarea-button /deep/ .app-button {
@@ -670,7 +670,7 @@
     padding: 2px 0;
 }
 .font-color{
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .search-details-wrapper /deep/ ngx-select-dropdown, .search-details-wrapper /deep/ .ngx-dropdown-container {

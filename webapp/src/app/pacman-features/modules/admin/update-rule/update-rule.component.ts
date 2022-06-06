@@ -28,7 +28,7 @@ import { WorkflowService } from '../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../services/all-admin.service';
 import { NgForm } from '@angular/forms';
-import { SelectComponent , SelectItem} from 'ng2-select';
+import { SelectComponent, SelectItem } from 'ng2-select';
 import { UploadFileService } from '../../../services/upload-file-service';
 
 @Component({
@@ -121,7 +121,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   datasourceDetails: any = [];
   targetTypesNames: any = [];
   ruleCategories = [];
-  ruleSeverities = ["critical","high","medium","low"];
+  ruleSeverities = ["critical", "high", "medium", "low"];
   allPolicyIds: any = [];
   allFrequencies: any = ['Daily', 'Hourly', 'Minutes', 'Monthly', 'Weekly', 'Yearly'];
   allMonths: any = [
@@ -145,8 +145,8 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
 
   ruleType: any = 'Classic';
   selectedFrequency: any = '';
-  selectedSeverity:any = '';
-  selectedCategory:any = '';
+  selectedSeverity: any = '';
+  selectedCategory: any = '';
   ruleJarFileName: any = '';
   selectedPolicyId: any = '';
   selectedTargetType: any = '';
@@ -264,7 +264,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
         this.showLoader = false;
       });
   }
-  
+
   getRuleCategoryDetails() {
     const url = environment.ruleCategory.url;
     const method = environment.ruleCategory.method;
@@ -463,8 +463,8 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   onJarFileChange(event) {
     this.selectedFiles = event.target.files;
     this.ruleJarFileName = this.selectedFiles[0].name;
-    let extension = this.ruleJarFileName.substring(this.ruleJarFileName.lastIndexOf(".")+1);
-    if(extension!=='jar') {
+    let extension = this.ruleJarFileName.substring(this.ruleJarFileName.lastIndexOf(".") + 1);
+    if (extension !== 'jar') {
       this.removeJarFileName();
     }
     this.isFileChanged = true;
@@ -528,7 +528,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
       this.allEnvironments = [];
       this.allRuleParams = [];
       this.isAutofixEnabled = false;
-      this.ruleDisplayName =  this.ruleDetails.displayName;
+      this.ruleDisplayName = this.ruleDetails.displayName;
       ruleParams = JSON.parse(this.ruleDetails.ruleParams);
 
       if (ruleParams.hasOwnProperty('pac_ds')) {
@@ -542,14 +542,14 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
       if (ruleParams.hasOwnProperty('params')) {
         if (ruleParams.params instanceof Array) {
           for (let i = ruleParams.params.length - 1; i >= 0; i -= 1) {
-            if(ruleParams.params[i].key == 'severity') {
+            if (ruleParams.params[i].key == 'severity') {
               this.selectedSeverity = ruleParams.params[i].value;
               this.ruleSeverityComponent.active.push(new SelectItem(ruleParams.params[i].value));
-              ruleParams.params.splice(i,1);
-            } else if(ruleParams.params[i].key == 'ruleCategory') {
+              ruleParams.params.splice(i, 1);
+            } else if (ruleParams.params[i].key == 'ruleCategory') {
               this.selectedCategory = ruleParams.params[i].value;
               this.ruleCategoryComponent.active.push(new SelectItem(ruleParams.params[i].value));
-              ruleParams.params.splice(i,1);
+              ruleParams.params.splice(i, 1);
             }
           }
           this.allRuleParams = ruleParams.params;
@@ -574,7 +574,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
 
       let frequencyforEdit = this.decodeCronExpression(this.ruleDetails.ruleFrequency);
       this.ruleFrequency = [{ 'text': frequencyforEdit.interval, 'id': frequencyforEdit.interval }];
-      
+
       this.onSelectFrequency(frequencyforEdit.interval);
       if (frequencyforEdit.interval.toLowerCase() === 'yearly') {
         this.ruleFrequencyDay = [{ text: frequencyforEdit.day, id: frequencyforEdit.day }];
@@ -744,7 +744,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   onSelectFrequencyMonthDay(selectedMonthDay) {
 
   }
-  
+
   onSelectSeverity(selectedSeverity) {
     this.selectedSeverity = selectedSeverity;
   }
@@ -886,7 +886,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
               link: true,
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -894,7 +894,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
               imgLink: '',
               text: 'Edit',
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else {

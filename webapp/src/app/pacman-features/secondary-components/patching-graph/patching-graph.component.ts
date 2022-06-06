@@ -30,7 +30,7 @@ import { UtilsService } from '../../../shared/services/utils.service';
   selector: 'app-patching-graph',
   templateUrl: './patching-graph.component.html',
   styleUrls: ['./patching-graph.component.css'],
-  providers: [ AutorefreshService ]
+  providers: [AutorefreshService]
 })
 
 export class PatchingGraphComponent implements OnInit, OnChanges {
@@ -52,9 +52,9 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
 
   @ViewChild('graphContainer') graphContainer: ElementRef;
 
-  private margin = {top: 15, right: 20, bottom: 30, left: 60};
+  private margin = { top: 15, right: 20, bottom: 30, left: 60 };
 
-  public lineColors = ['#afd9f9', '#ed0295', '#00b946', '#289cf7', '#ED0295'];
+  public lineColors = ['#afd9f9', '#0047bb', '#00b946', '#289cf7', '#0047bb'];
 
   // Lowest and Highest Line in the graph
   private lowerLine: any;
@@ -91,23 +91,23 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
 
 
   constructor(private ngZone: NgZone,
-              private autorefreshService: AutorefreshService,
-              private utils: UtilsService) {
+    private autorefreshService: AutorefreshService,
+    private utils: UtilsService) {
 
     // Variables initialized for auto-refresh
-                this.durationParams = this.autorefreshService.getDuration();
-                this.durationParams = parseInt(this.durationParams, 10);
-                this.autoRefresh = this.autorefreshService.autoRefresh;
+    this.durationParams = this.autorefreshService.getDuration();
+    this.durationParams = parseInt(this.durationParams, 10);
+    this.autoRefresh = this.autorefreshService.autoRefresh;
 
-                window.onresize = (e) => {
-                    // ngZone.run will help to run change detection
-                    this.ngZone.run(() => {
-                      this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
+    window.onresize = (e) => {
+      // ngZone.run will help to run change detection
+      this.ngZone.run(() => {
+        this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
 
-                      // Re-plot the graph for resized window
-                      this.resizeGraph();
-                    });
-                };
+        // Re-plot the graph for resized window
+        this.resizeGraph();
+      });
+    };
 
   }
 
@@ -136,7 +136,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         this.nonZeroValues = [];
         this.graphData = this.graphLinesData;
         let dotsDateVal = [];
-        for ( let i = 1; i <= this.graphData[0][`values`].length; i++) {
+        for (let i = 1; i <= this.graphData[0][`values`].length; i++) {
           if (this.graphData[0][`values`][6 * i]) {
             dotsDateVal.push(this.graphData[0][`values`][i * 6]);
           }
@@ -144,9 +144,9 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         dotsDateVal = dotsDateVal.splice(0, dotsDateVal.length);
         this.dotsDate = dotsDateVal;
 
-        for ( let j = 0; j < this.graphData.length; j++) {
+        for (let j = 0; j < this.graphData.length; j++) {
           const nonZeroArray = [];
-          for ( let t = 0; t < this.graphData[j].values.length; t++) {
+          for (let t = 0; t < this.graphData[j].values.length; t++) {
             if (this.graphData[j].values[t].value !== -1) {
               nonZeroArray.push(this.graphData[j].values[t]);
             }
@@ -162,7 +162,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         }
 
         // Set dimensions for the graph and timeline axis
-        this.width = this.graphWidth - this.margin.left - this.margin.right ;
+        this.width = this.graphWidth - this.margin.left - this.margin.right;
         if (this.width < 1) {
           this.width = 1;
         }
@@ -197,16 +197,16 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
       const graphWidth = changes['graphWidth'];
 
       if (graphDataChange && !graphWidth) {
-        const cur  = JSON.stringify(graphDataChange.currentValue);
+        const cur = JSON.stringify(graphDataChange.currentValue);
         const prev = JSON.stringify(graphDataChange.previousValue);
         if ((cur !== prev) && (this.graphLinesData)) {
           if (graphWidth) {
             const prevWidth = JSON.stringify(graphWidth.previousValue);
             const currWidth = JSON.stringify(graphWidth.currentValue);
-              if (prevWidth !== currWidth) {
-                  this.graphWidth = currWidth;
-              }
+            if (prevWidth !== currWidth) {
+              this.graphWidth = currWidth;
             }
+          }
           this.init();
         }
       }
@@ -214,10 +214,10 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
       if (!graphDataChange && graphWidth) {
         const prevWidth = JSON.stringify(graphWidth.previousValue);
         const currWidth = JSON.stringify(graphWidth.currentValue);
-          if (prevWidth !== currWidth) {
-              this.graphWidth = currWidth;
-              this.resizeGraph();
-          }
+        if (prevWidth !== currWidth) {
+          this.graphWidth = currWidth;
+          this.resizeGraph();
+        }
       }
 
     } catch (error) {
@@ -229,25 +229,25 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
   resizeGraph() {
     if (this.graphLinesData) {
 
-        // Reset the dimensions
-        this.width = this.graphWidth - this.margin.left - this.margin.right ;
-        if (this.width < 1) {
-          this.width = 1;
-        }
-        this.timeLineWidth = this.width * 1;
-        if (this.graphHeight === undefined) {
-          this.graphHeight = 280;
-          this.height = this.graphHeight - this.margin.top - this.margin.bottom - 70;
-        } else {
-          this.graphHeight = 180;
-          this.height = this.graphHeight - this.margin.top - this.margin.bottom - 70;
-        }
+      // Reset the dimensions
+      this.width = this.graphWidth - this.margin.left - this.margin.right;
+      if (this.width < 1) {
+        this.width = 1;
+      }
+      this.timeLineWidth = this.width * 1;
+      if (this.graphHeight === undefined) {
+        this.graphHeight = 280;
+        this.height = this.graphHeight - this.margin.top - this.margin.bottom - 70;
+      } else {
+        this.graphHeight = 180;
+        this.height = this.graphHeight - this.margin.top - this.margin.bottom - 70;
+      }
 
-        // To remove the graph content if its present before re-plotting
-        this.removeGraphSvg();
+      // To remove the graph content if its present before re-plotting
+      this.removeGraphSvg();
 
-        // Plot the graph and do all associated processes
-        this.plotGraph();
+      // Plot the graph and do all associated processes
+      this.plotGraph();
     }
   }
 
@@ -278,22 +278,22 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
     if (this.position === true) {
 
       this.svg = d3.select(uniqueId).select('svg')
-                 .append('g')
-                 .attr('transform', 'translate(' + this.margin.left + ',' + (-this.margin.bottom) + ')');
+        .append('g')
+        .attr('transform', 'translate(' + this.margin.left + ',' + (-this.margin.bottom) + ')');
 
     } else {
 
       this.svg = d3.select(uniqueId).select('svg')
-                 .append('g')
-                 .attr('transform', 'translate(' + 30 + ',' + (-this.margin.bottom - 30) + ')');
+        .append('g')
+        .attr('transform', 'translate(' + 30 + ',' + (-this.margin.bottom - 30) + ')');
     }
 
-                 this.graphHeight = undefined;
+    this.graphHeight = undefined;
   }
 
   private initComponents() {
 
-    this.data = this.graphData.map((v) => v.values.map((z) => z.date ))[0];
+    this.data = this.graphData.map((v) => v.values.map((z) => z.date))[0];
 
     this.x = d3Scale.scaleTime().range([0, this.width]);
     this.y = d3Scale.scaleLinear().range([this.height, 0]);
@@ -302,7 +302,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
     // this.x.domain(d3Array.extent(this.data, (d: Date) => d ));
 
 
-    this.x.domain(d3Array.extent(this.data, (d: Date) => d ));
+    this.x.domain(d3Array.extent(this.data, (d: Date) => d));
     // Note : You can add '.nice()' function at the end of this.x.domain() to have evenly spaced ticks with starting and
     //        ending point included
 
@@ -311,7 +311,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
 
     this.y.domain([
       0,
-      d3Array.max(this.graphData, function(c) { return d3Array.max(c[`values`], function(d) { return d[`value`] * 1.1; }); })
+      d3Array.max(this.graphData, function (c) { return d3Array.max(c[`values`], function (d) { return d[`value`] * 1.1; }); })
 
     ]);
     // Note : You can add '.nice()' function at the end of this.x.domain() to have evenly spaced ticks with starting and
@@ -323,7 +323,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
   private computeLowerAndHigherLines() {
     // Computing the Lowest / Highest line and their indices respectively
     this.lowerLine = this.graphData[0];
-    for ( let i = 0; i < this.graphData.length - 1; i++) {
+    for (let i = 0; i < this.graphData.length - 1; i++) {
       if (this.graphData[i][`values`].length < this.lowerLineIndex) {
         this.lowerLineIndex = i;
       } else {
@@ -349,46 +349,46 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
     // Merging the data of top and bottom lines to supply to plot shaded area
     // between top and bottom graph lines
     this.combinedData = [];
-    for ( let i = 0; i < this.smallerLine[`values`].length; i++) {
+    for (let i = 0; i < this.smallerLine[`values`].length; i++) {
 
       const lowerX = new Date(this.smallerLine[`values`][i].date);
       let lowerY = 0;
       let higherX = 0;
       let higherY = 0;
 
-        // Forming mm/dd/yyyy of both higher and lower line data points as we cannot directly compare both,
-        // as time may change in the data point for any given day
+      // Forming mm/dd/yyyy of both higher and lower line data points as we cannot directly compare both,
+      // as time may change in the data point for any given day
 
-        const smallerLineDate = new Date(this.smallerLine[`values`][i].date);
-        const smallerLineFormattedDate = smallerLineDate.getUTCMonth() + '/' +  smallerLineDate.getUTCDate() + '/' + smallerLineDate.getUTCFullYear();
+      const smallerLineDate = new Date(this.smallerLine[`values`][i].date);
+      const smallerLineFormattedDate = smallerLineDate.getUTCMonth() + '/' + smallerLineDate.getUTCDate() + '/' + smallerLineDate.getUTCFullYear();
 
-        for ( let j = 0; j < this.longerLine[`values`].length; j++) {
+      for (let j = 0; j < this.longerLine[`values`].length; j++) {
 
-          const longerLineDate = new Date(this.longerLine[`values`][j].date);
-          const longerLineFormattedDate = longerLineDate.getUTCMonth() + '/' +  longerLineDate.getUTCDate() + '/' + longerLineDate.getUTCFullYear();
+        const longerLineDate = new Date(this.longerLine[`values`][j].date);
+        const longerLineFormattedDate = longerLineDate.getUTCMonth() + '/' + longerLineDate.getUTCDate() + '/' + longerLineDate.getUTCFullYear();
 
-          if (longerLineFormattedDate === smallerLineFormattedDate) {
-              higherX = this.longerLine[`values`][j].date;
-              this.longerLine[`values`][j].value === 0 ? higherY = 1 : higherY = this.longerLine[`values`][j].value;
-              this.smallerLine[`values`][i].value === 0 ? lowerY = 1 : lowerY = this.smallerLine[`values`][i].value;
-              const obj = {
-                'x0': higherX,
-                'x1': lowerX,
-                'y0': higherY,
-                'y1': lowerY
-              };
-              this.combinedData.push(obj);
-              break;
-          }
+        if (longerLineFormattedDate === smallerLineFormattedDate) {
+          higherX = this.longerLine[`values`][j].date;
+          this.longerLine[`values`][j].value === 0 ? higherY = 1 : higherY = this.longerLine[`values`][j].value;
+          this.smallerLine[`values`][i].value === 0 ? lowerY = 1 : lowerY = this.smallerLine[`values`][i].value;
+          const obj = {
+            'x0': higherX,
+            'x1': lowerX,
+            'y0': higherY,
+            'y1': lowerY
+          };
+          this.combinedData.push(obj);
+          break;
         }
+      }
     }
 
     const nonZeroArray = [];
 
-    for ( let k = 0; k < this.combinedData.length; k++ ) {
-        if (this.combinedData[k].y0 !== -1 ) {
-          nonZeroArray.push(this.combinedData[k]);
-        }
+    for (let k = 0; k < this.combinedData.length; k++) {
+      if (this.combinedData[k].y0 !== -1) {
+        nonZeroArray.push(this.combinedData[k]);
+      }
     }
     this.combinedData = nonZeroArray;
 
@@ -398,22 +398,22 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
 
     // Horizontal Grid Lines
     this.svg.append('g')
-          .attr('class', 'grid horizontal')
-          .attr('transform', 'translate(0,' + (2 * this.margin.top + 40) + ')')
-          .call(d3Axis.axisLeft(this.y)
-              .ticks(3)
-              .tickSize(-this.width)
-              .tickFormat(d => '')
-          );
+      .attr('class', 'grid horizontal')
+      .attr('transform', 'translate(0,' + (2 * this.margin.top + 40) + ')')
+      .call(d3Axis.axisLeft(this.y)
+        .ticks(3)
+        .tickSize(-this.width)
+        .tickFormat(d => '')
+      );
     this.focus = this.svg.append('g')
-        .attr('class', 'focus')
-        .attr('transform', 'translate(0,' + (2 * this.margin.top + 40) + ')');
+      .attr('class', 'focus')
+      .attr('transform', 'translate(0,' + (2 * this.margin.top + 40) + ')');
 
     this.svg.append('defs').append('clipPath')
-        .attr('id', 'clip')
-        .append('rect')
-        .attr('width', 0)
-        .attr('height', this.height);
+      .attr('id', 'clip')
+      .append('rect')
+      .attr('width', 0)
+      .attr('height', this.height);
 
     // Main Graph y-axis and associated Label
     if (this.yAxisLabel !== undefined) {
@@ -446,13 +446,13 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
 
   abbreviateNumber(number) {
 
-      if (number < '99') {
-        return number;
-      } else {
-        number = parseInt(number, 10);
-        number = number > 1000000 ? (number / 1000000) + 'M' : (number > 1000 ? (number / 1000) + 'K' : number);
-        return number;
-      }
+    if (number < '99') {
+      return number;
+    } else {
+      number = parseInt(number, 10);
+      number = number > 1000000 ? (number / 1000000) + 'M' : (number > 1000 ? (number / 1000) + 'K' : number);
+      return number;
+    }
 
   }
 
@@ -462,16 +462,16 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
     // Line Graphs
 
     this.line = d3Shape.line()
-                       .x( (d: any) => this.x(d.date) )
-                       .y( (d: any) => this.y(d.value) )
-                       .curve(d3Shape.curveMonotoneX);  // changing the shape of graph from curveBasis to curveMonotoneX
-    for ( let i = 0; i < this.nonZeroValues.length; i++ ) {
+      .x((d: any) => this.x(d.date))
+      .y((d: any) => this.y(d.value))
+      .curve(d3Shape.curveMonotoneX);  // changing the shape of graph from curveBasis to curveMonotoneX
+    for (let i = 0; i < this.nonZeroValues.length; i++) {
       this.focus.append('path')
         .datum(this.nonZeroValues[i].values)
         .attr('clip-path', 'url(#clip)')
         .transition()
         .duration(5000)
-        .attr('class', 'line line' + `${ i + 1 }`)
+        .attr('class', 'line line' + `${i + 1}`)
         .attr('fill', 'none')
         .attr('stroke-width', '1.5px')
         .attr('stroke', this.lineColors[i])
@@ -479,39 +479,39 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
     }
 
     this.areaLower = d3Shape.area()
-            .x((d: any) => this.x(d.date))
-            .y0(this.height)
-            .y1((d: any) =>  this.y(d.value))
-            .curve(d3Shape.curveMonotoneX);  // changing the shape of graph from curveBasis to curveMonotoneX
+      .x((d: any) => this.x(d.date))
+      .y0(this.height)
+      .y1((d: any) => this.y(d.value))
+      .curve(d3Shape.curveMonotoneX);  // changing the shape of graph from curveBasis to curveMonotoneX
 
     this.area = d3Shape.area()
-            .x0((d: any) =>  this.x(d.x0))
-            .x1((d: any) =>  this.x(d.x1))
-            .y0( (d: any) =>  this.y(d.y1))
-            .y1( (d: any) => this.y(d.y0))
-            .curve(d3Shape.curveMonotoneX);  // changing the shape of graph from curveBasis to curveMonotoneX
+      .x0((d: any) => this.x(d.x0))
+      .x1((d: any) => this.x(d.x1))
+      .y0((d: any) => this.y(d.y1))
+      .y1((d: any) => this.y(d.y0))
+      .curve(d3Shape.curveMonotoneX);  // changing the shape of graph from curveBasis to curveMonotoneX
 
     this.focus.append('path')
-            .datum(this.combinedData)
-            .attr('class', 'areaPatch')
-            .attr('fill', '#fcd8ef')
-            .attr('stroke-width', '0.5')
-            .attr('stroke', '#2c2e3d')
-            .attr('d', this.area);
+      .datum(this.combinedData)
+      .attr('class', 'areaPatch')
+      .attr('fill', '#fcd8ef')
+      .attr('stroke-width', '0.5')
+      .attr('stroke', '#2c2e3d')
+      .attr('d', this.area);
 
     this.focus.append('path')
-            .datum(this.nonZeroValues[0]['values'])
-            .attr('class', 'areaPatchLower')
-            .attr('fill', '#afd9f9')
-            .attr('stroke-width', '0.5')
-            .attr('stroke', '#2c2e3d')
-            .attr('d', this.areaLower);
+      .datum(this.nonZeroValues[0]['values'])
+      .attr('class', 'areaPatchLower')
+      .attr('fill', '#afd9f9')
+      .attr('stroke-width', '0.5')
+      .attr('stroke', '#2c2e3d')
+      .attr('d', this.areaLower);
 
 
     this.svg.select('#clip rect')
-    .transition()
-    .duration(2000)
-    .attr('width', this.width);
+      .transition()
+      .duration(2000)
+      .attr('width', this.width);
 
   }
 
@@ -527,7 +527,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         xPos = this.x(date2) - radius - 3,
         yPosStart = 100 - radius - 3;
 
-        const markerG = this.svg.append('g')
+      const markerG = this.svg.append('g')
         .attr('class', 'marker ')
         .attr('transform', 'translate(' + xPos + ', ' + yPosStart + ')')
         .attr('opacity', 1);
@@ -570,7 +570,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         xPos = this.x(date2) - radius - 3,
         yPosStart = 100 - radius - 3;
 
-        const markerG = this.svg.append('g')
+      const markerG = this.svg.append('g')
         .attr('class', 'marker ')
         .attr('transform', 'translate(' + xPos + ', ' + yPosStart + ')')
         .attr('opacity', 1);
@@ -680,7 +680,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         xPos = this.x(new Date(this.todayDate)) - radius,
         yPosStart = 100 - radius - 3;
 
-        const markerG = this.svg.append('g')
+      const markerG = this.svg.append('g')
         .attr('class', 'markerToday')
         .attr('transform', 'translate(' + xPos + ', ' + yPosStart + ')')
         .attr('opacity', 1);
@@ -699,7 +699,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
         .attr('x', 19)
         .attr('y', 15)
         .text('TODAY');
-      }
+    }
   }
 
 }

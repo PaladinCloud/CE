@@ -138,7 +138,7 @@ img.delete-icon {
     bottom: 1em;
     background: #989898;
     padding: 0.5em 0.8em;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     color: #f3f3f3;
     opacity: 0;
     transition: 0.3s ease;
@@ -161,7 +161,7 @@ img.delete-icon {
 }
 
 .name-title {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     font-size: 1.3em;
     white-space: nowrap;
     overflow: hidden;

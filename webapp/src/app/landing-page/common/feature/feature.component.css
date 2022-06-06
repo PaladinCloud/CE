@@ -39,7 +39,7 @@
     width: 80%;
     margin: 0 auto;
     line-height: 1.56;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .mr-feature-img {

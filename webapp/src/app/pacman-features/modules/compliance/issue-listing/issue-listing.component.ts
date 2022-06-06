@@ -170,9 +170,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
   getUpdatedUrl() {
     this.filterText = this.utils.arrayToObject(
-        this.filters,
-        'filterkey',
-        'value'
+      this.filters,
+      'filterkey',
+      'value'
     ); // <-- TO update the queryparam which is passed in the filter of the api
     this.filterText = this.utils.makeFilterObj(this.filterText);
 
@@ -209,7 +209,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.getUpdatedUrl();
         this.updateComponent();
       }
-    } catch (error) {}
+    } catch (error) { }
     /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
   }
   /*
@@ -231,7 +231,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const filterValues = dataArray;
       const refactoredService = this.refactorFieldsService;
-      const formattedFilters = dataArray.map(function(data) {
+      const formattedFilters = dataArray.map(function (data) {
         data.name =
           refactoredService.getDisplayNameForAKey(data.name) || data.name;
         return data;
@@ -289,8 +289,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             domain: this.selectedDomain
           },
           environment.base +
-            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-              .url,
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
           'GET'
         )
         .subscribe(response => {
@@ -313,7 +313,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             key: this.currentFilterType.optionName,
             value: filterTag['id'],
             filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey : this.currentFilterType.optionValue.toLowerCase().trim()
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim()
           },
           el => {
             return el.compareKey === this.currentFilterType.optionValue.toLowerCase().trim();
@@ -393,7 +393,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const issueListingMethod = environment.issueListing.method;
       this.errorValue = 0;
       this.issueListingSubscription = this.commonResponseService
-        .getData( issueListingUrl, issueListingMethod, payload, {})
+        .getData(issueListingUrl, issueListingMethod, payload, {})
         .subscribe(
           response => {
             this.showGenericMessage = false;
@@ -471,7 +471,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
      */
     const refactoredService = this.refactorFieldsService;
     const newData = [];
-    data.map(function(responseData) {
+    data.map(function (responseData) {
       const KeysTobeChanged = Object.keys(responseData);
       let newObj = {};
       KeysTobeChanged.forEach(element => {
@@ -520,7 +520,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               valText: getData[row][getCols[col]]
             };
           } else if (getCols[col].toLowerCase() === 'policy name' ||
-              getCols[col].toLowerCase() === 'issue id') {
+            getCols[col].toLowerCase() === 'issue id') {
             cellObj = {
               link: 'true',
               properties: {
@@ -579,7 +579,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 imgLink: '',
                 text: getData[row][getCols[col]],
                 statusProp: {
-                  'background-color': '#ed0295'
+                  'background-color': '#0047bb'
                 }
               };
             } else {
@@ -600,7 +600,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               };
             }
           } else if (getCols[col].toLowerCase() === 'created on' ||
-          getCols[col].toLowerCase() === 'modified on') {
+            getCols[col].toLowerCase() === 'modified on') {
             cellObj = {
               link: '',
               properties: {
@@ -654,9 +654,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         ).then(response => {
           this.logger.log('info', 'Successfully navigated to asset details page: ' + response);
         })
-        .catch(error => {
-          this.logger.log('error', 'Error in navigation - ' + error);
-        });
+          .catch(error => {
+            this.logger.log('error', 'Error in navigation - ' + error);
+          });
       } else if (row.col.toLowerCase() === 'issue id') {
         this.router.navigate(['../issue-details', row.row['Issue ID'].text], {
           relativeTo: this.activatedRoute,
@@ -665,9 +665,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         }).then(response => {
           this.logger.log('info', 'Successfully navigated to issue details page: ' + response);
         })
-        .catch(error => {
-          this.logger.log('error', 'Error in navigation - ' + error);
-        });
+          .catch(error => {
+            this.logger.log('error', 'Error in navigation - ' + error);
+          });
       } else if (row.col.toLowerCase() === 'policy name') {
         this.router.navigate(
           [
@@ -678,9 +678,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         ).then(response => {
           this.logger.log('info', 'Successfully navigated to policy details page: ' + response);
         })
-        .catch(error => {
-          this.logger.log('error', 'Error in navigation - ' + error);
-        });
+          .catch(error => {
+            this.logger.log('error', 'Error in navigation - ' + error);
+          });
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -690,8 +690,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   calculateDate(_JSDate) {
     if (!_JSDate) {
-            return 'No Data';
-        }
+      return 'No Data';
+    }
     const date = new Date(_JSDate);
     const year = date.getFullYear().toString();
     const month = date.getMonth() + 1;
@@ -720,36 +720,36 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     try {
 
-        let queryParams;
+      let queryParams;
 
-        queryParams = {
-          fileFormat: 'csv',
-          serviceId: 1,
-          fileType: fileType
-        };
+      queryParams = {
+        fileFormat: 'csv',
+        serviceId: 1,
+        fileType: fileType
+      };
 
-        const filterToBePassed = this.filterText;
-        filterToBePassed.domain = this.selectedDomain;
+      const filterToBePassed = this.filterText;
+      filterToBePassed.domain = this.selectedDomain;
 
-        const downloadRequest = {
-          ag: this.selectedAssetGroup,
-          filter: filterToBePassed,
-          from: 0,
-          searchtext: this.searchTxt,
-          size: this.totalRows
-        };
+      const downloadRequest = {
+        ag: this.selectedAssetGroup,
+        filter: filterToBePassed,
+        from: 0,
+        searchtext: this.searchTxt,
+        size: this.totalRows
+      };
 
-        const downloadUrl = environment.download.url;
-        const downloadMethod = environment.download.method;
+      const downloadUrl = environment.download.url;
+      const downloadMethod = environment.download.method;
 
-        this.downloadService.requestForDownload(
-            queryParams,
-            downloadUrl,
-            downloadMethod,
-            downloadRequest,
-            'Policy Violations',
-            this.totalRows
-          );
+      this.downloadService.requestForDownload(
+        queryParams,
+        downloadUrl,
+        downloadMethod,
+        downloadRequest,
+        'Policy Violations',
+        this.totalRows
+      );
     } catch (error) {
       this.logger.log('error', error);
     }

@@ -279,7 +279,7 @@ li.list-inputs {
 }
 
 li.list-inputs:hover {
-    border: 1px solid #ed0295;
+    border: 1px solid var(--primary-500);
 }
 
 .sub-head {
@@ -292,7 +292,7 @@ li.list-inputs:hover {
 }
 
 .data-table-wrap {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 1px 7px -1px #0000001e, 0 2px 4px 0 #00000023;
     font-size: 1em;
@@ -354,10 +354,7 @@ li.list-inputs:hover {
 }
 
 .data-table-wrap a:hover {
-    color: #e20074;
-    /*font-family: ex2-medium;*/
-    letter-spacing: 0.2px;
-    text-shadow: 0.66px 0;
+    color: var(--primary-400);
 }
 
 .data-table-head {
@@ -366,7 +363,7 @@ li.list-inputs:hover {
     padding: 0.45em 0px;
     font-size: 0.83em;
     position: relative;
-    min-width: calc(100% - 1.66em);
+    min-width: 100%;
     left: 0;
     background-color: #fff;
     z-index: 1;
@@ -380,14 +377,6 @@ li.list-inputs:hover {
     margin: auto;
     min-height: 2.66em;
     transition: 0.3s ease;
-}
-
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.data-table-rows:nth-child(odd) {
-    background-color: #ffffff;
 }
 
 .data-table-rows:hover {
@@ -425,9 +414,6 @@ li.list-inputs:hover {
     padding-bottom: 2px;
 }
 
-.row-cells div:hover {
-    letter-spacing: 0.3px;
-}
 
 .head-cells {
     margin: 0 3px;
@@ -441,7 +427,7 @@ li.list-inputs:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 140px;
+    width: 200px;
     padding-left: 30px;
 }
 
@@ -482,6 +468,7 @@ li.list-inputs:hover {
     border-top: solid 1.5px #efefef;
     box-shadow: 0px -1.5px 6px -3px rgba(0, 0, 0, 0.16);
     position: relative;
+    padding: 16px 24px;
 }
 
 .test {
@@ -499,6 +486,7 @@ li.list-inputs:hover {
 .paginator-arrow {
     margin: 0 1.5em;
     cursor: pointer;
+    padding-top: 2px;
 }
 
 .paginator-arrow:hover img {
@@ -648,7 +636,7 @@ li.list-inputs:hover {
 
 .enable-scroll {
     color: #383c4d;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #fbfbfb;
     padding: 0.8em 0;
     text-transform: capitalize;
@@ -704,13 +692,13 @@ li.list-inputs:hover {
 }
 
 .role-title {
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 .submit-btn {
     border: none;
     border-radius: 7px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
     font-weight: bold;
@@ -724,17 +712,17 @@ li.list-inputs:hover {
     transition: all 0.5s ease;
     font-size: 1.1em;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .submit-btn:hover {
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
 .submit-btn:disabled {
     cursor: not-allowed !important;
-    background: #ffb7e4 !important;
+    background: var(--primary-300) !important;
     color: white !important;
     box-shadow: none;
 }
@@ -824,7 +812,7 @@ select.selectmax {
     width: 100%;
     border-radius: 2px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='#ed027d'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='var(--primary-400)'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
     background-size: 11px;
     background-position: calc(100% - 10px) center;
     background-repeat: no-repeat;
@@ -857,7 +845,7 @@ select.selectmax {
     height: 17px;
     border: 1px solid #aaa;
     background: #f8f8f8;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3)/* slight inner shadow */
 }
 
@@ -871,7 +859,7 @@ select.selectmax {
     top: 3px;
     left: 3px;
     font-size: 16px;
-    color: #ed027d;
+    color: var(--primary-400);
     transition: all .3s;
     /* animation incoming :p */
 }
@@ -996,7 +984,7 @@ p.inputnote {
     content: '';
     width: 12px;
     height: 12px;
-    background: #ed027d;
+    background: var(--primary-400);
     position: absolute;
     top: 4px;
     left: 4px;
@@ -1019,11 +1007,11 @@ p.inputnote {
 
 .selected-file {
     font-size: 14px;
-    color: #ed027d;
+    color: var(--primary-400);
 }
 
 .link {
-    color: #ed027d;
+    color: var(--primary-400);
 }
 
 a.tmbutton,
@@ -1033,7 +1021,7 @@ button.tmbutton {
     height: 30px;
     border-radius: 7px;
     background-color: #fff;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     font-size: 13px;
     font-weight: 600;
     color: #232323;
@@ -1044,16 +1032,16 @@ button.tmbutton {
 
 a.tmbutton:hover,
 button.tmbutton:hover {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     transition: all .3s ease;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     color: #fff !important;
 }
 
 button.tmbutton:disabled {
     cursor: not-allowed !important;
-    border-color: #ffb7e4 !important;
-    color: #ffb7e4 !important;
+    border-color: var(--primary-300) !important;
+    color: var(--primary-300) !important;
     box-shadow: none;
 }
 
@@ -1104,7 +1092,7 @@ button.tmbutton:disabled:hover {
     padding-top: 4.8em;
     text-align: center;
     font-size: 1.3em;
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 .valueaddctn .key {
@@ -1125,7 +1113,7 @@ button.tmbutton:disabled:hover {
 .valueaddctn div.valuerow i {
     float: right;
     margin-right: 10px;
-    color: #ed027d;
+    color: var(--primary-400);
 }
 
 .valueaddctn div.valuerow span.addedvalue {
@@ -1133,13 +1121,6 @@ button.tmbutton:disabled:hover {
     font-size: 12px;
     font-weight: 600;
 }
-
-.data-table-rows:nth-child(even) {
-    border-radius: 0.3em;
-    padding-bottom: 5px;
-    height: 2.7em;
-}
-
 
 /**************************************/
 
@@ -1152,16 +1133,16 @@ button.tmbutton:disabled:hover {
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row>a:hover {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
     padding: 3px 0.6em!important;
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row.active>a {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
 }
 
 :host ::ng-deep ng-select ul.ui-select-choices {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 2px 4px 0 #00000050;
     border: solid 1px #c3cbd7;
@@ -1204,7 +1185,7 @@ button.tmbutton:disabled:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #e20074;
+    color: var(--primary-400);
     padding-top: 5px;
     font-weight: bold;
     cursor: not-allowed !important;
@@ -1487,8 +1468,8 @@ button.tmbutton:disabled:hover {
     font-size: 17px;
 }
 
-.highlight-pink {
-    color: #e20074 !important;
+.highlight-blue {
+    color: var(--primary-400) !important;
     background-color: transparent;
 }
 
@@ -1854,7 +1835,7 @@ html body {
     min-height: 365px;
     max-height: auto;
     border: solid 1px #c8c8c8;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     display: block;
     margin: 0 auto;
     box-shadow: 2px 2px 7px #eaeaea;
@@ -1931,14 +1912,14 @@ html body {
 }
 
 .asset-formctn a {
-    color: #ed027d;
+    color: var(--primary-400);
     text-decoration: none;
     font-size: 12px;
     font-weight: 600;
 }
 
 .asset-formctn a:hover {
-    color: #ed027d;
+    color: var(--primary-400);
     text-decoration: none;
     font-size: 12px;
     font-weight: 600;
@@ -1989,7 +1970,7 @@ select.selectmax {
     min-width: 100%;
     border-radius: 2px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='#ed027d'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='var(--primary-400)'><polygon points='0,0 100,0 50,50'/></svg>") no-repeat;
     background-size: 11px;
     background-position: calc(100% - 10px) center;
     background-repeat: no-repeat;
@@ -2123,7 +2104,7 @@ p.inputnote {
 }
 
 .users-suggest .lists-suggestion:hover {
-    background-color: #ed0295;
+    background-color: var(--primary-500);
     color: #fff !important;
     cursor: pointer;
 }
@@ -2204,7 +2185,7 @@ p.inputnote {
 }
 
 #myUL li a:hover:not(.header) {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     /* Add a hover effect to all links, except for headers */
     color: #fff;
 }
@@ -2270,7 +2251,7 @@ div.attrlist div.attrspacer {
 div.attrlist h3.added {
     font-size: 35px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     display: block;
     margin: 5px 0px 5px 0px;
     display: block;
@@ -2279,7 +2260,7 @@ div.attrlist h3.added {
 div.attrlist h2.text {
     font-size: 12px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     display: block;
     margin: 0px 0px 10px 0px;
     ;
@@ -2313,20 +2294,20 @@ div.attrlistrow {
 .inner-div {
     display: inline-block;
     padding: 50px;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
 }
 
 button.attrbutton {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     min-width: 55px;
     width: auto;
     height: 18px;
     border-radius: 4px;
     background-color: #fff;
-    border: solid 1px #ed027d;
+    border: solid 1px var(--primary-400);
     font-size: 11px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     text-align: center;
     letter-spacing: 0.3px;
     cursor: pointer;
@@ -2334,9 +2315,9 @@ button.attrbutton {
 }
 
 button.attrbutton:hover {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     transition: all .3s ease;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     color: #fff !important;
     padding-top: 0px;
 }
@@ -2344,16 +2325,16 @@ button.attrbutton:hover {
 button.attrbutton:disabled {
     cursor: not-allowed !important;
     background-color: #fff;
-    border: solid 1px #ffb7e4;
-    color: #ffb7e4;
+    border: solid 1px var(--primary-300);
+    color: var(--primary-300);
     box-shadow: none;
 }
 
 button.attrbutton:disabled:hover {
     cursor: not-allowed !important;
     background-color: #fff;
-    border: solid 1px #ffb7e4;
-    color: #ffb7e4 !important;
+    border: solid 1px var(--primary-300);
+    color: var(--primary-300) !important;
     box-shadow: none;
 }
 
@@ -2376,7 +2357,7 @@ div.exchange {
 .list-select>h1 {
     padding-top: 20px;
     background: white;
-    color: #e20074 !important;
+    color: var(--primary-400) !important;
     padding-bottom: 20px;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
@@ -2450,7 +2431,7 @@ div.exchange {
     text-align: center;
     transition: all 0.5s ease;
     font-size: 1.1em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     cursor: pointer;
     float: left;
 }
@@ -2510,7 +2491,7 @@ div.exchange {
 
 .list-select .not-found-title b {
     font-weight: bold !important;
-    font-family: ex2-regular !important;
+    font-family: var(--text-font-family) !important;
 }
 
 .attributes-not-found {
@@ -2534,7 +2515,7 @@ div.exchange {
 
 .attributes-not-found-title b {
     font-weight: bold !important;
-    font-family: ex2-regular !important;
+    font-family: var(--text-font-family) !important;
 }
 
 .popup h2 {
@@ -2548,7 +2529,7 @@ div.exchange {
     font-size: 1.7em;
     font-weight: bold;
     text-decoration: none;
-    color: #e20074;
+    color: var(--primary-400);
     padding-right: 0.5em;
 }
 

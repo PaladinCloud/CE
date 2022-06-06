@@ -34,7 +34,7 @@
     overflow: hidden;
     margin: 0 .93%;
     border-radius: 5px;
-    background-color: #fbfbfb;
+    background-color: var(--background-grey);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
 }
 

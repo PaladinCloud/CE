@@ -17,7 +17,7 @@
     flex-shrink: 0;
     background: #fff;
     border: 1px solid #bbb;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     align-self: stretch;
     min-height: 5em;
     margin-right: 4em;
@@ -35,7 +35,7 @@
 .scan-txt {
     font-size: 1.5em;
     line-height: 1.2;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .desc-text {
@@ -44,7 +44,7 @@
     margin-bottom: 2em;
     line-height: 1.4;
     letter-spacing: 0.2px;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .bottom-line {
@@ -83,7 +83,7 @@
     flex-shrink: 0;
     background: #fff;
     border: 1px solid #bbb;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     min-height: 5em;
     overflow: hidden;
     padding: 1em 0em;
@@ -162,7 +162,7 @@
 .details-info {
     margin-left: 1.1em;
     line-height: 1.3;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     padding-bottom: 8px;
 }
 

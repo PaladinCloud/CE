@@ -55,7 +55,7 @@
     top: 50%;
     transform: rotate(-90deg);
     color: #444;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.5px;
     font-size: 0.9em;
     opacity: 0.9;
@@ -73,7 +73,7 @@
     top: 50%;
     transform: rotate(-90deg);
     color: #444;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.5px;
     font-size: 0.9em;
     opacity: 0.9;
@@ -233,14 +233,14 @@
 .onprem-graph-wrap /deep/ .app-button {
     border-radius: 0px!important;
     background-color: #fff!important;
-    color: #ed0295!important;
+    color: var(--primary-500)!important;
     display: flex!important;
     padding: 0.2em 0em!important;
     transition: 0.2s ease;
     min-height: 0em!important;
     min-width: 0em!important;
     text-transform: inherit!important;
-    border-bottom: 1px solid #ed0295!important;
+    border-bottom: 1px solid var(--primary-500)!important;
 }
 
 .onprem-graph-wrap /deep/ .app-button:hover {
@@ -266,7 +266,7 @@
     text-transform: uppercase;
     font-size: 11px;
     letter-spacing: 0.5px;
-    color: #ed0295;
+    color: var(--primary-500);
 }
 
 .legend {
@@ -313,7 +313,7 @@
     font-size: 1em;
     font-weight: bold;
     color: #fff;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     cursor: pointer;
     transition: 0.3s;
 }
@@ -338,7 +338,7 @@
 .pp-view-quarter {
     font-size: 0.83em;
     padding-top: 0.5em;
-    color: #e20074;
+    color: var(--primary-400);
     cursor: pointer;
     display: block;
     text-decoration: none;
@@ -349,7 +349,7 @@
     height: 0;
     border-top: 0.6em solid transparent;
     border-bottom: 0.6em solid transparent;
-    border-right: 0.6em solid #e20074;
+    border-right: 0.6em solid var(--primary-400);
 }
 
 .quarter-desc .arrow-right {
@@ -576,11 +576,11 @@
     background-color: #fff;
     padding: 0.5em 0.6em;
     text-align: center;
-    color: #ed0295;
+    color: var(--primary-500);
     border-radius: 4px;
     min-width: 6em;
     margin: 0 1em;
-    border: 2px solid #ed0295;
+    border: 2px solid var(--primary-500);
 }
 
 .view-btn:hover {
@@ -589,7 +589,7 @@
 
 .each-quarter-row.active .view-btn {
     color: #fff;
-    background: #ed0295;
+    background: var(--primary-500);
 }
 
 .err-occurred {

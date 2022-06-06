@@ -26,9 +26,12 @@
 }
 
 .sub-header {
-    padding: 0.8em;
+    padding: 16px 24px;
     background-color: #ffffff;
-    border: solid 1px #d6e2f1;
+    border-bottom: solid 2px var(--border-100);
+    border-top: none;
+    border-left: none;
+    border-right: none;
     color: #555;
     font-size: 1em;
 }

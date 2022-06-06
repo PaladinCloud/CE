@@ -8,7 +8,7 @@
         <g id="Statistics-Dashboard-v3.3" transform="translate(-1209.000000, -45.000000)">
             <g id="ic/get_app/grey600" transform="translate(1203.000000, 41.000000)">
                 <g id="ic_get_app_24px">
-                    <path d="M25.3333333,12 L20,12 L20,4 L12,4 L12,12 L6.66666667,12 L16,21.3333333 L25.3333333,12 Z M6.66666667,24 L6.66666667,26.6666667 L25.3333333,26.6666667 L25.3333333,24 L6.66666667,24 Z" id="Shape" fill="#ed0295" fill-rule="nonzero"></path>
+                    <path d="M25.3333333,12 L20,12 L20,4 L12,4 L12,12 L6.66666667,12 L16,21.3333333 L25.3333333,12 Z M6.66666667,24 L6.66666667,26.6666667 L25.3333333,26.6666667 L25.3333333,24 L6.66666667,24 Z" id="Shape" fill="#0047bb" fill-rule="nonzero"></path>
                     <polygon id="Shape" points="0 0 32 0 32 32 0 32"></polygon>
                 </g>
             </g>

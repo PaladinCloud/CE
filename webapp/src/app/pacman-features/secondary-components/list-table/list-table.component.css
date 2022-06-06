@@ -31,17 +31,17 @@
 
 .list-table-value {
     flex: 5;
-    justify-content: space-around;
-    font-family: ex2-light;
+    justify-content: space-between;
+    font-family: var(--text-light-font-family);
     font-size: .95em;
     align-items: center;
 }
 
 .list-table-value.list-table-header {
-    font-family: ex2-bold;
-    font-size: .95em;
-    font-weight: bold;
-    color: #000000;
+    font-family: var(--text-medium-font-family);
+    font-size: var(--text-overline);
+    font-weight: var(--text-font-weight);
+    color: var(--text-high-emphasis);
 }
 
 .list-table-each-list {
@@ -83,7 +83,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background-color: #eff3f6;
+    background-color: var(--background-white);
 }
 
 .count-color{

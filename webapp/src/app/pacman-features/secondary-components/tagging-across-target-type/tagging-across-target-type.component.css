@@ -14,15 +14,15 @@
 
 .tagging-across-target-type-wrapper {
     width: 100%;        
-    background: #fff;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
-    border: solid 1px #d6e2f1;
+    background: var(--background-grey);
 }
 
 .sub-header {
-    padding: 0.8em;
+    padding: 16px 24px;
     background-color: #fff;
-    border: solid 1px #d6e2f1;
+    border-left: 1px solid var(--border-100);
+    border-top: 1px solid var(--border-100);
+    border-right: 1px solid var(--border-100);
     color: #555;
     font-size: 1em;
 }
@@ -32,6 +32,11 @@
     padding: 0 1.5em;
     min-height: 18.5em;
     position: relative;
+    border-left: 1px solid var(--border-100);
+    border-right: 1px solid var(--border-100);
+    border-bottom: 1px solid var(--border-100);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
 }
 
 .container-parent {

@@ -75,7 +75,7 @@ ul.input-wrapper {
 }
 
 .data-table-wrap {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 1px 7px -1px #0000001e, 0 2px 4px 0 #00000023;
     font-size: 1em;
@@ -100,9 +100,7 @@ ul.input-wrapper {
 }
 
 .data-table-wrap a:hover {
-    color: #e20074;
-    letter-spacing: 0.2px;
-    text-shadow: 0.66px 0;
+    color: var(--primary-400);
 }
 .data-table-paginator-wrap {
     background-color: #fff;
@@ -111,11 +109,12 @@ ul.input-wrapper {
     border-top: solid 1.5px #efefef;
     box-shadow: 0px -1.5px 6px -3px rgba(0, 0, 0, 0.16);
     position: relative;
+    padding: 16px 24px;
 }
 .header-text {
     padding-top: 7px;
     padding-bottom: 7px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .data-content {
@@ -133,10 +132,10 @@ ul.input-wrapper {
 .submit-btn {
     border: none;
     border-radius: 7px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding: 0.6em 1.5em;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -147,17 +146,17 @@ ul.input-wrapper {
     transition: all 0.5s ease;
     font-size: 1.1em;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .submit-btn:hover {
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
 .submit-btn:disabled {
     cursor: not-allowed !important;
-    background: #ffb7e4 !important;
+    background: var(--primary-300) !important;
     color: white !important;
     box-shadow: none;
 }
@@ -200,7 +199,7 @@ ul.input-wrapper {
 label {
     display: block;
     font-size: 12px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #7b7b7b;
     margin-bottom: 7px;
 }
@@ -208,7 +207,7 @@ label {
     font-size: 15px;
     padding-top: 5px;
     word-wrap: break-word;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding-top: 5px;
 }
 .not-available {
@@ -339,8 +338,8 @@ label {
     font-size: 17px;
 }
 
-.highlight-pink {
-    color: #e20074 !important;
+.highlight-blue {
+    color: var(--primary-400) !important;
     background-color: transparent;
 }
 

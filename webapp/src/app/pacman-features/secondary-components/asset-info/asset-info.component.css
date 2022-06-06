@@ -35,7 +35,7 @@
 }
 
 .mr-primary-asset-value {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     max-width: 6em;
     cursor: pointer;
     /*min-width: 3em;*/
@@ -76,7 +76,7 @@
 }
 
 .mr-asset-bottom-section li .mr-secondary-asset-value {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     max-width: 5em;
 }
 
@@ -100,7 +100,7 @@
 }
 .no-content{
     color: #999;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 /* css for edge browser */

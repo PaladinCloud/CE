@@ -1,4 +1,4 @@
 .icon-color {
-    color:#e20074;
+    color:var(--primary-400);
     padding: 0 .5em;
 }

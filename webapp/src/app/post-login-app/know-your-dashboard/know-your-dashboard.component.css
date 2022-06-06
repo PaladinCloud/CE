@@ -75,15 +75,15 @@
 .paginator-indicator.active {
     width: 1em;
     height: 1em;
-    background-color: #e20074;
-    border: solid 1px #e20074;
+    background-color: var(--primary-400);
+    border: solid 1px var(--primary-400);
 }
 
 .next-page {
     width: 12.5em;
     border-radius: 8em;
     line-height: 3em;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     text-transform: uppercase;
     letter-spacing: 0.2px;
     text-align: center;
@@ -111,7 +111,7 @@
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     cursor: pointer;
     opacity: 0.86;
 }

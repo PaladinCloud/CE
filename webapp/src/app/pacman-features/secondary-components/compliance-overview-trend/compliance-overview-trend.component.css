@@ -27,17 +27,11 @@
 
 .sub-header {
     padding: 0.8em;
-    background-color: #ffffff;
-    border: solid 1px #d6e2f1;
+    background-color: var(--background-white);
     color: #555;
     font-size: 1em;
 }
 
-.multiline-brush-zoom-container {
-    position: relative;
-    min-height: 25.83em;
-    font-size: 1em;
-}
 
 .sub-footer {
     background-color: #fafbfc;
