@@ -35,7 +35,7 @@ section.system-info {
 
 .header {
     margin-bottom: 2em;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .server-wrapper,
@@ -58,7 +58,7 @@ section.system-info {
 
 .values-wrapper-field {
     font-size: 0.8em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 section.related-assets {
@@ -84,7 +84,7 @@ section.access-groups {
 }
 
 .header-text {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .text {

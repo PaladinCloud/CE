@@ -160,7 +160,7 @@ export class AssetGroupsComponent implements OnInit {
     this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(reponse => {
       this.showLoader = false;
       if (reponse[0].content !== undefined) {
-        this.allAssetGroups= reponse[0].content;
+        this.allAssetGroups = reponse[0].content;
         this.errorValue = 1;
         this.searchCriteria = undefined;
         var data = reponse[0];
@@ -299,7 +299,7 @@ export class AssetGroupsComponent implements OnInit {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = "#e20074";
+      var blue = "#336cc9";
       var green = "#26ba9d";
       var red = "#f2425f";
       var orange = "#ffb00d";
@@ -321,7 +321,7 @@ export class AssetGroupsComponent implements OnInit {
             cellObj = {
               properties: {
                 "text-shadow": "0.33px 0",
-                "color": "#ed0295"
+                "color": "#0047bb"
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -329,10 +329,10 @@ export class AssetGroupsComponent implements OnInit {
               dropDownEnabled: true,
               dropDownItems: dropDownItems,
               statusProp: {
-                "color": "#ed0295"
+                "color": "#0047bb"
               }
             };
-          }  else if (getCols[col].toLowerCase() === "no of target types") {
+          } else if (getCols[col].toLowerCase() === "no of target types") {
             let targetTypeName = getData[row]['Asset Types'].map(target => target.targetType);
             targetTypeName = _.uniq(targetTypeName);
             cellObj = {
@@ -421,7 +421,7 @@ export class AssetGroupsComponent implements OnInit {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
       }
-    } 
+    }
     else if (row.col === 'Edit') {
       try {
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
@@ -429,7 +429,7 @@ export class AssetGroupsComponent implements OnInit {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            groupId : row.row.groupId.text,
+            groupId: row.row.groupId.text,
             groupName: row.row['Group Name'].text
           }
         });

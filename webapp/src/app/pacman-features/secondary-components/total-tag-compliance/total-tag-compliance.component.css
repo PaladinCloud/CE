@@ -13,7 +13,7 @@
  */
 
 .sub-heading {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     background-color: var(--background-white);
     font-size: 1em;
     color: #3f4a59;

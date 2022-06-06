@@ -18,7 +18,7 @@
 }
 
 .sub-head {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     background-color: #dce3e9;
     font-size: 1em;
     color: #3f4a59;
@@ -44,13 +44,13 @@
 
 .compliant-percent {
     font-size: 2em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .percent-sym {
     font-size: 1.2em;
     padding-bottom: 1px;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .compliant-txt {

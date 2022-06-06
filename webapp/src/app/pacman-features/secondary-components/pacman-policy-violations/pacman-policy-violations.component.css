@@ -13,7 +13,7 @@
  */
 
 .policy-violations-container {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     min-height: 10em;
 }

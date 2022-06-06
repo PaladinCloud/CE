@@ -11,7 +11,7 @@
  min-height: 3em;
  line-height: 1.5;
  vertical-align: middle;
- border-radius: 3px;
+ border-radius: var(--border-radius);
 }
 .paginator-txt {
     letter-spacing: 0.2px;

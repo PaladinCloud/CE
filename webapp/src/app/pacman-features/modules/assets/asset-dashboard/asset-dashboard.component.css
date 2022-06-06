@@ -52,9 +52,9 @@
 /*alarms css goes here*/
 
 .notif-number {
-    background: #e20074;
+    background: var(--primary-400);
     color: #fff;
-    font-family: ex2-Light;
+    font-family: var(--text-light-font-family);
     border-radius: 3em;
     min-width: 1.7em;
     padding: 0.22em 0.28em;

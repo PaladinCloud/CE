@@ -15,7 +15,7 @@
 .aws-app-type-container {
     height: 9em;
     position: relative;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     z-index: 1;
     background: #fff;
@@ -44,7 +44,7 @@
     font-size: 1.7em;
     border-radius: 2em;
     text-transform: uppercase;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.5px;
     box-shadow: 0 0 4px 0px rgba(0,0,0,0.15);
 }
@@ -63,7 +63,7 @@
 }
 
 .aws-app-details .type {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     text-transform: capitalize;
     /*max-width: 5vw;*/
     overflow: hidden;
@@ -76,7 +76,7 @@
 .aws-app-details .instances {
     padding-left: 0.25em;
     /*font-size: 1.3em;*/
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     border-left: 1px solid #999;
     margin-left: 0.3em;
     white-space: nowrap;

@@ -307,11 +307,11 @@ export class RolesComponent implements OnInit, OnDestroy {
         innerArr = {};
         for (let col = 0; col < getCols.length; col++) {
           if (getCols[col].toLowerCase() === 'actions') {
-            const dropDownItems = [ 'Edit Role', 'Config Users'];
+            const dropDownItems = ['Edit Role', 'Config Users'];
             cellObj = {
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -319,7 +319,7 @@ export class RolesComponent implements OnInit, OnDestroy {
               dropDownEnabled: true,
               dropDownItems: dropDownItems,
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else if (getCols[col].toLowerCase() === 'allocations') {

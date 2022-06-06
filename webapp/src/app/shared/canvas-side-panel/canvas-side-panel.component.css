@@ -26,7 +26,7 @@
     width: 100%;
     height: 3em;
     border-radius: 2px;
-    background: #e20074;
+    background: var(--primary-400);
 
     cursor: pointer;
     display: table;

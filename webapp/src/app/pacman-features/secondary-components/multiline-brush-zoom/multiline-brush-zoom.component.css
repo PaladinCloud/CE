@@ -26,7 +26,7 @@
     position: absolute;
     right: 1.6vw;
     top: 1rem;
-    color: #e20074;
+    color: var(--primary-400);
     font-size: 2.3em;
 }
 

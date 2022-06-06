@@ -32,13 +32,13 @@
 .list-table-value {
     flex: 5;
     justify-content: space-around;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-size: .95em;
     align-items: center;
 }
 
 .list-table-value.list-table-header {
-    font-family: var(--text-font-family);
+    font-family: var(--text-medium-font-family);
     font-size: var(--text-overline);
     font-weight: var(--text-font-weight);
     color: var(--text-high-emphasis);

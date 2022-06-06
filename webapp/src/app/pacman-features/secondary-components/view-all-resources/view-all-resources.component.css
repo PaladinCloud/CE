@@ -84,7 +84,7 @@
 }
 
 .resource-categories li.flex.active {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .close-overlay {
@@ -123,7 +123,7 @@ img.close-icon {
     font-size: 2em;
     text-align: center;
     color: #ccc;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     transition: all 0.3s ease;
 }
 

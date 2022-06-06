@@ -29,11 +29,11 @@
 }
 
 .compliance-dashboard-wrapper /deep/ .data-table-wrap .table-cells:nth-child(3) {
-    width: 140px;
+    width: 200px;
 }
 
 .compliance-dashboard-wrapper /deep/ .data-table-wrap .table-cells {
-    width: 150px;
+    width: 180px;
 }
 
 .compliance-dashboard-wrapper /deep/ .data-table-wrap {
@@ -41,5 +41,5 @@
 }
 
 .compliance-dashboard-wrapper{
-    padding-top: 20px;
+    padding-top: 20px;  
 }

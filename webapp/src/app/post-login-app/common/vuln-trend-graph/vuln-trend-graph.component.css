@@ -29,7 +29,7 @@
     top: 1px;
     transform: translate(0%, -100%);
     right: 0;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-style: italic;
 }
 
@@ -50,7 +50,7 @@
 
 @media print {
     .today-flag{
-        font-family: ex2-bold;
+        font-family: var(--text-medium-font-family);
     }
 }
 
@@ -75,7 +75,7 @@
 
 .y0-axis .each-tick {
     justify-content: flex-end;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .each-tick {
@@ -144,7 +144,7 @@
 .each-note {
     background-color: #ffffff;
     border: solid 1px #79b2dd;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     padding: 0.5em 1em;
     margin: 0.25em 0.5em;
     align-self: stretch;
@@ -152,7 +152,7 @@
     line-height: 1.4;
     width: calc(25% - 1em);
     max-width: 24em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.4px;
     position: relative;
 }
@@ -187,7 +187,7 @@
 
 .label-txt {
     color: #79b2dd;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     font-size: 0.92em;
     margin-right: 2px;
 }
@@ -195,7 +195,7 @@
 .label-desc {
     font-size: 0.92em;
     color: #333;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .each-note.ag-specific {
@@ -237,7 +237,7 @@
     box-shadow: 0px 0px 4px 1px rgba(0,0,0,0.2);
     background: rgba(255, 255, 255, 0.85);
     font-size: 10px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     margin-top: 2px;
 }
 
@@ -334,7 +334,7 @@
     bottom: 0;
     margin: auto;
     background: #fff;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     box-shadow: 0px 0px 6px 2px rgba(0,0,0,0.2);
     max-width: 740px;
     max-height: 620px;
@@ -398,14 +398,14 @@
 .text-area {
     width: 100%;
     border: 1px solid #c3cbd7;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     min-height: 4em;
     padding: 0.4em 0.6em;
     font-size: 1.04em;
     resize: none;
     margin: 0.3em 0;
     line-height: 1.5;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 /deep/ span.ui-select-match-text.pull-left.ui-select-allow-clear {
@@ -436,12 +436,12 @@
     padding: 1.1em 0.6em 0;
     font-size: 1.05em;
     color: #444;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .data-text.bold {
     color: #000;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .data-text.bold span {
@@ -450,7 +450,7 @@
 
 .selected-txt {
     color: #222;
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
 }
 
 .modal-button {

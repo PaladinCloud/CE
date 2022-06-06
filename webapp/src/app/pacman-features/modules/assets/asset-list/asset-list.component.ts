@@ -126,15 +126,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.pageLevel
         );
         this.selectedAssetGroup = assetGroupName;
-    });
+      });
 
     this.subscriptionDomain = this.domainObservableService.getDomainType().subscribe(domain => {
-        this.selectedDomain = domain;
-        this.routerParam();
-        this.getFilters();
-        this.deleteFilters();
-        this.getFilterArray();
-        this.updateComponent();
+      this.selectedDomain = domain;
+      this.routerParam();
+      this.getFilters();
+      this.deleteFilters();
+      this.getFilterArray();
+      this.updateComponent();
     });
   }
 
@@ -218,7 +218,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.filterText = this.utils.processFilterObj(this.filterText);
         this.updateComponent();
       }
-    } catch (error) {}
+    } catch (error) { }
     /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
   }
   /*
@@ -239,7 +239,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       }
       const filterValues = dataArray;
       const refactoredService = this.refactorFieldsService;
-      const formattedFilters = dataArray.map(function(data) {
+      const formattedFilters = dataArray.map(function (data) {
         data.name =
           refactoredService.getDisplayNameForAKey(data.name) || data.name;
         return data;
@@ -250,7 +250,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           key: formattedFilters[i].name, // <-- displayKey-- Resource Type
           value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
           filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-          compareKey : filterObjKeys[i].toLowerCase().trim()// <<-- key to compare whether a key is already present -- "resourcetype"
+          compareKey: filterObjKeys[i].toLowerCase().trim()// <<-- key to compare whether a key is already present -- "resourcetype"
         };
         localFilters.push(eachObj);
       }
@@ -333,11 +333,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.tableDownloadName = 'Vulnerable Assets';
         } else if (this.urlID.toLowerCase() === 'pull-request-trend') {
           if (this.filterText.prstate) {
-          this.dataTableDesc =
-            'Note: This page shows the ' + this.filterText.prstate.toString().toLowerCase() + ' pull request trend';
+            this.dataTableDesc =
+              'Note: This page shows the ' + this.filterText.prstate.toString().toLowerCase() + ' pull request trend';
           } else {
             this.dataTableDesc =
-            'Note: This page shows the pull request trend';
+              'Note: This page shows the pull request trend';
           }
           // vulnerable  asset list api
           // the url and method for patching << -- defines url and method
@@ -347,11 +347,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.tableDownloadName = 'Pull Request Trend';
         } else if (this.urlID.toLowerCase() === 'pull-request-age') {
           if (this.filterText.daysRange) {
-          this.dataTableDesc =
-            'Note: This page shows the pull request age (' + this.filterText.daysRange.toString().toLowerCase() + ' days)';
+            this.dataTableDesc =
+              'Note: This page shows the pull request age (' + this.filterText.daysRange.toString().toLowerCase() + ' days)';
           } else {
             this.dataTableDesc =
-            'Note: This page shows the pull request age';
+              'Note: This page shows the pull request age';
           }
           assetListUrl = environment.PullReqAge.url;
           assetListMethod = environment.PullReqAge.method;
@@ -361,14 +361,14 @@ export class AssetListComponent implements OnInit, OnDestroy {
           if (this.filterText.strategyType) {
             this.dataTableDesc =
               'Note: This page shows the' + ' \'' + this.filterText.strategyType.toString().toLowerCase() + '\' ' + this.filterText.branchingStrategyType.toString().toLowerCase() + ' ' + 'distribution by branching strategies';
-            } else {
-              this.dataTableDesc =
+          } else {
+            this.dataTableDesc =
               'Note: This page shows the' + ' ' + this.filterText.branchingStrategyType.toString().toLowerCase() + ' ' + 'distribution by branching strategies';
-            }
-            assetListUrl = environment.devDistribution.url;
-            assetListMethod = environment.devDistribution.method;
-            this.serviceId = 14;
-            this.tableDownloadName = this.filterText.branchingStrategyType.toString() + ' ' + 'Distribution';
+          }
+          assetListUrl = environment.devDistribution.url;
+          assetListMethod = environment.devDistribution.method;
+          this.serviceId = 14;
+          this.tableDownloadName = this.filterText.branchingStrategyType.toString() + ' ' + 'Distribution';
         } else {
           assetListUrl = environment.assetList.url;
           assetListMethod = environment.assetList.method;
@@ -470,12 +470,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
      */
     const refactoredService = this.refactorFieldsService;
     const newData = [];
-    data.map(function(responseData){
+    data.map(function (responseData) {
       const KeysTobeChanged = Object.keys(responseData);
       let newObj = {};
       let entityType;
       KeysTobeChanged.forEach(element => {
-        if ( element === '_entitytype') {
+        if (element === '_entitytype') {
           entityType = responseData['_entitytype'];
         }
         const elementnew =
@@ -496,7 +496,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       let innerArr = {};
       const totalVariablesObj = {};
       let cellObj = {};
-      const magenta = '#e20074';
+      const magenta = '#336cc9';
       const green = '#26ba9d';
       const red = '#f2425f';
       const orange = '#ffb00d';
@@ -576,7 +576,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
                 imgLink: '',
                 text: getData[row][getCols[col]],
                 statusProp: {
-                  'background-color': '#ed0295'
+                  'background-color': '#0047bb'
                 }
               };
             } else {
@@ -634,7 +634,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         resourceType = row.row['Asset Type'].text;
       }
 
-      if ( this.urlID && (this.urlID.toLowerCase() === 'pull-request-trend' || this.urlID.toLowerCase() === 'pull-request-age' || this.urlID.toLowerCase() === 'branching-strategy') ) {
+      if (this.urlID && (this.urlID.toLowerCase() === 'pull-request-trend' || this.urlID.toLowerCase() === 'pull-request-age' || this.urlID.toLowerCase() === 'branching-strategy')) {
         resourceType = this.filterText.resourceType;
       }
       const resourceID = encodeURIComponent(row.row['Resource ID'].text);
@@ -690,35 +690,35 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const fileType = 'csv';
 
     try {
-        let queryParams;
+      let queryParams;
 
-        queryParams = {
-          fileFormat: 'csv',
-          serviceId: this.serviceId,
-          fileType: fileType,
-        };
+      queryParams = {
+        fileFormat: 'csv',
+        serviceId: this.serviceId,
+        fileType: fileType,
+      };
 
-        // temp code to send download domain filters only for dev page assets landing
+      // temp code to send download domain filters only for dev page assets landing
 
-        if (this.urlID && (this.urlID.toLowerCase() === 'taggable' ||
-                this.urlID.toLowerCase() === 'patchable' ||
-                this.urlID.toLowerCase() === 'scanned' ||
-                this.urlID.toLowerCase() === 'vulnerable')) {
-              // this.filterText['domain'] = this.selectedDomain;
-        } else {
-            this.filterText['domain'] = this.selectedDomain;
-        }
+      if (this.urlID && (this.urlID.toLowerCase() === 'taggable' ||
+        this.urlID.toLowerCase() === 'patchable' ||
+        this.urlID.toLowerCase() === 'scanned' ||
+        this.urlID.toLowerCase() === 'vulnerable')) {
+        // this.filterText['domain'] = this.selectedDomain;
+      } else {
+        this.filterText['domain'] = this.selectedDomain;
+      }
 
-        const downloadRequest = {
-          ag: this.selectedAssetGroup,
-          filter: this.filterText,
-          from: 0,
-          searchtext: this.searchTxt,
-          size: this.totalRows
-        };
+      const downloadRequest = {
+        ag: this.selectedAssetGroup,
+        filter: this.filterText,
+        from: 0,
+        searchtext: this.searchTxt,
+        size: this.totalRows
+      };
 
-        const downloadUrl = environment.download.url;
-        const downloadMethod = environment.download.method;
+      const downloadUrl = environment.download.url;
+      const downloadMethod = environment.download.method;
 
       this.downloadService.requestForDownload(
         queryParams,
@@ -746,12 +746,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
   getFilters() {
     try {
       let filterId = 8;
-      if ( this.urlID && (this.urlID.toLowerCase() === 'pull-request-trend' || this.urlID.toLowerCase() === 'pull-request-age' || this.urlID.toLowerCase() === 'branching-strategy')) {
+      if (this.urlID && (this.urlID.toLowerCase() === 'pull-request-trend' || this.urlID.toLowerCase() === 'pull-request-age' || this.urlID.toLowerCase() === 'branching-strategy')) {
         filterId = 9;
       }
       this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          { filterId: filterId , domain: this.selectedDomain},
+          { filterId: filterId, domain: this.selectedDomain },
           environment.issueFilter.url,
           environment.issueFilter.method
         )
@@ -777,8 +777,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
             domain: this.selectedDomain
           },
           environment.base +
-            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-              .url,
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
           'GET'
         )
         .subscribe(response => {
@@ -802,7 +802,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             key: this.currentFilterType.optionName,
             value: filterTag['id'].trim(),
             filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey : this.currentFilterType.optionValue.toLowerCase().trim()
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim()
           },
           el => {
             return el.compareKey === this.currentFilterType.optionValue.toLowerCase().trim();

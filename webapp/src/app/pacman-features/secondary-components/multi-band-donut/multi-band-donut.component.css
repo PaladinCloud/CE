@@ -36,7 +36,7 @@
     text-align: center;
     color: rgb(76, 76, 76);
     letter-spacing: 1px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .donut-chart-title {
@@ -63,7 +63,7 @@
 }
 
 .percent-wrap {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding-left: 5px;
 }
 

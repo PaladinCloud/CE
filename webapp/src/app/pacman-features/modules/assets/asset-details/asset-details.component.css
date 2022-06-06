@@ -47,7 +47,7 @@
 }
 
 .header {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     font-family: ex2-medium;
     background-color: #fff;
     color: #3f4a59;
@@ -86,7 +86,7 @@
 }
 
 .environmentName {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     margin-bottom: 1em;
     max-width: 12em;
     padding-bottom: 2px;
@@ -107,7 +107,7 @@
 }
 
 .value {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .half-widget {
@@ -152,7 +152,7 @@
 }
 
 .sub-head {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     background-color: #dce3e9;
 }
 
@@ -175,7 +175,7 @@
 
 .status-text {
     margin-left: 0.5em;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     text-transform: capitalize;
 }
 
@@ -219,7 +219,7 @@
     max-width: 22em;
     margin: auto;
     text-transform: initial;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .button-parent /deep/ .app-button:hover {
@@ -244,7 +244,7 @@
 }
 
 .header-description {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-size: 1.6em;
     padding-left: 0.4em;
     padding-bottom: 2px;
@@ -353,11 +353,11 @@
 }
 
 .button-textarea {
-    background-color: #ed0295;
+    background-color: var(--primary-500);
     border: none;
     width: 50%;
     height: 2.3em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-size: 0.9em;
     color: #fff;
     border-radius: 1.3em;
@@ -366,7 +366,7 @@
 
 .button-textarea:hover {
     background-color: #fff;
-    color: #ed0295;
+    color: var(--primary-500);
     border: 1px solid #aaa;
     box-shadow: 0 2px 0.25em 0 rgba(16, 16, 16, 0.5);
 }
@@ -374,7 +374,7 @@
 .circle-loader {
     margin: 0 0 30px 10px;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    border-left-color: #ed0295;
+    border-left-color: var(--primary-500);
     animation-name: loader-spin;
     animation-duration: 1s;
     animation-iteration-count: infinite;
@@ -569,7 +569,7 @@ li.list-inputs {
 }
 
 li.list-inputs:hover {
-    border: 1px solid #ed0295;
+    border: 1px solid var(--primary-500);
 }
 
 .suggestion-wrapper {
@@ -595,7 +595,7 @@ li.list-inputs:hover {
 }
 
 .lists-suggestion:hover {
-    background-color: #ed0295;
+    background-color: var(--primary-500);
     color: #fff;
     cursor: pointer;
 }

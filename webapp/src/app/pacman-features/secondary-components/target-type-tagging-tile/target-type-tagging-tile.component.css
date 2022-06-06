@@ -125,7 +125,7 @@
     font-size: 1.7em;
     border-radius: 2em;
     text-transform: uppercase;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.5px;
     box-shadow: 0 0 4px 0px rgba(0,0,0,0.15);
 }

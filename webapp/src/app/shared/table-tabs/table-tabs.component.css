@@ -16,7 +16,7 @@
     background-color: var(--background-white);
     color: #5a616b;
     font-size: 0.9em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     overflow-x: auto;
     white-space: nowrap;
 }
@@ -45,7 +45,7 @@
 }
 
 .individual-tag-header.filter-by:hover{
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.1px;
     cursor: default;
 }

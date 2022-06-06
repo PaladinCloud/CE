@@ -76,7 +76,7 @@
     white-space: pre-line;
     font-size: 1.2em;
     color: #333;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: .2px;
 }
 

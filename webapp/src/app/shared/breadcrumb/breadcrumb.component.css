@@ -17,7 +17,7 @@
 }
 
 .breadcrumb-text{
-	color: #ed0295;
+	color: var(--primary-500);
 }
 
 .breadcrumb-slash{

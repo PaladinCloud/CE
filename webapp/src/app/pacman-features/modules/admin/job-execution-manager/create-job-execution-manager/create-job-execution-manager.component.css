@@ -62,7 +62,7 @@
 
 p.label {
     font-size: 11px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #808080;
     display: block;
 }
@@ -225,7 +225,7 @@ ul.input-wrapper {
 }
 
 .data-table-wrap {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 1px 7px -1px #0000001e, 0 2px 4px 0 #00000023;
     font-size: 1em;
@@ -269,7 +269,7 @@ ul.input-wrapper {
 }
 
 .data-table-wrap a:hover {
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 .data-table-head {
@@ -338,7 +338,7 @@ ul.input-wrapper {
     overflow: unset;
     text-overflow: nowrap;
     white-space: nowrap;
-    width: 150px;
+    width: 200px;
 }
 
 .data-table-inner-content {
@@ -395,7 +395,7 @@ ul.input-wrapper {
 .header-text {
     padding-top: 7px;
     padding-bottom: 7px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .data-content {
@@ -411,10 +411,10 @@ ul.input-wrapper {
 .submit-btn {
     border: none;
     border-radius: 7px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding: 0.6em 1.5em;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -424,17 +424,17 @@ ul.input-wrapper {
     text-align: center;
     transition: all 0.5s ease;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .submit-btn:hover {
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
 .submit-btn:disabled {
     cursor: not-allowed !important;
-    background: #ffb7e4 !important;
+    background: var(--primary-300) !important;
     color: white !important;
     box-shadow: none;
 }
@@ -474,7 +474,7 @@ ul.input-wrapper {
 label {
     display: block;
     font-size: 12px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #7b7b7b;
     margin-bottom: 7px;
 }
@@ -508,7 +508,7 @@ label {
     /* dim. of the box */
     border: 1px solid #aaa;
     background: #f8f8f8;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3)/* slight inner shadow */
 }
 
@@ -522,7 +522,7 @@ label {
     top: 3px;
     left: 3px;
     font-size: 16px;
-    color: #ed027d;
+    color: var(--primary-400);
     transition: all .3s;
     /* animation incoming :p */
 }
@@ -610,7 +610,7 @@ label {
     line-height: 19px;
     display: block;
     font-size: 12px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #232323;
 }
 
@@ -633,7 +633,7 @@ label {
     content: '';
     width: 12px;
     height: 12px;
-    background: #ed027d;
+    background: var(--primary-400);
     position: absolute;
     top: 4px;
     left: 4px;
@@ -656,11 +656,11 @@ label {
 
 .selected-file {
     font-size: 14px;
-    color: #ed027d;
+    color: var(--primary-400);
 }
 
 .link {
-    color: #ed027d;
+    color: var(--primary-400);
 }
 
 a.tmbutton,
@@ -670,10 +670,10 @@ button.tmbutton {
     height: 30px;
     border-radius: 7px;
     background-color: #fff;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     font-size: 13px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     text-align: center;
     letter-spacing: 0.3px;
     cursor: pointer;
@@ -681,16 +681,16 @@ button.tmbutton {
 
 a.tmbutton:hover,
 button.tmbutton:hover {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     transition: all .3s ease;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     color: #fff !important;
 }
 
 button.tmbutton:disabled {
     cursor: not-allowed !important;
-    border-color: #ffb7e4 !important;
-    color: #ffb7e4 !important;
+    border-color: var(--primary-300) !important;
+    color: var(--primary-300) !important;
     box-shadow: none;
 }
 
@@ -747,7 +747,7 @@ button.tmbutton:disabled:hover {
     padding-top: 2.8em;
     text-align: center;
     font-size: 1.3em;
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 .valueaddctn .key {
@@ -768,7 +768,7 @@ button.tmbutton:disabled:hover {
 .valueaddctn div.valuerow i {
     float: right;
     margin-right: 10px;
-    color: #ed027d;
+    color: var(--primary-400);
 }
 
 .valueaddctn div.valuerow span.addedvalue {
@@ -793,16 +793,16 @@ button.tmbutton:disabled:hover {
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row>a:hover {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
     padding: 3px 0.6em!important;
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row.active>a {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
 }
 
 :host ::ng-deep ng-select ul.ui-select-choices {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 2px 4px 0 #00000050;
     border: solid 1px #c3cbd7;
@@ -1097,7 +1097,7 @@ button.tmbutton:disabled:hover {
 }
 
 .pacman-progress .content .highlight {
-    color: #ed0295;
+    color: var(--primary-500);
     background-color: transparent;
 }
 
@@ -1402,8 +1402,8 @@ button.tmbutton:disabled:hover {
     }
 }
 
-.highlight-pink {
-    color: #ed0295 !important;
+.highlight-blue {
+    color: var(--primary-500) !important;
     background-color: transparent;
 }
 

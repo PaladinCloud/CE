@@ -39,7 +39,7 @@
 .pk-top-header {
     padding-bottom: 1.2em;
     font-size: 2em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     color: #000;
 }
 .pk-top-desc-header{
@@ -47,12 +47,12 @@
     color: #4a4a4a;
     padding-bottom: 1em;
     letter-spacing: .4px;
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
 }
 .pk-top-desc-subheader{
     font-size: 1.1em;
     color: #555555;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: .2px;
     line-height: 1.3;
     padding-bottom: 2em;
@@ -75,7 +75,7 @@
     border-bottom: solid 1px #eeeeee;
     font-size: 1.2em;
     color: #555555;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .pk-each-category-right{
@@ -84,7 +84,7 @@
 .pk-resolution-wrapper{
     padding-top: 1.5em;
     font-size: 1.2em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     color: #555555;
 }
 .pk-resolution-header,.pk-resolution-each-desc,.pk-resolution-desc-wrapper{

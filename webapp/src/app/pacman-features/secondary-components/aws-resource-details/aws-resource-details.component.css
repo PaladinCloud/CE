@@ -60,7 +60,7 @@
 .wrapper-parent {
     padding: 1.42em;
     background-color: #dce3e9;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
 }
 
 .resource-types-container {
@@ -101,7 +101,7 @@
     overflow-x: auto; overflow-x: overlay;
 }
 .asset-dist-header{
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     font-family: ex2-medium;
     background-color: #fff;
     color: #3f4a59;

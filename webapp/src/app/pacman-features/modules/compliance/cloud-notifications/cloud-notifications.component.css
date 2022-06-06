@@ -10,7 +10,7 @@
     border-radius: 5px;
     box-shadow: 0 1px 4px 0 #d9dbe2;
     height: 100%;
-    border-bottom: 5px solid var(--primary-400)00;
+    border-bottom: 5px solid var(--primary-400);
     cursor: pointer;
     transition: 0.3s ease;
     position: relative;
@@ -45,7 +45,7 @@
 }
 
 .tile-txt {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     line-height: 1.2;
     opacity: 0.8;
 }
@@ -68,7 +68,7 @@
 }
 
 .tile-hover {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #000000;
     z-index: 1;
     opacity: 0;
@@ -100,7 +100,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, calc(-50% - 2em));
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     opacity: 0.8;
 }
 

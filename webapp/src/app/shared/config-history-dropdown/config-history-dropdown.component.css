@@ -17,7 +17,7 @@
     height: 0;
     border-left: 0.3em solid transparent;
     border-right: 0.3em solid transparent;
-    border-top: 0.4em solid #e20074;
+    border-top: 0.4em solid var(--primary-400);
     margin-left: 0.4em;
     cursor: pointer;
     pointer-events: none;
@@ -71,7 +71,7 @@
 }
 
 .active {
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
 }
 
@@ -79,7 +79,7 @@
 .active .application-name, 
 .active .owner,
 .active .message span  {
-    background-color: #e20074;
+    background-color: var(--primary-400);
     border-right-color: #fff;
     color: #fff;
 }
@@ -97,7 +97,7 @@
 }
 
 .each-tile.hover-tile:hover {
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
 }
 
@@ -105,7 +105,7 @@
 .hover-tile:hover .application-name,
 .hover-tile:hover .owner,
 .hover-tile:hover .message span  {
-    background-color: #e20074;
+    background-color: var(--primary-400);
     border-right-color: #fff;
     color: #fff;
 }

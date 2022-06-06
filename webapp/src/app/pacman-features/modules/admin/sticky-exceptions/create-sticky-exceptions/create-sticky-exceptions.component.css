@@ -169,7 +169,7 @@ ul.input-wrapper {
 }
 
 .data-table-wrap {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 1px 7px -1px #0000001e, 0 2px 4px 0 #00000023;
     font-size: 1em;
@@ -228,7 +228,7 @@ ul.input-wrapper {
 }
 
 .data-table-wrap a:hover {
-    color: #e20074;
+    color: var(--primary-400);
     letter-spacing: 0.2px;
     text-shadow: 0.66px 0;
 }
@@ -303,7 +303,7 @@ ul.input-wrapper {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 150px;
+    width: 200px;
 }
 
 .table-cells:hover {
@@ -348,7 +348,7 @@ ul.input-wrapper {
 .header-text {
     padding-top: 7px;
     padding-bottom: 7px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .data-content {
@@ -366,10 +366,10 @@ ul.input-wrapper {
     border: none;
     width: 9.3em;
     border-radius: 7px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding: 0.6em 1.5em;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -380,17 +380,17 @@ ul.input-wrapper {
     transition: all 0.5s ease;
     font-size: 1.1em;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .submit-btn:hover {
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
 .submit-btn:disabled {
     cursor: not-allowed !important;
-    background: #ffb7e4 !important;
+    background: var(--primary-300) !important;
     color: white !important;
     box-shadow: none;
 }
@@ -435,7 +435,7 @@ ul.input-wrapper {
 label {
     display: block;
     font-size: 12px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #7b7b7b;
     margin-bottom: 7px;
 }
@@ -466,7 +466,7 @@ button.tmbutton {
     height: 30px;
     border-radius: 7px;
     background-color: #fff;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     font-size: 13px;
     font-weight: 600;
     color: #232323;
@@ -477,16 +477,16 @@ button.tmbutton {
 
 a.tmbutton:hover,
 button.tmbutton:hover {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     transition: all .3s ease;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     color: #fff !important;
 }
 
 button.tmbutton:disabled {
     cursor: not-allowed !important;
-    border-color: #ffb7e4 !important;
-    color: #ffb7e4 !important;
+    border-color: var(--primary-300) !important;
+    color: var(--primary-300) !important;
     box-shadow: none;
 }
 
@@ -510,16 +510,16 @@ button.tmbutton:disabled:hover {
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row>a:hover {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
     padding: 3px 0.6em!important;
 }
 
 :host ::ng-deep ng-select .ui-select-choices-row.active>a {
-    background-color: #e20074!important;
+    background-color: var(--primary-400)!important;
 }
 
 :host ::ng-deep ng-select ul.ui-select-choices {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 2px 4px 0 #00000050;
     border: solid 1px #c3cbd7;
@@ -685,8 +685,8 @@ button.tmbutton:disabled:hover {
     font-size: 17px;
 }
 
-.highlight-pink {
-    color: #e20074 !important;
+.highlight-blue {
+    color: var(--primary-400) !important;
     background-color: transparent;
     text-transform: capitalize;
 }
@@ -997,7 +997,7 @@ button.tmbutton:disabled:hover {
 }
 
 .invocationId {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 .attribute-contents {
     width: 100% !important;
@@ -1060,14 +1060,14 @@ button.tmbutton:disabled:hover {
 }
 
 .asset-formctn a {
-    color: #ed027d;
+    color: var(--primary-400);
     text-decoration: none;
     font-size: 12px;
     font-weight: 600;
 }
 
 .asset-formctn a:hover {
-    color: #ed027d;
+    color: var(--primary-400);
     text-decoration: none;
     font-size: 12px;
     font-weight: 600;
@@ -1076,7 +1076,7 @@ button.tmbutton:disabled:hover {
 label {
     display: block;
     font-size: 12px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #7b7b7b;
     margin-bottom: 7px;
 }
@@ -1147,7 +1147,7 @@ label {
 }
 
 .md-stepper-horizontal.green .md-step.active .md-step-circle {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
 }
 
 .md-stepper-horizontal.orange .md-step.active .md-step-circle {
@@ -1155,7 +1155,7 @@ label {
     -o-transition: all .3s ease-in;
     -webkit-transition: all .3s ease-in;
     transition: all .3s ease-in;
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     z-index: 99;
     position: relative;
 }
@@ -1233,7 +1233,7 @@ label {
     -o-transition: all .3s ease-in;
     -webkit-transition: all .3s ease-in;
     transition: all .3s ease-in;
-    border-top-color: #ed027d !important;
+    border-top-color: var(--primary-400) !important;
 }
 
 .md-stepper-horizontal .md-step .md-step-bar-right {
@@ -1301,7 +1301,7 @@ div.attrlist div.attrspacer {
 div.attrlist h3.added {
     font-size: 35px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     display: block;
     margin: 5px 0px 5px 0px;
     display: block;
@@ -1310,7 +1310,7 @@ div.attrlist h3.added {
 div.attrlist h2.text {
     font-size: 12px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     display: block;
     margin: 0px 0px 10px 0px;
     ;
@@ -1344,20 +1344,20 @@ div.attrlistrow {
 .inner-div {
     display: inline-block;
     padding: 50px;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
 }
 
 button.attrbutton {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     min-width: 55px;
     width: auto;
     height: 18px;
     border-radius: 4px;
     background-color: #fff;
-    border: solid 1px #ed027d;
+    border: solid 1px var(--primary-400);
     font-size: 11px;
     font-weight: 600;
-    color: #ed027d;
+    color: var(--primary-400);
     text-align: center;
     letter-spacing: 0.3px;
     cursor: pointer;
@@ -1365,9 +1365,9 @@ button.attrbutton {
 }
 
 button.attrbutton:hover {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     transition: all .3s ease;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     color: #fff !important;
     padding-top: 0px;
 }
@@ -1402,7 +1402,7 @@ button.attrbutton:hover {
 
 .attributes-not-found-title b {
     font-weight: bold !important;
-    font-family: ex2-regular !important;
+    font-family: var(--text-font-family) !important;
 }
 
 .popup h2 {
@@ -1414,9 +1414,9 @@ button.attrbutton:hover {
 
 .popup .close {
     font-size: 1.7em;
-    /* font-family: ex2-bold; */
+    /* font-family: var(--text-medium-font-family); */
     text-decoration: none;
-    color: #e20074;
+    color: var(--primary-400);
     padding-right: 0.5em;
 }
 
@@ -1560,12 +1560,12 @@ button.attrbutton:hover {
 .sa-x-btn {
     border: none;
     width: auto;
-    border-radius: 3px;
-    background-color: #e20074;
+    border-radius: var(--border-radius);
+    background-color: var(--primary-400);
     transition: all 0.5s ease;
     cursor: pointer;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .sa-x-btn div {
@@ -1574,12 +1574,12 @@ button.attrbutton:hover {
     padding-left: 5px;
     padding-right: 5px;
     font-size: smaller;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     text-transform: uppercase;
 }
 
 .sa-x-btn:hover {
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
@@ -1587,7 +1587,7 @@ button.attrbutton:hover {
 .sticky-exceptions-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-days .year-unit.is-selected,
 .sticky-exceptions-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-years .day-unit.is-selected,
 .sticky-exceptions-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-years .year-unit.is-selected {
-    background: #e20074 !important;
+    background: var(--primary-400) !important;
 }
 
 :host ::ng-deep ng-select .ui-select-choices {
@@ -1641,9 +1641,9 @@ button.attrbutton:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #e20074;
+    color: var(--primary-400);
     padding-top: 5px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     cursor: not-allowed !important;
 }
 

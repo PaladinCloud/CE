@@ -72,9 +72,9 @@
 }
 
 .tab-list.active {
-    font-family: var(--text-font-family);
-    color: #e20074;
-    border-bottom: 2px solid #e20074;
+    font-family: var(--text-medium-font-family);
+    color: var(--primary-400);
+    border-bottom: 2px solid var(--primary-400);
 }
 
 .pk-main-content {
@@ -135,7 +135,7 @@
 
 .each-tab.tab-hover:hover {
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.05);
     border: 1px solid 0.9px #cccccc;
     background-color: #fdfdfd;
@@ -143,7 +143,7 @@
 
 .each-tab.tab-hover.active {
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.05);
     border: 1px solid 0.9px #cccccc;
     background-color: #f1f1f1;

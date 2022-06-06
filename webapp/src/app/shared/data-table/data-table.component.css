@@ -16,7 +16,6 @@
     padding: 16px 24px;
     background-color: #ffffff;
     border-bottom: solid 2px var(--border-100);
-
     font-size: 1em;
     min-height: 3em;
     display: flex;
@@ -43,7 +42,7 @@
 
 .data-table-inner-wrap {
     min-width: calc(100% - 0.66em);
-    margin-top: 9px;
+    margin-top: 5px;
     height: 100%;
     min-width: 100%;
     width: fit-content;
@@ -84,7 +83,7 @@
 }
 
 .data-table-wrap a:hover {
-    color: #e20074;
+    color: var(--primary-400);
     /*font-family: ex2-medium;*/
     letter-spacing: 0.2px;
     text-shadow: 0.66px 0;
@@ -105,7 +104,6 @@
     /* padding: 16px 24px; */
     width: calc(100% - 1px);
     margin: auto;
-    height: 56px;
     transition: 0.3s ease;
 }
 
@@ -123,7 +121,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    padding: 16px 21px 21px 24px;
+    padding: 12px 16px 12px 24px;
 }
 
 .row-cells div {
@@ -150,7 +148,7 @@
 }
 
 .head-cells {
-    font-family: var(--text-font-family);
+    font-family: var(--text-medium-font-family);
     font-size: var(--text-body-2-font-size);
     font-weight: var(--text-font-weight);
     color: var(--text-medium-emphasis);
@@ -163,12 +161,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 150px;
+    width: 200px;
 }
 
-.table-cells:hover {
+/* .table-cells:hover {
     letter-spacing: 0.2px;
-}
+} */
 
 .table-cells:first-letter {
     text-transform: uppercase;
@@ -372,7 +370,7 @@
 
 .enable-scroll {
     color: #383c4d;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #fbfbfb;
     padding: 0.8em 0;
     text-transform: capitalize;
@@ -446,7 +444,7 @@
 }
 
 .table-btn {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     border: 1px solid #ed0074;
     color: #ed0074;
     transition: 0.3s ease;
@@ -476,7 +474,7 @@
     left: -4px;
     right: -4px;
     box-shadow: 0 0 1px 0px rgba(0,0,0,0.1);
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     bottom: 0;
     transform: translateY(calc(100% + 8px));
     z-index: 1;
@@ -535,7 +533,7 @@
 
 .column-wrapper.flex div{
     text-shadow: none;
-    font-family: var(--text-font-family);
+    font-family: var(--text-medium-font-family);
     font-size: var(--text-body-2-font-size);
     font-weight: var(--text-font-weight);
     color: var(--text-high-emphasis);

@@ -21,7 +21,7 @@
     color: #ffffff;
     display: flex;
     flex-direction: column;
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
 }
 
 .contextual-menu-wrapper ul {
@@ -33,7 +33,7 @@
 .contextual-menu-title {
     height: 3em;
     line-height: 3em;
-    background: #e20074;
+    background: var(--primary-400);
     border-top-left-radius: 5px;
 }
 
@@ -72,7 +72,7 @@
     bottom: 0;
     width: 3%;
     max-width: 5px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
 }
 
 .arrow {

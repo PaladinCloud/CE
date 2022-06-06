@@ -168,7 +168,7 @@
     text-align: center;
     color: #ffffff;
     padding: .2em 0;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .mr-get-started-btn {
@@ -297,7 +297,7 @@
 
 .mr-bold-text {
     font-size: 29px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 
@@ -450,7 +450,7 @@
 }
 
 .wait-message {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     font-size: 1.5em;
 }
 

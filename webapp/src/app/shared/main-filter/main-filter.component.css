@@ -19,7 +19,7 @@
   display: flex;
   padding: 0.5em 1em;
   font-size: 1.2em;
-  /* background-color: #e20074; */
+  /* background-color: var(--primary-400); */
   background-color: #566d9b;
   color: #fff;
   justify-content: space-between;
@@ -68,7 +68,7 @@
 .each-filter-header {
   padding: 1em;
   font-size: 0.9em;
-  font-family: ex2-bold;
+  font-family: var(--text-medium-font-family);
   text-align: left;
   color: #383c4d;
   border-bottom: 1px solid #c3cbd7;
@@ -77,13 +77,13 @@
   padding: 1em;
   font-size: 1.1em;
   line-height: 1.5;
-  font-family: ex2-bold;
+  font-family: var(--text-medium-font-family);
   color: #3c5079;
   border-bottom: 1px solid #c3cbd7;
   transition: all 0.5s;
 }
 .filter-count {
-  font-family: ex2-light;
+  font-family: var(--text-light-font-family);
   font-size: 0.9em;
 }
 
@@ -95,11 +95,11 @@
   flex-direction: column;
 }
 .active {
-  background-color: #e20074;
+  background-color: var(--primary-400);
   color: #fff;
 }
 .sub-filter-each {
-  font-family: ex2-light;
+  font-family: var(--text-light-font-family);
   padding: 1em 0;
 }
 .filter-dropDdown-arrow {
@@ -172,7 +172,7 @@ input:checked ~ .filter-dropDdown-arrow {
   border-radius: 4px;
 }
 .applied-filter-count{
-  color: #e20074;
+  color: var(--primary-400);
   top: 1em;
   right: 1em;
 }
