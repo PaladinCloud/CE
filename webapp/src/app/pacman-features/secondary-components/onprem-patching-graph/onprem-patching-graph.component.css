@@ -50,7 +50,7 @@
     padding: 0.7em;
     font-size: 0.83em;
     line-height: 1.3;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     margin-left: 2em;
     white-space: nowrap;
     box-shadow: 0 0 6px 0px rgba(0, 0, 0, 0.2)
@@ -67,7 +67,7 @@
     top: 50%;
     transform: rotate(-90deg);
     color: #02629D;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     letter-spacing: 0.5px;
     font-size: 0.83em;
     opacity: 0.9;
@@ -84,7 +84,7 @@
     top: 50%;
     transform: rotate(-90deg);
     color: #00B972;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     letter-spacing: 0.5px;
     font-size: 0.83em;
     opacity: 0.9;
@@ -254,14 +254,14 @@
 .onprem-graph-wrap /deep/ .app-button {
     border-radius: 0px!important;
     background-color: #fff!important;
-    color: #ed0295!important;
+    color: var(--primary-500)!important;
     display: flex!important;
     padding: 0.2em 0em!important;
     transition: 0.2s ease;
     min-height: 0em!important;
     min-width: 0em!important;
     text-transform: inherit!important;
-    border-bottom: 1px solid #ed0295!important;
+    border-bottom: 1px solid var(--primary-500)!important;
 }
 
 .onprem-graph-wrap /deep/ .app-button:hover {
@@ -287,5 +287,5 @@
     text-transform: uppercase;
     font-size: 11px;
     letter-spacing: 0.5px;
-    color: #ed0295;
+    color: var(--primary-500);
 }

@@ -15,7 +15,7 @@
                             <mask id="mask-2" fill="white">
                                 <use xlink:href="#path-1"></use>
                             </mask>
-                            <use id="Info-Filled" fill="#E20074" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            <use id="Info-Filled" fill="#336cc9" fill-rule="nonzero" xlink:href="#path-1"></use>
                         </g>
                     </g>
                 </g>

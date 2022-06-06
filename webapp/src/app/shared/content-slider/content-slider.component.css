@@ -14,7 +14,7 @@
 
 .content-slider-wrapper {
     padding: 1.5em;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
     border: solid 1px #d6e2f1;
@@ -78,7 +78,7 @@
 }
 
 .navigate-link span {
-    color: #e20074;
+    color: var(--primary-400);
     transition: all .5s ease;
     cursor: pointer;
 }

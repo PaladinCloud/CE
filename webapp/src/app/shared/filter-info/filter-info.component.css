@@ -13,7 +13,7 @@
  */
 
 .header{
-	font-family: ex2-bold;
+	font-family: var(--text-medium-font-family);
     color: #666;
     transform: scaleY(1.1);
 }

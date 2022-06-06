@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {trigger, state, animate, style, transition, query, group, keyframes} from '@angular/animations';
+import { trigger, state, animate, style, transition, query, group, keyframes } from '@angular/animations';
 
 export const loginRouterTransition = trigger('loginRouterTransition', [
     state('in', style({
@@ -28,7 +28,7 @@ export const loginRouterTransition = trigger('loginRouterTransition', [
 export const changeTextColor =
     trigger('changeTextColor', [
         state('pink', style({
-            color: '#e20074'
+            color: '#336cc9'
         })),
         transition('* <=> pink', animate('400ms ease-in-out'))
     ]);
@@ -36,7 +36,7 @@ export const changeTextColor =
 export const changeUnderlineColor =
     trigger('changeUnderlineColor', [
         state('pink', style({
-            'border-color': '#e20074'
+            'border-color': '#336cc9'
         })),
         transition('* <=> pink', animate('400ms ease-in-out'))
     ]);
@@ -79,14 +79,14 @@ function glowPulseStateColor(colorCode, sizeMultiplier) {
     return style({
         'background-color': colorCode,
         'box-shadow':
-        '0 0 ' + (5 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (10 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (15 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (20 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (40 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (60 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (75 * sizeMultiplier) + 'px ' + colorCode + ',' +
-        '0 0 ' + (5 * sizeMultiplier) + 'px ' + colorCode
+            '0 0 ' + (5 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (10 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (15 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (20 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (40 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (60 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (75 * sizeMultiplier) + 'px ' + colorCode + ',' +
+            '0 0 ' + (5 * sizeMultiplier) + 'px ' + colorCode
     });
 }
 
@@ -152,35 +152,35 @@ export const diamondTitleActive = trigger('diamondTitleActive', [
 
 export const topGlowTravellerDuration = 375;
 export const topGlowTraveller = trigger('topGlowTraveller', [
-        transition('void => *', [
-            query('.glow-traveller-inside-right',
-                animate(topGlowTravellerDuration,
-                    style({
-                        'left': '22em'
-                    })
-                )
-            ),
-            query('.glow-traveller-inside-left',
-                animate(topGlowTravellerDuration,
-                    style({
-                        'left': '6em'
-                    })
-                )
-            ),
-            query('.glow-traveller-inside-right',
-                animate(topGlowTravellerDuration,
-                    style({
-                        'right': '38em'
-                    })
-                )
-            ),
-            query('.glow-traveller-inside-left',
-                animate(topGlowTravellerDuration,
-                    style({
-                        'right': '60em'
-                    })
-                )
-            ),
-        ])
-    ]);
+    transition('void => *', [
+        query('.glow-traveller-inside-right',
+            animate(topGlowTravellerDuration,
+                style({
+                    'left': '22em'
+                })
+            )
+        ),
+        query('.glow-traveller-inside-left',
+            animate(topGlowTravellerDuration,
+                style({
+                    'left': '6em'
+                })
+            )
+        ),
+        query('.glow-traveller-inside-right',
+            animate(topGlowTravellerDuration,
+                style({
+                    'right': '38em'
+                })
+            )
+        ),
+        query('.glow-traveller-inside-left',
+            animate(topGlowTravellerDuration,
+                style({
+                    'right': '60em'
+                })
+            )
+        ),
+    ])
+]);
 

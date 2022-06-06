@@ -30,7 +30,7 @@
     top: 50%;
     transform: rotate(-90deg);
     color: #02629D;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     letter-spacing: 0.5px;
     font-size: 0.83em;
     opacity: 0.9;

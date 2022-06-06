@@ -29,7 +29,7 @@
 
 .mr-each-desc:hover {
     color: #fff;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     font-family: ex2-medium;
 }
 

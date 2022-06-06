@@ -157,8 +157,8 @@ export class DomainsComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(reponse => {
       this.showLoader = false;
       if (reponse[0].content !== undefined) {
-        reponse[0].content= this.dataMarshalling(reponse[0].content);
-        this.allDomains= reponse[0].content;
+        reponse[0].content = this.dataMarshalling(reponse[0].content);
+        this.allDomains = reponse[0].content;
         this.errorValue = 1;
         this.searchCriteria = undefined;
         var data = reponse[0];
@@ -170,7 +170,7 @@ export class DomainsComponent implements OnInit, OnDestroy {
           this.outerArr = [];
           this.allColumns = [];
         }
-      
+
         if (data.content.length > 0) {
           this.isLastPage = data.last;
           this.isFirstPage = data.first;
@@ -189,7 +189,7 @@ export class DomainsComponent implements OnInit, OnDestroy {
           if (this.lastPaginator > this.totalRows) {
             this.lastPaginator = this.totalRows;
           }
-          
+
           let updatedResponse = this.massageData(data.content);
           this.processData(updatedResponse);
         }
@@ -310,7 +310,7 @@ export class DomainsComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = '#e20074';
+      var blue = '#336cc9';
       var green = '#26ba9d';
       var red = '#f2425f';
       var orange = '#ffb00d';
@@ -332,7 +332,7 @@ export class DomainsComponent implements OnInit, OnDestroy {
               link: true,
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -340,11 +340,11 @@ export class DomainsComponent implements OnInit, OnDestroy {
               imgLink: '',
               text: 'Edit',
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
-          }  else if (getCols[col].toLowerCase() == 'target types') {
-            let targetTypeName = getData[row][getCols[col]].map(target => target.targetType); 
+          } else if (getCols[col].toLowerCase() == 'target types') {
+            let targetTypeName = getData[row][getCols[col]].map(target => target.targetType);
             cellObj = {
               link: '',
               properties: {
@@ -402,14 +402,14 @@ export class DomainsComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(row) {
-    if(row.col === 'Actions') {
+    if (row.col === 'Actions') {
       try {
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
         this.router.navigate(['../create-update-domain'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            domainName : row.row['Domain Name'].text
+            domainName: row.row['Domain Name'].text
           }
         });
       } catch (error) {

@@ -19,7 +19,7 @@
 
 .policy-violation-label-header {
     padding-bottom: 8px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .policy-violation-desc-wrapper {
@@ -27,7 +27,7 @@
 }
 
 .policy-violation-label-content {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     line-height: 1.2;
     flex-wrap: wrap;
 }
@@ -40,7 +40,7 @@
 
 .policy-violation-label-name {
     padding-bottom: 2px;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     color: #757575;
     /* border-bottom: 1px solid #d3d3d3; */
 }

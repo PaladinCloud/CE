@@ -23,9 +23,8 @@
     position: relative;
     width: 22%;
     height: 30%;
-    padding-top: 5%;
+    padding-top: 4px;
     margin: auto;
-    display: block;
 }
 
 .aws-app-name {
@@ -125,7 +124,7 @@
     font-size: 1.7em;
     border-radius: 2em;
     text-transform: uppercase;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.5px;
     box-shadow: 0 0 4px 0px rgba(0,0,0,0.15);
 }

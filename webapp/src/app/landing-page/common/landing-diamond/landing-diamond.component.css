@@ -53,7 +53,7 @@
     font-size: 2em;
     color: white;
     letter-spacing: 1.2px;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .mr-diamond {

@@ -49,7 +49,7 @@
     font-size: 0.85em;
     line-height: 1.4;
     padding: 2em 1em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     display: inline-block;
     max-width: calc(100% - 13em);
 }
@@ -129,7 +129,7 @@
     font-size: 1em;
     font-weight: bold;
     color: #fff;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     cursor: pointer;
     transition: 0.3s;
 }
@@ -156,7 +156,7 @@
     height: 0;
     border-top: 0.6em solid transparent;
     border-bottom: 0.6em solid transparent;
-    border-right: 0.6em solid #e20074;
+    border-right: 0.6em solid var(--primary-400);
 }
 
 .quarter-desc .arrow-right {
@@ -168,7 +168,7 @@
 .pp-view-quarter {
     font-size: 0.83em;
     padding-top: 0.3em;
-    color: #e20074;
+    color: var(--primary-400);
     cursor: pointer;
     display: block;
     text-decoration: none;
@@ -388,6 +388,6 @@
 }
 
 .issue-trend-wrapper .selected{
-    color: #ed0295;
-    border-bottom: 2px solid #ed0295;
+    color: var(--primary-500);
+    border-bottom: 2px solid var(--primary-500);
 }

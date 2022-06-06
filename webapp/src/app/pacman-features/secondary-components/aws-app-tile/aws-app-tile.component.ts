@@ -34,7 +34,7 @@ export class AwsAppTileComponent implements OnInit {
   imagePathFound = true;
 
   private imagePath: any;
-  colors: any = ['#833E9E', 'red', '#0D77B2', '#CF0D3D', '#4F9D20', '#f09e06', '#ed0295'];
+  colors: any = ['#833E9E', 'red', '#0D77B2', '#CF0D3D', '#4F9D20', '#f09e06', '#0047bb'];
 
   numberWithCommas(number) {
     return number === undefined ? number : number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -44,15 +44,15 @@ export class AwsAppTileComponent implements OnInit {
     this.awsResourceSelected.emit(this.awsResourceName);
   }
 
-  constructor( private logger: LoggerService) { }
+  constructor(private logger: LoggerService) { }
 
   ngOnInit() {
     try {
-        if (this.awsResource) {
-            // Adding commas to numbers depending on the number
-            this.resourceInstances = this.numberWithCommas(this.resourceInstances);
-            this.imagePath = this.awsResource.iconPath;
-        }
+      if (this.awsResource) {
+        // Adding commas to numbers depending on the number
+        this.resourceInstances = this.numberWithCommas(this.resourceInstances);
+        this.imagePath = this.awsResource.iconPath;
+      }
     } catch (error) {
       this.logger.log('error', error);
     }
@@ -68,7 +68,7 @@ export class AwsAppTileComponent implements OnInit {
     const wordSplit = initials.split('-');
     let newinitial = '';
     for (let i = 0; i < wordSplit.length; i += 1) {
-        newinitial = newinitial + wordSplit[i].charAt(0);
+      newinitial = newinitial + wordSplit[i].charAt(0);
     }
     return newinitial.substring(0, 3);
   }

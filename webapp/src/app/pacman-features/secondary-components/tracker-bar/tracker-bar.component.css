@@ -15,7 +15,7 @@
 /* css for progress tracker */
 
 .loading_bar {
-    /* background:repeating-linear-gradient( 135deg, #e20074, #e20074 2px, #eef4f9 2px, #eef4f9 5px ); */
+    /* background:repeating-linear-gradient( 135deg, var(--primary-400), var(--primary-400) 2px, #eef4f9 2px, #eef4f9 5px ); */
     border-radius: 20px;
     position: relative;
     margin-bottom: 1.5em;
@@ -24,7 +24,7 @@
 }
 
 .loading_bar_right {
-    background: repeating-linear-gradient( 135deg, #e20074, #e20074 2px, #eef4f9 2px, #eef4f9 5px);
+    background: repeating-linear-gradient( 135deg, var(--primary-400), var(--primary-400) 2px, #eef4f9 2px, #eef4f9 5px);
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
     width: 0;
@@ -68,7 +68,7 @@
     -webkit-transform: translateY(-50%);
     transform: translateY(-50%);
     padding: 2px 8px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     align-items: center;
     letter-spacing: 1px;
     z-index: 10;
@@ -92,7 +92,7 @@
     display: inline-block;
     padding-left: 5px;
     text-transform: uppercase;
-    font-family: ex2-Light;
+    font-family: var(--text-light-font-family);
     font-size: .8em;
     letter-spacing: 1px
 }
@@ -107,7 +107,7 @@
     min-height: 2.5em;
     box-shadow: 0px 1px 3px 0px #4d4d4d;
     align-items: center;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     letter-spacing: 1px;
     z-index: 10;
     opacity: 0;
@@ -129,7 +129,7 @@
     display: inline-block;
     padding-left: 5px;
     text-transform: uppercase;
-    font-family: ex2-Light;
+    font-family: var(--text-light-font-family);
     font-size: .8em;
     letter-spacing: 1px
 }

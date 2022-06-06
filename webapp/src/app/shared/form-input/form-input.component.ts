@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 
-import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {trigger, state, style, transition, animate} from '@angular/animations';
-import {changeTextColor, changeUnderlineColor} from './../animations/animations';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { changeTextColor, changeUnderlineColor } from './../animations/animations';
 
 @Component({
     selector: 'app-form-input',
@@ -34,7 +34,7 @@ import {changeTextColor, changeUnderlineColor} from './../animations/animations'
             })),
             state('error', style({
                 width: '100%',
-                'border-color': '#e20074'
+                'border-color': '#336cc9'
             })),
             transition('* <=> focused', animate('400ms ease-in-out')),
             transition('* <=> error', animate('400ms ease-in-out'))
@@ -70,7 +70,7 @@ export class FormInputComponent {
     @Input()
     set value(value) {
         this._value = value;
-        this. valueChange.emit(this._value);
+        this.valueChange.emit(this._value);
         if (value) {
             this.animationLabelState = 'focused';
         }

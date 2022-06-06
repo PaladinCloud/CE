@@ -38,7 +38,7 @@
 .submit-btn {
     border: none;
     border-radius: 7px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
     font-weight: bold;
@@ -52,11 +52,11 @@
     transition: all 0.5s ease;
     font-size: 1em;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .submit-btn:hover {
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
@@ -75,28 +75,4 @@
 
 :host ::ng-deep app-data-table .drop-options {
     width: 8.25em !important;
-}
-
-.asset-groups-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
-    width: 20%;
-}
-
-.asset-groups-wrapper /deep/ .data-table-wrap .table-cells:nth-child(2) {
-    width: 14%;
-}
-
-.asset-groups-wrapper /deep/ .data-table-wrap .table-cells:nth-child(3) {
-    width: 500px;
-}
-
-.asset-groups-wrapper /deep/ .data-table-wrap .table-cells:nth-child(4) {
-    width: 100px;
-}
-
-.asset-groups-wrapper /deep/ .details-bar-inner .details-cell:nth-child(1) {
-    display: none;
-}
-
-.asset-groups-wrapper /deep/ .row-cells div:first-letter {
-    text-transform: inherit !important;
 }
