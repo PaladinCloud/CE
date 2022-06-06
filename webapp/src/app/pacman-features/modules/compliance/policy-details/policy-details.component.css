@@ -31,6 +31,8 @@
     background-color: #fff;
     min-height: 12em;
     flex-shrink: 0;
+    font: var(--text-caption);
+    color: var(--text-low-emphasis);
    }
    
    .pk-top-header {

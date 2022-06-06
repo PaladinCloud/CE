@@ -22,7 +22,6 @@
 .policy-knowledgebase-content {
     margin: 0 1.8em 1.8em;
     border-radius: 3px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
     overflow: hidden;
     height: 100%;
 }
@@ -38,6 +37,8 @@
     min-height: 5em;
     -ms-flex-negative: 0;
     flex-shrink: 0;
+    font: var(--text-caption);
+    color: var(--text-low-emphasis);
 }
 
 .pk-top-header {
@@ -113,7 +114,7 @@ transition-delay: 0.05s;
 }
 
 .pk-tabs.active {
-    font-family: ex2-bold;
+    font-family: var(--text-font-family);
     color: #e20074;
     border-bottom: 2px solid #e20074;
 }
@@ -188,6 +189,11 @@ transition-delay: 0.05s;
     position: relative;
     height: 100%;
     background: #fff;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-left: 1px var(--border-100);
+    border-right: 1px var(--border-100);
+    border-bottom: 1px var(--border-100);
 }
 
 .each-card {

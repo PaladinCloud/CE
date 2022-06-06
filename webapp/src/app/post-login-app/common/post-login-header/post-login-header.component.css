@@ -294,7 +294,7 @@ nav .nav-icon:last-child {
     padding: 0.9em 1em;
     font-size: 1em;
     color: #fff;
-    background: #ed0274;
+    background: var(--primary-400);
     font-family: ex2-bold;
     text-align: center;
     border-radius: 2px;

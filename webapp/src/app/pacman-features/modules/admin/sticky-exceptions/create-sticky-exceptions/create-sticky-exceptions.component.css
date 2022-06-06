@@ -198,7 +198,7 @@ ul.input-wrapper {
     padding: 0.83em 0 0;
     position: relative;
     overflow-y: hidden;
-    overflow-x: hidden;
+    overflow-x: auto;
     min-height: 7em;
     padding-top: 0px;
 }
@@ -239,7 +239,7 @@ ul.input-wrapper {
     padding: 0.45em 0px;
     font-size: 0.83em;
     position: relative;
-    min-width: calc(100%);
+    min-width: 100%;
     left: 0;
     background-color: #fff;
     z-index: 1;
@@ -253,14 +253,6 @@ ul.input-wrapper {
     margin: auto;
     min-height: 2.66em;
     transition: 0.3s ease;
-}
-
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.data-table-rows:nth-child(odd) {
-    background-color: #ffffff;
 }
 
 .data-table-rows:hover {
@@ -298,9 +290,6 @@ ul.input-wrapper {
     padding-bottom: 2px;
 }
 
-.row-cells div:hover {
-    letter-spacing: 0.3px;
-}
 
 .head-cells {
     margin: 0 3px;
@@ -314,8 +303,7 @@ ul.input-wrapper {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 140px;
-    padding-left: 30px;
+    width: 150px;
 }
 
 .table-cells:hover {
@@ -510,12 +498,6 @@ button.tmbutton:disabled:hover {
 .input-form .label {
     margin-bottom: 20px !important;
 }
-.data-table-rows:nth-child(even) {
-    border-radius: 0.3em;
-    padding-bottom: 5px;
-    height: 2.7em;
-}
-
 
 /**************************************/
 

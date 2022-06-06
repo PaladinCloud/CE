@@ -12,8 +12,7 @@
  * limitations under the License.
  */
 
- .pacman-logged-in-section {
-    background-image: url('../../assets/images/bg/background.png');
+.pacman-logged-in-section { 
     width: 100%;
     height: 100%;
     background-repeat: no-repeat;
@@ -22,7 +21,7 @@
     background-attachment: fixed;
     background-position: center center;
     transition: background .5s;
-}
+} 
 
 .post-login-header {
     font-size: 1em;
@@ -32,8 +31,6 @@
 .post-login-body {
     height: 100%!important;
     position: relative!important;
-    padding-bottom: 2.083em;
-    /* top: 75px; */
 }
 
 .pacman-logged-in-section.is-offine {

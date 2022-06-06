@@ -17,13 +17,19 @@
     font-family: ex2-regular;
     position: relative;
     font-size: 1em;
+    border: 1px solid var(--border-100);
+    border-radius: var(--border-radius);
+    background-color: var(--background-white);
 }
 
 .header {
     padding: 0.6em 0.5em 0.7em 1em;
     font-family: ex2-medium;
-    background-color: #dce3e9;
+    background-color: var(--background-white);
     color: #3f4a59;
+    border-bottom: 2px solid var(--border-100);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
 }
 
 .contextual-menu-height {
@@ -31,6 +37,12 @@
 }
 
 .article-parent {
+    background: var(--background-white);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-left: 1px solid var(--border-100);
+    border-right: 1px solid var(--border-100);
+    border-bottom: 1px solid var(--border-100);
     min-height: calc(24.28vh - 64px);
     padding: 1em 0.8em;
     transition: 0.8s ease;

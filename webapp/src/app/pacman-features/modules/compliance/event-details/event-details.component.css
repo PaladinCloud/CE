@@ -101,7 +101,7 @@
 }
 
 .link {
-    color: #ed0274;
+    color: var(--primary-400);
     cursor: pointer;
     word-break: break-all;
 }

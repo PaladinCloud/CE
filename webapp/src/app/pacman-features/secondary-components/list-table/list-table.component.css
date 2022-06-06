@@ -38,10 +38,10 @@
 }
 
 .list-table-value.list-table-header {
-    font-family: ex2-bold;
-    font-size: .95em;
-    font-weight: bold;
-    color: #000000;
+    font-family: var(--text-font-family);
+    font-size: var(--text-overline);
+    font-weight: var(--text-font-weight);
+    color: var(--text-high-emphasis);
 }
 
 .list-table-each-list {
@@ -83,7 +83,7 @@
     position: sticky;
     top: 0;
     z-index: 2;
-    background-color: #eff3f6;
+    background-color: var(--background-white);
 }
 
 .count-color{

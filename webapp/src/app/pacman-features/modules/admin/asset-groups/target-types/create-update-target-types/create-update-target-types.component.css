@@ -391,7 +391,7 @@ li.list-inputs:hover {
     padding: 0.45em 0px;
     font-size: 0.83em;
     position: relative;
-    min-width: calc(100% - 1.66em);
+    min-width: 100%;
     left: 0;
     background-color: #fff;
     z-index: 1;
@@ -405,14 +405,6 @@ li.list-inputs:hover {
     margin: auto;
     min-height: 2.66em;
     transition: 0.3s ease;
-}
-
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.data-table-rows:nth-child(odd) {
-    background-color: #ffffff;
 }
 
 .data-table-rows:hover {
@@ -450,9 +442,6 @@ li.list-inputs:hover {
     padding-bottom: 2px;
 }
 
-.row-cells div:hover {
-    letter-spacing: 0.3px;
-}
 
 .head-cells {
     margin: 0 3px;
@@ -466,7 +455,7 @@ li.list-inputs:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 140px;
+    width: 150px;
     padding-left: 30px;
 }
 
@@ -1156,13 +1145,6 @@ button.tmbutton:disabled:hover {
     font-size: 12px;
     font-weight: 600;
 }
-
-.data-table-rows:nth-child(even) {
-    border-radius: 0.3em;
-    padding-bottom: 5px;
-    height: 2.7em;
-}
-
 
 /**************************************/
 

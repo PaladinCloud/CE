@@ -15,7 +15,8 @@
 .sub-head {
     padding: 0.6em 0.5em 0.7em 1em;
     font-size: 1em;
-    background-color: #dce3e9;
+    background-color: var(--background-white);
+    border: 1px solid var(--border-100);
     color: #3f4a59;
 }
 
@@ -25,4 +26,8 @@
 
 :host ::ng-deep .error_message_post .error-handling {
     top: 60%;
+}
+
+.issues-category-container {
+    background: var(--background-white);
 }

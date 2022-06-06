@@ -13,7 +13,7 @@
  */
 
 .data-table-tabs{
-    background-color: #eff3f6;
+    background-color: var(--background-white);
     color: #5a616b;
     font-size: 0.9em;
     font-family: ex2-light;
@@ -58,4 +58,8 @@
     background-color: #5a616b;
     color: #fff;
     text-shadow: 1px 0;
+}
+
+.tabs-header{
+    font: var(--text-overline);
 }

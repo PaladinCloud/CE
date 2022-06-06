@@ -277,7 +277,7 @@ ul.input-wrapper {
     padding: 0.45em 0px;
     font-size: 0.83em;
     position: relative;
-    min-width: calc(100%);
+    min-width: 100%;
     left: 0;
     background-color: #fff;
     z-index: 1;
@@ -293,14 +293,6 @@ ul.input-wrapper {
     width: calc(100% - 1px);
     margin: auto;
     min-height: 2.66em;
-}
-
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.data-table-rows:nth-child(odd) {
-    background-color: #ffffff;
 }
 
 .data-table-rows:hover {
@@ -346,7 +338,7 @@ ul.input-wrapper {
     overflow: unset;
     text-overflow: nowrap;
     white-space: nowrap;
-    width: 140px;
+    width: 150px;
 }
 
 .data-table-inner-content {
@@ -784,12 +776,6 @@ button.tmbutton:disabled:hover {
     font-size: 12px;
     font-weight: 600;
 }
-
-.data-table-rows:nth-child(even) {
-    border-radius: 0.3em;
-    padding-bottom: 5px;
-}
-
 
 /**************************************/
 

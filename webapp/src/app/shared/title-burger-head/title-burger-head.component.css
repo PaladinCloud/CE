@@ -13,9 +13,10 @@
  */
 
 .sub-head-title {
-    font-size: 1em;
-    font-family: ex2-medium;
-    font-weight: bolder;
+    font-size: var(--text-body-2-font-size);
+    font-family: var(--text-font-family);
+    font-weight: var(--text-font-weight);
+    color: var(--text-high-emphasis);
     opacity: 0.4;
     letter-spacing: 2px;
     transition-delay: 0.2s;

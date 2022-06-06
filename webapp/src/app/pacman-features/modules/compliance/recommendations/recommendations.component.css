@@ -21,8 +21,8 @@
 
 .policy-knowledgebase-content {
     margin: 0 1.8em 1.8em;
-    border-radius: 3px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+    border-radius: var(--border-radius);
+    border: 1px var(--border-100) solid;
     overflow: hidden;
     height: 100%;
 }
@@ -37,6 +37,8 @@
     -ms-flex-negative: 0;
     flex-shrink: 0;
     margin: 0 1.8em;
+    font: var(--text-caption);
+    color: var(--text-low-emphasis);
 }
 
 .tab-list {
@@ -70,7 +72,7 @@
 }
 
 .tab-list.active {
-    font-family: ex2-bold;
+    font-family: var(--text-font-family);
     color: #e20074;
     border-bottom: 2px solid #e20074;
 }
@@ -218,7 +220,7 @@
 }
 
 .each-toggle.active {
-    color: #ed0274;
+    color: var(--primary-400);
 }
 
 .toggle-parent {
@@ -234,11 +236,11 @@
 .toggle-slider {
     height: 1.4em;
     width: 1.4em;
-    background: #ed0274;
+    background: var(--primary-400);
     top: 50%;
     transition: 0.3s ease;
     transform: translateY(-50%);
-    border: 5px solid #ed0274;
+    border: 5px solid var(--primary-400);
     border-radius: 0.8em;
     box-shadow: 0 0 4px 0px rgba(0,0,0,0.1);
     left: -3px;

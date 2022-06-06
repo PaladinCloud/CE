@@ -80,8 +80,8 @@
 }
 
 .vuln-link:hover {
-    color: #ed0274;
-    border-bottom: 1px solid #ed0274;
+    color: var(--primary-400);
+    border-bottom: 1px solid var(--primary-400);
     letter-spacing: 0.4px;
     text-shadow: 0.1px 0;
 }
@@ -98,7 +98,7 @@
 }
 
 .active-link {
-    color: #ed0274;
+    color: var(--primary-400);
     text-shadow: 0.2px 0;
 }
 

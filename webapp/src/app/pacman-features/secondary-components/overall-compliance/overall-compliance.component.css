@@ -14,9 +14,12 @@
 
 .sub-heading {
     padding: 0.6em 0.5em 0.7em 1em;
-    background-color: #dce3e9;
+    background-color: var(--background-white);
     font-size: 1em;
     color: #3f4a59;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border: 2px solid var(--border-100);
 }
 
 .cg-container-parent {

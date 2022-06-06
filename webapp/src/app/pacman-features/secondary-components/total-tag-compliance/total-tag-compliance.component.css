@@ -14,9 +14,10 @@
 
 .sub-heading {
     padding: 0.6em 0.5em 0.7em 1em;
-    background-color: #dce3e9;
+    background-color: var(--background-white);
     font-size: 1em;
     color: #3f4a59;
+    border: 2px solid var(--border-100);
 }
 
 .cg-container-parent {
@@ -41,10 +42,11 @@ app-multi-band-donut {
     width: 100%;
     height: auto;
     position: relative;
+    padding: 0 1.25em 2em 1.25em;
 }
 
-.total-tag-compliance-wrapper .cg-container-parent {
-    padding-top: 1em;
+app-total-tag-compliance-wrapper .complaince-graph-container {
+    border-radius: none;
 }
 
 .tag-compliance-details {
@@ -57,6 +59,10 @@ app-multi-band-donut {
     width: 100%;
     display: block;
     height: 100%;
+    background-color: #ffffff;
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border: 1px solid var(--border-100);
 }
 :host ::ng-deep .total-tag-compliance-wrapper app-list-table .list-table-header-values:first-child{
     flex: 1.7;

@@ -21,6 +21,11 @@
 
 .issues-category-container {
     min-height: 9.33em;
+    background: var(--background-white);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border: 1px solid var(--border-100);
+
 }
 
 .issues-category-content {

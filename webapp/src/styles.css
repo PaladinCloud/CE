@@ -20,6 +20,7 @@
 @import "./reset.css";
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~font-awesome/css/font-awesome.css";
+@import "./variables.css";
 
 
 /* Font family */
@@ -138,8 +139,7 @@ th.table-cells.hide, tr.table-cells.hide, td.hide.table-cells {
 
 * {
     box-sizing: border-box;
-    font-family: ex2-regular;
-    letter-spacing: 0.1px;
+    font-family: var(--text-font-family);
 }
 
 h1 {
@@ -591,7 +591,7 @@ text.axis-title {
 }
 
 .magenta-riddim {
-    color: #ed0274;
+    color: var(--primary-400);
 }
 
 
@@ -777,7 +777,6 @@ input:-webkit-autofill {
 .floating-widgets-section {
     width: 73%;
     height: 100%;
-    overflow: hidden;
 }
 
 .floating-widgets-header {
@@ -789,9 +788,9 @@ input:-webkit-autofill {
     text-transform: capitalize;
 }
 
-.widget.widget-container {
+/* .widget.widget-container {
     padding-bottom: 2em;
-}
+} */
 
 .filters-options-wrapper {
     display: inline-block;
@@ -837,7 +836,6 @@ input:-webkit-autofill {
 }
 
 .floating-widgets-container {
-    overflow: auto;
     overflow: overlay;
 }
 
@@ -942,8 +940,6 @@ html body .offline-ui.offline-ui-down.offline-ui-waiting .offline-ui-retry {
 .fixed-widgets-section {
     width: 27%;
     height: 100%;
-    background-color: #eff3f6;
-    box-shadow: -1px 0px 5px -1px rgba(0, 0, 0, 0.15);
     position: relative;
     z-index: 3;
     min-width: 25.4em;
@@ -952,32 +948,25 @@ html body .offline-ui.offline-ui-down.offline-ui-waiting .offline-ui-retry {
 .compliance-issues-container {
     width: 100%;
     height: 100%;
-    overflow: auto;
-    overflow: overlay;
 }
 
 .sub-header,
 .sub-head {
-    padding: 0.8em;
-    background-color: inherit;
-    border: solid 1px #d6e2f1;
-    color: #555;
-    font-size: 1em;
+    padding-left: 34px;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
     position: sticky;
     top: 0;
-    background-color: #ffffff;
     z-index: 11;
 }
 
-.sub-head {
-    border-block-end: 1px solid #ddd;
+body{
+    background-color: var(--background-grey);
 }
 
 .widget-container {
-    border-radius: 3px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
-    border: solid 1px #d6e2f1;
+    border-radius: var(--border-radius);
+    background-color: var(--background-white);
 }
 
 .drop-options {
@@ -1548,11 +1537,9 @@ li .details-left-value {
     width: 100%;
     height: 100%;
     max-width: 100%;
-    overflow: hidden;
-    margin: 0 1%;
+    /* overflow: hidden; */
     border-radius: 5px;
-    background-color: #fbfbfb;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    background-color: var(--background-grey);
 }
 
 /* End of post login panel classes */

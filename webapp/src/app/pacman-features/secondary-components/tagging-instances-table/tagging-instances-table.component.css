@@ -13,10 +13,10 @@
  */
 
 .tagging-instances-container {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
-    box-shadow: 0 1px 0.25em 0 rgba(0, 0, 0, 0.15);
-    border: solid 1px #d6e2f1;
+
+    border: none;
     min-height: 10em;
 }
 
@@ -28,7 +28,6 @@
 .sub-header {
     padding: 0.8em;
     background-color: #ffffff;
-    border: solid 1px #d6e2f1;
     color: #555;
     font-size: 1em;
 }

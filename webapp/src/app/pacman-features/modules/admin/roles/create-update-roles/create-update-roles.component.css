@@ -321,7 +321,7 @@ li.list-inputs:hover {
     padding: 0.83em 0 0;
     position: relative;
     overflow-y: hidden;
-    overflow-x: hidden;
+    overflow-x: auto;
     min-height: 7em;
 }
 
@@ -377,14 +377,6 @@ li.list-inputs:hover {
     transition: 0.3s ease;
 }
 
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.data-table-rows:nth-child(odd) {
-    background-color: #ffffff;
-}
-
 .data-table-rows:hover {
     background-color: #e6e6e6;
 }
@@ -420,9 +412,7 @@ li.list-inputs:hover {
     padding-bottom: 2px;
 }
 
-.row-cells div:hover {
-    letter-spacing: 0.3px;
-}
+
 
 .head-cells {
     margin: 0 3px;
@@ -436,7 +426,7 @@ li.list-inputs:hover {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 140px;
+    width: 150px;
     padding-left: 30px;
 }
 
@@ -1115,13 +1105,6 @@ button.tmbutton:disabled:hover {
     font-size: 12px;
     font-weight: 600;
 }
-
-.data-table-rows:nth-child(even) {
-    border-radius: 0.3em;
-    padding-bottom: 5px;
-    height: 2.7em;
-}
-
 
 /**************************************/
 

@@ -248,14 +248,6 @@ ul.input-wrapper {
     min-height: 2.66em;
 }
 
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.data-table-rows:nth-child(odd) {
-    background-color: #ffffff;
-}
-
 .data-table-rows:hover {
     background-color: #e6e6e6;
 }
@@ -299,10 +291,8 @@ ul.input-wrapper {
     overflow: unset;
     text-overflow: nowrap;
     white-space: nowrap;
-    width: 140px;
+    width: 150px;
 }
-
-.table-cells:hover {}
 
 .data-table-inner-content {
     overflow-y: unset;
@@ -712,12 +702,6 @@ button.tmbutton:disabled:hover {
     font-size: 12px;
     font-weight: 600;
 }
-
-.data-table-rows:nth-child(even) {
-    border-radius: 0.3em;
-    padding-bottom: 5px;
-}
-
 
 /**************************************/
 

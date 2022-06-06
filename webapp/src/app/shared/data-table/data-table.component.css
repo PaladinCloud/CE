@@ -13,10 +13,10 @@
  */
 
 .sub-head {
-    padding: 0.6em 0.8em;
+    padding: 16px 24px;
     background-color: #ffffff;
-    border: solid 1px #dce1e8;
-    color: #555;
+    border-bottom: solid 2px var(--border-100);
+
     font-size: 1em;
     min-height: 3em;
     display: flex;
@@ -28,12 +28,12 @@
 }
 
 .data-table-wrap {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     height: 100%;
     display: flex;
     flex-direction: column;
     background-color: #ffffff;
-    box-shadow: 0 1px 7px -1px #0000001e, 0 2px 4px 0 #00000023;
+    border: 1px solid var(--border-100);
     font-size: 1em;
     overflow: hidden;
     min-height: 11em;
@@ -42,31 +42,32 @@
 
 
 .data-table-inner-wrap {
+    min-width: calc(100% - 0.66em);
+    margin-top: 9px;
     height: 100%;
-    /* max-height: 27.4em; */
     min-width: 100%;
     width: fit-content;
     overflow-y: hidden;
 }
 
 .data-table-content {
-    padding: 0.83em 0 0;
     position: relative;
     overflow-y: hidden;
-    overflow-x: hidden;
+    overflow-x: auto;
     min-height: 7em;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.data-table-inner-wrap:hover {
-    overflow-y: auto; overflow-y: overlay;
-}
+/* .data-table-inner-wrap:hover { */
+    /* overflow-y: overlay; */
+/* } */
 
-.data-table-content:hover {
-    overflow-x: auto; overflow-x: overlay;
-}
+/* .data-table-content:hover {
+    overflow-x: auto;
+    overflow-x: overlay;
+} */
 
 .data-table-head-outer {
     background-color: #fff;
@@ -90,12 +91,9 @@
 }
 
 .data-table-head {
-    margin: 0 0.83em;
-    border-bottom: 2px solid #dce3e9;
-    padding: 0.45em 0px;
-    font-size: 0.83em;
-    position: absolute;
-    min-width: calc(100% - 1.66em);
+    border-bottom: 2px solid var(--border-100);
+    font-size: var(--text-body-2-font-size);
+    min-width: 100%;
     left: 0;
     background-color: #fff;
     z-index: 1;
@@ -104,15 +102,11 @@
 }
 
 .data-table-rows {
-    padding: 0px 0.83em;
+    /* padding: 16px 24px; */
     width: calc(100% - 1px);
     margin: auto;
-    min-height: 2.66em;
+    height: 56px;
     transition: 0.3s ease;
-}
-
-.data-table-rows:nth-child(even) {
-    background-color: #f9f9f9;
 }
 
 .data-table-rows:nth-child(odd) {
@@ -129,8 +123,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    padding: 3px 0;
-    margin: 0 3px;
+    padding: 16px 21px 21px 24px;
 }
 
 .row-cells div {
@@ -139,6 +132,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+
     /* display: inline-block; */
     vertical-align: middle;
 }
@@ -155,14 +149,12 @@
     /*text-decoration: underline;*/
 }
 
-.row-cells div:hover {
-    letter-spacing: 0.3px;
-}
-
 .head-cells {
-    margin: 0 3px;
-    font-family: ex2-medium;
-    padding-bottom: 2px;
+    font-family: var(--text-font-family);
+    font-size: var(--text-body-2-font-size);
+    font-weight: var(--text-font-weight);
+    color: var(--text-medium-emphasis);
+    padding: 16px 24px;
 }
 
 .table-cells {
@@ -171,8 +163,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 140px;
-    padding-left: 30px;
+    width: 150px;
 }
 
 .table-cells:hover {
@@ -184,7 +175,8 @@
 }
 
 .data-table-inner-content {
-    overflow-y: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
     min-width: 100%;
     position: relative;
     margin-bottom: 0.3em;
@@ -192,9 +184,9 @@
     height: 100%;
 }
 
-.data-table-inner-content:hover {
+/* .data-table-inner-content:hover {
     overflow-y: auto; overflow-y: overlay;
-}
+} */
 
 .data-table-previous {
     z-index: -1;
@@ -425,12 +417,12 @@
        overflow-y: auto;  
    }
    .data-table-content {
-       overflow: auto;
+       /* overflow: auto; */
        max-height: 25em;
    }
-   .data-table-inner-wrap {
+   /* .data-table-inner-wrap {
        overflow-y: auto;
-   }
+   } */
 } 
 
 
@@ -541,3 +533,10 @@
     pointer-events: auto;
 }
 
+.column-wrapper.flex div{
+    text-shadow: none;
+    font-family: var(--text-font-family);
+    font-size: var(--text-body-2-font-size);
+    font-weight: var(--text-font-weight);
+    color: var(--text-high-emphasis);
+}
