@@ -1037,6 +1037,52 @@ public class PacmanUtils {
         }
     }
     
+	/**
+	 * @param kmsKeyId
+	 * @param esKmsUrl
+	 * @param defaultKmsKeyManager
+	 * @return
+	 * @throws Exception
+	 */
+	public static Boolean checkIfDocumentDbEncryptedWithKmsCmks(String kmsKeyId, String esKmsUrl, String defaultKmsKeyManager) throws Exception {
+
+		List<String> customKeys = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ARN), kmsKeyId);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esKmsUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String keyManager = source.get(PacmanRuleConstants.ES_KMS_KEY_MANAGER_ATTRIBUTE).getAsString();
+					String keyArn = source.get(PacmanRuleConstants.ARN).getAsString();
+
+					if (!keyManager.equalsIgnoreCase(defaultKmsKeyManager)) {
+						customKeys.add(keyArn);
+					}
+				}
+			}
+
+		}
+		if (!CollectionUtils.isNullOrEmpty(customKeys))
+			return true;
+		return false;
+	}
+    
+	/**
+	 * @param kmsKeyId
+	 * @param esKmsUrl
+	 * @param defaultKmsKeyAlias
+	 * @return
+	 * @throws Exception
+	 */
 	public static Boolean checkIfEbsVolumeEncryptedWithCustomKMSKeys(String kmsKeyId, String esKmsUrl,
 			String defaultKmsKeyAlias) throws Exception {
 

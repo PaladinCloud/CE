@@ -143,7 +143,7 @@ public class UnrestrctedElbSecurityGroup extends BaseRule {
 				annotation.put(PacmanRuleConstants.SCHEME, scheme);
 				if ("appelb".equals(targetType))
 					annotation.put(PacmanRuleConstants.TYPE_OF_ELB, elbType);
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
+				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Elb is found having some security groups with unrestricted access.");
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.debug("========UnrestrctedElbSecurityGroup ended with an annotation {} : =========", annotation);
