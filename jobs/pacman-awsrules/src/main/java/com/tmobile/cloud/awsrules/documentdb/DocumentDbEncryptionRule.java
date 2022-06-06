@@ -20,7 +20,7 @@
   Modified Date: Jun 01, 2022
   
  **/
-package com.tmobile.cloud.awsrules.dynamodb;
+package com.tmobile.cloud.awsrules.documentdb;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -41,11 +41,10 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.PacmanRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 
-@PacmanRule(key = "check-for-dynamodb-uses-aws-managed-cmks-for-sse", desc = "checks for dynamodb tables are using AWS-managed CMKs for server side encryption", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class DynamoDbServerSideEncryptionRule extends BaseRule {
+@PacmanRule(key = "check-for-document-db-encryption", desc = "checks for document db clusters are encrypted ", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class DocumentDbEncryptionRule extends BaseRule {
 
-	private static final Logger logger = LoggerFactory.getLogger(DynamoDbServerSideEncryptionRule.class);
-    public static final String KMS_SSE_TYPE = "KMS";
+	private static final Logger logger = LoggerFactory.getLogger(DocumentDbEncryptionRule.class);
     
     /**
      * The method will get triggered from Rule Engine with following parameters
@@ -54,7 +53,7 @@ public class DynamoDbServerSideEncryptionRule extends BaseRule {
      * 
      * ************* Following are the Rule Parameters********* <br><br>
      * 
-     * ruleKey : check-for-dynamodb-uses-aws-managed-cmks-for-sse <br><br>
+     * ruleKey : check-for-document-db-encryption <br><br>
      * 
      * severity : Enter the value of severity <br><br>
      * 
@@ -68,9 +67,9 @@ public class DynamoDbServerSideEncryptionRule extends BaseRule {
 
 	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 
-		logger.debug("========DynamoDbServerSideEncryptionRule started=========");
-		String sseType = null;
+		logger.debug("========DocumentDbEncryptionRule started=========");
 		Annotation annotation = null;
+		String storageEncrypted = null;
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 		
@@ -87,28 +86,28 @@ public class DynamoDbServerSideEncryptionRule extends BaseRule {
 		}
 
 		if (resourceAttributes != null) {
-			sseType = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE));
+			storageEncrypted = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.STORAGE_ENCRYPTED));
            
-			if (!sseType.equalsIgnoreCase(KMS_SSE_TYPE)) {
+			if (!Boolean.parseBoolean(storageEncrypted)) {
 				annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
-				annotation.put(PacmanSdkConstants.DESCRIPTION,"Found AWS-owned Customer Master Keys for Server-Side Encryption instead of AWS-managed CMKs");
+				annotation.put(PacmanSdkConstants.DESCRIPTION,"Unencrypted document db clusters found!! ");
 				annotation.put(PacmanRuleConstants.SEVERITY, severity);
 				annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
 				annotation.put(PacmanRuleConstants.CATEGORY, category);
 				annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Found AWS-owned Customer Master Keys for Server-Side Encryption instead of AWS-managed CMKs");
+				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Unencrypted document db clusters found!! ");
 				issueList.add(issue);
 				annotation.put("issueDetails",issueList.toString());
-				logger.debug("========DynamoDbServerSideEncryptionRule ended with annotation {} :=========",annotation);
+				logger.debug("========DocumentDbEncryptionRule ended with annotation {} :=========",annotation);
 				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 		}
-		logger.debug("========DynamoDbServerSideEncryptionRule ended=========");
+		logger.debug("========DocumentDbEncryptionRule ended=========");
 		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {
-		return "This rule checks for dynamodb tables are using AWS-managed CMKs for server side encryption";
+		return "This rule checks for document db clusters are encrypted ";
 	}
 	
 }

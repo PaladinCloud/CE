@@ -394,6 +394,7 @@ public class PacmanRuleConstants {
 
     public static final String PORT_5432 = "5432";
     public static final String ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE = "ssetype";
+    public static final String ES_KMS_KEY_MANAGER_ATTRIBUTE = "keymanager";
     public static final String ES_KMS_ALIAS_ATTRIBUTE = "aliasname";
     public static final String ES_KMS_URL = "esKmsUrl";
     public static final String ES_KMS_KEY_ID_ATTRIBUTE = "kmskeyid";
