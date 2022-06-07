@@ -32,6 +32,7 @@ import com.amazonaws.services.autoscaling.model.LaunchConfiguration;
 import com.amazonaws.services.autoscaling.model.ScalingPolicy;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.databasemigrationservice.model.ReplicationInstance;
 import com.amazonaws.services.directconnect.model.Connection;
 import com.amazonaws.services.directconnect.model.VirtualInterface;
 import com.amazonaws.services.ec2.model.Address;
@@ -253,6 +254,7 @@ public class FileManager {
         FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-dms.data",InventoryConstants.OPEN_ARRAY, false);
 	}
 
 	public static void finalise() throws IOException{
@@ -395,6 +397,7 @@ public class FileManager {
         FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-dms.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -1094,6 +1097,21 @@ public class FileManager {
 		FileGenerator.generateJson(documentMap, fieldNames, "aws-documentdb.data",keys);
 
 	}
+	/* Generate document db files.
+	 *
+	 * @param documentMap the document map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateDMSFiles(Map<String,List<ReplicationInstance>> dms) throws IOException {
+		String fieldNames;
+		String keys;
+
+		fieldNames ="replicationInstanceArn`replicationInstanceIdentifier`availabilityZone`multiAZ`kmsKeyId`publiclyAccessible";
+		keys ="discoverydate`accountid`accountname`region`replicationinstancearn`replicationinstanceid`availabilityzone`multiaz`kmskeyid`publiclyAccessible";
+		FileGenerator.generateJson(dms, fieldNames, "aws-dms.data",keys);
+
+	}
+	
 	/**
 	 * Generate cloud front files.
 	 *

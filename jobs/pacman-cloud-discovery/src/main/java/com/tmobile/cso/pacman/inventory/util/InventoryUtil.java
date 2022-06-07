@@ -69,6 +69,11 @@ import com.amazonaws.services.cloudtrail.AWSCloudTrail;
 import com.amazonaws.services.cloudtrail.AWSCloudTrailClientBuilder;
 import com.amazonaws.services.cloudtrail.model.DescribeTrailsResult;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationService;
+import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClientBuilder;
+import com.amazonaws.services.databasemigrationservice.model.DescribeReplicationInstancesRequest;
+import com.amazonaws.services.databasemigrationservice.model.DescribeReplicationInstancesResult;
+import com.amazonaws.services.databasemigrationservice.model.ReplicationInstance;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.ListTablesRequest;
@@ -547,9 +552,6 @@ public class InventoryUtil {
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"" ;
 		List<DocumentDBVH> documentDBVHList = new ArrayList<>();
 		for(Region region : RegionUtils.getRegions()){
-			if("us-east-1".equalsIgnoreCase(region.getName())) {
-				log.debug(region.getName() );
-			}
 			try{
 				if(!skipRegions.contains(region.getName())){
 					AmazonDocDB awsDocDBClient = AmazonDocDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
@@ -576,6 +578,47 @@ public class InventoryUtil {
 			}
 		}
 		return documentDBClusters;
+	}
+	
+	/**
+	 * Fetch DMS replication instances tables.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String,List<ReplicationInstance>> fetchDBMigrationService(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+		Map<String,List<ReplicationInstance>> awsDBMigrationServiceMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"" ;		
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					AWSDatabaseMigrationService awsDBMigrationClient = AWSDatabaseMigrationServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					String marker = null;
+					List<ReplicationInstance> replicationInstanceList = new ArrayList<>();
+						do {
+							DescribeReplicationInstancesResult replicationInsacesResult = awsDBMigrationClient.describeReplicationInstances(new DescribeReplicationInstancesRequest()).withMarker(marker);
+							marker = replicationInsacesResult.getMarker();
+							replicationInstanceList.addAll( replicationInsacesResult.getReplicationInstances());
+						}while (marker != null);
+
+					if(!replicationInstanceList.isEmpty() ){
+
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : DMS "+region.getName() + " >> "+replicationInstanceList.size());
+						awsDBMigrationServiceMap.put(accountId+delimiter+accountName+delimiter+region.getName(), replicationInstanceList);
+					}
+
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AmazonDynamoDB.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"DocumentDB",e.getMessage());
+				}
+			}
+		}
+		return awsDBMigrationServiceMap;
 	}
 	/**
 	 * Fetch EFS info.
