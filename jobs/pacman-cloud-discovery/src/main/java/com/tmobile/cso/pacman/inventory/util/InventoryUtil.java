@@ -547,9 +547,6 @@ public class InventoryUtil {
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"" ;
 		List<DocumentDBVH> documentDBVHList = new ArrayList<>();
 		for(Region region : RegionUtils.getRegions()){
-			if("us-east-1".equalsIgnoreCase(region.getName())) {
-				log.debug(region.getName() );
-			}
 			try{
 				if(!skipRegions.contains(region.getName())){
 					AmazonDocDB awsDocDBClient = AmazonDocDBClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
