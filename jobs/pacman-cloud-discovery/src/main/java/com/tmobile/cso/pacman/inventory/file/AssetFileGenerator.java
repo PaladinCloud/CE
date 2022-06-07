@@ -160,6 +160,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "dynamodb", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("documentdb"))) {
+                    return;
+                }
+				try{
+					log.info(infoPrefix + "Documentdb");
+					FileManager.generatedocumentDbFiles(InventoryUtil.fetchDocumentDBTables(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "Documentdb\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "dynamodb", e.getMessage());
+				}
+			});
 
 			executor.execute(() ->
 			{
