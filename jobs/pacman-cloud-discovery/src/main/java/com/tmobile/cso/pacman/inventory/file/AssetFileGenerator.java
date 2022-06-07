@@ -170,7 +170,20 @@ public class AssetFileGenerator {
 					FileManager.generatedocumentDbFiles(InventoryUtil.fetchDocumentDBTables(temporaryCredentials, skipRegions,accountId,accountName));
 				}catch(Exception e){
 					log.error(expPrefix+ "Documentdb\", \"cause\":\"" +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(accountId, "", "dynamodb", e.getMessage());
+					ErrorManageUtil.uploadError(accountId, "", "documentdb", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("dms"))) {
+                    return;
+                }
+				try{
+					log.info(infoPrefix + "DMS");
+					FileManager.generateDMSFiles(InventoryUtil.fetchDBMigrationService(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "dms\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "dms", e.getMessage());
 				}
 			});
 
