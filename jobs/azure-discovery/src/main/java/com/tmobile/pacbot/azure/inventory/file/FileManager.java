@@ -76,7 +76,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "[", false);
 		FileGenerator.writeToFile("azure-searchservices.data", "[", false);
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
-		FileGenerator.writeToFile("azure-activityLog.data", "[", false);
+		FileGenerator.writeToFile("azure-activitylog.data", "[", false);
 		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
 	}
 
@@ -113,7 +113,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "]", true);
 		FileGenerator.writeToFile("azure-searchservices.data", "]", true);
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
-		FileGenerator.writeToFile("azure-activityLog.data", "]", true);
+		FileGenerator.writeToFile("azure-activitylog.data", "]", true);
 		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
 
 	}
