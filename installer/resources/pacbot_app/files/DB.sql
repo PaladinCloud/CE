@@ -991,7 +991,7 @@ INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeN
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('67712','201','virtualinterface','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('67713','201','elasticsearch','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('67714','201','elasticache','all','all');
-
+INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('71501','201','documentdb','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('00021aac-d0e6-4481-a1e7-8460154482ca','cdffb9cd-71de-4e29-9cae-783c2aa211ac','virtualmachine','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('ad076972-5c61-4e02-8c4b-7619db880f7f','cdffb9cd-71de-4e29-9cae-783c2aa211ac','blobcontainer','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a448c3a1-02c2-471d-a4b5-ea870eacbd12','cdffb9cd-71de-4e29-9cae-783c2aa211ac','cosmosdb','all','all');
@@ -1092,6 +1092,7 @@ INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targ
 INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('iamgroup','IAM groups','Identity & Compliance','aws','{\"key\":\"accountid,groupname\",\"id\":\"groupname\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_iamgroup/iamgroup'),'2019-02-26','2019-02-26','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('cloudtrail','AWS Cloud Trail','Management & Governance','aws','{\"key\":\"trailarn\",\"id\":\"trailarn\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_cloudtrail/cloudtrail'),'2019-02-26','2019-02-26','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('virtualmachine','GCP Virtual Machine','Compute','gcp','{"key":"id","id":"id"}','enabled','admin','http://vpc-pacbot-data-bn4qhsrcjbrytt5wndwqiq6fgi.us-east-1.es.amazonaws.com:80/gcp_virtualmachine/virtualmachine','2022-06-01','2022-06-01','Infra & Platforms');
+INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('documentdb','AWS Documentdb','Database','aws','{\"key\":\"dbclusterresourceid\",\"id\":\"dbclusterresourceid\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_documentdb/documentdb'),'2022-05-06','2022-05-06','Infra & Platforms');
 
 
 

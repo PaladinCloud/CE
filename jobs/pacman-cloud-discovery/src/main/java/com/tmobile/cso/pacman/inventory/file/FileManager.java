@@ -69,6 +69,7 @@ import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
 import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DeliveryStreamVH;
+import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
 import com.tmobile.cso.pacman.inventory.vo.EbsVH;
 import com.tmobile.cso.pacman.inventory.vo.EfsVH;
@@ -251,6 +252,7 @@ public class FileManager {
         FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.OPEN_ARRAY,false);
         FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.OPEN_ARRAY, false);
 	}
 
 	public static void finalise() throws IOException{
@@ -392,6 +394,7 @@ public class FileManager {
         FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.CLOSE_ARRAY,true);
         FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -1068,15 +1071,29 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "key.keyId`key.arn`key.creationDate`key.aWSAccountId`key.description`key.keyState`key.enabled`key.keyUsage`key.deletionDate`key.validTo"
-					+"`rotationStatus`alias.aliasName`alias.aliasArn";
+					+"`rotationStatus`alias.aliasName`alias.aliasArn`key.keyManager";
 		keys = "discoverydate`accountid`accountname`region`keyid`arn`creationdate`awsaccountid`description`keystate`keyenabled`keyusage`deletiondate`validto`"
-				+"rotationstatus`aliasname`aliasarn";
+				+"rotationstatus`aliasname`aliasarn`keymanager";
 		FileGenerator.generateJson(kmsKeyMap, fieldNames, "aws-kms.data",keys);
 		fieldNames = "key.keyId`tags.tagKey`tags.tagValue";
 		keys = "discoverydate`accountid`accountname`region`keyid`key`value";
 		FileGenerator.generateJson(kmsKeyMap, fieldNames, "aws-kms-tags.data",keys);
 	}
 
+	 /* Generate document db files.
+	 *
+	 * @param documentMap the document map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generatedocumentDbFiles(Map<String,List<DocumentDBVH>> documentMap) throws IOException {
+		String fieldNames;
+		String keys;
+
+		fieldNames ="clusters.hostedZoneId`clusters.dbClusterResourceId`clusters.storageEncrypted`clusters.kmsKeyId";
+		keys ="discoverydate`accountid`accountname`region`hostedzoneid`dbclusterresourceid`storageencrypted`kmskeyid";
+		FileGenerator.generateJson(documentMap, fieldNames, "aws-documentdb.data",keys);
+
+	}
 	/**
 	 * Generate cloud front files.
 	 *
