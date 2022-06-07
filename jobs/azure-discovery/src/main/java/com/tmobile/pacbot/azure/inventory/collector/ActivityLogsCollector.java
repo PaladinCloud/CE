@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 public final class ActivityLogsCollector {
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
-    private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Insights/activityLogAlerts/%s?api-version=2020-08-01";
+    private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Insights/activityLogAlerts/%s?api-version=2020-10-01";
     private static Logger logger = LoggerFactory.getLogger(ActivityLogsCollector.class);
 
     public List<ActivityLogVH> fetchActivityLogAlertDetails(SubscriptionVH subscription) {
