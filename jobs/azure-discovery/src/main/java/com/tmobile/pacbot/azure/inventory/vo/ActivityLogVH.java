@@ -4,15 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 public class ActivityLogVH extends AzureVH {
+    private Map<String, Object> properties;
 
-    private List<Map<String, Object>> allof;
-
-    public List<Map<String, Object>> getAllof() {
-        return allof;
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 
-    public void setAllof(List<Map<String, Object>> allof) {
-        this.allof = allof;
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 
 }
