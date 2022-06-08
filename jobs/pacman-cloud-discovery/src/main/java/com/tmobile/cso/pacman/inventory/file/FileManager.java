@@ -72,6 +72,7 @@ import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DeliveryStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
+import com.tmobile.cso.pacman.inventory.vo.EKSVH;
 import com.tmobile.cso.pacman.inventory.vo.EbsVH;
 import com.tmobile.cso.pacman.inventory.vo.EfsVH;
 import com.tmobile.cso.pacman.inventory.vo.ElastiCacheVH;
@@ -255,6 +256,8 @@ public class FileManager {
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-dms.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-eks.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-eks-tags.data",InventoryConstants.OPEN_ARRAY, false);
 	}
 
 	public static void finalise() throws IOException{
@@ -398,6 +401,8 @@ public class FileManager {
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-dms.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-eks.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-eks-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -592,6 +597,24 @@ public class FileManager {
 		fieldNames ="lambda.FunctionArn`lambda.vpcConfig.securityGroupIds";
 		keys ="discoverydate`accountid`accountname`region`functionarn`securitygroupid";
 		FileGenerator.generateJson(fileInofMap, fieldNames, "aws-lambda-secgroups.data",keys);
+	}
+	
+	/**
+	 * Generate eks files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateEKSFiles(Map<String,List<EKSVH>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "cluster.name`cluster.arn`cluster.status`cluster.encryptionConfig.provider.keyArn`cluster.version";
+		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`keyarn`version";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks.data",keys);
+		fieldNames ="cluster.arn`tags.key`tags.value";
+		keys ="discoverydate`accountid`accountname`region`clusterarn`key`value";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks-tags.data",keys);
+
 	}
 
 	/**
