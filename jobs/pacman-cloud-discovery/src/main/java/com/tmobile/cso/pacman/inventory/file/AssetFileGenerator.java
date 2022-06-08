@@ -229,6 +229,20 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "lambda", e.getMessage());
 				}
 			});
+			
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("eks"))) {
+                    return;
+                }
+				try{
+					log.info(infoPrefix + "eks");
+					FileManager.generateEKSFiles(InventoryUtil.fetcheksInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "eks\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "eks", e.getMessage());
+				}
+			});
 
 			executor.execute(() ->
 			{

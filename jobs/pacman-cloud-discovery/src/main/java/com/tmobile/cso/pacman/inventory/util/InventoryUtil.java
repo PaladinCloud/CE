@@ -102,6 +102,8 @@ import com.amazonaws.services.ec2.model.Subnet;
 import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.Vpc;
 import com.amazonaws.services.ec2.model.VpcEndpoint;
+import com.amazonaws.services.eks.AmazonEKS;
+import com.amazonaws.services.eks.AmazonEKSClientBuilder;
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalk;
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalkClientBuilder;
 import com.amazonaws.services.elasticbeanstalk.model.ApplicationDescription;
@@ -249,6 +251,7 @@ import com.tmobile.cso.pacman.inventory.vo.CloudFrontVH;
 import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
+import com.tmobile.cso.pacman.inventory.vo.EKSVH;
 import com.tmobile.cso.pacman.inventory.vo.EbsVH;
 import com.tmobile.cso.pacman.inventory.vo.EfsVH;
 import com.tmobile.cso.pacman.inventory.vo.GroupVH;
@@ -953,6 +956,56 @@ public class InventoryUtil {
 			}
 		}
 		return elbMap;
+	}
+	
+	/**
+	 * Fetch eks cluster info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static  Map<String,List<EKSVH>> fetcheksInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+
+		Map<String,List<EKSVH>> eksClusterMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Lambda\" , \"region\":\"" ;
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					AmazonEKS eksClient = AmazonEKSClientBuilder.standard().
+				 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					List<String> clusters ;
+					List<EKSVH> eksList = new ArrayList<>();
+					String nextNotken = null;
+					do{
+						com.amazonaws.services.eks.model.ListClustersResult listEKSClusters = eksClient.listClusters(new com.amazonaws.services.eks.model.ListClustersRequest().withNextToken(nextNotken));
+						 clusters = listEKSClusters.getClusters();
+						if( !clusters.isEmpty() ) {
+							clusters.forEach( clustername -> {
+								com.amazonaws.services.eks.model.DescribeClusterResult describeCluster = eksClient.describeCluster(new com.amazonaws.services.eks.model.DescribeClusterRequest().withName(clustername));
+								com.amazonaws.services.eks.model.Cluster cluster = describeCluster.getCluster();
+								EKSVH  eksVH = new EKSVH(cluster);
+								eksList.add(eksVH);
+							});
+						}
+						nextNotken = listEKSClusters.getNextToken();
+					}while(nextNotken!=null);
+
+					if( !eksList.isEmpty() ) {
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : eks " +region.getName() + " >> "+eksList.size());
+						eksClusterMap.put(accountId+delimiter+accountName+delimiter+region.getName(),eksList);
+					}
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AWSLambda.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"eks",e.getMessage());
+				}
+			}
+		}
+		return eksClusterMap ;
 	}
 
 	/**
