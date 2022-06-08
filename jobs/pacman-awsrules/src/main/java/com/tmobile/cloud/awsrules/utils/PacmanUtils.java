@@ -1044,7 +1044,7 @@ public class PacmanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Boolean checkIfDocumentDbEncryptedWithKmsCmks(String kmsKeyId, String esKmsUrl, String defaultKmsKeyManager) throws Exception {
+	public static Boolean checkIfResourceEncryptedWithKmsCmks(String kmsKeyId, String esKmsUrl, String defaultKmsKeyManager) throws Exception {
 
 		List<String> customKeys = new ArrayList<>();
 		Map<String, Object> mustFilter = new HashMap<>();
@@ -1064,7 +1064,7 @@ public class PacmanUtils {
 					String keyManager = source.get(PacmanRuleConstants.ES_KMS_KEY_MANAGER_ATTRIBUTE).getAsString();
 					String keyArn = source.get(PacmanRuleConstants.ARN).getAsString();
 
-					if (!keyManager.equalsIgnoreCase(defaultKmsKeyManager)) {
+					if (StringUtils.isNotEmpty(keyManager) && !keyManager.equalsIgnoreCase(defaultKmsKeyManager)) {
 						customKeys.add(keyArn);
 					}
 				}
@@ -1075,6 +1075,7 @@ public class PacmanUtils {
 			return true;
 		return false;
 	}
+    
     
 	/**
 	 * @param kmsKeyId
