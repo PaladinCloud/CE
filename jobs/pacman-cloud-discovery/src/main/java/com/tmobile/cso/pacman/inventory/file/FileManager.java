@@ -547,8 +547,8 @@ public class FileManager {
 	public static void generateEfsFiles(Map<String,List<EfsVH>> efsfMap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames ="efs.FileSystemId`efs.Name`efs.CreationTime`efs.CreationToken`efs.LifeCycleState`efs.NumberOfMountTargets`efs.OwnerId`efs.PerformanceMode";
-		keys ="discoverydate`accountid`accountname`region`filesystemid`name`creationtime`creationtoken`lifecyclestate`noofmounttargets`ownerid`performancemode";
+		fieldNames ="efs.FileSystemId`efs.Name`efs.CreationTime`efs.CreationToken`efs.LifeCycleState`efs.NumberOfMountTargets`efs.OwnerId`efs.PerformanceMode`efs.encrypted`efs.kmsKeyId";
+		keys ="discoverydate`accountid`accountname`region`filesystemid`name`creationtime`creationtoken`lifecyclestate`noofmounttargets`ownerid`performancemode`encrypted`kmskeyid";
 		FileGenerator.generateJson(efsfMap, fieldNames, "aws-efs.data",keys);
 		fieldNames ="efs.FileSystemId`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`filesystemid`key`value";
