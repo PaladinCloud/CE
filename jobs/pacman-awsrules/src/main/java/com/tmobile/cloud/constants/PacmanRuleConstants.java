@@ -105,7 +105,8 @@ public class PacmanRuleConstants {
     public static final String STATE_TRANSITION_REASON = "statetransitionreason";
     public static final String STATE_NAME = "statename";
     public static final String PRIVATE_IP_ADDRESS = "privateipaddress";
-    public static final String CATEGORY = "ruleCategory";
+    public static final String CATEGORY = "category";
+    public static final String ADMINISTRATIVE = "Administrative";
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
     public static final String ACCOUNTID = "accountid";
@@ -419,7 +420,7 @@ public class PacmanRuleConstants {
     public static final String EQUALS_STRING = "equals";
     public static final String SUCESS = "SUCESS";
     public static final String FAILURE = "failure";
-    public static final String ALLOF = "allof";
+    public static final String ALLOF = "allOf";
     public static final String PRICING_TIER = "pricingTier";
     public static final String PROPERTIES = "properties";
     public static final String KEYVAULTNAMES = "keyValutName";
