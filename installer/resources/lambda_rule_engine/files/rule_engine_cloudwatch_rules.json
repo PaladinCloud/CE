@@ -5259,5 +5259,28 @@
     "modifiedDate": "2022-06-09",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_PostgreSQL_Server_In_Transit_Encryption",
+    "ruleUUID": "azure_Enable_PostgreSQL_Server_In_Transit_Encryption",
+    "policyId": "Enable_PostgreSQL_Server_In_Transit_Encryption",
+    "ruleName": "PostgreSQL_Server_In_Transit_Encryption",
+    "targetType": "postgresql",
+    "assetGroup": "Azure",
+    "alexaKeyword": "PostgreSQL_Server_In_Transit_Encryption",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-postgree-ssl-enforcement\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enable PostgreSQL Server In-Transit Encryption\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_PostgreSQL_Server_In_Transit_Encryption\",\"autofix\":false,\"alexaKeyword\":\"PostgreSQL_Server_In_Transit_Encryption\",\"ruleRestUrl\":\"\",\"targetType\":\"postgresql\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_PostgreSQL_Server_In_Transit_Encryption\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_PostgreSQL_Server_In_Transit_Encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_PostgreSQL_Server_In_Transit_Encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable PostgreSQL Server In-Transit Encryption",
+    "createdDate": "2022-05-19",
+    "modifiedDate": "2022-05-19",
+    "severity": "high",
+    "category": "security"
   }
+
 ]
