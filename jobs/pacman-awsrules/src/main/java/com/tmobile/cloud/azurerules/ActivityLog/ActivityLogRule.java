@@ -126,7 +126,7 @@ public class ActivityLogRule extends BaseRule {
 
                             String jsonEqualType = allofdetails.get(PacmanRuleConstants.EQUALS_STRING).getAsString();
                             if (jsonField != null && jsonEqualType != null) {
-                                if (jsonField.equalsIgnoreCase(PacmanRuleConstants.CATEGORY) && jsonEqualType.equalsIgnoreCase(PacmanRuleConstants.ADMINISTRATIVE)) {
+                                if (jsonField.equalsIgnoreCase(PacmanRuleConstants.ACTIVITY_RULE_CATEGORY) && jsonEqualType.equalsIgnoreCase(PacmanRuleConstants.ADMINISTRATIVE)) {
                                     categoryAdminExists = true;
                                 }
                                 if (jsonField.equalsIgnoreCase(field) && jsonEqualType.equalsIgnoreCase(equalsType)) {

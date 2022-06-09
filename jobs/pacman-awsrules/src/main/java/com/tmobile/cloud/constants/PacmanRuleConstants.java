@@ -105,7 +105,8 @@ public class PacmanRuleConstants {
     public static final String STATE_TRANSITION_REASON = "statetransitionreason";
     public static final String STATE_NAME = "statename";
     public static final String PRIVATE_IP_ADDRESS = "privateipaddress";
-    public static final String CATEGORY = "category";
+    public static final String CATEGORY = "ruleCategory";
+    public static final String ACTIVITY_RULE_CATEGORY = "category";
     public static final String ADMINISTRATIVE = "Administrative";
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
