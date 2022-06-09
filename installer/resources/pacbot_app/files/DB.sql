@@ -1106,7 +1106,6 @@ INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targ
 
 
 
-
 /* Auth Related data */
 INSERT IGNORE INTO `oauth_client_details`(`client_id`,`resource_ids`,`client_secret`,`scope`,`authorized_grant_types`,`web_server_redirect_uri`,`authorities`,`access_token_validity`,`refresh_token_validity`,`additional_information`,`autoapprove`) values ('22e14922-87d7-4ee4-a470-da0bb10d45d3',NULL,'$2a$10$Is6r80wW65hKHUq6Wa8B6O3BLKqGOb5McDGbJUwVwfVvyeJBCf7ta','resource-access','implicit,authorization_code,refresh_token,password,client_credentials',NULL,'ROLE_CLIENT,ROLE_USER',NULL,NULL,NULL,'');
 INSERT IGNORE INTO `oauth_user`(`id`,`user_id`,`user_name`,`first_name`,`last_name`,`email`,`created_date`,`modified_date`) values (1,'user@pacbot.org','user','user','','user@pacbot.org','2018-06-26 18:21:56','2018-06-26 18:21:56'),(2,'admin@pacbot.org','admin','admin','','admin@pacbot.org','2018-06-26 18:21:56','2018-06-26 18:21:56');
