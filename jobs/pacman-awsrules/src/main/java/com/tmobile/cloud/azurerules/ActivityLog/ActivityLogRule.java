@@ -1,10 +1,7 @@
 package com.tmobile.cloud.azurerules.ActivityLog;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import com.google.common.collect.HashMultimap;
 
 import com.tmobile.pacman.commons.rule.Annotation;
@@ -13,6 +10,7 @@ import com.tmobile.pacman.commons.rule.PacmanRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +37,7 @@ public class ActivityLogRule extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String field = ruleParam.get(PacmanRuleConstants.FIELD);
         String equalstype = ruleParam.get(PacmanRuleConstants.EQUALS_STRING);
-        String sucessMSG = ruleParam.get(PacmanRuleConstants.SUCESS);
+        String sucessMSG = ruleParam.get(PacmanRuleConstants.SUCCESS);
         String failureMsg = ruleParam.get(PacmanRuleConstants.FAILURE);
         logger.info("field: {} ", field);
         logger.info("equalstype : {} ", equalstype);
@@ -50,7 +48,7 @@ public class ActivityLogRule extends BaseRule {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/azure_activitylog/_search";
+            esUrl = url + "/azure_activitylogalert/_search";
         }
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         boolean isValid = false;
@@ -71,7 +69,7 @@ public class ActivityLogRule extends BaseRule {
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
                     issue.put(PacmanRuleConstants.VIOLATION_REASON,
-                            ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
+                            ruleParam.get(PacmanRuleConstants.RULE_ID)+failureMsg + " Violation Found!");
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug(
@@ -92,8 +90,9 @@ public class ActivityLogRule extends BaseRule {
     }
 
     private boolean checkActivityLogAlert(String esUrl, Map<String, Object> mustFilter, String equalsType,
-            String field) throws Exception {
+                                          String field) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
+
         boolean validationResult = false;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
@@ -109,25 +108,38 @@ public class ActivityLogRule extends BaseRule {
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem.toString());
 
-                JsonArray allof = jsonDataItem.getAsJsonObject()
-                        .get(PacmanRuleConstants.ALLOF).getAsJsonArray();
-                if (allof != null && allof.size() > 0) {
+                JsonArray activityLogAlerts = jsonDataItem.getAsJsonArray("activityLogAlerts");
 
-                    for (JsonElement jsonElement : allof) {
-                        JsonObject allofdetails = jsonElement.getAsJsonObject();
-                        String jsonField = allofdetails.get(PacmanRuleConstants.FIELD).getAsString();
+                for (JsonElement activityLogAlert : activityLogAlerts) {
+                    JsonObject properties = activityLogAlert.getAsJsonObject().get(PacmanRuleConstants.PROPERTIES).getAsJsonObject();
+                    JsonObject condition = properties.getAsJsonObject().get("condition").getAsJsonObject();
+                    boolean enabled = properties.getAsJsonObject().get("enabled").getAsBoolean();
+                    boolean categoryAdminExists = false, isOperationNameMatched = false;
+                    JsonArray allof = condition.getAsJsonObject()
+                            .get(PacmanRuleConstants.ALLOF).getAsJsonArray();
+                    if (allof != null && allof.size() > 0) {
 
-                        String jsonEqualType = allofdetails.get(PacmanRuleConstants.EQUALS_STRING).getAsString();
-                        if (jsonField == null || jsonEqualType == null) {
-                            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-                            validationResult = true;
+                        for (JsonElement jsonElement : allof) {
 
-                        } else if (jsonField.equalsIgnoreCase(field) && jsonEqualType.equalsIgnoreCase(equalsType)) {
-                            validationResult = true;
-                        } else {
-                            validationResult = false;
+                            JsonObject allofdetails = jsonElement.getAsJsonObject();
+                            String jsonField = allofdetails.get(PacmanRuleConstants.FIELD).getAsString();
+
+                            String jsonEqualType = allofdetails.get(PacmanRuleConstants.EQUALS_STRING).getAsString();
+                            if (jsonField != null && jsonEqualType != null) {
+                                if (jsonField.equalsIgnoreCase(PacmanRuleConstants.CATEGORY) && jsonEqualType.equalsIgnoreCase(PacmanRuleConstants.ADMINISTRATIVE)) {
+                                    categoryAdminExists = true;
+                                }
+                                if (jsonField.equalsIgnoreCase(field) && jsonEqualType.equalsIgnoreCase(equalsType)) {
+                                    isOperationNameMatched = true;
+                                }
+                            }
+
                         }
-
+                    }
+                    if (isOperationNameMatched && categoryAdminExists && enabled) {
+                        validationResult = true;
+                        logger.debug("Validating the SUCCESS data item: {}", activityLogAlert);
+                        break;
                     }
 
                 }
