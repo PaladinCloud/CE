@@ -53,10 +53,13 @@ public class BlobContainerInventoryCollector {
 					blobContainerVH.setSubscriptionName(subscription.getSubscriptionName());
 					JsonObject blobObject = blobObjectElement.getAsJsonObject();
 					JsonObject properties = blobObject.getAsJsonObject("properties");
+					log.debug("Properties data{}",properties);
 					blobContainerVH.setId(blobObject.get("id").getAsString());
 					blobContainerVH.setName(blobObject.get("name").getAsString());
 					blobContainerVH.setType(blobObject.get("type").getAsString());
 					blobContainerVH.setTag(blobObject.get("etag").getAsString());
+					blobContainerVH.setHasImmutabilityPolicy(blobObject.get("hasImmutabilityPolicy").getAsBoolean());
+					blobContainerVH.setHasLegalHold(blobObject.get("hasLegalHold").getAsBoolean());
 					blobContainerVH.setTags(Util.tagsList(tagMap, storageAccount.resourceGroupName(), tags));
 					if (properties!=null) {
 						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
