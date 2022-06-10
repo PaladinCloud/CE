@@ -3960,6 +3960,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks",
+    "ruleUUID": "aws_enable_eks_secret_encryption",
+    "policyId": "Aws_EKS_secrets_should_be_encrypted_version-1",
+    "ruleName": "aws_eks_secrets_should_be_encrypted_with_kms_cmks",
+    "targetType": "eks",
+    "assetGroup": "aws",
+    "alexaKeyword": "EnableAwsEKSSecretsEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-eks-secrets-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks\",\"autofix\":false,\"alexaKeyword\":\"EnableAwsEKSSecretsEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_EKS_secrets_should_be_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_eks_secret_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_eks_secret_encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Envelope Encryption for EKS Kubernetes Secrets",
+    "createdDate": "2022-06-09",
+    "modifiedDate": "2022-06-09",
+    "severity": "critical",
+    "category": "security"
+  },
+  {
     "ruleId": "Aws_EFS_should_be_encrypted_version-1_aws_enable_encryption_efs",
     "ruleUUID": "aws_enable_efs_encryption",
     "policyId": "Aws_EFS_should_be_encrypted_version-1",
