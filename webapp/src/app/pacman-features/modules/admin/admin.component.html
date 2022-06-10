@@ -12,13 +12,13 @@
  * limitations under the License.
  -->
 
- <div class="admin-wrapper flex flex-between">
-    <div class="main-panel flex flex-between" [class.tv-selected]="tvState==true || tvState=='true'">
-        <div class="contextual-menu-container" *ngIf="tvState!=true && tvState!='true'">
-            <app-contextual-menu [pageTitle]="pageTitle" [listOfMenus]="listOfContextualMenuItems"></app-contextual-menu>
-        </div>
-        <div class="contextual-content-container">
-            <router-outlet #route="outlet"></router-outlet>
-        </div>
+<div class="admin-wrapper flex flex-between">
+  <div
+    class="main-panel flex flex-between"
+    [class.tv-selected]="tvState == true || tvState == 'true'"
+  >
+    <div class="contextual-content-container">
+      <router-outlet #route="outlet"></router-outlet>
     </div>
+  </div>
 </div>
