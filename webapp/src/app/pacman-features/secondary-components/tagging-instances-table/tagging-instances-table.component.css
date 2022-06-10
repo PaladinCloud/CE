@@ -13,25 +13,25 @@
  */
 
 .tagging-instances-container {
-    border-radius: var(--border-radius);
-    background-color: #ffffff;
+  border-radius: var(--border-radius);
+  background-color: var(--background-white);
 
-    border: none;
-    min-height: 10em;
+  border: none;
+  min-height: 10em;
 }
 
 .tagging-instances-content {
-    min-height: 10em;
-    font-size: 1em;
+  min-height: 10em;
+  font-size: 1em;
 }
 
 .sub-header {
-    padding: 0.8em;
-    background-color: #ffffff;
-    color: #555;
-    font-size: 1em;
+  padding: 0.8em;
+  background-color: var(--background-white);
+  color: #555;
+  font-size: 1em;
 }
 .tagging-instances-container /deep/ .table-cells {
-    max-width: 500px;
-    width: 100% !important;
+  max-width: 500px;
+  width: 100% !important;
 }

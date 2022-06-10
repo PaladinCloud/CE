@@ -13,58 +13,58 @@
  */
 
 .container {
-    display: block;
-    position: relative;
-    padding-left: 2em;
-    cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  display: block;
+  position: relative;
+  padding-left: 2em;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /* Hide the browser's default radio button */
 .container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
 }
 
 /* Create a custom radio button */
 .checkmark {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    height: 18px;
-    width: 18px;
-    background-color: #eee;
-    border-radius: 50%;
-    transition: 0.3s ease-in-out;
-    transform: translateY(-50%);
-    border: 1px solid #666666;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: #eee;
+  border-radius: 50%;
+  transition: 0.3s ease-in-out;
+  transform: translateY(-50%);
+  border: 1px solid #666666;
 }
 
 /* On mouse-over, add a grey background color */
 .container:hover input ~ .checkmark {
-    background-color: #ccc;
+  background-color: #ccc;
 }
 
 /* When the radio button is checked, add a blue background */
 .container input:checked ~ .checkmark {
-    background-color: #fff;
-    box-shadow: inset 0px 0px 0 5px var(--primary-400);
-    border: 0;
-    /* border: 1px solid #a10354; */
+  background-color: var(--background-white);
+  box-shadow: inset 0px 0px 0 5px var(--primary-400);
+  border: 0;
+  /* border: 1px solid #a10354; */
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+  content: "";
+  position: absolute;
+  display: none;
 }
 
 /* Show the indicator (dot/circle) when checked */
 .container input:checked ~ .checkmark:after {
-    display: block;
+  display: block;
 }

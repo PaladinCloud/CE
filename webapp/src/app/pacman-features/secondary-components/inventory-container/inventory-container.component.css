@@ -12,33 +12,33 @@
  * limitations under the License.
  */
 
-.header{
-    padding: 16px 24px;
-    font-family: ex2-medium;
-    background-color: #fff;
-    color: #3f4a59;
-    border-top-left-radius: 0.4em;
-    border-top-right-radius: 0.4em;
-    border-bottom: 0.1em solid #d5dce2;
+.header {
+  padding: 16px 24px;
+  font-family: ex2-medium;
+  background-color: var(--background-white);
+  color: #3f4a59;
+  border-top-left-radius: 0.4em;
+  border-top-right-radius: 0.4em;
+  border-bottom: 0.1em solid #d5dce2;
 }
 
-.inventory-wrapper{
-	min-height: 22.83em;
+.inventory-wrapper {
+  min-height: 22.83em;
 }
 
-.chart-wrapper{
-	position: relative;
+.chart-wrapper {
+  position: relative;
   height: 28.8em;
 }
 
-.post{
-	top:15em;
+.post {
+  top: 15em;
 }
 
-.error_message_post{
-    position: absolute;
-    width: 100%;
-    top: 12em;
+.error_message_post {
+  position: absolute;
+  width: 100%;
+  top: 12em;
 }
 
 .legend-color {
@@ -47,14 +47,14 @@
   margin: 0 1em;
 }
 
-.legend-text{
-    font-size: 1.05em;
+.legend-text {
+  font-size: 1.05em;
 }
 
-.legends-wrapper{
+.legends-wrapper {
   margin-top: 1.5em;
 }
-.chart-cont{
+.chart-cont {
   min-height: 40vh;
   width: 100%;
   position: relative;
