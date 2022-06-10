@@ -26,6 +26,10 @@ public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
     public static final String NAME = "name";
+    public static final String ES_VM_URL = "esvmURL";
+    public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
+    public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
+    public static final String GCP_NAT_IP = "natIP";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
