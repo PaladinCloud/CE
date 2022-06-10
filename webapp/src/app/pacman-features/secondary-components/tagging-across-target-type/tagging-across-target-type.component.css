@@ -13,68 +13,69 @@
  */
 
 .tagging-across-target-type-wrapper {
-    width: 100%;        
-    background: var(--background-grey);
+  width: 100%;
+  background: var(--background-grey);
 }
 
 .sub-header {
-    padding: 16px 24px;
-    background-color: #fff;
-    border-left: 1px solid var(--border-100);
-    border-top: 1px solid var(--border-100);
-    border-right: 1px solid var(--border-100);
-    color: #555;
-    font-size: 1em;
+  padding: 16px 24px;
+  background-color: var(--background-white);
+  border-left: 1px solid var(--border-100);
+  border-top: 1px solid var(--border-100);
+  border-right: 1px solid var(--border-100);
+  color: #555;
+  font-size: 1em;
 }
 
 .tiles-wrapper {
-    background-color: #fff;
-    padding: 0 1.5em;
-    min-height: 18.5em;
-    position: relative;
-    border-left: 1px solid var(--border-100);
-    border-right: 1px solid var(--border-100);
-    border-bottom: 1px solid var(--border-100);
-    border-bottom-left-radius: var(--border-radius);
-    border-bottom-right-radius: var(--border-radius);
+  background-color: var(--background-white);
+  padding: 0 1.5em;
+  min-height: 18.5em;
+  position: relative;
+  border-left: 1px solid var(--border-100);
+  border-right: 1px solid var(--border-100);
+  border-bottom: 1px solid var(--border-100);
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
 }
 
 .container-parent {
-    overflow-x: hidden;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
 }
 
 .container-parent:hover {
-    overflow-x: auto; overflow-x: overlay;
+  overflow-x: auto;
+  overflow-x: overlay;
 }
 
 .container-parent ul {
-    max-width: 100%;
-    height: 100%;
-    display: flex
+  max-width: 100%;
+  height: 100%;
+  display: flex;
 }
 
 .container-parent ul li {
-    float: left;
-    padding: 0em 1em;
-    margin: 1.5em 0;
-    border-right: 2px solid #DDD;
+  float: left;
+  padding: 0em 1em;
+  margin: 1.5em 0;
+  border-right: 2px solid #ddd;
 }
 
 .container-parent ul li:first-child {
-    padding-left: 0;
+  padding-left: 0;
 }
 
 .container-parent ul li:last-child {
-    border: 0px;
-    padding-right: 0;
+  border: 0px;
+  padding-right: 0;
 }
 
 /* css for edge browser */
-@supports (-ms-ime-align: auto) { 
-    .container-parent {
-        overflow-x: auto;
-    }
+@supports (-ms-ime-align: auto) {
+  .container-parent {
+    overflow-x: auto;
+  }
 }

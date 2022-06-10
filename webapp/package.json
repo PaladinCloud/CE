@@ -33,6 +33,7 @@
     "ag-grid-angular": "^16.0.0",
     "angular-font-awesome": "^2.0.3",
     "angular-in-memory-web-api": "^0.5.0",
+    "angular-tree-component": "^7.2.1",
     "blocking-proxy": "^1.0.1",
     "core-js": "^2.4.1",
     "d3": "^4.11.0",

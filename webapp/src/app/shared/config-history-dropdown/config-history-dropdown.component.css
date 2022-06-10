@@ -13,99 +13,100 @@
  */
 
 .filter-arrow {
-    width: 0;
-    height: 0;
-    border-left: 0.3em solid transparent;
-    border-right: 0.3em solid transparent;
-    border-top: 0.4em solid var(--primary-400);
-    margin-left: 0.4em;
-    cursor: pointer;
-    pointer-events: none;
-    top: 0.75em;
-    right: 0.5em;
+  width: 0;
+  height: 0;
+  border-left: 0.3em solid transparent;
+  border-right: 0.3em solid transparent;
+  border-top: 0.4em solid var(--primary-400);
+  margin-left: 0.4em;
+  cursor: pointer;
+  pointer-events: none;
+  top: 0.75em;
+  right: 0.5em;
 }
 
-.searchable-dropdown-wrapper{
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
-    border-radius: 1px;
+.searchable-dropdown-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-white);
+  box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 1px;
 }
 
 .items-wrapper {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 }
 
 .each-tile {
-    border-bottom: 1px solid #d3d3d3;
-    color: rgba(0,0,0,.54);
-    cursor: pointer;
+  border-bottom: 1px solid #d3d3d3;
+  color: rgba(0, 0, 0, 0.54);
+  cursor: pointer;
 }
 
 .application-name {
-    color: #3f51b5;
-    text-transform: capitalize;
-    padding-bottom: 0.3em;
+  color: #3f51b5;
+  text-transform: capitalize;
+  padding-bottom: 0.3em;
 }
 
 .property {
-    padding: 0 0.5em;
-    border-right: 1px solid #ccc;;
-    color: #333;
+  padding: 0 0.5em;
+  border-right: 1px solid #ccc;
+  color: #333;
 }
 
 .property:first-child {
-    padding-left: 0;
+  padding-left: 0;
 }
 
-.property:last-child, .property:nth-child(3) {
-    border: none;
+.property:last-child,
+.property:nth-child(3) {
+  border: none;
 }
 
 .owner {
-    color: #e20774;
-    font-size: 1.2em;
+  color: #e20774;
+  font-size: 1.2em;
 }
 
 .active {
-    background-color: var(--primary-400);
-    color: #fff;
+  background-color: var(--primary-400);
+  color: #fff;
 }
 
 .active .property,
-.active .application-name, 
+.active .application-name,
 .active .owner,
-.active .message span  {
-    background-color: var(--primary-400);
-    border-right-color: #fff;
-    color: #fff;
+.active .message span {
+  background-color: var(--primary-400);
+  border-right-color: #fff;
+  color: #fff;
 }
 
 .each-tile-wrapper {
-    padding: 1em;
+  padding: 1em;
 }
 
 .each-tile-row {
-    padding-bottom: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 .each-tile-row.message span {
-    color: #333;
+  color: #333;
 }
 
 .each-tile.hover-tile:hover {
-    background-color: var(--primary-400);
-    color: #fff;
+  background-color: var(--primary-400);
+  color: #fff;
 }
 
-.hover-tile:hover .property, 
+.hover-tile:hover .property,
 .hover-tile:hover .application-name,
 .hover-tile:hover .owner,
-.hover-tile:hover .message span  {
-    background-color: var(--primary-400);
-    border-right-color: #fff;
-    color: #fff;
+.hover-tile:hover .message span {
+  background-color: var(--primary-400);
+  border-right-color: #fff;
+  color: #fff;
 }

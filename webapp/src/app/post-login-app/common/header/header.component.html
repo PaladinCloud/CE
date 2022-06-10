@@ -1,0 +1,41 @@
+<div class="header-wrapper">
+  <div class="header-search-wrapper" (click)="handleSearch()">
+    <div class="header-search-content-container">
+      <mat-icon
+        class="mat-icon"
+        matPrefix
+        svgIcon="customSearchIcon"
+      ></mat-icon>
+
+      <form class="header-search-form">
+        <mat-form-field class="header-search-full-width" appearance="fill">
+          <input type="search" matInput placeholder="Search" />
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+
+  <div class="header-user-wrapper">
+    <div class="header-user-content-wrapper">
+      <div class="user-image-wrapper">
+        <img src="/assets/images/user-image.png" alt="" />
+      </div>
+      <div class="user-info-wrapper">
+        <div class="user-name">Admin</div>
+        <div class="user-email">admin@paladin.com</div>
+      </div>
+      <div class="user-logout-modal-btn" tabindex="1" (blur)="closeUserInfo()">
+        <img
+          src="/assets/icons/vector-62.svg"
+          alt=""
+          (click)="showUserInfo = !showUserInfo"
+        />
+      </div>
+    </div>
+  </div>
+  <app-user-info
+    (click)="showUserInfo = false"
+    class="user-options"
+    *ngIf="showUserInfo"
+  ></app-user-info>
+</div>

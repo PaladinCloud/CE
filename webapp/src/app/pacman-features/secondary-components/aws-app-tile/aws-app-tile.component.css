@@ -13,105 +13,106 @@
  */
 
 .aws-app-type-container {
-    height: 9em;
-    position: relative;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    z-index: 1;
-    background: #fff;
-    border: 0px;
-    width: 100%;
-    transition: 0.3s ease;
-    padding-top: 1.3em;
-    text-align: center;
-    min-width: 9em;
-    box-shadow: 0px 0px 8px -1px rgba(0,0,0,0.1);
+  height: 9em;
+  position: relative;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  z-index: 1;
+  background-color: var(--background-white);
+  border: 0px;
+  width: 100%;
+  transition: 0.3s ease;
+  padding-top: 1.3em;
+  text-align: center;
+  min-width: 9em;
+  box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.1);
 }
 
 .aws-app-image {
-    height: 4em;
-    margin: auto;
-    transform: scale(.75);
-    transition: all .3s ease-in-out;
+  height: 4em;
+  margin: auto;
+  transform: scale(0.75);
+  transition: all 0.3s ease-in-out;
 }
 
 .aws-app-extra {
-    height: 2.353em;
-    margin: auto;
-    background-color: red;
-    width: 2.43em;
-    color: #fff;
-    font-size: 1.7em;
-    border-radius: 2em;
-    text-transform: uppercase;
-    font-family: var(--text-light-font-family);
-    letter-spacing: 0.5px;
-    box-shadow: 0 0 4px 0px rgba(0,0,0,0.15);
+  height: 2.353em;
+  margin: auto;
+  background-color: red;
+  width: 2.43em;
+  color: #fff;
+  font-size: 1.7em;
+  border-radius: 2em;
+  text-transform: uppercase;
+  font-family: var(--text-light-font-family);
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.15);
 }
 
 .aws-app-image.view-all {
-    transform: rotate(90deg) scale(0.9);
+  transform: rotate(90deg) scale(0.9);
 }
 
 .aws-app-details {
-    width: 100%;
-    position: relative;
-    bottom: 7%;
-    font-size: 1.3em;
-    transform: translateY(100%);
-    padding: 0 0.4em;    
+  width: 100%;
+  position: relative;
+  bottom: 7%;
+  font-size: 1.3em;
+  transform: translateY(100%);
+  padding: 0 0.4em;
 }
 
 .aws-app-details .type {
-    font-family: var(--text-medium-font-family);
-    text-transform: capitalize;
-    /*max-width: 5vw;*/
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    padding-bottom: 2px;
-    display: inline-block;
+  font-family: var(--text-medium-font-family);
+  text-transform: capitalize;
+  /*max-width: 5vw;*/
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-bottom: 2px;
+  display: inline-block;
 }
 
 .aws-app-details .instances {
-    padding-left: 0.25em;
-    /*font-size: 1.3em;*/
-    font-family: var(--text-light-font-family);
-    border-left: 1px solid #999;
-    margin-left: 0.3em;
-    white-space: nowrap;
+  padding-left: 0.25em;
+  /*font-size: 1.3em;*/
+  font-family: var(--text-light-font-family);
+  border-left: 1px solid #999;
+  margin-left: 0.3em;
+  white-space: nowrap;
 }
 
 .aws-app-type-container:hover {
-    background: #f9f9f9;
-    box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.18);
+  background: #f9f9f9;
+  box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.18);
 }
 
 .aws-app-type-container.active {
-    background: rgb(221, 226, 233);
-    box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.18);
+  background: rgb(221, 226, 233);
+  box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.18);
 }
 
 .aws-app-type-container:hover .aws-app-image,
 .aws-app-type-container.active .aws-app-image {
-    transform: scale(1);
+  transform: scale(1);
 }
 
-.aws-app-type-container:hover .aws-app-image.view-all, .aws-app-type-container.active .aws-app-image.view-all{
-    transform: scale(1) rotate(90deg);
+.aws-app-type-container:hover .aws-app-image.view-all,
+.aws-app-type-container.active .aws-app-image.view-all {
+  transform: scale(1) rotate(90deg);
 }
 
 .aws-app-recommendation {
-    position: absolute;
-    right: 6%;
-    top: 6%;
-    background: transparent;
-    width: 1.5em;
-    border-radius: 50%;
-    text-align: center;
+  position: absolute;
+  right: 6%;
+  top: 6%;
+  background: transparent;
+  width: 1.5em;
+  border-radius: 50%;
+  text-align: center;
 }
 
 .aws-app-recommendation img {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
