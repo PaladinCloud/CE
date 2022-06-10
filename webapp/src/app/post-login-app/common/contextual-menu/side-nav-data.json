@@ -1,0 +1,138 @@
+[
+  {
+    "id": 1,
+    "name": "Dashboard",
+    "image": "compliance",
+    "route": "/pl/compliance/compliance-dashboard"
+  },
+  {
+    "id": 2,
+    "name": "Violations",
+    "image": "assets",
+    "route": "/pl/compliance/issue-listing"
+  },
+  {
+    "id": 3,
+    "name": "Assets",
+    "image": "assets",
+    "children": [
+      {
+        "id": 4,
+        "name": "Summary",
+        "parent": "Assets",
+        "route": "/pl/assets/asset-dashboard"
+      },
+      {
+        "id": 5,
+        "name": "Details",
+        "parent": "Assets",
+        "route": "/pl/assets/asset-list"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Policy",
+    "image": "admin",
+    "route": "/pl/compliance/policy-knowledgebase"
+  },
+  {
+    "id": 7,
+    "name": "Tagging",
+    "image": "admin",
+    "route": "/pl/compliance/tagging-compliance"
+  },
+  {
+    "id": 8,
+    "name": "Fix Central",
+    "image": "compliance",
+    "children": [
+      {
+        "id": 9,
+        "name": "Health Notifications",
+        "parent": "Fix Central",
+        "route": "/pl/compliance/health-notifications"
+      },
+      {
+        "id": 10,
+        "name": "Recommendations",
+        "parent": "Fix Central",
+        "route": "/pl/compliance/recommendations"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Statistics",
+    "image": "admin",
+    "route": "modalBGMenu:stats-overlay?ag=all-clouds&domain=Infra %26 Platforms"
+  },
+  {
+    "id": 14,
+    "name": "Admin",
+    "image": "admin",
+    "route": "/pl/admin/policies",
+    "children": [
+      {
+        "id": 15,
+        "name": "Policies",
+        "parent": "Admin",
+        "route": "/pl/admin/policies"
+      },
+      {
+        "id": 16,
+        "name": "Rules",
+        "parent": "Admin",
+        "route": "/pl/admin/rules"
+      },
+      {
+        "id": 17,
+        "name": "Job Execution Manager",
+        "parent": "Admin",
+        "route": "/pl/admin/job-execution-manager"
+      },
+      {
+        "id": 18,
+        "name": "Domains",
+        "parent": "Admin",
+        "route": "/pl/admin/domains"
+      },
+      {
+        "id": 19,
+        "name": "Target Types",
+        "parent": "Admin",
+        "route": "/pl/admin/target-types"
+      },
+      {
+        "id": 20,
+        "name": "Asset Groups",
+        "parent": "Admin",
+        "route": "/pl/admin/asset-groups"
+      },
+      {
+        "id": 21,
+        "name": "Sticky Exceptions",
+        "parent": "Admin",
+        "route": "/pl/admin/sticky-exceptions"
+      },
+      {
+        "id": 22,
+        "name": "Roles",
+        "parent": "Admin",
+        "route": "/pl/admin/roles"
+      },
+      {
+        "id": 23,
+        "name": "Configuration Management",
+        "parent": "Admin",
+        "route": "/pl/admin/config-management"
+      },
+      {
+        "id": 24,
+        "name": "System Management",
+        "parent": "Admin",
+        "route": "/pl/admin/system-management"
+      }
+    ]
+  }
+]

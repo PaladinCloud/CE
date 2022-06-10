@@ -13,121 +13,121 @@
  */
 
 .first-time-container {
-    z-index: 14;
-    background: #fff;
-    margin: auto;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 5px;
-    box-shadow: 0 2px 4px 0 #00000080;
-    padding: 2em 2.25em 3em;
-    font-size: 1em;
+  z-index: 14;
+  background-color: var(--background-white);
+  margin: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  box-shadow: 0 2px 4px 0 #00000080;
+  padding: 2em 2.25em 3em;
+  font-size: 1em;
 }
 
 .first-time-head {
-    color: #555555;
-    font-size: 2em;
-    /*padding-bottom: 1.25em;*/
+  color: #555555;
+  font-size: 2em;
+  /*padding-bottom: 1.25em;*/
 }
 
 .first-time-head-wrap {
-    padding-bottom: 2.5em;
+  padding-bottom: 2.5em;
 }
 
 .each-image-container img {
-    width: 69.58vw;
-    height: 32.4vw;
-    object-fit: contain;
-    max-width: 100em;
-    max-height: calc(100vh - 24em);
+  width: 69.58vw;
+  height: 32.4vw;
+  object-fit: contain;
+  max-width: 100em;
+  max-height: calc(100vh - 24em);
 }
 
 .image-parent {
-    overflow: hidden;
-    width: 69.58vw;
-    height: 32.4vw;
-    text-align: center;
-    margin: 0 1.66em;
-    max-height: calc(100vh - 24em);
-    max-width: 100em;
+  overflow: hidden;
+  width: 69.58vw;
+  height: 32.4vw;
+  text-align: center;
+  margin: 0 1.66em;
+  max-height: calc(100vh - 24em);
+  max-width: 100em;
 }
 
 .image-container {
-    transition: 0.3s ease;
+  transition: 0.3s ease;
 }
 
 .paginator-indicator {
-    width: 0.66em;
-    height: 0.66em;
-    border: solid 1px #b2b2b2;
-    margin: 0.83em;
-    border-radius: 0.5em;
-    cursor: pointer;
-    transition: 0.3s ease;
-    background-color: #ffffff;
+  width: 0.66em;
+  height: 0.66em;
+  border: solid 1px #b2b2b2;
+  margin: 0.83em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  transition: 0.3s ease;
+  background-color: var(--background-white);
 }
 
 .paginator-indicator:hover {
-    border: solid 1px #888;
+  border: solid 1px #888;
 }
 
 .paginator-indicator.active {
-    width: 1em;
-    height: 1em;
-    background-color: var(--primary-400);
-    border: solid 1px var(--primary-400);
+  width: 1em;
+  height: 1em;
+  background-color: var(--primary-400);
+  border: solid 1px var(--primary-400);
 }
 
 .next-page {
-    width: 12.5em;
-    border-radius: 8em;
-    line-height: 3em;
-    background-color: var(--primary-400);
-    text-transform: uppercase;
-    letter-spacing: 0.2px;
-    text-align: center;
-    color: #ffffff;
-    cursor: pointer;
-    right: 3.66em;
-    opacity: 0.86;
+  width: 12.5em;
+  border-radius: 8em;
+  line-height: 3em;
+  background-color: var(--primary-400);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+  right: 3.66em;
+  opacity: 0.86;
 }
 
 .next-page:hover {
-	opacity: 1;
-	letter-spacing: 0.3px;
+  opacity: 1;
+  letter-spacing: 0.3px;
 }
 
 .base-bar {
-	margin-top: 2.25em;
+  margin-top: 2.25em;
 }
 
 .skip-tutorial {
-	bottom: 0;
-    -webkit-transform: translateY(2em);
-    transform: translate(-50%, 3em);
-    left: 50%;
-    text-align: center;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: var(--text-light-font-family);
-    cursor: pointer;
-    opacity: 0.86;
+  bottom: 0;
+  -webkit-transform: translateY(2em);
+  transform: translate(-50%, 3em);
+  left: 50%;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--text-light-font-family);
+  cursor: pointer;
+  opacity: 0.86;
 }
 
 .skip-tutorial:hover {
-	opacity: 1;
+  opacity: 1;
 }
 
 img.delete-icon {
-    width: 2em;
-    height: 2em;
-    cursor: pointer;
-    transition: 0.4s ease;
+  width: 2em;
+  height: 2em;
+  cursor: pointer;
+  transition: 0.4s ease;
 }
 
 img.delete-icon:hover {
-    transform: rotate(-90deg);
-    transition: 0.4s ease;
+  transform: rotate(-90deg);
+  transition: 0.4s ease;
 }
