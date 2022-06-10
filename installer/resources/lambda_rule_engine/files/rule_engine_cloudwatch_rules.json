@@ -5147,6 +5147,28 @@
     "modifiedDate": "2022-05-19",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted.",
+    "ruleUUID": "azure_Enable_VM_disk_Volumes_Encrypted",
+    "policyId": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted",
+    "ruleName": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted",
+    "targetType": "virtualmachine",
+    "assetGroup": "azure",
+    "alexaKeyword": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-virtual-machine-rule\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\" App-tier disk volumes attached to the selected Microsoft Azure virtual machine (VM) are not encrypted. \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"App-tier disk volumes attached to the selected Microsoft Azure virtual machine (VM) are not encrypted \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"pricingTier\",\"value\":\"Standard\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Encryption for App-Tier Disk Volumes.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted\",\"ruleRestUrl\":\"\",\"targetType\":\"virtualmachine\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_VM_disk_Volumes_Encrypted\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_VM_disk_Volumes_Encrypted",
+    "status": "ENABLED",
+    "userId": "",
+    "displayName": "Enable Encryption for App-Tier Disk Volumes.",
+    "createdDate": "2022-06-10",
+    "modifiedDate": "2022-06-10",
+    "severity": "high",
+    "category": "security"
   }
 
 ]
