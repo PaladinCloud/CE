@@ -12,18 +12,24 @@
  * limitations under the License.
  */
 
-.sub-heading {
+app-overall-compliance .sub-heading {
     padding: 16px 24px;
     background-color: var(--background-white);
     font-size: 1em;
     color: #3f4a59;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
-    border: 2px solid var(--border-100);
+    border: 1px solid var(--border-100);
 }
 
+app-overall-compliance .complaince-graph-container{
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
 .cg-container-parent {
-    padding: 1px;
+    background-color: var(--background-white);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
     display: flex;
     height: calc(36.28vh - 6.5em);
     font-size: 1em;

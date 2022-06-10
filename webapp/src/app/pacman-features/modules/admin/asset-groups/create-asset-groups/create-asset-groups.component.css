@@ -163,11 +163,10 @@ ul.input-wrapper {
 .sub-head {
     padding: 0.6em 0.8em;
     background-color: #ffffff;
-    border: solid 1px #dce1e8;
+    border: solid 1px var(--border-100);
     color: #555;
     font-size: 1em;
     height: 3.8em;
-    box-shadow: 2px 2.5px 8px -3px rgba(0, 0, 0, 0.16);
 }
 
 .data-table-wrap {
@@ -227,9 +226,6 @@ ul.input-wrapper {
 
 .data-table-wrap a:hover {
     color: var(--primary-400);
-    /*font-family: ex2-medium;*/
-    letter-spacing: 0.2px;
-    text-shadow: 0.66px 0;
 }
 
 .data-table-head {
@@ -334,6 +330,8 @@ ul.input-wrapper {
     border-top: solid 1.5px #efefef;
     box-shadow: 0px -1.5px 6px -3px rgba(0, 0, 0, 0.16);
     position: relative;
+    padding: 16px 24px;
+
 }
 
 .head-cells::selection {

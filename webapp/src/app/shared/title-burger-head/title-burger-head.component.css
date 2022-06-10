@@ -31,9 +31,6 @@
     transform: translateX(0em);
 }
 
-.sub-head-title:hover {
-    letter-spacing: 0.5px;
-}
 
 .bulb-img {
     margin-right: 0.7em;

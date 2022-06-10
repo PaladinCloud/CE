@@ -62,18 +62,18 @@
     --background-grey: #F2F3F5;
  
 
-    --text-headline-1: 500 41px/140% var(--text-medium-font-family);
-    --text-headline-2: 500 35px/140% var(--text-medium-font-family);
-    --text-headline-3: 500 31px/140% var(--text-medium-font-family);
-    --text-headline-4: 500 28px/140% var(--text-medium-font-family);
-    --text-headline-5: 500 25px/140% var(--text-medium-font-family);
-    --text-headline-6: 500 20px/140% var(--text-medium-font-family);
+    --text-headline-1: 700 41px/100% var(--text-medium-font-family);
+    --text-headline-2: 700 35px/100% var(--text-medium-font-family);
+    --text-headline-3: 700 31px/140% var(--text-medium-font-family);
+    --text-headline-4: 700 28px/140% var(--text-medium-font-family);
+    --text-headline-5: 700 25px/140% var(--text-medium-font-family);
+    --text-headline-6: 700 20px/140% var(--text-medium-font-family);
 
-    --text-subtitle-1: 500 19px/140% var(--text-medium-font-family);
+    --text-subtitle-1: 400 19px/140% var(--text-medium-font-family);
     --text-subtitle-2: 500 17px/140% var(--text-medium-font-family);
-    --text-body-1: 500 normal 16px/140% var(--text-medium-font-family);
+    --text-body-1: 400 normal 16px/140% var(--text-medium-font-family);
     --text-body-2: 500 normal 14px/140% var(--text-medium-font-family);
-    --text-caption: 500 normal 12px/140% var(--text-medium-font-family);
+    --text-caption: 400 normal 12px/140% var(--text-medium-font-family);
     --text-overline: 500 11px/140% var(--text-medium-font-family);
 
     --text-font-weight: 500;
@@ -85,9 +85,6 @@
     --text-bold-font-family: mark-pro-bold;
     --text-black-font-family: mark-pro-black;
     --text-medium-font-family: mark-pro-medium;
-
-
-
 
     --text-body-1-font-size: 16px;
     --text-body-2-font-size: 14px;

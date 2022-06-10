@@ -32,12 +32,12 @@
 }
 
 .policy-violations-container /deep/ .data-table-wrap .sub-head {
-    padding: 0.3em 0.8em;
+    padding: 16px 20px;
     background-color: #ffffff;
-    color: #555;
-    font-size: 1em;
+    color: var(--text-high-emphasis);
+    font-size: var(--text-body-2-font-size);
     border: none;
-    border-top-left-radius: 0.4em;
-    border-top-right-radius: 0.4em;
-    border-bottom: 0.1em solid #d5dce2;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom: 2px solid var(--border-100);
 }

@@ -334,6 +334,7 @@ ul.input-wrapper {
     border-top: solid 1.5px #efefef;
     box-shadow: 0px -1.5px 6px -3px rgba(0, 0, 0, 0.16);
     position: relative;
+    padding: 16px 24px;
 }
 
 .test {

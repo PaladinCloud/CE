@@ -115,7 +115,7 @@
    }
    
    .pk-search-container {
-    border-radius: var(--border-radius);
+    border-radius: 3px;
     background-color: #eff3f6;
     padding: 0.66em 3em;
     min-height: 3.4em;

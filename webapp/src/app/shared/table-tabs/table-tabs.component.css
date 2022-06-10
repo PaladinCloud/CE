@@ -28,6 +28,7 @@
     text-align: center;
     font-size: 1.1em;
     text-transform: capitalize;
+    font: var(--text-overline);
 }
 
 .individual-tag-header:first-letter {
@@ -35,29 +36,17 @@
 }
 
 .individual-tag-header:hover {
-    text-shadow: 1px 0;
-    letter-spacing: 0.3px;
     cursor: pointer;
 }
 
-.individual-tag-header.filter-by {
-    font-size: 0.88em;
-}
-
-.individual-tag-header.filter-by:hover{
-    font-family: var(--text-light-font-family);
-    letter-spacing: 0.1px;
-    cursor: default;
-}
 
 .policies-count{
     padding: 1em 1em 1em 3em;
-    font-size: 0.88em;
+    font: var(--text-overline);
 }
 .selected {
     background-color: #5a616b;
     color: #fff;
-    text-shadow: 1px 0;
 }
 
 .tabs-header{

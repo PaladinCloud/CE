@@ -34,7 +34,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-transform: capitalize;
-    position: sticky;
+    position: relative;
     top:0;
     padding: 2.5em 1.1em .5em;
     background: #fbfbfb;

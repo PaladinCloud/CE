@@ -40,11 +40,9 @@
     background: var(--background-white);
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
-    border-left: 1px solid var(--border-100);
-    border-right: 1px solid var(--border-100);
     border-bottom: 1px solid var(--border-100);
     min-height: calc(24.28vh - 64px);
-    padding: 1em 0.8em;
+    padding: 1em 1.5em;
     transition: 0.8s ease;
 }
 

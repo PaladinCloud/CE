@@ -43,8 +43,8 @@
 
 .pk-top-header {
     padding-bottom: 1.66em;
-    padding-left: 2.3em;
-    font-family: ex2-medium;
+    padding-left: 1.8em;
+    font-family: var(--text-medium-font-family);
     color: #555555;
 }
 
@@ -120,7 +120,7 @@ transition-delay: 0.05s;
 }
 
 .pk-search-container {
-    border-radius: var(--border-radius);
+    border-radius: 3px;
     background-color: #eff3f6;
     padding: 0.66em 3em;
     min-height: 3.4em;

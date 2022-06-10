@@ -80,9 +80,6 @@
 
 .data-table-wrap a:hover {
     color: var(--primary-400);
-    /*font-family: ex2-medium;*/
-    letter-spacing: 0.2px;
-    text-shadow: 0.66px 0;
 }
 .submit-btn {
     border: none;

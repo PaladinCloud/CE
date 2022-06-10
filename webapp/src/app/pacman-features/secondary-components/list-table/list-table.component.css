@@ -31,7 +31,7 @@
 
 .list-table-value {
     flex: 5;
-    justify-content: space-around;
+    justify-content: space-between;
     font-family: var(--text-light-font-family);
     font-size: .95em;
     align-items: center;

@@ -23,9 +23,8 @@
     position: relative;
     width: 22%;
     height: 30%;
-    padding-top: 5%;
+    padding-top: 4px;
     margin: auto;
-    display: block;
 }
 
 .aws-app-name {
