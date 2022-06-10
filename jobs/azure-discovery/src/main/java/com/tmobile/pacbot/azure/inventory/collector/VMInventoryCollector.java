@@ -1,10 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -46,7 +42,6 @@ public class VMInventoryCollector {
 		for (VirtualMachine virtualMachine : vms) {
 			try {
 				VirtualMachineVH vmVH = new VirtualMachineVH();
-	
 				vmVH.setComputerName(virtualMachine.computerName() == null
 						? virtualMachine.instanceView().computerName() == null ? virtualMachine.name()
 								: virtualMachine.instanceView().computerName()
@@ -109,11 +104,15 @@ public class VMInventoryCollector {
 								virtualMachine.osProfile().linuxConfiguration().disablePasswordAuthentication());
 					}
 				}
-			
 				
-				if (virtualMachine.listExtensions() != null)
-					vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());
-					
+				if (virtualMachine.listExtensions() != null) {
+					if (virtualMachine.listExtensions().values() instanceof List) {
+						vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());
+					} else {
+						Collection<VirtualMachineExtension> virtualMachineExtensionValue = virtualMachine.listExtensions().values();
+						vmVH.setExtensionList(new ArrayList<>(virtualMachineExtensionValue));
+					}
+				}
 				
 				vmList.add(vmVH);
 			}catch(Exception e) {
