@@ -282,9 +282,4 @@ public class FileManager {
 
 	}
 
-	public static void generateSecurityPricingsFiles(List<SecurityPricingsVH> securityPricingsVH) throws IOException {
-		FileGenerator.generateJson(securityPricingsVH, "azure-securitypricings.data");
-
-	}
-
 }
