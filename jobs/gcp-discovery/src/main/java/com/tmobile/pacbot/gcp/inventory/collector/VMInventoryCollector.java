@@ -1,6 +1,8 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.cloud.compute.v1.*;
+import com.tmobile.pacbot.gcp.inventory.vo.AccessConfigVH;
+import com.tmobile.pacbot.gcp.inventory.vo.NetworkInterfaceVH;
 import com.tmobile.pacbot.gcp.inventory.vo.VMDiskVH;
 import com.tmobile.pacbot.gcp.inventory.vo.VirtualMachineVH;
 import org.slf4j.LoggerFactory;
@@ -52,9 +54,10 @@ public class VMInventoryCollector {
                         virtualMachineVH.setProjectName(projectId);
                         virtualMachineVH.setName(instance.getName());
                         virtualMachineVH.setDescription(instance.getDescription());
-                        virtualMachineVH.setZone(zoneName);
+                        virtualMachineVH.setRegion(zoneName);
                         virtualMachineVH.setStatus(instance.getStatus());
                         this.setVMDisks(instance, virtualMachineVH);
+                        this.setNetworkInterfaces(instance, virtualMachineVH);
                         instanceList.add(virtualMachineVH);
                     } catch (Exception e) {
                         logger.error("Error while fetching instance inventory for {} {}", instance.getName(), e.getMessage());
@@ -67,6 +70,31 @@ public class VMInventoryCollector {
         return instanceList;
     }
 
+    private void setNetworkInterfaces(Instance instance, VirtualMachineVH virtualMachineVH) {
+        List<NetworkInterfaceVH> networkInterfaceVHList = new ArrayList<>();
+        for (NetworkInterface networkInterface : instance.getNetworkInterfacesList()) {
+            NetworkInterfaceVH networkInterfaceVH = new NetworkInterfaceVH();
+            networkInterfaceVH.setName(networkInterface.getName());
+            networkInterfaceVH.setNetwork(networkInterface.getNetwork());
+            networkInterfaceVH.setId(networkInterface.getName());
+            // TODO: Add subnetwork
+            // networkInterfaceVH.setSubnetwork(networkInterface.getSubnetwork());
+
+            List<AccessConfigVH> accessConfigVHList = new ArrayList<>();
+            for (AccessConfig accessConfig : networkInterface.getAccessConfigsList()) {
+                AccessConfigVH accessConfigVH = new AccessConfigVH();
+                accessConfigVH.setId(accessConfig.getName());
+                accessConfigVH.setName(accessConfig.getName());
+                accessConfigVH.setNatIP(accessConfig.getNatIP());
+                accessConfigVH.setProjectName(virtualMachineVH.getProjectName());
+                accessConfigVHList.add(accessConfigVH);
+            }
+            networkInterfaceVH.setAccessConfigs(accessConfigVHList);
+            networkInterfaceVHList.add(networkInterfaceVH);
+        }
+        virtualMachineVH.setNetworkInterfaces(networkInterfaceVHList);
+    }
+
     private void setVMDisks(Instance vmInstance, VirtualMachineVH vm) {
         List<VMDiskVH> diskVHS = new ArrayList<>();
         List<AttachedDisk> disksList = vmInstance.getDisksList();
@@ -77,6 +105,7 @@ public class VMInventoryCollector {
             diskVH.setName(disk.getDeviceName());
             diskVH.setSizeInGB(disk.getDiskSizeGb());
             diskVH.setType(disk.getType());
+            diskVH.setProjectName(vm.getProjectName());
             diskVHS.add(diskVH);
         });
         vm.setDisks(diskVHS);
