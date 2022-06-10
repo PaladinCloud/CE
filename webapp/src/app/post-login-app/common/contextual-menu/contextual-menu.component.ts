@@ -21,14 +21,14 @@ import {
   SimpleChange,
   OnDestroy,
 } from "@angular/core";
-import { WorkflowService } from "../../core/services/workflow.service";
-import { ThemeObservableService } from "../../core/services/theme-observable.service";
-import { DomainTypeObservableService } from "../../core/services/domain-type-observable.service";
-import { AssetGroupObservableService } from "../../core/services/asset-group-observable.service";
+import { WorkflowService } from "../../../core/services/workflow.service";
+import { ThemeObservableService } from "../../../core/services/theme-observable.service";
+import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
+import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
 import { Subscription } from "rxjs";
-import { LoggerService } from "../services/logger.service";
-import { DownloadService } from "../../shared/services/download.service";
-import { DataCacheService } from "../../core/services/data-cache.service";
+import { LoggerService } from "../../../shared/services/logger.service";
+import { DownloadService } from "../../../shared/services/download.service";
+import { DataCacheService } from "../../../core/services/data-cache.service";
 import { TreeNode } from "angular-tree-component";
 
 @Component({
@@ -38,8 +38,8 @@ import { TreeNode } from "angular-tree-component";
   providers: [],
 })
 export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
-  currentParentId: number = 1;
-  currentNodeId: number = 1;
+  currentParentId: number = -1;
+  currentNodeId: number = -1;
   nodes = [
     {
       id: 1,
@@ -57,6 +57,7 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
       id: 3,
       name: "Assets",
       image: "assets",
+      route: "/pl/assets/asset-dashboard",
       children: [
         {
           id: 4,
@@ -88,6 +89,7 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
       id: 8,
       name: "Fix Central",
       image: "compliance",
+      route: "/pl/compliance/health-notifications",
       children: [
         {
           id: 9,
@@ -229,9 +231,15 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   handleClick(node: TreeNode) {
+    console.log(node);
+
     node.toggleExpanded();
     this.currentNodeId = node.id;
     this.currentParentId = node.parent.id;
+    if (node.hasChildren) {
+      this.currentNodeId = node.id + 1;
+      this.currentParentId = node.id;
+    }
   }
 
   getProvider() {

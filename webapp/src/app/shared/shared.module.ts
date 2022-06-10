@@ -27,7 +27,6 @@ import { FormInputComponent } from "./form-input/form-input.component";
 import { LinkComponent } from "./link/link.component";
 import { SubFooterComponent } from "./sub-footer/sub-footer.component";
 import { TitleBurgerHeadComponent } from "./title-burger-head/title-burger-head.component";
-import { ContextualMenuComponent } from "./contextual-menu/contextual-menu.component";
 import { OverlayComponent } from "./overlay/overlay.component";
 import { OrderByPipe } from "./../shared/pipes/order-by.pipe";
 import { SearchFilterPipe } from "./../shared/pipes/search-filter.pipe";
@@ -92,7 +91,6 @@ import { CopyElementComponent } from "./copy-element/copy-element.component";
 import { ToastObservableService } from "./services/toast-observable.service";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { TableListComponent } from "./table-list/table-list.component";
-import { TreeModule } from "angular-tree-component";
 
 @NgModule({
   imports: [
@@ -106,7 +104,6 @@ import { TreeModule } from "angular-tree-component";
     NgDatepickerModule,
     SelectDropDownModule,
     AgGridModule.withComponents([AgGridTableComponent]),
-    TreeModule,
   ],
   declarations: [
     CanvasSidePanelComponent,
@@ -117,7 +114,6 @@ import { TreeModule } from "angular-tree-component";
     LinkComponent,
     SubFooterComponent,
     TitleBurgerHeadComponent,
-    ContextualMenuComponent,
     OverlayComponent,
     SearchableDropdownComponent,
     FilteredSelectorComponent,
@@ -176,7 +172,6 @@ import { TreeModule } from "angular-tree-component";
     LinkComponent,
     SubFooterComponent,
     TitleBurgerHeadComponent,
-    ContextualMenuComponent,
     MatSelectModule,
     OverlayComponent,
     SearchableDropdownComponent,

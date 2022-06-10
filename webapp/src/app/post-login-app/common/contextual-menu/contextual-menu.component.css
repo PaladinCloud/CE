@@ -12,6 +12,12 @@
  * limitations under the License.
  */
 
+.contextual-menu-wrapper {
+  background-color: #ffffff;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
 ::ng-deep .tree-children {
   margin-left: 22px;
   padding-left: 9px !important;
@@ -22,12 +28,12 @@
   width: 155px !important;
   height: 18px !important;
   display: ruby !important;
-  font-family: "Mark Pro";
+  font-family: var(--text-medium-font-family);
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 18px;
-  color: #70767e;
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body2-font-size);
+  line-height: var(--text-line-height);
+  color: var(--text-medium-emphasis);
   flex: none;
   padding: 0px 16px 0px 12px !important;
 }
@@ -57,6 +63,8 @@
   height: 44px;
   width: 32px;
   padding: 14px 0px 14px 16px;
+  filter: invert(49%) sepia(6%) saturate(379%) hue-rotate(177deg)
+    brightness(92%) contrast(87%);
 }
 
 #logo {
@@ -77,26 +85,28 @@
   height: 13px;
   width: 13px;
   right: 25px;
-  background-image: url("/assets/images/arrow.svg");
+  background-image: url("/assets/icons/arrow.svg");
 }
 
 ::ng-deep .node-wrapper-active tree-node-content {
-  color: #0047bb !important;
+  color: var(--primary-500) !important;
 }
 
 ::ng-deep .node-wrapper-active {
   width: 218px;
   border-radius: 4px;
-  background-color: #ccdaf1 !important;
+  background-color: var(--primary-100) !important;
 }
 
 .node-wrapper-active .node-img {
-  filter: invert(18%) sepia(99%) saturate(2410%) hue-rotate(209deg)
-    brightness(92%) contrast(109%);
+  /* filter: invert(18%) sepia(99%) saturate(2410%) hue-rotate(209deg)
+    brightness(92%) contrast(109%); */
+  filter: invert(24%) sepia(73%) saturate(2569%) hue-rotate(186deg)
+    brightness(78%) contrast(111%);
 }
 
 ::ng-deep .tree-children tree-node-content {
-  color: #70767e;
+  color: var(--text-medium-emphasis);
 }
 
 ::ng-deep .node-drop-slot {
@@ -114,7 +124,7 @@
 }
 
 .wrapper tree-node-content {
-  color: black;
+  color: var(--text-high-emphasis);
 }
 
 .node-img-on-only-expanded {

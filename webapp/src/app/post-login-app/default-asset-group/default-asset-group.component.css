@@ -14,7 +14,7 @@
 
 /* CSS styles of default asset group starts here */
 
-.default-asset-group-wrapper {
+/* .default-asset-group-wrapper {
     display: flex;
     border: 1px solid #ffffff;
     border-radius: 5px;
@@ -57,8 +57,6 @@
 
 .asset-group-overlay {
     transition: 0.3s ease;
-}
-
-
+} */
 
 /* CSS styles of default asset group ends here */

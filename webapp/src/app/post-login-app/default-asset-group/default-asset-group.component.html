@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
- <a>
+<!-- <a>
     <div title="Change Asset Group" class="default-asset-group-wrapper">
         <img [class.after-load]='dataLoaded' *ngIf='provider.length == 0' class="default-asset-group-icon" src="/assets/icons/asset-group.svg" width="22px" />
         <img [class.after-load]='dataLoaded' *ngIf='provider.length == 1' class="default-asset-group-icon" src="/assets/icons/{{provider[0]}}-white.svg" width="22px" />
@@ -21,4 +21,75 @@
         <h4 *ngIf='!assetGroupDisplayName' class="default-asset-group-text">Select - Assets</h4>
         <i class="fa fa-angle-right mr-right-arrow" aria-hidden="true"></i>
     </div>
-</a>
+</a> -->
+
+<div
+  class="asset-switcher-wrapper"
+  style="
+    height: 55px;
+    width: 218px;
+    border: 1px solid #d8dde3;
+    background: #f2f3f5;
+    border-radius: 4px;
+    display: flex;
+    margin-top: 20px;
+    margin-left: 16px;
+  "
+>
+  <div
+    class="asset-switcher-image-wrapper"
+    style="
+      margin: 11.5px 0px 11.5px 12px;
+      background-color: white;
+      width: 32px;
+      height: 32px;
+    "
+  >
+    <img
+      src="/assets/icons/{{ provider[0] }}-color.svg"
+      style="height: 16px; width: 16px; margin-top: 8px; margin-left: 8px"
+    />
+  </div>
+  <div
+    class="asset-switcher-content-wrapper"
+    style="margin: 9px 0px 26px 12px; display: flex; flex-direction: column"
+  >
+    <div
+      class="asset-switcher-asset-title"
+      style="
+        width: 112px;
+        font-weight: 500;
+        font-size: 14px;
+        color: #1e2022;
+        align-items: center;
+      "
+    >
+      {{ assetGroupDisplayName }}
+    </div>
+    <div
+      class="asset-switcher-asset-count"
+      style="
+        width: 71px;
+        font-size: 12px;
+        font-weight: 400;
+        color: #73777d;
+        align-items: center;
+        margin-top: 6px;
+      "
+    >
+      Assets: 1242
+    </div>
+  </div>
+  <div
+    class="assets-switcher-icons-wrapper"
+    style="
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      margin-top: 21.5px;
+    "
+  >
+    <img src="/assets/icons/up-arrow.svg" alt="" />
+    <img src="/assets/icons/down-arrow.svg" alt="" />
+  </div>
+</div>

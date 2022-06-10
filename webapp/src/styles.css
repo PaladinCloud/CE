@@ -1528,7 +1528,7 @@ li .details-left-value {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  width: 15%;
+  /* width: 20%; */
   height: 100%;
 }
 

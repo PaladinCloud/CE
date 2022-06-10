@@ -1,0 +1,57 @@
+<div class="flex flex-align-center">
+  <a
+    (click)="$event.stopPropagation(); handleAssetGroupFlow()"
+    class="asset-group-selection"
+    [class.active]="showRecents && recentTiles.length"
+  >
+    <app-default-asset-group
+      [provider]="provider"
+      [dataLoaded]="cloudIconDataLoaded"
+    ></app-default-asset-group>
+  </a>
+  <div
+    *ngIf="showRecents"
+    (click)="showRecents = false"
+    [class.show-recents]="showRecents && recentTiles.length"
+    class="relative flex flex-align-center recently-viewed-wrap"
+  >
+    <h4 class="recently-viewed-txt">Recently Viewed</h4>
+    <div class="absolute recently-viewed-list">
+      <div
+        class="each-recent flex flex-align-center"
+        (click)="$event.stopPropagation(); changeAg(row)"
+        *ngFor="let row of recentTiles"
+      >
+        <div class="cloud-icon-wrapper flex flex-align-center">
+          <img
+            *ngIf="
+              (row.providers && row.providers.length == 0) || !row.providers
+            "
+            class="default-asset-group-icon"
+            src="/assets/icons/asset-group-magenta.svg"
+            width="20px"
+          />
+          <img
+            *ngIf="row.providers && row.providers.length == 1"
+            class="default-asset-group-icon"
+            src="/assets/icons/{{ row.providers[0].provider }}-color.svg"
+            width="20px"
+          />
+          <img
+            *ngIf="row.providers && row.providers.length > 1"
+            class="default-asset-group-icon"
+            src="/assets/icons/multi-cloud.svg"
+            width="20px"
+          />
+        </div>
+        <div>{{ row.displayName }}</div>
+      </div>
+      <div
+        class="view-more-list"
+        (click)="$event.stopPropagation(); openAgModal(); showRecents = false"
+      >
+        View More
+      </div>
+    </div>
+  </div>
+</div>
