@@ -20,7 +20,7 @@
   Modified Date: Jun 01, 2022
   
  **/
-package com.tmobile.cloud.awsrules.documentdb;
+package com.tmobile.cloud.awsrules.efs;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -42,15 +42,15 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.PacmanRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 
-@PacmanRule(key = "check-for-document-db-encrypted-with-kms-cmks", desc = "checks for document db clusters are encrypted with KMS Customer Master Keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class DocumentDbEncryptionUsingKMSCMKs extends BaseRule {
+@PacmanRule(key = "check-for-efs-encrypted-with-kms-cmks", desc = "checks for AWS Elastic File Systems are encrypted with KMS Customer Master Keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EfsEncryptionUsingKMSCMKs extends BaseRule {
 
-	private static final Logger logger = LoggerFactory.getLogger(DocumentDbEncryptionUsingKMSCMKs.class);
+	private static final Logger logger = LoggerFactory.getLogger(EfsEncryptionUsingKMSCMKs.class);
 	
 	public static final String VAL_TRUE = "true";
 	public static final String VAL_FALSE = "false";
-	public static final String VOLUME_ATTR_ENCRYPTED = "encrypted";
-	public static final String DEFAULT_KEY_MANAGER = "AWS";
+	public static final String ES_ATTR_ENCRYPTED = "encrypted";
+	public static final String DEFAULT_KMS_KEY_ALIAS = "alias/aws/elasticfilesystem";
     
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -75,7 +75,7 @@ public class DocumentDbEncryptionUsingKMSCMKs extends BaseRule {
 
 	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
-		logger.debug("========DocumentDbEncryptionUsingKMSCMKs started=========");
+		logger.debug("========EfsEncryptionUsingKMSCMKs started=========");
 		String esKmsUrl = null;
 		Annotation annotation = null;
 
@@ -101,12 +101,12 @@ public class DocumentDbEncryptionUsingKMSCMKs extends BaseRule {
 		if (resourceAttributes != null) {
 
 			boolean isEncryptedWithKmsCmks = false;
-			String encrypted = resourceAttributes.getOrDefault(PacmanRuleConstants.STORAGE_ENCRYPTED, VAL_FALSE);
+			String encrypted = resourceAttributes.getOrDefault(ES_ATTR_ENCRYPTED, VAL_FALSE);
 
 			try {
 				String kmsKeyId = resourceAttributes.get(PacmanRuleConstants.ES_KMS_KEY_ID_ATTRIBUTE);
 				if (VAL_TRUE.equalsIgnoreCase(encrypted))
-					isEncryptedWithKmsCmks = PacmanUtils.checkIfResourceEncryptedWithKmsCmks(kmsKeyId, esKmsUrl, DEFAULT_KEY_MANAGER);
+					isEncryptedWithKmsCmks = PacmanUtils.checkIfResourceEncryptedWithDefaultKeyAlias(kmsKeyId, esKmsUrl, DEFAULT_KMS_KEY_ALIAS);
 			} catch (Exception e) {
 				logger.error("unable to determine", e);
 				throw new RuleExecutionFailedExeption("unable to determine" + e);
@@ -114,25 +114,25 @@ public class DocumentDbEncryptionUsingKMSCMKs extends BaseRule {
 
 			if (!isEncryptedWithKmsCmks) {
 				annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-				annotation.put(PacmanSdkConstants.DESCRIPTION, "Document DB cluster without having KMS Customer Master Keys found !!");
+				annotation.put(PacmanSdkConstants.DESCRIPTION, "EFS without having KMS Customer Master Keys found !!");
 				annotation.put(PacmanRuleConstants.SEVERITY, severity);
 				annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
 				annotation.put(PacmanRuleConstants.CATEGORY, category);
 				annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Document DB cluster without having KMS Customer Master Keys found !!");
+				issue.put(PacmanRuleConstants.VIOLATION_REASON, "EFS without having KMS Customer Master Keys found !!");
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
-				logger.debug("========DocumentDbEncryptionUsingKMSCMKs ended with annotation {} :=========", annotation);
+				logger.debug("========EfsEncryptionUsingKMSCMKs ended with annotation {} :=========", annotation);
 				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 
 		}
-		logger.debug("========DocumentDbEncryptionUsingKMSCMKs ended=========");
+		logger.debug("========EfsEncryptionUsingKMSCMKs ended=========");
 		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {
-		return "checks for document db clusters are encrypted with KMS Customer Master Keys";
+		return "This rule checks for AWS Elastic File Systems are encrypted with KMS Customer Master Keys";
 	}
 	
 }

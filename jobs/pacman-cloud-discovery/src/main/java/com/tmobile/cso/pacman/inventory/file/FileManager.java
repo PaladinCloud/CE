@@ -27,11 +27,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.amazonaws.services.apigateway.model.RestApi;
+import com.amazonaws.services.athena.model.QueryExecution;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
 import com.amazonaws.services.autoscaling.model.LaunchConfiguration;
 import com.amazonaws.services.autoscaling.model.ScalingPolicy;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.comprehend.model.EntitiesDetectionJobProperties;
 import com.amazonaws.services.databasemigrationservice.model.ReplicationInstance;
 import com.amazonaws.services.directconnect.model.Connection;
 import com.amazonaws.services.directconnect.model.VirtualInterface;
@@ -258,6 +260,10 @@ public class FileManager {
         FileGenerator.writeToFile("aws-dms.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-eks.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-eks-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.OPEN_ARRAY, false);
+		
 	}
 
 	public static void finalise() throws IOException{
@@ -403,6 +409,9 @@ public class FileManager {
         FileGenerator.writeToFile("aws-dms.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-eks.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-eks-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -614,6 +623,54 @@ public class FileManager {
 		fieldNames ="cluster.arn`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`clusterarn`key`value";
 		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks-tags.data",keys);
+
+	}
+	
+	/**
+	 * Generate DAX Cluster files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateDAXClusterFiles(Map<String,List<com.amazonaws.services.dax.model.Cluster>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "clusterName`clusterArn`status`sSEDescription.status`clusterEndpointEncryptionType";
+		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`ssestatus`endpointencrytype";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-daxcluster.data",keys);
+		
+
+	}
+	
+	/**
+	 * Generate AWS Athena files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSAthenaFiles(Map<String,List<QueryExecution>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "queryExecutionId`query`resultConfiguration.encryptionConfiguration.encryptionOption`resultConfiguration.encryptionConfiguration.kmsKey`resultConfiguration.encryptionConfiguration.outputLocation`status.state";
+		keys = "discoverydate`accountid`accountname`region`queryid`query`encryptionoption`kmskey`outputlocation`status";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-awsathena.data",keys);
+		
+
+	}
+	
+	/**
+	 * Generate AWS comprehend files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSComprehendFiles(Map<String,List<EntitiesDetectionJobProperties>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "jobId`jobArn`jobName`jobStatus`outputDataConfig.s3Uri`outputDataConfig.kmsKeyId";
+		keys = "discoverydate`accountid`accountname`region`jobid`jobarn`jobname`jobstatus`s3url`kmskeyid";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-awscomprehend.data",keys);
+		
 
 	}
 

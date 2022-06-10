@@ -76,7 +76,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "[", false);
 		FileGenerator.writeToFile("azure-searchservices.data", "[", false);
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
-		FileGenerator.writeToFile("azure-activitylog.data", "[", false);
+		FileGenerator.writeToFile("azure-activitylogalert.data", "[", false);
 		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
 	}
 
@@ -113,7 +113,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "]", true);
 		FileGenerator.writeToFile("azure-searchservices.data", "]", true);
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
-		FileGenerator.writeToFile("azure-activitylog.data", "]", true);
+		FileGenerator.writeToFile("azure-activitylogalert.data", "]", true);
 		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
 
 	}
@@ -272,8 +272,8 @@ public class FileManager {
 
 	}
 
-	public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) throws IOException {
-		FileGenerator.generateJson(activityLogVHList, "azure-activityLog.data");
+	public static void generateActivityLogFiles(List<ActivityLogAlertRuleVH> activityLogVHList) throws IOException {
+		FileGenerator.generateJson(activityLogVHList, "azure-activitylogalert.data");
 
 	}
 

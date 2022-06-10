@@ -106,6 +106,8 @@ public class PacmanRuleConstants {
     public static final String STATE_NAME = "statename";
     public static final String PRIVATE_IP_ADDRESS = "privateipaddress";
     public static final String CATEGORY = "ruleCategory";
+    public static final String ACTIVITY_RULE_CATEGORY = "category";
+    public static final String ADMINISTRATIVE = "Administrative";
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
     public static final String ACCOUNTID = "accountid";
@@ -393,6 +395,8 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_ENCRYPTED_ATTRIBUTE = "encrypted";
+    public static final String ES_DMS_PUBLIC_ACCESS_ATTRIBUTE = "publiclyAccessible";
     public static final String ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE = "ssetype";
     public static final String ES_KMS_KEY_MANAGER_ATTRIBUTE = "keymanager";
     public static final String ES_KMS_ALIAS_ATTRIBUTE = "aliasname";
@@ -418,7 +422,7 @@ public class PacmanRuleConstants {
     public static final String EQUALS_STRING = "equals";
     public static final String SUCESS = "SUCESS";
     public static final String FAILURE = "failure";
-    public static final String ALLOF = "allof";
+    public static final String ALLOF = "allOf";
     public static final String PRICING_TIER = "pricingTier";
     public static final String PROPERTIES = "properties";
     public static final String KEYVAULTNAMES = "keyValutName";

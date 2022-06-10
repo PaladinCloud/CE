@@ -41,6 +41,13 @@ import com.amazonaws.services.apigateway.AmazonApiGatewayClientBuilder;
 import com.amazonaws.services.apigateway.model.GetRestApisRequest;
 import com.amazonaws.services.apigateway.model.GetRestApisResult;
 import com.amazonaws.services.apigateway.model.RestApi;
+import com.amazonaws.services.athena.AmazonAthena;
+import com.amazonaws.services.athena.AmazonAthenaClientBuilder;
+import com.amazonaws.services.athena.model.GetQueryExecutionRequest;
+import com.amazonaws.services.athena.model.GetQueryExecutionResult;
+import com.amazonaws.services.athena.model.ListQueryExecutionsRequest;
+import com.amazonaws.services.athena.model.ListQueryExecutionsResult;
+import com.amazonaws.services.athena.model.QueryExecution;
 import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClientBuilder;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
@@ -69,11 +76,18 @@ import com.amazonaws.services.cloudtrail.AWSCloudTrail;
 import com.amazonaws.services.cloudtrail.AWSCloudTrailClientBuilder;
 import com.amazonaws.services.cloudtrail.model.DescribeTrailsResult;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.comprehend.AmazonComprehend;
+import com.amazonaws.services.comprehend.AmazonComprehendClientBuilder;
+import com.amazonaws.services.comprehend.model.EntitiesDetectionJobProperties;
+import com.amazonaws.services.comprehend.model.ListEntitiesDetectionJobsRequest;
+import com.amazonaws.services.comprehend.model.ListEntitiesDetectionJobsResult;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationService;
 import com.amazonaws.services.databasemigrationservice.AWSDatabaseMigrationServiceClientBuilder;
 import com.amazonaws.services.databasemigrationservice.model.DescribeReplicationInstancesRequest;
 import com.amazonaws.services.databasemigrationservice.model.DescribeReplicationInstancesResult;
 import com.amazonaws.services.databasemigrationservice.model.ReplicationInstance;
+import com.amazonaws.services.dax.AmazonDax;
+import com.amazonaws.services.dax.AmazonDaxClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.ListTablesRequest;
@@ -720,6 +734,137 @@ public class InventoryUtil {
 		return clusterList;
 	}
 
+	/**
+	 * Fetch AWS Athena info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String,List<QueryExecution>> fetchAWSAthenaInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+
+		Map<String,List<QueryExecution>> queryExeDetailsMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					 AmazonAthena athenaClient = AmazonAthenaClientBuilder.standard().
+					 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					List<String> queryExeIDList = new ArrayList<>();
+					String token = null;
+					do{
+						ListQueryExecutionsResult queryExeResult = athenaClient.listQueryExecutions(new ListQueryExecutionsRequest()).withNextToken(token);						
+						queryExeIDList.addAll(queryExeResult.getQueryExecutionIds());
+						token = queryExeResult.getNextToken();
+					}while(token!=null);
+					List<QueryExecution> queryExeDetailsList = new ArrayList<>();
+					queryExeIDList.forEach(queryid ->
+						{
+							 GetQueryExecutionResult queryExecutionDetails = athenaClient.getQueryExecution(new GetQueryExecutionRequest().withQueryExecutionId(queryid));
+							 QueryExecution queryExecution = queryExecutionDetails.getQueryExecution();
+							 queryExeDetailsList.add(queryExecution);
+						});
+
+					if( !queryExeDetailsList.isEmpty() ){
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : AWS Athena "+region.getName() + " >> "+queryExeDetailsList.size());
+						queryExeDetailsMap.put(accountId+delimiter+accountName+delimiter+region.getName(),queryExeDetailsList);
+					}
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"awsathena",e.getMessage());
+				}
+			}
+		}
+		return queryExeDetailsMap;
+	}
+	
+	/**
+	 * Fetch AWS Comprehend info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String,List<EntitiesDetectionJobProperties>> fetchAWSComprehendInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+
+		Map<String,List<EntitiesDetectionJobProperties>> entitiesDetectionJobsMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					 AmazonComprehend comprehendClient = AmazonComprehendClientBuilder.standard().
+					 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					List<EntitiesDetectionJobProperties> entitiesDetectionJobsList = new ArrayList<>();
+					String token = null;
+					do{
+						ListEntitiesDetectionJobsResult entitiesJobs = comprehendClient.listEntitiesDetectionJobs(new ListEntitiesDetectionJobsRequest().withNextToken(token));
+						entitiesDetectionJobsList.addAll(entitiesJobs.getEntitiesDetectionJobPropertiesList());
+						token = entitiesJobs.getNextToken();
+					}while(token!=null);
+					
+
+					if( !entitiesDetectionJobsList.isEmpty() ){
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : AWSCOMPREHEND "+region.getName() + " >> "+entitiesDetectionJobsList.size());
+						entitiesDetectionJobsMap.put(accountId+delimiter+accountName+delimiter+region.getName(),entitiesDetectionJobsList);
+					}
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"awscomprehend",e.getMessage());
+				}
+			}
+		}
+		return entitiesDetectionJobsMap;
+	}
+	
+	/**
+	 * Fetch AWS DAX Cluster info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String,List<com.amazonaws.services.dax.model.Cluster>> fetchDAXClusterInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+
+		Map<String,List<com.amazonaws.services.dax.model.Cluster>> daxClustersMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					 AmazonDax daxClient = AmazonDaxClientBuilder.standard().
+					 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					List<com.amazonaws.services.dax.model.Cluster> daxClusters = new ArrayList<>();
+					String token = null;
+					do{
+						com.amazonaws.services.dax.model.DescribeClustersResult daxResult = daxClient.describeClusters(new com.amazonaws.services.dax.model.DescribeClustersRequest()).withNextToken(token);
+						daxClusters.addAll(daxResult.getClusters());
+						token = daxResult.getNextToken();
+					}while(token!=null);
+					
+
+					if( !daxClusters.isEmpty() ){
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : DAXCluster "+region.getName() + " >> "+daxClusters.size());
+						daxClustersMap.put(accountId+delimiter+accountName+delimiter+region.getName(),daxClusters);
+					}
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"daxcluster",e.getMessage());
+				}
+			}
+		}
+		return daxClustersMap;
+	}
 	/**
 	 * Fetch lambda info.
 	 *
