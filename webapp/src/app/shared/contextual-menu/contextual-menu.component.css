@@ -12,114 +12,111 @@
  * limitations under the License.
  */
 
- .contextual-menu-wrapper {
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    background-color: #5a616b;
-    font-size: 1em;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    font-family: var(--text-font-family);
+::ng-deep .tree-children {
+  margin-left: 22px;
+  padding-left: 9px !important;
+  border-left: 2px solid #dfe6ee;
 }
 
-.contextual-menu-wrapper ul {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+::ng-deep tree-node-content {
+  width: 155px !important;
+  height: 18px !important;
+  display: ruby !important;
+  font-family: "Mark Pro";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  color: #70767e;
+  flex: none;
+  padding: 0px 16px 0px 12px !important;
 }
 
-.contextual-menu-title {
-    height: 3em;
-    line-height: 3em;
-    background: var(--primary-400);
-    border-top-left-radius: 5px;
+.icon {
+  float: left;
 }
 
-.contextual-menu-title h6 {
-    padding-left: 0.66em;
-    text-transform: uppercase;
+::ng-deep .node-content-wrapper {
+  /* margin-left: 2px !important; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  width: 187px;
+  height: 44px;
+  border-radius: 4px;
+  flex: none;
+  align-self: stretch;
+  flex-grow: 0;
+  background: none !important;
+  box-shadow: none !important;
+  float: left;
 }
 
-.contextual-menu-item {
-    position: relative;
-    min-height: 3em;
-    line-height: 1.5;
-    cursor: pointer;
-    padding: 0.4em 0.91em;
-    text-transform: capitalize;
-    min-height: 3em;
-    display: flex;
-    align-items: center;
+.node-img {
+  height: 44px;
+  width: 32px;
+  padding: 14px 0px 14px 16px;
 }
 
-.contextual-menu-item:hover {
-    background-color: #687a92;
+#logo {
+  width: 192px;
+  height: 56px;
+  margin: 20px;
 }
 
-.contextual-menu-item.active {
-    font-family: ex2-medium;
-    background-color: #3f4a59;
+::ng-deep .angular-tree-component {
+  width: 250px !important;
 }
 
-.contextual-menu-item.active::before {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 3%;
-    max-width: 5px;
-    background-color: var(--primary-400);
+::ng-deep .toggle-children-wrapper-expanded .toggle-children {
+  transform: rotate(180deg) !important;
 }
 
-.arrow {
-    width: 7px;
-    height: 7px;
-    transition: transform 0.3s;
-    border-top: 2px solid #ffffff;
-    border-right: 2px solid #ffffff;
-    transform: rotate(45deg);
-    position: absolute;
-    right: 1em;
+::ng-deep .toggle-children {
+  height: 13px;
+  width: 13px;
+  right: 25px;
+  background-image: url("/assets/images/arrow.svg");
 }
 
-.sub-list {
-    width:100%;
+::ng-deep .node-wrapper-active tree-node-content {
+  color: #0047bb !important;
 }
 
-.arrow-checked {
-    transition: transform 0.3s;
-    transform:rotate(135deg);
+::ng-deep .node-wrapper-active {
+  width: 218px;
+  border-radius: 4px;
+  background-color: #ccdaf1 !important;
 }
 
-.list-wrapper {
-    display: block;
+.node-wrapper-active .node-img {
+  filter: invert(18%) sepia(99%) saturate(2410%) hue-rotate(209deg)
+    brightness(92%) contrast(109%);
 }
 
-.list-wrapper .contextual-menu-item:active,
-.list-wrapper .contextual-menu-item:hover {
-    background-color: #687a92;
+::ng-deep .tree-children tree-node-content {
+  color: #70767e;
 }
 
-.sub-list-container .contextual-menu-item {
-    padding-left: 1.8em;
+::ng-deep .node-drop-slot {
+  height: 0px !important;
 }
 
-.plus-mark {
-    font-size: 1em;
-    color: #aaaaaa;
+::ng-deep .node-wrapper {
+  width: 218px !important;
+  height: 44px !important;
 }
 
-.mr-multicloud-text {
-    font-size: 0.8em;
-    color: #aaaaaa;
+.wrapper .node-img,
+.wrapper tree-node-expander {
+  filter: brightness(0);
 }
 
-.contextual-list-wrapper {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+.wrapper tree-node-content {
+  color: black;
+}
+
+.node-img-on-only-expanded {
+  filter: brightness(0);
 }
