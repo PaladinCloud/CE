@@ -80,3 +80,14 @@
 .cloud-icon-wrapper {
   padding-right: 0.6em;
 }
+
+.view-more-list {
+  padding: 0.9em 1em;
+  font-size: 1em;
+  color: #fff;
+  background: var(--primary-400);
+  font-family: var(--text-medium-font-family);
+  text-align: center;
+  border-radius: 2px;
+  cursor: pointer;
+}

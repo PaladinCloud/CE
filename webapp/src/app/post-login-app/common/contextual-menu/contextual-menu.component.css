@@ -35,6 +35,8 @@
   line-height: var(--text-line-height);
   color: var(--text-medium-emphasis);
   flex: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
   padding: 0px 16px 0px 12px !important;
 }
 
@@ -84,7 +86,6 @@
 ::ng-deep .toggle-children {
   height: 13px;
   width: 13px;
-  right: 25px;
   background-image: url("/assets/icons/arrow.svg");
 }
 

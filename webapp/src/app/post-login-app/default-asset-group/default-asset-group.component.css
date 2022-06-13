@@ -69,4 +69,5 @@
   display: flex;
   flex-direction: column;
   margin-top: 21.5px;
+  padding-left: 21.5px;
 }
