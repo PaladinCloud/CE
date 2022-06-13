@@ -126,7 +126,3 @@
 .wrapper tree-node-content {
   color: var(--text-high-emphasis);
 }
-
-.node-img-on-only-expanded {
-  filter: brightness(0);
-}

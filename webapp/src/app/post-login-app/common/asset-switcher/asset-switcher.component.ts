@@ -61,8 +61,6 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
   cloudIconDataLoaded = false;
   public agAndDomain = {};
   private selectedDomainName;
-  public burgerMenuModuleLinks;
-  public footerData;
   public showMenu;
   public environment;
   tvState;
@@ -120,19 +118,9 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
         this.config.required.APP_NAME.toLowerCase() +
         "-white-text-logo.svg";
       this.haveAdminPageAccess = this.permissions.checkAdminPermission();
-      this.userType = this.haveAdminPageAccess ? "Admin" : "";
-      this.FirstName = "Guest";
-      const detailsData = this.dataCacheService.getUserDetailsValue();
-      const firstNameData = detailsData.getFirstName();
-      if (firstNameData) {
-        this.FirstName = firstNameData;
-      }
       this.selectedDomainName = "";
-      this.getModuleLinks();
       this.subscribeToAssetGroup();
       this.subscribeToDomainType();
-
-      this.getProfilePictureOfUser();
     } catch (error) {
       this.loggerService.log("error", "JS Error" + error);
     }
@@ -142,17 +130,6 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     e.stopPropagation();
     if (e.keyCode === 27) {
       this.showMenu = false;
-    }
-  }
-
-  closeUserInfo() {
-    try {
-      const x = this;
-      setTimeout(function () {
-        x.showUserInfo = false;
-      }, 300);
-    } catch (error) {
-      this.loggerService.log("error", error);
     }
   }
 
@@ -185,106 +162,11 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
           if (domainName) {
             this.agAndDomain["domain"] = domainName;
             this.selectedDomainName = domainName;
-            this.getModuleLinks();
           }
         });
     } catch (error) {
       this.loggerService.log("error", error);
     }
-  }
-
-  getModuleLinks() {
-    const complianceLinks =
-      this.domainMappingService.getDashboardsApplicableForADomain(
-        this.selectedDomainName,
-        "compliance"
-      );
-    const assetsLinks =
-      this.domainMappingService.getDashboardsApplicableForADomain(
-        this.selectedDomainName,
-        "assets"
-      );
-    const statisticsLinks = [
-      {
-        route: "stats-overlay",
-        name: "Statistics",
-        overlay: true,
-      },
-    ];
-
-    let complianceLinksUpdated = JSON.parse(JSON.stringify(complianceLinks));
-    complianceLinksUpdated = complianceLinksUpdated.map((eachRoute) => {
-      eachRoute.route = "compliance/" + eachRoute.route;
-      return eachRoute;
-    });
-
-    let assetsLinksUpdated = JSON.parse(JSON.stringify(assetsLinks));
-    assetsLinksUpdated = assetsLinksUpdated.map((eachRoute) => {
-      eachRoute.route = "assets/" + eachRoute.route;
-      return eachRoute;
-    });
-
-    this.burgerMenuModuleLinks = [
-      {
-        img: "../assets/icons/compliance.svg",
-        title: "compliance",
-        rows: complianceLinksUpdated,
-        shown: this.config.required.featureModules.COMPLIANCE_MODULE,
-      },
-      {
-        img: "../assets/icons/assets.svg",
-        title: "assets",
-        rows: assetsLinksUpdated,
-        shown: this.config.required.featureModules.ASSETS_MODULE,
-      },
-      {
-        img: "../assets/icons/Statistics.svg",
-        title: "Statistics",
-        rows: statisticsLinks,
-        shown: true,
-      },
-    ];
-    this.footerData = [];
-
-    if (
-      this.staticContent &&
-      this.staticContent.homePage &&
-      this.staticContent.homePage.contactUs &&
-      this.staticContent.homePage.contactUs.email &&
-      this.staticContent.homePage.contactUs.slack
-    ) {
-      this.footerData = [
-        {
-          img: "/assets/icons/contact.svg",
-          title: "Contact",
-          makePresent: false,
-          rows: [
-            {
-              name: "Email Us",
-              route: this.staticContent.homePage.contactUs.email,
-              target: "",
-            },
-          ],
-        },
-        {
-          img: "/assets/icons/social.svg",
-          title: "Social",
-          makePresent: false,
-          rows: [
-            {
-              name: "Slack",
-              route: this.staticContent.homePage.contactUs.slack,
-              target: "_blank",
-            },
-          ],
-        },
-      ];
-    }
-  }
-
-  makePresent(index) {
-    this.footerData[index].makePresent = true;
-    return true;
   }
 
   changeAg(agData) {
@@ -365,28 +247,6 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     } else {
       this.openAgModal();
     }
-  }
-
-  getProfilePictureOfUser() {
-    // Get profile picture of user from azure ad.
-    // this.adalService.acquireToken(CONFIGURATIONS.optional.auth.resource).subscribe(token => {
-    //     const api = environment.fetchProfilePic.url;
-    //     const httpMethod = environment.fetchProfilePic.method;
-    //     const header = new HttpHeaders();
-    //     const updatedHeader = header.append('Authorization', 'Bearer ' + token);
-    //     this.httpResponseService.getBlobHttpResponse(api, httpMethod, {}, {}, {headers: updatedHeader}).subscribe(response => {
-    //         this.utilService.generateBase64String(response).subscribe(image => {
-    //             this.loggerService.log('info', 'user profile pic received');
-    //             this.dataCacheService.setUserProfileImage(image);
-    //             this.profilePictureSrc = image;
-    //         });
-    //     },
-    //     error => {
-    //         this.loggerService.log('error', 'error while fetching image from azure ad - ' + error);
-    //     });
-    // }, error => {
-    //     this.loggerService.log('error', 'Error while fetching access token for resource - ' + error);
-    // });
   }
 
   ngOnDestroy() {

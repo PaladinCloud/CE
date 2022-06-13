@@ -14,49 +14,57 @@
 
 /* CSS styles of default asset group starts here */
 
-/* .default-asset-group-wrapper {
-    display: flex;
-    border: 1px solid #ffffff;
-    border-radius: 5px;
-    padding: .4em 1em;
-    font-size: 1em;
-    cursor: pointer;
-    align-items: center;
-    max-width: 30em;
+.defualt-asset-wrapper {
+  height: 55px;
+  width: 218px;
+  border: 1px solid #d8dde3;
+  background: #f2f3f5;
+  border-radius: 4px;
+  display: flex;
+  margin-top: 20px;
+  margin-left: 16px;
 }
 
-.default-asset-group-icon {
-    vertical-align: middle;
-    transition: 0.5s ease;
-    transform: scale(0);
-    transform-origin: center;
+.defualt-asset-image-wrapper {
+  margin: 11.5px 0px 11.5px 12px;
+  background-color: white;
+  width: 32px;
+  height: 32px;
 }
 
-.default-asset-group-icon.after-load {
-    transform: scale(1);
+.defualt-asset-image-wrapper img {
+  height: 16px;
+  width: 16px;
+  margin-top: 8px;
+  margin-left: 8px;
 }
 
-.default-asset-group-text {
-    color: #fff;
-    display: inline-block;
-    padding: 0 .9em 0 .4em;
-    vertical-align: middle;
-    padding-bottom: 2px;
-    text-transform: capitalize;
-    overflow: hidden;
-    user-select: none;
-    text-overflow: ellipsis;
+.defualt-asset-content-wrapper {
+  margin: 9px 0px 26px 12px;
+  display: flex;
+  flex-direction: column;
 }
 
-.mr-right-arrow {
-    color: #fff;
-    font-size: 2em;
-    padding-block-end: 1px;
-    vertical-align: middle;
+.defualt-asset-title {
+  width: 112px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-high-emphasis);
+  align-items: center;
 }
 
-.asset-group-overlay {
-    transition: 0.3s ease;
-} */
+.defualt-asset-count {
+  width: 71px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-low-emphasis);
+  align-items: center;
+  margin-top: 6px;
+}
 
-/* CSS styles of default asset group ends here */
+.default-asset-icons-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-top: 21.5px;
+}
