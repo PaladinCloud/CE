@@ -11,7 +11,10 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants
+from core.config import Settings
 import json
+
+
 
 
 class SubmitJobLambdaFunction(LambdaFunctionResource):
@@ -36,7 +39,16 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
 
 class DataCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Data-Collector"
-    schedule_expression = "cron(0 */6 * * ? *)"
+    mins = Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING
+    if mins >= 60 : 
+        hrs = Settings.CURRENT_HOUR + 1 
+        if hrs > 23:
+            hrs = 0
+        mins = mins - 60           
+    else:
+        hrs = Settings.CURRENT_HOUR
+    modHours = hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(mins),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(modHours),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -72,7 +84,16 @@ class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class DataShipperEventRule(CloudWatchEventRuleResource):
     name = "aws-redshift-es-data-shipper"
-    schedule_expression = "cron(5 */6 * * ? *)"
+    mins = Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 5 #waiting time to aws_collector complete
+    if mins >= 60 : 
+        hrs = Settings.CURRENT_HOUR + 1
+        if hrs > 23:
+            hrs = 0
+        mins = mins - 60           
+    else:
+        hrs = Settings.CURRENT_HOUR
+    modHours = hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(mins),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(modHours),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS))
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
 
 
@@ -116,7 +137,16 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class RecommendationsCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Recommendations-Collector"
-    schedule_expression = "cron(6 */6 * * ? *)"
+    mins = Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 6 #waiting time
+    if mins >= 60 : 
+        hrs = Settings.CURRENT_HOUR + 1
+        if hrs > 23:
+            hrs = 0
+        mins = mins - 60           
+    else:
+        hrs = Settings.CURRENT_HOUR
+    modHours = hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(mins),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(modHours),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS))
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -157,7 +187,16 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
 
 class CloudNotificationCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-CloudNotification-Collector"
-    schedule_expression = "cron(7 */6 * * ? *)"
+    mins = Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 7 #waiting time
+    if mins >= 60 : 
+        hrs = Settings.CURRENT_HOUR + 1
+        if hrs > 23:
+            hrs = 0
+        mins = mins - 60           
+    else:
+        hrs = Settings.CURRENT_HOUR
+    modHours = hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(mins),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(modHours),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS))
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -275,7 +314,16 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "azure-discovery"
-    schedule_expression = "cron(10 */6 * * ? *)"
+    mins = Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 10 #waiting time
+    if mins >= 60 : 
+        hrs = Settings.CURRENT_HOUR + 1
+        if hrs > 23:
+            hrs = 0
+        mins = mins - 60           
+    else:
+        hrs = Settings.CURRENT_HOUR
+    modHours = hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(mins),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(modHours),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS))
     DEPENDS_ON = [SubmitJobLambdaFunction]
     PROCESS = need_to_enable_azure()
 
@@ -313,7 +361,17 @@ class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class AzureDataShipperEventRule(CloudWatchEventRuleResource):
     name = "data-shipper-azure"
-    schedule_expression = "cron(11 */6 * * ? *)"
+    modules = Settings.CURRENT_HOUR % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    mins = Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 11 #waiting time
+    if mins >= 60 : 
+        hrs = Settings.CURRENT_HOUR + 1
+        if hrs > 23:
+                hrs = 0
+        mins = mins - 60           
+    else:
+        hrs = Settings.CURRENT_HOUR
+    modHours = hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(mins),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(modHours),str(hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS))
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
     PROCESS = need_to_enable_azure()
 

@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import sys
+from datetime import datetime
 
 
 PROVIDER = 'AWS'
@@ -97,6 +98,9 @@ VPC = {
     "CIDR_BLOCKS": ["10.0.0.0/16"],
     "SUBNETS": ["subnet-1", "subnet-2"]
 }
+
+
+
 REQUIRE_SUBNETS_ON_DIFFERENT_ZONE = True
 
 PACBOT_CODE_DIR = str(CURRENT_FILE_PATH.parent.parent)
@@ -125,3 +129,13 @@ except:
 
 if ALB_PROTOCOL == "HTTPS":
     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
+
+
+#getting system time 
+current_datetime = datetime.now()
+CURRENT_HOUR = current_datetime.hour 
+CURRENT_MINUTE = current_datetime.minute
+
+
+JOB_SCHEDULER_INTERVAL_IN_HOURS = 6
+BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING = 35
