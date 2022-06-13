@@ -37,7 +37,7 @@ import { TreeNode } from "angular-tree-component";
   styleUrls: ["./contextual-menu.component.css"],
   providers: [],
 })
-export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
+export class ContextualMenuComponent implements OnInit, OnDestroy {
   currentParentId: number = -1;
   currentNodeId: number = -1;
   nodes = [
@@ -193,17 +193,12 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
     private dataCacheService: DataCacheService
   ) {}
 
-  @Input() pageTitle;
-  @Input() listOfMenus;
   private assetGroupSubscription: Subscription;
   private domainSubscription: Subscription;
   private downloadSubscription: Subscription;
   public agAndDomain = {};
   public theme: any;
   showContent = true;
-  selectedMenu;
-  sortedMenu = [];
-  modifiedList = [];
   showPacLoader: any = [];
   provider = [];
 
@@ -219,15 +214,6 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
           this.showPacLoader.pop();
         }
       });
-    this.processMenu();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    for (const property in changes) {
-      if (property === "listOfMenus") {
-        this.processMenu();
-      }
-    }
   }
 
   handleClick(node: TreeNode) {
@@ -274,15 +260,6 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  onSelect(menu): void {
-    this.selectedMenu = menu;
-    /**
-     * added by Trinanjan on 09/02/2018 for back button functionality
-     * To clear page levels
-     */
-    this.workflowService.clearAllLevels();
-  }
-
   subscribeToAgAndDomainChange() {
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
@@ -295,59 +272,6 @@ export class ContextualMenuComponent implements OnInit, OnChanges, OnDestroy {
         this.agAndDomain["domain"] = domain;
         this.getProvider();
       });
-  }
-
-  toggleSubContent() {
-    this.showContent = !this.showContent;
-  }
-
-  sortListbyGroup(each_menu, callback) {
-    if (each_menu.groupBy) {
-      for (let j = 0; j < this.modifiedList.length; j++) {
-        if (each_menu.groupBy === this.modifiedList[j].route) {
-          if (
-            this.modifiedList[j].subList &&
-            this.modifiedList[j].subList.length > 0
-          ) {
-            let counter = 0;
-            for (let k = 0; k < this.modifiedList[j].subList.length; k++) {
-              if (this.modifiedList[j].subList[k].route !== each_menu.route) {
-                counter++;
-              } else {
-                break;
-              }
-              if (counter === this.modifiedList[j].subList.length) {
-                this.modifiedList[j].subList.push(each_menu);
-                callback();
-              }
-            }
-          } else {
-            this.modifiedList[j].subList = [];
-            this.modifiedList[j].subList.push(each_menu);
-            callback();
-          }
-          break;
-        }
-      }
-    } else {
-      this.modifiedList.push(each_menu);
-      callback();
-    }
-  }
-
-  processMenu() {
-    let menuCounter = 0;
-    this.sortedMenu = [];
-    this.modifiedList = [];
-    this.listOfMenus.forEach((each_menu, index, array) => {
-      each_menu.subList = [];
-      menuCounter++;
-      this.sortListbyGroup(each_menu, () => {
-        if (menuCounter === array.length) {
-          this.sortedMenu = this.modifiedList;
-        }
-      });
-    });
   }
 
   ngOnDestroy() {

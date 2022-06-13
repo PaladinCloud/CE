@@ -19,21 +19,12 @@
     theme !== undefined && { 'background-image': 'url(' + theme.bg + ')' }
   "
 >
-  <!-- <header class="post-login-header flex flex-col">
-    <app-post-login-header
-      class="flex flex-col"
-      [navigationDetails]="navigationDetails"
-    ></app-post-login-header>
-  </header> -->
   <section class="post-login-body flex" [@mainRouterTransition]="getState(o)">
     <div
       class="contextual-menu-container"
       *ngIf="tvState != true && tvState != 'true'"
     >
-      <app-contextual-menu
-        [pageTitle]="'pageTitle'"
-        [listOfMenus]="[]"
-      ></app-contextual-menu>
+      <app-contextual-menu></app-contextual-menu>
     </div>
     <div class="contextual-content-container">
       <router-outlet
