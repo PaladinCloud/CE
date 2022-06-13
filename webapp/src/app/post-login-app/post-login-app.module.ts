@@ -22,7 +22,6 @@ import { ComplianceModule } from "./../pacman-features/modules/compliance/compli
 import { AssetsModule } from "./../pacman-features/modules/assets/assets.module";
 import { NavIconComponent } from "./common/nav-icon/nav-icon.component";
 import { PostLoginAppComponent } from "./post-login-app.component";
-import { PostLoginHeaderComponent } from "./common/post-login-header/post-login-header.component";
 import { DefaultAssetGroupComponent } from "./default-asset-group/default-asset-group.component";
 import { FirstTimeUserJourneyComponent } from "./first-time-user-journey/first-time-user-journey.component";
 import { AssetGroupsComponent } from "./asset-groups/asset-groups.component";
@@ -73,7 +72,6 @@ import { AssetSwitcherComponent } from "./common/asset-switcher/asset-switcher.c
     AssetSwitcherComponent,
     NavIconComponent,
     PostLoginAppComponent,
-    PostLoginHeaderComponent,
     DefaultAssetGroupComponent,
     FirstTimeUserJourneyComponent,
     AssetGroupsComponent,
