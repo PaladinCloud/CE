@@ -13,76 +13,76 @@
  */
 
 .content-slider-wrapper {
-    padding: 1.5em;
-    border-radius: var(--border-radius);
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
-    border: solid 1px #d6e2f1;
+  padding: 1.5em;
+  border-radius: var(--border-radius);
+  background-color: var(--background-white);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+  border: solid 1px #d6e2f1;
 }
 
 .content-header {
-    font-size: 1.4em;
-    padding-bottom: .3em;
-    max-width: 100%;
+  font-size: 1.4em;
+  padding-bottom: 0.3em;
+  max-width: 100%;
 }
 
 .content-subheader {
-    font-size: 1em;
-    line-height: 1.3;
-    word-spacing: 1px;
-    margin: .5em 0;
-    max-height: 5.55vh;
-    transition: all 0.5s ease;
-    transition: all 0.5s cubic-bezier(0, 1, 0, 1);
+  font-size: 1em;
+  line-height: 1.3;
+  word-spacing: 1px;
+  margin: 0.5em 0;
+  max-height: 5.55vh;
+  transition: all 0.5s ease;
+  transition: all 0.5s cubic-bezier(0, 1, 0, 1);
 }
 
 .content-header:first-letter {
-    text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .content-subheader-open {
-    white-space: pre-line;
-    max-height: 100vh;
-    overflow: hidden;
-    transition: all 0.36s ease;
+  white-space: pre-line;
+  max-height: 100vh;
+  overflow: hidden;
+  transition: all 0.36s ease;
 }
 
 .content-subheader-open:hover {
-    overflow: auto;
-    overflow: overlay;
+  overflow: auto;
+  overflow: overlay;
 }
 
 .content-slider-wrapper .slider-arrow img {
-    height: 1em;
-    transition: 0.36s ease;
+  height: 1em;
+  transition: 0.36s ease;
 }
 
 .content-slider-wrapper .slider-arrow {
-    position: absolute;
-    left: 50%;
-    top: 100%;
-    transform: translate(-50%, -150%) rotate(270deg);
-    cursor: pointer;
-    transition-delay: .2s;
-    transition: all 0.4s ease;
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, -150%) rotate(270deg);
+  cursor: pointer;
+  transition-delay: 0.2s;
+  transition: all 0.4s ease;
 }
 
 .content-slider-wrapper .slider-arrow.rotate90 {
-    transform: translate(-50%, -150%) rotate(90deg);
+  transform: translate(-50%, -150%) rotate(90deg);
 }
 
 .navigate-link {
-    font-family: ex2-medium;
-    letter-spacing: .3px;
-    font-size: 1.1em;
+  font-family: ex2-medium;
+  letter-spacing: 0.3px;
+  font-size: 1.1em;
 }
 
 .navigate-link span {
-    color: var(--primary-400);
-    transition: all .5s ease;
-    cursor: pointer;
+  color: var(--primary-400);
+  transition: all 0.5s ease;
+  cursor: pointer;
 }
 
 .navigate-link span:hover {
-    letter-spacing: 1px;
+  letter-spacing: 1px;
 }

@@ -13,54 +13,54 @@
  */
 
 .mr-user-dropdown-wrapper {
-    border-radius: .2em;
-    background-color: #ffffff;
-    box-shadow: 0px 3px 3px 0 rgba(0, 0, 0, 0.32);
-    overflow: hidden;
+  border-radius: 0.2em;
+  background-color: var(--background-white);
+  box-shadow: 0px 3px 3px 0 rgba(0, 0, 0, 0.32);
+  overflow: hidden;
 }
 
 .mr-each-desc {
-    padding: 1em 1.4em;
-    min-width: 13.8em;
-    min-height: 2.5em;
-    transition: all .2s ease;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 1.1em;
-    line-height: 1.4;
-    transition: 0.2s ease;
+  padding: 1em 1.4em;
+  min-width: 13.8em;
+  min-height: 2.5em;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.1em;
+  line-height: 1.4;
+  transition: 0.2s ease;
 }
-.mr-each-desc:hover{
-    text-shadow: 1px 0;
-    background-color: #F6F6F7;
+.mr-each-desc:hover {
+  text-shadow: 1px 0;
+  background-color: #f6f6f7;
 }
 .mr-user-dropdown-wrapper::after {
-    content: '';
-    clear: both;
-    width: 0;
-    height: 0;
-    position: absolute;
-    top: 1%;
-    right: 7%;
-    transform-origin: 0 0;
-    transform: rotate(-45deg);
-    border: 10px solid;
-    border-color: #fff #fff transparent transparent;
-    box-shadow: 2px -2px 1px -1px rgba(0, 0, 0, 0.11);
-    z-index: -1;
+  content: "";
+  clear: both;
+  width: 0;
+  height: 0;
+  position: absolute;
+  top: 1%;
+  right: 7%;
+  transform-origin: 0 0;
+  transform: rotate(-45deg);
+  border: 10px solid;
+  border-color: #fff #fff transparent transparent;
+  box-shadow: 2px -2px 1px -1px rgba(0, 0, 0, 0.11);
+  z-index: -1;
 }
-.dropdown-select-box{
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 1px solid #757575;
-    margin-right: 1em;
-    background: #fff;
-    flex-shrink: 0;
+.dropdown-select-box {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #757575;
+  margin-right: 1em;
+  background: #fff;
+  flex-shrink: 0;
 }
-.dropdown-selected-active{
-    font-family: var(--text-medium-font-family);
-    background-color: #F6F6F7;
+.dropdown-selected-active {
+  font-family: var(--text-medium-font-family);
+  background-color: #f6f6f7;
 }
-.dropdown-selected-active .dropdown-select-box{
-    background-color: #a5a0a0;
+.dropdown-selected-active .dropdown-select-box {
+  background-color: #a5a0a0;
 }

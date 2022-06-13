@@ -13,7 +13,7 @@
  */
 
 .contextual-menu-wrapper {
-  background-color: #ffffff;
+  background-color: var(--background-white);
   height: 100vh;
   overflow-y: scroll;
 }

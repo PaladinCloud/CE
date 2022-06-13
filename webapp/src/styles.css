@@ -1000,7 +1000,7 @@ body {
   height: 2em;
   transition: 0.3s ease;
   width: 21em;
-  background-color: #ffffff;
+  background-color: var(--background-white);
   position: relative;
   cursor: pointer;
   line-height: 1.8em;
