@@ -9,8 +9,8 @@ public class VirtualMachineVH extends GCPVH {
     private List<VMDiskVH> disks;
     private Map<String, String> tags;
     private String machineType;
-    private String zone;
     private String status;
+    private List<NetworkInterfaceVH> networkInterfaces;
 
     public String getName() {
         return name;
@@ -52,19 +52,19 @@ public class VirtualMachineVH extends GCPVH {
         this.machineType = machineType;
     }
 
-    public String getZone() {
-        return zone;
-    }
-
-    public void setZone(String zone) {
-        this.zone = zone;
-    }
-
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public List<NetworkInterfaceVH> getNetworkInterfaces() {
+        return networkInterfaces;
+    }
+
+    public void setNetworkInterfaces(List<NetworkInterfaceVH> networkInterfaces) {
+        this.networkInterfaces = networkInterfaces;
     }
 }

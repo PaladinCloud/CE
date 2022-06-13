@@ -5257,6 +5257,27 @@
     "modifiedDate": "2022-05-19",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "GCP_Virtual_Machine_public_access_version-1_Rule",
+    "ruleUUID": "GCP_Virtual_Machine_public_access_Rule",
+    "policyId": "GCP_Virtual_Machine_public_access_version-1",
+    "ruleName": "VirtualMachinePublicAccess",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "VirtualMachinePublicIP",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vminstnace-public-access\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"VM Instance is having public IP \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"VM Instance in not having public access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure VM instances are not using public IP addresses\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_Virtual_Machine_public_access_version-1_Rule\",\"autofix\":false,\"alexaKeyword\":\"VirtualMachinePublicIP\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_Virtual_Machine_public_access_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"GCP_Virtual_Machine_public_access_Rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/GCP_Virtual_Machine_public_access_Rule",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure VM instances are not using public IP addresses",
+    "createdDate": "2022-06-09",
+    "modifiedDate": "2022-06-09",
+    "severity": "high",
+    "category": "security"
   }
-
 ]
