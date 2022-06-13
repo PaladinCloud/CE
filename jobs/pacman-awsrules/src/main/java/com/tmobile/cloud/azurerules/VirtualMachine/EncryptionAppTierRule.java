@@ -45,7 +45,7 @@ public class EncryptionAppTierRule extends BaseRule {
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
 
-        boolean isValid = false;
+        boolean isValid = true;
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
             Map<String, Object> mustFilter = new HashMap<>();
@@ -95,11 +95,13 @@ public class EncryptionAppTierRule extends BaseRule {
             JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
             if (hitsJsonArray.size() > 0) {
-                JsonObject sourceJsonObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                if(sourceJsonObject != null && sourceJsonObject.get(PacmanRuleConstants.VM_EXTENSIONS)!=null){
-
-                }else {
+                logger.debug("Validating the data item: {}", jsonDataItem.toString());
+                String encryption=jsonDataItem.getAsJsonObject().get("properties.disks[0].isEncryptionEnabled").getAsString();
+                  if (encryption == "false"){
+                      validationResult = false;}
+                else {
                     logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
             } else {
@@ -108,7 +110,6 @@ public class EncryptionAppTierRule extends BaseRule {
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
-
            return validationResult;
         }
 
