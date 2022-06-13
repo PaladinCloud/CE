@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import java.util.List;
 import java.util.Map;
 
 public class VaultVH extends AzureVH {
@@ -14,9 +15,35 @@ public class VaultVH extends AzureVH {
 	private String tenantId;
 	private String provisioningState;
 	private String vaultUri;
-
+	private List<String> permissionForKeys;
+	private List<String> permissionForSecrets;
+	private List<String> permissionForCertificates;
 	public Map<String, Object> getSku() {
 		return sku;
+	}
+
+	public List<String> getPermissionForKeys() {
+		return permissionForKeys;
+	}
+
+	public void setPermissionForKeys(List<String> permissionForKeys) {
+		this.permissionForKeys = permissionForKeys;
+	}
+
+	public List<String> getPermissionForSecrets() {
+		return permissionForSecrets;
+	}
+
+	public void setPermissionForSecrets(List<String> permissionForSecrets) {
+		this.permissionForSecrets = permissionForSecrets;
+	}
+
+	public List<String> getPermissionForCertificates() {
+		return permissionForCertificates;
+	}
+
+	public void setPermissionForCertificates(List<String> permissionForCertificates) {
+		this.permissionForCertificates = permissionForCertificates;
 	}
 
 	public boolean isEnabledForDeployment() {
