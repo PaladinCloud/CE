@@ -174,7 +174,7 @@
 }
 
 .pp-quarter-overlay {
-  background-color: #fff;
+  background-color: var(--background-white);
   min-width: 50vw;
   display: block;
   top: 0;

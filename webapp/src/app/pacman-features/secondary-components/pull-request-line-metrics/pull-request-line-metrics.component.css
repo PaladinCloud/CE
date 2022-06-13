@@ -139,7 +139,7 @@
 
 .patched.patch-target {
   height: 3px;
-  background: #fff;
+  background-color: var(--background-white);
   width: 2em;
   border: 0px solid #ededed;
   border-bottom: 3px dashed #00b972;
@@ -231,7 +231,7 @@
 
 .onprem-graph-wrap /deep/ .app-button {
   border-radius: 0px !important;
-  background-color: #fff !important;
+  background-color: var(--background-white) !important;
   color: var(--primary-500) !important;
   display: flex !important;
   padding: 0.2em 0em !important;
@@ -243,7 +243,7 @@
 }
 
 .onprem-graph-wrap /deep/ .app-button:hover {
-  background-color: #fff !important;
+  background-color: var(--background-white) !important;
   box-shadow: none !important;
   text-shadow: 1px 0 !important;
 }
@@ -370,7 +370,7 @@
 }
 
 .pp-quarter-overlay {
-  background-color: #fff;
+  background-color: var(--background-white);
   min-width: 54em;
   width: 50vw;
   max-width: 100%;
@@ -490,7 +490,7 @@
   height: 25%;
   cursor: pointer;
   transition: 0.2s ease;
-  background-color: #fff;
+  background-color: var(--background-white);
 }
 
 .quarterNumText {
@@ -572,7 +572,7 @@
   transition: 0.2s ease;
   text-transform: uppercase;
   font-size: 1.2em;
-  background-color: #fff;
+  background-color: var(--background-white);
   padding: 0.5em 0.6em;
   text-align: center;
   color: var(--primary-500);

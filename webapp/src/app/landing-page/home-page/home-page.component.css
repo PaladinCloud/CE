@@ -83,7 +83,7 @@
 
 .mr-connect-line {
   width: 0.2em;
-  background-color: #fff;
+  background-color: var(--background-white);
   margin: 0 auto;
   margin-bottom: 1em;
   min-height: 3em;
@@ -129,7 +129,7 @@
   width: 100%;
   position: relative;
   z-index: 11;
-  background: #fff;
+  background-color: var(--background-white);
 }
 
 .mr-all-feature {
@@ -206,7 +206,7 @@
 .mr-footer-link-margin {
   width: 0.1em;
   height: 100%;
-  background-color: #fff;
+  background-color: var(--background-white);
   display: inline-block;
 }
 

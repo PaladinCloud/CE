@@ -258,7 +258,7 @@ input.inputarea-container {
 .textarea-container {
   border: 1px solid #aaa;
   border-radius: 0.3em;
-  background-color: #fff;
+  background-color: var(--background-white);
   padding: 0.8em;
   width: 100%;
   height: 81px;
@@ -268,7 +268,7 @@ input.inputarea-container {
 ul.input-wrapper {
   border: 1px solid #aaa;
   border-radius: 0.3em;
-  background-color: #fff;
+  background-color: var(--background-white);
   padding: 0.6em;
   padding-top: 0.1em;
   padding-bottom: 0.1em;
@@ -346,7 +346,7 @@ li.list-inputs:hover {
 }
 
 .data-table-head-outer {
-  background-color: #fff;
+  background-color: var(--background-white);
   left: 0;
   width: 100%;
   min-height: 1.7em;
@@ -371,7 +371,7 @@ li.list-inputs:hover {
   position: relative;
   min-width: 100%;
   left: 0;
-  background-color: #fff;
+  background-color: var(--background-white);
   z-index: 1;
   bottom: 0;
   width: fit-content;
@@ -467,7 +467,7 @@ li.list-inputs:hover {
 }
 
 .data-table-paginator-wrap {
-  background-color: #fff;
+  background-color: var(--background-white);
   width: 100%;
   height: 4.66em;
   border-top: solid 1.5px #efefef;
@@ -979,7 +979,7 @@ p.inputnote {
   height: 18px;
   border: 1px solid #333;
   border-radius: 100%;
-  background: #fff;
+  background-color: var(--background-white);
 }
 
 [type="radio"]:checked + label:after,
@@ -1023,7 +1023,7 @@ button.tmbutton {
   padding: 0 10px 0 10px;
   height: 30px;
   border-radius: 7px;
-  background-color: #fff;
+  background-color: var(--background-white);
   border: solid 2px var(--primary-400);
   font-size: 13px;
   font-weight: 600;
@@ -1049,7 +1049,7 @@ button.tmbutton:disabled {
 }
 
 button.tmbutton:disabled:hover {
-  background-color: #fff;
+  background-color: var(--background-white);
   box-shadow: none;
 }
 
@@ -2084,7 +2084,7 @@ p.inputnote {
 
 .users-suggest .suggestions {
   position: absolute;
-  background-color: #fff;
+  background-color: var(--background-white);
   border: 1px solid #aaa;
   width: 100%;
   border-radius: 0.2em;
@@ -2297,7 +2297,7 @@ button.attrbutton {
   width: auto;
   height: 18px;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: var(--background-white);
   border: solid 1px var(--primary-400);
   font-size: 11px;
   font-weight: 600;
@@ -2318,7 +2318,7 @@ button.attrbutton:hover {
 
 button.attrbutton:disabled {
   cursor: not-allowed !important;
-  background-color: #fff;
+  background-color: var(--background-white);
   border: solid 1px var(--primary-300);
   color: var(--primary-300);
   box-shadow: none;
@@ -2326,7 +2326,7 @@ button.attrbutton:disabled {
 
 button.attrbutton:disabled:hover {
   cursor: not-allowed !important;
-  background-color: #fff;
+  background-color: var(--background-white);
   border: solid 1px var(--primary-300);
   color: var(--primary-300) !important;
   box-shadow: none;

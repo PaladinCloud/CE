@@ -17,8 +17,8 @@
 .defualt-asset-wrapper {
   height: 55px;
   width: 218px;
-  border: 1px solid #d8dde3;
-  background: #f2f3f5;
+  border: 1px solid var(--neutral-200);
+  background: var(--neutral-100);
   border-radius: 4px;
   display: flex;
   margin-top: 20px;
@@ -27,7 +27,7 @@
 
 .defualt-asset-image-wrapper {
   margin: 11.5px 0px 11.5px 12px;
-  background-color: white;
+  background-color: var(--background-white);
   width: 32px;
   height: 32px;
 }
@@ -47,16 +47,18 @@
 
 .defualt-asset-title {
   width: 112px;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body-2-font-size);
+  font-family: var(--text-medium-font-family);
   color: var(--text-high-emphasis);
   align-items: center;
 }
 
 .defualt-asset-count {
   width: 71px;
-  font-size: 12px;
-  font-weight: 400;
+  font-size: var(--text-caption-font-size);
+  font-family: var(--text-font-family);
+  font-weight: var(--text-light-font-weight);
   color: var(--text-low-emphasis);
   align-items: center;
   margin-top: 6px;

@@ -54,7 +54,7 @@
   border-radius: 50%;
   border: 1px solid #757575;
   margin-right: 1em;
-  background: #fff;
+  background-color: var(--background-white);
   flex-shrink: 0;
 }
 .dropdown-selected-active {

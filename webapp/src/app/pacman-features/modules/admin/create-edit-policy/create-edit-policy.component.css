@@ -52,7 +52,7 @@ input.inputarea-container {
 .textarea-container {
   border: 1px solid #aaa;
   border-radius: 0.3em;
-  background-color: #fff;
+  background-color: var(--background-white);
   padding: 0.8em;
   width: 100%;
   height: 9em;
@@ -62,7 +62,7 @@ input.inputarea-container {
 ul.input-wrapper {
   border: 1px solid #aaa;
   border-radius: 0.3em;
-  background-color: #fff;
+  background-color: var(--background-white);
   padding: 0.3em;
 }
 
@@ -105,7 +105,7 @@ ul.input-wrapper {
 }
 
 .data-table-paginator-wrap {
-  background-color: #fff;
+  background-color: var(--background-white);
   width: 100%;
   height: 4.66em;
   border-top: solid 1.5px #efefef;

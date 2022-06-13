@@ -260,7 +260,7 @@
   border-radius: 2px;
   outline: none;
   box-shadow: none;
-  background: #fff;
+  background-color: var(--background-white);
   border: 1px solid #aeaeae;
   padding: 0.5em 1em;
 }
@@ -371,13 +371,13 @@
 }
 
 .cancel-update /deep/ .app-button {
-  background-color: #fff;
+  background-color: var(--background-white);
   color: var(--primary-500);
   margin-top: 1em;
 }
 
 .cancel-update /deep/ .app-button:hover {
-  background-color: #fff;
+  background-color: var(--background-white);
   color: var(--primary-500);
   box-shadow: none;
 }

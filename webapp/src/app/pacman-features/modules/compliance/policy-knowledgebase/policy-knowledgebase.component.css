@@ -33,7 +33,7 @@
 
 .pk-top-content {
   padding: 1em 1em 0.2em;
-  background-color: #fff;
+  background-color: var(--background-white);
   min-height: 5em;
   -ms-flex-negative: 0;
   flex-shrink: 0;
@@ -188,7 +188,7 @@
   align-content: flex-start;
   position: relative;
   height: 100%;
-  background: #fff;
+  background-color: var(--background-white);
   border-bottom-left-radius: var(--border-radius);
   border-bottom-right-radius: var(--border-radius);
   border-left: 1px var(--border-100);

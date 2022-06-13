@@ -14,7 +14,7 @@
 
 .first-time-container {
   z-index: 14;
-  background: #fff;
+  background-color: var(--background-white);
   margin: auto;
   top: 50%;
   left: 50%;

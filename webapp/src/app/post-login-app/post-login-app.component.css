@@ -141,3 +141,7 @@
     padding-bottom: 0%;
   }
 }
+
+.contextual-content-container {
+  padding: 0px 28px;
+}

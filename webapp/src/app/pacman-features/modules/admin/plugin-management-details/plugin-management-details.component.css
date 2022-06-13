@@ -4,7 +4,7 @@
   height: calc(100vh - 19em);
   flex-direction: column;
   align-items: center;
-  background: #fff;
+  background-color: var(--background-white);
   box-shadow: 0 1px 7px -1px #0000001e, 0 2px 4px 0 #00000023;
 }
 .form-container {

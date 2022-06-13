@@ -14,7 +14,13 @@
 
 <div class="defualt-asset-wrapper">
   <div class="defualt-asset-image-wrapper">
-    <img src="/assets/icons/{{ provider[0] }}-color.svg" />
+    <img
+      src="/assets/icons/{{ provider[0] }}-color.svg"
+      *ngIf="provider.length == 1; else defaultImage"
+    />
+    <ng-template #defaultImage>
+      <img src="/assets/icons/multi-cloud.svg" />
+    </ng-template>
   </div>
   <div class="defualt-asset-content-wrapper">
     <div class="defualt-asset-title">

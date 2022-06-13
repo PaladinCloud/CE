@@ -28,7 +28,7 @@
 
 .pk-top-content {
   padding: 2em 3em 1.8em;
-  background-color: #fff;
+  background-color: var(--background-white);
   min-height: 12em;
   flex-shrink: 0;
   font: var(--text-caption);
