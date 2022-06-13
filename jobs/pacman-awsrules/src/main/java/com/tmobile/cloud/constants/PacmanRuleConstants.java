@@ -33,6 +33,9 @@ public class PacmanRuleConstants {
     public static String BLOB_PUBLIC_ACCESS_ALLOWED="blobPublicAccessAllowed";
     public static final String GCP_CMK ="hasKmsKeyName" ;
     public static String GCP_CSEK="hasSha256";
+    public static final String ADMIN_FOR_KEYS = "adminForKeys";
+    public static final String ADMIN_FOR_SECRETS ="adminForSecrets" ;
+    public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
