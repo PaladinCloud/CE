@@ -110,8 +110,8 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       id: 13,
       name: "Statistics",
       image: "admin",
-      route:
-        "modalBGMenu:stats-overlay?ag=all-clouds&domain=Infra %26 Platforms",
+      route: "stats-overlay",
+      overlay: true,
     },
     {
       id: 14,

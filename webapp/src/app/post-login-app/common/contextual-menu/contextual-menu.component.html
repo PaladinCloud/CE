@@ -55,7 +55,11 @@
           <tree-node-content
             [queryParams]="agAndDomain"
             class="{{ node.data.name }}"
-            routerLink="{{ node.data?.route }}"
+            [routerLink]="
+              node.data?.overlay
+                ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
+                : [node.data?.route]
+            "
             (click)="handleClick(node)"
             [node]="node"
             [index]="index"
