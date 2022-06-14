@@ -12,6 +12,26 @@ from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATC
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids
 import json
+from core.config import Settings
+
+class Time:
+    def __init__(self, mins, hrs, modHours=0):
+        self.mins = mins
+        self.hrs = hrs
+        self.modHours = modHours
+
+    def calculate_mins_hrs(self):
+        if self.mins >= 60: 
+            self.hrs += 1 
+            if self.hrs > 23:
+                self.hrs = 0
+            self.mins = self.mins - 60           
+        else:
+            self.hrs = self.hrs
+    
+    def calculate_modHours(self):
+        self.modHours = self.hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
+        return self.modHours
 
 
 class SubmitJobLambdaFunction(LambdaFunctionResource):
@@ -20,7 +40,7 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
     handler = BATCH_JOB_FILE_NAME + ".lambda_handler"
     runtime = "python3.6"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = UploadLambdaSubmitJobZipFile.get_output_attr('id')
+    s3_key = UploadLambdaSubmitJobZipFile.get_output_attr('id') 
     environment = {
         'variables': {
             'JOB_QUEUE': BatchJobsQueue.get_input_attr('name'),
@@ -36,7 +56,9 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
 
 class DataCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Data-Collector"
-    schedule_expression = "cron(0 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -73,10 +95,11 @@ class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         ]
     })
 
-
 class DataShipperEventRule(CloudWatchEventRuleResource):
     name = "aws-redshift-es-data-shipper"
-    schedule_expression = "cron(5 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 5, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()   
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
 
 
@@ -125,7 +148,9 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class RecommendationsCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Recommendations-Collector"
-    schedule_expression = "cron(6 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 6, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -171,7 +196,9 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
 
 class CloudNotificationCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-CloudNotification-Collector"
-    schedule_expression = "cron(7 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 7, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -296,7 +323,9 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "azure-discovery"
-    schedule_expression = "cron(10 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 10, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction]
     PROCESS = need_to_enable_azure()
 
@@ -337,7 +366,9 @@ class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class AzureDataShipperEventRule(CloudWatchEventRuleResource):
     name = "data-shipper-azure"
-    schedule_expression = "cron(11 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 11, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
     PROCESS = need_to_enable_azure()
 
@@ -377,7 +408,9 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "gcp-discovery"
-    schedule_expression = "cron(10 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 10, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction]
     PROCESS = need_to_enable_gcp()
 
@@ -419,7 +452,9 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class GCPDataShipperEventRule(CloudWatchEventRuleResource):
     name = "data-shipper-gcp"
-    schedule_expression = "cron(12 */6 * * ? *)"
+    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 11, Settings.CURRENT_HOUR)
+    time.calculate_mins_hrs()
+    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
     PROCESS = need_to_enable_gcp()
 
