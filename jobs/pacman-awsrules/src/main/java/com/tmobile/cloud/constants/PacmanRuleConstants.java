@@ -30,11 +30,11 @@ public class PacmanRuleConstants {
     public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
     public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
     public static final String GCP_NAT_IP = "natIP";
-    public static String BLOB_PUBLIC_ACCESS_ALLOWED="blobPublicAccessAllowed";
-    public static final String GCP_CMK ="hasKmsKeyName" ;
-    public static String GCP_CSEK="hasSha256";
+    public static String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
+    public static final String GCP_CMK = "hasKmsKeyName";
+    public static String GCP_CSEK = "hasSha256";
     public static final String ADMIN_FOR_KEYS = "adminForKeys";
-    public static final String ADMIN_FOR_SECRETS ="adminForSecrets" ;
+    public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
     public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
 
     private PacmanRuleConstants() {
@@ -447,5 +447,10 @@ public class PacmanRuleConstants {
     public static final String KEYVAULTVALUE = "keyVaultValue";
     public static final String SUCCESS = "SUCCESS";
     public static final String PROPERTIESMAP = "propertiesMap";
+    public static final String DISABLED = "disabled";
+    public static final String DIRECTION = "direction";
+    public static final String SOURCERANGES = "sourceRanges";
+    public static final String INGRESS = "INGRESS";
+    public static final String PORTS = "ports";
 
 }
