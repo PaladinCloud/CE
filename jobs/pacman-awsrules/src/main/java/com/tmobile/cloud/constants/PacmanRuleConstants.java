@@ -26,6 +26,10 @@ public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
     public static final String NAME = "name";
+    public static final String ES_VM_URL = "esvmURL";
+    public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
+    public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
+    public static final String GCP_NAT_IP = "natIP";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -105,7 +109,8 @@ public class PacmanRuleConstants {
     public static final String STATE_TRANSITION_REASON = "statetransitionreason";
     public static final String STATE_NAME = "statename";
     public static final String PRIVATE_IP_ADDRESS = "privateipaddress";
-    public static final String CATEGORY = "category";
+    public static final String CATEGORY = "ruleCategory";
+    public static final String ACTIVITY_RULE_CATEGORY = "category";
     public static final String ADMINISTRATIVE = "Administrative";
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
@@ -394,6 +399,8 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_KEY_ARN_ATTRIBUTE = "keyarn";
+    public static final String ES_ENCRYPTED_ATTRIBUTE = "encrypted";
     public static final String ES_DMS_PUBLIC_ACCESS_ATTRIBUTE = "publiclyAccessible";
     public static final String ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE = "ssetype";
     public static final String ES_KMS_KEY_MANAGER_ATTRIBUTE = "keymanager";

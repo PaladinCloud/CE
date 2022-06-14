@@ -1011,7 +1011,47 @@ public class AssetFileGenerator {
 				}
 			});
 			//****** Changes For Federated Rules End ******
-
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("daxcluster"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "daxcluster");
+					FileManager.generateDAXClusterFiles(InventoryUtil.fetchDAXClusterInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "daxcluster\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "daxcluster", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("awsathena"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "awsathena");
+					FileManager.generateAWSAthenaFiles(InventoryUtil.fetchAWSAthenaInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "awsathena\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "awsathena", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("awscomprehend"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "awscomprehend");
+					FileManager.generateAWSComprehendFiles(InventoryUtil.fetchAWSComprehendInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "awscomprehend\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "awscomprehend", e.getMessage());
+				}
+			});
+			
+			
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

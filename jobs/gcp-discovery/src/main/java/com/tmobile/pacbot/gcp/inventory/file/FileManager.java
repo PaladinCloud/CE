@@ -44,17 +44,17 @@ public class FileManager {
 		FileGenerator.folderName = folderName;
 		new File(folderName).mkdirs();
 
-		FileGenerator.writeToFile("gcp-computeinstance.data", "[", false);
+		FileGenerator.writeToFile("gcp-vminstance.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
 
-		FileGenerator.writeToFile("gcp-computeinstance.data", "]", true);
+		FileGenerator.writeToFile("gcp-vminstance.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
 
-		FileGenerator.generateJson(vmMap, "gcp-computeinstance.data");
+		FileGenerator.generateJson(vmMap, "gcp-vminstance.data");
 	}
 	
 }
