@@ -64,6 +64,7 @@ import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
+import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
@@ -263,6 +264,8 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -412,6 +415,8 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -672,6 +677,23 @@ public class FileManager {
 		FileGenerator.generateJson(eksMap, fieldNames, "aws-awscomprehend.data",keys);
 		
 
+	}
+	
+	/**
+	 * Generate AWS AppFlow files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSAppFlowFiles(Map<String,List<AppFlowVH>> appFlowMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "flowDef.flowArn`flowDef.description`flowDef.flowName`flowDef.flowStatus`flowDef.sourceConnectorType`flowDef.destinationConnectorType`kmsArn";
+		keys = "discoverydate`accountid`accountname`region`flowarn`description`flowname`flowstatus`sourceconntype`destconntype`kmsarn";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow.data",keys);
+		fieldNames ="flowDef.flowArn`tags.key`tags.value";
+		keys ="discoverydate`accountid`accountname`region`flowarn`key`value";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow-tags.data",keys);
 	}
 
 	/**

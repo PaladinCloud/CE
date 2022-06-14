@@ -41,6 +41,13 @@ import com.amazonaws.services.apigateway.AmazonApiGatewayClientBuilder;
 import com.amazonaws.services.apigateway.model.GetRestApisRequest;
 import com.amazonaws.services.apigateway.model.GetRestApisResult;
 import com.amazonaws.services.apigateway.model.RestApi;
+import com.amazonaws.services.appflow.AmazonAppflow;
+import com.amazonaws.services.appflow.AmazonAppflowClientBuilder;
+import com.amazonaws.services.appflow.model.DescribeFlowRequest;
+import com.amazonaws.services.appflow.model.DescribeFlowResult;
+import com.amazonaws.services.appflow.model.FlowDefinition;
+import com.amazonaws.services.appflow.model.ListFlowsRequest;
+import com.amazonaws.services.appflow.model.ListFlowsResult;
 import com.amazonaws.services.athena.AmazonAthena;
 import com.amazonaws.services.athena.AmazonAthenaClientBuilder;
 import com.amazonaws.services.athena.model.GetQueryExecutionRequest;
@@ -257,6 +264,7 @@ import com.tmobile.cso.pacman.inventory.file.ErrorManageUtil;
 import com.tmobile.cso.pacman.inventory.file.FileGenerator;
 import com.tmobile.cso.pacman.inventory.vo.AccessKeyMetadataVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
+import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
 import com.tmobile.cso.pacman.inventory.vo.Attribute;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
@@ -864,6 +872,53 @@ public class InventoryUtil {
 			}
 		}
 		return daxClustersMap;
+	}
+	
+	/**
+	 * Fetch AWS AppFlow Cluster info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String,List<AppFlowVH>> fetchAppFlowInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+
+		Map<String,List<AppFlowVH>> appFlowMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					AmazonAppflow appflow = AmazonAppflowClientBuilder.standard().
+				 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					List<FlowDefinition> appFlowList = new ArrayList<>();
+					String token = null;
+					do{
+						ListFlowsResult appList = appflow.listFlows(new ListFlowsRequest()).withNextToken(token);
+						appFlowList.addAll(appList.getFlows());
+						token = appList.getNextToken();
+					}while(token!=null);
+					
+					List<AppFlowVH> appFlowVHList = new ArrayList<>();
+					if( !appFlowList.isEmpty() ){
+						appFlowList.forEach( flow -> {
+							DescribeFlowResult describeFlow = appflow.describeFlow(new DescribeFlowRequest().withFlowName(flow.getFlowName()));
+							String kmsArn = describeFlow.getKmsArn();
+							appFlowVHList.add(new AppFlowVH(flow, kmsArn));
+						});
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : DAXCluster "+region.getName() + " >> "+appFlowVHList.size());
+						appFlowMap.put(accountId+delimiter+accountName+delimiter+region.getName(),appFlowVHList);
+					}
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"daxcluster",e.getMessage());
+				}
+			}
+		}
+		return appFlowMap;
 	}
 	/**
 	 * Fetch lambda info.
