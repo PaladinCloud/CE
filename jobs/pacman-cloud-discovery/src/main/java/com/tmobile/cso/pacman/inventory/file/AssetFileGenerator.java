@@ -1063,6 +1063,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "appflow", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("ecs"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "ecs");
+					FileManager.generateAWSECSFiles(InventoryUtil.fetchECSInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "ecs\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "ecs", e.getMessage());
+				}
+			});
 			
 			executor.shutdown();
 			while (!executor.isTerminated()) {

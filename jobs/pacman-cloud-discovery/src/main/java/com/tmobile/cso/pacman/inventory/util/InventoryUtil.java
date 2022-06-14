@@ -123,6 +123,13 @@ import com.amazonaws.services.ec2.model.Subnet;
 import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.Vpc;
 import com.amazonaws.services.ec2.model.VpcEndpoint;
+import com.amazonaws.services.ecs.AmazonECS;
+import com.amazonaws.services.ecs.AmazonECSClientBuilder;
+import com.amazonaws.services.ecs.model.DescribeTaskDefinitionRequest;
+import com.amazonaws.services.ecs.model.DescribeTaskDefinitionResult;
+import com.amazonaws.services.ecs.model.ListTaskDefinitionsRequest;
+import com.amazonaws.services.ecs.model.ListTaskDefinitionsResult;
+import com.amazonaws.services.ecs.model.TaskDefinition;
 import com.amazonaws.services.eks.AmazonEKS;
 import com.amazonaws.services.eks.AmazonEKSClientBuilder;
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalk;
@@ -907,19 +914,68 @@ public class InventoryUtil {
 							String kmsArn = describeFlow.getKmsArn();
 							appFlowVHList.add(new AppFlowVH(flow, kmsArn));
 						});
-						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : DAXCluster "+region.getName() + " >> "+appFlowVHList.size());
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : appflow "+region.getName() + " >> "+appFlowVHList.size());
 						appFlowMap.put(accountId+delimiter+accountName+delimiter+region.getName(),appFlowVHList);
 					}
 				}
 			}catch(Exception e){
 				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
 					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(accountId,region.getName(),"daxcluster",e.getMessage());
+					ErrorManageUtil.uploadError(accountId,region.getName(),"appflow",e.getMessage());
 				}
 			}
 		}
 		return appFlowMap;
 	}
+	
+	/**
+	 * Fetch AWS ECS Cluster info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions the skip regions
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String,List<TaskDefinition>> fetchECSInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+
+		Map<String,List<TaskDefinition>> ecsTaskDefMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		for(Region region : RegionUtils.getRegions()){
+			try{
+				if(!skipRegions.contains(region.getName())){
+					AmazonECS ecsClient = AmazonECSClientBuilder.standard().
+				 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					List<String> taskDefArnList = new ArrayList<>();
+					String token = null;
+					do{
+						ListTaskDefinitionsResult taskDefinRes = ecsClient.listTaskDefinitions(new ListTaskDefinitionsRequest()).withNextToken(token);
+						taskDefArnList.addAll(taskDefinRes.getTaskDefinitionArns());
+						token = taskDefinRes.getNextToken();
+					}while(token!=null);
+					
+					List<TaskDefinition> taskDefList = new ArrayList<>();
+					if( !taskDefArnList.isEmpty() ){
+						taskDefArnList.forEach( taskDef -> {
+							DescribeTaskDefinitionResult describeTaskDefinition = ecsClient.describeTaskDefinition(new DescribeTaskDefinitionRequest().withTaskDefinition(taskDef));
+							TaskDefinition taskDefinition = describeTaskDefinition.getTaskDefinition();
+							taskDefList.add(taskDefinition);
+						});
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : ECS "+region.getName() + " >> "+taskDefList.size());
+						ecsTaskDefMap.put(accountId+delimiter+accountName+delimiter+region.getName(),taskDefList);
+					}
+				}
+			}catch(Exception e){
+				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId,region.getName(),"ECS",e.getMessage());
+				}
+			}
+		}
+		return ecsTaskDefMap;
+	}
+	
+	
 	/**
 	 * Fetch lambda info.
 	 *

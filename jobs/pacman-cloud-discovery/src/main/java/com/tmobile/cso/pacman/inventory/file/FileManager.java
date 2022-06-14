@@ -56,6 +56,7 @@ import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VpcPeeringConnection;
 import com.amazonaws.services.ec2.model.VpnConnection;
 import com.amazonaws.services.ec2.model.VpnGateway;
+import com.amazonaws.services.ecs.model.TaskDefinition;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticmapreduce.model.Cluster;
 import com.amazonaws.services.identitymanagement.model.Role;
@@ -266,6 +267,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -417,6 +419,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -696,6 +699,21 @@ public class FileManager {
 		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow-tags.data",keys);
 	}
 
+	/**
+	 * Generate AWS ECS files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSECSFiles(Map<String,List<TaskDefinition>> appFlowMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "taskDefinitionArn`family`taskRoleArn`executionRoleArn`revision`status`cpu`memory`registeredAt`registeredBy`containerDefinitions.logConfiguration.logDriver";
+		keys = "discoverydate`accountid`accountname`region`taskdefarn`family`taskrolearn`executionrolearn`revision`status`cpu`memory`registeredat`registeredby`logdriver";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-ecs.data",keys);
+	}
+	
+	
 	/**
 	 * Generate classic elb files.
 	 *
