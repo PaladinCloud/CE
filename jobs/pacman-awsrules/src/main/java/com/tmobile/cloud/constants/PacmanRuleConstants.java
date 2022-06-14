@@ -401,6 +401,8 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_ENCRYPTION_OPTION_ATTRIBUTE = "encryptionoption";
+    public static final String ES_SSE_STATUS_ATTRIBUTE = "ssestatus";
     public static final String ES_KEY_ARN_ATTRIBUTE = "keyarn";
     public static final String ES_ENCRYPTED_ATTRIBUTE = "encrypted";
     public static final String ES_DMS_PUBLIC_ACCESS_ATTRIBUTE = "publiclyAccessible";
