@@ -54,9 +54,6 @@ public class AppFlowShouldBeEncryptedWithCMK extends BaseRule {
 
 		logger.debug("========AppFlowShouldBeEncryptedWithCMK started=========");
 		
-		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
 
@@ -64,13 +61,13 @@ public class AppFlowShouldBeEncryptedWithCMK extends BaseRule {
 		String esKmsUrl = !StringUtils.isNullOrEmpty(formattedKmsUrl)?formattedKmsUrl:"";
 
 		Optional.ofNullable(ruleParam)
-			.filter(param -> (!PacmanUtils.doesAllHaveValue(severity, category, esKmsUrl)))
+			.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY), param.get(PacmanRuleConstants.CATEGORY), esKmsUrl)))
 			.map(param -> {logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 				throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 			});
 		RuleResult ruleResult = Optional.ofNullable(resourceAttributes)
 				.filter(resource -> !checkValidation(esKmsUrl, resourceAttributes))
-				.map(resource -> buildFailureAnnotation(ruleParam, severity, category))
+				.map(resource -> buildFailureAnnotation(ruleParam))
 				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 		logger.debug("========AppFlowShouldBeEncryptedWithCMK ended=========");
 		return ruleResult;
@@ -89,7 +86,7 @@ public class AppFlowShouldBeEncryptedWithCMK extends BaseRule {
 	}
 	
 	
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String severity, String category) {
+	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -97,9 +94,9 @@ public class AppFlowShouldBeEncryptedWithCMK extends BaseRule {
 
 		annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
 		annotation.put(PacmanSdkConstants.DESCRIPTION,"Aws Appflow is encrypted with AWS managed keys instead of Customer Master Keys !!");
-		annotation.put(PacmanRuleConstants.SEVERITY, severity);
+		annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
 		annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
-		annotation.put(PacmanRuleConstants.CATEGORY, category);
+		annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
 		annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
 		issue.put(PacmanRuleConstants.VIOLATION_REASON, "Aws Appflow is encrypted with AWS managed keys instead of Customer Master Keys !!");
 		issueList.add(issue);

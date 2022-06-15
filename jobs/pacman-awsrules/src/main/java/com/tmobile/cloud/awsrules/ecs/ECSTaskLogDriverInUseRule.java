@@ -49,20 +49,17 @@ public class ECSTaskLogDriverInUseRule extends BaseRule {
 
 		logger.debug("========ECSTaskLogDriverInUseRule started=========");
 		
-		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
 
 		Optional.ofNullable(ruleParam)
-			.filter(param -> (!PacmanUtils.doesAllHaveValue(severity, category)))
+			.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY), param.get(PacmanRuleConstants.CATEGORY))))
 			.map(param -> {logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 				throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 			});
 		RuleResult ruleResult = Optional.ofNullable(resourceAttributes)
 				.filter(resource -> LOG_DRIVER_NONE.equalsIgnoreCase(resource.get(PacmanRuleConstants.ES_LOG_DRIVER_ATTRIBUTE)))
-				.map(resource -> buildFailureAnnotation(ruleParam, severity, category))
+				.map(resource -> buildFailureAnnotation(ruleParam))
 				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 		
 		logger.debug("========ECSTaskLogDriverInUseRule ended=========");
@@ -70,7 +67,7 @@ public class ECSTaskLogDriverInUseRule extends BaseRule {
 		
 	}
 	
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String severity, String category) {
+	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -78,8 +75,8 @@ public class ECSTaskLogDriverInUseRule extends BaseRule {
 
 		annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
 		annotation.put(PacmanSdkConstants.DESCRIPTION,"Aws ECS task definitions should be configured with a log driver");
-		annotation.put(PacmanRuleConstants.SEVERITY, severity);
-		annotation.put(PacmanRuleConstants.CATEGORY, category);
+		annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
+		annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
 		annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
 		issue.put(PacmanRuleConstants.VIOLATION_REASON, "Aws ECS task definitions should be configured with a log driver");
 		issueList.add(issue);
