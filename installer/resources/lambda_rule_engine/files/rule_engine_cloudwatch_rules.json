@@ -3960,7 +3960,7 @@
     "category": "security"
   },
   {
-    "ruleId": " Aws_dax_should_be_encrypted_version-1_aws_enable_encryption_dax",
+    "ruleId": "Aws_dax_should_be_encrypted_version-1_aws_enable_encryption_dax",
     "ruleUUID": "aws_enable_dax_encryption",
     "policyId": "Aws_dax_should_be_encrypted_version-1",
     "ruleName": "aws_dax_cluster_should_be_encrypted",
