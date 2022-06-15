@@ -4005,7 +4005,7 @@
   },
   {
     "ruleId": "Aws_comprehend_job_results_should_be_encrypted_version-1_aws_enable_job_results_encryption_awscomprehend",
-    "ruleUUID": " aws_enable_comprehend_job_results_encryption",
+    "ruleUUID": "aws_enable_comprehend_job_results_encryption",
     "policyId": "Aws_comprehend_job_results_should_be_encrypted_version-1",
     "ruleName": "aws_comprehend_job_results_should_be_encrypted",
     "targetType": "awscomprehend",
