@@ -104,7 +104,8 @@ public class EncryptionAppTierRule extends BaseRule {
                     for (int i = 0; i < diskJsonArray.size(); i++) {
                         JsonObject diskDataItem = ((JsonObject) diskJsonArray
                                 .get(i));
-                        if (diskDataItem.getAsBoolean()) {
+                        boolean encryption=diskDataItem.getAsJsonObject().get("isEncryptionEnabled").getAsBoolean();
+                        if (encryption) {
                             logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
                             validationResult = true;
                         } else {
