@@ -64,6 +64,7 @@ import com.amazonaws.services.rds.model.DBSnapshot;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
+import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
 import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
@@ -268,6 +269,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -420,6 +424,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -711,6 +718,28 @@ public class FileManager {
 		fieldNames = "taskDefinitionArn`family`taskRoleArn`executionRoleArn`revision`status`cpu`memory`registeredAt`registeredBy`containerDefinitions.logConfiguration.logDriver";
 		keys = "discoverydate`accountid`accountname`region`taskdefarn`family`taskrolearn`executionrolearn`revision`status`cpu`memory`registeredat`registeredby`logdriver";
 		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-ecs.data",keys);
+	}
+	
+	/**
+	 * Generate AWS ECS files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAccessAnalyzerFiles(Map<String,List<AccessAnalyzerVH>> analyzerMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "analyzer.arn`analyzer.lastResourceAnalyzed`analyzer.lastResourceAnalyzedAt`analyzer.name`analyzer.status`analyzer.type";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`lastresanalyzed`lastresanalyzedat`name`status`type";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer.data",keys);
+		// analyzer findings data
+		fieldNames = "analyzer.arn`finding.analyzedAt`finding.id`finding.isPublic`finding.resource`finding.resourceOwnerAccount`finding.status";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`analyzedat`id`ispublic`resource`resourceowneraccount`status";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-findings.data",keys);
+		// analyzer tags data 
+		fieldNames = "analyzer.arn`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`key`value";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-tags.data",keys);
 	}
 	
 	
