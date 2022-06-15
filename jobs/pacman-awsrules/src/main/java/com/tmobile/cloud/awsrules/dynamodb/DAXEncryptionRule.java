@@ -69,14 +69,12 @@ public class DAXEncryptionRule extends BaseRule {
 	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========DAXEncryptionRule started=========");
-		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
 
 		Optional.ofNullable(ruleParam)
-			.filter(param -> (!PacmanUtils.doesAllHaveValue(severity, category)))
+			.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY), param.get(PacmanRuleConstants.CATEGORY))))
 			.map(param -> {
 					logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 					throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -84,14 +82,14 @@ public class DAXEncryptionRule extends BaseRule {
 
 		RuleResult ruleResult = Optional.ofNullable(resourceAttributes)
 				.filter(resource -> !(resource.get(PacmanRuleConstants.ES_SSE_STATUS_ATTRIBUTE).equalsIgnoreCase(SSE_STATUS_ENABLED)))
-				.map(resource -> buildFailureAnnotation(ruleParam, severity, category))
+				.map(resource -> buildFailureAnnotation(ruleParam))
 				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
 		logger.debug("========DAXEncryptionRule ended=========");
 		return ruleResult;
 	}
 	
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String severity, String category) {
+	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -100,9 +98,9 @@ public class DAXEncryptionRule extends BaseRule {
 
 		annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
 		annotation.put(PacmanSdkConstants.DESCRIPTION,"Encryption at rest is disabled for the cluster");
-		annotation.put(PacmanRuleConstants.SEVERITY, severity);
+		annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
 		annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
-		annotation.put(PacmanRuleConstants.CATEGORY, category);
+		annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
 		annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
 		issue.put(PacmanRuleConstants.VIOLATION_REASON, "Encryption at rest is disabled for the cluster");
 		issueList.add(issue);
