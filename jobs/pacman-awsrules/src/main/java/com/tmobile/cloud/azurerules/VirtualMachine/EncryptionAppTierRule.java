@@ -98,9 +98,20 @@ public class EncryptionAppTierRule extends BaseRule {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem.toString());
-                String encryption=jsonDataItem.getAsJsonObject().get("properties.disks[0].isEncryptionEnabled").getAsString();
-                  if (encryption == "false"){
-                      validationResult = false;}
+                JsonArray diskJsonArray = jsonDataItem.getAsJsonObject()
+                        .get(PacmanRuleConstants.DISKS).getAsJsonArray();
+                if(diskJsonArray.size()>0) {
+                    for (int i = 0; i < diskJsonArray.size(); i++) {
+                        JsonObject diskDataItem = ((JsonObject) diskJsonArray
+                                .get(i));
+                        if (diskDataItem.getAsBoolean()) {
+                            logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
+                            validationResult = true;
+                        } else {
+                            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                        }
+                    }
+                }
                 else {
                     logger.debug(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                 }
