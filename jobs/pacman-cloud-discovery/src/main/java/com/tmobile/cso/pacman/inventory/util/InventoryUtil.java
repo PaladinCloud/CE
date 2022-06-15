@@ -885,43 +885,49 @@ public class InventoryUtil {
 	 * Fetch AWS AppFlow Cluster info.
 	 *
 	 * @param temporaryCredentials the temporary credentials
-	 * @param skipRegions the skip regions
-	 * @param accountId the accountId
-	 * @param accountName the account name
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
 	 * @return the map
 	 */
-	public static Map<String,List<AppFlowVH>> fetchAppFlowInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+	public static Map<String, List<AppFlowVH>> fetchAppFlowInfo(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String accountId, String accountName) {
 
-		Map<String,List<AppFlowVH>> appFlowMap = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
-		for(Region region : RegionUtils.getRegions()){
-			try{
-				if(!skipRegions.contains(region.getName())){
-					AmazonAppflow appflow = AmazonAppflowClientBuilder.standard().
-				 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+		Map<String, List<AppFlowVH>> appFlowMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AmazonAppflow appflow = AmazonAppflowClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
 					List<FlowDefinition> appFlowList = new ArrayList<>();
 					String token = null;
-					do{
+					do {
 						ListFlowsResult appList = appflow.listFlows(new ListFlowsRequest()).withNextToken(token);
 						appFlowList.addAll(appList.getFlows());
 						token = appList.getNextToken();
-					}while(token!=null);
-					
+					} while (token != null);
+
 					List<AppFlowVH> appFlowVHList = new ArrayList<>();
-					if( !appFlowList.isEmpty() ){
-						appFlowList.forEach( flow -> {
-							DescribeFlowResult describeFlow = appflow.describeFlow(new DescribeFlowRequest().withFlowName(flow.getFlowName()));
+					if (!appFlowList.isEmpty()) {
+						appFlowList.forEach(flow -> {
+							DescribeFlowResult describeFlow = appflow
+									.describeFlow(new DescribeFlowRequest().withFlowName(flow.getFlowName()));
 							String kmsArn = describeFlow.getKmsArn();
 							appFlowVHList.add(new AppFlowVH(flow, kmsArn));
 						});
-						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : appflow "+region.getName() + " >> "+appFlowVHList.size());
-						appFlowMap.put(accountId+delimiter+accountName+delimiter+region.getName(),appFlowVHList);
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : appflow " + region.getName()
+								+ " >> " + appFlowVHList.size());
+						appFlowMap.put(accountId + delimiter + accountName + delimiter + region.getName(),
+								appFlowVHList);
 					}
 				}
-			}catch(Exception e){
-				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
-					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(accountId,region.getName(),"appflow",e.getMessage());
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, region.getName(), "appflow", e.getMessage());
 				}
 			}
 		}
@@ -932,43 +938,50 @@ public class InventoryUtil {
 	 * Fetch AWS ECS Cluster info.
 	 *
 	 * @param temporaryCredentials the temporary credentials
-	 * @param skipRegions the skip regions
-	 * @param accountId the accountId
-	 * @param accountName the account name
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
 	 * @return the map
 	 */
-	public static Map<String,List<TaskDefinition>> fetchECSInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+	public static Map<String, List<TaskDefinition>> fetchECSInfo(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String accountId, String accountName) {
 
-		Map<String,List<TaskDefinition>> ecsTaskDefMap = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
-		for(Region region : RegionUtils.getRegions()){
-			try{
-				if(!skipRegions.contains(region.getName())){
-					AmazonECS ecsClient = AmazonECSClientBuilder.standard().
-				 	withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+		Map<String, List<TaskDefinition>> ecsTaskDefMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AmazonECS ecsClient = AmazonECSClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
 					List<String> taskDefArnList = new ArrayList<>();
 					String token = null;
-					do{
-						ListTaskDefinitionsResult taskDefinRes = ecsClient.listTaskDefinitions(new ListTaskDefinitionsRequest()).withNextToken(token);
+					do {
+						ListTaskDefinitionsResult taskDefinRes = ecsClient
+								.listTaskDefinitions(new ListTaskDefinitionsRequest()).withNextToken(token);
 						taskDefArnList.addAll(taskDefinRes.getTaskDefinitionArns());
 						token = taskDefinRes.getNextToken();
-					}while(token!=null);
-					
+					} while (token != null);
+
 					List<TaskDefinition> taskDefList = new ArrayList<>();
-					if( !taskDefArnList.isEmpty() ){
-						taskDefArnList.forEach( taskDef -> {
-							DescribeTaskDefinitionResult describeTaskDefinition = ecsClient.describeTaskDefinition(new DescribeTaskDefinitionRequest().withTaskDefinition(taskDef));
+					if (!taskDefArnList.isEmpty()) {
+						taskDefArnList.forEach(taskDef -> {
+							DescribeTaskDefinitionResult describeTaskDefinition = ecsClient.describeTaskDefinition(
+									new DescribeTaskDefinitionRequest().withTaskDefinition(taskDef));
 							TaskDefinition taskDefinition = describeTaskDefinition.getTaskDefinition();
 							taskDefList.add(taskDefinition);
 						});
-						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : ECS "+region.getName() + " >> "+taskDefList.size());
-						ecsTaskDefMap.put(accountId+delimiter+accountName+delimiter+region.getName(),taskDefList);
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ECS " + region.getName() + " >> "
+								+ taskDefList.size());
+						ecsTaskDefMap.put(accountId + delimiter + accountName + delimiter + region.getName(),
+								taskDefList);
 					}
 				}
-			}catch(Exception e){
-				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
-					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(accountId,region.getName(),"ECS",e.getMessage());
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, region.getName(), "ECS", e.getMessage());
 				}
 			}
 		}
