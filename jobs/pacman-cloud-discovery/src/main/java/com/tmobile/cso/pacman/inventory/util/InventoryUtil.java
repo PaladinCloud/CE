@@ -623,7 +623,7 @@ public class InventoryUtil {
 	 */
 	public static Map<String,List<ReplicationInstance>> fetchDBMigrationService(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
 		Map<String,List<ReplicationInstance>> awsDBMigrationServiceMap = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DynamoDB\" , \"region\":\"" ;		
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"DocumentDB\" , \"region\":\"" ;		
 		for(Region region : RegionUtils.getRegions()){
 			try{
 				if(!skipRegions.contains(region.getName())){
@@ -644,7 +644,7 @@ public class InventoryUtil {
 
 				}
 			}catch(Exception e){
-				if(region.isServiceSupported(AmazonDynamoDB.ENDPOINT_PREFIX)){
+				if(region.isServiceSupported(AWSDatabaseMigrationService.ENDPOINT_PREFIX)){
 					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId,region.getName(),"DocumentDB",e.getMessage());
 				}
@@ -761,7 +761,7 @@ public class InventoryUtil {
 	public static Map<String,List<QueryExecution>> fetchAWSAthenaInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
 
 		Map<String,List<QueryExecution>> queryExeDetailsMap = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"awsathena\" , \"region\":\"" ;
 		for(Region region : RegionUtils.getRegions()){
 			try{
 				if(!skipRegions.contains(region.getName())){
@@ -788,7 +788,7 @@ public class InventoryUtil {
 					}
 				}
 			}catch(Exception e){
-				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+				if(region.isServiceSupported(AmazonAthena.ENDPOINT_PREFIX)){
 					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId,region.getName(),"awsathena",e.getMessage());
 				}
@@ -809,7 +809,7 @@ public class InventoryUtil {
 	public static Map<String,List<EntitiesDetectionJobProperties>> fetchAWSComprehendInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
 
 		Map<String,List<EntitiesDetectionJobProperties>> entitiesDetectionJobsMap = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"awscomprehend\" , \"region\":\"" ;
 		for(Region region : RegionUtils.getRegions()){
 			try{
 				if(!skipRegions.contains(region.getName())){
@@ -830,7 +830,7 @@ public class InventoryUtil {
 					}
 				}
 			}catch(Exception e){
-				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+				if(region.isServiceSupported(AmazonComprehend.ENDPOINT_PREFIX)){
 					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId,region.getName(),"awscomprehend",e.getMessage());
 				}
@@ -851,7 +851,7 @@ public class InventoryUtil {
 	public static Map<String,List<com.amazonaws.services.dax.model.Cluster>> fetchDAXClusterInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
 
 		Map<String,List<com.amazonaws.services.dax.model.Cluster>> daxClustersMap = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"" ;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"daxcluster\" , \"region\":\"" ;
 		for(Region region : RegionUtils.getRegions()){
 			try{
 				if(!skipRegions.contains(region.getName())){
@@ -872,7 +872,7 @@ public class InventoryUtil {
 					}
 				}
 			}catch(Exception e){
-				if(region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)){
+				if(region.isServiceSupported(AmazonDax.ENDPOINT_PREFIX)){
 					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId,region.getName(),"daxcluster",e.getMessage());
 				}
@@ -895,7 +895,7 @@ public class InventoryUtil {
 
 		Map<String, List<AppFlowVH>> appFlowMap = new LinkedHashMap<>();
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
-				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"";
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"appflow\" , \"region\":\"";
 		for (Region region : RegionUtils.getRegions()) {
 			try {
 				if (!skipRegions.contains(region.getName())) {
@@ -925,7 +925,7 @@ public class InventoryUtil {
 					}
 				}
 			} catch (Exception e) {
-				if (region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)) {
+				if (region.isServiceSupported(AmazonAppflow.ENDPOINT_PREFIX)) {
 					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
 					ErrorManageUtil.uploadError(accountId, region.getName(), "appflow", e.getMessage());
 				}
@@ -948,7 +948,7 @@ public class InventoryUtil {
 
 		Map<String, List<TaskDefinition>> ecsTaskDefMap = new LinkedHashMap<>();
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
-				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"EMR\" , \"region\":\"";
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ECS\" , \"region\":\"";
 		for (Region region : RegionUtils.getRegions()) {
 			try {
 				if (!skipRegions.contains(region.getName())) {
@@ -979,7 +979,7 @@ public class InventoryUtil {
 					}
 				}
 			} catch (Exception e) {
-				if (region.isServiceSupported(AmazonElasticMapReduce.ENDPOINT_PREFIX)) {
+				if (region.isServiceSupported(AmazonECS.ENDPOINT_PREFIX)) {
 					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
 					ErrorManageUtil.uploadError(accountId, region.getName(), "ECS", e.getMessage());
 				}
@@ -987,7 +987,7 @@ public class InventoryUtil {
 		}
 		return ecsTaskDefMap;
 	}
-	
+		
 	
 	/**
 	 * Fetch lambda info.
