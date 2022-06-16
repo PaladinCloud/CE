@@ -5479,6 +5479,28 @@
     "category": "security"
   },
   {
+    "ruleId": "TaggingRule_version-1_VMInstanceTagging_vminstance",
+    "ruleUUID": "gcp_vm_instance_should_be_tagged_with_mandatory_tags",
+    "policyId": "PacMan_TaggingRule_version-1",
+    "ruleName": "VmInstanceTaggingRule",
+    "targetType": "vminstance",
+    "assetGroup": "gcp",
+    "alexaKeyword": "VmInstanceTaggingRule",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"application,environment\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"PacMan_TaggingRule_version-1_VMInstanceTagging_vminstance\",\"autofix\":false,\"alexaKeyword\":\"VmInstanceTaggingRule\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"PacMan_TaggingRule_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_vm_instance_should_be_tagged_with_mandatory_tags\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 * * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/gcp_vm_instance_should_be_tagged_with_mandatory_tags",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VM Instances should be tagged with mandatory tags",
+    "createdDate": "2022-06-16",
+    "modifiedDate": "2022-06-16",
+    "severity": null,
+    "category": null
+  },
+  {
     "ruleId": "Enable_Azure_BlobContainer_Immutability",
     "ruleUUID": "azure_Enable_BlobContainer_Immutability",
     "policyId": "Enable_Azure_BlobContainer_Immutability",
