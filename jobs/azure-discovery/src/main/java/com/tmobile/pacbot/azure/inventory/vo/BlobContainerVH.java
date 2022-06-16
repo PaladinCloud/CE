@@ -13,6 +13,25 @@ public class BlobContainerVH extends AzureVH {
 	private Map<String, Object> propertiesMap;
 	private Map<String, String> tags;
 
+	private boolean hasImmutabilityPolicy;
+	private boolean hasLegalHold;
+
+	public boolean isHasLegalHold() {
+		return hasLegalHold;
+	}
+
+	public void setHasLegalHold(boolean hasLegalHold) {
+		this.hasLegalHold = hasLegalHold;
+	}
+
+	public boolean isHasImmutabilityPolicy() {
+		return hasImmutabilityPolicy;
+	}
+
+	public void setHasImmutabilityPolicy(boolean hasImmutabilityPolicy) {
+		this.hasImmutabilityPolicy = hasImmutabilityPolicy;
+	}
+
 	public String getName() {
 		return name;
 	}
