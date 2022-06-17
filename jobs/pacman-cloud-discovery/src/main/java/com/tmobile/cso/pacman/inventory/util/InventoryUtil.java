@@ -114,6 +114,7 @@ import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
+import com.amazonaws.services.ec2.model.CreateVolumePermission;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
@@ -122,6 +123,8 @@ import com.amazonaws.services.ec2.model.DescribeNatGatewaysRequest;
 import com.amazonaws.services.ec2.model.DescribeNatGatewaysResult;
 import com.amazonaws.services.ec2.model.DescribeNetworkInterfacesResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
+import com.amazonaws.services.ec2.model.DescribeSnapshotAttributeRequest;
+import com.amazonaws.services.ec2.model.DescribeSnapshotAttributeResult;
 import com.amazonaws.services.ec2.model.DescribeSnapshotsRequest;
 import com.amazonaws.services.ec2.model.DescribeSubnetsResult;
 import com.amazonaws.services.ec2.model.DescribeVolumesResult;
@@ -133,6 +136,7 @@ import com.amazonaws.services.ec2.model.NatGateway;
 import com.amazonaws.services.ec2.model.NetworkInterface;
 import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.services.ec2.model.Snapshot;
+import com.amazonaws.services.ec2.model.SnapshotAttributeName;
 import com.amazonaws.services.ec2.model.Subnet;
 import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.Vpc;
@@ -310,6 +314,7 @@ import com.tmobile.cso.pacman.inventory.vo.Resource;
 import com.tmobile.cso.pacman.inventory.vo.SQS;
 import com.tmobile.cso.pacman.inventory.vo.SQSVH;
 import com.tmobile.cso.pacman.inventory.vo.SSLCertificateVH;
+import com.tmobile.cso.pacman.inventory.vo.SnapshotVH;
 import com.tmobile.cso.pacman.inventory.vo.TargetGroupVH;
 import com.tmobile.cso.pacman.inventory.vo.UserVH;
 import com.tmobile.cso.pacman.inventory.vo.VpcEndPointVH;
@@ -1898,31 +1903,60 @@ public class InventoryUtil {
 	 * Fetch snapshots.
 	 *
 	 * @param temporaryCredentials the temporary credentials
-	 * @param skipRegions the skip regions
-	 * @param accountId the accountId
-	 * @param accountName the account name
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
 	 * @return the map
 	 */
-	public static Map<String,List<Snapshot>> fetchSnapshots(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName) {
-		Map<String,List<Snapshot>> snapShots = new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Snapshot\" , \"region\":\"" ;
-		for(Region region : RegionUtils.getRegions()){
-			try{
-				if(!skipRegions.contains(region.getName())){
-					AmazonEC2 ec2Client = AmazonEC2ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
-					List<Snapshot> snapShotsList = ec2Client.describeSnapshots(new DescribeSnapshotsRequest().withOwnerIds(accountId)).getSnapshots();// No need to paginate as all results will be returned
-					if( !snapShotsList.isEmpty() ){
-						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : Snapshot " +region.getName() + " >> "+snapShotsList.size());
-						snapShots.put(accountId+delimiter+accountName+delimiter+region.getName(),snapShotsList);
+	public static Map<String, List<SnapshotVH>> fetchSnapshots(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String accountId, String accountName) {
+		Map<String, List<SnapshotVH>> snapShots = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Snapshot\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AmazonEC2 ec2Client = AmazonEC2ClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+					List<Snapshot> snapShotsList = ec2Client
+							.describeSnapshots(new DescribeSnapshotsRequest().withOwnerIds(accountId)).getSnapshots();
+					if (!snapShotsList.isEmpty()) {
+						List<SnapshotVH> snapShotVHList = snapShotsList.stream()
+								.map(snapshot -> new SnapshotVH(snapshot,
+										getSnapShotPermissions(ec2Client, snapshot.getSnapshotId())))
+								.collect(Collectors.toList());
+
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : Snapshot " + region.getName()
+								+ " >> " + snapShotVHList.size());
+						snapShots.put(accountId + delimiter + accountName + delimiter + region.getName(),
+								snapShotVHList);
 					}
 				}
 
-			}catch(Exception e){
-				log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-				ErrorManageUtil.uploadError(accountId,region.getName(),"snapshot",e.getMessage());
+			} catch (Exception e) {
+				log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+				ErrorManageUtil.uploadError(accountId, region.getName(), "snapshot", e.getMessage());
 			}
 		}
 		return snapShots;
+	}
+
+	/**
+	 * Get SnapShot permission.
+	 *
+	 * @param ec2Client the AmazonEC2
+	 * @param snapshotID the SnapShot ID
+	 * @return the boolean
+	 */
+	private static boolean getSnapShotPermissions(AmazonEC2 ec2Client, String snapshotID) {
+		DescribeSnapshotAttributeResult describeSnapshotAttribute = ec2Client
+				.describeSnapshotAttribute(new DescribeSnapshotAttributeRequest().withSnapshotId(snapshotID)
+						.withAttribute(SnapshotAttributeName.CreateVolumePermission));
+		List<CreateVolumePermission> createVolumePermissions = describeSnapshotAttribute.getCreateVolumePermissions();
+		boolean ispublic = createVolumePermissions.stream()
+				.anyMatch(volPerm -> volPerm.getGroup() != null && "all".equalsIgnoreCase(volPerm.getGroup()));
+		return ispublic;
 	}
 
 	/**

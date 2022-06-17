@@ -95,6 +95,7 @@ import com.tmobile.cso.pacman.inventory.vo.Resource;
 import com.tmobile.cso.pacman.inventory.vo.SGRuleVH;
 import com.tmobile.cso.pacman.inventory.vo.SQSVH;
 import com.tmobile.cso.pacman.inventory.vo.SSLCertificateVH;
+import com.tmobile.cso.pacman.inventory.vo.SnapshotVH;
 import com.tmobile.cso.pacman.inventory.vo.TargetGroupVH;
 import com.tmobile.cso.pacman.inventory.vo.UserVH;
 import com.tmobile.cso.pacman.inventory.vo.VideoStreamVH;
@@ -1138,15 +1139,15 @@ public class FileManager {
 	 * @param snapshotMap the snapshot map
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void generateSnapshotFiles(Map<String, List<Snapshot>> snapshotMap) throws IOException {
+	public static void generateSnapshotFiles(Map<String, List<SnapshotVH>> snapshotMap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "SnapshotId`Description`VolumeId`VolumeSize`Encrypted`DataEncryptionKeyId"
-				+ "`KmsKeyId`OwnerAlias`OwnerId`Progress`StartTime`State`StateMessage";
+		fieldNames = "snapshot.SnapshotId`snapshot.Description`snapshot.VolumeId`snapshot.VolumeSize`snapshot.Encrypted`snapshot.DataEncryptionKeyId"
+				+ "`snapshot.KmsKeyId`snapshot.OwnerAlias`snapshot.OwnerId`snapshot.Progress`snapshot.StartTime`snapshot.State`snapshot.StateMessage`isSnapshotPublic";
 		keys = "discoverydate`accountid`accountname`region`snapshotid`description`volumeid`volumesize`encrypted`dataencryptionkeyid`"
-				+ "kmskeyid`owneralias`ownerid`progress`starttime`state`statemessage";
+				+ "kmskeyid`owneralias`ownerid`progress`starttime`state`statemessage`ispublic";
 		FileGenerator.generateJson(snapshotMap, fieldNames, "aws-snapshot.data",keys);
-		fieldNames = "SnapshotId`tags.key`tags.value";
+		fieldNames = "snapshot.SnapshotId`snapshot.tags.key`snapshot.tags.value";
 		keys = "discoverydate`accountid`accountname`region`snapshotid`key`value";
 		FileGenerator.generateJson(snapshotMap, fieldNames, "aws-snapshot-tags.data",keys);
 	}
