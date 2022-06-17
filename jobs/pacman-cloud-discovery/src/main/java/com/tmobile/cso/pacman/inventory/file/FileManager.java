@@ -64,6 +64,7 @@ import com.amazonaws.services.rds.model.DBSnapshot;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
+import com.tmobile.cso.pacman.inventory.vo.AMIVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
 import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
@@ -272,6 +273,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -427,6 +431,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -742,6 +749,27 @@ public class FileManager {
 		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-tags.data",keys);
 	}
 	
+	/**
+	 * Generate AWS AMI files.
+	 *
+	 * @param amiMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAMIFiles(Map<String, List<AMIVH>> amiMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "image.architecture`image.creationDate`image.imageId`image.imageLocation`image.imageType`image.publicValue`image.platform`image.platformDetails`image.state`image.name`image.rootDeviceType`image.rootDeviceName";
+		keys = "discoverydate`accountid`accountname`region`architecture`creationdate`imageid`imagelocation`imagetype`publicvalue`platform`platformdetails`state`name`rootdevicetype`rootdevicename";
+		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami.data", keys);
+		// ami blockDeviceMapping findings data
+		fieldNames = "image.imageId`blockDeviceMapping.deviceName`blockDeviceMapping.virtualName`blockDeviceMapping.ebs.snapshotId`blockDeviceMapping.ebs.volumeSize`blockDeviceMapping.ebs.volumeType`blockDeviceMapping.ebs.encrypted`blockDeviceMapping.ebs.deleteOnTermination";
+		keys = "discoverydate`accountid`accountname`region`imageid`devicename`virtualname`snapshotid`volumesize`volumetype`encrypted`deleteontermination";
+		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami-blockdevicemap.data", keys);
+		// ami tags data
+		fieldNames = "image.imageId`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`imageid`key`value";
+		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami-tags.data", keys);
+	}
 	
 	/**
 	 * Generate classic elb files.

@@ -17,6 +17,7 @@ package com.tmobile.cso.pacman.inventory.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,6 +113,9 @@ import com.amazonaws.services.dynamodbv2.model.ListTagsOfResourceRequest;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
+import com.amazonaws.services.ec2.model.BlockDeviceMapping;
+import com.amazonaws.services.ec2.model.DescribeImagesRequest;
+import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeNatGatewaysRequest;
@@ -122,6 +127,7 @@ import com.amazonaws.services.ec2.model.DescribeSubnetsResult;
 import com.amazonaws.services.ec2.model.DescribeVolumesResult;
 import com.amazonaws.services.ec2.model.DescribeVpcEndpointsRequest;
 import com.amazonaws.services.ec2.model.Filter;
+import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.NatGateway;
 import com.amazonaws.services.ec2.model.NetworkInterface;
@@ -277,6 +283,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.file.ErrorManageUtil;
 import com.tmobile.cso.pacman.inventory.file.FileGenerator;
+import com.tmobile.cso.pacman.inventory.vo.AMIVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessKeyMetadataVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
@@ -1067,6 +1074,64 @@ public class InventoryUtil {
 			token = listFindings.getNextToken();
 		} while (token != null);
 		return findings;
+	}
+	
+	/**
+	 * Fetch EC2 AMI.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
+	 * @return the map
+	 */
+	public static Map<String, List<AMIVH>> fetchAMI(BasicSessionCredentials temporaryCredentials, String skipRegions,
+			String accountId, String accountName) {
+
+		Map<String, List<AMIVH>> amiMap = new LinkedHashMap<>();
+		AmazonEC2 ec2Client;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"AMI\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					ec2Client = AmazonEC2ClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+					DescribeImagesResult describeImages = ec2Client
+							.describeImages(new DescribeImagesRequest().withOwners(accountId));
+					List<AMIVH> amiVHList = describeImages.getImages().stream()
+							.filter(image -> image.getBlockDeviceMappings().size() > 0)
+							.map(image -> new AMIVH(image, getAMIBlocKDeviceMapping(image), image.getTags()))
+							.collect(Collectors.toList());
+					if (!amiVHList.isEmpty()) {
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : AMI " + region.getName() + " >> "
+								+ amiVHList.size());
+						amiMap.put(accountId + delimiter + accountName + delimiter + region.getName(), amiVHList);
+					}
+
+				}
+			} catch (Exception e) {
+				log.error("Exception fetching EC2 AMI for " + region.getName() + e);
+				log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+				ErrorManageUtil.uploadError(accountId, region.getName(), "ami", e.getMessage());
+			}
+		}
+		return amiMap;
+	}
+	
+	/**
+	 * Get BlockDeviceMapping info.
+	 *
+	 * @param image the Image
+	 * @return the list of BlockDeviceMapping
+	 */
+	private static List<BlockDeviceMapping> getAMIBlocKDeviceMapping(Image image) {
+		return Optional.ofNullable(image)
+				.map(img -> img.getBlockDeviceMappings().stream()
+						.filter(devMap -> devMap.getEbs() != null && devMap.getEbs().getSnapshotId() != null)
+						.collect(Collectors.toList()))
+				.orElse(Collections.emptyList());
 	}
 	
 	/**
