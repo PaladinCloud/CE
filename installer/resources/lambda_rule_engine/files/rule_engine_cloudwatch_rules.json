@@ -4070,6 +4070,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Aws_iam_access_analyser_findings_version-1_aws_active_findings_accessanalyzer",
+    "ruleUUID": "aws_active_accessanalyzer_findings_should_be_resolved",
+    "policyId": "Aws_iam_access_analyser_findings_version-1",
+    "ruleName": "aws_analyzer_findings_should_be_resolved",
+    "targetType": "accessanalyzer",
+    "assetGroup": "aws",
+    "alexaKeyword": "ActiveAwsIAMAccessAnalyzerFindings",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-access-analyzer-findings\",\"encrypt\":false},{\"key\":\"esFindingsUrl\",\"value\":\"\/aws\/accessanalyzer_findings\/_search\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_iam_access_analyser_findings_version-1_aws_active_findings_accessanalyzer\",\"autofix\":false,\"alexaKeyword\":\"ActiveAwsIAMAccessAnalyzerFindings\",\"ruleRestUrl\":\"\",\"targetType\":\"accessanalyzer\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_iam_access_analyser_findings_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_active_accessanalyzer_findings_should_be_resolved\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_active_accessanalyzer_findings_should_be_resolved",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Resolve IAM Access Analyzer Findings",
+    "createdDate": "2022-06-17",
+    "modifiedDate": "2022-06-17",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks",
     "ruleUUID": "aws_enable_eks_secret_encryption",
     "policyId": "Aws_EKS_secrets_should_be_encrypted_version-1",
