@@ -49,8 +49,8 @@
 
 .asset-tabs-inset.active {
     font-weight: bolder;
-    color: #e20074;
-    border-bottom: 2px solid #e20074;
+    color: var(--primary-400);
+    border-bottom: 2px solid var(--primary-400);
 }
 
 .asset-tabs-outer {
@@ -78,7 +78,7 @@
 
 .show-more-pop .each-pop-row.pointer.active {
     font-weight: bold;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #666;
     background: #f0f0f0;
 }

@@ -10,7 +10,7 @@
     border-radius: 5px;
     box-shadow: 0 1px 4px 0 #d9dbe2;
     height: 100%;
-    border-bottom: 5px solid #ed027400;
+    border-bottom: 5px solid var(--primary-400);
     cursor: pointer;
     transition: 0.3s ease;
     position: relative;
@@ -22,7 +22,7 @@
 }
 
 .each-tile.active {
-    border-bottom: 5px solid #ed0274;
+    border-bottom: 5px solid var(--primary-400);
 }
 
 .tile-wrap { 
@@ -34,7 +34,7 @@
 }
 
 .each-tile:hover .tile-number {
-    color: #ed0274;
+    color: var(--primary-400);
 }
 
 .tile-number {
@@ -45,7 +45,7 @@
 }
 
 .tile-txt {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     line-height: 1.2;
     opacity: 0.8;
 }
@@ -68,7 +68,7 @@
 }
 
 .tile-hover {
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #000000;
     z-index: 1;
     opacity: 0;
@@ -100,7 +100,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, calc(-50% - 2em));
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     opacity: 0.8;
 }
 
@@ -121,11 +121,11 @@
 .toggle-slider {
     height: 1.4em;
     width: 1.4em;
-    background: #ed0274;
+    background: var(--primary-400);
     top: 50%;
     transition: 0.3s ease;
     transform: translateY(-50%);
-    border: 5px solid #ed0274;
+    border: 5px solid var(--primary-400);
     border-radius: 0.8em;
     box-shadow: 0 0 4px 0px rgba(0,0,0,0.1);
     left: -3px;
@@ -145,7 +145,7 @@
 }
 
 .each-tab.active {
-    color: #ed0274;
+    color: var(--primary-400);
 }
 
 .toggle-wrap {

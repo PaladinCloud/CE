@@ -1,10 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -17,6 +13,7 @@ import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.compute.DataDisk;
 import com.microsoft.azure.management.compute.OSDisk;
 import com.microsoft.azure.management.compute.VirtualMachine;
+import com.microsoft.azure.management.compute.VirtualMachineExtension;
 import com.microsoft.azure.management.network.NetworkInterface;
 import com.microsoft.azure.management.network.NicIPConfiguration;
 import com.microsoft.azure.management.network.Subnet;
@@ -27,10 +24,10 @@ import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineVH;
 
 @Component
 public class VMInventoryCollector {
-	
+
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
-	
+
 
 	private static Logger log = LoggerFactory.getLogger(VMInventoryCollector.class);
 
@@ -45,7 +42,6 @@ public class VMInventoryCollector {
 		for (VirtualMachine virtualMachine : vms) {
 			try {
 				VirtualMachineVH vmVH = new VirtualMachineVH();
-	
 				vmVH.setComputerName(virtualMachine.computerName() == null
 						? virtualMachine.instanceView().computerName() == null ? virtualMachine.name()
 								: virtualMachine.instanceView().computerName()
@@ -102,7 +98,22 @@ public class VMInventoryCollector {
 				setVnetInfo(virtualMachine, vmVH);
 				setOtherVnets(virtualMachine, vmVH, networkInterfaces);
 				
-	
+				if (virtualMachine.osProfile() != null) {
+					if (virtualMachine.osProfile().linuxConfiguration() != null) {
+						vmVH.setPasswordBasedAuthenticationDisabled(
+								virtualMachine.osProfile().linuxConfiguration().disablePasswordAuthentication());
+					}
+				}
+				
+				if (virtualMachine.listExtensions() != null) {
+					if (virtualMachine.listExtensions().values() instanceof List) {
+						vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());
+					} else {
+						Collection<VirtualMachineExtension> virtualMachineExtensionValue = virtualMachine.listExtensions().values();
+						vmVH.setExtensionList(new ArrayList<>(virtualMachineExtensionValue));
+					}
+				}
+				
 				vmList.add(vmVH);
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -160,7 +171,7 @@ public class VMInventoryCollector {
 			Optional<Subnet> subnetOptional = ipConfiguration.getNetwork().subnets().values().stream()
 					.filter(subnetObj -> subnet.equals(subnetObj.name())).findAny();
 			Subnet subnetObj = null;
-			;
+
 			if (subnetOptional.isPresent()) {
 				subnetObj = subnetOptional.get();
 			}
@@ -197,12 +208,17 @@ public class VMInventoryCollector {
 		vmDisk.setCachingType(osDisk.caching().toString());
 		try {
 			vmDisk.setStorageAccountType(
-				osDisk.managedDisk().storageAccountType() != null ? osDisk.managedDisk().storageAccountType().toString()
-						: "Unknown");
-		}catch(Exception e) {
+					osDisk.managedDisk().storageAccountType() != null
+							? osDisk.managedDisk().storageAccountType().toString()
+							: "Unknown");
+		} catch (Exception e) {
 			vmDisk.setStorageAccountType("Unknown");
 		}
 		vmDisk.setType("OSDisk");
+
+		if (osDisk.encryptionSettings() != null) {
+			vmDisk.setisEncryptionEnabled(osDisk.encryptionSettings().enabled());
+		}
 		vmDisks.add(vmDisk);
 
 		List<DataDisk> dataDisks = vm.storageProfile().dataDisks();
@@ -214,7 +230,7 @@ public class VMInventoryCollector {
 				vmDisk.setStorageAccountType(dataDisk.managedDisk().storageAccountType() != null
 						? dataDisk.managedDisk().storageAccountType().toString()
 						: "Unknown");
-			}catch(Exception e) {
+			} catch (Exception e) {
 				vmDisk.setStorageAccountType("Unknown");
 			}
 			vmDisk.setCachingType(dataDisk.caching().toString());
@@ -224,19 +240,17 @@ public class VMInventoryCollector {
 		vmVH.setDisks(vmDisks);
 
 	}
-	
+
 	@SuppressWarnings("unused")
-	private  String identifyPlatform(String os) {
-		try{
-			if(os.toLowerCase().contains("windows")) {
-			return "windows";
-		}
-		}catch(Exception e) {
-			
+	private String identifyPlatform(String os) {
+		try {
+			if (os.toLowerCase().contains("windows")) {
+				return "windows";
+			}
+		} catch (Exception e) {
+
 		}
 		return "";
 	}
-	
-	
 
 }

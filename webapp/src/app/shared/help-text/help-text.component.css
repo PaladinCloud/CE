@@ -79,7 +79,7 @@
 
 .question-text {
     font-size: 1.17em;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     color: #1c5066;
     line-height: 1.36;
 }
@@ -99,7 +99,7 @@
 
 .related-questions-wrap {
     min-height: 13em;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #dce3e9;
     padding: 1.8em 1.8em 2em;
     position: relative;

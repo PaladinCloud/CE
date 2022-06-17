@@ -23,14 +23,14 @@
 }
 
 .keyword {
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
     padding-right: 0.3em;
     animation: fadein 0.3s;
     color: #333;
 }
 
 .key-value {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     padding-left: 0.3em;
     animation: fadein 0.5s;
 }
@@ -43,7 +43,7 @@
 
 .name-title {
     /*white-space: nowrap;*/
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     font-size: 1.4em;
     margin-bottom: 1em;
     line-height: 1.3;
@@ -58,7 +58,7 @@
     line-height: 1.25;
     border-bottom: 1px solid #aaa;
     animation: fadein 0.3s;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     color: #111;
 }
 

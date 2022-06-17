@@ -18,7 +18,7 @@
 }
 
 .sub-head {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     background-color: #dce3e9;
     font-size: 1em;
     color: #3f4a59;
@@ -44,13 +44,13 @@
 
 .compliant-percent {
     font-size: 2em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .percent-sym {
     font-size: 1.2em;
     padding-bottom: 1px;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .compliant-txt {
@@ -80,8 +80,8 @@
 }
 
 .vuln-link:hover {
-    color: #ed0274;
-    border-bottom: 1px solid #ed0274;
+    color: var(--primary-400);
+    border-bottom: 1px solid var(--primary-400);
     letter-spacing: 0.4px;
     text-shadow: 0.1px 0;
 }
@@ -98,7 +98,7 @@
 }
 
 .active-link {
-    color: #ed0274;
+    color: var(--primary-400);
     text-shadow: 0.2px 0;
 }
 

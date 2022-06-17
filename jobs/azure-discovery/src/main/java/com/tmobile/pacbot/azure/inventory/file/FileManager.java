@@ -19,37 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import com.tmobile.pacbot.azure.inventory.vo.BatchAccountVH;
-import com.tmobile.pacbot.azure.inventory.vo.BlobContainerVH;
-import com.tmobile.pacbot.azure.inventory.vo.CosmosDBVH;
-import com.tmobile.pacbot.azure.inventory.vo.DataDiskVH;
-import com.tmobile.pacbot.azure.inventory.vo.DatabricksVH;
-import com.tmobile.pacbot.azure.inventory.vo.LoadBalancerVH;
-import com.tmobile.pacbot.azure.inventory.vo.MariaDBVH;
-import com.tmobile.pacbot.azure.inventory.vo.MySQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.NamespaceVH;
-import com.tmobile.pacbot.azure.inventory.vo.NetworkInterfaceVH;
-import com.tmobile.pacbot.azure.inventory.vo.NetworkVH;
-import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
-import com.tmobile.pacbot.azure.inventory.vo.PolicyStatesVH;
-import com.tmobile.pacbot.azure.inventory.vo.PostgreSQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.PublicIpAddressVH;
-import com.tmobile.pacbot.azure.inventory.vo.RecommendationVH;
-import com.tmobile.pacbot.azure.inventory.vo.RegisteredApplicationVH;
-import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
-import com.tmobile.pacbot.azure.inventory.vo.RouteTableVH;
-import com.tmobile.pacbot.azure.inventory.vo.SQLDatabaseVH;
-import com.tmobile.pacbot.azure.inventory.vo.SQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.SearchServiceVH;
-import com.tmobile.pacbot.azure.inventory.vo.SecurityAlertsVH;
-import com.tmobile.pacbot.azure.inventory.vo.SecurityGroupVH;
-import com.tmobile.pacbot.azure.inventory.vo.SitesVH;
-import com.tmobile.pacbot.azure.inventory.vo.SnapshotVH;
-import com.tmobile.pacbot.azure.inventory.vo.StorageAccountVH;
-import com.tmobile.pacbot.azure.inventory.vo.SubnetVH;
-import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
-import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineVH;
-import com.tmobile.pacbot.azure.inventory.vo.WorkflowVH;;
+import com.tmobile.pacbot.azure.inventory.vo.*;
 
 /**
  * The Class FileManager.
@@ -67,9 +37,9 @@ public class FileManager {
 	 * Initialise.
 	 *
 	 * @param folderName
-	 *            the folder name
+	 *                   the folder name
 	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *                     Signals that an I/O exception has occurred.
 	 */
 	public static void initialise(String folderName) throws IOException {
 		FileGenerator.folderName = folderName;
@@ -106,6 +76,9 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "[", false);
 		FileGenerator.writeToFile("azure-searchservices.data", "[", false);
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
+		FileGenerator.writeToFile("azure-activitylogalert.data", "[", false);
+		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
+		FileGenerator.writeToFile("azure-webApp.data", "]", true);
 	}
 
 	public static void finalise() throws IOException {
@@ -141,8 +114,9 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-namespaces.data", "]", true);
 		FileGenerator.writeToFile("azure-searchservices.data", "]", true);
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
-		
-
+		FileGenerator.writeToFile("azure-activitylogalert.data", "]", true);
+		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
+		FileGenerator.writeToFile("azure-webApp.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -278,20 +252,39 @@ public class FileManager {
 		FileGenerator.generateJson(batchAccountList, "azure-batchaccounts.data");
 
 	}
-	
+
 	public static void generateNamespaceFiles(List<NamespaceVH> namespaceList) throws IOException {
 		FileGenerator.generateJson(namespaceList, "azure-namespaces.data");
 
 	}
-	
+
 	public static void generateSearchServiceFiles(List<SearchServiceVH> searchServiceList) throws IOException {
 		FileGenerator.generateJson(searchServiceList, "azure-searchservices.data");
 
 	}
-	
+
 	public static void generateSubnetFiles(List<SubnetVH> subnetList) throws IOException {
 		FileGenerator.generateJson(subnetList, "azure-subnets.data");
 
 	}
-	
+
+	public static void generateRedisCacheFiles(List<RedisCacheVH> redisCacheList) throws IOException {
+		FileGenerator.generateJson(redisCacheList, "azure-rediscache.data");
+
+	}
+
+	public static void generateActivityLogFiles(List<ActivityLogAlertRuleVH> activityLogVHList) throws IOException {
+		FileGenerator.generateJson(activityLogVHList, "azure-activitylogalert.data");
+
+	}
+
+	public static void generateSecurityPricingsFiles(List<SecurityPricingsVH> securityPricingsVH) throws IOException {
+		FileGenerator.generateJson(securityPricingsVH, "azure-securitypricings.data");
+
+	}
+
+	public static void generateWebAppFiles(List<WebAppVH> webAppVHList) throws IOException {
+		FileGenerator.generateJson(webAppVHList, "azure-webApp.data");
+
+	}
 }

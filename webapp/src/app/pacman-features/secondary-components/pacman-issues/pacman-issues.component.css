@@ -14,16 +14,22 @@
 
 .pacman-issues-wrapper {
     width: 100%;
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
     position: relative;
     font-size: 1em;
+    border: 1px solid var(--border-100);
+    border-radius: var(--border-radius);
+    background-color: var(--background-white);
 }
 
 .header {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     font-family: ex2-medium;
-    background-color: #dce3e9;
+    background-color: var(--background-white);
     color: #3f4a59;
+    border-bottom: 2px solid var(--border-100);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
 }
 
 .contextual-menu-height {
@@ -31,13 +37,17 @@
 }
 
 .article-parent {
+    background: var(--background-white);
+    border-bottom-left-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+    border-bottom: 1px solid var(--border-100);
     min-height: calc(24.28vh - 64px);
-    padding: 1em 0.8em;
+    padding: 1em 1.5em;
     transition: 0.8s ease;
 }
 
 .link-text:hover .left_count_issue, .link-text:hover .total-issues-text-issue{
-    color: #ed0295;
+    color: var(--primary-500);
 }
 
 
@@ -101,7 +111,7 @@
 .total-issues-text-issue {
     font-size: 1em;
     color: #3c5079;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     margin-right: 0.4em;
 }
 
@@ -143,7 +153,7 @@
     margin-bottom: 0.8em;
     margin-left: 0.3em;
     height: 1em;
-    background: repeating-linear-gradient( 135deg, #e20074, #e20074 2px, #eef4f9 2px, #eef4f9 5px);
+    background: repeating-linear-gradient( 135deg, var(--primary-400), var(--primary-400) 2px, #eef4f9 2px, #eef4f9 5px);
     border-radius: 5px;
     cursor: pointer;
 }
@@ -171,7 +181,7 @@
 .critical_issues_bar {
     width: 27%;
     height: 10px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
@@ -187,7 +197,7 @@
 }
 
 .view_issue:hover {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     letter-spacing: 0.51px;
 }
 

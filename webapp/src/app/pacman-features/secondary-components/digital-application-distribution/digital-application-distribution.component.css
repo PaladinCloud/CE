@@ -35,8 +35,8 @@
 }
 
 .make-link:hover {
-    color: #ed0295;
+    color: var(--primary-500);
     text-decoration: underline;
-    fill: #ed0295;
+    fill: var(--primary-500);
     text-shadow: 0.4px 0;
 }

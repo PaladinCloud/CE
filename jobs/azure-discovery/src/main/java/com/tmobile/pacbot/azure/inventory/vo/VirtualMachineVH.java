@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.microsoft.azure.management.compute.StorageAccountTypes;
+import com.microsoft.azure.management.compute.VirtualMachineExtension;
 import com.microsoft.azure.management.resources.fluentcore.arm.AvailabilityZoneId;
 
 @JsonSerialize
@@ -30,6 +31,7 @@ public class VirtualMachineVH extends AzureVH {
 	private boolean isBootDiagnosticsEnabled;
 	private String bootDiagnosticsStorageUri;
 	private boolean isManagedServiceIdentityEnabled;
+	private boolean isPasswordBasedAuthenticationDisabled;
 	private String systemAssignedManagedServiceIdentityTenantId;
 	private String systemAssignedManagedServiceIdentityPrincipalId;
 	private Set<String> userAssignedManagedServiceIdentityIds;
@@ -42,6 +44,7 @@ public class VirtualMachineVH extends AzureVH {
 	private String publicIpAddress;
 
 	private List<Map<String, String>> networkSecurityGroups;
+	private List<VirtualMachineExtension> extensionList;
 
 	private String vnet;
 	private String subnet;
@@ -53,8 +56,24 @@ public class VirtualMachineVH extends AzureVH {
 		return osType;
 	}
 
+	public List< VirtualMachineExtension> getExtensionList() {
+		return extensionList;
+	}
+
+	public void setExtensionList(List<VirtualMachineExtension> extensionList) {
+		this.extensionList = extensionList;
+	}
+
 	public void setOsType(String osType) {
 		this.osType = osType;
+	}
+
+	public void setPasswordBasedAuthenticationDisabled(boolean isPasswordBasedAuthenticationDisabled){
+          this.isPasswordBasedAuthenticationDisabled = isPasswordBasedAuthenticationDisabled;
+	}
+
+	public boolean getPasswordBasedAuthenticationDisabled(){
+		return this.isPasswordBasedAuthenticationDisabled;
 	}
 
 	public String getPrimaryNCIMacAddress() {

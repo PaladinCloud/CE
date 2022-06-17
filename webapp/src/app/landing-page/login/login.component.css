@@ -24,7 +24,7 @@
     right: 3.57em;
     bottom: 3.37em;
     left: 3.57em;
-    color: #e20074;
+    color: var(--primary-400);
     text-align: center;
     font-size: 14px;
     overflow-x: hidden;

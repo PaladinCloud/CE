@@ -74,7 +74,7 @@
 	display: block;
 	height: inherit;
     background-color: #CCCCCC;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
 }
 .switch-label:before, .switch-label:after {
 	position: absolute;
@@ -104,7 +104,7 @@
 	width: 50px;
     height: 29px;
     background-color: #50C17C;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     color: white;
     padding-top: 8px;
     text-align: center;
@@ -150,7 +150,7 @@
 .submit-button{
     padding: .6em 2.1em;
     border: none;
-    background-color: #E20074;
+    background-color: var(--primary-400);
     color: white;
     font-weight: bold;
     letter-spacing: .6px;
@@ -158,7 +158,7 @@
     cursor: pointer;
 }
 .cancel{
-    color: #E20074;
+    color: var(--primary-400);
     font-weight: bold;
     padding: 0 2em;
 }

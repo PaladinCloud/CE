@@ -160,6 +160,32 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "dynamodb", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("documentdb"))) {
+                    return;
+                }
+				try{
+					log.info(infoPrefix + "Documentdb");
+					FileManager.generatedocumentDbFiles(InventoryUtil.fetchDocumentDBTables(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "Documentdb\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "documentdb", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("dms"))) {
+                    return;
+                }
+				try{
+					log.info(infoPrefix + "DMS");
+					FileManager.generateDMSFiles(InventoryUtil.fetchDBMigrationService(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "dms\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "dms", e.getMessage());
+				}
+			});
 
 			executor.execute(() ->
 			{
@@ -201,6 +227,20 @@ public class AssetFileGenerator {
 				}catch(Exception e){
 					log.error(expPrefix+ "Lambda\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "lambda", e.getMessage());
+				}
+			});
+			
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("eks"))) {
+                    return;
+                }
+				try{
+					log.info(infoPrefix + "eks");
+					FileManager.generateEKSFiles(InventoryUtil.fetcheksInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "eks\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "eks", e.getMessage());
 				}
 			});
 
@@ -971,7 +1011,84 @@ public class AssetFileGenerator {
 				}
 			});
 			//****** Changes For Federated Rules End ******
-
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("daxcluster"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "daxcluster");
+					FileManager.generateDAXClusterFiles(InventoryUtil.fetchDAXClusterInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "daxcluster\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "daxcluster", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("awsathena"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "awsathena");
+					FileManager.generateAWSAthenaFiles(InventoryUtil.fetchAWSAthenaInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "awsathena\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "awsathena", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("awscomprehend"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "awscomprehend");
+					FileManager.generateAWSComprehendFiles(InventoryUtil.fetchAWSComprehendInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "awscomprehend\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "awscomprehend", e.getMessage());
+				}
+			}); 
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("appflow"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "appflow");
+					FileManager.generateAWSAppFlowFiles(InventoryUtil.fetchAppFlowInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "appflow\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "appflow", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("ecs"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "ecs");
+					FileManager.generateAWSECSFiles(InventoryUtil.fetchECSInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "ecs\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "ecs", e.getMessage());
+				}
+			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("accessanalyzer"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "accessanalyzer");
+					FileManager.generateAccessAnalyzerFiles(InventoryUtil.fetchAccessAnalyzerInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "accessanalyzer\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "accessanalyzer", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

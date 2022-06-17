@@ -29,12 +29,12 @@
     text-align: initial;
     max-width: 30em;
     text-overflow: ellipsis;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     letter-spacing: .3px;
     overflow: hidden;
     white-space: nowrap;
     text-transform: capitalize;
-    position: sticky;
+    position: relative;
     top:0;
     padding: 2.5em 1.1em .5em;
     background: #fbfbfb;
@@ -143,7 +143,7 @@
 .input-bar input {
     width: 21.25em;
     height: 2.1em;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     background-color: #ffffff;
     border: solid 1px #c3cbd7;
     padding: 0 1em 0em 2.2em;
@@ -198,7 +198,7 @@
     font-size: 1.08em;;
 }
 .right-number{
- font-family: ex2-bold;
+ font-family: var(--text-medium-font-family);
 }
 .cursor-element{
     cursor: pointer;

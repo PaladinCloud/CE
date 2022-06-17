@@ -56,10 +56,10 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   showLoader: boolean = true;
 
   paginatorSize: number = 25;
-  isLastPage : boolean; 
-  isFirstPage : boolean; 
-  totalPages : number;
-  pageNumber : number = 0;
+  isLastPage: boolean;
+  isFirstPage: boolean;
+  totalPages: number;
+  pageNumber: number = 0;
 
   searchTxt: String = '';
   dataTableData: any = [];
@@ -146,7 +146,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         this.showLoader = true;
         this.getPolicyDetails();
       }
-      
+
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log('error', error);
@@ -154,21 +154,21 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   getPolicyDetails() {
-    var url = environment.policyDetails.url; 
-    var method = environment.policyDetails.method; 
-    
+    var url = environment.policyDetails.url;
+    var method = environment.policyDetails.method;
+
     var queryParams = {
-      page: this.pageNumber, 
+      page: this.pageNumber,
       size: this.paginatorSize
     };
-    
-    if(this.searchTxt !== undefined && this.searchTxt!== '') {
+
+    if (this.searchTxt !== undefined && this.searchTxt !== '') {
       queryParams['searchTerm'] = this.searchTxt;
     }
-    
+
     this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(reponse => {
       this.showLoader = false;
-      if(reponse[0].content !== undefined) {
+      if (reponse[0].content !== undefined) {
         reponse[0].content = this.dataMarshalling(reponse[0].content);
         this.allPolicies = reponse[0].content;
         this.errorValue = 1;
@@ -188,11 +188,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           this.isFirstPage = data.first;
           this.totalPages = data.totalPages;
           this.pageNumber = data.number;
-         
+
           this.seekdata = false;
 
           this.totalRows = data.totalElements;
-          
+
           this.firstPaginator = data.number * this.paginatorSize + 1;
           this.lastPaginator = data.number * this.paginatorSize + this.paginatorSize;
 
@@ -206,15 +206,15 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         }
       }
     },
-    error => {
-      this.showGenericMessage = true;
-      this.errorValue = -1;
-      this.outerArr = [];
-      this.dataLoaded = true;
-      this.seekdata = true;
-      this.errorMessage = 'apiResponseError';
-      this.showLoader = false;
-    })
+      error => {
+        this.showGenericMessage = true;
+        this.errorValue = -1;
+        this.outerArr = [];
+        this.dataLoaded = true;
+        this.seekdata = true;
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+      })
   }
 
   /*
@@ -284,10 +284,10 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  massageData(data) {      
+  massageData(data) {
     let refactoredService = this.refactorFieldsService;
     let newData = [];
-    let formattedFilters = data.map(function(data) {
+    let formattedFilters = data.map(function (data) {
       let keysTobeChanged = Object.keys(data);
       let newObj = {};
       keysTobeChanged.forEach(element => {
@@ -308,7 +308,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = '#e20074';
+      var blue = '#336cc9';
       var green = '#26ba9d';
       var red = '#f2425f';
       var orange = '#ffb00d';
@@ -330,7 +330,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               link: true,
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -338,7 +338,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               imgLink: '',
               text: 'Edit',
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else {
@@ -364,7 +364,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         this.outerArr = this.outerArr.splice(halfLength);
       }
       this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = ['Policy Id','Policy Name', 'Policy Description', 'Policy Version', 'No of Rules', 'Actions'];
+      this.allColumns = ['Policy Id', 'Policy Name', 'Policy Description', 'Policy Version', 'No of Rules', 'Actions'];
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log('error', error);
@@ -387,14 +387,14 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(row) {
-    if(row.col === 'Actions') {
+    if (row.col === 'Actions') {
       try {
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
         this.router.navigate(['../create-edit-policy'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            policyId : row.row['Policy Id'].text
+            policyId: row.row['Policy Id'].text
           }
         });
       } catch (error) {

@@ -134,7 +134,7 @@
 	<dependency>
   		<groupId>org.apache.httpcomponents</groupId>
   		<artifactId>httpclient</artifactId>
-  		<version>4.5.3</version>
+  		<version>4.5.13</version>
 	</dependency>
 	<dependency>
     	<groupId>org.elasticsearch.client</groupId>
@@ -149,7 +149,7 @@
     <dependency>
 	   <groupId>mysql</groupId>
 	   <artifactId>mysql-connector-java</artifactId>
-	   <version>5.1.17</version>
+	   <version>8.0.16</version>
 	</dependency>
   </dependencies>
   <build>
@@ -197,6 +197,7 @@
 							<target>
 								<copy file="target/data-shipper-jar-with-dependencies.jar" tofile="../../dist/jobs/data-shipper-jar-with-dependencies.jar"/>
 								<copy file="target/data-shipper-jar-with-dependencies.jar" tofile="../../dist/jobs/data-shipper-azure.jar"/>
+								<copy file="target/data-shipper-jar-with-dependencies.jar" tofile="../../dist/jobs/data-shipper-gcp.jar"/>
 							</target>
 						</configuration>
 						<goals>

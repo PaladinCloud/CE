@@ -8,7 +8,7 @@
         <g id="ic/arrow_forward/grey600" transform="translate(-4.000000, -4.000000)">
             <g id="ic_arrow_forward_24px">
                 <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
-                <polygon id="Shape" fill="#ed0295" fill-rule="nonzero" points="12 4 10.59 5.41 16.17 11 4 11 4 13 16.17 13 10.59 18.59 12 20 20 12"></polygon>
+                <polygon id="Shape" fill="#0047bb" fill-rule="nonzero" points="12 4 10.59 5.41 16.17 11 4 11 4 13 16.17 13 10.59 18.59 12 20 20 12"></polygon>
             </g>
         </g>
     </g>

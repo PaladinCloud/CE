@@ -40,7 +40,7 @@
     margin: 0 .5em;
     vertical-align: middle;
     text-transform: capitalize;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .mr-right-arrow {

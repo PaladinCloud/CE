@@ -49,7 +49,8 @@
 		<module>recommendation-enricher</module>
 		<module>pacman-qualys-enricher</module>
 		<module>azure-discovery</module>
-	</modules>
+        <module>gcp-discovery</module>
+    </modules>
 
 </project>
 

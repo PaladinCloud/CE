@@ -12,22 +12,22 @@
  * limitations under the License.
  */
 
-import {BrowserModule} from '@angular/platform-browser';
-import {NgModule, ErrorHandler} from '@angular/core';
-import {RouterModule, Routes, RouterLink, RouterLinkActive} from '@angular/router';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatSelectModule} from '@angular/material';
-import {AngularFontAwesomeModule} from 'angular-font-awesome/angular-font-awesome';
-import {HttpClientModule} from '@angular/common/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule, ErrorHandler } from '@angular/core';
+import { RouterModule, Routes, RouterLink, RouterLinkActive } from '@angular/router';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material';
+import { AngularFontAwesomeModule } from 'angular-font-awesome/angular-font-awesome';
+import { HttpClientModule } from '@angular/common/http';
 import 'rxjs/add/operator/toPromise';
-import {AppComponent} from './app.component';
+import { AppComponent } from './app.component';
 
 /* Feature modules */
-import {LandingPageModule} from './landing-page/landing-page.module';
-import {PostLoginAppModule} from './post-login-app/post-login-app.module';
-import {AppRoutingModule} from './app-routing.module';
-import {CoreModule} from './core/core.module';
+import { LandingPageModule } from './landing-page/landing-page.module';
+import { PostLoginAppModule } from './post-login-app/post-login-app.module';
+import { AppRoutingModule } from './app-routing.module';
+import { CoreModule } from './core/core.module';
 import { ErrorHandlingService } from './shared/services/error-handling.service';
 
 @NgModule({

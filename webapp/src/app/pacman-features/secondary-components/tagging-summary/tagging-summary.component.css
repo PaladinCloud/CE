@@ -14,17 +14,17 @@
 
 .certficate-summary-wrapper{
     min-height: 18em;
+    padding: 0 1.25em 2em 1.25em;
 }
 
 .sub-heading {
-    padding: 0.6em 0.5em 0.7em 1em;
+    padding: 16px 24px;
     background-color: #dce3e9;
     font-size: 1em;
     color: #3f4a59;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    border-bottom: 2px var(--border-100);
 }
 
-.certficate-summary-container{
-    /* min-height: 90%;
-    display: flex;
-    align-items: center; */
-}
+

@@ -38,7 +38,7 @@
 }
 
 .bold {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .conf-text.bold {

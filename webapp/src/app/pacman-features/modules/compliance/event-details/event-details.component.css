@@ -63,7 +63,7 @@
     line-height: 1.5;
     font-size: 1.2em;
     color: #333;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     letter-spacing: 0.2px;
     white-space: pre-line;
     word-break: break-word;
@@ -101,7 +101,7 @@
 }
 
 .link {
-    color: #ed0274;
+    color: var(--primary-400);
     cursor: pointer;
     word-break: break-all;
 }
@@ -111,7 +111,7 @@
 }
 
 .model-title {
-    color: #ed0295;
+    color: var(--primary-500);
     font-size: 1.2em;
     cursor: pointer;
     padding-right: 1em;

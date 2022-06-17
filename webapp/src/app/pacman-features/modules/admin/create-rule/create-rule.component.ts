@@ -59,10 +59,10 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   allColumns = [];
   totalRows = 0;
   currentBucket = [];
-  bucketNumber= 0;
-  firstPaginator= 1;
+  bucketNumber = 0;
+  firstPaginator = 1;
   lastPaginator;
-  currentPointer= 0;
+  currentPointer = 0;
   seekdata = false;
   showLoader = true;
   allMonthDays = [];
@@ -82,7 +82,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   isLastPage;
   isFirstPage;
   totalPages: number;
-  pageNumber= 0;
+  pageNumber = 0;
 
   searchTxt = '';
   dataTableData = [];
@@ -91,7 +91,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   filters = [];
   searchCriteria;
   filterText = {};
-  errorValue= 0;
+  errorValue = 0;
   showGenericMessage = false;
   dataTableDesc = '';
   urlID = '';
@@ -107,7 +107,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   datasourceDetails = [];
   targetTypesNames = [];
   ruleCategories = [];
-  ruleSeverities = ["critical","high","medium","low"];
+  ruleSeverities = ["critical", "high", "medium", "low"];
   allPolicyIds = [];
   allFrequencies = ['Daily', 'Hourly', 'Minutes', 'Monthly', 'Weekly', 'Yearly'];
   allMonths = [
@@ -260,7 +260,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
         this.showLoader = false;
       });
   }
-  
+
   getRuleCategoryDetails() {
     this.rulePolicyLoader = true;
     this.contentHidden = true;
@@ -320,11 +320,11 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
       this.isRuleIdValid = -1;
     } else {
       const isKeywordExits = this.ruleIds.findIndex(item => ruleIdKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-        if (isKeywordExits === -1) {
-          this.isRuleIdValid = 1;
-        } else {
-          this.isRuleIdValid = 0;
-        }
+      if (isKeywordExits === -1) {
+        this.isRuleIdValid = 1;
+      } else {
+        this.isRuleIdValid = 0;
+      }
     }
   }
 
@@ -380,10 +380,10 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
       this.ruleLoader = false;
       this.isRuleCreationSuccess = true;
     },
-    error => {
-      this.isRuleCreationFailed = true;
-      this.ruleLoader = false;
-    });
+      error => {
+        this.isRuleCreationFailed = true;
+        this.ruleLoader = false;
+      });
   }
 
   private buildRuleParams() {
@@ -423,7 +423,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
 
   private generateExpression(cronDetails) {
 
-    const getCronExpression = function(cronObjInst) {
+    const getCronExpression = function (cronObjInst) {
       if (cronObjInst === undefined || cronObjInst === null) {
         return undefined;
       } else {
@@ -610,11 +610,11 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
       this.isAlexaKeywordValid = -1;
     } else {
       const isKeywordExits = this.alexaKeywords.findIndex(item => alexaKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-        if (isKeywordExits === -1) {
-          this.isAlexaKeywordValid = 1;
-        } else {
-          this.isAlexaKeywordValid = 0;
-        }
+      if (isKeywordExits === -1) {
+        this.isAlexaKeywordValid = 1;
+      } else {
+        this.isAlexaKeywordValid = 0;
+      }
     }
   }
 
@@ -766,7 +766,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
               link: true,
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -774,7 +774,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
               imgLink: '',
               text: 'Edit',
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else {

@@ -326,5 +326,6 @@ public interface Constants {
 	String TOTAL_VIOLATIONS = "totalViolations";
 	String CLOUD_QUALYS_POLICY="PacMan_Ec2InstanceScannedByQualys_version-1";
 	 String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "PacMan_cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
+    String GCP = "gcp";
 }
 

@@ -26,7 +26,7 @@
     width: 0;
     height: 0;
     border-top: 8px solid transparent;
-    border-left: 8px solid #e20074;
+    border-left: 8px solid var(--primary-400);
     border-bottom: 8px solid transparent;
     transition: all 0.2s;
     border-right: 0;
@@ -79,7 +79,7 @@ input:checked~.accordion-multiselect-type .filter-dropDdown-arrow {
 }
 .label-count{
     flex:1;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     text-align: right;
 }
 .no-accordion-arrow{

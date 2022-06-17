@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import com.tmobile.pacbot.azure.inventory.collector.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,37 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.microsoft.azure.management.Azure;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.collector.BatchAccountInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.BlobContainerInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.CosmosDBInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.DatabricksInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.DiskInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.LoadBalancerInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.MariaDBInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.MySQLInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NSGInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NamespaceInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NetworkInterfaceInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.NetworkInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PolicyDefinitionInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PolicyStatesInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PostgreSQLInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.PublicIpAddressInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.RegisteredApplicationInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.ResourceGroupInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.RouteTableInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SCRecommendationsCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SQLDatabaseInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SQLServerInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SearchServiceInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SecurityAlertsInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SitesInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SnapshotInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.StorageAccountInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.SubnetInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.VMInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.VaultInventoryCollector;
-import com.tmobile.pacbot.azure.inventory.collector.WorkflowInventoryCollector;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
@@ -131,31 +101,42 @@ public class AssetFileGenerator {
 	SecurityAlertsInventoryCollector securityAlertsInventoryCollector;
 
 	@Autowired
+	SecurityPricingsInventoryCollector securityPricingsInventoryCollector;
+
+	@Autowired
 	PolicyStatesInventoryCollector policyStatesInventoryCollector;
 
 	@Autowired
 	PolicyDefinitionInventoryCollector policyDefinitionInventoryCollector;
-	
+
 	@Autowired
 	SitesInventoryCollector sitesInventoryCollector;
-	
+
 	@Autowired
 	VaultInventoryCollector vaultInventoryCollector;
-	
+
 	@Autowired
 	WorkflowInventoryCollector workflowInventoryCollector;
-	
+
 	@Autowired
 	BatchAccountInventoryCollector batchAccountInventoryCollector;
 
 	@Autowired
 	NamespaceInventoryCollector namespaceInventoryCollector;
-	
+
 	@Autowired
 	SearchServiceInventoryCollector searchServiceInventoryCollector;
-	
+
 	@Autowired
 	SubnetInventoryCollector subnetInventoryCollector;
+
+	@Autowired
+	RedisCacheInventoryCollector redisCacheInventoryCollector;
+
+	@Autowired
+	ActivityLogsCollector activityLogsCollector;
+	@Autowired
+	WebAppInventoryCollector webAppInventoryCollector;
 
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
@@ -168,18 +149,18 @@ public class AssetFileGenerator {
 
 		for (SubscriptionVH subscription : subscriptions) {
 			log.info("Started Discovery for sub {}", subscription);
-		
+
 			try {
 				String accessToken = azureCredentialProvider.getAuthToken(subscription.getTenant());
-				Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),subscription.getSubscriptionId());
-				azureCredentialProvider.putClient(subscription.getTenant(),subscription.getSubscriptionId(), azure);
+				Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
+						subscription.getSubscriptionId());
+				azureCredentialProvider.putClient(subscription.getTenant(), subscription.getSubscriptionId(), azure);
 				azureCredentialProvider.putToken(subscription.getTenant(), accessToken);
 
 			} catch (Exception e) {
-				log.error("Error authenticating for {}",subscription,e);
+				log.error("Error authenticating for {}", subscription, e);
 				continue;
 			}
-		
 
 			List<ResourceGroupVH> resourceGroupList = new ArrayList<ResourceGroupVH>();
 			try {
@@ -479,7 +460,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("sites"))) {
 					return;
@@ -492,7 +473,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("vaults"))) {
 					return;
@@ -505,7 +486,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("workflows"))) {
 					return;
@@ -518,7 +499,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("batchaccounts"))) {
 					return;
@@ -544,7 +525,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("searchservices"))) {
 					return;
@@ -557,7 +538,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("subnets"))) {
 					return;
@@ -570,8 +551,60 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
-			
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("rediscache"))) {
+					return;
+				}
+
+				try {
+					FileManager.generateRedisCacheFiles(
+							redisCacheInventoryCollector.fetchRedisCacheDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+
+				if (!(isTypeInScope("activitylog"))) {
+					return;
+				}
+
+				try {
+					FileManager.generateActivityLogFiles(
+							activityLogsCollector.fetchActivityLogAlertDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("securitypricings"))) {
+					return;
+				}
+
+				try {
+					FileManager.generateSecurityPricingsFiles(
+							securityPricingsInventoryCollector.fetchSecurityPricingsDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+            executor.execute(() -> {
+                if (!(isTypeInScope("webApp"))) {
+                    return;
+                }
+                try {
+
+                    FileManager
+                            .generateWebAppFiles(webAppInventoryCollector.fetchWebAppDetails(subscription));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

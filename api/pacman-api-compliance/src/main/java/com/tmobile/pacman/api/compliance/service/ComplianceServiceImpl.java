@@ -871,10 +871,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             throws ServiceException {
         List<Map<String, Object>> ruleSevCatDetails = new ArrayList<>();
         for (Map<String, Object> ruleDetail : ruleDetails) {
+            logger.info("Fetching details for rule: {}",ruleDetail);
             JsonParser parser = new JsonParser();
             List<Map<String, String>> paramsList;
             JsonObject ruleParamsJson;
             Map<String, Object> ruleSevCatDetail = new HashMap<>();
+            logger.info("Rule params for the rule: {}",(String) ruleDetail.get(RULE_PARAMS));
             ruleParamsJson = (JsonObject) parser.parse(ruleDetail.get(RULE_PARAMS).toString());
             paramsList = new Gson().fromJson(ruleParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
             }.getType());

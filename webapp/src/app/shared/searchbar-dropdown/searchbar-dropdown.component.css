@@ -61,7 +61,7 @@
 :host ::ng-deep app-searchable-dropdown .filter-arrow {
     border-left: 0.6em solid transparent;
     border-right: 0.6em solid transparent;
-    border-top: 0.6em solid #e20074;
+    border-top: 0.6em solid var(--primary-400);
     margin-left: 0.4em;
     cursor: pointer;
     pointer-events: none;
@@ -100,7 +100,7 @@
     transition: all 0.5s ease;
     font-size: 1.2em;
     box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
 }
 
 .search-btn:hover {
@@ -138,10 +138,10 @@
 }
 
 .search-btn-active {
-    background-color: #e20074;
+    background-color: var(--primary-400);
 }
 .search-btn-active:hover{
-    background-color: #c20064;
+    background-color: var(--primary-500);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 

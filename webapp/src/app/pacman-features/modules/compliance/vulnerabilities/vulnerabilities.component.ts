@@ -218,7 +218,7 @@ export class VulnerabilitiesComponent implements OnInit, OnDestroy {
       const filterValues = dataArray;
       const refactoredService = this.refactorFieldsService;
       // add By trinanjan
-      const formattedFilters = dataArray.map(function(data) {
+      const formattedFilters = dataArray.map(function (data) {
         data.name =
           refactoredService.getDisplayNameForAKey(data.name.toLowerCase()) || data.name;
         return data;
@@ -229,7 +229,7 @@ export class VulnerabilitiesComponent implements OnInit, OnDestroy {
           key: formattedFilters[i].name, // <-- displayKey-- Resource Type
           value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
           filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-          compareKey : filterObjKeys[i].toLowerCase().trim()// <<-- key to compare whether a key is already present -- "resourcetype"
+          compareKey: filterObjKeys[i].toLowerCase().trim()// <<-- key to compare whether a key is already present -- "resourcetype"
         };
         localFilters.push(eachObj);
       }
@@ -356,7 +356,7 @@ export class VulnerabilitiesComponent implements OnInit, OnDestroy {
         innerArr = {};
         for (let col = 0; col < getCols.length; col++) {
           if (getCols[col].toLowerCase() === 'title' ||
-              getCols[col].toLowerCase() === 'qid') {
+            getCols[col].toLowerCase() === 'qid') {
             cellObj = {
               link: 'View Vulnerability Details',
               properties: {
@@ -415,7 +415,7 @@ export class VulnerabilitiesComponent implements OnInit, OnDestroy {
                 imgLink: '',
                 text: getData[row][getCols[col]],
                 statusProp: {
-                  'background-color': '#ed0295'
+                  'background-color': '#0047bb'
                 }
               };
             } else {
@@ -503,18 +503,18 @@ export class VulnerabilitiesComponent implements OnInit, OnDestroy {
       if (row.col.toLowerCase() === 'assets affected' || row.col.toLowerCase() === 'assetsaffected') {
         const applicationFilterValue = this.filterText['tags.Application.keyword'];
         const environmentFilterValue = this.filterText['tags.Environment.keyword'];
-        const eachParams = { qid: row.row.qid.valText, application: applicationFilterValue, environment:  environmentFilterValue};
+        const eachParams = { qid: row.row.qid.valText, application: applicationFilterValue, environment: environmentFilterValue };
         let newParams = this.utils.makeFilterObj(eachParams);
         newParams = Object.assign(newParams, apiTarget);
         newParams['mandatory'] = 'qid';
         this.router.navigate(['../../../assets', 'asset-list'],
-        {
-          relativeTo: this.activatedRoute,
-          queryParams: newParams,
-          queryParamsHandling: 'merge'
-        });
+          {
+            relativeTo: this.activatedRoute,
+            queryParams: newParams,
+            queryParamsHandling: 'merge'
+          });
       } else if (row.col.toLowerCase() === 'qid' || row.col.toLowerCase() === 'title') {
-        this.router.navigate(['../../vulnerabilities/vulnerability-details', row.row.qid.valText ], {
+        this.router.navigate(['../../vulnerabilities/vulnerability-details', row.row.qid.valText], {
           relativeTo: this.activatedRoute,
           queryParams: this.queryParamsWithoutFilter,
           queryParamsHandling: 'merge'
@@ -576,40 +576,40 @@ export class VulnerabilitiesComponent implements OnInit, OnDestroy {
     let downloadSize = 0;
 
     try {
-        let queryParams;
+      let queryParams;
 
-        queryParams = {
-          fileFormat: 'csv',
-          fileType: fileType
-        };
-        if (serviceName === 'Vulnerability list') {
-          queryParams.serviceId = 6;
-          downloadCsvName = 'All Vulnerabilities';
-          downloadSize = this.totalRows;
-        } else if (serviceName === 'Vulnerability list with asset details') {
-          queryParams.serviceId = 19;
-          downloadCsvName = 'All Vulnerabilities with Details';
-        }
+      queryParams = {
+        fileFormat: 'csv',
+        fileType: fileType
+      };
+      if (serviceName === 'Vulnerability list') {
+        queryParams.serviceId = 6;
+        downloadCsvName = 'All Vulnerabilities';
+        downloadSize = this.totalRows;
+      } else if (serviceName === 'Vulnerability list with asset details') {
+        queryParams.serviceId = 19;
+        downloadCsvName = 'All Vulnerabilities with Details';
+      }
 
-        const downloadRequest = {
-          ag: this.selectedAssetGroup,
-          filter: this.filterText,
-          from: 0,
-          searchtext: this.searchTxt,
-          size: downloadSize
-        };
+      const downloadRequest = {
+        ag: this.selectedAssetGroup,
+        filter: this.filterText,
+        from: 0,
+        searchtext: this.searchTxt,
+        size: downloadSize
+      };
 
-        const downloadUrl = environment.download.url;
-        const downloadMethod = environment.download.method;
-        this.downloadService
-          .requestForDownload(
-            queryParams,
-            downloadUrl,
-            downloadMethod,
-            downloadRequest,
-            downloadCsvName,
-            this.totalRows
-          );
+      const downloadUrl = environment.download.url;
+      const downloadMethod = environment.download.method;
+      this.downloadService
+        .requestForDownload(
+          queryParams,
+          downloadUrl,
+          downloadMethod,
+          downloadRequest,
+          downloadCsvName,
+          this.totalRows
+        );
     } catch (error) {
       this.logger.log('error', error);
     }

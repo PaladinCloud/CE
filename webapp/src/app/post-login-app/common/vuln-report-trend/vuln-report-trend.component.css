@@ -16,7 +16,7 @@
     background: #ffffff;
     flex-shrink: 0;
     border: 1px solid #bbb;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     padding: 1.2em;
     min-height: 25em;
     overflow: hidden;
@@ -50,9 +50,9 @@
 }
 
 .each-range.active {
-    color: #e20074;
+    color: var(--primary-400);
     text-shadow: 0.2px 0;
-    border-bottom: 2px solid #e20074;
+    border-bottom: 2px solid var(--primary-400);
 }
 
 .top-section {
@@ -73,7 +73,7 @@
 }
 
 .admin-instr {
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     color: #444;
     padding-right: 6px;
     align-self: flex-start;

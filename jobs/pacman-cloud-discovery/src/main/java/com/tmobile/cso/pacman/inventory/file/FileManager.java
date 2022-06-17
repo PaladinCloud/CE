@@ -27,11 +27,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.amazonaws.services.apigateway.model.RestApi;
+import com.amazonaws.services.athena.model.QueryExecution;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
 import com.amazonaws.services.autoscaling.model.LaunchConfiguration;
 import com.amazonaws.services.autoscaling.model.ScalingPolicy;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.comprehend.model.EntitiesDetectionJobProperties;
+import com.amazonaws.services.databasemigrationservice.model.ReplicationInstance;
 import com.amazonaws.services.directconnect.model.Connection;
 import com.amazonaws.services.directconnect.model.VirtualInterface;
 import com.amazonaws.services.ec2.model.Address;
@@ -53,6 +56,7 @@ import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VpcPeeringConnection;
 import com.amazonaws.services.ec2.model.VpnConnection;
 import com.amazonaws.services.ec2.model.VpnGateway;
+import com.amazonaws.services.ecs.model.TaskDefinition;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticmapreduce.model.Cluster;
 import com.amazonaws.services.identitymanagement.model.Role;
@@ -60,7 +64,9 @@ import com.amazonaws.services.rds.model.DBSnapshot;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
+import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
+import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
@@ -69,7 +75,9 @@ import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
 import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DeliveryStreamVH;
+import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
+import com.tmobile.cso.pacman.inventory.vo.EKSVH;
 import com.tmobile.cso.pacman.inventory.vo.EbsVH;
 import com.tmobile.cso.pacman.inventory.vo.EfsVH;
 import com.tmobile.cso.pacman.inventory.vo.ElastiCacheVH;
@@ -248,7 +256,23 @@ public class FileManager {
         FileGenerator.writeToFile("aws-account.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-iamgroup.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-cloudtrail.data",InventoryConstants.OPEN_ARRAY, false);
-
+        FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.OPEN_ARRAY,false);
+        FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-dms.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-eks.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-eks-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		
 	}
 
 	public static void finalise() throws IOException{
@@ -387,7 +411,22 @@ public class FileManager {
         FileGenerator.writeToFile("aws-account.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-iamgroup.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-cloudtrail.data",InventoryConstants.CLOSE_ARRAY, true);
-
+        FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.CLOSE_ARRAY,true);
+        FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-documentdb.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-dms.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-eks.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-eks-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -520,8 +559,8 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 
-		fieldNames ="table.TableArn`table.TableName`table.CreationDateTime`table.ItemCount`table.LatestStreamArn`table.LatestStreamLabel`table.TableSizeBytes`table.TableStatus`table.ProvisionedThroughput.ReadCapacityUnits`table.ProvisionedThroughput.WriteCapacityUnits`table.StreamSpecification.StreamEnabled`table.StreamSpecification.StreamViewType";
-		keys ="discoverydate`accountid`accountname`region`tablearn`tablename`creationdatetime`itemcount`lateststreamarn`lateststreamlabel`tablesizebytes`tablestatus`readcapacityunits`writecapacityunits`streamenabled`streamviewtype";
+		fieldNames ="table.TableArn`table.TableName`table.CreationDateTime`table.ItemCount`table.LatestStreamArn`table.LatestStreamLabel`table.TableSizeBytes`table.TableStatus`table.ProvisionedThroughput.ReadCapacityUnits`table.ProvisionedThroughput.WriteCapacityUnits`table.StreamSpecification.StreamEnabled`table.StreamSpecification.StreamViewType`table.sSEDescription.SSEType";
+		keys ="discoverydate`accountid`accountname`region`tablearn`tablename`creationdatetime`itemcount`lateststreamarn`lateststreamlabel`tablesizebytes`tablestatus`readcapacityunits`writecapacityunits`streamenabled`streamviewtype`ssetype";
 		FileGenerator.generateJson(dynamoMap, fieldNames, "aws-dynamodb.data",keys);
 		fieldNames ="table.TableArn`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`tablearn`key`value";
@@ -537,8 +576,8 @@ public class FileManager {
 	public static void generateEfsFiles(Map<String,List<EfsVH>> efsfMap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames ="efs.FileSystemId`efs.Name`efs.CreationTime`efs.CreationToken`efs.LifeCycleState`efs.NumberOfMountTargets`efs.OwnerId`efs.PerformanceMode";
-		keys ="discoverydate`accountid`accountname`region`filesystemid`name`creationtime`creationtoken`lifecyclestate`noofmounttargets`ownerid`performancemode";
+		fieldNames ="efs.FileSystemId`efs.Name`efs.CreationTime`efs.CreationToken`efs.LifeCycleState`efs.NumberOfMountTargets`efs.OwnerId`efs.PerformanceMode`efs.encrypted`efs.kmsKeyId";
+		keys ="discoverydate`accountid`accountname`region`filesystemid`name`creationtime`creationtoken`lifecyclestate`noofmounttargets`ownerid`performancemode`encrypted`kmskeyid";
 		FileGenerator.generateJson(efsfMap, fieldNames, "aws-efs.data",keys);
 		fieldNames ="efs.FileSystemId`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`filesystemid`key`value";
@@ -583,7 +622,127 @@ public class FileManager {
 		keys ="discoverydate`accountid`accountname`region`functionarn`securitygroupid";
 		FileGenerator.generateJson(fileInofMap, fieldNames, "aws-lambda-secgroups.data",keys);
 	}
+	
+	/**
+	 * Generate eks files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateEKSFiles(Map<String,List<EKSVH>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "cluster.name`cluster.arn`cluster.status`cluster.encryptionConfig.provider.keyArn`cluster.version";
+		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`keyarn`version";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks.data",keys);
+		fieldNames ="cluster.arn`tags.key`tags.value";
+		keys ="discoverydate`accountid`accountname`region`clusterarn`key`value";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks-tags.data",keys);
 
+	}
+	
+	/**
+	 * Generate DAX Cluster files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateDAXClusterFiles(Map<String,List<com.amazonaws.services.dax.model.Cluster>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "clusterName`clusterArn`status`sSEDescription.status`clusterEndpointEncryptionType";
+		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`ssestatus`endpointencrytype";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-daxcluster.data",keys);
+		
+
+	}
+	
+	/**
+	 * Generate AWS Athena files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSAthenaFiles(Map<String,List<QueryExecution>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "queryExecutionId`query`resultConfiguration.encryptionConfiguration.encryptionOption`resultConfiguration.encryptionConfiguration.kmsKey`resultConfiguration.encryptionConfiguration.outputLocation`status.state";
+		keys = "discoverydate`accountid`accountname`region`queryid`query`encryptionoption`kmskey`outputlocation`status";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-awsathena.data",keys);
+		
+
+	}
+	
+	/**
+	 * Generate AWS comprehend files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSComprehendFiles(Map<String,List<EntitiesDetectionJobProperties>> eksMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "jobId`jobArn`jobName`jobStatus`outputDataConfig.s3Uri`outputDataConfig.kmsKeyId";
+		keys = "discoverydate`accountid`accountname`region`jobid`jobarn`jobname`jobstatus`s3url`kmskeyid";
+		FileGenerator.generateJson(eksMap, fieldNames, "aws-awscomprehend.data",keys);
+		
+
+	}
+	
+	/**
+	 * Generate AWS AppFlow files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSAppFlowFiles(Map<String,List<AppFlowVH>> appFlowMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "flowDef.flowArn`flowDef.description`flowDef.flowName`flowDef.flowStatus`flowDef.sourceConnectorType`flowDef.destinationConnectorType`kmsArn";
+		keys = "discoverydate`accountid`accountname`region`flowarn`description`flowname`flowstatus`sourceconntype`destconntype`kmsarn";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow.data",keys);
+		fieldNames ="flowDef.flowArn`tags.key`tags.value";
+		keys ="discoverydate`accountid`accountname`region`flowarn`key`value";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow-tags.data",keys);
+	}
+
+	/**
+	 * Generate AWS ECS files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSECSFiles(Map<String,List<TaskDefinition>> appFlowMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "taskDefinitionArn`family`taskRoleArn`executionRoleArn`revision`status`cpu`memory`registeredAt`registeredBy`containerDefinitions.logConfiguration.logDriver";
+		keys = "discoverydate`accountid`accountname`region`taskdefarn`family`taskrolearn`executionrolearn`revision`status`cpu`memory`registeredat`registeredby`logdriver";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-ecs.data",keys);
+	}
+	
+	/**
+	 * Generate AWS ECS files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAccessAnalyzerFiles(Map<String,List<AccessAnalyzerVH>> analyzerMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "analyzer.arn`analyzer.lastResourceAnalyzed`analyzer.lastResourceAnalyzedAt`analyzer.name`analyzer.status`analyzer.type";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`lastresanalyzed`lastresanalyzedat`name`status`type";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer.data",keys);
+		// analyzer findings data
+		fieldNames = "analyzer.arn`finding.analyzedAt`finding.id`finding.isPublic`finding.resource`finding.resourceOwnerAccount`finding.status";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`analyzedat`id`ispublic`resource`resourceowneraccount`status";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-findings.data",keys);
+		// analyzer tags data 
+		fieldNames = "analyzer.arn`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`key`value";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-tags.data",keys);
+	}
+	
+	
 	/**
 	 * Generate classic elb files.
 	 *
@@ -605,6 +764,9 @@ public class FileManager {
 		fieldNames ="elb.LoadBalancerName`elb.securityGroups";
 		keys ="discoverydate`accountid`accountname`region`loadbalancername`securitygroupid";
 		FileGenerator.generateJson(elbMap, fieldNames, "aws-classicelb-secgroups.data",keys);
+		fieldNames ="elb.LoadBalancerName`listnerDesc.Listener.Protocol`listnerDesc.Listener.LoadBalancerPort";
+		keys ="discoverydate`accountid`accountname`region`loadbalancername`protocol`port";
+		FileGenerator.generateJson(elbMap, fieldNames, "aws-classicelb-listeners.data",keys);
 	}
 
 	/**
@@ -622,9 +784,15 @@ public class FileManager {
 		fieldNames ="lb.LoadBalancerName`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`loadbalancername`key`value";
 		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-tags.data",keys);
-		fieldNames ="lb.LoadBalancerName`lb.securityGroups";
-		keys ="discoverydate`accountid`accountname`region`loadbalancername`securitygroupid";
+		fieldNames ="lb.LoadBalancerArn`lb.LoadBalancerName`lb.securityGroups";
+		keys ="discoverydate`accountid`accountname`region`loadbalancerarn`loadbalancername`securitygroupid";
 		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-secgroups.data",keys);
+		fieldNames ="lb.LoadBalancerName`listenersList.listenerArn`listenersList.loadBalancerArn`listenersList.port`listenersList.protocol";
+		keys ="discoverydate`accountid`accountname`region`loadbalancername`listenerArn`loadBalancerarn`port`protocol";
+		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-listeners.data",keys);
+		fieldNames ="lb.LoadBalancerName`listenersList.listenerArn`rules.RuleArn`rules.IsDefault`rules.Priority";
+		keys ="discoverydate`accountid`accountname`region`loadbalancername`listenerArn`rulearn`isdefault`priority";
+		FileGenerator.generateJson(elbMap, fieldNames, "aws-appelb-rules.data",keys);
 	}
 
 	/**
@@ -1055,15 +1223,44 @@ public class FileManager {
 		String fieldNames;
 		String keys;
 		fieldNames = "key.keyId`key.arn`key.creationDate`key.aWSAccountId`key.description`key.keyState`key.enabled`key.keyUsage`key.deletionDate`key.validTo"
-					+"`rotationStatus`alias.aliasName`alias.aliasArn";
+					+"`rotationStatus`alias.aliasName`alias.aliasArn`key.keyManager";
 		keys = "discoverydate`accountid`accountname`region`keyid`arn`creationdate`awsaccountid`description`keystate`keyenabled`keyusage`deletiondate`validto`"
-				+"rotationstatus`aliasname`aliasarn";
+				+"rotationstatus`aliasname`aliasarn`keymanager";
 		FileGenerator.generateJson(kmsKeyMap, fieldNames, "aws-kms.data",keys);
 		fieldNames = "key.keyId`tags.tagKey`tags.tagValue";
 		keys = "discoverydate`accountid`accountname`region`keyid`key`value";
 		FileGenerator.generateJson(kmsKeyMap, fieldNames, "aws-kms-tags.data",keys);
 	}
 
+	 /* Generate document db files.
+	 *
+	 * @param documentMap the document map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generatedocumentDbFiles(Map<String,List<DocumentDBVH>> documentMap) throws IOException {
+		String fieldNames;
+		String keys;
+
+		fieldNames ="clusters.hostedZoneId`clusters.dbClusterResourceId`clusters.storageEncrypted`clusters.kmsKeyId";
+		keys ="discoverydate`accountid`accountname`region`hostedzoneid`dbclusterresourceid`storageencrypted`kmskeyid";
+		FileGenerator.generateJson(documentMap, fieldNames, "aws-documentdb.data",keys);
+
+	}
+	/* Generate document db files.
+	 *
+	 * @param documentMap the document map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateDMSFiles(Map<String,List<ReplicationInstance>> dms) throws IOException {
+		String fieldNames;
+		String keys;
+
+		fieldNames ="replicationInstanceArn`replicationInstanceIdentifier`availabilityZone`multiAZ`kmsKeyId`publiclyAccessible";
+		keys ="discoverydate`accountid`accountname`region`replicationinstancearn`replicationinstanceid`availabilityzone`multiaz`kmskeyid`publiclyAccessible";
+		FileGenerator.generateJson(dms, fieldNames, "aws-dms.data",keys);
+
+	}
+	
 	/**
 	 * Generate cloud front files.
 	 *
@@ -1469,10 +1666,10 @@ public class FileManager {
 		fieldNames = "domain.domainId`domain.domainName`domain.aRN`domain.created`domain.deleted`domain.endpoint`domain.processing`domain.elasticsearchVersion`domain.accessPolicies`domain.endpoints"
 				+ "`domain.elasticsearchClusterConfig.instanceType`domain.elasticsearchClusterConfig.instanceCount`domain.elasticsearchClusterConfig.dedicatedMasterEnabled`domain.elasticsearchClusterConfig.zoneAwarenessEnabled"
 				+ "`domain.elasticsearchClusterConfig.dedicatedMasterType`domain.elasticsearchClusterConfig.dedicatedMasterCount`domain.vPCOptions.vPCId`domain.vPCOptions.subnetIds`domain.vPCOptions.availabilityZones"
-				+ "`domain.vPCOptions.securityGroupIds`domain.advancedOptions";
+				+ "`domain.vPCOptions.securityGroupIds`domain.advancedOptions`domain.encryptionAtRestOptions.enabled`domain.encryptionAtRestOptions.kmsKeyId`domain.nodeToNodeEncryptionOptions.enabled";
 		keys = "discoverydate`accountid`accountname`region`domainid`domainname`arn`created`deleted`endpoint`processing`elasticsearchversion`accesspolicies`endpoints"
 				+ "`clusterinstancetype`clusterinstancecount`clusterdedicatedmasterenabled`clusterzoneawarenessenabled"
-				+ "`clusterdedicatedmastertype`clusterdedicatedmastercount`vpcid`subnetid`availabilityzone`securitygroupid`advancedoptions";
+				+ "`clusterdedicatedmastertype`clusterdedicatedmastercount`vpcid`subnetid`availabilityzone`securitygroupid`advancedoptions`encryptionenabled`encryptionkmskey`nodetonodeencryption";
 		FileGenerator.generateJson(esDomainMap, fieldNames, "aws-elasticsearch.data",keys);
 
 		fieldNames = "domain.domainId`tags.key`tags.value";
@@ -1615,8 +1812,8 @@ public class FileManager {
 	public static void generateACMCertificateFiles(Map<String,List<SSLCertificateVH>> acmCertificate) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "domainName`certificateARN`expiryDate";
-		keys = "discoverydate`accountid`accountname`region`domainname`certificatearn`expirydate";
+		fieldNames = "domainName`certificateARN`expiryDate`status";
+		keys = "discoverydate`accountid`accountname`region`domainname`certificatearn`expirydate`status";
 		FileGenerator.generateJson(acmCertificate, fieldNames, "aws-acmcertificate.data", keys);
 	}
 

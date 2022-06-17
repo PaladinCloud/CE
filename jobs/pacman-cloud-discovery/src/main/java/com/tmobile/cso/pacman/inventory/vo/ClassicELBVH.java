@@ -17,6 +17,7 @@ package com.tmobile.cso.pacman.inventory.vo;
 
 import java.util.List;
 
+import com.amazonaws.services.elasticloadbalancing.model.ListenerDescription;
 import com.amazonaws.services.elasticloadbalancing.model.LoadBalancerDescription;
 import com.amazonaws.services.elasticloadbalancing.model.Tag;
 
@@ -38,6 +39,9 @@ public class ClassicELBVH {
 	/** The accessLog. */
 	boolean accessLog;
 
+	/** ELB Listener */
+	List<ListenerDescription> listnerDesc;
+	
 	/**
 	 * Instantiates a new classic ELBVH.
 	 *
@@ -49,6 +53,9 @@ public class ClassicELBVH {
 		this.tags = tags;
 		this.accessLogBucketName = accessLogBucketName;
 		this.accessLog = accessLog;
+		if(elb != null) {
+			this.listnerDesc = elb.getListenerDescriptions();
+		}
 	}
 
 }
