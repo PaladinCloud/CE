@@ -1089,6 +1089,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "accessanalyzer", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("ami"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "ami");
+					FileManager.generateAMIFiles(InventoryUtil.fetchAMI(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "ami\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "ami", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
