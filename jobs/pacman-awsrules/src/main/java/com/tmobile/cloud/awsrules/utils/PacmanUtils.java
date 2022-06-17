@@ -1075,6 +1075,40 @@ public class PacmanUtils {
 			return true;
 		return false;
 	}
+	
+	/**
+	 * @param analyzerArn
+	 * @param esFindingsUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getActiveAnalyzerFindings(String analyzerArn, String esFindingsUrl) throws Exception {
+
+		List<String> findings = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ANALYZER_ARN_ATTRIBUTE), analyzerArn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esFindingsUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String status = source.get(PacmanRuleConstants.STATUS).getAsString();
+					if (status.equalsIgnoreCase(PacmanRuleConstants.STATUS_ACTIVE)) {
+						findings.add(source.get(PacmanRuleConstants.ES_RESOURCE_ATTRIBUTE).getAsString());
+					}
+				}
+			}
+
+		}
+		return findings;
+	}
     
 	/**
 	 * @param kmsKeyId
