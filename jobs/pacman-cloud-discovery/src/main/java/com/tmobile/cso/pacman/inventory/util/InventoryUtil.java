@@ -36,6 +36,14 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.RegionUtils;
+import com.amazonaws.services.accessanalyzer.AWSAccessAnalyzer;
+import com.amazonaws.services.accessanalyzer.AWSAccessAnalyzerClientBuilder;
+import com.amazonaws.services.accessanalyzer.model.AnalyzerSummary;
+import com.amazonaws.services.accessanalyzer.model.FindingSummary;
+import com.amazonaws.services.accessanalyzer.model.ListAnalyzersRequest;
+import com.amazonaws.services.accessanalyzer.model.ListAnalyzersResult;
+import com.amazonaws.services.accessanalyzer.model.ListFindingsRequest;
+import com.amazonaws.services.accessanalyzer.model.ListFindingsResult;
 import com.amazonaws.services.apigateway.AmazonApiGateway;
 import com.amazonaws.services.apigateway.AmazonApiGatewayClientBuilder;
 import com.amazonaws.services.apigateway.model.GetRestApisRequest;
@@ -269,6 +277,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.file.ErrorManageUtil;
 import com.tmobile.cso.pacman.inventory.file.FileGenerator;
+import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessKeyMetadataVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
 import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
@@ -987,7 +996,78 @@ public class InventoryUtil {
 		}
 		return ecsTaskDefMap;
 	}
-		
+
+	/**
+	 * Fetch AWS Access Analyzer info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
+	 * @return the map
+	 */
+	public static Map<String, List<AccessAnalyzerVH>> fetchAccessAnalyzerInfo(
+			BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName) {
+
+		Map<String, List<AccessAnalyzerVH>> accessAnalyzerMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"AccessAnalyzer\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AWSAccessAnalyzer accAnalyClient = AWSAccessAnalyzerClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+					List<AnalyzerSummary> analyzers = new ArrayList<>();
+					String token = null;
+					do {
+						ListAnalyzersResult listAnalyzers = accAnalyClient
+								.listAnalyzers(new ListAnalyzersRequest().withNextToken(token));
+						analyzers.addAll(listAnalyzers.getAnalyzers());
+						token = listAnalyzers.getNextToken();
+					} while (token != null);
+
+					List<AccessAnalyzerVH> AccessAnalyzerVHList = new ArrayList<>();
+					if (!analyzers.isEmpty()) {
+						analyzers.forEach(analyzer -> {
+							List<FindingSummary> findings = fetchAnalyzerFindings(analyzer, accAnalyClient);
+							AccessAnalyzerVHList.add(new AccessAnalyzerVH(analyzer, findings));
+						});
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : AccessAnalyzer " + region.getName()
+								+ " >> " + AccessAnalyzerVHList.size());
+						accessAnalyzerMap.put(accountId + delimiter + accountName + delimiter + region.getName(),
+								AccessAnalyzerVHList);
+					}
+				}
+			} catch (Exception e) {
+				if (region.isServiceSupported(AWSAccessAnalyzer.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, region.getName(), "AccessAnalyzer", e.getMessage());
+				}
+			}
+		}
+		return accessAnalyzerMap;
+	}
+
+	/**
+	 * Fetch Analyzer findings.
+	 *
+	 * @param accAnalyClient the AWSAccessAnalyzer
+	 * @param analyzer       the AnalyzerSummary
+	 * @return the list of FindingSummary
+	 */
+	private static List<FindingSummary> fetchAnalyzerFindings(AnalyzerSummary analyzer,
+			AWSAccessAnalyzer accAnalyClient) {
+		List<FindingSummary> findings = new ArrayList<>();
+		String token = null;
+		do {
+			ListFindingsResult listFindings = accAnalyClient
+					.listFindings(new ListFindingsRequest().withAnalyzerArn(analyzer.getArn()).withNextToken(token));
+			findings.addAll(listFindings.getFindings());
+			token = listFindings.getNextToken();
+		} while (token != null);
+		return findings;
+	}
 	
 	/**
 	 * Fetch lambda info.

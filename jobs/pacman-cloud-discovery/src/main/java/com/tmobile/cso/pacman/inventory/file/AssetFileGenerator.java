@@ -1076,7 +1076,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "ecs", e.getMessage());
 				}
 			});
-			
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("accessanalyzer"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "accessanalyzer");
+					FileManager.generateAccessAnalyzerFiles(InventoryUtil.fetchAccessAnalyzerInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "accessanalyzer\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "accessanalyzer", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

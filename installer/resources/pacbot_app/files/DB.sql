@@ -999,6 +999,7 @@ INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeN
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('715016','201','awscomprehend','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('715017','201','appflow','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('715018','201','ecs','all','all');
+INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('715019','201','accessanalyzer','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('00021aac-d0e6-4481-a1e7-8460154482ca','cdffb9cd-71de-4e29-9cae-783c2aa211ac','virtualmachine','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('ad076972-5c61-4e02-8c4b-7619db880f7f','cdffb9cd-71de-4e29-9cae-783c2aa211ac','blobcontainer','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a448c3a1-02c2-471d-a4b5-ea870eacbd12','cdffb9cd-71de-4e29-9cae-783c2aa211ac','cosmosdb','all','all');
@@ -1108,6 +1109,7 @@ INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targ
 INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('daxcluster','AWS DAX cluster','Database','aws','{\"key\":\"clusterarn\",\"id\":\"clusterarn\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_daxcluster/daxcluster'),'2022-05-06','2022-05-06','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('appflow','AWS AppFlow','Management Tools','aws','{\"key\":\"flowarn\",\"id\":\"flowarn\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_appflow/appflow'),'2022-05-06','2022-05-06','Infra & Platforms');
 INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('ecs','AWS ECS','Compute','aws','{\"key\":\"taskdefarn\",\"id\":\"taskdefarn\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_ecs/ecs'),'2022-05-06','2022-05-06','Infra & Platforms');
+INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targetConfig,status,userId,endpoint,createdDate,modifiedDate,domain) VALUES ('accessanalyzer','AWS Access Analyzer','Application Services','aws','{\"key\":\"analyzerarn\",\"id\":\"analyzerarn\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/aws_accessanalyzer/accessanalyzer'),'2022-05-06','2022-05-06','Infra & Platforms');
 
 
 /* Auth Related data */
