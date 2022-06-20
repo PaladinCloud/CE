@@ -4092,6 +4092,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Aws_AMI_encryption_version-1_aws_enable_encryption_ami",
+    "ruleUUID": "aws_ami_should_be_encrypted",
+    "policyId": "Aws_AMI_encryption_version-1",
+    "ruleName": "aws_ami_snapshots_should_be_encrypted",
+    "targetType": "ami",
+    "assetGroup": "aws",
+    "alexaKeyword": "EnableAwsAMIEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-ami-blockdevice-is-encrypted\",\"encrypt\":false},{\"key\":\"esAmiBlockDeviceMappingUrl\",\"value\":\"\/aws\/ami_blockdevicemap\/_search\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_AMI_encryption_version-1_aws_enable_encryption_ami\",\"autofix\":false,\"alexaKeyword\":\"EnableAwsAMIEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"ami\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_AMI_encryption_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_ami_should_be_encrypted\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_ami_should_be_encrypted",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable AWS AMI Encryption",
+    "createdDate": "2022-06-20",
+    "modifiedDate": "2022-06-20",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks",
     "ruleUUID": "aws_enable_eks_secret_encryption",
     "policyId": "Aws_EKS_secrets_should_be_encrypted_version-1",
