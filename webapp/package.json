@@ -39,7 +39,7 @@
     "d3": "^4.11.0",
     "font-awesome": "^4.7.0",
     "html2canvas": "1.0.0-rc.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "moment": "~2.29.2",
     "ng2-datepicker": "~2.1.7",
     "ng2-select": "^1.2.0",
