@@ -5587,5 +5587,76 @@
     "modifiedDate": "2022-06-13",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible",
+    "ruleUUID": "VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible",
+    "policyId": "VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible",
+    "ruleName": "RPDPortAcess",
+    "targetType": "vpcfirewall",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "RDP_port_3389_should_not_be_publicly_accessible",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vpc-network-firewall-security\",\"key\":\"ruleKey\"},{\"key\":\"rule\",\"value\":\"tcp:3389,tcp:0-65535\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure there are no VPC firewall rules that allow unrestricted inbound access on RDP port 3389\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VPC Firewall with RDP port 3389 was publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VPC Firewall with RDP port 3389 should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible\",\"autofix\":false,\"alexaKeyword\":\"RDP_port_3389_should_not_be_publicly_accessible\",\"ruleRestUrl\":\"\",\"targetType\":\"vpcfirewall\",\"pac_ds\":\"gcp\",\"policyId\":\"VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/VPC_firewall_RDP_port_3389_should_not_be_publicly_accessible",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VPC Firewall with RDP port 3389 should not be publicly accessible",
+    "createdDate": "2022-06-09",
+    "modifiedDate": "2022-06-09",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
+    "ruleUUID": "VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
+    "policyId": "VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
+    "ruleName": "SSHPortAcess",
+    "targetType": "vpcfirewall",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "SSH_port_22_should_not_be_publicly_accessible",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vpc-network-firewall-security\",\"key\":\"ruleKey\"},{\"key\":\"rule\",\"value\":\"tcp:22,tcp:0-65535\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that no VPC firewall rules allow unrestricted inbound access on SSH port 22\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VPC Firewall with SSH port 22 was publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VPC Firewall with RDP port 3389 should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"VPC_firewall_SSH_port_22_should_not_be_publicly_accessible\",\"autofix\":false,\"alexaKeyword\":\"SSH_port_22_should_not_be_publicly_accessible\",\"ruleRestUrl\":\"\",\"targetType\":\"vpcfirewall\",\"pac_ds\":\"gcp\",\"policyId\":\"VPC_firewall_SSH_port_22_should_not_be_publicly_accessible\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"VPC_firewall_SSH_port_22_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VPC Firewall with SSH port 22 should not be publicly accessible",
+    "createdDate": "2022-06-09",
+    "modifiedDate": "2022-06-09",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "VPC_firewall_DNS_port_53_should_not_be_publicly_accessible",
+    "ruleUUID": "VPC_firewall_DNS_port_53_should_not_be_publicly_accessible",
+    "policyId": "VPC_firewall_DNS_port_53_should_not_be_publicly_accessible",
+    "ruleName": "DNSPortAcess",
+    "targetType": "vpcfirewall",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "DNS_port_53_should_not_be_publicly_accessible",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vpc-network-firewall-security\",\"key\":\"ruleKey\"},{\"key\":\"rule\",\"value\":\"tcp:53,tcp:0-65535,udp:53,udp:0-65535\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure there are no VPC firewall rules that allow unrestricted inbound access on TCP and UDP port 53\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VPC Firewall with DNS port 53 was publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VPC Firewall with DNS port 53 should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"VPC_firewall_DNS_port_53_should_not_be_publicly_accessible\",\"autofix\":false,\"alexaKeyword\":\"DNS_port_53_should_not_be_publicly_accessible\",\"ruleRestUrl\":\"\",\"targetType\":\"vpcfirewall\",\"pac_ds\":\"gcp\",\"policyId\":\"VPC_firewall_DNS_port_53_should_not_be_publicly_accessible\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"VPC_firewall_DNS_port_53_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/VPC_firewall_DNS_port_53_should_not_be_publicly_accessible",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VPC Firewall with DNS port 53 should not be publicly accessible",
+    "createdDate": "2022-06-09",
+    "modifiedDate": "2022-06-09",
+    "severity": "high",
+    "category": "security"
   }
+
+
+
+
+
 ]
