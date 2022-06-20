@@ -407,6 +407,10 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String FALSE = "false";
+    public static final String ES_SNAPSHOT_ID_ATTRIBUTE = "snapshotid";
+    public static final String ES_IMAGE_ID_ATTRIBUTE = "imageid";
+    public static final String ES_AMI_BLOCK_DEVICE_MAPPING_URL = "esAmiBlockDeviceMappingUrl";
     public static final String ES_RESOURCE_ATTRIBUTE = "resource";
     public static final String STATUS_ACTIVE = "Active";
     public static final String ES_ACCESS_ANALYZER_FINDINGS_URL = "esFindingsUrl";
