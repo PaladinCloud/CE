@@ -460,5 +460,6 @@ public class PacmanRuleConstants {
     public static final String SOURCERANGES = "sourceRanges";
     public static final String INGRESS = "INGRESS";
     public static final String PORTS = "ports";
+    public static final String ICMP = "icmp";
 
 }
