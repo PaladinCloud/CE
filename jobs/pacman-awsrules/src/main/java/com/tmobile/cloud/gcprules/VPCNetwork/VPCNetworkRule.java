@@ -29,14 +29,16 @@ public class VPCNetworkRule extends BaseRule {
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.debug("========VPCNetworkRule started=========");
+
         Annotation annotation = null;
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
-        String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-        String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
+        String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
+
+        String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String[] port = ruleParam.get(PacmanRuleConstants.PORT).split(",");
+
         String description = ruleParam.get(PacmanRuleConstants.DESCRIPTION);
         String violtionReason = ruleParam.get(PacmanRuleConstants.VIOLATION_REASON);
         String vmEsURL = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
@@ -57,6 +59,7 @@ public class VPCNetworkRule extends BaseRule {
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
+            logger.debug("========after url");
 
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
@@ -95,6 +98,8 @@ public class VPCNetworkRule extends BaseRule {
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = true;
         if (hitsJsonArray.size() > 0) {
+            logger.debug("========verifyports hit array=========");
+
             JsonObject vpcFirewall = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
@@ -128,8 +133,13 @@ public class VPCNetworkRule extends BaseRule {
     }
 
     boolean validateSourceRanges(JsonArray sourceRanges) {
+        logger.debug("*********validate source Ranges {}", sourceRanges);
+
         for (JsonElement jsonElement : sourceRanges) {
-            if (jsonElement.toString().equalsIgnoreCase("0.0.0.0/0")) {
+            String sourcerange = jsonElement.toString().replaceAll("^\"|\"$", "");
+
+            if (sourcerange.equals("0.0.0.0/0")) {
+
                 return true;
             }
         }
@@ -138,12 +148,28 @@ public class VPCNetworkRule extends BaseRule {
     }
 
     boolean checkports(String[] allparamsPorts, String protocol, JsonArray jsonports) {
+        logger.debug("======== all paramsProtocol========= {}", allparamsPorts);
+
         for (String paramsPorts : allparamsPorts) {
             String paramsProtocol = paramsPorts.split(":")[0];
             String paramsPort = paramsPorts.split(":")[1];
+            logger.debug("========check ports========= {}", paramsPort);
+            logger.debug("========paramsProtocol========= {}", paramsProtocol);
+
+            logger.debug("========paramsPort========= {}", paramsPort);
+            logger.debug("========Protocol========= {}", protocol);
+            if (paramsProtocol.equalsIgnoreCase(PacmanRuleConstants.ICMP)) {
+                return true;
+            }
+
             if (paramsProtocol.equalsIgnoreCase(protocol)) {
+                logger.debug("========Protocol inside if========= {}", protocol);
+
                 for (JsonElement jsonElement : jsonports) {
-                    if (jsonElement.toString().equalsIgnoreCase(paramsPort)) {
+                    logger.debug("========check ports Jsonele ========= {}", jsonElement);
+                    logger.debug("========check ports params port ========= {}", paramsPort);
+
+                    if (jsonElement.toString().replaceAll("^\"|\"$", "").equalsIgnoreCase(paramsPort)) {
                         return true;
                     }
 
