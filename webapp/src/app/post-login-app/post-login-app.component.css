@@ -31,7 +31,7 @@
 
 .post-login-body {
   position: relative !important;
-  height: 100% !important;
+  /* height: 100% !important; */
 }
 
 .pacman-logged-in-section.is-offine {
