@@ -215,10 +215,9 @@ ul.input-wrapper {
 }
 
 .data-table-head-outer {
-  background-color: var(--background-white);
+  background-color: var(--table-header-background);
   left: 0;
   width: 100%;
-  min-height: 1.7em;
   z-index: 2;
   position: relative;
 }
@@ -238,7 +237,7 @@ ul.input-wrapper {
   position: relative;
   min-width: calc(100%);
   left: 0;
-  background-color: var(--background-white);
+  background-color: var(--table-header-background);
   z-index: 1;
   bottom: 0;
   width: -webkit-fit-content;

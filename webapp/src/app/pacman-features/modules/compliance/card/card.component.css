@@ -1,0 +1,90 @@
+::ng-deep app-card {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius);
+}
+
+::ng-deep app-chart {
+  width: 100%;
+}
+
+.panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
+  box-sizing: border-box;
+  background: var(--background-white);
+  border: 1px solid var(--border-100);
+  border-radius: 16px;
+}
+
+::ng-deep .mat-card-header-text {
+  margin: 0px !important;
+}
+
+mat-card-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px;
+  width: 100%;
+  height: 58px;
+  margin: 0;
+  background: var(--background-white);
+  border-bottom: 2px solid var(--border-100);
+  border-radius: 16px 16px 0px 0px;
+  font: var(--text-body-2);
+  color: var(--text-high-emphasis);
+}
+
+mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 24px 0px 24px;
+  width: 100%;
+  height: 286px;
+  margin: 0;
+  background: var(--background-white);
+}
+
+mat-card-actions {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px !important;
+  width: 100%;
+  height: 52px;
+  margin: 0;
+  background: var(--background-white);
+  border-top: 2px solid var(--border-100);
+  border-radius: 0px 0px 16px 16px;
+}
+
+mat-card-actions button {
+  border: none;
+  background: var(--background-white);
+  cursor: pointer;
+  height: 17px;
+  font-family: var(--text-medium-font-family);
+  font-style: var(--text-font-style);
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body-2-font-size);
+  display: flex;
+  letter-spacing: -0.005em;
+  color: var(--primary-500);
+}
+
+.chart {
+  width: 100%;
+}
+
+mat-card-actions img {
+  margin-left: 9px;
+  height: 17px;
+  width: 10px;
+}

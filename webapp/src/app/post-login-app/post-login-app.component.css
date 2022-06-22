@@ -31,7 +31,7 @@
 
 .post-login-body {
   position: relative !important;
-  /* height: 100% !important; */
+  height: 100% !important;
 }
 
 .pacman-logged-in-section.is-offine {
@@ -145,8 +145,7 @@
 .contextual-container {
   position: relative;
   flex-grow: 1;
-  /* width: 80%; */
+  width: 82%;
   height: 100%;
   max-width: 100%;
-  overflow: auto;
 }

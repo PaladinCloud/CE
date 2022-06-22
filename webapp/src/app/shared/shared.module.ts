@@ -159,6 +159,7 @@ import { TableListComponent } from "./table-list/table-list.component";
     TableListComponent,
   ],
   exports: [
+    DoughnutChartComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -236,4 +237,5 @@ import { TableListComponent } from "./table-list/table-list.component";
     FormService,
   ],
 })
-export class SharedModule {}
+export class SharedModule {
+}

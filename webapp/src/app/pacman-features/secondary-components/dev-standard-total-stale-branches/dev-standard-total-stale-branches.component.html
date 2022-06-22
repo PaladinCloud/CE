@@ -12,15 +12,17 @@
  * limitations under the License.
  -->
 
- <div class="stale-branches-summary-wrapper flex flex-col">
+<div class="stale-branches-summary-wrapper flex flex-col">
     <div class="sub-head">
-          <app-title-burger-head [subHeadTitle]="'Branch Distribution'"></app-title-burger-head>
-      </div>  
-      <div class="graph-chart-cont relative" id="staleBranchDonut" *ngIf='errorValue > 0' #widget>
-          <app-doughnut-chart *ngIf='donutData' [chartContId]="'staleBranchDonut'" [graphData]="donutData" [graphWidth]="widgetWidth" [flexTrue]="false" [graphHeight]="widgetHeight" [MainTextcolor]='MainTextcolor' [innerRadious]='innerRadious' [outerRadious]='outerRadious' [strokeColor]="strokeColor"></app-doughnut-chart>
-      </div>
-      <div class='loader' *ngIf='errorValue==0'></div>      
-        <div class="error-msg-block center" *ngIf='errorValue == -1'>
-            <app-error-message *ngIf='errorValue == -1' [selectedValue]="errorMessage"></app-error-message>
-      </div>    
-  </div>
+        <app-title-burger-head [subHeadTitle]="'Branch Distribution'"></app-title-burger-head>
+    </div>
+    <div class="graph-chart-cont relative" id="staleBranchDonut" *ngIf='errorValue > 0' #widget>
+        <app-doughnut-chart *ngIf='donutData' [chartContId]="'staleBranchDonut'" [graphData]="donutData"
+            [graphWidth]="widgetWidth" [flexTrue]="false" [graphHeight]="widgetHeight" [MainTextcolor]='MainTextcolor'
+            [innerRadius]='innerRadius' [outerRadius]='outerRadius' [strokeColor]="strokeColor"></app-doughnut-chart>
+    </div>
+    <div class='loader' *ngIf='errorValue==0'></div>
+    <div class="error-msg-block center" *ngIf='errorValue == -1'>
+        <app-error-message *ngIf='errorValue == -1' [selectedValue]="errorMessage"></app-error-message>
+    </div>
+</div>

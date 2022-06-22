@@ -3,36 +3,34 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-
-import { Component, OnInit, Input } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
-import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
-import { Subscription } from 'rxjs/Subscription';
-import { WorkflowService } from '../../../core/services/workflow.service';
-import { LoggerService } from '../../../shared/services/logger.service';
+import { Component, OnInit, Input } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
+import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
+import { Subscription } from "rxjs/Subscription";
+import { WorkflowService } from "../../../core/services/workflow.service";
+import { LoggerService } from "../../../shared/services/logger.service";
 
 @Component({
-  selector: 'app-policy-violation-desc',
-  templateUrl: './policy-violation-desc.component.html',
-  styleUrls: ['./policy-violation-desc.component.css'],
-  providers: [LoggerService]
+  selector: "app-policy-violation-desc",
+  templateUrl: "./policy-violation-desc.component.html",
+  styleUrls: ["./policy-violation-desc.component.css"],
+  providers: [LoggerService],
 })
-
 export class PolicyViolationDescComponent implements OnInit {
   @Input() violationData;
   @Input() autofixData;
   @Input() pageLevel: number;
-  urlToRedirect = '';
+  urlToRedirect = "";
   private subscriptionToAssetGroup: Subscription;
   private domainSubscription: Subscription;
   selectedAssetGroup: string;
@@ -52,16 +50,16 @@ export class PolicyViolationDescComponent implements OnInit {
   ) {
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
-      .subscribe(assetGroupName => {
+      .subscribe((assetGroupName) => {
         this.selectedAssetGroup = assetGroupName;
-        this.agAndDomain['ag'] = this.selectedAssetGroup;
+        this.agAndDomain["ag"] = this.selectedAssetGroup;
       });
     // domain subscription
     this.domainSubscription = this.domainObservableService
       .getDomainType()
-      .subscribe(domain => {
+      .subscribe((domain) => {
         this.selectedDomain = domain;
-        this.agAndDomain['domain'] = this.selectedDomain;
+        this.agAndDomain["domain"] = this.selectedDomain;
       });
     // processData for accordion
   }
@@ -78,48 +76,46 @@ export class PolicyViolationDescComponent implements OnInit {
 
   processDataForAccordion(data) {
     try {
-
       let checkifJsonString;
       this.accordionData = [];
       this.labelData = [];
       const dataToBeChecked = data.violationDetails[0];
       // check if there are nested obj inside
-      Object.keys(dataToBeChecked).forEach(element => {
+      Object.keys(dataToBeChecked).forEach((element) => {
         if (dataToBeChecked[element]) {
-          checkifJsonString = dataToBeChecked[element].search('{');
+          checkifJsonString = dataToBeChecked[element].search("{");
           // .search returns returns -1 if string doesn't exists
           if (!(checkifJsonString === -1)) {
             const arrayValues = [];
             const innerObj = JSON.parse(dataToBeChecked[element]);
-            Object.keys(innerObj).forEach(elementinner => {
+            Object.keys(innerObj).forEach((elementinner) => {
               const eachObj = {
-                labelName: elementinner.replace(/_/g, ' '), // remove the '_' from the key name before pushing,
-                labelCount: innerObj[elementinner]
+                labelName: elementinner.replace(/_/g, " "), // remove the '_' from the key name before pushing,
+                labelCount: innerObj[elementinner],
               };
               arrayValues.push(eachObj);
             });
 
             const dataToPushForAccorDion = {
-              labelName: element.replace(/_/g, ' '), // remove the '_' from the key name before pushing
+              labelName: element.replace(/_/g, " "), // remove the '_' from the key name before pushing
               labelCount: null,
               values: arrayValues,
-              isAccordion: true
+              isAccordion: true,
             };
             this.labelData.push(dataToPushForAccorDion);
           } else {
             const dataToPush = {
-              labelName: element.replace(/_/g, ' '), // remove the '_' from the key name before pushing
+              labelName: element.replace(/_/g, " "), // remove the '_' from the key name before pushing
               labelCount: dataToBeChecked[element],
               values: null,
-              isAccordion: false
+              isAccordion: false,
             };
             this.labelData.push(dataToPush);
           }
         }
       });
-
     } catch (e) {
-      this.logger.log('error', e);
+      this.logger.log("error", e);
     }
   }
 
@@ -155,25 +151,25 @@ export class PolicyViolationDescComponent implements OnInit {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
-      if (destination === 'asset details') {
+      if (destination === "asset details") {
         const resourceId = id1;
         const resourceType = id2;
         this.router.navigate(
-          ['../../../', 'assets', 'assets-details', resourceType, resourceId],
+          ["../../../", "assets", "asset-detail", resourceType, resourceId],
           {
             relativeTo: this.activatedRoute,
-            queryParamsHandling: 'merge'
+            queryParamsHandling: "merge",
           }
         );
-      } else if (destination === 'policy knowledgebase details') {
+      } else if (destination === "policy knowledgebase details") {
         const ruleId = id1;
-        this.router.navigate(['../../policy-knowledgebase-details', ruleId], {
+        this.router.navigate(["../../policy-knowledgebase-details", ruleId], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge'
+          queryParamsHandling: "merge",
         });
       }
     } catch (e) {
-      this.logger.log('error', e);
+      this.logger.log("error", e);
     }
   }
 }
