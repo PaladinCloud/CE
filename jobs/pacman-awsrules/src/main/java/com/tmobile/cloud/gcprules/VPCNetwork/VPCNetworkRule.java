@@ -138,7 +138,7 @@ public class VPCNetworkRule extends BaseRule {
         for (JsonElement jsonElement : sourceRanges) {
             String sourcerange = jsonElement.toString().replaceAll("^\"|\"$", "");
 
-            if (sourcerange.equals("0.0.0.0/0")) {
+            if (sourcerange.equals(PacmanRuleConstants.SOURCERANGE)) {
 
                 return true;
             }
