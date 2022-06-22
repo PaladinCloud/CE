@@ -40,8 +40,8 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
   @Input() graphWidth: any;
   @Input() graphHeight: any = 185;
   @Input() MainTextcolor: '#fff';
-  @Input() innerRadious: 0;
-  @Input() outerRadious: 0;
+  @Input() innerRadius: 0;
+  @Input() outerRadius: 0;
   @Input() strokeColor: 'transparent';
   @Input() flexTrue: any;
   @Output() error: EventEmitter<any> = new EventEmitter();
@@ -55,7 +55,7 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
   public svg: any;
   public duration = 600;
   public zeroData = false;
-  constructor() {}
+  constructor() { }
 
   ngOnInit() {
     this.processGraphdata();
@@ -65,7 +65,7 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
     try {
       const graphDataChange = changes['graphData'];
       const graphDimensionChange = changes['graphWidth'];
-      const graphRadiusChange = changes['innerRadious'];
+      const graphRadiusChange = changes['innerRadius'];
       if (graphDataChange) {
         const cur = JSON.stringify(graphDataChange.currentValue);
         const prev = JSON.stringify(graphDataChange.previousValue);
@@ -121,7 +121,7 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
           this.arc = d3Shape
             .arc()
             .innerRadius(0)
-            .outerRadius(this.radius - this.outerRadious);
+            .outerRadius(this.radius - this.outerRadius);
 
           // --------this appends a svg to the selected container and positions the svg------//
           this.svg = d3
@@ -133,23 +133,23 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
             .attr(
               'transform',
               'translate(' +
-                this.graphWidth / 2 +
-                ',' +
-                this.graphHeight / 2 +
-                ')'
+              this.graphWidth / 2 +
+              ',' +
+              this.graphHeight / 2 +
+              ')'
             )
             .attr('stroke', this.strokeColor);
 
           // ------------ Hover in and out animation ------------------  //
           const arcHoverIn = d3Shape
-          .arc()
-          .innerRadius(0)
-          .outerRadius(this.radius - this.outerRadious + 5);
+            .arc()
+            .innerRadius(0)
+            .outerRadius(this.radius - this.outerRadius + 5);
 
           const arcHoverOut = d3Shape
-          .arc()
-          .innerRadius(0)
-          .outerRadius(this.radius - this.outerRadious);
+            .arc()
+            .innerRadius(0)
+            .outerRadius(this.radius - this.outerRadius);
 
           // --------plots the pie chart--------//
           this.path = this.svg
@@ -162,14 +162,14 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
             })
             .attr('d', this.arc)
             .attr('stroke-width', 1)
-            .on('mouseover', function(d, i) {
+            .on('mouseover', function (d, i) {
               d3.select(this)
                 .transition()
                 .duration(250)
                 .attr('d', arcHoverIn)
                 .attr('stroke-width', 4);
             })
-            .on('mouseout', function(d, i) {
+            .on('mouseout', function (d, i) {
               d3.select(this)
                 .transition()
                 .duration(250)
@@ -191,7 +191,7 @@ export class PrimaryPieChartComponent implements OnInit, OnChanges {
       endAngle: 0
     };
     const i = d3Interpolate.interpolate(start, finish);
-    return function(d) {
+    return function (d) {
       return this.arc(i(d));
     };
   }

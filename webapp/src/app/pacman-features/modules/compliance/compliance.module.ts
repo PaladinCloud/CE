@@ -110,9 +110,21 @@ import { RecommendationsComponent } from "../../modules/compliance/recommendatio
 import { RecommandCategoryComponent } from "../../secondary-components/recommand-category/recommand-category.component";
 import { RecommendationsDetailsComponent } from "./recommendations-details/recommendations-details.component";
 import { OverallVulnerabilitiesComponent } from "./../../secondary-components/overall-vulnerabilities/overall-vulnerabilities.component";
+import { MatCardModule } from "@angular/material/card";
+import { MatGridListModule } from "@angular/material/grid-list";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { ViolationsCardComponent } from "./violations-card/violations-card.component";
+import { CardComponent } from "./card/card.component";
+import { PolicyViolationSummaryService } from "../../services/policy-violation-summary.service";
+import { PacmanIssuesService } from "../../services/pacman-issues.service";
+import { ProgressBarChartComponent } from "./progress-bar-chart/progress-bar-chart.component";
+import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-bar-chart.component";
 
 @NgModule({
   imports: [
+    MatCardModule,
+    MatGridListModule,
+    MatProgressBarModule,
     CommonModule,
     ComplianceRoutingModule,
     SharedModule,
@@ -126,6 +138,8 @@ import { OverallVulnerabilitiesComponent } from "./../../secondary-components/ov
     ]),
   ],
   declarations: [
+    ProgressBarChartComponent,
+    HorizontalBarChartComponent,
     ComplianceIssuesComponent,
     PacmanIssuesComponent,
     MultilineBrushZoomComponent,
@@ -214,12 +228,16 @@ import { OverallVulnerabilitiesComponent } from "./../../secondary-components/ov
     RecommandCategoryComponent,
     RecommendationsDetailsComponent,
     OverallVulnerabilitiesComponent,
+    CardComponent,
+    ViolationsCardComponent,
   ],
   providers: [
     SelectComplianceDropdown,
     WindowRefService,
     DigitalDevManagementService,
     IssueListingService,
+    PolicyViolationSummaryService,
+    PacmanIssuesService
   ],
 })
-export class ComplianceModule {}
+export class ComplianceModule { }

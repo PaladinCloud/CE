@@ -219,7 +219,6 @@ ul.input-wrapper {
 .data-table-head-outer {
   left: 0;
   width: 100%;
-  min-height: 1.7em;
   z-index: 2;
   position: relative;
 }

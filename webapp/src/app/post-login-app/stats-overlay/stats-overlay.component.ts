@@ -73,8 +73,8 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
   public widgetWidth: number;
   public widgetHeight: number;
   public MainTextcolor: any = '';
-  public innerRadious = 60;
-  public outerRadious = 50;
+  public innerRadius = 60;
+  public outerRadius = 50;
   public strokeColor = 'transparent';
   public totalAutoFixesApplied: any = '';
   private autorefreshInterval;
@@ -111,14 +111,14 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
     const statsOverlayPage = document.getElementById('stats-overlay-page');
     statsOverlayPage.appendChild(pageClone);
 
-    html2canvas(pageClone).then(function(canvas) {
+    html2canvas(pageClone).then(function (canvas) {
       statsOverlayPage.removeChild(pageClone);
       const url = canvas.toDataURL('image/png');
       const binStr = atob(url.split(',')[1]),
         len = binStr.length,
         arr = new Uint8Array(len);
 
-      for ( let i = 0; i < len; i++) {
+      for (let i = 0; i < len; i++) {
         arr[i] = binStr.charCodeAt(i);
       }
       const blob = new Blob([arr]);
@@ -135,7 +135,7 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
     const afterLoad = this;
     if (this.autoRefresh !== undefined) {
       if (this.autoRefresh === true || this.autoRefresh.toString() === 'true') {
-        this.autorefreshInterval = setInterval(function() {
+        this.autorefreshInterval = setInterval(function () {
           afterLoad.getStatsData();
         }, this.durationParams);
       }
@@ -216,10 +216,10 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getStatsData() {
     const queryParams = {
-  };
+    };
 
-  const statspageUrl = environment.statspage.url;
-  const statspageMethod = environment.statspage.method;
+    const statspageUrl = environment.statspage.url;
+    const statspageMethod = environment.statspage.method;
     this.dataSubscription = this.commonResponseService
       .getData(statspageUrl, statspageMethod, {}, queryParams)
       .subscribe(
@@ -291,8 +291,8 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
     objKeys.forEach(element => {
       graphDataArray.push(this.totalViolationsGraph[element]);
     });
-    this.innerRadious = 70;
-    this.outerRadious = 50;
+    this.innerRadius = 70;
+    this.outerRadius = 50;
     const formattedObject = {
       color: colorTransData,
       data: graphDataArray,

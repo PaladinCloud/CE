@@ -12,61 +12,60 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DataCacheService } from '../../../../core/services/data-cache.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { OmniSearchDataService } from '../../../services/omni-search-data.service';
-import { environment } from './../../../../../environments/environment';
-import { Subscription } from 'rxjs/Subscription';
-import { AutorefreshService } from '../../../services/autorefresh.service';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import { DatepickerOptions } from 'ng2-datepicker';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { DataCacheService } from "../../../../core/services/data-cache.service";
+import { Router, ActivatedRoute } from "@angular/router";
+import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
+import { OmniSearchDataService } from "../../../services/omni-search-data.service";
+import { environment } from "./../../../../../environments/environment";
+import { Subscription } from "rxjs/Subscription";
+import { AutorefreshService } from "../../../services/autorefresh.service";
+import { LoggerService } from "../../../../shared/services/logger.service";
+import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
+import { DatepickerOptions } from "ng2-datepicker";
 import {
   trigger,
   state,
   style,
   transition,
-  animate
-} from '@angular/animations';
-import { WorkflowService } from '../../../../core/services/workflow.service';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
-import { ICONS } from './../../../../shared/constants/icons-mapping';
+  animate,
+} from "@angular/animations";
+import { WorkflowService } from "../../../../core/services/workflow.service";
+import { UtilsService } from "../../../../shared/services/utils.service";
+import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
+import { ICONS } from "./../../../../shared/constants/icons-mapping";
 import {
   FormControl,
   FormGroup,
   FormBuilder,
-  Validators
-} from '@angular/forms';
+  Validators,
+} from "@angular/forms";
 
 @Component({
-  selector: 'app-omni-search-details',
-  templateUrl: './omni-search-details.component.html',
-  styleUrls: ['./omni-search-details.component.css'],
+  selector: "app-omni-search-details",
+  templateUrl: "./omni-search-details.component.html",
+  styleUrls: ["./omni-search-details.component.css"],
   providers: [
     OmniSearchDataService,
     AutorefreshService,
     LoggerService,
-    ErrorHandlingService
+    ErrorHandlingService,
   ],
-  animations: []
+  animations: [],
 })
-
 export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
   /*
-    ***************  Component details  **********************
-    * @author Trinanjan
+   ***************  Component details  **********************
+   * @author Trinanjan
    * @desc add description here about the component
-    ************ Component details ends here  ******************
+   ************ Component details ends here  ******************
    */
   dropdownData = []; // -> Stores the data for dropdown in array
   filterData = {}; // -> filter data is stored to paint the entire filter
   filterQuery = {}; // -> gets the applied filter from the main filter component
   searchResultsData = []; // ->results cards data in array
-  searchText: any = ''; // -> search text entered/typed
-  searchboxValueSelected: any = ''; // -> search category selected
+  searchText: any = ""; // -> search text entered/typed
+  searchboxValueSelected: any = ""; // -> search category selected
   dataSubscription: Subscription; // -> subscription for results card + (results + filter)
   resultsDataSubscription: Subscription; // -> subscription for only results card
   subscriptionToAssetGroup: Subscription; // -> subscription for assetgroup
@@ -86,8 +85,8 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
   autoRefresh: boolean;
   datacoming;
   options: DatepickerOptions = {
-    displayFormat: 'MMM D[,] YYYY',
-    minDate: new Date()
+    displayFormat: "MMM D[,] YYYY",
+    minDate: new Date(),
   };
   autorefreshInterval;
   filterPresent = false; // -> To show and hide filter block
@@ -96,7 +95,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
   totalNumOfCards: number; // -> To show total num of results
   infiniteScrollCalled = false; // -> to call the infiniteScroll
   // variables used in back Btn
-  urlToRedirect: any = ''; // ->
+  urlToRedirect: any = ""; // ->
   pageLevel = 0; // ->
   SearchDataFromCache; // <-- used to get and store omnisearch data from the session storage
   showOverlay = false; // -> to show an overlay when filter is opened
@@ -126,18 +125,18 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       // asset group subscription
       this.subscriptionToAssetGroup = this.assetGroupObservableService
         .getAssetGroup()
-        .subscribe(assetGroupName => {
+        .subscribe((assetGroupName) => {
           this.selectedAssetGroup = assetGroupName;
         });
       // domain subscription
       this.subscriptionDomain = this.domainObservableService
         .getDomainType()
-        .subscribe(domain => {
+        .subscribe((domain) => {
           this.selectedDomain = domain;
           // getting the omni search category from the session storage
-          if (this.dataStore.get('OmniSearchCategories')) {
+          if (this.dataStore.get("OmniSearchCategories")) {
             this.dropdownData = JSON.parse(
-              this.dataStore.get('OmniSearchCategories')
+              this.dataStore.get("OmniSearchCategories")
             );
             if (this.utils.isObjectEmpty(this.dropdownData)) {
               this.setOmniSearchCategory();
@@ -149,7 +148,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
           this.updateComponent();
         });
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -164,7 +163,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       if (this.autoRefresh !== undefined) {
         if (
           this.autoRefresh === true ||
-          this.autoRefresh.toString() === 'true'
+          this.autoRefresh.toString() === "true"
         ) {
           this.autorefreshInterval = setInterval(function () {
             this.fetchOmniSearchData();
@@ -172,28 +171,29 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         }
       }
       this.user = new FormGroup({
-        name: new FormControl('', [
+        name: new FormControl("", [
           Validators.required,
-          Validators.minLength(1)
-        ])
+          Validators.minLength(1),
+        ]),
       });
-
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
   getRuleId() {
     /*
-    * this funtion stores the URL params
-    */
+     * this funtion stores the URL params
+     */
     try {
-      this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-        this.searchboxValueSelected = params.filterValue;
-        this.searchText = params.searchText;
-      });
+      this.routeSubscription = this.activatedRoute.params.subscribe(
+        (params) => {
+          this.searchboxValueSelected = params.filterValue;
+          this.searchText = params.searchText;
+        }
+      );
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -207,7 +207,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       }
       this.getData();
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -218,24 +218,24 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       // get the terminated-cliked/omnisearchLastAppliedFilter from cacheing(needed for cacheing)
       if (
         !(
-          this.dataStore.get('terminated-cliked') === undefined ||
-          this.dataStore.get('terminated-cliked') === 'undefined'
+          this.dataStore.get("terminated-cliked") === undefined ||
+          this.dataStore.get("terminated-cliked") === "undefined"
         )
       ) {
         this.terminatedIsChecked = JSON.parse(
-          this.dataStore.get('terminated-cliked')
+          this.dataStore.get("terminated-cliked")
         );
       } else {
         this.terminatedIsChecked = false;
       }
       if (
         !(
-          this.dataStore.get('omnisearchLastAppliedFilter') === undefined ||
-          this.dataStore.get('omnisearchLastAppliedFilter') === 'undefined'
+          this.dataStore.get("omnisearchLastAppliedFilter") === undefined ||
+          this.dataStore.get("omnisearchLastAppliedFilter") === "undefined"
         )
       ) {
         this.filterQuery = JSON.parse(
-          this.dataStore.get('omnisearchLastAppliedFilter')
+          this.dataStore.get("omnisearchLastAppliedFilter")
         );
       }
       // get the searchdata from cache(returns no data if not available)
@@ -251,7 +251,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       // Based on if the data is available or not in the cacheing either call apis or show existing data
       if (!this.pageLoad) {
         if (
-          this.SearchDataFromCache.toString().toLowerCase() === 'no data' ||
+          this.SearchDataFromCache.toString().toLowerCase() === "no data" ||
           this.SearchDataFromCache.data === undefined
         ) {
           this.fetchOmniSearchData();
@@ -280,7 +280,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       // change the pageload variable to true after first time.it indicated that the page is not loading
       this.pageLoad = true;
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -318,7 +318,6 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
    * doNotReturnFilter: true, to get only results data
    */
   fetchResultData() {
-
     const omniSearchUrl = environment.omniSearch.url;
     const omniSearchMethod = environment.omniSearch.method;
     let omniSearchPayload;
@@ -345,17 +344,17 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         size: this.numOfCardShown,
         filter: {
           groupBy: {
-            type: 'searchFilterAttributeGroup',
-            name: 'Group',
+            type: "searchFilterAttributeGroup",
+            name: "Group",
             values: [
               {
-                type: 'searchFilterAttribute',
+                type: "searchFilterAttribute",
                 name: this.searchboxValueSelected,
-                applied: true
-              }
-            ]
-          }
-        }
+                applied: true,
+              },
+            ],
+          },
+        },
       };
     } else {
       //  payload when filter options is selected
@@ -370,44 +369,42 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         from: 0,
         filter: this.filterQuery,
         searchText: this.searchText,
-        size: this.numOfCardShown
+        size: this.numOfCardShown,
       };
     }
 
-    this.dataSubscription = this.omniSearchDataService.getOmniSearchData(
-      omniSearchUrl,
-      omniSearchMethod,
-      omniSearchPayload
-    ).subscribe(
-      response => {
-        try {
-          // storing the data in session storage
-          this.stopPreviousDataSubscription = false;
-          this.dataStore.setOmniSeachData(
-            this.searchText,
-            this.searchboxValueSelected,
-            this.selectedAssetGroup,
-            this.selectedDomain,
-            this.terminatedIsChecked,
-            this.filterQuery,
-            response
-          );
-          if (this.utils.checkIfAPIReturnedDataIsEmpty(response.data)) {
+    this.dataSubscription = this.omniSearchDataService
+      .getOmniSearchData(omniSearchUrl, omniSearchMethod, omniSearchPayload)
+      .subscribe(
+        (response) => {
+          try {
+            // storing the data in session storage
+            this.stopPreviousDataSubscription = false;
+            this.dataStore.setOmniSeachData(
+              this.searchText,
+              this.searchboxValueSelected,
+              this.selectedAssetGroup,
+              this.selectedDomain,
+              this.terminatedIsChecked,
+              this.filterQuery,
+              response
+            );
+            if (this.utils.checkIfAPIReturnedDataIsEmpty(response.data)) {
+              this.getErrorValues();
+              this.errorMessage = "noDataAvailable";
+            } else {
+              this.processHttpResponse(response);
+            }
+          } catch (e) {
+            this.errorMessage = this.errorHandling.handleJavascriptError(e);
             this.getErrorValues();
-            this.errorMessage = 'noDataAvailable';
-          } else {
-            this.processHttpResponse(response);
           }
-        } catch (e) {
-          this.errorMessage = this.errorHandling.handleJavascriptError(e);
+        },
+        (error) => {
+          this.errorMessage = error;
           this.getErrorValues();
         }
-      },
-      error => {
-        this.errorMessage = error;
-        this.getErrorValues();
-      }
-    );
+      );
   }
   // **************************** results data subscription code ends here  *************************** */
   // *****************************************************************************************************************/
@@ -435,65 +432,67 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       includeAllAssets: this.terminatedIsChecked,
       filter: {
         groupBy: {
-          type: 'searchFilterAttributeGroup',
-          name: 'Group',
+          type: "searchFilterAttributeGroup",
+          name: "Group",
           values: [
             {
-              type: 'searchFilterAttribute',
+              type: "searchFilterAttribute",
               name: this.searchboxValueSelected,
-              applied: true
-            }
-          ]
-        }
-      }
+              applied: true,
+            },
+          ],
+        },
+      },
     };
     this.searchClicked = false;
-    this.filterSubscription = this.omniSearchDataService.getOmniSearchData(
-      omniSearchUrl,
-      omniSearchMethod,
-      omniSearchResultsPayload
-    ).subscribe(
-      response => {
-        try {
-          this.stopPreviousDataSubscription = false;
-          this.filterDataIsRequested = false;
+    this.filterSubscription = this.omniSearchDataService
+      .getOmniSearchData(
+        omniSearchUrl,
+        omniSearchMethod,
+        omniSearchResultsPayload
+      )
+      .subscribe(
+        (response) => {
+          try {
+            this.stopPreviousDataSubscription = false;
+            this.filterDataIsRequested = false;
 
-          if (!this.utils.checkIfAPIReturnedDataIsEmpty(response.data)) {
-            if (
-              this.utils.checkIfAPIReturnedDataIsEmpty(
-                response.data.filter.groupBy
-              )
-            ) {
-              this.filterData = {};
+            if (!this.utils.checkIfAPIReturnedDataIsEmpty(response.data)) {
+              if (
+                this.utils.checkIfAPIReturnedDataIsEmpty(
+                  response.data.filter.groupBy
+                )
+              ) {
+                this.filterData = {};
+              } else {
+                this.dataStore.setOmniSeachData(
+                  this.searchText,
+                  this.searchboxValueSelected,
+                  this.selectedAssetGroup,
+                  this.selectedDomain,
+                  this.terminatedIsChecked,
+                  response.data.filter,
+                  response
+                );
+                this.dataStore.set(
+                  "omnisearchLastAppliedFilter",
+                  JSON.stringify(response.data.filter)
+                );
+                this.processFilterOptions(response.data.filter);
+              }
             } else {
-              this.dataStore.setOmniSeachData(
-                this.searchText,
-                this.searchboxValueSelected,
-                this.selectedAssetGroup,
-                this.selectedDomain,
-                this.terminatedIsChecked,
-                response.data.filter,
-                response
-              );
-              this.dataStore.set(
-                'omnisearchLastAppliedFilter',
-                JSON.stringify(response.data.filter)
-              );
-              this.processFilterOptions(response.data.filter);
+              this.filterData = {};
             }
-          } else {
-            this.filterData = {};
+          } catch (e) {
+            this.errorHandling.handleJavascriptError(e);
+            this.filterData = { value: "errorInApiCall" };
           }
-        } catch (e) {
-          this.errorHandling.handleJavascriptError(e);
-          this.filterData = { value: 'errorInApiCall' };
+        },
+        (error) => {
+          this.filterData = { value: "errorInApiCall" };
+          this.filterDataIsRequested = false;
         }
-      },
-      error => {
-        this.filterData = { value: 'errorInApiCall' };
-        this.filterDataIsRequested = false;
-      }
-    );
+      );
   }
   // **************************** filter data subscription function code ends here  *************************** */
   /**
@@ -506,7 +505,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       if (this.utils.checkIfAPIReturnedDataIsEmpty(response.data)) {
         this.processFilterOptions(this.filterQuery);
         this.getErrorValues();
-        this.errorMessage = 'noDataAvailable';
+        this.errorMessage = "noDataAvailable";
       } else {
         this.showLoader = false;
         this.seekdata = false;
@@ -517,7 +516,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         this.processSearchResults(response.data);
       }
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -526,38 +525,40 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
     try {
       const omniSearchomniSearchCategoriesUrl =
         environment.omniSearchCategories.url;
-      const omniSearchCategoriesMethod = environment.omniSearchCategories.method;
+      const omniSearchCategoriesMethod =
+        environment.omniSearchCategories.method;
       const queryParam = {
-        domain: this.selectedDomain
+        domain: this.selectedDomain,
       };
 
-      this.omniSearchCategorySubscription = this.omniSearchDataService.getOmniSearchCategories(
-        omniSearchomniSearchCategoriesUrl,
-        omniSearchCategoriesMethod,
-        queryParam
-      ).subscribe(
-        response => {
-          try {
-            if (response.length === 0) {
-              // need to add code By Trinanjan
-              // what will happen if no options are coming
-            } else {
-              this.dropdownData = response;
-              this.dropdownData.splice(0, 0);
-
+      this.omniSearchCategorySubscription = this.omniSearchDataService
+        .getOmniSearchCategories(
+          omniSearchomniSearchCategoriesUrl,
+          omniSearchCategoriesMethod,
+          queryParam
+        )
+        .subscribe(
+          (response) => {
+            try {
+              if (response.length === 0) {
+                // need to add code By Trinanjan
+                // what will happen if no options are coming
+              } else {
+                this.dropdownData = response;
+                this.dropdownData.splice(0, 0);
+              }
+            } catch (e) {
+              this.errorMessage = this.errorHandling.handleJavascriptError(e);
+              this.getErrorValues();
             }
-          } catch (e) {
-            this.errorMessage = this.errorHandling.handleJavascriptError(e);
+          },
+          (error) => {
+            this.errorMessage = error;
             this.getErrorValues();
           }
-        },
-        error => {
-          this.errorMessage = error;
-          this.getErrorValues();
-        }
-      );
+        );
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
   // assign error values...
@@ -589,7 +590,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         this.filterPresent = false;
       }
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -609,7 +610,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
     try {
       this.searchResultsData = this.getImagePathforTargetType(data);
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
   getImagePathforTargetType(data) {
@@ -617,22 +618,22 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       const searchData = data.results;
       const targetTypeImagePath = ICONS.awsResources;
       searchData.forEach(function (eachObj) {
-        if (eachObj.hasOwnProperty('_entitytype')) {
-          const targetType = eachObj['_entitytype'];
+        if (eachObj.hasOwnProperty("_entitytype")) {
+          const targetType = eachObj["_entitytype"];
           if (targetTypeImagePath.hasOwnProperty(targetType)) {
-            eachObj['imagePath'] = targetTypeImagePath[targetType];
+            eachObj["imagePath"] = targetTypeImagePath[targetType];
           }
         }
       });
 
       return searchData;
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
   /*
-    *This function capture the filter click event on checkbox and radioBtn
+   *This function capture the filter click event on checkbox and radioBtn
    */
   filterOptionClicked(event) {
     try {
@@ -644,13 +645,13 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       }
       this.filterQuery = event;
       this.dataStore.set(
-        'omnisearchLastAppliedFilter',
+        "omnisearchLastAppliedFilter",
         JSON.stringify(this.filterQuery)
       );
       this.numOfCardShown = 50; // size of payload results , everytime filter is clicked we are resetting the variable
       this.updateComponent();
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -675,20 +676,20 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       if (this.utils.isObjectEmpty(event.searchValue)) {
         event.searchValue = {
           id: this.searchboxValueSelected,
-          text: this.searchboxValueSelected
+          text: this.searchboxValueSelected,
         };
       }
 
       const queryData = {
         filterValue: event.searchValue.value.toString(),
-        searchText: event.filterValue.toString()
+        searchText: event.filterValue.toString(),
       };
       // update the url with new searchtext and search category
       this.router.navigate(
-        ['../../', queryData.filterValue, queryData.searchText],
+        ["../../", queryData.filterValue, queryData.searchText],
         {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge'
+          queryParamsHandling: "merge",
         }
       );
       /**
@@ -707,7 +708,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
 
       this.updateComponent();
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -732,10 +733,10 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         /* Fetch Results Data */
         this.fetchResultData();
       } else {
-        this.logger.log('', 'All Data Shown');
+        this.logger.log("", "All Data Shown");
       }
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -749,7 +750,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         this.showOverlay = true;
       }
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -767,56 +768,68 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       );
       let resourceID;
       let resourceType;
-      if (data['_id']) {
-        resourceID = encodeURIComponent(data['_id']);
+      if (data["_id"]) {
+        resourceID = encodeURIComponent(data["_id"]);
       }
-      if (data['_entitytype']) {
-        resourceType = encodeURIComponent(data['_entitytype']);
+      if (data["_entitytype"]) {
+        resourceType = encodeURIComponent(data["_entitytype"]);
       }
 
-      if (data['searchCategory'].toLowerCase() === 'assets') {
-
-          this.router.navigate(
-            ['../../../../assets/assets-details', resourceType, resourceID],
-            { relativeTo: this.activatedRoute, queryParamsHandling: 'merge' }
-          ).then(response => {
-            this.logger.log('info', 'Successfully navigated to asset details page: ' + response);
+      if (data["searchCategory"].toLowerCase() === "assets") {
+        this.router
+          .navigate(
+            ["../../../../assets/asset-detail", resourceType, resourceID],
+            { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
+          )
+          .then((response) => {
+            this.logger.log(
+              "info",
+              "Successfully navigated to asset details page: " + response
+            );
           })
-          .catch(error => {
-            this.logger.log('error', 'Error in navigation - ' + error);
+          .catch((error) => {
+            this.logger.log("error", "Error in navigation - " + error);
           });
-
-      } else if (data['searchCategory'].toLowerCase() === 'policy violations') {
-          this.router.navigate(['../../../../compliance/issue-details', resourceID], {
+      } else if (data["searchCategory"].toLowerCase() === "policy violations") {
+        this.router
+          .navigate(["../../../../compliance/issue-details", resourceID], {
             relativeTo: this.activatedRoute,
-            queryParamsHandling: 'merge'
-          }).then(response => {
-            this.logger.log('info', 'Successfully navigated to issue details page: ' + response);
+            queryParamsHandling: "merge",
           })
-          .catch(error => {
-            this.logger.log('error', 'Error in navigation - ' + error);
+          .then((response) => {
+            this.logger.log(
+              "info",
+              "Successfully navigated to issue details page: " + response
+            );
+          })
+          .catch((error) => {
+            this.logger.log("error", "Error in navigation - " + error);
           });
-      } else if (data['searchCategory'].toLowerCase() === 'vulnerabilities') {
-          const apiTarget = { TypeAsset: 'vulnerable' };
-          const eachParams = { qid: resourceID }; // resourceID is qid here
-          let newParams = this.utils.makeFilterObj(eachParams);
-          newParams = Object.assign(newParams, apiTarget);
-          newParams['mandatory'] = 'qid';
-          this.router.navigate(['../../../../', 'assets', 'asset-list'], {
+      } else if (data["searchCategory"].toLowerCase() === "vulnerabilities") {
+        const apiTarget = { TypeAsset: "vulnerable" };
+        const eachParams = { qid: resourceID }; // resourceID is qid here
+        let newParams = this.utils.makeFilterObj(eachParams);
+        newParams = Object.assign(newParams, apiTarget);
+        newParams["mandatory"] = "qid";
+        this.router
+          .navigate(["../../../../", "assets", "asset-list"], {
             relativeTo: this.activatedRoute,
             queryParams: newParams,
-            queryParamsHandling: 'merge'
+            queryParamsHandling: "merge",
           })
-          .then(response => {
-            this.logger.log('info', 'Successfully navigated to issue details page: ' + response);
+          .then((response) => {
+            this.logger.log(
+              "info",
+              "Successfully navigated to issue details page: " + response
+            );
           })
-          .catch(error => {
-            this.logger.log('error', 'Error in navigation - ' + error);
+          .catch((error) => {
+            this.logger.log("error", "Error in navigation - " + error);
           });
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -837,12 +850,11 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
     this.filterClicked = false;
 
     // clearing omnisearchLastAppliedFilter,OmniSearchFirstLevelIndex,OmniSearchSecondLevelIndex,omniSearchFilterRefineByCount
-    this.dataStore.clear('OmniSearchFirstLevelIndex');
-    this.dataStore.clear('OmniSearchSecondLevelIndex');
-    this.dataStore.clear('omniSearchFilterRefineByCount');
-    this.dataStore.clear('omnisearchLastAppliedFilter');
+    this.dataStore.clear("OmniSearchFirstLevelIndex");
+    this.dataStore.clear("OmniSearchSecondLevelIndex");
+    this.dataStore.clear("omniSearchFilterRefineByCount");
+    this.dataStore.clear("omnisearchLastAppliedFilter");
   }
-
 
   ngOnDestroy() {
     // unsubscribing on ngOnDestroy
@@ -869,7 +881,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
         this.omniSearchCategorySubscription.unsubscribe();
       }
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 }

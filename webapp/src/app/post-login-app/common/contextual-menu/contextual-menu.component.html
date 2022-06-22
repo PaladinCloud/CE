@@ -13,79 +13,46 @@
  -->
 
 <div class="contextual-menu-wrapper" [ngStyle]="theme">
-  <img
-    style="padding-top: 20px; padding-left: 0px"
-    width="146px"
-    height="48px"
-    src="/assets/images/Paladin_Logo.svg"
-  />
+  <div id="app-logo">
+    <img src="/assets/images/Paladin_Logo.svg" />
+  </div>
   <!-- asset-switcher -->
   <div class="asset-switcher-container">
     <app-asset-switcher></app-asset-switcher>
   </div>
-  <tree-root [nodes]="nodes" class="tree">
-    <ng-template #treeNodeWrapperTemplate let-node let-index="index">
-      <div
-        *ngIf="
+  <div class="tree-component">
+    <tree-root [nodes]="nodes" class="tree">
+      <ng-template #treeNodeWrapperTemplate let-node let-index="index">
+        <div *ngIf="
           !(node.data.notDisplayIfAzure == true && agAndDomain.ag == 'azure')
-        "
-        class="node-wrapper"
-        [class.wrapper]="currentParentId == node.id && node.hasChildren"
-        [class.node-wrapper-active]="
+        " class="node-wrapper" [class.wrapper]="currentParentId == node.id && node.hasChildren"
+          [class.node-wrapper-active]="
           node.id == currentNodeId && !node.hasChildren
-        "
-        [style.padding-left]="node.getNodePadding()"
-      >
-        <div *ngIf="node.data?.image" class="icon">
-          <img
-            class="node-img"
-            src="/assets/icons/{{ node.data?.image }}.svg"
-            alt=""
-          />
-        </div>
-        <div
-          class="node-content-wrapper"
-          [class.node-content-wrapper-focused]="node.isFocused"
-          (click)="node.mouseAction('click', $event)"
-          (dblclick)="node.mouseAction('dblClick', $event)"
-          (contextmenu)="node.mouseAction('contextMenu', $event)"
-          (treeDrop)="node.onDrop($event)"
-          [treeAllowDrop]="node.allowDrop"
-          [treeDrag]="node"
-          [treeDragEnabled]="node.allowDrag()"
-          [class.node-content-wrapper-expanded]="node.isExpanded"
-        >
-          <tree-node-content
-            *ngIf="node.hasChildren"
-            class="{{ node.data.name }}"
-            (click)="handleClick(node)"
-            [node]="node"
-            [index]="index"
-            title="{{ node.data.name }}"
-          ></tree-node-content>
-          <tree-node-content
-            *ngIf="!node.hasChildren"
-            [queryParams]="agAndDomain"
-            class="{{ node.data.name }}"
-            [routerLink]="
+        " [style.padding-left]="node.getNodePadding()">
+          <div *ngIf="node.data?.image" class="icon">
+            <img class="node-img" src="/assets/icons/{{ node.data?.image }}.svg" alt="" />
+          </div>
+          <div class="node-content-wrapper" [class.node-content-wrapper-focused]="node.isFocused"
+            (click)="node.mouseAction('click', $event)" (dblclick)="node.mouseAction('dblClick', $event)"
+            (contextmenu)="node.mouseAction('contextMenu', $event)" (treeDrop)="node.onDrop($event)"
+            [treeAllowDrop]="node.allowDrop" [treeDrag]="node" [treeDragEnabled]="node.allowDrag()"
+            [class.node-content-wrapper-expanded]="node.isExpanded">
+            <tree-node-content *ngIf="node.hasChildren" class="{{ node.data.name }}" (click)="selectNode(node)"
+              [node]="node" [index]="index" title="{{ node.data.name }}"></tree-node-content>
+            <tree-node-content *ngIf="!node.hasChildren" [queryParams]="agAndDomain" class="{{ node.data.name }}"
+              [routerLink]="
               node.data?.overlay
                 ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
                 : [node.data?.route]
-            "
-            (click)="handleClick(node)"
-            [node]="node"
-            [index]="index"
-            title="{{ node.data.name }}"
-          ></tree-node-content>
-          <tree-node-expander [node]="node"></tree-node-expander>
+            " (click)="selectNode(node)" [node]="node" [index]="index" title="{{ node.data.name }}">
+            </tree-node-content>
+            <tree-node-expander [node]="node"></tree-node-expander>
+          </div>
         </div>
-      </div>
-    </ng-template>
-  </tree-root>
-  <div
-    class="know-your-app-wrapper node-wrapper"
-    [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]"
-  >
+      </ng-template>
+    </tree-root>
+  </div>
+  <div class="know-your-app-wrapper node-wrapper" [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]">
     <div class="icon icon-wrapper">
       <img class="node-img" src="/assets/icons/stroke.svg" alt="" />
     </div>

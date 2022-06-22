@@ -41,7 +41,6 @@
 
 .data-table-inner-wrap {
   min-width: calc(100% - 0.66em);
-  margin-top: 5px;
   height: 100%;
   min-width: 100%;
   width: fit-content;
@@ -68,10 +67,9 @@
 } */
 
 .data-table-head-outer {
-  background-color: var(--background-white);
+  background-color: var(--table-header-background);
   left: 0;
   width: 100%;
-  min-height: 1.7em;
   z-index: 2;
   position: relative;
 }
@@ -90,7 +88,7 @@
   font-size: var(--text-body-2-font-size);
   min-width: 100%;
   left: 0;
-  background-color: var(--background-white);
+  background-color: var(--table-header-background);
   z-index: 1;
   bottom: 0;
   width: fit-content;

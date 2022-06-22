@@ -11,16 +11,40 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-
- <div #issuesHistoryContainer class="issue-trend-wrapper">
-    <div class='multiline-brush-zoom-container'>
-        <div class="sub-header">
-            <app-title-burger-head [subHeadTitle]="'Trend of Number of Policy Violations'"></app-title-burger-head>
+<a (click)="closeOverallComplianceTrendModal()">
+  <app-overlay></app-overlay>
+</a>
+<div #issuesHistoryContainer class="issue-trend-wrapper">
+  <div class="multiline-brush-zoom-container">
+    <div class="sub-header">
+      <div class="sub-header-wrapper">
+        <app-title-burger-head
+          [subHeadTitle]="'Trend of Number of Policy Violations'"
+        ></app-title-burger-head>
+        <div class="delete-title" (click)="closeOverallComplianceTrendModal()">
+          <img
+            _ngcontent-c41=""
+            class="delete-icon"
+            src="/assets/icons/x-icon.svg"
+          />
         </div>
-        <div *ngIf="dataLoaded" id="issuesHistory">
-            <app-multiline-brush-zoom [showArea]="showArea" [id]="'issuesHistory'"(error)="setError($event)" [showLegend]="showGraphLegend" [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>
-        </div>        
-        <div class="loader" *ngIf='!dataLoaded && !error'></div>
-        <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
+      </div>
     </div>
+    <div *ngIf="dataLoaded" id="issuesHistory">
+      <app-multiline-brush-zoom
+        [showArea]="showArea"
+        [id]="'issuesHistory'"
+        (error)="setError($event)"
+        [showLegend]="showGraphLegend"
+        [yAxisLabel]="yAxisLabel"
+        [graphWidth]="graphWidth"
+        [graphLinesData]="graphData"
+      ></app-multiline-brush-zoom>
+    </div>
+    <div class="loader" *ngIf="!dataLoaded && !error"></div>
+    <app-error-message
+      *ngIf="error"
+      [selectedValue]="errorMessage"
+    ></app-error-message>
+  </div>
 </div>

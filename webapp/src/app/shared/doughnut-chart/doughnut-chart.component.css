@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-.each-value {
+ .each-value {
     font-family: ex2-medium;
     font-size: 3em;
     text-align: left;
@@ -31,21 +31,43 @@
     width: 10px;
     height: 10px;
     margin-right: 10px;
-    /* border: 1px solid #9e9e9e; */
     background-color: #e60127;
     vertical-align: middle;
+    border-radius: 8px;
 }
 
 .legend-text {
-    font-size: 1.1em;
-    white-space: nowrap;
-    /* vertical-align: middle; */
+width: 139px;
+height: 20px;
+font-family: var(--text-medium-font-family);
+font-style: var(--text-font-style);
+font-weight: var(--text-font-weight);
+font-size: var(--text-body2-font-size);
+line-height: 20px;
+color: #2E2C34;
+flex: none;
+flex-grow: 1;
 }
 
 .graph-legend-cont {
     margin: 1em;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+.legend-text-count{
+width: 38px;
+height: 20px;
+font-family: var(--text-medium-font-family);
+font-style: var(--text-font-style);
+font-weight: var(--text-font-weight);
+font-size: var(--text-body2-font-size);
+line-height: 20px;
+text-align: right;
+color: #2E2C34;
+flex: none;
+order: 0;
+flex-grow: 0;
 }
 
 .legend-each {
@@ -74,6 +96,7 @@
     justify-content: flex-start;
     flex-direction: column;
     align-self: center;
+    position: relative;
 }
 
 .showFlex .legend-each {
