@@ -18,7 +18,7 @@ package com.tmobile.pacbot.gcp.inventory.file;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import com.tmobile.pacbot.gcp.inventory.vo.*;;
+import com.tmobile.pacbot.gcp.inventory.vo.*;
 
 /**
  * The Class FileManager.
@@ -47,12 +47,15 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-vminstance.data", "[", false);
         FileGenerator.writeToFile("gcp-vpcfirewall.data", "[", false);
 
+        FileGenerator.writeToFile("gcp-bigquerydataset.data", "[", false);
+
     }
 
     public static void finalise() throws IOException {
 
         FileGenerator.writeToFile("gcp-vminstance.data", "]", true);
         FileGenerator.writeToFile("gcp-vpcfirewall.data", "]", true);
+        FileGenerator.writeToFile("gcp-bigquerydataset.data", "]", true);
 
     }
 
@@ -65,6 +68,11 @@ public class FileManager {
     public static void generateFireWallFiles(List<FireWallVH> vmMap) throws IOException {
 
         FileGenerator.generateJson(vmMap, "gcp-vpcfirewall.data");
+
+    }
+
+    public static void generateBigqueryFiles(List<BigQueryVH> dataMap) throws IOException {
+        FileGenerator.generateJson(dataMap, "gcp-bigquerydataset.data");
 
     }
 
