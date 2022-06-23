@@ -1,6 +1,6 @@
 name: ci_dev
 on:  
-  pull_request:
+  push:
     branches: [ master, dev ]
 
 jobs:
