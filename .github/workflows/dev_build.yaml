@@ -1,7 +1,7 @@
 name: ci_dev
 on:  
   push:
-    branches: [ master, dev ]
+    branches: [ master, cicd ]
 
 jobs:
   build:
