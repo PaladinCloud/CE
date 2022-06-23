@@ -51,6 +51,7 @@ public class FirewallInventoryCollector {
                 allowedportsvh.setPorts(allowedport.getPortsList());
                 allowedList.add(allowedportsvh);
             }
+            fireWallVH.setDestinationRanges(firewall.getDestinationRangesList());
             fireWallVH.setAllow(allowedList);
             fireWallVH.setId(String.valueOf(firewall.getId()));
             fireWallVH.setProjectName(projectId);

@@ -33,21 +33,21 @@ public class PacmanRuleConstants {
     public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
     public static final String GCP_NAT_IP = "natIP";
     public static final String USERS = "users";
-    public static final String ALL_USERS ="allUsers" ;
-    public static final String ALL_AUTH_USERS ="allAuthenticatedUsers" ;
+    public static final String ALL_USERS = "allUsers";
+    public static final String ALL_AUTH_USERS = "allAuthenticatedUsers";
     public static final String SPECIAL_GROUP = "specialGroup";
     public static final String IAM_MEMBER = "iamMember";
     public static final String ITEMS = "items";
     public static final String KEY = "key";
     public static final String VALUE = "value";
-    public static final String TWO_FACTOR_AUTH ="enable-oslogin-2fa" ;
+    public static final String TWO_FACTOR_AUTH = "enable-oslogin-2fa";
     public static String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
     public static final String GCP_CMK = "hasKmsKeyName";
     public static String GCP_CSEK = "hasSha256";
     public static final String ADMIN_FOR_KEYS = "adminForKeys";
     public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
     public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
-    public static final String STORAGE_KMS_KEY_NAME ="defaultKmsKeyName" ;
+    public static final String STORAGE_KMS_KEY_NAME = "defaultKmsKeyName";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -474,8 +474,10 @@ public class PacmanRuleConstants {
     public static final String INGRESS = "INGRESS";
     public static final String PORTS = "ports";
     public static final String ICMP = "icmp";
-    public static final String SOURCERANGE="0.0.0.0/0";
+    public static final String SOURCERANGE = "0.0.0.0/0";
     public static final String ACL = "acl";
     public static final String KMS_KEY_NAME = "kmsKeyName";
+    public static final String DESTINATIONRANGE = "destinationRanges";
+    public static final String EGRESS = "egress";
 
 }

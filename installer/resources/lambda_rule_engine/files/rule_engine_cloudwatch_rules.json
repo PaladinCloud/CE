@@ -6050,6 +6050,29 @@
     "modifiedDate": "2022-06-27",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible",
+    "ruleUUID": "VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible",
+    "policyId": "VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible",
+    "ruleName": "SMTPPortAccess",
+    "targetType": "vpcfirewall",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vpc-network-firewall-outbound-security\",\"key\":\"ruleKey\"},{\"key\":\"port\",\"value\":\"udp:0-65535,tcp:0-65535\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure there are no VPC firewall rules that allow unrestricted outbound access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VPC Firewall with  unrestricted outbound  access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VPC Firewall with Egress ports  should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"autofix\":false,\"alexaKeyword\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"ruleRestUrl\":\"\",\"targetType\":\"vpcfirewall\",\"pac_ds\":\"gcp\",\"policyId\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VPC Firewall with Egress ports  should not be publicly accessible",
+    "createdDate": "2022-06-09",
+    "modifiedDate": "2022-06-09",
+    "severity": "high",
+    "category": "security"
   }
+
 
 ]
