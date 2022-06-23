@@ -79,4 +79,4 @@ ENABLE_GCP = False
 GCP_CREDENTIALS = {}
 
 #job/rules intervals
-JOB_SCHEDULER_INTERVAL_IN_HOURS = ''
+JOB_SCHEDULER_INTERVAL_IN_HOURS = 6 #default is 6hr interval, user can increase or decrease the interval
