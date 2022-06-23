@@ -21,7 +21,7 @@ jobs:
     - name: install maven
       run: sudo apt install maven -y
 
-    - name: Cache the Maven packages to speed up builds
+    - name: Cache the Maven packages to speed up build
       uses: actions/cache@v2
       with:
         path: ~/.m2/repository
