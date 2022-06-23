@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.collector.BigQueryInventoryCollector;
 import com.tmobile.pacbot.gcp.inventory.collector.FirewallInventoryCollector;
 import com.tmobile.pacbot.gcp.inventory.collector.VMInventoryCollector;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ public class AssetFileGenerator {
 	VMInventoryCollector vmInventoryCollector;
 	@Autowired
 	FirewallInventoryCollector firewallInventoryCollector;
+
+	@Autowired
+	BigQueryInventoryCollector bigQueryInventoryCollector;
 
 	public void generateFiles(List<String> projects, String filePath) {
 
@@ -67,6 +71,18 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateFireWallFiles(firewallInventoryCollector.fetchFirewallInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("bigqueydataset"))) {
+					log.info("Target type bigqueydataset not found!!. Skipping collector");
+					return;
+				}
+				try {
+					log.info("Target type bigqueydataset configured. Executing collector");
+					FileManager.generateBigqueryFiles(bigQueryInventoryCollector.fetchBigqueryInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
