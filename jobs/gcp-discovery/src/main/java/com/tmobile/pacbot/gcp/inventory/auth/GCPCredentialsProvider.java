@@ -1,27 +1,20 @@
 package com.tmobile.pacbot.gcp.inventory.auth;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Value;
 import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.compute.v1.FirewallsClient;
 import com.google.cloud.compute.v1.FirewallsSettings;
 import com.google.cloud.compute.v1.InstancesClient;
 import com.google.cloud.compute.v1.InstancesSettings;
 import com.google.common.collect.Lists;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.tmobile.pacbot.gcp.inventory.collector.VMInventoryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 @Component
 public class GCPCredentialsProvider {
@@ -30,6 +23,8 @@ public class GCPCredentialsProvider {
 
     private InstancesClient instancesClient;
     private FirewallsClient firewallsClient;
+
+    private BigQueryOptions.Builder bigQueryBuilder;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -72,6 +67,13 @@ public class GCPCredentialsProvider {
             firewallsClient = FirewallsClient.create(firewallsSettings);
         }
         return firewallsClient;
+    }
+
+    public BigQueryOptions.Builder getBigQueryOptions() throws IOException {
+        if(bigQueryBuilder==null) {
+            bigQueryBuilder = BigQueryOptions.newBuilder().setCredentials(this.getCredentials());
+        }
+        return bigQueryBuilder;
     }
 
     // close the client in destroy method
