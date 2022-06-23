@@ -15,11 +15,11 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
-    - name: running update
-      run: sudo apt update
+    # - name: running update
+    #   run: sudo apt update
 
-    - name: install maven
-      run: sudo apt install maven -y
+    # - name: install maven
+    #   run: sudo apt install maven -y
 
     - name: Cache the Maven packages to speed up build
       uses: actions/cache@v1
