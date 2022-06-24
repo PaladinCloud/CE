@@ -43,7 +43,7 @@
 .error {
     margin-top: 5px;
     margin-left: 5px;
-    color: #e20074;
+    color: var(--primary-400);
     font-size: 80%;
 }
 

@@ -145,7 +145,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
   private bisectDate: any;
   private firstMouseMove = 0;
 
-  constructor(private loggerService: LoggerService) {}
+  constructor(private loggerService: LoggerService) { }
 
   @HostListener('window:resize', ['$event']) onSizeChanges() {
     this.init();
@@ -160,8 +160,8 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
         this.computeLowerAndHigherLines();
         this.formatDataForArea();
       }
-       this.drawAxisAndGrid();
-       this.drawLine();
+      this.drawAxisAndGrid();
+      this.drawLine();
       if (this.hoverActive && this.data.length > 1) {
         this.drawHover();
       }
@@ -332,7 +332,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
             dataStartObject = new Date(this.graphData[i]['values'][0]['date']);
             dataEndObject = new Date(
               this.graphData[i]['values'][
-                this.graphData[i]['values'].length - 1
+              this.graphData[i]['values'].length - 1
               ]['date']
             );
           }
@@ -371,14 +371,14 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
         this.dataStartDate =
           lineStartDates.length > 0
             ? d3Array.min(lineStartDates, (c) => {
-                return c;
-              })
+              return c;
+            })
             : dataStartObject;
         this.dataEndDate =
           lineEndDates.length > 0
             ? d3Array.max(lineEndDates, (c) => {
-                return c;
-              })
+              return c;
+            })
             : dataEndObject;
       } catch (error) {
         this.error.emit('jsError');
@@ -678,22 +678,22 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
           .select('.area-start')
           .text(
             this.highlightAreaStart.getMonth() +
-              1 +
-              '/' +
-              this.highlightAreaStart.getDate() +
-              '/' +
-              this.highlightAreaStart.getFullYear()
+            1 +
+            '/' +
+            this.highlightAreaStart.getDate() +
+            '/' +
+            this.highlightAreaStart.getFullYear()
           );
         this.focus
           .selectAll('.brush')
           .select('.area-end')
           .text(
             this.highlightAreaEnd.getMonth() +
-              1 +
-              '/' +
-              this.highlightAreaEnd.getDate() +
-              '/' +
-              this.highlightAreaEnd.getFullYear()
+            1 +
+            '/' +
+            this.highlightAreaEnd.getDate() +
+            '/' +
+            this.highlightAreaEnd.getFullYear()
           );
       } else {
         this.focus
@@ -732,9 +732,9 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
           .attr(
             'transform',
             'translate(' +
-              (parseInt(this.focus.select('.handle.handle--w').attr('x'), 10) +
-                3) +
-              ', 0)'
+            (parseInt(this.focus.select('.handle.handle--w').attr('x'), 10) +
+              3) +
+            ', 0)'
           );
         this.focus
           .selectAll('.brush')
@@ -742,9 +742,9 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
           .attr(
             'transform',
             'translate(' +
-              (parseInt(this.focus.select('.handle.handle--e').attr('x'), 10) +
-                3) +
-              ', 0)'
+            (parseInt(this.focus.select('.handle.handle--e').attr('x'), 10) +
+              3) +
+            ', 0)'
           );
       } else {
         // hide the diamond-shaped blocks if the area highter is not shown
@@ -1078,8 +1078,8 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
       .attr(
         'transform',
         'translate(0,' +
-          (2 * this.margin.top + this.height2 + this.height + 40) +
-          ')'
+        (2 * this.margin.top + this.height2 + this.height + 40) +
+        ')'
       )
       .call(
         d3Axis
@@ -1188,7 +1188,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
       .attr('class', 'line-head-1')
       .attr('width', '7')
       .attr('height', '7')
-      .attr('fill', '#e20074')
+      .attr('fill', '#336cc9')
       .attr('transform', 'translate(0, -5) rotate(45)');
 
     this.focus
@@ -1200,7 +1200,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
       .attr('class', 'line-head-2')
       .attr('width', '7')
       .attr('height', '7')
-      .attr('fill', '#e20074')
+      .attr('fill', '#336cc9')
       .attr('transform', 'translate(0, -5) rotate(45)');
 
     // Dynamic Label Text associated with draggable lines on the time-line selector
@@ -1469,7 +1469,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
         const axisRange = self.x2.range()[1];
         dobj[`label`] = label;
 
-        self.legendHover.map(function(legend) {
+        self.legendHover.map(function (legend) {
           for (let i = 0; i < self.graphLinesData.length; i++) {
             const currentLineValues =
               self.graphLinesData[numOfLines - i].values;

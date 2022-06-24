@@ -77,7 +77,7 @@
     margin-top: 1em;
 }
 .legend-text-right{
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .total-count-section{
@@ -92,5 +92,5 @@
     text-align: center;
 }
 .pie-chart-legend-desc span{
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }

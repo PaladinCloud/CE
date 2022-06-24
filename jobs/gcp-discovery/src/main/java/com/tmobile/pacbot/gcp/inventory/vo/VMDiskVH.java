@@ -5,6 +5,26 @@ public class VMDiskVH extends GCPVH {
     long sizeInGB;
     String type;
 
+    boolean hasSha256;
+
+    boolean hasKmsKeyName;
+
+    public boolean isHasKmsKeyName() {
+        return hasKmsKeyName;
+    }
+
+    public void setHasKmsKeyName(boolean hasKmsKeyName) {
+        this.hasKmsKeyName = hasKmsKeyName;
+    }
+
+    public boolean isHasSha256() {
+        return hasSha256;
+    }
+
+    public void setHasSha256(boolean hasSha256) {
+        this.hasSha256 = hasSha256;
+    }
+
     public String getName() {
         return name;
     }

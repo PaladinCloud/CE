@@ -150,8 +150,8 @@ export class JobExecutionManagerComponent implements OnInit, OnDestroy {
     this.systemStatusSubscription = this.commonResponseService
       .getData(url, method, {}, {}).subscribe(
         response => {
-          if(!response) return;
-          this.isJobsTurnedOff  = response.job !== 'ENABLED';
+          if (!response) return;
+          this.isJobsTurnedOff = response.job !== 'ENABLED';
         },
         error => {
         }
@@ -312,7 +312,7 @@ export class JobExecutionManagerComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = '#e20074';
+      var blue = '#336cc9';
       var green = '#26ba9d';
       var red = '#f2425f';
       var orange = '#ffb00d';
@@ -334,7 +334,7 @@ export class JobExecutionManagerComponent implements OnInit, OnDestroy {
               link: true,
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -342,7 +342,7 @@ export class JobExecutionManagerComponent implements OnInit, OnDestroy {
               imgLink: '',
               text: 'Edit',
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else {
@@ -392,20 +392,20 @@ export class JobExecutionManagerComponent implements OnInit, OnDestroy {
 
   goToDetails(row) {
     if (row.col === 'Actions') {
-        try {
-          this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-          this.router.navigate(['../update-job-execution-manager'], {
-            relativeTo: this.activatedRoute,
-            queryParamsHandling: 'merge',
-            queryParams: {
-              jobId: row.row['jobId'].text
-            }
-          });
-        } catch (error) {
-          this.errorMessage = this.errorHandling.handleJavascriptError(error);
-          this.logger.log('error', error);
-        }
+      try {
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.router.navigate(['../update-job-execution-manager'], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: 'merge',
+          queryParams: {
+            jobId: row.row['jobId'].text
+          }
+        });
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log('error', error);
       }
+    }
   }
 
   searchCalled(search) {

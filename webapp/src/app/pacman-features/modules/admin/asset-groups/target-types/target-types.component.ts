@@ -158,7 +158,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(reponse => {
       this.showLoader = false;
       if (reponse[0].content !== undefined) {
-        this.allDomains= reponse[0].content;
+        this.allDomains = reponse[0].content;
         this.errorValue = 1;
         this.searchCriteria = undefined;
         var data = reponse[0];
@@ -296,7 +296,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = '#e20074';
+      var blue = '#336cc9';
       var green = '#26ba9d';
       var red = '#f2425f';
       var orange = '#ffb00d';
@@ -318,7 +318,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
               link: true,
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -326,11 +326,11 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
               imgLink: '',
               text: 'Edit',
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
-          }  else if (getCols[col].toLowerCase() == 'target types') {
-            let targetTypeName = getData[row][getCols[col]].map(target => target.targetType); 
+          } else if (getCols[col].toLowerCase() == 'target types') {
+            let targetTypeName = getData[row][getCols[col]].map(target => target.targetType);
             cellObj = {
               link: '',
               properties: {
@@ -388,14 +388,14 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(row) {
-    if(row.col === 'Actions') {
+    if (row.col === 'Actions') {
       try {
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
         this.router.navigate(['../create-update-target-type'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            targetTypeName : row.row['Target Name'].text
+            targetTypeName: row.row['Target Name'].text
           }
         });
       } catch (error) {

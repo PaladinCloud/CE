@@ -1,12 +1,12 @@
 .swagger-section #header {
-	background-color: #e20074;
+	background-color: var(--primary-400);
 	padding: 9px 14px 19px;
 	height: 23px;
 	min-width: 775px;
 }
 
 .swagger-section .swagger-ui-wrap .markdown h3 {
-	color: #e20074
+	color: var(--primary-400)
 }
 
 .swagger-section .swagger-ui-wrap ul#resources li.resource ul.endpoints li.endpoint ul.operations li.operation.head div.content div.sandbox_header a
@@ -25,15 +25,15 @@
 	.swagger-section pre .number, .swagger-section pre .regexp,
 	.swagger-section pre .smalltalk .char, .swagger-section pre .smalltalk .symbol
 	{
-	color: #e20074
+	color: var(--primary-400)
 }
 
 .swagger-section .swagger-ui-wrap a {
-	color: #e20074
+	color: var(--primary-400)
 }
 
 .swagger-section .swagger-ui-wrap .message-success {
-	color: #e20074
+	color: var(--primary-400)
 }
 
 .swagger-section #auth_container .authorize__btn, .swagger-section #explore
@@ -54,13 +54,13 @@
 }
 
 .swagger-section .auth_container .auth__title {
-	color: #e20074;
+	color: var(--primary-400);
 	font-size: 1.2em;
 	background-color: white;
 }
 
 .swagger-section .api-ic .api_information_panel p .api-msg-enabled {
-	color: #e20074
+	color: var(--primary-400)
 }
 
 .swagger-section .auth__button .auth_submit__button {
@@ -69,7 +69,7 @@
 	font-weight: 700;
 	padding: 6px 8px;
 	color: #fff;
-	background-color: #e20074 !important;
+	background-color: var(--primary-400) !important;
 	border-style: none;
 }
 
@@ -79,17 +79,18 @@
 	font-weight: 700;
 	padding: 6px 8px;
 	color: #fff;
-	background-color: #e20074 !important;
+	background-color: var(--primary-400) !important;
 	border-style: none;
 }
 
 .swagger-section .auth_container .auth__title {
-	color: #e20074 font-size: 1.2em
+	color: var(--primary-400);
+    font-size: 1.2em;
 }
 
 .swagger-section .swagger-ui-wrap p#colophon a {
 	text-decoration: none;
-	color: #e20074
+	color: var(--primary-400)
 }
 
 /* Swagger Pacman Loader */
@@ -166,8 +167,8 @@
     line-height: 25px;
 }
 
-.highlight-pink {
-    color: #e20074 !important;
+.highlight-blue {
+    color: var(--primary-400);
     background-color: transparent;
     text-transform: capitalize;
 }
@@ -308,7 +309,7 @@ button.auth_submit__button {
     height: 30px;
     border-radius: 7px;
     background-color: #fff;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     font-size: 13px;
     font-weight: 600;
     color: #232323;
@@ -320,9 +321,9 @@ button.auth_submit__button {
 button.auth_logout__button:hover,
 button.api-popup-cancel:hover,
 button.auth_submit__button:hover {
-    background-color: #ed027d;
+    background-color: var(--primary-400);
     transition: all .3s ease;
-    border: solid 2px #ed027d;
+    border: solid 2px var(--primary-400);
     color: #fff !important;
 }
 
@@ -345,7 +346,7 @@ button.auth_submit__button:focus {
 input.basic_auth__password:focus,
 input.basic_auth__username:focus {
     outline:none !important;
-    border: 1px solid #ed0295;
+    border: 1px solid var(--primary-500);
 }
 
 form.basic_input_container .auth_label {

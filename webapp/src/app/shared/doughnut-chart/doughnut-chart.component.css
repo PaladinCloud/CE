@@ -80,7 +80,7 @@
     margin-top: 1em;
 }
 .legend-text-right{
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .center-text {

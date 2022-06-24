@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.4</version>
+            <version>2.12.6.1</version>
         </dependency>
         <dependency>
             <artifactId>google-cloud-compute</artifactId>
@@ -47,6 +47,10 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-storage</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-bigquery</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.auth</groupId>

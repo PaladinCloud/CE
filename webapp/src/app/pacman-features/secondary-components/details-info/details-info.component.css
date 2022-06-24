@@ -23,7 +23,7 @@
 
 .title{
     margin-bottom: 0.7em;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     text-transform: capitalize;
     word-break: break-word;
     padding-right: 0.3em;
@@ -40,12 +40,12 @@
 }
 
 .colored{
-    color: #ed0295;
+    color: var(--primary-500);
     cursor: pointer;
 }
 
 .header{
-	font-family: ex2-bold;
+	font-family: var(--text-medium-font-family);
 	margin-top: 1.5em;
 }
 

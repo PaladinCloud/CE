@@ -13,109 +13,107 @@
  */
 
 .app-login {
-    height: 100%;
-    width: 100%;
-    box-shadow: 1px 0px 12px 2px rgba(0,0,0,0.3)
+  height: 100%;
+  width: 100%;
+  box-shadow: 1px 0px 12px 2px rgba(0, 0, 0, 0.3);
 }
 
 .sidemenu {
-    position: absolute;
-    top: 2em;
-    right: 3.57em;
-    bottom: 3.37em;
-    left: 3.57em;
-    color: #e20074;
-    text-align: center;
-    font-size: 14px;
-    overflow-x: hidden;
-    white-space: nowrap;
+  position: absolute;
+  top: 2em;
+  right: 3.57em;
+  bottom: 3.37em;
+  left: 3.57em;
+  color: var(--primary-400);
+  text-align: center;
+  font-size: 14px;
+  overflow-x: hidden;
+  white-space: nowrap;
 }
 
 h2 {
-    font-size: 2em;
-    letter-spacing: .3px;
-    margin-bottom: 3em;
-    color: #555555;
+  font-size: 2em;
+  letter-spacing: 0.3px;
+  margin-bottom: 3em;
+  color: #555555;
 }
 
 .close-button {
-    right: 0.5em;
-    height: 2.5em;
-    -webkit-transition: .3s ease;
-    transition: .3s ease;
-    cursor: pointer;
+  right: 0.5em;
+  height: 2.5em;
+  -webkit-transition: 0.3s ease;
+  transition: 0.3s ease;
+  cursor: pointer;
 }
 
 .close-button:hover {
-    transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
 
-
 .close-button:hover:before {
-    cursor: pointer;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
-
+  cursor: pointer;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 .close-button:active:before {
-    text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 .footer {
-    text-align: center;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
 .separator {
-    margin: 0 auto 1.5em auto;
-    width: 6.78em;
-    border-bottom: 1px solid #555555;
+  margin: 0 auto 1.5em auto;
+  width: 6.78em;
+  border-bottom: 1px solid #555555;
 }
 
 .space1 {
-    height: 25%;
-    width: 100%
+  height: 25%;
+  width: 100%;
 }
 
 .form {
-    width: 100%;
+  width: 100%;
 }
 
 .error-message {
-    margin-bottom: 2em;
+  margin-bottom: 2em;
 }
 
 .login-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #FFF;
-    z-index: 1;
-    opacity: .5;
-    text-align: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background-white);
+  z-index: 1;
+  opacity: 0.5;
+  text-align: center;
 }
 
 .loader-ghost {
-    margin-top: 26em;
-    display: inline-block;
-    width: 50%;
-    height: 19em;
-    background: url('../../../assets/images/pacman_loader-2.gif');
-    background-size: contain;
-    background-repeat: no-repeat;
+  margin-top: 26em;
+  display: inline-block;
+  width: 50%;
+  height: 19em;
+  background: url("../../../assets/images/pacman_loader-2.gif");
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .login-sidemenu {
-    height: 100%;
-    /*width: inherit;*/
-    width: 38em;
-    position: fixed;
-    z-index: 100;
-    top: 0;
-    right: 0;
-    background-color: #E0E1E2;
+  height: 100%;
+  /*width: inherit;*/
+  width: 38em;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  background-color: #e0e1e2;
 }

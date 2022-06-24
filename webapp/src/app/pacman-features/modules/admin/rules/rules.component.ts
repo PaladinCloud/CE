@@ -150,8 +150,8 @@ export class RulesComponent implements OnInit, OnDestroy {
     this.systemStatusSubscription = this.commonResponseService
       .getData(url, method, {}, {}).subscribe(
         response => {
-          if(!response) return;
-          this.isRulesTurnedOff  = response.rule !== 'ENABLED';
+          if (!response) return;
+          this.isRulesTurnedOff = response.rule !== 'ENABLED';
         },
         error => {
         }
@@ -312,7 +312,7 @@ export class RulesComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = '#e20074';
+      var blue = '#336cc9';
       var green = '#26ba9d';
       var red = '#f2425f';
       var orange = '#ffb00d';
@@ -333,14 +333,14 @@ export class RulesComponent implements OnInit, OnDestroy {
             let dropDownItems: Array<String> = ['Edit'];
             if (getData[row].Status === 'ENABLED') {
               dropDownItems.push('Disable');
-			  dropDownItems.push('Invoke');
+              dropDownItems.push('Invoke');
             } else {
               dropDownItems.push('Enable');
             }
             cellObj = {
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -348,7 +348,7 @@ export class RulesComponent implements OnInit, OnDestroy {
               dropDownEnabled: true,
               dropDownItems: dropDownItems,
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else {

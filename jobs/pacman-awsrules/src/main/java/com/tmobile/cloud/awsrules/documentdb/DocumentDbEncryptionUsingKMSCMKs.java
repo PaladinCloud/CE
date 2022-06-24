@@ -59,7 +59,7 @@ public class DocumentDbEncryptionUsingKMSCMKs extends BaseRule {
 	 * 
 	 ************** Following are the Rule Parameters********* <br><br>
 	 * 
-	 * ruleKey : check-for-unused-ebs-rule <br><br>
+	 * ruleKey : check-for-document-db-encrypted-with-kms-cmks <br><br>
 	 *
 	 * threadsafe : if true , rule will be executed on multiple threads <br><br>
 	 *
@@ -106,7 +106,7 @@ public class DocumentDbEncryptionUsingKMSCMKs extends BaseRule {
 			try {
 				String kmsKeyId = resourceAttributes.get(PacmanRuleConstants.ES_KMS_KEY_ID_ATTRIBUTE);
 				if (VAL_TRUE.equalsIgnoreCase(encrypted))
-					isEncryptedWithKmsCmks = PacmanUtils.checkIfDocumentDbEncryptedWithKmsCmks(kmsKeyId, esKmsUrl, DEFAULT_KEY_MANAGER);
+					isEncryptedWithKmsCmks = PacmanUtils.checkIfResourceEncryptedWithKmsCmks(kmsKeyId, esKmsUrl, DEFAULT_KEY_MANAGER);
 			} catch (Exception e) {
 				logger.error("unable to determine", e);
 				throw new RuleExecutionFailedExeption("unable to determine" + e);

@@ -13,75 +13,76 @@
  */
 
 .nested-accordion-wrapper {
-    min-width: 22em;
-    max-height: 18em;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0px 0px 2px 2px #d3d3d3;
-    overflow: auto;
-    max-width: 45vw;
+  min-width: 22em;
+  max-height: 18em;
+  background-color: var(--background-white);
+  border-radius: 4px;
+  box-shadow: 0px 0px 2px 2px #d3d3d3;
+  overflow: auto;
+  max-width: 45vw;
 }
 
 .filter-dropDdown-arrow {
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-left: 8px solid #e20074;
-    border-bottom: 8px solid transparent;
-    transition: all 0.2s;
-    border-right: 0;
-    content: '';
-    position: absolute;
-    left: 1em;
-    top: 50%;
-    transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-left: 8px solid var(--primary-400);
+  border-bottom: 8px solid transparent;
+  transition: all 0.2s;
+  border-right: 0;
+  content: "";
+  position: absolute;
+  left: 1em;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .accordion-inner {
-    max-height: 0;
-    overflow: hidden;
-    transition: all .1s ease-in-out;
-    padding: 0 0 0 2em;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.1s ease-in-out;
+  padding: 0 0 0 2em;
 }
 
 .accordion-input {
-    opacity: 0;
-    z-index: -1;
+  opacity: 0;
+  z-index: -1;
 }
 
-input:checked~.accordion-inner {
-    max-height: 40vh;
-    overflow: auto;
+input:checked ~ .accordion-inner {
+  max-height: 40vh;
+  overflow: auto;
 }
 
-input:checked~.accordion-multiselect-type .filter-dropDdown-arrow {
-    transform: rotate(90deg) translateX(-50%);
+input:checked ~ .accordion-multiselect-type .filter-dropDdown-arrow {
+  transform: rotate(90deg) translateX(-50%);
 }
 
 .accordion-multiselect-type {
-    position: relative;
-    padding: 1em 1em 1em 2.5em;
-    display: flex;
-    justify-content: space-between;
+  position: relative;
+  padding: 1em 1em 1em 2.5em;
+  display: flex;
+  justify-content: space-between;
 }
-.accordion-second-level{
-    padding: 1em;
+.accordion-second-level {
+  padding: 1em;
 }
-.accordion-inner-name,.accordion-inner-count{
-    padding: .5em
+.accordion-inner-name,
+.accordion-inner-count {
+  padding: 0.5em;
 }
-.label-name{
-    flex:1
+.label-name {
+  flex: 1;
 }
 
 .label-name::first-letter {
-    text-transform: capitalize;
+  text-transform: capitalize;
 }
-.label-count{
-    flex:1;
-    font-family: ex2-bold;
-    text-align: right;
+.label-count {
+  flex: 1;
+  font-family: var(--text-medium-font-family);
+  text-align: right;
 }
-.no-accordion-arrow{
-    padding: 1em 1em 1em 1em;
+.no-accordion-arrow {
+  padding: 1em 1em 1em 1em;
 }

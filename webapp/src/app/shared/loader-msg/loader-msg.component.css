@@ -8,7 +8,7 @@
 .generic-msg .title {
     padding: 8px 0;
     font-size: 1.2em;
-    font-family: ex2-regular;
+    font-family: var(--text-font-family);
 }
 .generic-msg .details {
     padding: 8px 0;

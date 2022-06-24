@@ -22,7 +22,7 @@
     transform: translate(-50%, -200%);
     padding: 0.7em 0.7em 0.7em 0.3em;
     z-index: 40;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     box-shadow: 0 0 6px 3px rgba(0,0,0,0.2);
     min-height: 3.5em;
     transition: 0.4s ease;
@@ -37,8 +37,8 @@
 .toast-exe {
 	padding: 0.6em 0.83em;
     color: white;
-    background: #ed0295;
-    border-radius: 3px;
+    background: var(--primary-500);
+    border-radius: var(--border-radius);
     border: 1px solid #ddd;
     cursor: pointer;
     font-family: ex2-medium;
@@ -52,11 +52,11 @@
 .msg-heading  {
     font-weight: 600;
     padding-bottom: 0.5em;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     font-size: 1.1em;
  }
 .toast-msg {
-	/* font-family: ex2-light; */
+	/* font-family: var(--text-light-font-family); */
 	font-size: 1.1em;
     letter-spacing: 0.4px;
     line-height: 1.3;

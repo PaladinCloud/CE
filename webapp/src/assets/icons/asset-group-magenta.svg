@@ -8,7 +8,7 @@
         <g id="ic/layers/grey600">
             <g id="ic_layers_24px">
                 <polygon id="Shape" points="0 0 24 0 24 24 0 24"></polygon>
-                <path d="M11.99,18.54 L4.62,12.81 L3,14.07 L12,21.07 L21,14.07 L19.37,12.8 L11.99,18.54 Z M12,16 L19.36,10.27 L21,9 L12,2 L3,9 L4.63,10.27 L12,16 Z" id="Shape" fill="#e20074" fill-rule="nonzero"></path>
+                <path d="M11.99,18.54 L4.62,12.81 L3,14.07 L12,21.07 L21,14.07 L19.37,12.8 L11.99,18.54 Z M12,16 L19.36,10.27 L21,9 L12,2 L3,9 L4.63,10.27 L12,16 Z" id="Shape" fill="#336cc9" fill-rule="nonzero"></path>
             </g>
         </g>
     </g>

@@ -48,13 +48,13 @@ public class DocumentDbEncryptionUsingKMSCMKsTest {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(true);
         
-        when(PacmanUtils.checkIfDocumentDbEncryptedWithKmsCmks(anyString(), anyString(), anyString())).thenReturn(true);
+        when(PacmanUtils.checkIfResourceEncryptedWithKmsCmks(anyString(), anyString(), anyString())).thenReturn(true);
         assertThat(documentDbEncryptionUsingKMSCMKs.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.checkIfDocumentDbEncryptedWithKmsCmks(anyString(), anyString(), anyString())).thenReturn(false);
+        when(PacmanUtils.checkIfResourceEncryptedWithKmsCmks(anyString(), anyString(), anyString())).thenReturn(false);
         assertThat(documentDbEncryptionUsingKMSCMKs.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.checkIfDocumentDbEncryptedWithKmsCmks(anyString(), anyString(), anyString())).thenThrow(new Exception());
+        when(PacmanUtils.checkIfResourceEncryptedWithKmsCmks(anyString(), anyString(), anyString())).thenThrow(new Exception());
         assertThatThrownBy(() -> documentDbEncryptionUsingKMSCMKs.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
         
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(false);

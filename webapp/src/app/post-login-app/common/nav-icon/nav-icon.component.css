@@ -31,12 +31,12 @@
 .icon-selection {
     width: 3px;
     height: 32px;
-    background-color: #e20074;
+    background-color: var(--primary-400);
 }
 
 .module-name {
     font-size: 12px;
-    font-family: "ex2-regular";
+    font-family: "var(--text-font-family)";
     color: #fff;
     text-transform: capitalize;
 }
@@ -50,13 +50,13 @@ a.icon-wrapper {
 }
 
 a.icon-wrapper.active .module-name {
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 a.icon-wrapper.active {
     pointer-events: none;
     background-color: #FBFBFB;
-    color: #e20074;
+    color: var(--primary-400);
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;    
     opacity: 1;

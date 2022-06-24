@@ -13,49 +13,49 @@
  */
 
 .generic-modal {
-    min-height: 240px;
-    width: 40vw;
-    background: #fff;
-    z-index: 30;
-    min-width: 30em;
-    border-radius: 5px;
-    box-shadow: 0 0 6px 1px rgba(0,0,0,0.2);
-    max-width: 50vw;
-    max-height: 80vh;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 3.4em 2em 2.4em;
+  min-height: 240px;
+  width: 40vw;
+  background-color: var(--background-white);
+  z-index: 30;
+  min-width: 30em;
+  border-radius: 5px;
+  box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.2);
+  max-width: 50vw;
+  max-height: 80vh;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 3.4em 2em 2.4em;
 }
 
 .close-img {
-    right: 1em;
-    top: 1em;
-    cursor: pointer;
-    transition: 0.3s ease;
+  right: 1em;
+  top: 1em;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .close-img:hover {
-    transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
 
 .close-img img {
-    height: 2.5em;
-    width: 2.5em;
+  height: 2.5em;
+  width: 2.5em;
 }
 
 .title-txt {
-    text-align: center;
-    text-transform: capitalize;
-    font-family: ex2-medium;
-    font-size: 1.8em;
-    padding-bottom: 1.6em;
+  text-align: center;
+  text-transform: capitalize;
+  font-family: ex2-medium;
+  font-size: 1.8em;
+  padding-bottom: 1.6em;
 }
 
 .main-container {
-    height: 100%;
-    overflow: auto;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+  height: 100%;
+  overflow: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }

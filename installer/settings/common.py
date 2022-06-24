@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 import sys
-
+from datetime import datetime
 
 PROVIDER = 'AWS'
 CURRENT_FILE_PATH = Path(os.path.join(os.path.abspath(os.path.dirname(__file__))))
@@ -125,3 +125,11 @@ except:
 
 if ALB_PROTOCOL == "HTTPS":
     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
+
+
+current_datetime = datetime.now()
+CURRENT_HOUR = current_datetime.hour 
+CURRENT_MINUTE = current_datetime.minute
+
+
+BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING = 30

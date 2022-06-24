@@ -12,13 +12,23 @@
  * limitations under the License.
  -->
 
- <a>
-    <div title="Change Asset Group" class="default-asset-group-wrapper">
-        <img [class.after-load]='dataLoaded' *ngIf='provider.length == 0' class="default-asset-group-icon" src="/assets/icons/asset-group.svg" width="22px" />
-        <img [class.after-load]='dataLoaded' *ngIf='provider.length == 1' class="default-asset-group-icon" src="/assets/icons/{{provider[0]}}-white.svg" width="22px" />
-        <img [class.after-load]='dataLoaded' *ngIf='provider.length > 1' class="default-asset-group-icon" src="/assets/icons/multi-cloud-white.svg" width="22px" />
-        <h4 *ngIf='assetGroupDisplayName' class="default-asset-group-text">{{assetGroupDisplayName}} - Assets</h4>
-        <h4 *ngIf='!assetGroupDisplayName' class="default-asset-group-text">Select - Assets</h4>
-        <i class="fa fa-angle-right mr-right-arrow" aria-hidden="true"></i>
+<div class="defualt-asset-wrapper">
+  <div class="defualt-asset-image-wrapper">
+    <img
+      src="/assets/icons/{{ provider[0] }}-color.svg"
+      *ngIf="provider.length == 1; else defaultImage"
+    />
+    <ng-template #defaultImage>
+      <img src="/assets/icons/multi-cloud.svg" />
+    </ng-template>
+  </div>
+  <div class="defualt-asset-content-wrapper">
+    <div class="defualt-asset-title">
+      {{ assetGroupDisplayName }}
     </div>
-</a>
+    <div class="defualt-asset-count">Assets: {{ assetCount }}</div>
+  </div>
+  <div class="default-asset-icons-wrapper">
+    <img src="/assets/icons/chevron-expand.svg" alt="" />
+  </div>
+</div>

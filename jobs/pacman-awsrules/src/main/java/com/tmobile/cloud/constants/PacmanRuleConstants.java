@@ -26,6 +26,21 @@ public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
     public static final String NAME = "name";
+    public static final String ES_VM_URL = "esvmURL";
+    public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
+    public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
+    public static final String GCP_NAT_IP = "natIP";
+    public static final String ALL_USERS = "allUsers";
+
+    public static final String ALL_AUTH_USERS = "allAuthenticatedUsers";
+    public static final String SPECIAL_GROUP = "specialGroup";
+    public static final String IAM_MEMBER = "iamMember";
+    public static String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
+    public static final String GCP_CMK = "hasKmsKeyName";
+    public static String GCP_CSEK = "hasSha256";
+    public static final String ADMIN_FOR_KEYS = "adminForKeys";
+    public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
+    public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -106,6 +121,8 @@ public class PacmanRuleConstants {
     public static final String STATE_NAME = "statename";
     public static final String PRIVATE_IP_ADDRESS = "privateipaddress";
     public static final String CATEGORY = "ruleCategory";
+    public static final String ACTIVITY_RULE_CATEGORY = "category";
+    public static final String ADMINISTRATIVE = "Administrative";
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
     public static final String ACCOUNTID = "accountid";
@@ -377,6 +394,8 @@ public class PacmanRuleConstants {
     public static final String START_IP_ADDRESS = "startIPAddress";
     public static final String FIREWALL_RULE_DETAILS = "firewallRuleDetails";
     public static final String AZURE_INBOUNDARYSECURITYRULES = "inBoundSecurityRules";
+
+    public static final String AZURE_REMOTEDEBUGGING = "remoteDebuggingEnabled";
     public static final String CUSTOMER_MANAGED_KEY = "customerManagedKey";
 
     public static final String AZURE_NONSSLPORT = "nonSslPort";
@@ -393,6 +412,21 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String FALSE = "false";
+    public static final String ES_SNAPSHOT_ID_ATTRIBUTE = "snapshotid";
+    public static final String ES_IMAGE_ID_ATTRIBUTE = "imageid";
+    public static final String ES_AMI_BLOCK_DEVICE_MAPPING_URL = "esAmiBlockDeviceMappingUrl";
+    public static final String ES_RESOURCE_ATTRIBUTE = "resource";
+    public static final String STATUS_ACTIVE = "Active";
+    public static final String ES_ACCESS_ANALYZER_FINDINGS_URL = "esFindingsUrl";
+    public static final String ES_ANALYZER_ARN_ATTRIBUTE = "analyzerarn";
+    public static final String ES_LOG_DRIVER_ATTRIBUTE = "logdriver";
+    public static final String ES_KMS_ARN_ATTRIBUTE = "kmsarn";
+    public static final String ES_ENCRYPTION_OPTION_ATTRIBUTE = "encryptionoption";
+    public static final String ES_SSE_STATUS_ATTRIBUTE = "ssestatus";
+    public static final String ES_KEY_ARN_ATTRIBUTE = "keyarn";
+    public static final String ES_ENCRYPTED_ATTRIBUTE = "encrypted";
+    public static final String ES_DMS_PUBLIC_ACCESS_ATTRIBUTE = "publiclyAccessible";
     public static final String ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE = "ssetype";
     public static final String ES_KMS_KEY_MANAGER_ATTRIBUTE = "keymanager";
     public static final String ES_KMS_ALIAS_ATTRIBUTE = "aliasname";
@@ -418,12 +452,21 @@ public class PacmanRuleConstants {
     public static final String EQUALS_STRING = "equals";
     public static final String SUCESS = "SUCESS";
     public static final String FAILURE = "failure";
-    public static final String ALLOF = "allof";
+    public static final String ALLOF = "allOf";
     public static final String PRICING_TIER = "pricingTier";
     public static final String PROPERTIES = "properties";
     public static final String KEYVAULTNAMES = "keyValutName";
     public static final String KEYVAULTKEY = "keyVaultKey";
     public static final String KEYVAULTVALUE = "keyVaultValue";
     public static final String SUCCESS = "SUCCESS";
+    public static final String PROPERTIESMAP = "propertiesMap";
+    public static final String DISABLED = "disabled";
+    public static final String DIRECTION = "direction";
+    public static final String SOURCERANGES = "sourceRanges";
+    public static final String INGRESS = "INGRESS";
+    public static final String PORTS = "ports";
+    public static final String ICMP = "icmp";
+    public static final String SOURCERANGE="0.0.0.0/0";
+    public static final String ACL = "acl";
 
 }

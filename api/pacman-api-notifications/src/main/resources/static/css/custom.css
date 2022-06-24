@@ -30,7 +30,7 @@ img{max-width:100%;}
     text-transform: capitalize;
     outline: none;
     border-radius: 5px;
-    background: #ed0295;
+    background: var(--primary-500);
     color: #fff;
     cursor: pointer;
     font-family: 'PT Sans Narrow', sans-serif;
@@ -80,14 +80,14 @@ body {
 	font-family: 'PT Sans Narrow', sans-serif;
 }
 .subscribe-top {
-    background: #ed0295;
+    background: var(--primary-500);
     position: absolute;
     width: 5%;
     height: 11%;
     top: -42px;
     left: 43%;
     padding: 1.7em 1.7em;
-    border-radius: 50px;left
+    border-radius: 50px;
     text-align: center;
 }
 .login-bottom input[type="text"] {
@@ -118,7 +118,7 @@ body {
     text-transform: capitalize;
     outline: none;
     border-radius: 5px;
-    background: #ed0295;
+    background: var(--primary-500);
     color: #fff;
     cursor: pointer;
     font-family: 'PT Sans Narrow', sans-serif;
@@ -148,7 +148,7 @@ body {
 	text-decoration:none;
 }
 .login-bottom a p:hover {
-    color: #ed0295;
+    color: var(--primary-500);
 }
 .footer {
     text-align: center;

@@ -173,7 +173,7 @@ img.close-imgicon:hover {
     background-color: rgb(226, 0, 116);
     border-radius: 50%;
     font-size: 28px;
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
 }
 
 .text {
@@ -197,7 +197,7 @@ img.close-imgicon:hover {
     height: 2em;
     width: 2px;
     background-color: #000;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     opacity: 0.2;
 }*/
 
@@ -218,7 +218,7 @@ img.close-imgicon:hover {
     height: 2em;
     width: 2px;
     background-color: grey;
-    border-radius: 3px;
+    border-radius: var(--border-radius);
     margin-top: 11px;
     opacity: 0.2;
     flex-shrink: 0;

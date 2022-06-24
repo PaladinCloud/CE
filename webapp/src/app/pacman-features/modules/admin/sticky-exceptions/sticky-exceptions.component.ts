@@ -58,7 +58,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   seekdata: boolean = false;
   showLoader: boolean = true;
 
-  allExceptions:any = [];
+  allExceptions: any = [];
 
   paginatorSize: number = 25;
   isLastPage: boolean;
@@ -295,7 +295,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var magenta = '#e20074';
+      var blue = '#336cc9';
       var green = '#26ba9d';
       var red = '#f2425f';
       var orange = '#ffb00d';
@@ -317,7 +317,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
             cellObj = {
               properties: {
                 'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                'color': '#0047bb'
               },
               colName: getCols[col],
               hasPreImg: false,
@@ -325,7 +325,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
               dropDownEnabled: true,
               dropDownItems: dropDownItems,
               statusProp: {
-                'color': '#ed0295'
+                'color': '#0047bb'
               }
             };
           } else if (getCols[col].toLowerCase() == 'expiry date') {
@@ -402,7 +402,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log('error', error);
       }
-    } 
+    }
     else if (row.col === 'Edit') {
       try {
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
