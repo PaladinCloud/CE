@@ -136,4 +136,124 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+
+    public static JsonArray getHitsJsonArrayForBigQuerydataset() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"gcp\",\n" +
+                "          \"region\": \"US\",\n" +
+                "          \"id\": \"tesing_dataset\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"projectId\": \"cool-bay-349411\",\n" +
+                "          \"datasetId\": \"tesing_dataset\",\n" +
+                "          \"acl\": [\n" +
+                "            {\n" +
+                "              \"role\": \"WRITER\",\n" +
+                "              \"specialGroup\": \"projectWriters\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"OWNER\",\n" +
+                "              \"specialGroup\": \"projectOwners\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"OWNER\",\n" +
+                "              \"userByEmail\": \"pacbot-demo@cool-bay-349411.iam.gserviceaccount.com\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"OWNER\",\n" +
+                "              \"userByEmail\": \"santhosh.challa@zemosolabs.com\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"READER\",\n" +
+                "              \"specialGroup\": \"projectReaders\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"READER\",\n" +
+                "              \"userByEmail\": \"pacbot-demo@cool-bay-349411.iam.gserviceaccount.com\"\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"defaultTableLifetime\": null,\n" +
+                "          \"description\": \"test data set\",\n" +
+                "          \"etag\": \"mS16Y7CQ5o1etp5Qj0oxRg==\",\n" +
+                "          \"friendlyName\": null,\n" +
+                "          \"generatedId\": \"cool-bay-349411:tesing_dataset\",\n" +
+                "          \"lastModified\": null,\n" +
+                "          \"labels\": {\n" +
+                "            \"application\": \"demo_app\"\n" +
+                "          },\n" +
+                "          \"kmsKeyName\": null,\n" +
+                "          \"defaultPartitionExpirationMs\": null,\n" +
+                "          \"discoverydate\": \"2022-06-22 13:00:00+0000\",\n" +
+                "          \"_resourceid\": \"tesing_dataset\",\n" +
+                "          \"_docid\": \"tesing_dataset\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"bigquerydataset\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-22 13:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-22 13:43:00+0000\"\n" +
+                "        }", JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitsJsonArrayForBigQuerydatasetFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"gcp\",\n" +
+                "          \"region\": \"us-east1\",\n" +
+                "          \"id\": \"test_dataSet2\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"projectId\": \"cool-bay-349411\",\n" +
+                "          \"datasetId\": \"test_dataSet2\",\n" +
+                "          \"acl\": [\n" +
+                "            {\n" +
+                "              \"role\": \"WRITER\",\n" +
+                "              \"specialGroup\": \"projectWriters\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"OWNER\",\n" +
+                "              \"specialGroup\": \"projectOwners\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"OWNER\",\n" +
+                "              \"userByEmail\": \"santhosh.challa@zemosolabs.com\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"READER\",\n" +
+                "              \"specialGroup\": \"projectReaders\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"roles/viewer\",\n" +
+                "              \"iamMember\": \"allUsers\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"role\": \"roles/viewer\",\n" +
+                "              \"specialGroup\": \"projectReaders\"\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"defaultTableLifetime\": null,\n" +
+                "          \"description\": null,\n" +
+                "          \"etag\": \"VntiAMxVlRTtmtfE09sq+w==\",\n" +
+                "          \"friendlyName\": null,\n" +
+                "          \"generatedId\": \"cool-bay-349411:test_dataSet2\",\n" +
+                "          \"lastModified\": null,\n" +
+                "          \"labels\": {},\n" +
+                "          \"kmsKeyName\": null,\n" +
+                "          \"defaultPartitionExpirationMs\": null,\n" +
+                "          \"discoverydate\": \"2022-06-22 13:00:00+0000\",\n" +
+                "          \"_resourceid\": \"test_dataSet2\",\n" +
+                "          \"_docid\": \"test_dataSet2\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"bigquerydataset\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-22 13:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-22 13:43:00+0000\"\n" +
+                "        }", JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

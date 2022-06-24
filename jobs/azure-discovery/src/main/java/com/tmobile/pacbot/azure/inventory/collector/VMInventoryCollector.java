@@ -104,7 +104,6 @@ public class VMInventoryCollector {
 								virtualMachine.osProfile().linuxConfiguration().disablePasswordAuthentication());
 					}
 				}
-				
 				if (virtualMachine.listExtensions() != null) {
 					if (virtualMachine.listExtensions().values() instanceof List) {
 						vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());

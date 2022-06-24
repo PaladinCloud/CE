@@ -5852,7 +5852,7 @@
     "severity": "high",
     "category": "security"
   },
-  
+
   {
     "ruleId": "VPC_firewall_SMTP_port_should_not_be_publicly_accessible",
     "ruleUUID": "VPC_firewall_SMTP_port_should_not_be_publicly_accessible",
@@ -5896,6 +5896,51 @@
     "modifiedDate": "2022-06-09",
     "severity": "high",
     "category": "security"
-  }
-
-]
+  },
+  {
+    "ruleId": "GCP_bigquery_dataset_public_access_rule",
+    "ruleUUID": "gcp_bigquery_dataset_public_access_rule",
+    "policyId": "GCP_bigquery_dataset_public_access_version-1",
+    "ruleName": "BigqueryDatasetPublicAccess",
+    "targetType": "bigqueydataset",
+    "assetGroup": "gcp",
+    "alexaKeyword": "BigqueryDatasetPublicAccess",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-bigquery-dataset-public-access\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that Google Cloud BigQuery datasets are not publicly accessible.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"One or more roles are using the allUsers or allAuthenticatedUsers member bindings in the dataset ACLs\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_bigquerydataset\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Check for Publicly Accessible BigQuery Datasets\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_bigquery_dataset_public_access_rule\",\"autofix\":false,\"alexaKeyword\":\"BigqueryDatasetPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"bigqueydataset\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_bigquery_dataset_public_access_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_bigquery_dataset_public_access_rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/gcp_bigquery_dataset_public_access_rule",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Check for Publicly Accessible BigQuery Datasets",
+    "createdDate": "2022-06-23",
+    "modifiedDate": "2022-06-23",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted.",
+    "ruleUUID": "azure_Enable_VM_disk_Volumes_Encrypted",
+    "policyId": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted",
+    "ruleName": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted",
+    "targetType": "virtualmachine",
+    "assetGroup": "azure",
+    "alexaKeyword": "Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-security-virtual-machine-rule\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\" App-tier disk volumes attached to the selected Microsoft Azure virtual machine (VM) are not encrypted. \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCESS\",\"value\":\"App-tier disk volumes attached to the selected Microsoft Azure virtual machine (VM) are not encrypted \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"pricingTier\",\"value\":\"Standard\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Encryption for App-Tier Disk Volumes.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted\",\"autofix\":false,\"alexaKeyword\":\"Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted\",\"ruleRestUrl\":\"\",\"targetType\":\"virtualmachine\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_VM_disk_Volumes_for_App_Tier_Encrypted\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_VM_disk_Volumes_Encrypted\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_VM_disk_Volumes_Encrypted",
+    "status": "ENABLED",
+    "userId": "",
+    "displayName": "Enable Encryption for App-Tier Disk Volumes.",
+    "createdDate": "2022-06-10",
+    "modifiedDate": "2022-06-10",
+    "severity": "high",
+    "category": "security"
+    }
+ ]
+    
+   
