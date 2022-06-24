@@ -469,5 +469,6 @@ public class PacmanRuleConstants {
     public static final String ICMP = "icmp";
     public static final String SOURCERANGE="0.0.0.0/0";
     public static final String ACL = "acl";
+    public static final String KMS_KEY_NAME = "kmsKeyName";
 
 }
