@@ -88,6 +88,19 @@ public class AssetFileGenerator {
 				}
 			});
 
+			executor.execute(() -> {
+				if (!(isTypeInScope("bigqueytable"))) {
+					log.info("Target type bigqueytable not found!!. Skipping collector");
+					return;
+				}
+				try {
+					log.info("Target type bigqueytable configured. Executing collector");
+					FileManager.generateBigqueryTableFiles(bigQueryInventoryCollector.fetchBigqueryTableInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 
 			while (!executor.isTerminated()) {

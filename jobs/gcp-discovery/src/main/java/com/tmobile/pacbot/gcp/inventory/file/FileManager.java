@@ -48,6 +48,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-vpcfirewall.data", "[", false);
 
         FileGenerator.writeToFile("gcp-bigquerydataset.data", "[", false);
+        FileGenerator.writeToFile("gcp-bigquerytable.data", "[", false);
 
     }
 
@@ -56,6 +57,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-vminstance.data", "]", true);
         FileGenerator.writeToFile("gcp-vpcfirewall.data", "]", true);
         FileGenerator.writeToFile("gcp-bigquerydataset.data", "]", true);
+        FileGenerator.writeToFile("gcp-bigquerytable.data", "]", true);
 
     }
 
@@ -73,6 +75,10 @@ public class FileManager {
 
     public static void generateBigqueryFiles(List<BigQueryVH> dataMap) throws IOException {
         FileGenerator.generateJson(dataMap, "gcp-bigquerydataset.data");
+
+    }
+    public static void generateBigqueryTableFiles(List<BigQueryTableVH> dataMap) throws IOException {
+        FileGenerator.generateJson(dataMap, "gcp-bigquerytable.data");
 
     }
 
