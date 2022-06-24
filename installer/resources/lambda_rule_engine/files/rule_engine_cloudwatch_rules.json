@@ -5898,6 +5898,28 @@
     "category": "security"
   },
   {
+    "ruleId": "GCP_bigquery_table_encryption_cmks_rule",
+    "ruleUUID": "gcp_bigquery_table_encryption_cmks_rule",
+    "policyId": "GCP_bigquery_table_encryption_cmks_rule_version-1",
+    "ruleName": "BigqueryTableEncryptionCMKs",
+    "targetType": "bigquerytable",
+    "assetGroup": "gcp",
+    "alexaKeyword": "BigqueryTableEncryptionCMKs",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-bigquery-table-encryption-with-cmks\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that BigQuery dataset tables are encrypted using Customer-Managed Keys (CMKs).\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Cloud BigQuery dataset table is not encrypted using a Customer-Managed Key (CMK)\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_bigquerytable\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable BigQuery Encryption with Customer-Managed Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_bigquery_table_encryption_cmks_rule\",\"autofix\":false,\"alexaKeyword\":\"BigqueryTableEncryptionCMKs\",\"ruleRestUrl\":\"\",\"targetType\":\"bigquerytable\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_bigquery_table_encryption_cmks_rule_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_bigquery_table_encryption_cmks_rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/gcp_bigquery_table_encryption_cmks_rule",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable BigQuery Encryption with Customer-Managed Keys",
+    "createdDate": "2022-06-24",
+    "modifiedDate": "2022-06-24",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "GCP_bigquery_dataset_public_access_rule",
     "ruleUUID": "gcp_bigquery_dataset_public_access_rule",
     "policyId": "GCP_bigquery_dataset_public_access_version-1",
