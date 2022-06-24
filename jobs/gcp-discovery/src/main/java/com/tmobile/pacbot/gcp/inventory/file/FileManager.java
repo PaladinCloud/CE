@@ -46,7 +46,7 @@ public class FileManager {
 
         FileGenerator.writeToFile("gcp-vminstance.data", "[", false);
         FileGenerator.writeToFile("gcp-vpcfirewall.data", "[", false);
-
+        FileGenerator.writeToFile("gcp-cloudstorage.data", "[", false);
         FileGenerator.writeToFile("gcp-bigquerydataset.data", "[", false);
         FileGenerator.writeToFile("gcp-bigquerytable.data", "[", false);
 
@@ -58,7 +58,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-vpcfirewall.data", "]", true);
         FileGenerator.writeToFile("gcp-bigquerydataset.data", "]", true);
         FileGenerator.writeToFile("gcp-bigquerytable.data", "]", true);
-
+        FileGenerator.writeToFile("gcp-cloudstorage.data", "]", true);
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -82,4 +82,7 @@ public class FileManager {
 
     }
 
+    public static void generateStorageFiles(List<StorageVH> storageList) {
+        FileGenerator.generateJson(storageList, "gcp-cloudstorage.data");
+    }
 }
