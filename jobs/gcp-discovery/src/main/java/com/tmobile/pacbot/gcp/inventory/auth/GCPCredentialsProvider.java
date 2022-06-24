@@ -6,6 +6,8 @@ import com.google.cloud.compute.v1.FirewallsClient;
 import com.google.cloud.compute.v1.FirewallsSettings;
 import com.google.cloud.compute.v1.InstancesClient;
 import com.google.cloud.compute.v1.InstancesSettings;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.slf4j.Logger;
@@ -25,6 +27,8 @@ public class GCPCredentialsProvider {
     private FirewallsClient firewallsClient;
 
     private BigQueryOptions.Builder bigQueryBuilder;
+
+    private Storage storageClient;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -74,6 +78,14 @@ public class GCPCredentialsProvider {
             bigQueryBuilder = BigQueryOptions.newBuilder().setCredentials(this.getCredentials());
         }
         return bigQueryBuilder;
+    }
+
+    public Storage getStorageClient() throws IOException {
+        if(storageClient==null) {
+            storageClient = StorageOptions.newBuilder().setCredentials(this.getCredentials()).build().getService();
+        }
+
+        return storageClient;
     }
 
     // close the client in destroy method
