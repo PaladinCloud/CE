@@ -1551,7 +1551,7 @@ public class PacmanUtils {
 					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
 
-					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_TLS)) {
+					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_SSL)) {
 						securedProtocols.add(protocol);
 					}
 				}
