@@ -29,37 +29,28 @@ import org.slf4j.Logger;
 public final class ActivityLogsCollector {
         @Autowired
         AzureCredentialProvider azureCredentialProvider;
-        private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Insights/activityLogAlerts/%s?api-version=2020-10-01";
-        private static Logger logger = LoggerFactory.getLogger(ActivityLogsCollector.class);
+        private final String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Insights/activityLogAlerts/%s?api-version=2020-10-01";
+        private static final Logger logger = LoggerFactory.getLogger(ActivityLogsCollector.class);
 
-        public List<ActivityLogAlertRuleVH> fetchActivityLogAlertDetails(SubscriptionVH subscription) {
+        public List<ActivityLogVH> fetchActivityLogAlertDetails(SubscriptionVH subscription) {
                 List<ActivityLogVH> activityLogVHList = new ArrayList<>();
-                List<ActivityLogAlertRuleVH> activityLogAlertsRuleVHList = new ArrayList<>();
-                ActivityLogAlertRuleVH activityLogAlertsRuleVH = new ActivityLogAlertRuleVH();
+
                 String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
                 Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
-                                subscription.getSubscriptionId());
+                        subscription.getSubscriptionId());
                 PagedList<ActivityLogAlert> activityLogAlertList = azure.alertRules().activityLogAlerts().list();
-                String resourceGroupName = activityLogAlertList.size() > 0
-                                ? activityLogAlertList.get(0).resourceGroupName()
-                                : "";
-                activityLogAlertsRuleVH.setId("subscriptions/" + subscription.getSubscriptionId() + "/resourceGroups/"
-                                + resourceGroupName + "/providers/microsoft.insights/activityLogAlerts/");
-                activityLogAlertsRuleVH.setSubscription(subscription.getSubscriptionId());
-                activityLogAlertsRuleVH.setSubscriptionName(subscription.getSubscriptionName());
-                activityLogAlertsRuleVH.setResourceGroupName(resourceGroupName);
 
                 logger.info("activityLogAlertList size : {}  ", activityLogAlertList.size());
                 for (ActivityLogAlert activityLogAlert : activityLogAlertList) {
 
                         try {
                                 String url = String.format(apiUrlTemplate,
-                                                URLEncoder.encode(subscription.getSubscriptionId(),
-                                                                java.nio.charset.StandardCharsets.UTF_8.toString()),
-                                                URLEncoder.encode(activityLogAlert.resourceGroupName(),
-                                                                java.nio.charset.StandardCharsets.UTF_8.toString()),
-                                                URLEncoder.encode(activityLogAlert.name(),
-                                                                java.nio.charset.StandardCharsets.UTF_8.toString()));
+                                        URLEncoder.encode(subscription.getSubscriptionId(),
+                                                java.nio.charset.StandardCharsets.UTF_8.toString()),
+                                        URLEncoder.encode(activityLogAlert.resourceGroupName(),
+                                                java.nio.charset.StandardCharsets.UTF_8.toString()),
+                                        URLEncoder.encode(activityLogAlert.name(),
+                                                java.nio.charset.StandardCharsets.UTF_8.toString()));
                                 String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
                                 logger.info("response form API: {} for log alert name: {}",
                                                 response,
@@ -73,21 +64,17 @@ public final class ActivityLogsCollector {
                                         ActivityLogVH activityLogVH = new ActivityLogVH();
 
                                         activityLogVH.setId(activityLogObject.get("id").getAsString());
-                                        if (activityLogAlertsRuleVH.getRegion() == null) {
-                                                activityLogAlertsRuleVH.setRegion(
-                                                                activityLogObject.get("location").getAsString());
-                                        }
                                         activityLogVH.setRegion(
-                                                        activityLogObject.get("location").getAsString());
+                                                activityLogObject.get("location").getAsString());
                                         activityLogVH.setSubscription(subscription.getSubscriptionId());
                                         activityLogVH.setSubscriptionName(subscription.getSubscriptionName());
                                         activityLogVH.setResourceGroupName(
-                                                        activityLogAlert.resourceGroupName());
+                                                activityLogAlert.resourceGroupName());
                                         JsonObject properties = activityLogObject.getAsJsonObject("properties");
                                         if (properties != null) {
                                                 HashMap<String, Object> propertiesMap = new Gson().fromJson(
-                                                                properties.toString(),
-                                                                HashMap.class);
+                                                        properties.toString(),
+                                                        HashMap.class);
                                                 activityLogVH.setProperties(propertiesMap);
                                         }
 
@@ -96,17 +83,13 @@ public final class ActivityLogsCollector {
                                 }
 
                         } catch (Exception e) {
-
+                                logger.error("Error while fetching activity logs for alert: {}",
+                                        activityLogAlert.name(), e);
                         }
-
                 }
-                activityLogAlertsRuleVH.setActivityLogAlerts(activityLogVHList);
-                activityLogAlertsRuleVHList.add(activityLogAlertsRuleVH);
 
-                logger.info("Target Type : {}  Total: {} ", "activityLogAlerts", activityLogVHList.size(),
-                                activityLogAlertsRuleVH);
-
-                return activityLogAlertsRuleVHList;
+                logger.info("Target Type : {}  Total: {} ", "activityLogAlerts", activityLogVHList.size());
+                return activityLogVHList;
         }
 
 }

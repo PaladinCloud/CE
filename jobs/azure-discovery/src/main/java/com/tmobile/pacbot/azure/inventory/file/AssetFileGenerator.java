@@ -138,6 +138,9 @@ public class AssetFileGenerator {
 	@Autowired
 	WebAppInventoryCollector webAppInventoryCollector;
 
+	@Autowired
+	SubscriptionInventoryCollector subscriptionInventoryCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -592,18 +595,33 @@ public class AssetFileGenerator {
 				}
 			});
 
-            executor.execute(() -> {
-                if (!(isTypeInScope("webApp"))) {
-                    return;
-                }
-                try {
+			executor.execute(() -> {
+				if (!(isTypeInScope("webApp"))) {
+					return;
+				}
+				try {
 
-                    FileManager
-                            .generateWebAppFiles(webAppInventoryCollector.fetchWebAppDetails(subscription));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+					FileManager
+							.generateWebAppFiles(webAppInventoryCollector.fetchWebAppDetails(subscription));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("subscription"))) {
+					log.info("no target type found for subscription!!");
+					return;
+				}
+				try {
+
+					FileManager
+							.generateSubscriptionFiles(subscriptionInventoryCollector.fetchSubscriptions(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 
 			executor.shutdown();
 			while (!executor.isTerminated()) {
