@@ -37,4 +37,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: sudo mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE
+        run: sudo mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE_1
