@@ -47,5 +47,10 @@
 		<module>jobs</module>
 		<module>webapp</module>
     </modules>
+    
+    <properties>
+        <sonar.organization>paladincloud</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
 
 </project>
