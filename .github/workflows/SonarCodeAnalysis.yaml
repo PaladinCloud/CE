@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK 11
-        uses: s4u/setup-maven-action@< version >
+        uses: s4u/setup-maven-action@3.6.3
         with:
           java-version: 11  
           maven-version: 3.6.3
