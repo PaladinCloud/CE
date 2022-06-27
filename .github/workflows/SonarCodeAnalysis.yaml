@@ -2,7 +2,7 @@ name: Build
 on:
   push:
     branches:
-      - sonarcloud_static_code_testing
+      - chore/sonarcloud_static_code_testing
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -34,7 +34,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
-        run: sudo mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE_1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: sudo mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE_1
