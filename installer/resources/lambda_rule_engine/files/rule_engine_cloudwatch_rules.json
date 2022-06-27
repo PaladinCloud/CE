@@ -5988,6 +5988,28 @@
     "modifiedDate": "2022-06-24",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "GCP_Virtual_Machine_2FA_Rule",
+    "ruleUUID": "GCP_Virtual_Machine_2FA_Rule",
+    "policyId": "GCP_Virtual_Machine_2FA_Rule",
+    "ruleName": "GCP_Virtual_Machine_2FA_Rule",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "VirtualMachine2FA",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vm-two-factor-authentication\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"VM Instance does NOT have 2 Factor Authorisation\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"VM Instance has two factor authorisation \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure VM instances has 2 factor Authentication\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_Virtual_Machine_2FA_Rule\",\"autofix\":false,\"alexaKeyword\":\"VirtualMachine2FA\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_Virtual_Machine_2FA_Rule\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"GCP_Virtual_Machine_2FA_Rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/GCP_Virtual_Machine_2FA_Rule",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure that OS Login is configured with Two-Factor Authentication (2FA) for production VM instances.",
+    "createdDate": "2022-06-21",
+    "modifiedDate": "2022-06-21",
+    "severity": "high",
+    "category": "security"
   }
 
 ]
