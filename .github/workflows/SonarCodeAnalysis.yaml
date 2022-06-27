@@ -16,7 +16,8 @@ jobs:
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11  
+          maven-version: 3.63
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
