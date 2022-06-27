@@ -1,4 +1,4 @@
-package com.tmobile.cloud.gcprules.utils;
+package com.tmobile.cloud.azurerules.utils;
 
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GCPUtils {
-    private static final Logger logger = LoggerFactory.getLogger(GCPUtils.class);
+public class AzureUtils {
+    private static final Logger logger = LoggerFactory.getLogger(AzureUtils.class);
 
-    private GCPUtils() {
+    private AzureUtils() {
     }
 
     public static JsonArray getHitsArrayFromEs(String esURL, Map<String, Object> mustFilter) throws Exception {

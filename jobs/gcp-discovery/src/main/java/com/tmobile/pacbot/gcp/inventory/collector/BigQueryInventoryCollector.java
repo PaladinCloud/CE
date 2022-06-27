@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
 public class BigQueryInventoryCollector {
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:00:00Z";
     @Autowired
     GCPCredentialsProvider gcpCredentialsProvider;
 
@@ -112,5 +114,78 @@ public class BigQueryInventoryCollector {
             aclMap.put(key,value);
         }
         return aclMap;
+    }
+
+    public List<BigQueryTableVH> fetchBigqueryTableInventory(String projectId) throws IOException {
+        logger.info("Running collector for bigquery table inventory. Project Name:{}", projectId);
+        BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions()
+                .setProjectId(projectId).build();
+
+        BigQuery bigQuery = bigQueryOption.getService();
+
+        Page<Dataset> dataSetList = bigQuery.listDatasets(projectId, BigQuery.DatasetListOption.all());
+        List<BigQueryTableVH> tableVHList = new ArrayList<>();
+        for (Dataset dataSet : dataSetList.iterateAll()) {
+            String datasetId = dataSet.getDatasetId().getDataset();
+            logger.debug("Dataset found. Dataset id:{} .Extracting table data for dataset.", datasetId);
+            String location=getDataSetLocation(dataSet,bigQuery);
+            try {
+                Page<Table> tableList = dataSet.list(BigQuery.TableListOption.pageSize(100));
+                for (Table table : tableList.iterateAll()) {
+                    String tableId = table.getTableId().getTable();
+                    Table tableData=bigQuery.getTable(TableId.of(datasetId, tableId));
+                    logger.info("Table data :{}",tableData);
+                    BigQueryTableVH tableVH = new BigQueryTableVH();
+                    tableVH.setId(tableId);
+                    tableVH.setDataSetId(tableData.getTableId().getDataset());
+                    tableVH.setProjectName(tableData.getTableId().getProject());
+                    tableVH.setTableId(tableId);
+                    tableVH.setIamResourceName(tableData.getTableId().getIAMResourceName());
+                    tableVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
+                    tableVH.setDescription(tableData.getDescription());
+                    tableVH.setFriendlyName(tableData.getFriendlyName());
+                    tableVH.setGeneratedId(tableData.getGeneratedId());
+                    tableVH.setEtag(tableData.getEtag());
+                    tableVH.setExpirationTime(getFormattedDate(tableData.getExpirationTime()));
+                    tableVH.setLastModifiedTime(getFormattedDate(tableData.getLastModifiedTime()));
+                    tableVH.setCreationTime(getFormattedDate(tableData.getCreationTime()));
+                    tableVH.setRegion(location);
+                    tableVH.setLabels(tableData.getLabels());
+                    if (tableData.getEncryptionConfiguration() != null) {
+                        tableVH.setKmsKeyName(tableData.getEncryptionConfiguration().getKmsKeyName());
+                    }
+                    tableVH.setNumBytes(tableData.getNumBytes());
+                    tableVH.setRowNum(tableData.getNumRows());
+                    tableVH.setSelfLink(tableData.getSelfLink());
+                    tableVHList.add(tableVH);
+                }
+            } catch (Exception e) {
+                logger.error("Error while fetching inventory data for BigQuery :", e);
+            }
+        }
+        logger.info("BigQuery Collected for project:{}, number of tables found:{}", projectId, tableVHList.size());
+        return tableVHList;
+    }
+
+    private String getDataSetLocation(Dataset dataSet, BigQuery bigQuery) {
+        if(dataSet.getLocation()!=null){
+            return dataSet.getLocation();
+        }else{
+            Dataset locationData=bigQuery.getDataset(dataSet.getDatasetId(),
+                    BigQuery.DatasetOption.fields(BigQuery.DatasetField.LOCATION));
+            return locationData.getLocation();
+        }
+    }
+
+    private String getFormattedDate(Long timeData){
+        if(timeData!=null) {
+            try {
+                return new SimpleDateFormat(DATE_FORMAT).format(new Date(timeData));
+            } catch (Exception e) {
+                logger.error("Error in parsing date format",e);
+                return null;
+            }
+        }
+        return null;
     }
 }
