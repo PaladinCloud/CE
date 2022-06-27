@@ -19,7 +19,7 @@ jobs:
           java-version: 11
       - name: running update
         run: sudo apt update
-      - name: install maven
+      - name: Install maven
         run: sudo apt install maven -y
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
