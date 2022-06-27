@@ -107,13 +107,17 @@ public class BYOKDiskVolumeRule extends BaseRule {
                     for (int i = 0; i < diskJsonArray.size(); i++) {
                         JsonObject diskDataItem = ((JsonObject) diskJsonArray
                                 .get(i));
-                        boolean encryption = diskDataItem.getAsJsonObject().get("isEncryptionEnabled").getAsBoolean();
+                        String isEncryptionEnabled="isEncryptionEnabled";
+                        boolean encryption = diskDataItem.getAsJsonObject().get(isEncryptionEnabled).getAsBoolean();
                         if (encryption) {
                             logger.info("The attached disk volumes are  encrypted,");
-                            JsonArray encryptionSettings=jsonDataItem.getAsJsonObject().get("encryptionSettings").getAsJsonArray();
+                            String encryptionSetting="encryptionSettings";
+                            JsonArray encryptionSettings=jsonDataItem.getAsJsonObject().get(encryptionSetting).getAsJsonArray();
                             if(encryptionSettings.size()>0){
-                                JsonObject keyEncryptionKey=encryptionSettings.getAsJsonArray().get(Integer.parseInt("keyEncryptionKey")).getAsJsonObject();
-                                String keyUrl=keyEncryptionKey.getAsJsonObject().get("keyUrl").getAsString();
+                                String keyEncryption="keyEncryptionKey";
+                                JsonObject keyEncryptionKey=encryptionSettings.getAsJsonArray().get(Integer.parseInt(keyEncryption)).getAsJsonObject();
+                                String keyurl="keyUrl";
+                                String keyUrl=keyEncryptionKey.getAsJsonObject().get(keyurl).getAsString();
                                 if(keyUrl!=null){
                                     validationResult=true;}
                             }
