@@ -38,7 +38,7 @@
         <developerConnection>scm:git:ssh://github.com/tmobile/pacman.git</developerConnection>
         <url>https://github.com/tmobile/pacman/tree/master</url>
     </scm>
-    
+
     <properties>
         <sonar.organization>paladincloud</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
