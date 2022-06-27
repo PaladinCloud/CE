@@ -1033,6 +1033,7 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('f043449a-3f6d-472c-8537-534a2e5a50ff','cdffb9cd-71de-4e29-9cae-783c2aa211ac','activitylogalert','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('f043449a-3f6d-472c-8537-534a2e5a50ff','cdffb9cd-71de-4e29-9cae-783c2aa211ac','securitypricings','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('e33111d2-0ca0-4dbe-93d3-0e0aa2391ec0','cdffb9cd-71de-4e29-9cae-783c2aa211ac','webapp','all','all');
+INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('e33111d2-0ca0-4dbe-93d3-0e0aa2391ec1','cdffb9cd-71de-4e29-9cae-783c2aa211ac','subscription','all','all');
 
 
 
@@ -1040,6 +1041,7 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('50dbdcf8-9465-4095-9612-4990d4e47d40','e0008397-f74e-4deb-9066-10bdf11202ae','vpcfirewall','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a9udqucf8-3465-4235-9612-4990d4er5td40','e0008397-f74e-4deb-9066-10bdf11202ae','bigquerytable','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('50dthdcf8-3465-4235-9612-4990d4er5td40','e0008397-f74e-4deb-9066-10bdf11202ae','bigquerydataset','all','all');
+INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('subscription','Azure subscription','','azure','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/azure_subscription'),'2022-06-23','2022-06-23','Infra & Platforms');
 
 
 /*Insert Domain in required table*/
