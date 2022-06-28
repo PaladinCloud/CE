@@ -6006,6 +6006,28 @@
     "modifiedDate": "2022-06-21",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "ruleUUID": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "policyId": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "ruleName": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "targetType": "cloudstorage",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-cmk-encryption\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"checks if cloud storage has customer managed key to encrypt data\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google cloud storage is not encrypted with customer managed key\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"cloud storage should be encrypted with customer managed key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"autofix\":false,\"alexaKeyword\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"policyId\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Cloud_Storage_should_be_encrypted_with_CMK",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure that your Cloud Storage objects are encrypted using Customer-Managed Keys (CMKs).",
+    "createdDate": "2022-06-27",
+    "modifiedDate": "2022-06-27",
+    "severity": "high",
+    "category": "security"
   }
 
 ]
