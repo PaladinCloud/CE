@@ -5962,10 +5962,6 @@
     "modifiedDate": "2022-06-10",
     "severity": "high",
     "category": "security"
-    }
- ]
-
-
   },
   {
     "ruleId": "Cloud_Storage_should_not_be_public",
