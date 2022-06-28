@@ -277,7 +277,7 @@ CREATE TABLE IF NOT EXISTS `cf_PatchStats_Kernel` (
   `group_` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `kernel` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `nopendingerratas` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `erratadetails` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `erratadetails` varchar(7 5) COLLATE utf8_bin DEFAULT NULL,
   `iscompliant` tinyint(4) DEFAULT NULL,
   `isregistered` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`instanceid`)
@@ -1117,11 +1117,11 @@ INSERT IGNORE INTO cf_Target (targetName,targetDesc,category,dataSourceName,targ
 INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('bigquerydataset','GCP Bigquery Dataset','BigQuery','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_bigquerydataset'),'2022-06-23','2022-06-23','Infra & Platforms');
 /* Auth Related data */
 INSERT IGNORE INTO `oauth_client_details`(`client_id`,`resource_ids`,`client_secret`,`scope`,`authorized_grant_types`,`web_server_redirect_uri`,`authorities`,`access_token_validity`,`refresh_token_validity`,`additional_information`,`autoapprove`) values ('22e14922-87d7-4ee4-a470-da0bb10d45d3',NULL,'$2a$10$Is6r80wW65hKHUq6Wa8B6O3BLKqGOb5McDGbJUwVwfVvyeJBCf7ta','resource-access','implicit,authorization_code,refresh_token,password,client_credentials',NULL,'ROLE_CLIENT,ROLE_USER',NULL,NULL,NULL,'');
-INSERT IGNORE INTO `oauth_user`(`id`,`user_id`,`user_name`,`first_name`,`last_name`,`email`,`created_date`,`modified_date`) values (1,'user@pacbot.org','user','user','','user@pacbot.org','2018-06-26 18:21:56','2018-06-26 18:21:56'),(2,'admin@pacbot.org','admin','admin','','admin@pacbot.org','2018-06-26 18:21:56','2018-06-26 18:21:56');
-INSERT IGNORE INTO `oauth_user_credentials` (`id`, `password`, `type`) values('1','$2a$10$IKXbqqHbMBMa/1Cs3VhjGeye4EKVBen4dPwhTYB24cHgDouravEMa','db');
-INSERT IGNORE INTO `oauth_user_credentials` (`id`, `password`, `type`) values('2','$2a$10$G02s.dXgFAV7oKvYzvL5luq9FaBuzwNHeBLdbpncBazk5APkiVjUq','db');
+INSERT IGNORE INTO `oauth_user`(`id`,`user_id`,`user_name`,`first_name`,`last_name`,`email`,`created_date`,`modified_date`) values (1,'user@paladin.org','user','user','','user@paladin.org','2018-06-26 18:21:56','2018-06-26 18:21:56'),(2,'admin@pacbot.org','admin','admin','','admin@pacbot.org','2018-06-26 18:21:56','2018-06-26 18:21:56');
+INSERT IGNORE INTO `oauth_user_credentials` (`id`, `password`, `type`) values('1','$2a$12$DJFYCvoHbUsXSq2FXBEp5uJLhSmNXHVPbTo61CCsvPEqGvigqi0eK','db');
+INSERT IGNORE INTO `oauth_user_credentials` (`id`, `password`, `type`) values('2','$2a$12$KEstt9CXXR0Eg8LoptAycuISZi4NXZdWYG0Pjr2n0c57yC35naVkK','db');
 INSERT IGNORE INTO `oauth_user_roles`(`roleId`,`roleName`,`roleDesc`,`writePermission`,`owner`,`client`,`createdDate`,`modifiedDate`) values ('1','ROLE_USER','ROLE_USER',0,'asgc','22e14922-87d7-4ee4-a470-da0bb10d45d3','2018-01-23 00:00:00','2018-01-23 00:00:00'),('703','ROLE_ADMIN','ROLE_ADMIN',1,'asgc','22e14922-87d7-4ee4-a470-da0bb10d45d3','2018-03-13 17:26:58','2018-03-13 17:26:58');
-INSERT IGNORE INTO `oauth_user_role_mapping`(`userRoleId`,`userId`,`roleId`,`clientId`,`allocator`,`createdDate`,`modifiedDate`) values ('4747c0cf-63cc-4829-a1e8-f1e957ec5dd6','user@pacbot.org','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('4747c0cf-63cc-4829-a1e8-f1e957ec5dd7','admin@pacbot.org','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('f5b2a689-c185-11e8-9c73-12d01119b604','admin@pacbot.org','703','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47');
+INSERT IGNORE INTO `oauth_user_role_mapping`(`userRoleId`,`userId`,`roleId`,`clientId`,`allocator`,`createdDate`,`modifiedDate`) values ('4747c0cf-63cc-4829-a1e8-f1e957ec5dd6','user@paladin.org','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('4747c0cf-63cc-4829-a1e8-f1e957ec5dd7','admin@pacbot.org','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('f5b2a689-c185-11e8-9c73-12d01119b604','admin@pacbot.org','703','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47');
 
 /* Display and Update Fields */
 INSERT IGNORE INTO cf_pac_updatable_fields  (resourceType,displayFields,updatableFields) VALUES

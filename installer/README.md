@@ -169,8 +169,8 @@ IAM account.
 ```
 
 **Once the installation is complete, go to the PacBot ELB URL to access the web application. Use the default credentials**
-  * Admin User : admin@pacbot.org / pacman
-  * Readonly User : user@pacbot.org / user
+  * Admin User : admin@pacbot.org / PaladinAdmin@Boom!!
+  * Readonly User : user@paladin.org / PaladinUser@Boom!!
 
 
 ## Redeploy
