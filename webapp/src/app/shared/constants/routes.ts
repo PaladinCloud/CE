@@ -167,7 +167,7 @@ export const COMPLIANCE_ROUTES = [
     canActivate: [AuthGuardService],
   },
   {
-    path: "event-details/:arn",
+    path: "health-notifications/event-details/:arn",
     component: EventDetailsComponent,
     data: {
       title: "Event Details",

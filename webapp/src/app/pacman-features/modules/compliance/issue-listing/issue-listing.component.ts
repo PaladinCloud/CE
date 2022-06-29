@@ -694,6 +694,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             [
               "../policy-knowledgebase-details",
               row.row.nonDisplayableAttributes.text.RuleId,
+              "false"
             ],
             {
               relativeTo: this.activatedRoute,
