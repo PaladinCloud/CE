@@ -1,11 +1,19 @@
 package com.tmobile.pacbot.gcp.inventory.auth;
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.api.services.sqladmin.SQLAdmin;
+import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.compute.v1.FirewallsClient;
 import com.google.cloud.compute.v1.FirewallsSettings;
 import com.google.cloud.compute.v1.InstancesClient;
 import com.google.cloud.compute.v1.InstancesSettings;
+import com.google.cloud.kms.v1.KeyManagementServiceClient;
+import com.google.cloud.kms.v1.KeyManagementServiceSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
@@ -17,6 +25,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 @Component
 public class GCPCredentialsProvider {
@@ -29,6 +38,10 @@ public class GCPCredentialsProvider {
     private BigQueryOptions.Builder bigQueryBuilder;
 
     private Storage storageClient;
+
+    private SQLAdmin sqlAdmin;
+
+    private KeyManagementServiceClient kmsKeyServiceClient;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -74,18 +87,39 @@ public class GCPCredentialsProvider {
     }
 
     public BigQueryOptions.Builder getBigQueryOptions() throws IOException {
-        if(bigQueryBuilder==null) {
+        if (bigQueryBuilder == null) {
             bigQueryBuilder = BigQueryOptions.newBuilder().setCredentials(this.getCredentials());
         }
         return bigQueryBuilder;
     }
 
     public Storage getStorageClient() throws IOException {
-        if(storageClient==null) {
+        if (storageClient == null) {
             storageClient = StorageOptions.newBuilder().setCredentials(this.getCredentials()).build().getService();
         }
 
         return storageClient;
+    }
+
+    public SQLAdmin getSqlAdminService() throws IOException, GeneralSecurityException {
+        if (sqlAdmin == null) {
+            HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+            sqlAdmin = new SQLAdmin.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials()))
+                    .build();
+        }
+        return sqlAdmin;
+    }
+
+
+    public KeyManagementServiceClient getKmsKeyServiceClient() throws IOException {
+        if (kmsKeyServiceClient == null) {
+            KeyManagementServiceSettings keyManagementServiceSettings = KeyManagementServiceSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials()))
+                    .build();
+            kmsKeyServiceClient = KeyManagementServiceClient.create(keyManagementServiceSettings);
+        }
+        return kmsKeyServiceClient;
     }
 
     // close the client in destroy method

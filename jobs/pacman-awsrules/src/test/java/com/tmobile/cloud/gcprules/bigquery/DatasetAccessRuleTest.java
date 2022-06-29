@@ -2,6 +2,7 @@ package com.tmobile.cloud.gcprules.bigquery;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.gcprules.bigquery.DatasetAccesRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.cloud.gcprules.vminstance.VMInstanceWithPublicAccess;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
