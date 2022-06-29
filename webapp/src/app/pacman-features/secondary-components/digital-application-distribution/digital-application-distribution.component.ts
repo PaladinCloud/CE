@@ -44,8 +44,8 @@ export class DigitalApplicationDistributionComponent
   widgetWidth = 200;
   widgetHeight = 200;
   MainTextcolor = '#000';
-  innerRadious: any = 80;
-  outerRadious: any = 50;
+  innerRadius: any = 80;
+  outerRadius: any = 50;
   strokeColor = '#fff';
   private donutData = {};
   public dataComing = true;
@@ -78,7 +78,7 @@ export class DigitalApplicationDistributionComponent
       });
   }
 
-  ngOnChanges (changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges) {
     try {
       const DataChange = changes['filter'];
       this.appFilter = DataChange.currentValue;
@@ -95,7 +95,7 @@ export class DigitalApplicationDistributionComponent
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
   updateComponent() {
     /* All functions variables which are required to be set for component to be reloaded should go here */
     this.showLoader = true;
@@ -167,7 +167,7 @@ export class DigitalApplicationDistributionComponent
       const formatted_obj = [];
       const barColor = ['#59616A', '#00BA9F', '#139EF0', '#F73F5F'];
       let i = 0;
-      const obj =  Object.keys(data).map(function(key) {
+      const obj = Object.keys(data).map(function (key) {
         if (barColor[i] === undefined) {
           i = 0;
         }
@@ -205,25 +205,25 @@ export class DigitalApplicationDistributionComponent
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
 
       const prStateObj = {
-        'gitflow' : 'Gitflow',
-        'trunk' : 'Trunk',
+        'gitflow': 'Gitflow',
+        'trunk': 'Trunk',
         'featureBranching': 'FeatureBranching',
         'none': 'None',
         'repoWithoutApplication': 'repoWithoutApplication'
       };
       const filter = {
-         'strategyType': prStateObj[data.x_domain] || data.x_domain,
-         'branchingStrategyType': 'applications',
-         'resourceType': 'dgtldsgn-branch',
-         'tags.Application.keyword': this.appFilter
+        'strategyType': prStateObj[data.x_domain] || data.x_domain,
+        'branchingStrategyType': 'applications',
+        'resourceType': 'dgtldsgn-branch',
+        'tags.Application.keyword': this.appFilter
       };
       const params = this.utils.makeFilterObj(filter);
       const apiTarget = {
-        'TypeAsset' : 'branching-strategy'
+        'TypeAsset': 'branching-strategy'
       };
       const newParams = Object.assign(params, apiTarget);
       newParams['mandatory'] = 'resourceType|strategyType|branchingStrategyType';
-      this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+      this.router.navigate(['../../', 'assets', 'asset-list'], { relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
     }
   }
 

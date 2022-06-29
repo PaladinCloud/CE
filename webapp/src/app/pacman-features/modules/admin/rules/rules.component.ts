@@ -12,42 +12,38 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { environment } from './../../../../../environments/environment';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { environment } from "./../../../../../environments/environment";
 
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
-import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
-import { WorkflowService } from '../../../../core/services/workflow.service';
-import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
-import { AdminService } from '../../../services/all-admin.service';
-import { CommonResponseService } from '../../../../shared/services/common-response.service';
+import { ActivatedRoute, Router } from "@angular/router";
+import { Subscription } from "rxjs/Subscription";
+import { UtilsService } from "../../../../shared/services/utils.service";
+import { LoggerService } from "../../../../shared/services/logger.service";
+import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
+import "rxjs/add/operator/filter";
+import "rxjs/add/operator/pairwise";
+import { RefactorFieldsService } from "./../../../../shared/services/refactor-fields.service";
+import { WorkflowService } from "../../../../core/services/workflow.service";
+import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
+import { AdminService } from "../../../services/all-admin.service";
+import { CommonResponseService } from "../../../../shared/services/common-response.service";
 
 @Component({
-  selector: 'app-admin-rules',
-  templateUrl: './rules.component.html',
-  styleUrls: ['./rules.component.css'],
-  providers: [
-    LoggerService,
-    ErrorHandlingService,
-    AdminService
-  ]
+  selector: "app-admin-rules",
+  templateUrl: "./rules.component.html",
+  styleUrls: ["./rules.component.css"],
+  providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class RulesComponent implements OnInit, OnDestroy {
-  pageTitle: String = 'Rules';
+  pageTitle: String = "Rules";
   allPolicies: any = [];
-  breadcrumbArray: any = ['Admin'];
-  breadcrumbLinks: any = ['policies'];
+  breadcrumbArray: any = ["Admin"];
+  breadcrumbLinks: any = ["policies"];
   breadcrumbPresent: any;
   outerArr: any = [];
   dataLoaded: boolean = false;
   errorMessage: any;
-  showingArr: any = ['policyName', 'policyId', 'policyDesc'];
+  showingArr: any = ["policyName", "policyId", "policyDesc"];
   allColumns: any = [];
   totalRows: number = 0;
   currentBucket: any = [];
@@ -65,7 +61,7 @@ export class RulesComponent implements OnInit, OnDestroy {
   totalPages: number;
   pageNumber: number = 0;
 
-  searchTxt: String = '';
+  searchTxt: String = "";
   dataTableData: any = [];
   tableDataLoaded: boolean = false;
   filters: any = [];
@@ -73,13 +69,13 @@ export class RulesComponent implements OnInit, OnDestroy {
   filterText: any = {};
   errorValue: number = 0;
   showGenericMessage: boolean = false;
-  dataTableDesc: String = '';
-  urlID: String = '';
+  dataTableDesc: String = "";
+  urlID: String = "";
   public labels: any;
   FullQueryParams: any;
   queryParamsWithoutFilter: any;
-  private previousUrl: any = '';
-  urlToRedirect: any = '';
+  private previousUrl: any = "";
+  urlToRedirect: any = "";
   private pageLevel = 0;
   public backButtonRequired;
   mandatory: any;
@@ -101,16 +97,14 @@ export class RulesComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     private commonResponseService: CommonResponseService
   ) {
-
     this.routerParam();
     this.updateComponent();
   }
 
-
   ngOnInit() {
     this.checkRulesStatus();
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    this.breadcrumbPresent = 'Rules List';
+    this.breadcrumbPresent = "Rules List";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
@@ -125,7 +119,7 @@ export class RulesComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -136,10 +130,9 @@ export class RulesComponent implements OnInit, OnDestroy {
         this.showLoader = true;
         this.getPolicyDetails();
       }
-
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -148,14 +141,14 @@ export class RulesComponent implements OnInit, OnDestroy {
     const method = environment.systemJobStatus.method;
 
     this.systemStatusSubscription = this.commonResponseService
-      .getData(url, method, {}, {}).subscribe(
-        response => {
+      .getData(url, method, {}, {})
+      .subscribe(
+        (response) => {
           if (!response) return;
-          this.isRulesTurnedOff = response.rule !== 'ENABLED';
+          this.isRulesTurnedOff = response.rule !== "ENABLED";
         },
-        error => {
-        }
-      )
+        (error) => {}
+      );
   }
 
   getPolicyDetails() {
@@ -164,97 +157,101 @@ export class RulesComponent implements OnInit, OnDestroy {
 
     var queryParams = {
       page: this.pageNumber,
-      size: this.paginatorSize
+      size: this.paginatorSize,
     };
 
-    if (this.searchTxt !== undefined && this.searchTxt !== '') {
-      queryParams['searchTerm'] = this.searchTxt;
+    if (this.searchTxt !== undefined && this.searchTxt !== "") {
+      queryParams["searchTerm"] = this.searchTxt;
     }
 
-    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(reponse => {
-      this.showLoader = false;
-      if (reponse[0].content !== undefined) {
-        this.allPolicies = reponse[0].content;
-        this.errorValue = 1;
-        this.searchCriteria = undefined;
-        var data = reponse[0];
-        this.tableDataLoaded = true;
-        this.dataTableData = reponse[0].content;
-        this.dataLoaded = true;
-        if (reponse[0].content.length == 0) {
-          this.errorValue = -1;
-          this.outerArr = [];
-          this.allColumns = [];
-        }
-
-        if (data.content.length > 0) {
-          this.isLastPage = data.last;
-          this.isFirstPage = data.first;
-          this.totalPages = data.totalPages;
-          this.pageNumber = data.number;
-
-          this.seekdata = false;
-
-          this.totalRows = data.totalElements;
-
-          this.firstPaginator = data.number * this.paginatorSize + 1;
-          this.lastPaginator = data.number * this.paginatorSize + this.paginatorSize;
-
-          this.currentPointer = data.number;
-
-          if (this.lastPaginator > this.totalRows) {
-            this.lastPaginator = this.totalRows;
+    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
+      (reponse) => {
+        this.showLoader = false;
+        if (reponse[0].content !== undefined) {
+          this.allPolicies = reponse[0].content;
+          this.errorValue = 1;
+          this.searchCriteria = undefined;
+          var data = reponse[0];
+          this.tableDataLoaded = true;
+          this.dataTableData = reponse[0].content;
+          this.dataLoaded = true;
+          if (reponse[0].content.length == 0) {
+            this.errorValue = -1;
+            this.outerArr = [];
+            this.allColumns = [];
           }
-          let updatedResponse = this.massageData(data.content);
-          this.processData(updatedResponse);
+
+          if (data.content.length > 0) {
+            this.isLastPage = data.last;
+            this.isFirstPage = data.first;
+            this.totalPages = data.totalPages;
+            this.pageNumber = data.number;
+
+            this.seekdata = false;
+
+            this.totalRows = data.totalElements;
+
+            this.firstPaginator = data.number * this.paginatorSize + 1;
+            this.lastPaginator =
+              data.number * this.paginatorSize + this.paginatorSize;
+
+            this.currentPointer = data.number;
+
+            if (this.lastPaginator > this.totalRows) {
+              this.lastPaginator = this.totalRows;
+            }
+            let updatedResponse = this.massageData(data.content);
+            this.processData(updatedResponse);
+          }
         }
-      }
-    },
-      error => {
+      },
+      (error) => {
         this.showGenericMessage = true;
         this.errorValue = -1;
         this.outerArr = [];
         this.dataLoaded = true;
         this.seekdata = true;
-        this.errorMessage = 'apiResponseError';
+        this.errorMessage = "apiResponseError";
         this.showLoader = false;
-      })
+      }
+    );
   }
 
   /*
-    * This function gets the urlparameter and queryObj
-    *based on that different apis are being hit with different queryparams
-    */
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
   routerParam() {
     try {
       // this.filterText saves the queryparam
-      let currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
+      let currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
       if (currentQueryParams) {
-
         this.FullQueryParams = currentQueryParams;
 
-        this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
-        delete this.queryParamsWithoutFilter['filter'];
+        this.queryParamsWithoutFilter = JSON.parse(
+          JSON.stringify(this.FullQueryParams)
+        );
+        delete this.queryParamsWithoutFilter["filter"];
 
         /**
          * The below code is added to get URLparameter and queryparameter
          * when the page loads ,only then this function runs and hits the api with the
          * filterText obj processed through processFilterObj function
          */
-        this.filterText = this.utils.processFilterObj(
-          this.FullQueryParams
-        );
+        this.filterText = this.utils.processFilterObj(this.FullQueryParams);
 
         this.urlID = this.FullQueryParams.TypeAsset;
         //check for mandatory filters.
         if (this.FullQueryParams.mandatory) {
           this.mandatory = this.FullQueryParams.mandatory;
         }
-
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -265,7 +262,7 @@ export class RulesComponent implements OnInit, OnDestroy {
 
   updateComponent() {
     this.outerArr = [];
-    this.searchTxt = '';
+    this.searchTxt = "";
     this.currentBucket = [];
     this.bucketNumber = 0;
     this.firstPaginator = 1;
@@ -282,9 +279,11 @@ export class RulesComponent implements OnInit, OnDestroy {
 
   navigateBack() {
     try {
-      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+        this.router.routerState.snapshot.root
+      );
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -294,14 +293,12 @@ export class RulesComponent implements OnInit, OnDestroy {
     let formattedFilters = data.map(function (data) {
       let keysTobeChanged = Object.keys(data);
       let newObj = {};
-      keysTobeChanged.forEach(element => {
+      keysTobeChanged.forEach((element) => {
         var elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element
-          ) || element;
+          refactoredService.getDisplayNameForAKey(element) || element;
         newObj = Object.assign(newObj, { [elementnew]: data[element] });
       });
-      newObj['Actions'] = '';
+      newObj["Actions"] = "";
       newData.push(newObj);
     });
     return newData;
@@ -312,11 +309,11 @@ export class RulesComponent implements OnInit, OnDestroy {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var blue = '#336cc9';
-      var green = '#26ba9d';
-      var red = '#f2425f';
-      var orange = '#ffb00d';
-      var yellow = 'yellow';
+      var blue = "#336cc9";
+      var green = "#26ba9d";
+      var red = "#f2425f";
+      var orange = "#ffb00d";
+      var yellow = "yellow";
       this.outerArr = [];
       var getData = data;
 
@@ -329,43 +326,43 @@ export class RulesComponent implements OnInit, OnDestroy {
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
         for (var col = 0; col < getCols.length; col++) {
-          if (getCols[col].toLowerCase() == 'actions') {
-            let dropDownItems: Array<String> = ['Edit'];
-            if (getData[row].Status === 'ENABLED') {
-              dropDownItems.push('Disable');
-              dropDownItems.push('Invoke');
+          if (getCols[col].toLowerCase() == "actions") {
+            let dropDownItems: Array<String> = ["Edit"];
+            if (getData[row].Status === "ENABLED") {
+              dropDownItems.push("Disable");
+              dropDownItems.push("Invoke");
             } else {
-              dropDownItems.push('Enable');
+              dropDownItems.push("Enable");
             }
             cellObj = {
               properties: {
-                'text-shadow': '0.33px 0',
-                'color': '#0047bb'
+                "text-shadow": "0.33px 0",
+                color: "#0047bb",
               },
               colName: getCols[col],
               hasPreImg: false,
-              imgLink: '',
+              imgLink: "",
               dropDownEnabled: true,
               dropDownItems: dropDownItems,
               statusProp: {
-                'color': '#0047bb'
-              }
+                color: "#0047bb",
+              },
             };
           } else {
             cellObj = {
-              link: '',
+              link: "",
               properties: {
-                color: ''
+                color: "",
               },
               colName: getCols[col],
               hasPreImg: false,
-              imgLink: '',
+              imgLink: "",
               text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]]
+              valText: getData[row][getCols[col]],
             };
           }
           innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = '';
+          totalVariablesObj[getCols[col]] = "";
         }
         this.outerArr.push(innerArr);
       }
@@ -374,89 +371,102 @@ export class RulesComponent implements OnInit, OnDestroy {
         this.outerArr = this.outerArr.splice(halfLength);
       }
       this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = ['Rule Name', 'Asset Type', 'Asset Group', 'Rule Frequency', 'Rule Type', 'Status', 'Actions'];
+      this.allColumns = [
+        "Rule Name",
+        "Asset Type",
+        "Asset Group",
+        "Rule Frequency",
+        "Rule Type",
+        "Status",
+        "Actions",
+      ];
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
   goToCreateRules() {
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-      this.router.navigate(['../create-rule'], {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root
+      );
+      this.router.navigate(["create-rule"], {
         relativeTo: this.activatedRoute,
-        queryParamsHandling: 'merge',
-        queryParams: {
-        }
+        queryParamsHandling: "merge",
+        queryParams: {},
       });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
   goToDetails(row) {
-
-    if (row.col === 'Actions') {
+    if (row.col === "Actions") {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.router.navigate(['../create-edit-policy'], {
+        this.workflowService.addRouterSnapshotToLevel(
+          this.router.routerState.snapshot.root
+        );
+        this.router.navigate(["../create-edit-policy"], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
+          queryParamsHandling: "merge",
           queryParams: {
-            policyId: row.row['Policy Id'].text
-          }
+            policyId: row.row["Policy Id"].text,
+          },
         });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
+        this.logger.log("error", error);
       }
-    }
-    else if (row.col === 'Edit') {
+    } else if (row.col === "Edit") {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.router.navigate(['../update-rule'], {
+        this.workflowService.addRouterSnapshotToLevel(
+          this.router.routerState.snapshot.root
+        );
+        this.router.navigate(["update-rule"], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
+          queryParamsHandling: "merge",
           queryParams: {
-            ruleId: row.row['Rule Id'].text
-          }
+            ruleId: row.row["Rule Id"].text,
+          },
         });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
+        this.logger.log("error", error);
       }
-    }
-    else if (row.col === 'Invoke') {
+    } else if (row.col === "Invoke") {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.router.navigate(['../invoke-rule'], {
+        this.workflowService.addRouterSnapshotToLevel(
+          this.router.routerState.snapshot.root
+        );
+        this.router.navigate(["invoke-rule"], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
+          queryParamsHandling: "merge",
           queryParams: {
-            ruleId: row.row['Rule Id'].text
-          }
+            ruleId: row.row["Rule Id"].text,
+          },
         });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
+        this.logger.log("error", error);
       }
-    }
-    else if (row.col === 'Enable' || row.col === 'Disable') {
+    } else if (row.col === "Enable" || row.col === "Disable") {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.router.navigate(['../enable-disable-rule'], {
+        this.workflowService.addRouterSnapshotToLevel(
+          this.router.routerState.snapshot.root
+        );
+        this.router.navigate(["enable-disable-rule"], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
+          queryParamsHandling: "merge",
           queryParams: {
-            ruleId: row.row['Rule Id'].text,
-            action: row.col
-          }
+            ruleId: row.row["Rule Id"].text,
+            action: row.col,
+          },
         });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
+        this.logger.log("error", error);
       }
     }
   }
@@ -474,11 +484,10 @@ export class RulesComponent implements OnInit, OnDestroy {
   }
 
   routeToSystemManagementPage() {
-    this.router.navigate(['../system-management'], {
+    this.router.navigate(["../system-management"], {
       relativeTo: this.activatedRoute,
-      queryParamsHandling: 'merge',
-      queryParams: {
-      }
+      queryParamsHandling: "merge",
+      queryParams: {},
     });
   }
 
@@ -494,7 +503,7 @@ export class RulesComponent implements OnInit, OnDestroy {
         this.systemStatusSubscription.unsubscribe();
       }
     } catch (error) {
-      this.logger.log('error', '--- Error while unsubscribing ---');
+      this.logger.log("error", "--- Error while unsubscribing ---");
     }
   }
 }

@@ -1,0 +1,44 @@
+.label {
+  display: flex;
+  flex-direction: row;
+  font: var(--text-body-2);
+  line-height: var(--text-line-height);
+  height: 20px;
+}
+.label-name {
+  color: var(--text-medium-emphasis);
+  flex: none;
+  order: 0;
+  flex-grow: 1;
+}
+.label-percent {
+  color: var(--text-low-emphasis);
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.or ::ng-deep .mat-progress-bar-fill::after {
+  background-color: #f5b66f;
+  border-radius: 4px;
+}
+
+.gr ::ng-deep .mat-progress-bar-fill::after {
+  background-color: #6aaa75;
+  border-radius: 4px;
+}
+
+.red ::ng-deep .mat-progress-bar-fill::after {
+  background-color: rgb(204, 98, 98);
+  border-radius: 4px !important;
+}
+
+::ng-deep .mat-progress-bar-buffer {
+  background: var(--neutral-100);
+}
+
+mat-progress-bar {
+  height: 20px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+}

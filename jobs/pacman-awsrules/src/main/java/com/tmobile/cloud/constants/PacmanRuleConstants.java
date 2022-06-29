@@ -22,6 +22,8 @@
  **/
 package com.tmobile.cloud.constants;
 
+import com.google.gson.JsonElement;
+
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
@@ -30,11 +32,15 @@ public class PacmanRuleConstants {
     public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
     public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
     public static final String GCP_NAT_IP = "natIP";
-    public static final String ALL_USERS = "allUsers";
-
-    public static final String ALL_AUTH_USERS = "allAuthenticatedUsers";
+    public static final String USERS = "users";
+    public static final String ALL_USERS ="allUsers" ;
+    public static final String ALL_AUTH_USERS ="allAuthenticatedUsers" ;
     public static final String SPECIAL_GROUP = "specialGroup";
     public static final String IAM_MEMBER = "iamMember";
+    public static final String ITEMS = "items";
+    public static final String KEY = "key";
+    public static final String VALUE = "value";
+    public static final String TWO_FACTOR_AUTH ="enable-oslogin-2fa" ;
     public static String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
     public static final String GCP_CMK = "hasKmsKeyName";
     public static String GCP_CSEK = "hasSha256";

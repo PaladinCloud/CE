@@ -1,10 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.cloud.compute.v1.*;
-import com.tmobile.pacbot.gcp.inventory.vo.AccessConfigVH;
-import com.tmobile.pacbot.gcp.inventory.vo.NetworkInterfaceVH;
-import com.tmobile.pacbot.gcp.inventory.vo.VMDiskVH;
-import com.tmobile.pacbot.gcp.inventory.vo.VirtualMachineVH;
+import com.tmobile.pacbot.gcp.inventory.vo.*;
 import org.slf4j.LoggerFactory;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import org.slf4j.Logger;
@@ -56,6 +53,7 @@ public class VMInventoryCollector {
                         virtualMachineVH.setDescription(instance.getDescription());
                         virtualMachineVH.setRegion(zoneName);
                         virtualMachineVH.setStatus(instance.getStatus());
+                        this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);
                         this.setNetworkInterfaces(instance, virtualMachineVH);
                         instanceList.add(virtualMachineVH);
@@ -68,6 +66,17 @@ public class VMInventoryCollector {
         }
 
         return instanceList;
+    }
+
+    private void setItemList(Instance instance, VirtualMachineVH virtualMachineVH) {
+        List<ItemInterfaceVH> itemsVH = new ArrayList<>();
+        for (Items item : instance.getMetadata().getItemsList()) {
+            ItemInterfaceVH itemVH=new ItemInterfaceVH();
+            itemVH.setKey(item.getKey());
+            itemVH.setValue(item.getValue());
+            itemsVH.add(itemVH);
+    }
+        virtualMachineVH.setItems(itemsVH);
     }
 
     private void setNetworkInterfaces(Instance instance, VirtualMachineVH virtualMachineVH) {

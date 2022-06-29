@@ -103,8 +103,8 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
   widgetWidth = 200;
   widgetHeight = 200;
   MainTextcolor = '#000';
-  innerRadious: any = 80;
-  outerRadious: any = 50;
+  innerRadius: any = 80;
+  outerRadius: any = 50;
   strokeColor = '#e8ebee88';
   graphData: any = [];
   private legend_text: any;
@@ -117,7 +117,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
 
   @Input() filter: any;
 
-  ngOnChanges (changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges) {
     try {
       const DataChange = changes['filter'];
       this.appFilter = DataChange.currentValue;
@@ -143,7 +143,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       const afterLoad = this;
       if (this.autoRefresh !== undefined) {
         if (this.autoRefresh === true || this.autoRefresh.toString() === 'true') {
-          this.autorefreshInterval = setInterval(function() {
+          this.autorefreshInterval = setInterval(function () {
             afterLoad.updateComponent();
           }, this.durationParams);
         }
@@ -268,28 +268,28 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
     try {
       const yearData = [];
       let cnt = -1;
-      for ( let i = this.currentYear; i >= this.firstYear; i--) {
+      for (let i = this.currentYear; i >= this.firstYear; i--) {
         cnt++;
         const eachObj = {
           'year': i,
           'quartersData': []
         };
         yearData.push(eachObj);
-        for ( let j = 0; j < 4 ; j++ ) {
+        for (let j = 0; j < 4; j++) {
           const quarterObj = {
             'number': j + 1,
             'data': {},
             'rawData': {}
           };
-          if ( i === this.currentYear && j + 1 <= this.currentQuarter ) {
+          if (i === this.currentYear && j + 1 <= this.currentQuarter) {
             yearData[cnt].quartersData.push(quarterObj);
           }
 
-          if ( i !== this.currentYear && i !== this.firstYear ) {
+          if (i !== this.currentYear && i !== this.firstYear) {
             yearData[cnt].quartersData.push(quarterObj);
           }
 
-          if ( i === this.firstYear && j + 1 >= this.firstQuarter ) {
+          if (i === this.firstYear && j + 1 >= this.firstQuarter) {
             yearData[cnt].quartersData.push(quarterObj);
           }
         }
@@ -321,7 +321,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
     const firstDay = new Date(data[0].date).getTime();
     const lastDay =
       new Date(data[data.length - 1].date).getTime() + 7 * 24 * 60 * 60 * 1000;
-      const today = new Date().getTime();
+    const today = new Date().getTime();
     this.percentToday = (today - firstDay) * 100 / (lastDay - firstDay);
 
     const graphThis = this;
@@ -364,26 +364,26 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
 
       const area = d3Shape
         .area()
-        .defined(function(d) {
+        .defined(function (d) {
           return d['totalCreated'] === -1 ? false : true;
         })
-        .x(function(d) {
+        .x(function (d) {
           return x(d['week']);
         })
-        .y1(function(d) {
+        .y1(function (d) {
           return y0(d['totalCreated']);
         });
 
       // define the 1st line
       const valueline1 = d3Shape
         .line()
-        .defined(function(d) {
+        .defined(function (d) {
           return d['totalDeclined'] === -1 ? false : true;
         })
-        .x(function(d) {
+        .x(function (d) {
           return x(d['week']);
         })
-        .y(function(d) {
+        .y(function (d) {
           graphThis.findMaxVal(d);
           return y0(d['totalDeclined']);
         });
@@ -391,13 +391,13 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       // define the 2nd line
       const valueline2 = d3Shape
         .line()
-        .defined(function(d) {
+        .defined(function (d) {
           return d['totalCreated'] === -1 ? false : true;
         })
-        .x(function(d) {
+        .x(function (d) {
           return x(d['week']);
         })
-        .y(function(d) {
+        .y(function (d) {
           graphThis.findMaxVal(d);
           return y0(d['totalCreated']);
         });
@@ -405,13 +405,13 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       // define the 3rd line
       const valueline3 = d3Shape
         .line()
-        .defined(function(d) {
+        .defined(function (d) {
           return d['totalMerged'] === -1 ? false : true;
         })
-        .x(function(d) {
+        .x(function (d) {
           return x(d['week']);
         })
-        .y(function(d) {
+        .y(function (d) {
           graphThis.findMaxVal(d);
           return y0(d['totalMerged']);
         });
@@ -419,13 +419,13 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       // define the 4th line
       const valueline4 = d3Shape
         .line()
-        .defined(function(d) {
+        .defined(function (d) {
           return d['totalCreated'] === -1 ? false : true;
         })
-        .x(function(d) {
+        .x(function (d) {
           return x(d['week']);
         })
-        .y(function(d) {
+        .y(function (d) {
           graphThis.findMaxVal(d);
           return y0(d['totalCreated']);
         });
@@ -433,13 +433,13 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       // define the 5th line
       const valueline5 = d3Shape
         .line()
-        .defined(function(d) {
+        .defined(function (d) {
           return d['totalMerged'] === -1 ? false : true;
         })
-        .x(function(d) {
+        .x(function (d) {
           return x(d['week']);
         })
-        .y(function(d) {
+        .y(function (d) {
           graphThis.findMaxVal(d);
           return y0(d['totalMerged']);
         });
@@ -453,7 +453,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
       // format the data
-      data.forEach(function(d) {
+      data.forEach(function (d) {
         d['week'] = +d['week'];
         d['totalDeclined'] = +d['totalDeclined'];
         d['totalMerged'] = +d['totalMerged'];
@@ -462,7 +462,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
 
       // Scale the range of the data for each axes
       y0.domain([
-        d3Array.min(newData, function(d) {
+        d3Array.min(newData, function (d) {
           return Math.min(
             d['totalCreated'],
             d['totalMerged'],
@@ -470,7 +470,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
             5
           );
         }),
-        d3Array.max(newData, function(d) {
+        d3Array.max(newData, function (d) {
           return Math.max(
             d['totalCreated'],
             d['totalMerged'],
@@ -509,7 +509,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
         .attr('clip-path', 'url(#clip-above)')
         .attr(
           'd',
-          area.y0(function(d) {
+          area.y0(function (d) {
             return y0(d['totalMerged']);
           })
         );
@@ -584,7 +584,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
           obj['totalMerged'],
           obj['totalCreated']
         );
-        for ( let i = 5; i > 0; i--) {
+        for (let i = 5; i > 0; i--) {
           this.axisValues['y0'].push(Math.ceil(this.maxVal[0] / 5 * i));
         }
         this.axisValues['y0'] = this.axisValues['y0'].slice(
@@ -665,7 +665,7 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
   checkIfEmptyObj() {
     try {
 
-      for ( let i = 0; i < this.finalData[this.yearPickedIndex].quartersData.length; i++) {
+      for (let i = 0; i < this.finalData[this.yearPickedIndex].quartersData.length; i++) {
         if (Object.keys(this.finalData[this.yearPickedIndex].quartersData[i].rawData).length === 0) {
           this.callNewData(this.finalData[this.yearPickedIndex].year, this.finalData[this.yearPickedIndex].quartersData[i].number, i);
         }
@@ -725,28 +725,28 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
 
       const prStateObj = {
-        'merged' : 'MERGED',
-        'open' : 'OPEN',
+        'merged': 'MERGED',
+        'open': 'OPEN',
         'declined': 'DECLINED',
         'created': 'CREATED'
       };
       const filter = {
-         'resourceType': 'dgtldsgn-pullrequest',
-         'prstate': prStateObj[data.x_domain],
-         'year': this.currentYear - this.selectedYear,
-         'qtr': this.finalData[this.selectedYear].quartersData[this.selectedQuarter].number,
-         'week': this.selectedWeek + 1,
-         'tags.Application.keyword': this.appFilter
+        'resourceType': 'dgtldsgn-pullrequest',
+        'prstate': prStateObj[data.x_domain],
+        'year': this.currentYear - this.selectedYear,
+        'qtr': this.finalData[this.selectedYear].quartersData[this.selectedQuarter].number,
+        'week': this.selectedWeek + 1,
+        'tags.Application.keyword': this.appFilter
       };
       const params = this.utilsService.makeFilterObj(filter);
       const apiTarget = {
-        'TypeAsset' : 'pull-request-trend',
+        'TypeAsset': 'pull-request-trend',
       };
 
       const newParams = Object.assign(params, apiTarget);
       newParams['mandatory'] = 'qtr|resourceType|prstate|week|year';
 
-      this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+      this.router.navigate(['../../', 'assets', 'asset-list'], { relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
     }
   }
 

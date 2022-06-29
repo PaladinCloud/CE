@@ -274,4 +274,80 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonArrayForCloudStoragePublicAccessFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west1-a\",\n" +
+                "          \"id\": \"staging.cool-bay-349411.appspot.com\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"name\": \"pacbot-demo-vm\",\n" +
+                "          \"users\": [\n" +
+                "              \"allAuthenticatedUsers\",\n" +
+                "              \"allUsers\" \n" +
+                "          ],\n" +
+                "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
+                "          \"_resourceid\": \"8993151141438601059\",\n" +
+                "          \"_docid\": \"8993151141438601059\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-14 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-16 06:12:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitsJsonArrayForCloudStoragePublicAccessSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west1-a\",\n" +
+                "          \"id\": \"staging.cool-bay-349411.appspot.com\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"name\": \"pacbot-demo-vm\",\n" +
+                "          \"users\": [\n" +
+                "              \"project-owners-47822473470\",\n" +
+                "              \"project-viewers-47822473470\" \n" +
+                "          ],\n" +
+                "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
+                "          \"_resourceid\": \"8993151141438601059\",\n" +
+                "          \"_docid\": \"8993151141438601059\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-14 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-16 06:12:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+
+    public static JsonArray getHitsJsonArrayForVM2FA() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\"_cloudType\":\"GCP\",\"region\":\"us-west1-a\",\"id\":\"8993151141438601059\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"description\":\"\",\"disks\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"0\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"sizeInGB\":10,\"type\":\"PERSISTENT\",\"hasSha256\":false,\"hasKmsKeyName\":false,\"discoverydate\":null}],\"tags\":{\"for\":\"pacbot-demo\",\"by\":\"skchalla\"},\"machineType\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/zones/us-west1-a/machineTypes/e2-medium\",\"status\":\"TERMINATED\",\"networkInterfaces\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"nic0\",\"projectName\":null,\"name\":\"nic0\",\"accessConfigs\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"External NAT\",\"projectName\":\"cool-bay-349411\",\"name\":\"External NAT\",\"natIP\":\"\",\"discoverydate\":null}],\"network\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/global/networks/default\",\"discoverydate\":null}],\"items\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"enable-oslogin\",\"value\":\"TRUE\",\"discoverydate\":null},{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"enable-oslogin-2fa\",\"value\":\"TRUE\",\"discoverydate\":null}],\"discoverydate\":\"2022-06-27 08:00:00+0000\",\"_resourceid\":\"8993151141438601059\",\"_docid\":\"8993151141438601059\",\"_entity\":\"true\",\"_entitytype\":\"vminstance\",\"firstdiscoveredon\":\"2022-06-14 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-06-27 08:42:00+0000\"}", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitsJsonArrayForVM2FAFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\"_cloudType\":\"GCP\",\"region\":\"us-west1-a\",\"id\":\"8993151141438601059\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"description\":\"\",\"disks\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"0\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"sizeInGB\":10,\"type\":\"PERSISTENT\",\"hasSha256\":false,\"hasKmsKeyName\":false,\"discoverydate\":null}],\"tags\":{\"for\":\"pacbot-demo\",\"by\":\"skchalla\"},\"machineType\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/zones/us-west1-a/machineTypes/e2-medium\",\"status\":\"TERMINATED\",\"networkInterfaces\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"nic0\",\"projectName\":null,\"name\":\"nic0\",\"accessConfigs\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"External NAT\",\"projectName\":\"cool-bay-349411\",\"name\":\"External NAT\",\"natIP\":\"\",\"discoverydate\":null}],\"network\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/global/networks/default\",\"discoverydate\":null}],\"items\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"enable-oslogin\",\"value\":\"TRUE\",\"discoverydate\":null}],\"discoverydate\":\"2022-06-27 08:00:00+0000\",\"_resourceid\":\"8993151141438601059\",\"_docid\":\"8993151141438601059\",\"_entity\":\"true\",\"_entitytype\":\"vminstance\",\"firstdiscoveredon\":\"2022-06-14 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-06-27 08:42:00+0000\"}", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
 }

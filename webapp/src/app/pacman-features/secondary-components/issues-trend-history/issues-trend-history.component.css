@@ -13,10 +13,30 @@
  */
 
 .issue-trend-wrapper {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  min-height: 25.83em;
+  min-height: 435px;
+  background-color: white;
+  width: 72vw;
+  height: 58vh;
+  position: fixed;
+  transition: 0.4s ease;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 15;
+  border-radius: var(--border-radius);
+  border: 1px solid #edf2f7;
+}
+
+#issuesHistory {
+  padding: 24px;
+  overflow: scroll;
+}
+
+.delete-title {
+  cursor: pointer;
+  margin-left: auto;
 }
 
 .multiline-brush-zoom-container {
@@ -37,6 +57,14 @@
   font-size: 1em;
 }
 
+.sub-header .sub-header-wrapper {
+  display: flex;
+  height: 24px;
+  color: var(--text-black-emphasis);
+  font: var(--text-body-2);
+  padding: 5px 0px;
+}
+
 .multiline-brush-zoom-container {
   position: relative;
   min-height: 25.83em;
@@ -44,6 +72,6 @@
 }
 
 .sub-footer {
-  background-color: #fafbfc;
+  background-color: var(--background-white);
   color: #1c5066;
 }

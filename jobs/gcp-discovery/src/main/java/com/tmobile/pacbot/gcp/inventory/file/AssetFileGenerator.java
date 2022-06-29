@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.collector.BigQueryInventoryCollector;
 import com.tmobile.pacbot.gcp.inventory.collector.FirewallInventoryCollector;
+import com.tmobile.pacbot.gcp.inventory.collector.StorageCollector;
 import com.tmobile.pacbot.gcp.inventory.collector.VMInventoryCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,8 @@ public class AssetFileGenerator {
 	VMInventoryCollector vmInventoryCollector;
 	@Autowired
 	FirewallInventoryCollector firewallInventoryCollector;
+	@Autowired
+	StorageCollector storageInventoryCollector;
 
 	@Autowired
 	BigQueryInventoryCollector bigQueryInventoryCollector;
@@ -96,6 +99,16 @@ public class AssetFileGenerator {
 				try {
 					log.info("Target type bigqueytable configured. Executing collector");
 					FileManager.generateBigqueryTableFiles(bigQueryInventoryCollector.fetchBigqueryTableInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("computestorage"))) {
+					return;
+				}
+				try {
+					FileManager.generateStorageFiles(storageInventoryCollector.fetchStorageInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -1,7 +1,6 @@
 .header-wrapper {
-  /* justify-content: center; */
+  padding: 16px 28px;
   display: flex;
-  height: 68px;
   width: 100%;
   min-width: 600px;
   background-color: var(--background-white);
@@ -28,14 +27,21 @@
   height: 36px;
   display: flex;
   flex-direction: row;
-  margin-left: 4.3%;
-  /* flex: 2; */
-  margin-top: 16px;
   cursor: pointer;
 }
 
 .header-search-content-container {
   padding: 8px 12px;
+}
+
+.header-search-content-container img {
+  padding: 2px;
+}
+
+::ng-deep .mat-form-field-placeholder {
+  font: var(--text-body-2);
+  color: var(--text-low-emphasis);
+  text-transform: none;
 }
 
 ::ng-deep .mat-input-element {
@@ -77,11 +83,6 @@
   color: var(--text-high-emphasis);
   padding: 0 5px 0 0;
 }
-/* 
-::ng-deep .mat-form-field-flex {
-  background: #f2f3f5;
-  width: 308px;
-} */
 
 ::ng-deep .mat-form-field-underline {
   display: none;
@@ -105,32 +106,20 @@
 .header-user-wrapper {
   margin-left: auto;
   float: right;
-  padding: 18px;
-  width: 174px;
   height: 100%;
   position: relative;
-  /* flex: 1; */
 }
 .header-user-content-wrapper {
-  /* padding: 16px 0px; */
   display: flex;
 }
 
-.user-image-wrapper {
-  height: 36px;
-  padding: 2px;
-}
-
 .user-info-wrapper {
-  padding: 2px;
   margin-left: 8px;
-  height: 36px;
 }
 
 .user-logout-modal-btn {
   cursor: pointer;
-  margin-left: 10px;
-  margin-top: 12px;
+  padding: 12px 2px 10px 12px;
 }
 
 .user-image-wrapper > img {

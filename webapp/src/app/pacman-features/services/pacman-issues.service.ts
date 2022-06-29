@@ -25,12 +25,13 @@ import { ErrorHandlingService } from '../../shared/services/error-handling.servi
 @Injectable()
 export class PacmanIssuesService {
     constructor(
-                private httpService: HttpService,
-                private errorHandling: ErrorHandlingService) { }
+        private httpService: HttpService,
+        private errorHandling: ErrorHandlingService) { }
 
     criticalValue: any;
     highValue: any;
     mediumValue: any;
+    lowValue: any;
     securityValue: any;
     governanceValue: any;
     length: any;
@@ -53,14 +54,14 @@ export class PacmanIssuesService {
 
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
-                        try {
-                            this.dataCheck(response);
-                            return this.massageData(response);
-                        } catch (error) {
-                            this.errorHandling.handleJavascriptError(error);
-                        }
-                    });
+                .map(response => {
+                    try {
+                        this.dataCheck(response);
+                        return this.massageData(response);
+                    } catch (error) {
+                        this.errorHandling.handleJavascriptError(error);
+                    }
+                });
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -80,6 +81,7 @@ export class PacmanIssuesService {
         this.criticalValue = undefined;
         this.highValue = undefined;
         this.mediumValue = undefined;
+        this.lowValue = undefined;
 
         // get the key values and respective count values of the severities.....
 
@@ -95,6 +97,9 @@ export class PacmanIssuesService {
                 case 'medium':
                     this.mediumValue = data[`distribution`].distribution_by_severity[this.checkKey];
                     break;
+                case 'low':
+                    this.lowValue = data[`distribution`].distribution_by_severity[this.checkKey];
+
                 default:
             }
         } // end of for loop
@@ -111,6 +116,10 @@ export class PacmanIssuesService {
             this.highValue = 0;
         }
 
+        if (this.lowValue === undefined) {
+            this.lowValue = 0;
+        }
+
         this.totalIssues = data[`distribution`].total_issues;
         this.valuePercent = (this.criticalValue / this.totalIssues) * 100;
         const catArr = [];
@@ -119,7 +128,7 @@ export class PacmanIssuesService {
             catObj[Object.keys(data[`distribution`].ruleCategory_percentage)[i]] =
                 data[`distribution`].ruleCategory_percentage[
                 Object.keys(data[`distribution`].ruleCategory_percentage)[i]
-            ];
+                ];
             catArr.push(catObj);
         }
 
@@ -134,7 +143,11 @@ export class PacmanIssuesService {
                 },
                 {
                     'medium': this.mediumValue
-                }],
+                },
+                {
+                    'low': this.lowValue
+                }
+            ],
             'category': catArr,
             'valuePercent': this.valuePercent
         };
