@@ -41,6 +41,7 @@ public class PacmanRuleConstants {
     public static final String KEY = "key";
     public static final String VALUE = "value";
     public static final String TWO_FACTOR_AUTH = "enable-oslogin-2fa";
+    public static final String PUBSUB_KMS_NAME ="kmsKeyName" ;
     public static String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
     public static final String GCP_CMK = "hasKmsKeyName";
     public static String GCP_CSEK = "hasSha256";

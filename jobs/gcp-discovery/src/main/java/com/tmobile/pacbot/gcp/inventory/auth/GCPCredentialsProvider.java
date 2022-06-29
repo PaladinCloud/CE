@@ -14,10 +14,14 @@ import com.google.cloud.compute.v1.InstancesClient;
 import com.google.cloud.compute.v1.InstancesSettings;
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
 import com.google.cloud.kms.v1.KeyManagementServiceSettings;
+import com.google.cloud.pubsub.v1.TopicAdminClient;
+import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.pubsub.v1.ProjectName;
+import com.google.pubsub.v1.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -36,6 +40,8 @@ public class GCPCredentialsProvider {
     private FirewallsClient firewallsClient;
 
     private BigQueryOptions.Builder bigQueryBuilder;
+
+    private TopicAdminClient topicAdminClient;
 
     private Storage storageClient;
 
@@ -120,6 +126,14 @@ public class GCPCredentialsProvider {
             kmsKeyServiceClient = KeyManagementServiceClient.create(keyManagementServiceSettings);
         }
         return kmsKeyServiceClient;
+    }
+
+    public TopicAdminClient getTopicClient() throws IOException {
+        if(topicAdminClient==null) {
+            TopicAdminSettings topicAdminSettings=TopicAdminSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            topicAdminClient =TopicAdminClient.create(topicAdminSettings);
+        }
+        return topicAdminClient;
     }
 
     // close the client in destroy method
