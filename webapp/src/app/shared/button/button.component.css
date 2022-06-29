@@ -15,7 +15,7 @@
 .app-button {
     border: none;
     box-shadow: none;
-    border-radius: 100px;
+    border-radius: 8px;
     background-color: var(--primary-400);
     color: #fff;
     display: inline-block;

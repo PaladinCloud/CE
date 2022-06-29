@@ -25,18 +25,13 @@
         <div class="user-name">Admin</div>
         <div class="user-email">admin@paladin.com</div>
       </div>
-      <div class="user-logout-modal-btn" tabindex="1" (blur)="closeUserInfo()">
+      <div title="Logout" class="user-logout-modal-btn" >
         <img
-          src="/assets/icons/vector-62.svg"
+          src="/assets/icons/logout-icon.svg"
           alt=""
-          (click)="showUserInfo = !showUserInfo"
+          (click)="logout()"
         />
       </div>
     </div>
   </div>
-  <app-user-info
-    (click)="showUserInfo = false"
-    class="user-options"
-    *ngIf="showUserInfo"
-  ></app-user-info>
 </div>
