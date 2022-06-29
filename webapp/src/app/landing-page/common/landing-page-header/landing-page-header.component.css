@@ -42,7 +42,11 @@
 }
 
 .mr-header-logo-icon {
-  width: 40px;
+  width: 150px;
+  height: 48px;
+  padding: 10px;
+  background-color: var(--background-white);
+  opacity: 0.8;
 }
 
 .mr-login-btn-header {
