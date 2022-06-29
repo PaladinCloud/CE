@@ -92,7 +92,7 @@ public class UnusedSgAutoFix extends BaseFix {
 	@Override
 	public boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
 		String groupName = issue.get("groupname");
-		return !StringUtils.isNullOrEmpty(groupName) && groupName.startsWith(PacmanSdkConstants.PACBOT_CREATED_SG_DESC);
+		return !StringUtils.isNullOrEmpty(groupName) && !groupName.startsWith(PacmanSdkConstants.PACBOT_CREATED_SG_DESC);
 	}
 
 	

@@ -41,8 +41,8 @@
 							<tbody>
 								<tr style="">
 									<td width="3D624" valign="3Dtop" style=""><img width="700" data-imagetype="External"
-											src="${EMAIL_BANNER}" alt="T-Mobile Cloud Security Operations"
-											title="T-Mobile Cloud Security Operations"></td>
+											src="${EMAIL_BANNER}" alt="PaladinCloud Security Operations"
+											title="PaladinCloud Security Operations"></td>
 								</tr>
 								<tr style="">
 									<td width="3D624" valign="3Dtop" style="">
@@ -50,7 +50,7 @@
 											style="margin-bottom: 0in; margin-bottom: .0001pt; text-align: left; line-height: normal">
 											<i style=""><span style="font-size: 9.0pt">You are
 													receiving this email because one of your AWS resource were
-													found vulnerable under T-Mobile policy. </span></i>
+													found vulnerable under PaladinCloud policy. </span></i>
 										</p>
 										<p class="x_MsoNormal"
 											style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
@@ -60,7 +60,7 @@
 											style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
 											<span style="font-size: 12.0pt" th:text="${AUTOFIX_POST_FIX_MESSAGE}" />
 											,<br>
-											<a th:href="${POLICY_URL}">T-Mobile Cloud Governance
+											<a th:href="${POLICY_URL}">PaladinCloud Cloud Governance
 												Policy</a> </span>
 										</p>
 										<p class="x_MsoNormal"
@@ -82,7 +82,7 @@
 
 						<table width="1000" border=1>
 							<tr>
-								<th th:each="column : ${columns}" th:text="${column}">key
+								<th th:each="column : ${columns}" th:text="${column}" style="color: black;">key
 								</th>
 							</tr>
 							<tr th:each="resource : ${resources}">
@@ -118,9 +118,9 @@
 
 						<p class="x_MsoNormal" style="margin-bottom: 0in; margin-bottom: .0001pt; line-height: normal">
 							<span style="font-size: 12.0pt">For questions,
-								comments, or concerns, please contact <a href="mailto:CloudSecOps@T-Mobile.com"
+								comments, or concerns, please contact <a href="mailto:CloudSecOps@PaladinCloud.com"
 									target="_blank" rel="noopener noreferrer"><span
-										style="color: var(--primary-400)">CloudSecOps@T-Mobile.com</span></a>.
+										style="color: var(--primary-400)">CloudSecOps@PaladinCloud.com</span></a>.
 							</span>
 						</p>
 					</div>
