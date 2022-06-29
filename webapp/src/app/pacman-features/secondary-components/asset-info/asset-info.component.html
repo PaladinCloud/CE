@@ -12,26 +12,10 @@
  * limitations under the License.
  -->
 
- <section class="mr-assest-info-wrapper flex flex-col" *ngIf='dataComing && !showLoader'>
-    <ul class="mr-asset-bottom-section" *ngIf="assetDistributionData">
-        <li *ngFor="let issueType of assetDistributionData | orderBy : { property: 'count', direction: -1 }" class="flex flex-between">
-            <p class="mr-secondary-asset-name nowrap-ellipsis " title={{issueType.application}}>{{issueType.application}}</p>
-            <p class="mr-secondary-asset-value  nowrap-ellipsis" [ngClass]="{'pointer link-text underline-link-num': issueType.count >0}" (click)="issueType.count > 0 && NavigatetoAsset(issueType.application)">{{issueType.count | number}}</p>
-        </li>
-        <div *ngIf="assetDistributionData !== undefined && dataComing">
-            <div class="no-content text center" *ngIf="assetDistributionData.length == 0"> No Items Available </div>
-        </div>
-    </ul>
-    <ul class="mr-asset-top-section" *ngIf="untaggedApplicationData">
-        <li class="flex flex-between capitalize">
-            <p class="mr-primary-asset-name">Without Application Tag</p>
-            <p class="mr-primary-asset-value nowrap-ellipsis" title="{{untaggedApplicationData | number}}" [ngClass]="{'pointer link-text underline-link-num': untaggedApplicationData > 0}" (click)="untaggedApplicationData > 0 && NavigatetoAsset('untagged')">{{untaggedApplicationData | number}}</p>
-        </li>
-    </ul>
-</section>
-<article class='center error_handling' *ngIf='!datacoming'>
-    <div class="error_msg">
-        <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
-    </div>
-</article>
-<div *ngIf='showLoader' class="loader"></div>
+<mat-card class="asset-card">
+    <!-- <mat-card-title-group> -->
+      <mat-card-title>Without application tag</mat-card-title>
+    <!-- </mat-card-title-group> -->
+    <mat-card-subtitle (click)="untaggedApplicationData > 0 && NavigatetoAsset('untagged')">{{untaggedApplicationData | number}}<img style="padding: 5px 12.5px;" src="/assets/icons/Path.svg" />
+    </mat-card-subtitle>
+</mat-card>

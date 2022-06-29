@@ -12,45 +12,63 @@
  * limitations under the License.
  -->
 
- <div class="resource-details-wrapper">
-    <div class="resource-types-container flex flex-center">
-        <ul class="flex flex-row" *ngIf="dataLoaded && !error">
-            <li class='flex full-width' (click)="awsTileClicked(resource, i)" *ngFor="let resource of awsResourcesCache | slice: 0:7; let i = index" [ngClass]="{'active':selectedResource.type == resource.type}">
-                <a class='full-width'>
-                    <app-aws-app-tile class='full-width' [i]='i' [awsResource]="resource" [active]="selectedResource.type == resource.type" [recommendationAvailable]="resource.recommendationAvailable" [awsResourceName]="resource.type" [resourceInstances]="resource.count"></app-aws-app-tile>
-                </a>
-            </li>
-            <li class="flex full-width" *ngIf="showViewMore == true">
-                <a class='full-width' [routerLink]="[  {outlets: { modal: 'all-resources' } } ]" queryParamsHandling="merge">
-                    <app-aws-app-tile class='full-width' [awsResourceName]="'view-all'"></app-aws-app-tile>
-                </a>
-            </li>
-        </ul>
-        <div class="loader" *ngIf='!dataLoaded && !error'></div>
-        <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
-    </div>
-    <div class="resource-details-container" *ngIf="dataLoaded">
-        <div class='wrapper-parent'>
-            <div class="wrapper-container flex flex-between">
-                <div class="tagged relative" *ngIf="selectedResource.type !== undefined">
-                    <p class="asset-dist-header">Asset by application</p>
-                    <app-asset-info [targetType]="selectedResource.type" [pageLevel]="pageLevel"></app-asset-info>
-                </div>
-                <div class="multiline-chart" *ngIf="selectedResource !== undefined">
-                    <app-inventory-container [targetType]="selectedResource.type" [pageLevel]="pageLevel"></app-inventory-container>
-                </div>
-            </div>
-            <div class="wrapper-container-utilization" *ngIf="selectedResource !== undefined">
-                <app-utilization-container *ngIf="(selectedResource.type === 'ec2') && !oss"></app-utilization-container>
-            </div>
-            <div class="wrapper-container-recommendation" *ngIf="selectedResource !== undefined">
-                <div *ngIf="selectedResource.recommendations !== undefined">
-                    <app-recommendation *ngIf="selectedResource.recommendations.length > 0" [recommendationData]="selectedResourceRecommendation" [selectedResource]="selectedResource.type"></app-recommendation>
-                </div>                
+
+
+
+
+<div class="view-all-resources-wrapper flex flex-row">
+    <div class="left-section flex flex-col">
+        <div class="display-category flex flex-row">
+            <div class="header">Showing</div>
+            <div title="{{activeFilterCategory?activeFilterCategory.name:''}}" class="selected-category">
+                {{activeFilterCategory?activeFilterCategory.name:''}}</div>
+            <div class="expander">
+                <mat-form-field>
+                    <mat-select>
+                        <mat-option (click)="filterByCategory(category)"
+                            [ngClass]="{'active' : activeFilterCategory.name == category.name}"
+                            *ngFor="let category of categories; let i = index" value="category.name">{{category.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
         </div>
+        <div class="search-bar-wrapper" style="padding: 16px 0px;">
+            <div class="search-bar">
+                <img src="/assets/icons/header-search.svg" alt="">
+                <input [(ngModel)]="searchTxt" placeholder="Search" type="text">
+            </div>
+        </div>
+        <div class="list-header">
+            <div class="list-header-wrapper flex flex-row flex-between">
+                <div>Asset</div>
+                <div>Value</div>
+            </div>
+        </div>
+        <div class="resource-tiles-container">
+            <ul class="flex flex-col" *ngIf="dataLoaded && !error && selectedResource!=undefined">
+                <li *ngFor="let resource of filteredResources | assetSummarySearchFilter: searchTxt; let i = index"
+                    (click)="awsTileClicked(resource)" class="flex">
+                    <app-aws-app-tile [i]='i' class='full-width' [active]="selectedResource.type == resource.type"
+                        [awsResource]="resource" [awsResourceName]="resource.type" [resourceInstances]="resource.count">
+                    </app-aws-app-tile>
+                </li>
+            </ul>
+            <div class="no-content" *ngIf="filteredResources.length == 0">No Items Available In This Category</div>
+        </div>
     </div>
-</div>
-<div style="height: 0px; overflow: hidden">
-    <router-outlet name="modal"></router-outlet>
+    <div class="resource-details-container flex-col" *ngIf="dataLoaded">
+        <div class="resource-name-type" *ngIf="selectedResource.type !== undefined">{{selectedResource.type}}</div>
+        <div class="flex-col asset-info-container">
+            <div class="asset-dist-header">Asset by application</div>
+            <div class="tagged" *ngIf="selectedResource.type !== undefined">
+                <app-asset-info [targetType]="selectedResource.type" [pageLevel]="pageLevel"></app-asset-info>
+            </div>
+        </div>
+        <div class="multiline-chart-header">Inventory</div>
+        <div class="multiline-chart" *ngIf="selectedResource !== undefined">
+            <app-inventory-container [targetType]="selectedResource.type" [pageLevel]="pageLevel">
+            </app-inventory-container>
+        </div>
+    </div>
 </div>

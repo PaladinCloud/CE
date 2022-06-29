@@ -166,7 +166,7 @@ export class PolicyContentSliderComponent implements OnInit, OnDestroy {
     navigateToPlolicy(event) {
         try {
             this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-            this.router.navigate(['../../policy-knowledgebase-details', this.ruleID], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
+            this.router.navigate(['../../policy-knowledgebase-details', this.ruleID, "false"], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
 
         } catch (error) {
                 this.errorMessage = this.errorHandling.handleJavascriptError(error);

@@ -12,107 +12,49 @@
  * limitations under the License.
  */
 
+
 .aws-app-type-container {
-  height: 9em;
-  position: relative;
-  border-radius: var(--border-radius);
   cursor: pointer;
-  z-index: 1;
-  background-color: var(--background-white);
-  border: 0px;
-  width: 100%;
-  transition: 0.3s ease;
-  padding-top: 1.3em;
-  text-align: center;
-  min-width: 9em;
-  box-shadow: 0px 0px 8px -1px rgba(0, 0, 0, 0.1);
-}
-
-.aws-app-image {
-  height: 4em;
-  margin: auto;
-  transform: scale(0.75);
-  transition: all 0.3s ease-in-out;
-}
-
-.aws-app-extra {
-  height: 2.353em;
-  margin: auto;
-  background-color: red;
-  width: 2.43em;
-  color: #fff;
-  font-size: 1.7em;
-  border-radius: 2em;
-  text-transform: uppercase;
-  font-family: var(--text-light-font-family);
-  letter-spacing: 0.5px;
-  box-shadow: 0 0 4px 0px rgba(0, 0, 0, 0.15);
-}
-
-.aws-app-image.view-all {
-  transform: rotate(90deg) scale(0.9);
+  padding: 8px 4px;
+  background: var(--background-white);
+  border-radius: 4px;
+  font-family: var(--text-font-family);
+  font-style: var(--text-font-style);
+  line-height: var(--text-line-height);
 }
 
 .aws-app-details {
   width: 100%;
-  position: relative;
-  bottom: 7%;
-  font-size: 1.3em;
-  transform: translateY(100%);
-  padding: 0 0.4em;
+  justify-content: space-between;
+  color: var(--text-high-emphasis);
+}
+
+.aws-app-details img {
+  padding: 4px;
+  background-color: var(--background-white);
 }
 
 .aws-app-details .type {
-  font-family: var(--text-medium-font-family);
   text-transform: capitalize;
-  /*max-width: 5vw;*/
+  font-weight: var(--text-light-font-weight);
+  font-size: var(--text-body-1-font-size);
+  width: 77%;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
-  padding-bottom: 2px;
-  display: inline-block;
+  align-self: center;
 }
 
 .aws-app-details .instances {
-  padding-left: 0.25em;
-  /*font-size: 1.3em;*/
-  font-family: var(--text-light-font-family);
-  border-left: 1px solid #999;
-  margin-left: 0.3em;
-  white-space: nowrap;
-}
-
-.aws-app-type-container:hover {
-  background: #f9f9f9;
-  box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.18);
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body-2-font-size);
+  align-self: center;
 }
 
 .aws-app-type-container.active {
-  background: rgb(221, 226, 233);
-  box-shadow: 2px 2px 8px 1px rgba(0, 0, 0, 0.18);
+  background-color: var(--primary-100);
+  border-radius: 4px;
 }
 
-.aws-app-type-container:hover .aws-app-image,
-.aws-app-type-container.active .aws-app-image {
-  transform: scale(1);
-}
-
-.aws-app-type-container:hover .aws-app-image.view-all,
-.aws-app-type-container.active .aws-app-image.view-all {
-  transform: scale(1) rotate(90deg);
-}
-
-.aws-app-recommendation {
-  position: absolute;
-  right: 6%;
-  top: 6%;
-  background: transparent;
-  width: 1.5em;
-  border-radius: 50%;
-  text-align: center;
-}
-
-.aws-app-recommendation img {
-  width: 100%;
-  height: 100%;
+.aws-app-type-container.active .aws-app-details {
+  color: var(--primary-500);
 }

@@ -30,6 +30,8 @@ import { TitleBurgerHeadComponent } from "./title-burger-head/title-burger-head.
 import { OverlayComponent } from "./overlay/overlay.component";
 import { OrderByPipe } from "./../shared/pipes/order-by.pipe";
 import { SearchFilterPipe } from "./../shared/pipes/search-filter.pipe";
+import { SearchPipe } from "./../shared/pipes/search.pipe";
+import { AssetSummarySearchFilterPipe } from "./pipes/asset-summary-search-filter.pipe";
 import { MainRoutingAnimationEventService } from "./services/main-routing-animation-event.service";
 import { RefactorFieldsService } from "./services/refactor-fields.service";
 import { RouterUtilityService } from "./services/router-utility.service";
@@ -126,7 +128,9 @@ import { MatIconModule } from "@angular/material";
     FilteredSelectorComponent,
     OrderByPipe,
     OrderBySumPipe,
+    SearchPipe,
     SearchFilterPipe,
+    AssetSummarySearchFilterPipe,
     BackNavigationComponent,
     BreadcrumbComponent,
     SearchInfoComponent,
@@ -187,6 +191,8 @@ import { MatIconModule } from "@angular/material";
     OrderByPipe,
     OrderBySumPipe,
     SearchFilterPipe,
+    SearchPipe,
+    AssetSummarySearchFilterPipe,
     BreadcrumbComponent,
     SearchInfoComponent,
     DataTableComponent,
@@ -232,6 +238,8 @@ import { MatIconModule } from "@angular/material";
     RefactorFieldsService,
     OrderByPipe,
     SearchFilterPipe,
+    SearchPipe,
+    AssetSummarySearchFilterPipe,
     MainRoutingAnimationEventService,
     AuthGuardService,
     RouterUtilityService,

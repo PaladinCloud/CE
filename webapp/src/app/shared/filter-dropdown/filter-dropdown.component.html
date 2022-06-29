@@ -23,7 +23,7 @@
     </div>
     <div class=" filter-content-container">
       <div class="filter-content" *ngIf="!isExpanded">
-        <div *ngFor="let filterTypeLabel of filterTypeLabels | searchFilter: searchText" class="contextual-menu"
+        <div *ngFor="let filterTypeLabel of filterTypeLabels | search: searchText" class="contextual-menu"
           (click)="expand(filterTypeLabel)">
           <div class="contextual-menu-text-content" title="{{filterTypeLabel}}">
             <span>{{filterTypeLabel}}</span>
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="filter-content" *ngIf="isExpanded">
-        <div *ngFor="let filterTagLabel of filterTagLabels | searchFilter: searchText" class="contextual-menu"
+        <div *ngFor="let filterTagLabel of filterTagLabels | search: searchText" class="contextual-menu"
           (click)="selectFilter(filterTagLabel)">
           <div class="contextual-menu-text-content" title="{{filterTagLabel}}">
             <span>{{filterTagLabel}}</span>

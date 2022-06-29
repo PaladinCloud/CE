@@ -12,23 +12,10 @@
  * limitations under the License.
  -->
 
- <div *ngIf="awsResourceName != 'view-all'" [ngClass]="{'active' : active}" class="aws-app-type-container " (click)="awsResourseSelected()">
-    <img *ngIf="imagePathFound" class="aws-app-image" src="{{imagePath}}" (error)="setImagePathNotFound()">
-    <div class="aws-app-image aws-app-extra flex flex-align-center flex-center" *ngIf="!imagePathFound" [innerHTML]='getInitial(awsResource.type)' [ngStyle]="{'background-color': getRandomColor()}"></div>
-    <div class="aws-app-recommendation" *ngIf="recommendationAvailable">
-        <img src="assets/icons/lightbulb.svg">
-    </div>
-    <div class="aws-app-details flex flex-row flex-center">
+ <div *ngIf="awsResourceName != 'view-all'" [ngClass]="{'active' : active}" class="aws-app-type-container ">
+    <div class="aws-app-details flex flex-row">
+        <img src="../../../../assets/icons/asset-a-icon.svg" />
         <div title='{{awsResourceName | uppercase}}' class="type">{{awsResourceName}}</div>
         <div class="instances" *ngIf="resourceInstances !== undefined">{{resourceInstances}}</div>
-    </div>
-</div>
-<div *ngIf="awsResourceName == 'view-all'" [ngClass]="{'active' : active}" class="aws-app-type-container " (click)="awsResourseSelected()">
-    <img class="aws-app-image view-all" onError="this.src='assets/icons/Extra/Extra.svg'" src="assets/icons/contextual-menu.svg">
-    <div class="aws-app-recommendation" *ngIf="recommendationAvailable">
-        <img src="assets/icons/lightbulb.svg">
-    </div>
-    <div class="aws-app-details flex flex-row flex-center">
-        <div title='{{awsResourceName | uppercase}}' class="type view-all">View All</div>
     </div>
 </div>
