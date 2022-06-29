@@ -546,7 +546,7 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   }
 
   navigateBack() {
-    this.router.navigate(['../job-execution-manager'], {
+    this.router.navigate(['../'], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'merge',
       queryParams: {
