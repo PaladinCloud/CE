@@ -18,7 +18,7 @@
 			<span *ngIf='showExceptionModal'>Add Exception</span>
 			<span *ngIf='showRevokeExceptionmodal'>Revoke Exception</span>
 		</div>
-		<img class='pointer cross-img' (click)='closeModal()' src='../../../../assets/png/delete.png'>
+		<img class='pointer cross-img' (click)='closeModal()' src='../../../../assets/icons/x-icon.svg'>
 	</header>
 	<section class="content-wrapper flex flex-col flex-grow">
 		<div class='empty-issuelist' *ngIf='(showExceptionModal || showRevokeExceptionmodal) && issueList.length === 0 && !showLoadComplete'>There are no selected issues found.</div>

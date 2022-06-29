@@ -18,7 +18,7 @@ const APP_NAME = "Paladin Cloud";
 
 export const CONTENT = {
   homePage: {
-    productLogo: "/assets/images/Paladin_Logo.svg",
+    productLogo: "/assets/images/Paladin_Logo_KO.svg",
     companyLogo: "/assets/icons/tmo-black.svg",
     heading: APP_NAME,
     subHeading: "Policy as Code Manager",
