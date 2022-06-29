@@ -19,26 +19,27 @@
 import { Pipe, PipeTransform, Output, EventEmitter } from '@angular/core';
 import { LoggerService } from '../services/logger.service';
 
-@Pipe({ name: 'searchFilter' })
-export class SearchFilterPipe implements PipeTransform {
+@Pipe({ name: 'assetSummarySearchFilter' })
+export class AssetSummarySearchFilterPipe implements PipeTransform {
   @Output() pipeError = new EventEmitter();
 
   constructor(private loggerService: LoggerService) { }
 
-  transform(input: any, searchQuery: any): any {
+  transform(input: any, searchQuery: string): any {
+    if (!input) return [];
+    if (!searchQuery) return input;
+
     try {
       return input.filter(item => {
-        for (const key in item) {
-          if (
+          if (item['type'] &&
             (
               '' +
-              JSON.stringify(item[key])
+              JSON.stringify(item['type'])
                 .toString()
                 .toLowerCase()
             ).includes(searchQuery.toString().toLowerCase())
           ) {
             return true;
-          }
         }
         return false;
       });
