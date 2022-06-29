@@ -52,7 +52,7 @@
       </ng-template>
     </tree-root>
   </div>
-  <div class="know-your-app-wrapper node-wrapper" [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]">
+  <div class="know-your-app-wrapper node-wrapper" [queryParams]="agAndDomain" [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]">
     <div class="icon icon-wrapper">
       <img class="node-img" src="/assets/icons/stroke.svg" alt="" />
     </div>

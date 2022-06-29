@@ -126,16 +126,15 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       if (row.col.toLowerCase() === 'policy name') {
         this.router.navigate(
           [
-            '../../../../',
-            'compliance',
-            'policy-knowledgebase-details',
-            row.row['Rule Id'].text
+            '/pl/compliance/policy-knowledgebase-details',
+            row.row['Rule Id'].text,
+            'false'
           ],
           { relativeTo: this.activatedRoute, queryParamsHandling: 'merge' }
         );
       } else if (row.col.toLowerCase() === 'last scanned') {
         this.router.navigate(
-          ['../../../../', 'compliance', 'issue-details', row.row['Issue ID'].text],
+          ['../../../../', 'compliance', 'issue-listing', 'issue-details', row.row['Issue ID'].text],
           { relativeTo: this.activatedRoute, queryParamsHandling: 'merge' }
         );
       }
