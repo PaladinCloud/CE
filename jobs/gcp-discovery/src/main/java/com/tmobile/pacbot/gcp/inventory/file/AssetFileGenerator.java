@@ -42,6 +42,9 @@ public class AssetFileGenerator {
 	@Autowired
 	BigQueryInventoryCollector bigQueryInventoryCollector;
 
+	@Autowired
+	PubSubInventoryCollector pubSubInventoryCollector;
+
 	public void generateFiles(List<String> projects, String filePath) {
 
 		try {
@@ -108,6 +111,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateStorageFiles(storageInventoryCollector.fetchStorageInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("pubsub"))) {
+					return;
+				}
+				try {
+					FileManager.generatePubSubFiles(pubSubInventoryCollector.fetchPubSubInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
