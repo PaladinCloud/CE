@@ -5651,7 +5651,7 @@
     "displayName": "VPC Firewall with RDP port 3389 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5673,7 +5673,7 @@
     "displayName": "VPC Firewall with SSH port 22 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5695,7 +5695,7 @@
     "displayName": "VPC Firewall with DNS port 53 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5717,7 +5717,7 @@
     "displayName": "VPC Firewall with FTP port 20 and 21 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5761,7 +5761,7 @@
     "displayName": "VPC Firewall with Uncommon port 8010 and 1494 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5783,7 +5783,7 @@
     "displayName": "VPC Firewall with MYSQL port 3306  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5805,7 +5805,7 @@
     "displayName": "VPC Firewall with Oracle DB  port 1521  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5827,7 +5827,7 @@
     "displayName": "VPC Firewall with Postgres DB  port 5432  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5849,7 +5849,7 @@
     "displayName": "VPC Firewall with RPC  port 135  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
 
@@ -5872,7 +5872,7 @@
     "displayName": "VPC Firewall with SMTP  port 25  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5894,7 +5894,7 @@
     "displayName": "VPC Firewall with SQL server  port 1433  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
