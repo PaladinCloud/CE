@@ -1,4 +1,4 @@
-package com.tmobile.cloud.gcprules.bigquery;
+package com.tmobile.cloud.gcprules.encryption;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
@@ -27,10 +27,10 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PacmanUtils.class, GCPUtils.class})
-public class TableKeyEncryptionRuleTest {
+public class CMKEncryptionRuleTest {
 
     @InjectMocks
-    TableKeyEncryptionRule tableKeyEncryptionRule;
+    CMKEncryptionRule cmkEncryptionRule;
 
     @Before
     public void setUp() {
@@ -48,7 +48,7 @@ public class TableKeyEncryptionRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(tableKeyEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
+        assertThat(cmkEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
 
@@ -62,7 +62,7 @@ public class TableKeyEncryptionRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(tableKeyEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+        assertThat(cmkEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class TableKeyEncryptionRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> tableKeyEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        assertThatThrownBy(() -> cmkEncryptionRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
 
     public static Map<String, String> getMapString(String passRuleResourceId) {
