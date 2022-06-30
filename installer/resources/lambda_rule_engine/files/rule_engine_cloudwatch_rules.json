@@ -4987,7 +4987,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_Account_Create_Network_Security Group_log_alert",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Enable Create or Update Network Security Group log alert",
+    "displayName": "Enable \"Create/Update Network Security Group\" log alert",
     "createdDate": "2022-05-24",
     "modifiedDate": "2022-05-24",
     "severity": "high",
