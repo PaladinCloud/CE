@@ -445,7 +445,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = 'PacMan_TaggingRule_version-1'";
         ruleIdwithTargetType = rdsepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
         if (Strings.isNullOrEmpty(targetType)) {
-            assetCount = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null,null,"");
+            assetCount = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null, null, "");
             data = assetCount.getData();
             assetcountCount = data.getAssetcount();
 
@@ -526,12 +526,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author santoshi
      * @param assetGroup
-     *            the asset group
+     *                   the asset group
      * @param targetType
-     *            the target type
+     *                   the target type
      * @return the recommendations
      * @throws DataException
-     *             the data exception
+     *                       the data exception
      */
     @SuppressWarnings("rawtypes")
     public List<Map<String, Object>> getRecommendations(String assetGroup, String targetType) throws DataException {
@@ -586,14 +586,14 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author santoshi
      * @param assetGroup
-     *            the asset group
+     *                   the asset group
      * @param targetType
-     *            the target type
+     *                   the target type
      * @return the total asset count for anytarget type
      */
     public Long getTotalAssetCountForAnytargetType(String assetGroup, String targetType) {
 
-        AssetCount totalAssets = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null,null,"");
+        AssetCount totalAssets = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null, null, "");
         AssetCountData data = totalAssets.getData();
         AssetCountByAppEnvDTO[] assetcount = data.getAssetcount();
         Long totalAssetsCount = 0l;
@@ -610,12 +610,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author u55262
      * @param assetGroup
-     *            the asset group
+     *                   the asset group
      * @param resourceId
-     *            the resource id
+     *                   the resource id
      * @return the resource details from ES
      * @throws DataException
-     *             the data exception
+     *                       the data exception
      */
     public List<Map<String, Object>> getResourceDetailsFromES(String assetGroup, String resourceId)
             throws DataException {
@@ -640,18 +640,18 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author u55262
      * @param annotationId
-     *            the annotation id
+     *                     the annotation id
      * @param targetType
-     *            the target type
+     *                     the target type
      * @param from
-     *            the from
+     *                     the from
      * @param size
-     *            the size
+     *                     the size
      * @param searchText
-     *            the search text
+     *                     the search text
      * @return the issue audit log
      * @throws DataException
-     *             the data exception
+     *                       the data exception
      */
     public List<LinkedHashMap<String, Object>> getIssueAuditLog(String annotationId, String targetType, int from,
             int size, String searchText) throws DataException {
@@ -692,10 +692,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * Gets the rules from ES.
      *
      * @param assetGroup
-     *            the asset group
+     *                   the asset group
      * @return the rules from ES
      * @throws Exception
-     *             the exception
+     *                   the exception
      */
     public Map<String, Long> getRulesFromES(String assetGroup) throws Exception {
         Map<String, Object> mustFilter = new HashMap<>();
@@ -750,7 +750,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author NidhishKrishnan (Nidhish)
      * @param ruleDetails
-     *            the rule details
+     *                    the rule details
      * @return Boolean
      * @requestBody RuleDetails
      */
@@ -789,10 +789,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author Nidhish Krishnan (Nidhish)
      * @param ruleId
-     *            the rule id
+     *               the rule id
      * @return List<Map<String, Object>>
      * @throws Exception
-     *             the exception
+     *                   the exception
      * @requestParam ruleId
      */
     private List<Map<String, Object>> getOpenIssueDetailsByRuleId(final String ruleId) throws Exception {
@@ -815,12 +815,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author NidhishKrishnan (Nidhish)
      * @param issueId
-     *            the issue id
+     *                the issue id
      * @param status
-     *            the status
+     *                the status
      * @return It return list of map details for the given issueId and status
      * @throws DataException
-     *             the data exception
+     *                       the data exception
      * @requestParam issueId - String
      * @requestParam status - String
      */
@@ -981,20 +981,20 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      *
      * @author santoshi
      * @param assetGroup
-     *            the asset group
+     *                    the asset group
      * @param searchText
-     *            the search text
+     *                    the search text
      * @param filters
-     *            the filters
+     *                    the filters
      * @param from
-     *            the from
+     *                    the from
      * @param size
-     *            the size
+     *                    the size
      * @param targetTypes
-     *            the target types
+     *                    the target types
      * @return the non compliance policy by es with asset group
      * @throws DataException
-     *             the data exception
+     *                       the data exception
      */
     @SuppressWarnings("rawtypes")
     public Map<String, Long> getNonCompliancePolicyByEsWithAssetGroup(String assetGroup, String searchText,
@@ -1255,27 +1255,28 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * java.lang.String, java.lang.String)
      */
     public JsonArray getRuleDetailsByEnvironmentFromES(String assetGroup, String ruleId, String application,
-            String searchText,String targetType) throws DataException {
+            String searchText, String targetType) throws DataException {
         String responseJson = null;
         JsonParser jsonParser;
         JsonObject resultJson;
         StringBuilder requestBody = null;
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
                 .append(SEARCH);
-        
-if (ruleId.contains(TAGGIG_POLICY)) {
-        	
-        	List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
-            String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""+ruleId+"\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+        if (ruleId.contains(TAGGIG_POLICY)) {
 
-            //Added resourceType to the Query
-            char ch='"';
-            targetType = ch+targetType+ch;
-            
-            body = body + ",{\"terms\":{\"targetType.keyword\":["+targetType+"]}}";
-            if(application!=null){
-            	  body = body + ",{\"match\":{\"tags.Application.keyword\":\""+application+"\"}}";
+            List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
+
+            String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                    + ruleId + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+
+            // Added resourceType to the Query
+            char ch = '"';
+            targetType = ch + targetType + ch;
+
+            body = body + ",{\"terms\":{\"targetType.keyword\":[" + targetType + "]}}";
+            if (application != null) {
+                body = body + ",{\"match\":{\"tags.Application.keyword\":\"" + application + "\"}}";
             }
             body = body + "]";
             if (!tagsList.isEmpty()) {
@@ -1288,29 +1289,30 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                 body = body + "]";
                 body = body + ",\"minimum_should_match\":1";
             }
-            body = body + "}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000000}}}}";
+            body = body
+                    + "}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000000}}}}";
             requestBody = new StringBuilder(body);
-           
-        }else{
 
-        if (StringUtils.isEmpty(searchText)) {
-            requestBody = new StringBuilder(
-                    "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
-                            + ruleId
-                            + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
-                            + application
-                            + "\"}}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
         } else {
-            requestBody = new StringBuilder(
-                    "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
-                            + ruleId
-                            + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
-                            + application
-                            + "\"}}},{\"match_phrase_prefix\":{\"_all\":\""
-                            + searchText
-                            + "\"}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
+
+            if (StringUtils.isEmpty(searchText)) {
+                requestBody = new StringBuilder(
+                        "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                                + ruleId
+                                + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
+                                + application
+                                + "\"}}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
+            } else {
+                requestBody = new StringBuilder(
+                        "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                                + ruleId
+                                + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
+                                + application
+                                + "\"}}},{\"match_phrase_prefix\":{\"_all\":\""
+                                + searchText
+                                + "\"}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
+            }
         }
-    }
         try {
             responseJson = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
         } catch (Exception e) {
@@ -1328,7 +1330,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      *
      * @return the events processed from es
      * @throws Exception
-     *             the exception
+     *                   the exception
      */
     public JsonArray getEventsProcessedFromEs() throws Exception {
         return heimdallElasticSearchRepository.getEventsProcessed();
@@ -1341,7 +1343,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      * getRuleDescriptionFromDb(java.lang.String)
      */
     public List<Map<String, Object>> getRuleDescriptionFromDb(String ruleId) throws DataException {
-        String policyDescQuery = "SELECT rule.displayName, policy.resolution, policy.policyDesc, policy.policyVersion, rule.ruleParams FROM cf_RuleInstance rule LEFT JOIN cf_Policy policy ON rule.policyId = policy.policyId WHERE rule.status = 'ENABLED' AND rule.ruleId ='"
+        String policyDescQuery = "SELECT rule.displayName,policy.resolutionUrl, policy.resolution, policy.policyDesc, policy.policyVersion, rule.ruleParams FROM cf_RuleInstance rule LEFT JOIN cf_Policy policy ON rule.policyId = policy.policyId WHERE rule.status = 'ENABLED' AND rule.ruleId ='"
                 + ruleId + "'";
         return rdsepository.getDataFromPacman(policyDescQuery);
     }
@@ -1362,22 +1364,22 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      * Gets the issue list.
      *
      * @param issueDetail
-     *            the issue detail
+     *                                 the issue detail
      * @param sourceMap
-     *            the source map
+     *                                 the source map
      * @param ruleIdwithDisplayNameMap
-     *            the rule idwith display name map
+     *                                 the rule idwith display name map
      * @param issueList
-     *            the issue list
+     *                                 the issue list
      * @param domain
-     *            the domain
+     *                                 the domain
      * @return the issue list
      * @throws DataException
-     *             the data exception
+     *                       the data exception
      */
     private List<LinkedHashMap<String, Object>> getIssueList(Map<String, Object> issueDetail,
             Map<String, Object> sourceMap, Map<String, String> ruleIdwithDisplayNameMap,
-            List<LinkedHashMap<String, Object>> issueList, String domain){
+            List<LinkedHashMap<String, Object>> issueList, String domain) {
         Map<String, Object> nonDisplayable = new HashMap<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
         if (!Strings.isNullOrEmpty(ruleIdwithDisplayNameMap.get(sourceMap.get(RULEID)))) {
@@ -1419,16 +1421,16 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      * Gets the untagged count.
      *
      * @param esUrl
-     *            the es url
+     *                   the es url
      * @param assetGroup
-     *            the asset group
+     *                   the asset group
      * @param ruleId
-     *            the rule id
+     *                   the rule id
      * @param tagsList
-     *            the tags list
+     *                   the tags list
      * @return the untagged count
      * @throws Exception
-     *             the exception
+     *                   the exception
      */
     private static int getUntaggedCount(String esUrl, String assetGroup, String ruleId, List<String> tagsList)
             throws Exception {
@@ -1562,7 +1564,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      * Builds the criteria map.
      *
      * @param compCriteriaMap
-     *            the comp criteria map
+     *                        the comp criteria map
      * @return the map
      */
     private Map<String, String> buildCriteriaMap(String compCriteriaMap) {
@@ -1579,7 +1581,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
             logger.info("criteria map" + kernelCriteriaMap);
             return kernelCriteriaMap;
         } catch (Exception e) {
-            logger.error("error parsing 'pacman.kernel.compliance.map' from system configuration : " , e);
+            logger.error("error parsing 'pacman.kernel.compliance.map' from system configuration : ", e);
             return new TreeMap<>();
         }
     }
@@ -1588,11 +1590,11 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      * Checks if is compliant.
      *
      * @param version
-     *            the version
+     *                                 the version
      * @param criteriaMapkeys
-     *            the criteria mapkeys
+     *                                 the criteria mapkeys
      * @param kernelCriteriaMapDetails
-     *            the kernel criteria map details
+     *                                 the kernel criteria map details
      * @return the boolean
      */
     private Boolean isCompliant(String version, Set<String> criteriaMapkeys,
@@ -1609,11 +1611,11 @@ if (ruleId.contains(TAGGIG_POLICY)) {
      * Gets the compliance criteria for.
      *
      * @param version
-     *            the version
+     *                                 the version
      * @param criteriaMapkeys
-     *            the criteria mapkeys
+     *                                 the criteria mapkeys
      * @param kernelCriteriaMapDetails
-     *            the kernel criteria map details
+     *                                 the kernel criteria map details
      * @return the compliance criteria for
      */
     private String getComplianceCriteriaFor(String version, Set<String> criteriaMapkeys,
@@ -1660,59 +1662,59 @@ if (ruleId.contains(TAGGIG_POLICY)) {
     }
 
     /*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-	 * getTaggingByAG(java.lang.String)
-	 */
-	@SuppressWarnings("rawtypes")
-	public Map<String, Object> getTaggingByAG(String assetGroup, String targetTypes, String application)
-			throws DataException {
-		List<String> targetTypeList = Arrays.asList(targetTypes.split("\\s*,\\s*"));
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     * getTaggingByAG(java.lang.String)
+     */
+    @SuppressWarnings("rawtypes")
+    public Map<String, Object> getTaggingByAG(String assetGroup, String targetTypes, String application)
+            throws DataException {
+        List<String> targetTypeList = Arrays.asList(targetTypes.split("\\s*,\\s*"));
 
-		Gson gson = new GsonBuilder().create();
-		String responseDetails = null;
-		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
-				.append(SEARCH);
-		StringBuilder requestBody = null;
-		List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
+        Gson gson = new GsonBuilder().create();
+        String responseDetails = null;
+        StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
+                .append(SEARCH);
+        StringBuilder requestBody = null;
+        List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
-		String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"PacMan_TaggingRule_version-1\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+        String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"PacMan_TaggingRule_version-1\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
 
-		// Added resourceType to the Query
-		String targetTypesTerms = targetTypes.replaceAll("'", "\"");
-		body = body + ",{\"terms\":{\"targetType.keyword\":[" + targetTypesTerms + "]}}";
-		if (application != null) {
-			body = body + ",{\"match\":{\"tags.Application.keyword\":\"" + application + "\"}}";
-		}
-		body = body + "]";
-		if (!tagsList.isEmpty()) {
-			body = body + ",\"should\":[";
+        // Added resourceType to the Query
+        String targetTypesTerms = targetTypes.replaceAll("'", "\"");
+        body = body + ",{\"terms\":{\"targetType.keyword\":[" + targetTypesTerms + "]}}";
+        if (application != null) {
+            body = body + ",{\"match\":{\"tags.Application.keyword\":\"" + application + "\"}}";
+        }
+        body = body + "]";
+        if (!tagsList.isEmpty()) {
+            body = body + ",\"should\":[";
 
-			for (String tag : tagsList) {
-				body = body + "{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},";
-			}
-			body = body.substring(0, body.length() - 1);
-			body = body + "]";
-			body = body + ",\"minimum_should_match\":1";
-		}
-		body = body + "}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"targetType.keyword\",\"size\":"
-				+ targetTypeList.size() + "}}}}";
-		requestBody = new StringBuilder(body);
-		try {
-			responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
-		} catch (Exception e) {
-			throw new DataException(e);
-		}
-		Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
-		Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
-		Map<String, Object> name = (Map<String, Object>) aggregations.get("name");
-		List<Map<String, Object>> buckets = (List<Map<String, Object>>) name.get(BUCKETS);
+            for (String tag : tagsList) {
+                body = body + "{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},";
+            }
+            body = body.substring(0, body.length() - 1);
+            body = body + "]";
+            body = body + ",\"minimum_should_match\":1";
+        }
+        body = body + "}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"targetType.keyword\",\"size\":"
+                + targetTypeList.size() + "}}}}";
+        requestBody = new StringBuilder(body);
+        try {
+            responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+        Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
+        Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
+        Map<String, Object> name = (Map<String, Object>) aggregations.get("name");
+        List<Map<String, Object>> buckets = (List<Map<String, Object>>) name.get(BUCKETS);
 
-		return buckets.parallelStream().filter(buket -> buket.get("doc_count") != null)
-				.collect(Collectors.toMap(buket -> buket.get("key").toString(), buket -> buket.get("doc_count"),
-						(oldValue, newValue) -> newValue));
-	}
+        return buckets.parallelStream().filter(buket -> buket.get("doc_count") != null)
+                .collect(Collectors.toMap(buket -> buket.get("key").toString(), buket -> buket.get("doc_count"),
+                        (oldValue, newValue) -> newValue));
+    }
 
     /*
      * (non-Javadoc)
@@ -1723,13 +1725,13 @@ if (ruleId.contains(TAGGIG_POLICY)) {
     @SuppressWarnings("rawtypes")
     public Map<String, Object> getPolicyViolationDetailsByIssueId(String assetGroup, String issueId)
             throws DataException {
-    	Map<String, Object> issueDetails = new HashMap<>();
-		StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(assetGroup);
-		urlToQuery.append("/").append(SEARCH);
+        Map<String, Object> issueDetails = new HashMap<>();
+        StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(assetGroup);
+        urlToQuery.append("/").append(SEARCH);
 
-		StringBuilder requestBody = new StringBuilder();
-		requestBody.append("{\"query\":{\"bool\":{\"must\":[{\"match\":{\"type\":\"issue\"}},{\"match\":{\"_id\":\"")
-				.append(issueId).append("\"}}]}}}");
+        StringBuilder requestBody = new StringBuilder();
+        requestBody.append("{\"query\":{\"bool\":{\"must\":[{\"match\":{\"type\":\"issue\"}},{\"match\":{\"_id\":\"")
+                .append(issueId).append("\"}}]}}}");
         String responseJson = "";
         try {
             responseJson = PacHttpUtils.doHttpPost(urlToQuery.toString(), requestBody.toString());
@@ -1754,12 +1756,12 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                 issueDetails.put(POLICYID, source.get(POLICYID).getAsString());
                 issueDetails.put(CREATED_DATE, source.get(CREATED_DATE).getAsString());
                 issueDetails.put(MODIFIED_DATE, source.get(MODIFIED_DATE).getAsString());
-                if(source.has("desc")){
+                if (source.has("desc")) {
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
-                   }else{
-                       JsonObject message = (JsonObject) jsonParser.parse(source.get("message").getAsString());
-                       issueDetails.put(ISSUE_REASON, message.get("desc").getAsString());
-                   }
+                } else {
+                    JsonObject message = (JsonObject) jsonParser.parse(source.get("message").getAsString());
+                    issueDetails.put(ISSUE_REASON, message.get("desc").getAsString());
+                }
                 if (null != source.get(ISSUE_DETAILS)) {
                     issueDetails.put(ISSUE_DETAILS, source.get(ISSUE_DETAILS).getAsString());
                 }
@@ -1847,30 +1849,30 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         }
     }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-	 * getUnpatchedAssetsCount(java.lang.String, java.lang.String)
-	 */
-	public Long getUnpatchedAssetsCount(String assetGroup, String targetType, String application) throws DataException {
-		String policyId = null;
-		if (EC2.equalsIgnoreCase(targetType) || VIRTUALMACHINE.equalsIgnoreCase(targetType)) {
-			policyId = CLOUD_KERNEL_COMPLIANCE_POLICY;
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     * getUnpatchedAssetsCount(java.lang.String, java.lang.String)
+     */
+    public Long getUnpatchedAssetsCount(String assetGroup, String targetType, String application) throws DataException {
+        String policyId = null;
+        if (EC2.equalsIgnoreCase(targetType) || VIRTUALMACHINE.equalsIgnoreCase(targetType)) {
+            policyId = CLOUD_KERNEL_COMPLIANCE_POLICY;
+        }
 
-		Map<String, Object> mustFilter = formatUnpatchedMustFilter(targetType, policyId);
-		if (StringUtils.isNotBlank(application)) {
-			mustFilter.put(TAGS_APPS, application);
-		}
-		String type = ISSUE_UNDERSCORE + targetType;
-		try {
-			return elasticSearchRepository.getTotalDocumentCountForIndexAndType(assetGroup, type, mustFilter, null,
-					null, null, null);
-		} catch (Exception e) {
-			throw new DataException("" + e);
-		}
-	}
+        Map<String, Object> mustFilter = formatUnpatchedMustFilter(targetType, policyId);
+        if (StringUtils.isNotBlank(application)) {
+            mustFilter.put(TAGS_APPS, application);
+        }
+        String type = ISSUE_UNDERSCORE + targetType;
+        try {
+            return elasticSearchRepository.getTotalDocumentCountForIndexAndType(assetGroup, type, mustFilter, null,
+                    null, null, null);
+        } catch (Exception e) {
+            throw new DataException("" + e);
+        }
+    }
 
     /*
      * (non-Javadoc)
@@ -1885,7 +1887,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         mustFilter.put(CommonUtils.convertAttributetoKeyword(RULEID), ruleId);
         mustFilter.put("has_parent",
 
-        patchingRepository.addParentConditionPatching(targetType));
+                patchingRepository.addParentConditionPatching(targetType));
         return mustFilter;
     }
 
@@ -1945,99 +1947,99 @@ if (ruleId.contains(TAGGIG_POLICY)) {
     }
 
     private JsonObject getResopnse(String assetGroup, String apiType, String application, String environment,
-			String resourceType) throws DataException {
-		StringBuilder urlToQuery = formatURL(assetGroup, resourceType, apiType);
-		String responseJson = "";
-		try {
-			responseJson = PacHttpUtils.doHttpPost(urlToQuery.toString(),
-					getQueryForQualys(apiType, application, environment, resourceType).toString());
-		} catch (Exception e) {
-			logger.error(e.toString());
-			throw new DataException(e.getMessage());
-		}
-		JsonParser jsonParser = new JsonParser();
-		return (JsonObject) jsonParser.parse(responseJson);
-	}
-
+            String resourceType) throws DataException {
+        StringBuilder urlToQuery = formatURL(assetGroup, resourceType, apiType);
+        String responseJson = "";
+        try {
+            responseJson = PacHttpUtils.doHttpPost(urlToQuery.toString(),
+                    getQueryForQualys(apiType, application, environment, resourceType).toString());
+        } catch (Exception e) {
+            logger.error(e.toString());
+            throw new DataException(e.getMessage());
+        }
+        JsonParser jsonParser = new JsonParser();
+        return (JsonObject) jsonParser.parse(responseJson);
+    }
 
     public Long getInstanceCountForQualys(String assetGroup, String apiType, String application, String environment,
-			String resourceType) throws DataException {
-		return getResopnse(assetGroup, apiType, application, environment, resourceType).get(COUNT).getAsLong();
-	}
+            String resourceType) throws DataException {
+        return getResopnse(assetGroup, apiType, application, environment, resourceType).get(COUNT).getAsLong();
+    }
 
     public Map<String, Long> getInstanceCountForQualysByAppsOrEnv(String assetGroup, String apiType, String application,
-			String environment, String resourceType) throws DataException {
-		Map<String, Long> assetWithTagsMap = new HashMap<>();
-		JsonObject resultJson = getResopnse(assetGroup, apiType, application, environment, resourceType);
+            String environment, String resourceType) throws DataException {
+        Map<String, Long> assetWithTagsMap = new HashMap<>();
+        JsonObject resultJson = getResopnse(assetGroup, apiType, application, environment, resourceType);
 
-		JsonObject aggs = (JsonObject) resultJson.get(AGGREGATIONS);
-		JsonObject name = (JsonObject) aggs.get("NAME");
-		JsonArray buckets = name.get(BUCKETS).getAsJsonArray();
-		// convert Json Array to Map object
-		for (JsonElement bucket : buckets) {
-			assetWithTagsMap.put(bucket.getAsJsonObject().get("key").getAsString(),
-					bucket.getAsJsonObject().get(DOC_COUNT).getAsLong());
-		}
+        JsonObject aggs = (JsonObject) resultJson.get(AGGREGATIONS);
+        JsonObject name = (JsonObject) aggs.get("NAME");
+        JsonArray buckets = name.get(BUCKETS).getAsJsonArray();
+        // convert Json Array to Map object
+        for (JsonElement bucket : buckets) {
+            assetWithTagsMap.put(bucket.getAsJsonObject().get("key").getAsString(),
+                    bucket.getAsJsonObject().get(DOC_COUNT).getAsLong());
+        }
 
-		return assetWithTagsMap;
-	}
+        return assetWithTagsMap;
+    }
 
-	private StringBuilder getQueryForQualys(String apiType, String application, String environment,
-			String resourceType) {
-		StringBuilder requestBody = new StringBuilder();
+    private StringBuilder getQueryForQualys(String apiType, String application, String environment,
+            String resourceType) {
+        StringBuilder requestBody = new StringBuilder();
 
-		if (EC2.equals(resourceType)) {
-			requestBody = new StringBuilder(
-					"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename.keyword\":\"running\"}}");
-		} else if (VIRTUALMACHINE.equals(resourceType)) {
-			requestBody = new StringBuilder(
-					"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"status.keyword\":\"running\"}}");
-		}
-		if (StringUtils.isNotBlank(application)) {
-			requestBody.append(",{\"match\":{\"tags.Application.keyword\":\"" + application + "\"}}");
-		}
-		if (StringUtils.isNotBlank(environment)) {
-			requestBody.append(",{\"match\":{\"tags.Environment.keyword\":\"" + environment + "\"}}");
-		}
-		requestBody.append(
-				"],\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10)).isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}");
-		if ("noncompliancepolicy".equals(apiType)) {
+        if (EC2.equals(resourceType)) {
+            requestBody = new StringBuilder(
+                    "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename.keyword\":\"running\"}}");
+        } else if (VIRTUALMACHINE.equals(resourceType)) {
+            requestBody = new StringBuilder(
+                    "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"status.keyword\":\"running\"}}");
+        }
+        if (StringUtils.isNotBlank(application)) {
+            requestBody.append(",{\"match\":{\"tags.Application.keyword\":\"" + application + "\"}}");
+        }
+        if (StringUtils.isNotBlank(environment)) {
+            requestBody.append(",{\"match\":{\"tags.Environment.keyword\":\"" + environment + "\"}}");
+        }
+        requestBody.append(
+                "],\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10)).isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}");
+        if ("noncompliancepolicy".equals(apiType)) {
 
-			requestBody.append("}");
-		} else if ("policydetailsbyapplication".equals(apiType)) {
-			requestBody.append(
-					",\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":10000}}}}");
-		} else if ("policydetailsbyenvironment".equals(apiType)) {
+            requestBody.append("}");
+        } else if ("policydetailsbyapplication".equals(apiType)) {
+            requestBody.append(
+                    ",\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":10000}}}}");
+        } else if ("policydetailsbyenvironment".equals(apiType)) {
 
-			if (EC2.equals(resourceType)) {
-				requestBody = new StringBuilder(
-						"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename.keyword\":\"running\"}},{\"match\":{\"tags.Application.keyword\":\""
-								+ application + "\"}},{\"match\":{\"tags.Environment.keyword\":\"" + environment
-								+ "\"}}],\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10)).isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}}");
-			} else if (VIRTUALMACHINE.equals(resourceType)) {
-				requestBody = new StringBuilder(
-						"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"status.keyword\":\"running\"}},{\"match\":{\"tags.Application.keyword\":\""
-								+ application + "\"}},{\"match\":{\"tags.Environment.keyword\":\"" + environment
-								+ "\"}}],\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10)).isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}}");
-			}
-		}
-		return requestBody;
-	}
+            if (EC2.equals(resourceType)) {
+                requestBody = new StringBuilder(
+                        "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename.keyword\":\"running\"}},{\"match\":{\"tags.Application.keyword\":\""
+                                + application + "\"}},{\"match\":{\"tags.Environment.keyword\":\"" + environment
+                                + "\"}}],\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10)).isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}}");
+            } else if (VIRTUALMACHINE.equals(resourceType)) {
+                requestBody = new StringBuilder(
+                        "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"status.keyword\":\"running\"}},{\"match\":{\"tags.Application.keyword\":\""
+                                + application + "\"}},{\"match\":{\"tags.Environment.keyword\":\"" + environment
+                                + "\"}}],\"should\":[{\"script\":{\"script\":\"LocalDate.parse(doc['firstdiscoveredon.keyword'].value.substring(0,10)).isBefore(LocalDate.from(Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault())).minusDays(7))\"}},{\"has_child\":{\"type\":\"qualysinfo\",\"query\":{\"match\":{\"latest\":\"true\"}}}}],\"minimum_should_match\":1}}}");
+            }
+        }
+        return requestBody;
+    }
 
-    private StringBuilder formatURL(String assetGroup, String resourcetype,String apiType) {
+    private StringBuilder formatURL(String assetGroup, String resourcetype, String apiType) {
         StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(
                 assetGroup);
         urlToQuery.append("/").append(resourcetype);
-        if("noncompliancepolicy".equals(apiType) || "policydetailsbyenvironment".equals(apiType)){
-        urlToQuery.append("/").append("_count");
-        }else if("policydetailsbyapplication".equals(apiType)){
+        if ("noncompliancepolicy".equals(apiType) || "policydetailsbyenvironment".equals(apiType)) {
+            urlToQuery.append("/").append("_count");
+        } else if ("policydetailsbyapplication".equals(apiType)) {
             urlToQuery.append("/").append("_search");
         }
         return urlToQuery;
     }
 
     @Override
-    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(IssuesException issuesException) throws DataException {
+    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(IssuesException issuesException)
+            throws DataException {
 
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
@@ -2045,13 +2047,13 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         List<String> issueIds = issuesException.getIssueIds();
 
         StringBuilder bulkRequest = new StringBuilder();
-        Map<String,String> exceptions = new HashMap<>();
+        Map<String, String> exceptions = new HashMap<>();
         List<String> failedIssueIds = new ArrayList<>();
         List<String> errors = new ArrayList<>();
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
             issueDetails = getMultipleIssueDetails(issueIds, OPEN);
-        } catch(DataException e) {
+        } catch (DataException e) {
             logger.error("Error while fetching open issue details ", e);
             issueExceptionResponse.setStatus("Failed");
             issueExceptionResponse.setFailedIssueIds(issueIds);
@@ -2063,17 +2065,18 @@ if (ruleId.contains(TAGGIG_POLICY)) {
 
         if (!issueDetails.isEmpty()) {
             int i = 0;
-            for(Map<String, Object> issueDetail : issueDetails) {
+            for (Map<String, Object> issueDetail : issueDetails) {
                 try {
                     Map<String, Object> issueExceptionDetails = Maps.newHashMap();
                     issueExceptionDetails.put("issueId", issueDetail.get(ES_DOC_ID_KEY));
-                    issueExceptionDetails.put("exceptionGrantedDate", sdf.format(issuesException.getExceptionGrantedDate()));
+                    issueExceptionDetails.put("exceptionGrantedDate",
+                            sdf.format(issuesException.getExceptionGrantedDate()));
                     issueExceptionDetails.put("exceptionEndDate", sdf.format(issuesException.getExceptionEndDate()));
                     issueExceptionDetails.put("exceptionReason", issuesException.getExceptionReason());
                     issueExceptionDetails.put(TARGET_TYPE, String.valueOf(issueDetail.get(TARGET_TYPE)));
                     issueExceptionDetails.put("source", "issueException");
                     issueExceptionDetails.put("resourceId", String.valueOf(issueDetail.get(RESOURCEID)));
-                    issueExceptionDetails.put("createdBy",issuesException.getCreatedBy());
+                    issueExceptionDetails.put("createdBy", issuesException.getCreatedBy());
                     String dataSource = issueDetail.get(PAC_DS) + "_" + issueDetail.get(TARGET_TYPE);
                     String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
                     String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
@@ -2086,7 +2089,9 @@ if (ruleId.contains(TAGGIG_POLICY)) {
 
                     StringBuilder exceptionDoc = new StringBuilder(createESDoc(issueExceptionDetails));
                     if (exceptionDoc != null) {
-                        StringBuilder exceptionTarget = new StringBuilder(String.format(actionTemplateException, dataSource, "issue_"+issueDetail.get(TARGET_TYPE)+"_exception", routing)).append(exceptionDoc + "\n");
+                        StringBuilder exceptionTarget = new StringBuilder(String.format(actionTemplateException,
+                                dataSource, "issue_" + issueDetail.get(TARGET_TYPE) + "_exception", routing))
+                                .append(exceptionDoc + "\n");
                         exceptions.put(id, exceptionTarget.toString());
                     }
 
@@ -2094,13 +2099,14 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                     issueDocument.put("doc", partialDocument);
                     StringBuilder doc = new StringBuilder(createESDoc(issueDocument));
                     if (doc != null) {
-                        bulkRequest.append(String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
+                        bulkRequest.append(
+                                String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
                         bulkRequest.append(doc + "\n");
                     }
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-                        logger.info("Uploading {}"+ i);
-                        bulkUpload(errors,bulkRequest.toString());
+                        logger.info("Uploading {}" + i);
+                        bulkUpload(errors, bulkRequest.toString());
                         bulkRequest = new StringBuilder();
                     }
                 } catch (Exception e) {
@@ -2108,53 +2114,53 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                 }
             }
             if (bulkRequest.length() > 0) {
-                logger.info("Uploading {}"+ i);
-                bulkUpload(errors,bulkRequest.toString());
+                logger.info("Uploading {}" + i);
+                bulkUpload(errors, bulkRequest.toString());
             }
 
-            if(!errors.isEmpty()) {
+            if (!errors.isEmpty()) {
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
             failedIssueIds.addAll(revokeException(issueIds));
 
-            if(failedIssueIds.isEmpty()) {
+            if (failedIssueIds.isEmpty()) {
                 i = 0;
-                for(Map.Entry<String,String> entry: exceptions.entrySet()) {
+                for (Map.Entry<String, String> entry : exceptions.entrySet()) {
                     bulkRequest.append(entry.getValue());
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-                        logger.info("Uploading {}"+ i);
-                        bulkUpload(errors,bulkRequest.toString());
+                        logger.info("Uploading {}" + i);
+                        bulkUpload(errors, bulkRequest.toString());
                         bulkRequest = new StringBuilder();
                     }
                 }
                 if (bulkRequest.length() > 0) {
-                    logger.info("Uploading {}"+ i);
-                    bulkUpload(errors,bulkRequest.toString());
+                    logger.info("Uploading {}" + i);
+                    bulkUpload(errors, bulkRequest.toString());
                 }
             } else {
                 errors = new ArrayList<>();
                 i = 0;
-                for(Map.Entry<String,String> entry: exceptions.entrySet()) {
-                    if(!failedIssueIds.contains(entry.getKey())) {
+                for (Map.Entry<String, String> entry : exceptions.entrySet()) {
+                    if (!failedIssueIds.contains(entry.getKey())) {
                         bulkRequest.append(entry.getValue());
                         i++;
                         if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-                            logger.info("Uploading {}"+ i);
-                            bulkUpload(errors,bulkRequest.toString());
+                            logger.info("Uploading {}" + i);
+                            bulkUpload(errors, bulkRequest.toString());
                             bulkRequest = new StringBuilder();
                         }
                     }
                 }
                 if (bulkRequest.length() > 0) {
-                    logger.info("Uploading {}"+ i);
-                    bulkUpload(errors,bulkRequest.toString());
+                    logger.info("Uploading {}" + i);
+                    bulkUpload(errors, bulkRequest.toString());
                 }
             }
 
             fetchIdFromErrors(errors).parallelStream().forEach(id -> {
-                if(!failedIssueIds.contains(id)) {
+                if (!failedIssueIds.contains(id)) {
                     synchronized (failedIssueIds) {
                         failedIssueIds.add(id);
                     }
@@ -2165,9 +2171,9 @@ if (ruleId.contains(TAGGIG_POLICY)) {
             failedIssueIds.addAll(issueIds);
         }
 
-        if(failedIssueIds.isEmpty()) {
+        if (failedIssueIds.isEmpty()) {
             issueExceptionResponse.setStatus("Success");
-        } else if(issuesException.getIssueIds().size() == failedIssueIds.size()) {
+        } else if (issuesException.getIssueIds().size() == failedIssueIds.size()) {
             issueExceptionResponse.setStatus("Failed");
         } else {
             issueExceptionResponse.setStatus("Partial Success");
@@ -2189,7 +2195,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
             issueDetails = getMultipleIssueDetails(issueIds, EXEMPTED);
-        } catch(DataException e) {
+        } catch (DataException e) {
             logger.error("Error while fetching exempted issue details ", e);
             issueExceptionResponse.setStatus("Failed");
             issueExceptionResponse.setFailedIssueIds(issueIds);
@@ -2201,7 +2207,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
 
         if (!issueDetails.isEmpty()) {
             int i = 0;
-            for(Map<String, Object> issueDetail : issueDetails) {
+            for (Map<String, Object> issueDetail : issueDetails) {
                 try {
                     String dataSource = issueDetail.get(PAC_DS) + "_" + issueDetail.get(TARGET_TYPE);
                     String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
@@ -2217,13 +2223,14 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                     issueDocument.put("doc", partialDocument);
                     StringBuilder doc = new StringBuilder(createESDoc(issueDocument));
                     if (doc != null) {
-                        bulkRequest.append(String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
+                        bulkRequest.append(
+                                String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
                         bulkRequest.append(doc + "\n");
                     }
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-                        logger.info("Uploading {}"+ i);
-                        bulkUpload(errors,bulkRequest.toString());
+                        logger.info("Uploading {}" + i);
+                        bulkUpload(errors, bulkRequest.toString());
                         bulkRequest = new StringBuilder();
                     }
                 } catch (Exception e) {
@@ -2231,11 +2238,11 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                 }
             }
             if (bulkRequest.length() > 0) {
-                logger.info("Uploading {}"+ i);
-                bulkUpload(errors,bulkRequest.toString());
+                logger.info("Uploading {}" + i);
+                bulkUpload(errors, bulkRequest.toString());
             }
 
-            if(!errors.isEmpty()) {
+            if (!errors.isEmpty()) {
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
@@ -2245,10 +2252,9 @@ if (ruleId.contains(TAGGIG_POLICY)) {
             failedIssueIds.addAll(issueIds);
         }
 
-
-        if(failedIssueIds.isEmpty()) {
+        if (failedIssueIds.isEmpty()) {
             issueExceptionResponse.setStatus("Success");
-        } else if(issueIds.size() == failedIssueIds.size()) {
+        } else if (issueIds.size() == failedIssueIds.size()) {
             issueExceptionResponse.setStatus("Failed");
         } else {
             issueExceptionResponse.setStatus("Partial Success");
@@ -2257,10 +2263,11 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         return issueExceptionResponse;
     }
 
-    private List<Map<String, Object>> getMultipleIssueDetails(final List<String> issueIds, final String status) throws DataException {
+    private List<Map<String, Object>> getMultipleIssueDetails(final List<String> issueIds, final String status)
+            throws DataException {
         Map<String, Object> mustFilter = Maps.newHashMap();
         Map<String, Object> mustFilterTerms = Maps.newHashMap();
-        List<Map<String, Object>> resourceDetList =  new ArrayList<>();
+        List<Map<String, Object>> resourceDetList = new ArrayList<>();
         if (!CollectionUtils.isEmpty(issueIds) && !Strings.isNullOrEmpty(status)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), status);
             mustFilterTerms.put(ES_DOC_ID_KEY, issueIds);
@@ -2269,13 +2276,14 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         }
 
         try {
-            if(mustFilter.isEmpty()) {
+            if (mustFilter.isEmpty()) {
                 StringBuilder urlToQuery = new StringBuilder(esUrl).append("/aws/_search");
                 String responseJson = "";
                 try {
-                    StringBuilder requestBody = new StringBuilder("{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"terms\":{\"issueId.keyword\":[");
-                      requestBody.append("\""+StringUtils.join(issueIds, "\", \"")+"\"");
-                      requestBody.append("]}}]}}}");
+                    StringBuilder requestBody = new StringBuilder(
+                            "{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"terms\":{\"issueId.keyword\":[");
+                    requestBody.append("\"" + StringUtils.join(issueIds, "\", \"") + "\"");
+                    requestBody.append("]}}]}}}");
                     responseJson = PacHttpUtils.doHttpPost(urlToQuery.toString(),
                             requestBody.toString());
                     elasticSearchRepository.processResponseAndSendTheScrollBack(
@@ -2300,11 +2308,11 @@ if (ruleId.contains(TAGGIG_POLICY)) {
 
         List<String> errors = new ArrayList<>();
         List<String> failedIssueIds = new ArrayList<>();
-        List<Map<String, Object>> exceptionDetails =  new ArrayList<>();
+        List<Map<String, Object>> exceptionDetails = new ArrayList<>();
 
         try {
             exceptionDetails = getMultipleIssueDetails(issueIds, null);
-        } catch(DataException e) {
+        } catch (DataException e) {
             logger.error("Error while fetching exemption details ", e);
             failedIssueIds.addAll(issueIds);
             return failedIssueIds;
@@ -2312,14 +2320,14 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        Map<String,String> idMapping = new HashMap<>();
+        Map<String, String> idMapping = new HashMap<>();
         if (!exceptionDetails.isEmpty()) {
             int i = 0;
-            for(Map<String, Object> exceptionDetail : exceptionDetails) {
+            for (Map<String, Object> exceptionDetail : exceptionDetails) {
                 try {
-                    if(sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
+                    if (sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
                         String dataSource = "aws_" + exceptionDetail.get(TARGET_TYPE);
-                        String targetType = "issue_" + exceptionDetail.get(TARGET_TYPE)+"_exception";
+                        String targetType = "issue_" + exceptionDetail.get(TARGET_TYPE) + "_exception";
                         String id = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));
                         String routing = String.valueOf(exceptionDetail.get(ES_DOC_ROUTING_KEY));
                         exceptionDetail.put("exceptionEndDate", sdf.format(yesterday()));
@@ -2329,13 +2337,14 @@ if (ruleId.contains(TAGGIG_POLICY)) {
 
                         StringBuilder doc = new StringBuilder(createESDoc(exceptionDetail));
                         if (doc != null) {
-                            bulkRequest.append(String.format(actionTemplateException, id, dataSource, targetType, routing));
+                            bulkRequest.append(
+                                    String.format(actionTemplateException, id, dataSource, targetType, routing));
                             bulkRequest.append(doc + "\n");
                         }
                         i++;
                         if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
-                            logger.info("Uploading {}"+ i);
-                            bulkUpload(errors,bulkRequest.toString());
+                            logger.info("Uploading {}" + i);
+                            bulkUpload(errors, bulkRequest.toString());
                             bulkRequest = new StringBuilder();
                         }
                     }
@@ -2344,8 +2353,8 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                 }
             }
             if (bulkRequest.length() > 0) {
-                logger.info("Uploading {}"+ i);
-                bulkUpload(errors,bulkRequest.toString());
+                logger.info("Uploading {}" + i);
+                bulkUpload(errors, bulkRequest.toString());
             }
         }
 
@@ -2367,7 +2376,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
                 errors.add(responseStr);
             }
         } catch (Exception e) {
-            logger.error("Bulk upload failed",e);
+            logger.error("Bulk upload failed", e);
             errors.add(e.getMessage());
         }
     }
@@ -2378,7 +2387,7 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         try {
             docJson = objMapper.writeValueAsString(doc);
         } catch (JsonProcessingException e) {
-            logger.error("Error createESDoc",e);
+            logger.error("Error createESDoc", e);
         }
         return docJson;
     }
@@ -2405,16 +2414,18 @@ if (ruleId.contains(TAGGIG_POLICY)) {
     @SuppressWarnings("unchecked")
     private List<String> fetchIdFromErrors(List<String> errors) {
         List<String> ids = new ArrayList<>();
-        for(String error : errors) {
+        for (String error : errors) {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> errorMap = new HashMap<String, Object>();
             try {
-                errorMap = mapper.readValue(error, new TypeReference<Map<String, Object>>(){});
+                errorMap = mapper.readValue(error, new TypeReference<Map<String, Object>>() {
+                });
             } catch (IOException e) {
             }
-            List<LinkedHashMap<String, Object>> errorItems = ((List<LinkedHashMap<String, Object>>) errorMap.get("items"));
+            List<LinkedHashMap<String, Object>> errorItems = ((List<LinkedHashMap<String, Object>>) errorMap
+                    .get("items"));
 
-            for(LinkedHashMap<String, Object> errorItem : errorItems) {
+            for (LinkedHashMap<String, Object> errorItem : errorItems) {
                 Map<String, Object> errorItemMap = (Map<String, Object>) errorItem.get("update");
                 ids.add(errorItemMap.get("_id").toString());
             }
@@ -2427,122 +2438,126 @@ if (ruleId.contains(TAGGIG_POLICY)) {
         cal.add(Calendar.DATE, -1);
         return cal.getTime();
     }
-    
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#getTotalAssetCountByEnvironment(java.lang.String, java.lang.String, java.lang.String)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     * getTotalAssetCountByEnvironment(java.lang.String, java.lang.String,
+     * java.lang.String)
      */
-    public Map<String,Long> getTotalAssetCountByEnvironment(String assetGroup, String application,String targetType) {
-    	Map<String,Long> assetCountByEnv = new HashMap<>();
-        AssetCount totalAssets = assetServiceClient.getTotalAssetsCountByEnvironment(assetGroup, application,targetType);
+    public Map<String, Long> getTotalAssetCountByEnvironment(String assetGroup, String application, String targetType) {
+        Map<String, Long> assetCountByEnv = new HashMap<>();
+        AssetCount totalAssets = assetServiceClient.getTotalAssetsCountByEnvironment(assetGroup, application,
+                targetType);
         AssetCountData data = totalAssets.getData();
         AssetCountByAppEnvDTO[] assetcount = data.getAssetcount();
         for (AssetCountByAppEnvDTO assetCount_Count : assetcount) {
             if (assetCount_Count.getApplication().equals(application)) {
                 for (AssetCountEnvCount envCount_Count : assetCount_Count.getEnvironments()) {
-                	assetCountByEnv.put(envCount_Count.getEnvironment(),Long.parseLong(envCount_Count.getCount()));
+                    assetCountByEnv.put(envCount_Count.getEnvironment(), Long.parseLong(envCount_Count.getCount()));
                 }
             }
         }
         return assetCountByEnv;
     }
-    
-	/**
-	 * Function for getting dataSource and target type of an asset group and domain
-	 * 
-	 * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-	 *      getDataSourceForTargetTypeForAG(java.lang.String, java.lang.String)
-	 */
-	public List<Map<String, String>> getDataSourceForTargetTypeForAG(String assetGroup, String domain,
-			String targetType) {
 
-		List<Map<String, String>> dataSourceForTargetType = new ArrayList<Map<String, String>>();
-		AssetApi assetApi = assetServiceClient.getTargetTypeList(assetGroup, domain);
-		AssetApiData data = assetApi.getData();
-		AssetCountDTO[] targetTypes = data.getTargettypes();
-		for (AssetCountDTO name : targetTypes) {
-			Map<String, String> datasourceTargetType = new HashMap<String, String>();
-			if (!Strings.isNullOrEmpty(name.getType())) {
-				datasourceTargetType.put(TYPE, name.getType());
-				datasourceTargetType.put(PROVIDER, name.getProvider());
-				if (targetType == null) {
-					dataSourceForTargetType.add(datasourceTargetType);
-				} else {
-					if (datasourceTargetType.get(TYPE).equals(targetType)) {
-						dataSourceForTargetType.add(datasourceTargetType);
-					}
-				}
-			}
-		}
-		return dataSourceForTargetType;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-	 * getTotalAssetCount(java.lang.String, java.lang.String)
-	 */
-	public Map<String, Long> getTotalAssetCount(String assetGroup, String domain, String application, String type) {
-		AssetCount totalAssets = assetServiceClient.getTotalAssetsCount(assetGroup, type, domain, application,"");   
-		AssetCountData data = totalAssets.getData();
-		AssetCountByAppEnvDTO[] assetcount = data.getAssetcount();
-		Map<String, Long> assetCountByType = new HashMap<>();
-		for (AssetCountByAppEnvDTO assetCount_Count : assetcount) {
-			assetCountByType.put(assetCount_Count.getType(), Long.parseLong(assetCount_Count.getCount()));
-		}
-		return assetCountByType;
-	}
-	
-	@Override
-	public Map<String, Integer> getExemptedAssetsCountByRule(String assetGroup, String application, String type)
-			throws DataException {
+    /**
+     * Function for getting dataSource and target type of an asset group and domain
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     *      getDataSourceForTargetTypeForAG(java.lang.String, java.lang.String)
+     */
+    public List<Map<String, String>> getDataSourceForTargetTypeForAG(String assetGroup, String domain,
+            String targetType) {
 
-		Map<String, Integer> exemptedAssetsCount = new HashMap<>();
-		ExemptedAssetByPolicy exemptedAssetByPolicy = assetServiceClient.getTotalAssetsExemptedByPolicy(assetGroup,
-				application, type, null);
-		ExemptedAssetByPolicyData data = exemptedAssetByPolicy.getData();
-		for (Map<String, Object> exempted : data.getExempted()) {
-			exemptedAssetsCount.put(exempted.get("ruleid").toString(),
-					Integer.parseInt(exempted.get(COUNT).toString()));
-		}
-		return exemptedAssetsCount;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-	 * getPatchabeAssetsCount(java.lang.String, java.lang.String)
-	 */
-	public Long getPatchabeAssetsCount(String assetGroup, String targetType, String application, String environment,
-			String searchText) throws DataException {
-		Map<String, Object> mustFilter = new HashMap<>();
-		Map<String, Object> mustNotFilter = null;
+        List<Map<String, String>> dataSourceForTargetType = new ArrayList<Map<String, String>>();
+        AssetApi assetApi = assetServiceClient.getTargetTypeList(assetGroup, domain);
+        AssetApiData data = assetApi.getData();
+        AssetCountDTO[] targetTypes = data.getTargettypes();
+        for (AssetCountDTO name : targetTypes) {
+            Map<String, String> datasourceTargetType = new HashMap<String, String>();
+            if (!Strings.isNullOrEmpty(name.getType())) {
+                datasourceTargetType.put(TYPE, name.getType());
+                datasourceTargetType.put(PROVIDER, name.getProvider());
+                if (targetType == null) {
+                    dataSourceForTargetType.add(datasourceTargetType);
+                } else {
+                    if (datasourceTargetType.get(TYPE).equals(targetType)) {
+                        dataSourceForTargetType.add(datasourceTargetType);
+                    }
+                }
+            }
+        }
+        return dataSourceForTargetType;
+    }
 
-		if (!StringUtils.isEmpty(application)) {
-			mustFilter.put(CommonUtils.convertAttributetoKeyword(TAGS_APPLICATION), application);
-		}
-		if (!StringUtils.isEmpty(environment)) {
-			mustFilter.put(CommonUtils.convertAttributetoKeyword(TAGS_ENVIRONMENT), environment);
-		}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     * getTotalAssetCount(java.lang.String, java.lang.String)
+     */
+    public Map<String, Long> getTotalAssetCount(String assetGroup, String domain, String application, String type) {
+        AssetCount totalAssets = assetServiceClient.getTotalAssetsCount(assetGroup, type, domain, application, "");
+        AssetCountData data = totalAssets.getData();
+        AssetCountByAppEnvDTO[] assetcount = data.getAssetcount();
+        Map<String, Long> assetCountByType = new HashMap<>();
+        for (AssetCountByAppEnvDTO assetCount_Count : assetcount) {
+            assetCountByType.put(assetCount_Count.getType(), Long.parseLong(assetCount_Count.getCount()));
+        }
+        return assetCountByType;
+    }
 
-		mustFilter.put(LATEST, true);
-		if (EC2.equalsIgnoreCase(targetType)) {
-			mustFilter.put(CommonUtils.convertAttributetoKeyword(STATE_NAME), RUNNING);
-			mustNotFilter = new HashMap<>();
-			mustNotFilter.put(CommonUtils.convertAttributetoKeyword(PLATFORM), WINDOWS);
-		} else if (VIRTUALMACHINE.equalsIgnoreCase(targetType)) {
-			mustFilter.put(CommonUtils.convertAttributetoKeyword("status"), RUNNING);
-			mustNotFilter = new HashMap<>();
-			mustNotFilter.put(CommonUtils.convertAttributetoKeyword("osType"), AZURE_WINDOWS);
-		}
-		try {
-			return elasticSearchRepository.getTotalDocumentCountForIndexAndType(assetGroup, targetType, mustFilter,
-					mustNotFilter, null, searchText, null);
-		} catch (Exception e) {
-			throw new DataException(e);
-		}
-	}
+    @Override
+    public Map<String, Integer> getExemptedAssetsCountByRule(String assetGroup, String application, String type)
+            throws DataException {
 
-	
+        Map<String, Integer> exemptedAssetsCount = new HashMap<>();
+        ExemptedAssetByPolicy exemptedAssetByPolicy = assetServiceClient.getTotalAssetsExemptedByPolicy(assetGroup,
+                application, type, null);
+        ExemptedAssetByPolicyData data = exemptedAssetByPolicy.getData();
+        for (Map<String, Object> exempted : data.getExempted()) {
+            exemptedAssetsCount.put(exempted.get("ruleid").toString(),
+                    Integer.parseInt(exempted.get(COUNT).toString()));
+        }
+        return exemptedAssetsCount;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     * getPatchabeAssetsCount(java.lang.String, java.lang.String)
+     */
+    public Long getPatchabeAssetsCount(String assetGroup, String targetType, String application, String environment,
+            String searchText) throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = null;
+
+        if (!StringUtils.isEmpty(application)) {
+            mustFilter.put(CommonUtils.convertAttributetoKeyword(TAGS_APPLICATION), application);
+        }
+        if (!StringUtils.isEmpty(environment)) {
+            mustFilter.put(CommonUtils.convertAttributetoKeyword(TAGS_ENVIRONMENT), environment);
+        }
+
+        mustFilter.put(LATEST, true);
+        if (EC2.equalsIgnoreCase(targetType)) {
+            mustFilter.put(CommonUtils.convertAttributetoKeyword(STATE_NAME), RUNNING);
+            mustNotFilter = new HashMap<>();
+            mustNotFilter.put(CommonUtils.convertAttributetoKeyword(PLATFORM), WINDOWS);
+        } else if (VIRTUALMACHINE.equalsIgnoreCase(targetType)) {
+            mustFilter.put(CommonUtils.convertAttributetoKeyword("status"), RUNNING);
+            mustNotFilter = new HashMap<>();
+            mustNotFilter.put(CommonUtils.convertAttributetoKeyword("osType"), AZURE_WINDOWS);
+        }
+        try {
+            return elasticSearchRepository.getTotalDocumentCountForIndexAndType(assetGroup, targetType, mustFilter,
+                    mustNotFilter, null, searchText, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+
 }
