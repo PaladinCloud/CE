@@ -17,7 +17,7 @@ import { HttpModule } from "@angular/http";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { MatSelectModule } from "@angular/material";
+import { MatGridListModule, MatInputModule, MatMenuModule, MatSelectModule } from "@angular/material";
 import { AgGridModule } from "ag-grid-angular/main";
 import { CanvasSidePanelComponent } from "./canvas-side-panel/canvas-side-panel.component";
 import { ButtonIconComponent } from "./button-icon/button-icon.component";
@@ -91,21 +91,28 @@ import { CopyElementComponent } from "./copy-element/copy-element.component";
 import { ToastObservableService } from "./services/toast-observable.service";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { TableListComponent } from "./table-list/table-list.component";
+import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
+import { MatIconModule } from "@angular/material";
 
 @NgModule({
   imports: [
+    MatGridListModule,
+    MatSelectModule,
+    MatInputModule,
+    MatMenuModule,
+    MatIconModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
     SelectModule,
     HttpModule,
-    MatSelectModule,
     NgDatepickerModule,
     SelectDropDownModule,
     AgGridModule.withComponents([AgGridTableComponent]),
   ],
   declarations: [
+    FilterDropdownComponent,
     CanvasSidePanelComponent,
     ButtonIconComponent,
     ButtonComponent,

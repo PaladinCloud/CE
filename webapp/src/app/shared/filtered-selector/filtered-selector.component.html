@@ -11,13 +11,18 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-
- <div class='flex flex-align-center flex-wrap'>
-    <div class='each-filter capitalize' [class.filter-without-cross]='arr.hasOwnProperty("mandatoryFilter")' title='{{arr.key}}: {{arr.value}}' *ngFor='let arr of filteredArray; let i = index; ' >
-        {{arr.key}}: {{arr.value}}
-        <div class='absolute right-close-wrap' (click)='removeFilter(arr, i)' *ngIf='!arr.hasOwnProperty("mandatoryFilter")' >
-            <img class='absolute close-img' src='../assets/icons/cross-white.svg'>
+<div class="filters-wrapper">
+    <div class='filters'>
+        <div class='each-filter capitalize' [class.filter-without-cross]='arr.hasOwnProperty("mandatoryFilter")'
+            title='{{arr.key}}: {{arr.value}}' *ngFor='let arr of filteredArray; let i = index; '>
+            <span class="text-content">
+                {{arr.key}}: {{arr.value}}
+            </span>
+            <div class='right-close-wrap' (click)='removeFilter(arr, i)' *ngIf='!arr.hasOwnProperty("mandatoryFilter")'>
+                <img class='close-img' src='/assets/icons/filter-close-icon.svg'>
+            </div>
         </div>
     </div>
-    <div *ngIf='filteredArray.length && !(countMandatoryFilter == filteredArray.length)' (click)='clearAll(filteredArray)' class='clear-filter'>clear all</div>
+    <div *ngIf='filteredArray.length && !(countMandatoryFilter == filteredArray.length)'
+        (click)='clearAll(filteredArray)' class='clear-filter'> Clear Filters</div>
 </div>

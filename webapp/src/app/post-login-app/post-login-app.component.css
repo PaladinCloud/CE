@@ -145,7 +145,7 @@
 .contextual-container {
   position: relative;
   flex-grow: 1;
-  width: 82%;
+  width: 70%;
   height: 100%;
   max-width: 100%;
 }
