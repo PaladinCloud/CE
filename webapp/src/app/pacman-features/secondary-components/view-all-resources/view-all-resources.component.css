@@ -101,6 +101,7 @@ img.close-icon {
     height: 100%;
     cursor: pointer;
     transition: 0.4s ease;
+    padding: 2px;
 }
 
 .close-overlay:hover {

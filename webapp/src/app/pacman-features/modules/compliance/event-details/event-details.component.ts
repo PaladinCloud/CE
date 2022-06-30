@@ -344,7 +344,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   }
 
   goToLinkDetails(module, page, p1?, p2?) {
-    const arr = ["../../../", module, page];
+    const arr = ["../../../../", module, page];
     if (p1) {
       arr.push(p1);
     }

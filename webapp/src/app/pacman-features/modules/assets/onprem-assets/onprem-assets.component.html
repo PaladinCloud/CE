@@ -55,7 +55,7 @@
                             <div class='details-bar-header relative flex flex-align-center flex-between'>
                                 <app-title-burger-head [subHeadTitle]="'update columns'">
                                 </app-title-burger-head>
-                                <img class='pointer' [class.no-event]='updateState==0 && carouselState==2 ' (click)='$event.stopPropagation(); showSidebar=false; carouselState=0; ' style='height: 1.3em;' src='../assets/png/delete.png'>
+                                <img class='pointer' [class.no-event]='updateState==0 && carouselState==2 ' (click)='$event.stopPropagation(); showSidebar=false; carouselState=0; ' style='height: 1.1em;' src='../assets/icons/x-icon.svg'>
                             </div>
                             <div class='flex flex-strip' [ngStyle]="{'transform': 'translateX(' + -carouselState * 100 + '%' }">
                                 <!-- Slide One -->
@@ -139,7 +139,7 @@
                     </div>
                     <!-- select target type popup -->
                     <div class='absolute target-wrap flex flex-col' *ngIf='showTargets'>
-                        <div *ngIf='savedTarget' (click)='showTargets=false;' class='close-img'><img src='../../assets/png/delete.png'></div>
+                        <div *ngIf='savedTarget' (click)='showTargets=false;' class='close-img'><img src='../../assets/icons/x-icon.svg'></div>
                         <div class='target-title'> Choose a target type to show the data
                         </div>
                         <div class='flex flex-center target-tile-wrap' *ngIf='errorValue >0'>

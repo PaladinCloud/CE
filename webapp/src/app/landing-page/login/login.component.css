@@ -39,8 +39,9 @@ h2 {
 }
 
 .close-button {
-  right: 0.5em;
-  height: 2.5em;
+  filter: invert(50%) sepia(8%) saturate(310%) hue-rotate(177deg) brightness(91%) contrast(86%);
+  right: 0em;
+  height: 2.0em;
   -webkit-transition: 0.3s ease;
   transition: 0.3s ease;
   cursor: pointer;
@@ -115,5 +116,9 @@ h2 {
   z-index: 100;
   top: 0;
   right: 0;
-  background-color: #e0e1e2;
+  background-color: var(--background-white);
+}
+
+::ng-deep .login-sidemenu .app-login .app-button{
+  width:356px !important;
 }

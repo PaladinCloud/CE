@@ -469,8 +469,9 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
       } else if (row.col.toLowerCase() === "policy name") {
         this.router.navigate(
           [
-            "../../policy-knowledgebase-details",
+            "/pl/compliance/policy-knowledgebase-details",
             row.row.nonDisplayableAttributes.text.RuleId,
+            "false",
           ],
           { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
         );
