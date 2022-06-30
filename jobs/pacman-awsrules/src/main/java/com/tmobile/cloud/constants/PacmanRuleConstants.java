@@ -47,6 +47,7 @@ public class PacmanRuleConstants {
     public static final String ADMIN_FOR_KEYS = "adminForKeys";
     public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
     public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
+    public static final String STORAGE_KMS_KEY_NAME ="defaultKmsKeyName" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");

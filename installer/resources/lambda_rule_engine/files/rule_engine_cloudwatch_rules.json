@@ -5651,7 +5651,7 @@
     "displayName": "VPC Firewall with RDP port 3389 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5673,7 +5673,7 @@
     "displayName": "VPC Firewall with SSH port 22 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5695,7 +5695,7 @@
     "displayName": "VPC Firewall with DNS port 53 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5717,7 +5717,7 @@
     "displayName": "VPC Firewall with FTP port 20 and 21 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5761,7 +5761,7 @@
     "displayName": "VPC Firewall with Uncommon port 8010 and 1494 should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5783,7 +5783,7 @@
     "displayName": "VPC Firewall with MYSQL port 3306  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5805,7 +5805,7 @@
     "displayName": "VPC Firewall with Oracle DB  port 1521  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5827,7 +5827,7 @@
     "displayName": "VPC Firewall with Postgres DB  port 5432  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5849,7 +5849,7 @@
     "displayName": "VPC Firewall with RPC  port 135  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
 
@@ -5872,7 +5872,7 @@
     "displayName": "VPC Firewall with SMTP  port 25  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5894,7 +5894,7 @@
     "displayName": "VPC Firewall with SQL server  port 1433  should not be publicly accessible",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -5905,7 +5905,7 @@
     "targetType": "bigquerytable",
     "assetGroup": "gcp",
     "alexaKeyword": "BigqueryTableEncryptionCMKs",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-bigquery-table-encryption-with-cmks\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that BigQuery dataset tables are encrypted using Customer-Managed Keys (CMKs).\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Cloud BigQuery dataset table is not encrypted using a Customer-Managed Key (CMK)\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_bigquerytable\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable BigQuery Encryption with Customer-Managed Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_bigquery_table_encryption_cmks_rule\",\"autofix\":false,\"alexaKeyword\":\"BigqueryTableEncryptionCMKs\",\"ruleRestUrl\":\"\",\"targetType\":\"bigquerytable\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_bigquery_table_encryption_cmks_rule_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_bigquery_table_encryption_cmks_rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-customer-managed-key-encryption\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that BigQuery dataset tables are encrypted using Customer-Managed Keys (CMKs).\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Cloud BigQuery dataset table is not encrypted using a Customer-Managed Key (CMK)\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_bigquerytable\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable BigQuery Encryption with Customer-Managed Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_bigquery_table_encryption_cmks_rule\",\"autofix\":false,\"alexaKeyword\":\"BigqueryTableEncryptionCMKs\",\"ruleRestUrl\":\"\",\"targetType\":\"bigquerytable\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_bigquery_table_encryption_cmks_rule_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_bigquery_table_encryption_cmks_rule\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -5924,10 +5924,10 @@
     "ruleUUID": "gcp_bigquery_dataset_public_access_rule",
     "policyId": "GCP_bigquery_dataset_public_access_version-1",
     "ruleName": "BigqueryDatasetPublicAccess",
-    "targetType": "bigqueydataset",
+    "targetType": "bigquerydataset",
     "assetGroup": "gcp",
     "alexaKeyword": "BigqueryDatasetPublicAccess",
-    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-bigquery-dataset-public-access\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that Google Cloud BigQuery datasets are not publicly accessible.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"One or more roles are using the allUsers or allAuthenticatedUsers member bindings in the dataset ACLs\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_bigquerydataset\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Check for Publicly Accessible BigQuery Datasets\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_bigquery_dataset_public_access_rule\",\"autofix\":false,\"alexaKeyword\":\"BigqueryDatasetPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"bigqueydataset\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_bigquery_dataset_public_access_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_bigquery_dataset_public_access_rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-bigquery-dataset-public-access\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that Google Cloud BigQuery datasets are not publicly accessible.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"One or more roles are using the allUsers or allAuthenticatedUsers member bindings in the dataset ACLs\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_bigquerydataset\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Check for Publicly Accessible BigQuery Datasets\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_bigquery_dataset_public_access_rule\",\"autofix\":false,\"alexaKeyword\":\"BigqueryDatasetPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"bigquerydataset\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_bigquery_dataset_public_access_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_bigquery_dataset_public_access_rule\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -5938,6 +5938,28 @@
     "displayName": "Check for Publicly Accessible BigQuery Datasets",
     "createdDate": "2022-06-23",
     "modifiedDate": "2022-06-23",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "GCP_cloud_sql_encryption_cmks_rule",
+    "ruleUUID": "gcp_cloud_sql_encryption_cmks_rule",
+    "policyId": "GCP_cloud_sql_encryption_cmks_rule_version-1",
+    "ruleName": "CloudSqlEncryptionCMKs",
+    "targetType": "cloudsql",
+    "assetGroup": "gcp",
+    "alexaKeyword": "CloudSqlEncryptionCMKs",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-customer-managed-key-encryption\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that Cloud SQL instances are encrypted with Customer-Managed Keys (CMKs).\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Cloud SQL database instance is not encrypted using a Customer-Managed Key (CMK)\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_cloudsql\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Cloud SQL Instance Encryption with Customer-Managed Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_cloud_sql_encryption_cmks_rule\",\"autofix\":false,\"alexaKeyword\":\"CloudSqlEncryptionCMKs\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_cloud_sql_encryption_cmks_rule_version-1\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"gcp_cloud_sql_encryption_cmks_rule\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/gcp_cloud_sql_encryption_cmks_rule",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Cloud SQL Instance Encryption with Customer-Managed Keys",
+    "createdDate": "2022-06-29",
+    "modifiedDate": "2022-06-29",
     "severity": "high",
     "category": "security"
   },
@@ -6004,6 +6026,28 @@
     "displayName": "Ensure that OS Login is configured with Two-Factor Authentication (2FA) for production VM instances.",
     "createdDate": "2022-06-21",
     "modifiedDate": "2022-06-21",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "ruleUUID": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "policyId": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "ruleName": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "targetType": "cloudstorage",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "Cloud_Storage_should_be_encrypted_with_CMK",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-cmk-encryption\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"checks if cloud storage has customer managed key to encrypt data\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google cloud storage is not encrypted with customer managed key\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"cloud storage should be encrypted with customer managed key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"autofix\":false,\"alexaKeyword\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"policyId\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Cloud_Storage_should_be_encrypted_with_CMK\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Cloud_Storage_should_be_encrypted_with_CMK",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure that your Cloud Storage objects are encrypted using Customer-Managed Keys (CMKs).",
+    "createdDate": "2022-06-27",
+    "modifiedDate": "2022-06-27",
     "severity": "high",
     "category": "security"
   }

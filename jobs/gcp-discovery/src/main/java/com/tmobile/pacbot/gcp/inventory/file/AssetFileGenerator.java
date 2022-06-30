@@ -7,10 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
-import com.tmobile.pacbot.gcp.inventory.collector.BigQueryInventoryCollector;
-import com.tmobile.pacbot.gcp.inventory.collector.FirewallInventoryCollector;
-import com.tmobile.pacbot.gcp.inventory.collector.StorageCollector;
-import com.tmobile.pacbot.gcp.inventory.collector.VMInventoryCollector;
+import com.tmobile.pacbot.gcp.inventory.collector.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +36,8 @@ public class AssetFileGenerator {
 	FirewallInventoryCollector firewallInventoryCollector;
 	@Autowired
 	StorageCollector storageInventoryCollector;
+	@Autowired
+	CloudSqlInventoryCollector cloudSqlInventoryCollector;
 
 	@Autowired
 	BigQueryInventoryCollector bigQueryInventoryCollector;
@@ -109,6 +108,17 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateStorageFiles(storageInventoryCollector.fetchStorageInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("cloudsql"))) {
+					return;
+				}
+				try {
+					FileManager.generateCloudSqlFiles(cloudSqlInventoryCollector.fetchCloudSqlInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
