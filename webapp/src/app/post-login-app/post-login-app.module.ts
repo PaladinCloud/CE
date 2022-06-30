@@ -33,7 +33,6 @@ import { AwsResourceTypeSelectionService } from "./../pacman-features/services/a
 import { StateManagementService } from "./common/services/state-management.service";
 import { ToastObservableService } from "./common/services/toast-observable.service";
 import { HelpObservableService } from "./common/services/help-observable.service";
-import { UserInfoComponent } from "./common/user-info/user-info.component";
 import { ChangeDefaultAssetGroupComponent } from "./change-default-asset-group/change-default-asset-group.component";
 import { ToolsModule } from "../pacman-features/modules/tools/tools.module";
 import { KnowYourDashboardComponent } from "./know-your-dashboard/know-your-dashboard.component";
@@ -85,7 +84,6 @@ import { HttpClientModule } from "@angular/common/http";
     AssetGroupTabsComponent,
     AssetGroupDetailsComponent,
     AssetGroupSearchComponent,
-    UserInfoComponent,
     ChangeDefaultAssetGroupComponent,
     KnowYourDashboardComponent,
     DomainGroupComponent,

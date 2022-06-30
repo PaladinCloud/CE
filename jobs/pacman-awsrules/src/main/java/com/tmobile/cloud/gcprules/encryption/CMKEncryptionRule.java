@@ -1,4 +1,4 @@
-package com.tmobile.cloud.gcprules.bigquery;
+package com.tmobile.cloud.gcprules.encryption;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
@@ -20,16 +20,16 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-bigquery-table-encryption-with-cmks", desc = "Enable BigQuery Encryption with Customer-Managed Keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+@PacmanRule(key = "check-customer-managed-key-encryption", desc = "Enable Encryption with Customer-Managed Keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 
-public class TableKeyEncryptionRule extends BaseRule {
+public class CMKEncryptionRule extends BaseRule {
 
-    private static final Logger logger = LoggerFactory.getLogger(TableKeyEncryptionRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(CMKEncryptionRule.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
-        logger.debug("Executing bigquery dataset table encryption with customer managed keys rule");
+        logger.debug("Executing encryption with customer-managed keys rule.");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -45,7 +45,7 @@ public class TableKeyEncryptionRule extends BaseRule {
         if (!StringUtils.isNullOrEmpty(esUrl)) {
             esUrl = esUrl + esEndpoint;
         }
-        logger.debug("ES search url for gcp bigquery datset table:  {}", esUrl);
+        logger.debug("ES search url :  {}", esUrl);
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
         MDC.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
 
@@ -64,7 +64,7 @@ public class TableKeyEncryptionRule extends BaseRule {
                     issue.put(PacmanRuleConstants.VIOLATION_REASON, violationReason);
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                    logger.debug("Bigquery dataset table encryption with cmks rule ended with failure. Annotation {} :", annotation);
+                    logger.debug("Encryption with customer-managed key rule ended with failure. Annotation {} :", annotation);
                     return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
@@ -72,13 +72,13 @@ public class TableKeyEncryptionRule extends BaseRule {
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
-        logger.debug("Bigquery dataset table encryption with cmks rule ended with success.");
+        logger.debug("Encryption with customer-managed key rule ended with success.");
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 
     private boolean checkEncryptionKeyNull(String esUrl, Map<String, Object> mustFilter) throws Exception {
-        logger.debug("Validating bigquery table customer managed key encryption rule");
+        logger.debug("Validating customer managed key encryption rule");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(esUrl, mustFilter);
         if (hitsJsonArray.size() > 0) {
             JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
@@ -93,6 +93,6 @@ public class TableKeyEncryptionRule extends BaseRule {
 
     @Override
     public String getHelpText() {
-        return "This rule checks if the bigquery dataset tables are encrypted with customer managed keys.";
+        return "This rule checks if the gcp resources are encrypted with customer managed keys.";
     }
 }

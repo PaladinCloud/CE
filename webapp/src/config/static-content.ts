@@ -18,12 +18,13 @@ const APP_NAME = 'Paladin Cloud';
 
 export const CONTENT = {
   'homePage': {
-    'productLogo': '/assets/icons/application-logo.svg',
+    'productLogo': '/assets/images/Paladin_Logo_KO.svg',
     'companyLogo': '/assets/icons/tmo-black.svg',
     'heading': APP_NAME,
     'subHeading': 'Policy as Code Manager',
     'awsLogo': '/assets/icons/aws-color.svg',
     'azureLogo': '/assets/icons/azure-color.svg',
+    'gcpLogo': '/assets/icons/gcp-color.svg',
     'productBrief': 'A platform for continuous compliance monitoring, compliance reporting and security automation for Cloud.',
     'applicationCore': [
       {

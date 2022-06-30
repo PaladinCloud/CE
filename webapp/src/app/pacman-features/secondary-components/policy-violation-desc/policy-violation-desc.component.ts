@@ -155,7 +155,7 @@ export class PolicyViolationDescComponent implements OnInit {
         const resourceId = id1;
         const resourceType = id2;
         this.router.navigate(
-          ["../../../", "assets", "asset-detail", resourceType, resourceId],
+          ["../../../../", "assets", "asset-list", resourceType, resourceId],
           {
             relativeTo: this.activatedRoute,
             queryParamsHandling: "merge",
@@ -163,7 +163,7 @@ export class PolicyViolationDescComponent implements OnInit {
         );
       } else if (destination === "policy knowledgebase details") {
         const ruleId = id1;
-        this.router.navigate(["../../policy-knowledgebase-details", ruleId], {
+        this.router.navigate(["../../../policy-knowledgebase-details", ruleId, "false"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
         });

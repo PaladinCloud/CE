@@ -119,12 +119,13 @@
 
 .user-logout-modal-btn {
   cursor: pointer;
-  padding: 12px 2px 10px 12px;
+  padding: 6px;
 }
 
 .user-image-wrapper > img {
   height: 32px;
   width: 32px;
+  border-radius: 4px;
 }
 
 .user-info-wrapper {

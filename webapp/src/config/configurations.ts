@@ -20,9 +20,9 @@ export const CONFIGURATIONS = {
   required: {
     APP_NAME: 'Paladin Cloud',
     domains: {
-      PROD_BASE_URL: "http://pacbot-548201713.us-east-1.elb.amazonaws.com/api", // Expected values: domain where the API is deployed, ex: http://beta.pacbot.com/api
-      STG_BASE_URL: "http://pacbot-548201713.us-east-1.elb.amazonaws.com/api", // Expected values: domain where the API is deployed, ex: http://stgbeta.pacbot.com/api
-      DEV_BASE_URL: "http://pacbot-548201713.us-east-1.elb.amazonaws.com/api", // Expected values: domain where the API is deployed, ex: http://devbeta.pacbot.com/api
+      PROD_BASE_URL: "", // Expected values: domain where the API is deployed, ex: http://beta.pacbot.com/api
+      STG_BASE_URL: "", // Expected values: domain where the API is deployed, ex: http://stgbeta.pacbot.com/api
+      DEV_BASE_URL: "", // Expected values: domain where the API is deployed, ex: http://devbeta.pacbot.com/api
       CLOUD_BASE_URL: "", // Expected values: domain where the API is deployed
     },
     featureModules: {

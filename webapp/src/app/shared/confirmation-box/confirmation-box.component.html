@@ -1,7 +1,7 @@
 <app-overlay (click)='closeBox();'></app-overlay>
 <div class='confirmation-box fixed'>
   <div class="static-confirmation flex flex-col flex-center flex-align-center" *ngIf="!transactionInProgress">
-    <img class="delete-icon absolute" (click)='closeBox();' src='../assets/png/delete.png'>
+    <img class="delete-icon absolute" (click)='closeBox();' src='../assets/icons/x-icon.svg'>
     <div class='flex flex-col flex-center flex-align-center'>
       <div class="conf-text bold">Confirmation</div>
       <div class="conf-text">{{text}}</div>

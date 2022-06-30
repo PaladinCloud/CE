@@ -31,6 +31,7 @@ mat-card-title {
 
 mat-card-title-group div {
   width: 32px;
+  height: 32px;
   border-radius: 8px;
 }
 
