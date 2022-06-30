@@ -75,7 +75,7 @@
 
   --text-subtitle-1: 400 19px/140% var(--text-medium-font-family);
   --text-subtitle-2: 500 17px/140% var(--text-medium-font-family);
-  --text-body-1: 400 normal 16px/140% var(--text-medium-font-family);
+  --text-body-1: 400 normal 16px/140% var(--text-font-family);
   --text-body-2: 500 normal 14px/140% var(--text-medium-font-family);
   --text-caption: 400 normal 12px/140% var(--text-medium-font-family);
   --text-overline: 500 11px/140% var(--text-medium-font-family);

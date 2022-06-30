@@ -23,24 +23,15 @@ import { LoggerService } from '../services/logger.service';
 export class SearchFilterPipe implements PipeTransform {
   @Output() pipeError = new EventEmitter();
 
-  constructor(private loggerService: LoggerService) {}
+  constructor(private loggerService: LoggerService) { }
 
-  transform(input: any, searchQuery: any): any {
+  transform(input: any, searchQuery: string): any {
+    if (!input) return [];
+    if (!searchQuery) return input;
+
     try {
       return input.filter(item => {
-        for (const key in item) {
-          if (
-            (
-              '' +
-              JSON.stringify(item[key])
-                .toString()
-                .toLowerCase()
-            ).includes(searchQuery.toString().toLowerCase())
-          ) {
-            return true;
-          }
-        }
-        return false;
+        return item.toLowerCase().includes(searchQuery.toLowerCase())
       });
     } catch (error) {
       this.loggerService.log('infor', 'error in pipe' + error);
