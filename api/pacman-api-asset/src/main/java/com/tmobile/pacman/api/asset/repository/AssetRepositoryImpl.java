@@ -1148,7 +1148,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         String ruleIdWithTargetTypeQuery = null;
 
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGIG_POLICY);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
         filter.entrySet()
@@ -1172,7 +1172,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         if (!Strings.isNullOrEmpty(targetType)) {
             sb = new StringBuilder();
             type = sb.append("'").append(targetType).append("'").toString();
-            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = 'PacMan_TaggingRule_version-1' AND A.targetType = "
+            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = '"+Constants.TAGGING_POLICY+"' AND A.targetType = "
                     + type;
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             try {
@@ -1215,7 +1215,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             	 assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
             }
         } else {
-            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = 'PacMan_TaggingRule_version-1'";
+            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = '"+Constants.TAGGING_POLICY+"'";
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             List<String> validTypes = ruleIdwithTargetType.stream()
                     .map(obj -> obj.get(Constants.TARGET_TYPE).toString()).collect(Collectors.toList());
@@ -1445,7 +1445,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     null, null, null, null);
             if (!nonCompliantAssets.isEmpty()) {
                 String policy = nonCompliantAssets.get(0).get("policyId").toString();
-                if ("PacMan_TaggingRule_version-1".equals(policy)) {
+                if (Constants.TAGGING_POLICY.equals(policy)) {
                     String[] tags = mandatoryTags.split(",");
                     nonCompliantAssets = nonCompliantAssets.stream().filter(issue -> {
                         boolean compliant = true;
