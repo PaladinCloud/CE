@@ -66,7 +66,7 @@ public interface Constants {
     String TARGET_TYPE = "targetType";
     String RESOURCE_TYPE = "resourcetType";
     String POLICY_DESC = "policyDesc";
-    String TAGGIG_POLICY = "PacMan_TaggingRule_version-1";
+
     String TITLE = "title";
     String DESCRIPTION = "description";
     String METRIC_NAME = "metricName";
@@ -95,7 +95,7 @@ public interface Constants {
     String COMPLIANCE_PERCENTAGE = "compliance";
     String COMPLIANCE_PERCENT = "compliance_percent";
     String LAST_SCAN = "lastScan";
-    String TAGGING_POLICY = "PacMan_TaggingRule_version-1";
+    String TAGGING_POLICY = "TaggingRule_version-1";
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";
     String ACCOUNT_ID = "accountid";

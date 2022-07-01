@@ -450,7 +450,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     executor.execute(() -> {
 
                         boolean tagginPolicyExists = rulesTemp.stream()
-                                .filter(ruleObj -> ruleObj.get(RULEID).toString().contains(TAGGIG_POLICY)).findAny()
+                                .filter(ruleObj -> ruleObj.get(RULEID).toString().contains(TAGGING_POLICY)).findAny()
                                 .isPresent();
 
                         if (tagginPolicyExists)
@@ -515,7 +515,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                                 logger.error("Error fetching patching info", e);
                             }
 
-                        } else if (ruleId.contains(TAGGIG_POLICY)) {
+                        } else if (ruleId.contains(TAGGING_POLICY)) {
                             issuecountPerRuleAG = 0l;
                             if (untagMap.get(resourceType) != null) {
                                 String totaluntaggedStr = untagMap.get(resourceType).toString()

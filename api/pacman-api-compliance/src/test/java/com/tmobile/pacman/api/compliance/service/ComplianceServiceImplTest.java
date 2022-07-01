@@ -76,7 +76,7 @@ public class ComplianceServiceImplTest {
     public void getResourceDetailsTest() throws Exception {
 
         Map<String, Object> ruleMap = new HashMap<>();
-        ruleMap.put("ruleId", "PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2");
+        ruleMap.put("ruleId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
 
         List<Map<String, Object>> ruleList = new ArrayList<>();
         ruleList.add(ruleMap);
@@ -99,7 +99,7 @@ public class ComplianceServiceImplTest {
     public void getRecommendationsTest() throws Exception {
 
         Map<String, Object> ruleMap = new HashMap<>();
-        ruleMap.put("ruleId", "PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2");
+        ruleMap.put("ruleId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
 
         List<Map<String, Object>> ruleList = new ArrayList<>();
         ruleList.add(ruleMap);
