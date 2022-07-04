@@ -91,7 +91,7 @@ export class TaggingTrendComponent implements OnInit, OnDestroy {
           'ruleId': '',
           'app': '',
           'env': '',
-          'policyId': 'PacMan_TaggingRule_version-1'
+          'policyId': 'TaggingRule_version-1'
       };
 
       const url = environment.issueTrends.url;
