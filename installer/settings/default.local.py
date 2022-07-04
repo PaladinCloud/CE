@@ -9,7 +9,7 @@ VPC = {
 
 # CUstom tags that can be defined by user
 CUSTOM_RESOURCE_TAGS = {
-    'Application': "PacBot",
+    'Application': "PaladinCloud",
     'Environment': "Prod",
     'Created By': "customer-name"
 }
@@ -30,7 +30,7 @@ ES_VOLUME_SIZE = 20
 MAKE_ALB_INTERNAL = True
 ALB_PROTOCOL = "HTTP"
 SSL_CERTIFICATE_ARN = ""  # Required only if ALB_PROTOCOL is defined as HTTPS
-PACBOT_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.pacbot.com
+PALADINCLOUD_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.pacbot.com
 
 
 # MAIL Server configuration
