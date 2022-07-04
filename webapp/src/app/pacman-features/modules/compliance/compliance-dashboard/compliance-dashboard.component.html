@@ -22,19 +22,15 @@
     </div>
     <div class="container-2">
         <mat-grid-list [cols]="breakpoint2" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
-            <mat-grid-tile *ngFor="let card of cards">
-                <app-card [card]="card"></app-card>
-            </mat-grid-tile>
-        </mat-grid-list>
-    </div>
-    <div class="container-3">
-        <mat-grid-list [cols]="breakpoint3" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="SeverityCard" [policyData]="policyData"></app-card>
+                <app-card [card]="cards[0]"></app-card>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <app-card [card]="cards[1]" [policyData]="policyData"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
-    <div class="container-4" (window:resize)="onresize($event)">
+    <div class="container-3" (window:resize)="onresize($event)">
         <mat-grid-list [cols]="breakpoint4" rowHeight="504px">
             <mat-grid-tile>
                 <app-data-table (noScrollDetected)="noMinHeight=true" [searchTextValues]='searchTxt'
@@ -47,10 +43,17 @@
                     (searchTriggerred)='callNewSearch()' (previousPageCalled)='prevPg()'
                     (tabSelected)='tabValChange($event)' [headerColName]="'Policy Severity'" (nextPageCalled)='nextPg()'
                     [direction]='-1' [tabFilterProperty]="'Rule Category'"
-                    [columnWhiteList]="[ 'compliance', 'Policy Title', 'Compliance %', 'Policy Severity',   'Last Scanned']"
+                    [columnWhiteList]="['Policy Title', 'Compliance %', 'Policy Severity', 'Last Scanned']"
                     [paginatorAbsent]='true' [popRows]='popRows' (rowClickText)='handlePopClick($event)'
                     [searchPassed]='searchPassed'>
                 </app-data-table>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+    <div class="container-4">
+        <mat-grid-list [cols]="breakpoint3" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
+            <mat-grid-tile>
+                <app-card [card]="cards[2]"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>

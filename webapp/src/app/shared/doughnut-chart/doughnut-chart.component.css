@@ -37,7 +37,7 @@
 }
 
 .legend-text {
-width: 139px;
+/* width: 139px; */
 height: 20px;
 font-family: var(--text-medium-font-family);
 font-style: var(--text-font-style);
