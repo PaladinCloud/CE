@@ -306,7 +306,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 body = "{\"size\":"
                         + size
                         + ",\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
-                        + TAGGIG_POLICY + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+                        + TAGGING_POLICY + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
                 body = body + ",{\"term\":{\"ruleId.keyword\":{\"value\":\"" + ruleId + "\"}}}";
                 body = body + "]";
                 if (!tagsList.isEmpty()) {
@@ -417,7 +417,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
         String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
-                + TAGGIG_POLICY + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+                + TAGGING_POLICY + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
         if (!Strings.isNullOrEmpty(targetType)) {
             body = body + ",{\"term\":{\"targetType.keyword\":{\"value\":\"" + targetType + "\"}}}";
         }
@@ -442,7 +442,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
         totaluntagged = responseJson.get(COUNT).getAsLong();
-        ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = 'PacMan_TaggingRule_version-1'";
+        ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = '"+Constants.TAGGING_POLICY+"'";
         ruleIdwithTargetType = rdsepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
         if (Strings.isNullOrEmpty(targetType)) {
             assetCount = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null, null, "");
@@ -1263,7 +1263,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
                 .append(SEARCH);
 
-        if (ruleId.contains(TAGGIG_POLICY)) {
+        if (ruleId.contains(TAGGING_POLICY)) {
 
             List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
@@ -1437,7 +1437,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         int size = 0;
         Gson serializer = new GsonBuilder().create();
         String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
-                + TAGGIG_POLICY + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+                + TAGGING_POLICY + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
         body = body + ",{\"term\":{\"ruleId.keyword\":{\"value\":\"" + ruleId + "\"}}}";
 
         body = body + "]";
@@ -1679,7 +1679,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         StringBuilder requestBody = null;
         List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
-        String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"PacMan_TaggingRule_version-1\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+        String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"TaggingRule_version-1\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
 
         // Added resourceType to the Query
         String targetTypesTerms = targetTypes.replaceAll("'", "\"");

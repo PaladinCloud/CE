@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.commons.Constants;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
@@ -168,13 +169,13 @@ public class TaggingRepositoryImplTest {
         Map<String, Object> ruleParamMap = new HashMap<>();
         ruleParamMap.put("assetGroup", "aws");
         ruleParamMap.put("targetType", "ec2");
-        ruleParamMap.put("policyId", "PacMan_TaggingRule_version-1");
+        ruleParamMap.put("policyId", Constants.TAGGING_POLICY);
         ruleParams.add(ruleParamMap);
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(ruleParams);
-        response = taggingRepositoryImpl.getRuleParamsFromDbByPolicyId("PacMan_TaggingRule_version-1");
+        response = taggingRepositoryImpl.getRuleParamsFromDbByPolicyId(Constants.TAGGING_POLICY);
         assertTrue(response.size() > 0);
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(ruleParams);
-        response = taggingRepositoryImpl.getRuleTargetTypesFromDbByPolicyId("PacMan_TaggingRule_version-1");
+        response = taggingRepositoryImpl.getRuleTargetTypesFromDbByPolicyId(Constants.TAGGING_POLICY);
         assertTrue(response.size() > 0);
     }
 

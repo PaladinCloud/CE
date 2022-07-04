@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
 import com.tmobile.pacman.api.compliance.domain.CompliantTrendRequest;
 import com.tmobile.pacman.api.compliance.domain.IssueAuditLogRequest;
@@ -95,7 +96,7 @@ public class CommonTestUtil {
                         "[{violationReason=Amazon RDS idle DB instance found, check_id=Ti39halfu8, sources_verified=trusted advisor}]");
         commonMap.put("date", "2018-06-26");
         commonMap.put("noncompliant", 2114.0);
-        commonMap.put("ruleId", "PacMan_TaggingRule_version-1");
+        commonMap.put("ruleId", Constants.TAGGING_POLICY);
         commonMap.put("overall", 73);
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
@@ -148,7 +149,7 @@ public class CommonTestUtil {
         Map<String, String> filter = new HashMap<>();
         filter.put("domain", "domain");
         filter.put("issueId.keyword", "security");
-        filter.put("ruleId.keyword", "PacMan_TaggingRule_version-1");
+        filter.put("ruleId.keyword", Constants.TAGGING_POLICY);
         filter.put("targetType.keyword", "ec2");
         return filter;
     }
@@ -168,7 +169,7 @@ public class CommonTestUtil {
         RuleTrendRequest ruleTrendRequest = new RuleTrendRequest();
         ruleTrendRequest.setAg("aws-all");
         ruleTrendRequest
-                .setRuleid("PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2");
+                .setRuleid("TaggingRule_version-1_Ec2TaggingRule_ec2");
         ruleTrendRequest.setFilters(getFilters());
         return ruleTrendRequest;
     }
@@ -282,7 +283,7 @@ public class CommonTestUtil {
 
     public static RuleDetails getRuleDetails() {
         RuleDetails details = new RuleDetails();
-        details.setRuleId("PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2");
+        details.setRuleId("TaggingRule_version-1_Ec2TaggingRule_ec2");
         return new RuleDetails();
     }
 
@@ -343,7 +344,7 @@ public class CommonTestUtil {
         ruleMap.put("status", "open");
         ruleMap.put("auditdate", "2017-11-09T18:03:30.263Z");
         ruleMap.put("_auditdate", "2017-11-09");
-        ruleMap.put("ruleId", "PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2");
+        ruleMap.put("ruleId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
         return ruleMap;
     }
     
@@ -488,7 +489,7 @@ public class CommonTestUtil {
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
         commonMap.put("ruleCategory", "security");
-        commonMap.put("ruleId", "PacMan_TaggingRule_version-1");
+        commonMap.put("ruleId", Constants.TAGGING_POLICY);
         commonMap
                 .put("displayName", "Onprem Kernel compliance rule");
         commonMap.put("targetType", "ec2");
@@ -503,7 +504,7 @@ public class CommonTestUtil {
     
     public static List<Object> getRules() {
         List<Object> rules = new ArrayList<>();
-        rules.add("PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2");
+        rules.add("TaggingRule_version-1_Ec2TaggingRule_ec2");
         return rules;
     }
 
