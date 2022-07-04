@@ -59,8 +59,7 @@ public class ElasticSearchDataPublisher {
     /** The client. */
     private RestHighLevelClient client;
     
-   /**  rest client will be used to create RestHighLevelClient. */
-    private RestClient restClient;
+
     
     /**  test mode flag *. */
     boolean testMode = false;
@@ -69,8 +68,7 @@ public class ElasticSearchDataPublisher {
      * Instantiates a new elastic search data publisher.
      */
     public ElasticSearchDataPublisher() {
-        restClient = RestClient.builder(new HttpHost(ESUtils.getESHost(), ESUtils.getESPort())).build();
-        client = new RestHighLevelClient(restClient);
+    	client = new RestHighLevelClient(RestClient.builder(new HttpHost(ESUtils.getESHost(), ESUtils.getESPort())));
     }
     
     /**
@@ -206,19 +204,19 @@ public class ElasticSearchDataPublisher {
     }
     
     
-    /**
-     * Close.
-     */
-    public void close(){
-        if(null!=restClient)
-            try {
-                restClient.close();
-            } catch (IOException e) {
-                logger.error("error closing rest client" ,e);
-            }
-        
-        client = null;
-    }
+	/**
+	 * Close.
+	 */
+	public void close() {
+		if (null != client)
+			try {
+				client.close();
+			} catch (IOException e) {
+				logger.error("error closing rest client", e);
+			}
+
+		client = null;
+	}
     
     /**
      * 

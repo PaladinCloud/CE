@@ -10,6 +10,16 @@ public class FireWallVH extends GCPVH {
     boolean isDisabled;
     String direction;
     List<String> sourceRanges;
+    List<String> destinationRanges;
+
+    public List<String> getDestinationRanges() {
+        return destinationRanges;
+    }
+
+    public void setDestinationRanges(List<String> destinationRanges) {
+        this.destinationRanges = destinationRanges;
+    }
+
     List<AllowedPortsVH> allow;
 
     public void setAllow(List<AllowedPortsVH> list) {

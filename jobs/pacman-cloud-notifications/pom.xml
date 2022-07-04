@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.tmobile.pacman.cloud</groupId>
-  <artifactId>pacman-cloud-notifications</artifactId>
+  <groupId>com.paladincloud</groupId>
+  <artifactId>paladin-cloud-notifications</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>pacman-cloud-notifications</name>
+  <name>paladin-cloud-notifications</name>
   <description>Cloud Notification service</description>
 
   <properties>
@@ -97,7 +97,7 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.tmobile.cloud</groupId>
+			<groupId>com.paladincloud</groupId>
 			<artifactId>batch-commons</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>provided</scope>

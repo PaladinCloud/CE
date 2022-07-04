@@ -31,7 +31,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tmobile.pacman.commons.autofix.manager.NextStepManager;
 import com.tmobile.pacman.util.ESUtils;
 
 /**
@@ -48,8 +47,7 @@ public class ElasticSearchDataInterface implements AutoCloseable{
     /** The client. */
     protected RestHighLevelClient client;
     
-   /**  rest client will be used to create RestHighLevelClient. */
-    protected RestClient restClient;
+
     
     
     /**
@@ -57,25 +55,26 @@ public class ElasticSearchDataInterface implements AutoCloseable{
      * @throws MalformedURLException 
      */
     public ElasticSearchDataInterface() throws MalformedURLException {
-        restClient = RestClient.builder(new HttpHost(ESUtils.getESHost(), ESUtils.getESPort())).build();
-        client = new RestHighLevelClient(restClient);
+        client = new RestHighLevelClient(RestClient.builder(new HttpHost(ESUtils.getESHost(), ESUtils.getESPort())));
+        
     }
 
     
-    /* (non-Javadoc)
-     * @see java.lang.AutoCloseable#close()
-     */
-    @Override
-    public void close(){
-        if(null!=restClient)
-            try {
-                restClient.close();
-            } catch (IOException e) {
-                logger.error("error closing rest client" ,e);
-            }
-        
-        client = null;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.AutoCloseable#close()
+	 */
+	@Override
+	public void close() {
+		if (null != client)
+			try {
+				client.close();
+			} catch (IOException e) {
+				logger.error("error closing rest client", e);
+			}
 
+		client = null;
+	}
 
 }

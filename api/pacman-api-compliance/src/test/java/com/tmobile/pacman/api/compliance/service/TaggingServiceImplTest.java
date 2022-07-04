@@ -160,9 +160,9 @@ public class TaggingServiceImplTest {
         String response = "{\"took\":806,\"timed_out\":false,\"_shards\":{\"total\":176,\"successful\":176,\"failed\":0},\"hits\":{\"total\":45266,\"max_score\":9.880274,\"hits\":["
         		+ "{\"_index\":\"aws_ec2\",\"_type\":\"issue_ec2\",\"_id\":\"_id\",\"_score\":9.880274,\"_routing\":\"_routing\",\"_parent\":\"_parent\",\"_source\":{\"missingTags\":\"Role, Environment, Application, Stack\","
         		+ "\"_docid\":\"_docid\",\"type\":\"issue\",\"accountid\":\"accountid\",\"issueStatus\":\"open\",\"accountname\":\"accountname\","
-        		+ "\"ruleId\":\"PacMan_TaggingRule_version-1_Ec2TaggingRule_ec2\",\"severity\":\"high\",\"_resourceid\":\"_resourceid\",\"ruleCategory\":\"tagging\","
+        		+ "\"ruleId\":\"TaggingRule_version-1_Ec2TaggingRule_ec2\",\"severity\":\"high\",\"_resourceid\":\"_resourceid\",\"ruleCategory\":\"tagging\","
         		+ "\"targetType\":\"ec2\",\"issueDetails\":\"[{violationReason\\u003dMandatory tags missed for ec2 target type!, tags_associated\\u003d{\\\"Role\\\":\\\"Not Found\\\",\\\"Environment\\\":\\\"Not Found\\\",\\\"Application\\\":\\\"Not Found\\\",\\\"Stack\\\":\\\"Not Found\\\"}}]\",\"Stack\":\"Not Found\",\"Role\":\"Not Found\","
-        		+ "\"executionId\":\"executionId\",\"mandatoryTagsMissingFlg\":\"YES\",\"createdDate\":\"2018-06-22T21:01:01.603Z\",\"policyId\":\"PacMan_TaggingRule_version-1\",\"pac_ds\":\"aws\",\"modifiedDate\":\"2018-06-26T11:00:47.956Z\",\"Environment\":\"Not Found\",\"region\":\"region\",\"Application\":\"Not Found\",\"desc\":\"Missed tags for ec2 are Role, Environment, Application, Stack\"}}]},"
+        		+ "\"executionId\":\"executionId\",\"mandatoryTagsMissingFlg\":\"YES\",\"createdDate\":\"2018-06-22T21:01:01.603Z\",\"policyId\":\"TaggingRule_version-1\",\"pac_ds\":\"aws\",\"modifiedDate\":\"2018-06-26T11:00:47.956Z\",\"Environment\":\"Not Found\",\"region\":\"region\",\"Application\":\"Not Found\",\"desc\":\"Missed tags for ec2 are Role, Environment, Application, Stack\"}}]},"
         		+ "\"aggregations\":{\"NAME\":{\"doc_count_error_upper_bound\":0,\"sum_other_doc_count\":0,\"buckets\":["
         		+ "{\"key\":\"key\",\"doc_count\":25032},{\"key\":\"key\",\"doc_count\":5589},"
         		+ "{\"key\":\"key\",\"doc_count\":1797},{\"key\":\"key\",\"doc_count\":9}]}}}";

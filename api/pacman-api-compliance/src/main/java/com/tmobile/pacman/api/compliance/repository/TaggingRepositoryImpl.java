@@ -120,7 +120,7 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/")
                 .append(assetGroup).append("/").append(SEARCH);
         StringBuilder requestBody = new StringBuilder(
-                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"PacMan_TaggingRule_version-1\"}}}");
+                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"TaggingRule_version-1\"}}}");
         if (!Strings.isNullOrEmpty(searchText)) {
             requestBody.append("," + "{\"match_phrase_prefix\":{\"_all\":\""
                     + searchText + "\"" + "}}");
@@ -180,7 +180,7 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID),
-                TAGGIG_POLICY);
+                TAGGING_POLICY);
         matchPhrasePrefix.put(MISSING_TAGS, mandatoryTagsList);
         shouldFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS),
                 OPEN);
@@ -216,7 +216,7 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
                 .append(assetGroup).append("/").append(SEARCH);
         StringBuilder requestBody = null;
         String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
-                + TAGGIG_POLICY
+                + TAGGING_POLICY
                 + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}]";
 
         if (!tagsList.isEmpty()) {
