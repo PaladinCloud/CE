@@ -6,16 +6,7 @@
     <div class="chart" *ngIf="card.id == 1 && complianceData.length > 0">
       <app-progress-bar-chart [bars]="complianceData"></app-progress-bar-chart>
     </div>
-    <div
-      class="chart"
-      *ngIf="card.id == 2 && assetsCountData.length > 0"
-      style="overflow-y: scroll"
-    >
-      <app-horizontal-bar-chart
-        [data]="assetsCountData"
-      ></app-horizontal-bar-chart>
-    </div>
-    <div class="chart" *ngIf="card.id == 3">
+    <div class="chart" *ngIf="card.id == 2">
       <div class="graph-chart-cont relative" id="statsDoughnut">
         <app-doughnut-chart
           *ngIf="policyData"
@@ -33,6 +24,15 @@
         </app-doughnut-chart>
       </div>
     </div>
+    <div
+    class="chart"
+    *ngIf="card.id == 3 && assetsCountData.length > 0"
+    style="overflow-y: scroll"
+  >
+    <app-horizontal-bar-chart
+      [data]="assetsCountData"
+    ></app-horizontal-bar-chart>
+  </div>
   </mat-card-content>
   <mat-card-actions>
     <button mat-button (click)="card.cardButtonAction()">
