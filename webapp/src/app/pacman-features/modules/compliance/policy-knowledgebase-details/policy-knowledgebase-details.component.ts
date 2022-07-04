@@ -176,7 +176,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     this.ruleDescription = data.ruleDescription;
     this.resolutionUrl = data.resolutionUrl;
     this.resolution = data.resolution;
-    if (this.resolutionUrl != null || this.resolutionUrl != "") {
+    if (this.resolutionUrl == null || this.resolutionUrl == "") {
       this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
     }
     this.policyDesc = [
