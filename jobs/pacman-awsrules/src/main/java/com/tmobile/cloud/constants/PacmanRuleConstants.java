@@ -22,7 +22,6 @@
  **/
 package com.tmobile.cloud.constants;
 
-import com.google.gson.JsonElement;
 
 public class PacmanRuleConstants {
 
@@ -42,7 +41,8 @@ public class PacmanRuleConstants {
     public static final String VALUE = "value";
     public static final String TWO_FACTOR_AUTH = "enable-oslogin-2fa";
     public static final String PUBSUB_KMS_NAME ="kmsKeyName" ;
-    public static String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
+    public static final String VIOLATION_REASON_POLICYNAME ="policyName" ;
+    public static final String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
     public static final String GCP_CMK = "hasKmsKeyName";
     public static String GCP_CSEK = "hasSha256";
     public static final String ADMIN_FOR_KEYS = "adminForKeys";

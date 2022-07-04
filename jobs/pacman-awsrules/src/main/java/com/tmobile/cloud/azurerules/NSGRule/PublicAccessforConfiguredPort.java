@@ -6,21 +6,14 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.rule.PacmanRule;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
-import okhttp3.Protocol;
 
 import com.amazonaws.util.StringUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
@@ -49,6 +42,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String[] port = ruleParam.get(PacmanRuleConstants.PORT).split(",");
         String protocol = ruleParam.get(PacmanRuleConstants.PROTOCOL);
+        String violationReason=ruleParam.get(PacmanRuleConstants.VIOLATION_REASON_POLICYNAME);
         logger.info("check Public Access for the   port: {} ", ((Object[]) port));
         logger.info("check Public Access for the Protocol : {} ", protocol);
 
@@ -80,8 +74,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                 LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Azure   has unrestricted Access");
+                annotation.put(PacmanSdkConstants.DESCRIPTION, violationReason +"Ports :"+ port);
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
@@ -154,7 +147,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                         }
 
                     }
-                    if (validationResult == true) {
+                    if (validationResult) {
                         logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
                     }
 
