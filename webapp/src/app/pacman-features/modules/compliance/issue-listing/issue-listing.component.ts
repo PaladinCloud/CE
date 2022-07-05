@@ -138,6 +138,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.adminAccess = this.permissions.checkAdminPermission();
   }
 
+  handlePaginatorSizeSelection(event) {
+    this.paginatorSize = event;
+    this.getData();
+  }
+
   /*
    * This function gets the urlparameter and queryObj
    *based on that different apis are being hit with different queryparams
@@ -208,7 +213,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.getUpdatedUrl();
         this.updateComponent();
       }
-    } catch (error) {}
+    } catch (error) { }
     /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
   }
   /*
@@ -278,7 +283,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   changeFilterType(value) {
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
-        optionName: value.value,
+        optionName: value,
       });
       this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -287,8 +292,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             domain: this.selectedDomain,
           },
           environment.base +
-            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-              .url,
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
           "GET"
         )
         .subscribe((response) => {
@@ -301,10 +306,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeFilterTags(value) {
+  changeFilterTags(value: String) {
     try {
       if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions, { name: value.value });
+        const filterTag = _.find(this.filterTagOptions, { name: value });
         this.utils.addOrReplaceElement(
           this.filters,
           {
@@ -787,10 +792,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   prevPg() {
     try {
       this.currentPointer--;
-      this.processData(this.currentBucket[this.currentPointer]);
+      // this.processData(this.currentBucket[this.currentPointer]);
       this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
       this.lastPaginator =
         this.currentPointer * this.paginatorSize + this.paginatorSize;
+      this.bucketNumber--;
+      this.getData()
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -835,6 +842,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.errorValue = 0;
     this.showGenericMessage = false;
     this.getData();
+  }
+
+  handleRemoveAllChecked(event: any) {
+    if (event == true) {
+      this.cbModel = [];
+      this.cbArr = [];
+      this.cbObj = {};
+    }
   }
 
   ngOnDestroy() {

@@ -53,6 +53,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-bigquerytable.data", "[", false);
         FileGenerator.writeToFile(InventoryConstants.GCP_CLOUD_SQL_FILE, "[", false);
 
+        FileGenerator.writeToFile("gcp-pubsub.data", "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -63,6 +64,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-bigquerytable.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudstorage.data", "]", true);
         FileGenerator.writeToFile(InventoryConstants.GCP_CLOUD_SQL_FILE, "]", true);
+        FileGenerator.writeToFile("gcp-pubsub.data", "]", true);
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -93,4 +95,8 @@ public class FileManager {
         FileGenerator.generateJson(cloudsqlList, InventoryConstants.GCP_CLOUD_SQL_FILE);
     }
 
+
+    public static void generatePubSubFiles(List<TopicVH> pubsubList) {
+        FileGenerator.generateJson(pubsubList,"gcp-pubsub.data");
+    }
 }

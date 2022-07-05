@@ -10,7 +10,7 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.tmobile.cloud</groupId>
+	<groupId>com.paladincloud</groupId>
 	<artifactId>admin-service</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -41,7 +41,7 @@
 	</dependencyManagement>
 	<dependencies>
 		<dependency>
-			<groupId>com.tmobile.cloud</groupId>
+			<groupId>com.paladincloud</groupId>
 			<artifactId>api-commons</artifactId>
 			<version>1.0.1-SNAPSHOT</version>
 		</dependency>

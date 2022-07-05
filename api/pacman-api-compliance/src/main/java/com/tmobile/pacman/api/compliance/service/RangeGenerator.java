@@ -38,7 +38,7 @@ import java.util.stream.IntStream;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -97,7 +97,7 @@ public class RangeGenerator implements Constants {
         if (esHosts != null && !esHosts.isEmpty()) {
             esHosts.forEach(host -> {
                 try {
-                    client.addTransportAddress(new InetSocketTransportAddress(
+                    client.addTransportAddress(new TransportAddress(
                             InetAddress.getByName(host), port));
                 } catch (UnknownHostException e) {
                     LOGGER.error(e.toString());

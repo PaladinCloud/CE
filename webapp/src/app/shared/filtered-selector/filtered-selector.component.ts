@@ -22,14 +22,14 @@ import { LoggerService } from '../services/logger.service';
 })
 export class FilteredSelectorComponent implements OnInit, OnChanges {
   countMandatoryFilter = 0;
-  constructor(private logger: LoggerService) {}
+  constructor(private logger: LoggerService) { }
 
   @Input() filteredArray: any;
   @Input() mandatoryFilter: any;
   @Output() deleteFilter = new EventEmitter();
   @Output() deleteAllFilters = new EventEmitter();
 
-  @Output() updateFilterArray = new EventEmitter();
+  // @Output() updateFilterArray = new EventEmitter();
   @Input() clearSelectedFilterValue;
   ngOnInit() {
     this.updateComponent();
@@ -39,13 +39,13 @@ export class FilteredSelectorComponent implements OnInit, OnChanges {
     // clear all filter by default - currenlty used in recommendations to reset on ag change
     const toClearValueChange = changes['clearSelectedFilterValue'];
     if (toClearValueChange && !toClearValueChange.firstChange) {
-      const cur  = JSON.stringify(toClearValueChange.currentValue);
+      const cur = JSON.stringify(toClearValueChange.currentValue);
       const prev = JSON.stringify(toClearValueChange.previousValue);
-        if (cur !== prev) {
-          this.mandatoryFilter = undefined;
-          this.countMandatoryFilter = 0;
-          this.clearAll(this.filteredArray);
-        }
+      if (cur !== prev) {
+        this.mandatoryFilter = undefined;
+        this.countMandatoryFilter = 0;
+        this.clearAll(this.filteredArray);
+      }
     } else {
       this.updateComponent();
     }
@@ -108,7 +108,7 @@ export class FilteredSelectorComponent implements OnInit, OnChanges {
           this.filteredArray.splice(event.index, 1);
         }
       }
-      this.updateFilterArray.emit(this.filteredArray);
+      // this.updateFilterArray.emit(this.filteredArray);
     } catch (error) {
       this.logger.log('error', error);
     }

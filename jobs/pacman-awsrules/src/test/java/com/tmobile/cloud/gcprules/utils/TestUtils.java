@@ -405,5 +405,24 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonArrayForPubSubEncryptionSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"projects/cool-bay-349411/topics/test2\",\"projectName\":\"cool-bay-349411\",\"kmsKeyName\":\"projects/cool-bay-349411/locations/global/keyRings/demo-key-ring1/cryptoKeys/demo-key1\",\"discoverydate\":\"2022-07-01 06:00:00+0000\",\"_resourceid\":\"projects/cool-bay-349411/topics/test2\",\"_docid\":\"projects/cool-bay-349411/topics/test2\",\"_entity\":\"true\",\"_entitytype\":\"pubsub\",\"firstdiscoveredon\":\"2022-07-01 06:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-07-01 06:15:00+0000\"}", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitsJsonArrayForPubSubEncryptionFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"projects/cool-bay-349411/topics/test2\",\"projectName\":\"cool-bay-349411\",\"kmsKeyName\":null,\"discoverydate\":\"2022-07-01 06:00:00+0000\",\"_resourceid\":\"projects/cool-bay-349411/topics/test2\",\"_docid\":\"projects/cool-bay-349411/topics/test2\",\"_entity\":\"true\",\"_entitytype\":\"pubsub\",\"firstdiscoveredon\":\"2022-07-01 06:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-07-01 06:15:00+0000\"}", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 
 }

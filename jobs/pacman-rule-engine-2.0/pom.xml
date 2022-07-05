@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.tmobile.cloud</groupId>
+	<groupId>com.paladincloud</groupId>
 	<artifactId>rule-engine</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -51,7 +51,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.tmobile.cloud</groupId>
+			<groupId>com.paladincloud</groupId>
 			<artifactId>batch-commons</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>

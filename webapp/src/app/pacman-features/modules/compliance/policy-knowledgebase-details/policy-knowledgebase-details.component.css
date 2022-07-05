@@ -83,6 +83,8 @@
   margin-left: auto;
 }
 .pk-resolution-wrapper {
+  display: flex;
+  flex-direction: row;
   padding-top: 1.5em;
   font-size: 1.2em;
   font-family: var(--text-light-font-family);
