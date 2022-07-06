@@ -27,6 +27,10 @@ public class BYOKDiskVolumeRule extends BaseRule {
 
 
     private static final Logger logger = LoggerFactory.getLogger(BYOKDiskVolumeRule.class);
+    public static  final   String isEncryptionEnabled="isEncryptionEnabled";
+    public static  final   String encryptionSetting="encryptionSettings";
+    public static  final   String keyEncryption="keyEncryptionKey";
+    public static  final   String keyurl="keyUrl";
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -107,16 +111,12 @@ public class BYOKDiskVolumeRule extends BaseRule {
                     for (int i = 0; i < diskJsonArray.size(); i++) {
                         JsonObject diskDataItem = ((JsonObject) diskJsonArray
                                 .get(i));
-                        String isEncryptionEnabled="isEncryptionEnabled";
                         boolean encryption = diskDataItem.getAsJsonObject().get(isEncryptionEnabled).getAsBoolean();
                         if (encryption) {
                             logger.info("The attached disk volumes are  encrypted,");
-                            String encryptionSetting="encryptionSettings";
                             JsonArray encryptionSettings=jsonDataItem.getAsJsonObject().get(encryptionSetting).getAsJsonArray();
                             if(encryptionSettings.size()>0){
-                                String keyEncryption="keyEncryptionKey";
                                 JsonObject keyEncryptionKey=encryptionSettings.getAsJsonArray().get(Integer.parseInt(keyEncryption)).getAsJsonObject();
-                                String keyurl="keyUrl";
                                 String keyUrl=keyEncryptionKey.getAsJsonObject().get(keyurl).getAsString();
                                 if(keyUrl!=null){
                                     validationResult=true;}
