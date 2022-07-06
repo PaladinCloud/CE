@@ -44,7 +44,7 @@ public class PacmanRuleConstants {
     public static final String VIOLATION_REASON_POLICYNAME ="policyName" ;
     public static final String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
     public static final String GCP_CMK = "hasKmsKeyName";
-    public static String GCP_CSEK = "hasSha256";
+    public static final String GCP_CSEK = "hasSha256";
     public static final String ADMIN_FOR_KEYS = "adminForKeys";
     public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
     public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
@@ -391,7 +391,7 @@ public class PacmanRuleConstants {
     public static final String AZURE_SUBSCRIPTION = "subscription";
     public static final String AZURE_SUBSCRIPTION_NAME = "subscriptionName";
     public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED = "passwordBasedAuthenticationDisabled";
-    public static final String IS_ENCRYPTION_ENABLED = "encryptionEnabled";
+    public static final String IS_ENCRYPTION_ENABLED = "isEncryptionEnabled";
     public static final String DISKS = "disks";
 
     public static final String VM_EXTENSIONS = "extensionList";
