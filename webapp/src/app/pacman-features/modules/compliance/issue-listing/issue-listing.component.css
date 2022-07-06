@@ -11,6 +11,16 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ .violations-table{
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+app-data-table{
+    height: 100%;
+  }
 
 .floating-widgets-section {
     height: 100%;
@@ -33,43 +43,53 @@
     min-height: 17em;
 } 
 
-.issue-listing-wrapper.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(3) {
-    width: 300px;
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(3) {
+    width: 190px;
 }
 
-.issue-listing-wrapper.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(2) {
+    width: 260px;
+}
+
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(4) {
     width: 160px;
 }
 
-.issue-listing-wrapper.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(4) {
-    width: 160px;
-}
-
-.issue-listing-wrapper.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(5) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(5) {
     width: 100px;
 }
 
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells:nth-child(2) {
-    width: 300px;
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(1) {
+    width: 58px;
 }
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
-    width: 160px;
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(2) {
+    width: 260px;
 }
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells:nth-child(3) {
-    width: 160px;
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(3) {
+    width: 190px;
 }
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells:nth-child(4) {
-    width: 100px;
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(4) {
+    width: 150px;
 }
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells {
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(5) {
+    width: 107px;
+}
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(6) {
+    width: 105px;
+}
+.violations-table /deep/ .data-table-wrap .table-cells:nth-child(7) {
+    width: 193px;
+}
+
+.violations-table /deep/ .data-table-wrap .table-cells {
     width: 130px;
 }
-.issue-listing-wrapper /deep/ .data-table-wrap {
+.violations-table /deep/ .data-table-wrap {
     border: 1px solid #dce1e8;
     border-top: none;
 }

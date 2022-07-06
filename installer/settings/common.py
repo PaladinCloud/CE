@@ -9,7 +9,7 @@ BASE_APP_DIR = str(CURRENT_FILE_PATH.parent)
 RESOURCES_FOLDER = 'resources'  # Provide only relative path
 
 # This is commonn configuration should be used in all setup
-SETUP_TITLE = "PACBOT"
+SETUP_TITLE = "PALADINCLOUD"
 SETUP_DESCRIPTION = "INFRA SETUP AND DEPLOYMENT"
 LOADER_FILE_PATH = os.path.join(str(CURRENT_FILE_PATH), "loader")
 
@@ -74,11 +74,11 @@ ALB_PROTOCOL = "HTTP"
 
 DESTROY_NUM_ATTEMPTS = 3
 SKIP_RESOURCE_EXISTENCE_CHECK = False
-RESOURCE_NAME_PREFIX = "pacbot"
-DEFAULT_RESOURCE_TAG = {"Application": "PacBot"}
+RESOURCE_NAME_PREFIX = "paladincloud"
+DEFAULT_RESOURCE_TAG = {"Application": "PaladinCloud"}
 CUSTOM_RESOURCE_TAGS = []
 
-RESOURCE_DESCRIPTION = "DO-NOT-DELETE-IT - This has been created as part of pacbot installation"
+RESOURCE_DESCRIPTION = "DO-NOT-DELETE-IT - This has been created as part of paladincloud installation"
 AWS_POLICIES_REQUIRED = [
     "AmazonS3FullAccess",
     "AmazonRDSFullAccess",
@@ -101,8 +101,8 @@ REQUIRE_SUBNETS_ON_DIFFERENT_ZONE = True
 
 PACBOT_CODE_DIR = str(CURRENT_FILE_PATH.parent.parent)
 PACBOT_LOGIN_CREDENTIALS = {
-    'Admin': "admin@pacbot.org / pacman",
-    'User': "user@pacbot.org / user"
+    'Admin': "admin@paladincloud.io / PaladinAdmin@Boom!!",
+    'User': "user@paladincloud.io / PaladinUser@Boom!!"
 }
 
 MAKE_ALB_INTERNAL = True

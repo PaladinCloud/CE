@@ -401,7 +401,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         const arnId = encodeURIComponent(row.row['eventarn'].text);
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
         this.router.navigate(
-          ['pl/compliance/event-details', arnId],
+          ['pl/compliance/health-notifications/event-details', arnId],
           { queryParams: {'global': this.tabSelected === 'general', autofix: row.row['Event Category'].text.toLowerCase() === 'autofix'}, queryParamsHandling: 'merge' }
         ).then(response => {
           this.logger.log('info', 'Successfully navigated to details page: ' + response);

@@ -45,7 +45,12 @@
                 </div>
             </div>
           </div>
-          <div class="pk-resolution-wrapper" *ngIf = "resolution.length > 0 ">
+       <a    href="{{resolutionUrl}}" target="_blank" rel="noopener noreferrer" > <div  class="pk-resolution-wrapper"> <h5 style="font-size:1em;color:var(--primary-500); font-weight: 600;">Learn more</h5> <img  style="height: 0.91em;margin-left: 0.5vw;margin-top: 0.1%;" src="../assets/icons/left-arrow.svg"> </div>    </a>    
+
+
+          
+        
+          <!-- <div class="pk-resolution-wrapper" *ngIf = "resolution.length > 0 ">
             <div class="pk-resolution-header">Resolution</div>
             <div class="pk-resolution-desc-wrapper">
                 <div class="pk-resolution-each-desc">
@@ -55,7 +60,7 @@
                     {{i+1}}) {{data}}
                 </div>
               </div>
-          </div>
+          </div> -->
       </div>
   </div>
   <article class='center error_handling' *ngIf='!datacoming'>

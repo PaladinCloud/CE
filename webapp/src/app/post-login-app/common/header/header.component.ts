@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { MatIconRegistry } from "@angular/material";
 import { DomSanitizer } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
+import { AuthService } from "../../../core/services/auth.service";
 import { DataCacheService } from "../../../core/services/data-cache.service";
 import { PermissionGuardService } from "../../../core/services/permission-guard.service";
 import { LoggerService } from "../../../shared/services/logger.service";
@@ -20,6 +21,7 @@ export class HeaderComponent implements OnInit {
   queryParams;
 
   constructor(
+    private authenticateService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private dataCacheService: DataCacheService,
@@ -97,5 +99,9 @@ export class HeaderComponent implements OnInit {
     // }, error => {
     //     this.loggerService.log('error', 'Error while fetching access token for resource - ' + error);
     // });
+  }
+
+  logout() {
+    this.authenticateService.doLogout();
   }
 }

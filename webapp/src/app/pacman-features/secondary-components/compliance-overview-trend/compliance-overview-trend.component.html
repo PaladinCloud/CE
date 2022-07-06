@@ -12,15 +12,41 @@
  * limitations under the License.
  -->
 
- <div #complianceOverviewContainer class="issue-trend-wrapper">
-  <div class='multiline-brush-zoom-container'>
-      <div class="sub-header">
-          <app-title-burger-head [subHeadTitle]="'Overall Compliance Trend'"></app-title-burger-head>
+<a (click)="closeOverallComplianceTrendModal()">
+  <app-overlay></app-overlay>
+</a>
+<div #complianceOverviewContainer class="issue-trend-wrapper">
+  <div class="multiline-brush-zoom-container">
+    <div class="sub-header">
+      <div class="sub-header-wrapper">
+        <app-title-burger-head
+          [subHeadTitle]="'Overall Compliance Trend'"
+        ></app-title-burger-head>
+        <div class="delete-title" (click)="closeOverallComplianceTrendModal()">
+          <img
+            _ngcontent-c41=""
+            class="delete-icon"
+            src="/assets/icons/x-icon.svg"
+          />
+        </div>
       </div>
-      <div *ngIf="dataLoaded" id="complianceOverview">
-        <app-multiline-brush-zoom [id]="'complianceOverview'" [hoverActive]="hoverActive" [showArea]="showArea" (error)="setError($event)" [showLegend]="showGraphLegend" [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData"></app-multiline-brush-zoom>
-      </div>      
-      <div class="loader" *ngIf='!dataLoaded && !error'></div>
-      <app-error-message *ngIf='error' [selectedValue]="errorMessage"></app-error-message>
+    </div>
+    <div *ngIf="dataLoaded" id="complianceOverview">
+      <app-multiline-brush-zoom
+        [id]="'complianceOverview'"
+        [hoverActive]="hoverActive"
+        [showArea]="showArea"
+        (error)="setError($event)"
+        [showLegend]="showGraphLegend"
+        [yAxisLabel]="yAxisLabel"
+        [graphWidth]="graphWidth"
+        [graphLinesData]="graphData"
+      ></app-multiline-brush-zoom>
+    </div>
+    <div class="loader" *ngIf="!dataLoaded && !error"></div>
+    <app-error-message
+      *ngIf="error"
+      [selectedValue]="errorMessage"
+    ></app-error-message>
   </div>
 </div>

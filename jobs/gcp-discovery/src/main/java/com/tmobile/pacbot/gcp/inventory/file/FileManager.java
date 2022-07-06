@@ -18,6 +18,8 @@ package com.tmobile.pacbot.gcp.inventory.file;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import com.tmobile.pacbot.gcp.inventory.InventoryConstants;
 import com.tmobile.pacbot.gcp.inventory.vo.*;
 
 /**
@@ -49,7 +51,9 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-cloudstorage.data", "[", false);
         FileGenerator.writeToFile("gcp-bigquerydataset.data", "[", false);
         FileGenerator.writeToFile("gcp-bigquerytable.data", "[", false);
+        FileGenerator.writeToFile(InventoryConstants.GCP_CLOUD_SQL_FILE, "[", false);
 
+        FileGenerator.writeToFile("gcp-pubsub.data", "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -59,6 +63,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-bigquerydataset.data", "]", true);
         FileGenerator.writeToFile("gcp-bigquerytable.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudstorage.data", "]", true);
+        FileGenerator.writeToFile(InventoryConstants.GCP_CLOUD_SQL_FILE, "]", true);
+        FileGenerator.writeToFile("gcp-pubsub.data", "]", true);
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -84,5 +90,13 @@ public class FileManager {
 
     public static void generateStorageFiles(List<StorageVH> storageList) {
         FileGenerator.generateJson(storageList, "gcp-cloudstorage.data");
+    }
+    public static void generateCloudSqlFiles(List<CloudSqlVH> cloudsqlList) {
+        FileGenerator.generateJson(cloudsqlList, InventoryConstants.GCP_CLOUD_SQL_FILE);
+    }
+
+
+    public static void generatePubSubFiles(List<TopicVH> pubsubList) {
+        FileGenerator.generateJson(pubsubList,"gcp-pubsub.data");
     }
 }

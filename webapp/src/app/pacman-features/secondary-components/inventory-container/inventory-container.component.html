@@ -12,21 +12,17 @@
  * limitations under the License.
  -->
 
- <div class="inventory-wrapper">
-    <header class="header">
-        <app-title-burger-head [subHeadTitle]="'Inventory'" [arrow]="'true'" [routeParams]="utils.makeFilterObj({ 'resourceType': targetType })" [routeTo]="routeTo" [pageLevel]="pageLevel"></app-title-burger-head>
-    </header>
+<div class="inventory-wrapper">
     <div #widget class="chart-wrapper" id="inv">
-        <app-multiline-chart *ngIf="showdata" [colorSetLegends]="'false'" [targetType]="targetType" [hover]="true" [colorSet]="colorSet" [graphWidth]="widgetWidth" [graphHeight]="widgetHeight" [xAxisValues]="true" [smoothEdge]="true" [yAxisLabel]="'Total assets'" [axisUnit]="'false'" [dataResponse]="graphData" [verticalLines]="true" [multipleData]="true" [idUnique]="'inv'"></app-multiline-chart>
+        <app-multiline-chart *ngIf="showdata" [colorSetLegends]="'false'" [targetType]="targetType" [hover]="true"
+            [colorSet]="colorSet" [graphWidth]="widgetWidth" [graphHeight]="widgetHeight" [xAxisValues]="true"
+            [smoothEdge]="true" [yAxisLabel]="'Total assets'" [axisUnit]="'false'" [dataResponse]="graphData"
+            [verticalLines]="true" [multipleData]="true" [idUnique]="'inv'"></app-multiline-chart>
         <ul *ngIf='showdata' class="flex flex-row flex-center legends-wrapper">
             <li *ngFor="let line of graphData; let i = index;" class="flex flex-row flex-align-center">
                 <div class="legend-color" [ngStyle]="{'background-color': colorSet[i]}"></div>
                 <div class="flex flex-col flex-center legend-text capitalize">{{line.values[0].keys[i]}}</div>
             </li>
         </ul>
-        <div class="error_message_post" *ngIf='showerror == true && error == true && dataLoaded == false'>
-            <app-error-message [selectedValue]="errorMessage"></app-error-message>
-        </div>
-        <div class="loader post" *ngIf="!showloader"></div>
     </div>
 </div>

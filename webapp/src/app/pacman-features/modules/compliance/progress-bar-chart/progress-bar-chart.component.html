@@ -1,0 +1,12 @@
+<div *ngFor="let bar of bars">
+  <div class="label">
+    <div class="label-name">{{ bar.title }}</div>
+    <div class="label-percent">{{ bar.val }}%</div>
+  </div>
+  <div class="{{ bar.class }}">
+    <mat-progress-bar
+      mode="determinate"
+      value="{{ bar.val }}"
+    ></mat-progress-bar>
+  </div>
+</div>

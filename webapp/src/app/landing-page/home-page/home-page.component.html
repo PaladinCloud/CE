@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
-<app-landing-page-header class="mr-header-component" [class.show]="showHeader == true" [item1]="content.homePage.productLogo" [item2]="'HIGHLIGHTS'" [item3]="'FEATURES'" [item4]="'CONTACT US'" [item5]="'GO TO DASHBOARD'" (loginEvent)=openLoginMenu()></app-landing-page-header>
+<app-landing-page-header class="mr-header-component" [class.show]="showHeader == true" [item1]="content.homePage.productLogo" [item2]="'HIGHLIGHTS'" [item3]="'FEATURES'" [item4]="'CONTACT US'" [item5]="'Login'" (loginEvent)=openLoginMenu()></app-landing-page-header>
 <div class="mr-wrapper" (scroll)="onScroll($event)">
     <div class="parallax-new home-page-header">
         <div class="">
@@ -33,6 +33,8 @@
                         <img class='each-cloud' alt='Azure' width="50px" src="{{content.homePage.azureLogo}}">
                         <div class='each-cloud plus-mark'>+</div>
                         <img class='each-cloud' alt='AWS' width="50px" src="{{content.homePage.awsLogo}}">
+                        <div class='each-cloud plus-mark'>+</div>
+                        <img class='each-cloud' alt='AWS' width="50px" src="{{content.homePage.gcpLogo}}">
                     </div>
                     <div class='mr-multicloud-text'>Multi-Cloud Supported</div>
                 </div>
@@ -66,7 +68,7 @@
     <div class="mr-each-sec mr-get-started">
         <h2 class="mr-get-started-title">GET STARTED</h2>
         <h3 class="mr-get-started-subtitle">Ready to easily monitor your compliance and assets?</h3>
-        <app-button class="mr-login-btn mr-get-started-btn" (onClickInner)="openLoginMenu($event)">Go to Dashboard
+        <app-button class="mr-login-btn mr-get-started-btn" (onClickInner)="openLoginMenu($event)">Login
         </app-button>
     </div>
     <div class="mr-each-sec mr-footer-bottom" id="mr-feature-section">

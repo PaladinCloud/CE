@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 import { FetchResourcesService } from './../../services/fetch-resources.service';
 import { ActivatedRoute } from '@angular/router';
 import 'rxjs/add/operator/switchMap';
@@ -29,13 +29,23 @@ import { CONFIGURATIONS } from './../../../../config/configurations';
   selector: 'app-aws-resource-details',
   templateUrl: './aws-resource-details.component.html',
   styleUrls: ['./aws-resource-details.component.css'],
-  providers: [ FetchResourcesService ]
+  providers: [FetchResourcesService]
 })
 
 export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
+  //  @Input() filteredResources: any;
+  private awsResources: any = [];
+  private activeTileIndex: any = 0;
+  private categories = [];
+  private categoryNames = [];
+  private filteredResources: any = [];
+  //  private selectedResource: any;
+  private activeFilterCategory: any;
+  private searchTxt = '';
 
+  private resourceTypeSelectionSubscription: Subscription;
   selectedResource: any = {
-      type: undefined
+    type: undefined
   };
   dataLoaded: boolean;
   loading: boolean;
@@ -50,7 +60,7 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   private selectedAssetGroup: any;
   awsResourcesCache: any = [];
 
-  private showViewMore =  false;
+  private showViewMore = false;
 
   private assetGroupSubscription: Subscription;
   private routeSubscription: Subscription;
@@ -64,48 +74,113 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   public config;
   public oss;
 
+  saveSelectedResource() {
+    this.awsResourceTypeSelectionService.awsResourceSelected(this.selectedResource);
+  }
+
+  filterByCategory(category) {
+    this.activeFilterCategory = category;
+    const resources = this.awsResources.slice();
+    this.filteredResources = [];
+    resources.forEach(element => {
+      if (element.category === category.name || category.name === 'All') {
+        this.filteredResources.push(element);
+      }
+    });
+    this.selectedResource = this.filteredResources[0];
+  }
+
+  getAllCategories() {
+    this.categories = [];
+
+    // Temporary array to store unique categories
+    this.categoryNames = [];
+
+    this.awsResources.forEach(resource => {
+      const category = ICONS.categories[resource.category] === undefined ? 'Extra' : resource['category'];
+      resource.category = category;   // Update the category of current resource depending on the result of the above line
+      if (this.categoryNames.indexOf(category) === -1) {
+        this.categoryNames.push(category);
+        const obj = {
+          'name': category,
+          'color': ICONS.categories[category]
+        };
+        this.categories.push(obj);
+      }
+    });
+
+    // If extra categories are present, push them to the end
+    if (this.categoryNames.indexOf('Extra') > -1) {
+      const extraCategory = this.categories.splice(this.categoryNames.indexOf('Extra'), 1)[0];
+      this.categories.push(extraCategory);
+    }
+
+    // Push 'All' type at the front if categories array
+    this.categories.unshift({
+      'name': 'All',
+      'color': '#333333'
+    });
+
+    this.activeFilterCategory = this.categories[0];
+  }
+
+  getAwsResources() {
+    if (this.resourceTypeSelectionSubscription) { this.resourceTypeSelectionSubscription.unsubscribe(); }
+    this.resourceTypeSelectionSubscription = this.awsResourceTypeSelectionService.getAllAwsResources().subscribe(
+      allAwsResources => {
+        this.filteredResources = [];
+        this.awsResources = allAwsResources;
+        this.getAllCategories();
+        this.filteredResources = this.awsResources.slice();
+      },
+      error => {
+        this.logger.log('error', error);
+      }
+    );
+  }
   constructor(private fetchResourcesService: FetchResourcesService,
-              private route: ActivatedRoute,
-              private assetGroupObservableService: AssetGroupObservableService,
-              private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
-              private errorHandling: ErrorHandlingService,
-              private domainObservableService: DomainTypeObservableService,
-              private logger: LoggerService) {
+    private route: ActivatedRoute,
+    private assetGroupObservableService: AssetGroupObservableService,
+    private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
+    private errorHandling: ErrorHandlingService,
+    private domainObservableService: DomainTypeObservableService,
+    private logger: LoggerService) {
 
 
-                this.config = CONFIGURATIONS;
+    this.config = CONFIGURATIONS;
 
-                this.oss = this.config && this.config.optional && this.config.optional.general && this.config.optional.general.OSS;
+    this.oss = this.config && this.config.optional && this.config.optional.general && this.config.optional.general.OSS;
 
-                this.assetGroupSubscription = this.assetGroupObservableService.getAssetGroup()
-                    .subscribe(
-                        assetGroupName => {
-                            this.selectedAssetGroup = assetGroupName;
-                        });
-                this.subscriptionDomain = this.domainObservableService.getDomainType().subscribe(domain => {
-                            this.selectedDomain = domain;
-                            this.init();
-                        });
+    this.assetGroupSubscription = this.assetGroupObservableService.getAssetGroup()
+      .subscribe(
+        assetGroupName => {
+          this.selectedAssetGroup = assetGroupName;
+        });
+    this.subscriptionDomain = this.domainObservableService.getDomainType().subscribe(domain => {
+      this.selectedDomain = domain;
+      this.init();
+    });
 
-                this.routeSubscription = this.route.queryParams.subscribe(params => {
-                    if (params['type']) {
-                        this.selectedResourceTypeFromUrl = params['type'];
-                    }
+    this.routeSubscription = this.route.queryParams.subscribe(params => {
+      if (params['type']) {
+        this.selectedResourceTypeFromUrl = params['type'];
+      }
 
-                });
+    });
 
   }
 
   ngOnInit() {
-      // Reset all variables
-      this.loading = false;
-      this.dataLoaded = false;
-      this.error = false;
-      this.errorMessage = 'apiResponseError';
-      this.awsResourcesCache = [];
-      this.selectedResource['recommendations'] = [];
-      this.getData();
-      this.viewAllSetup();
+    // Reset all variables
+    this.getAwsResources();
+    this.loading = false;
+    this.dataLoaded = false;
+    this.error = false;
+    this.errorMessage = 'apiResponseError';
+    this.awsResourcesCache = [];
+    this.selectedResource['recommendations'] = [];
+    this.getData();
+    this.viewAllSetup();
   }
 
   init() {
@@ -132,127 +207,126 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   }
 
   viewAllSetup() {
-      try {
+    try {
 
-        if (this.resourceSelectionSubscription) {
-          this.resourceSelectionSubscription.unsubscribe();
-        }
-
-        // SeelctedResource selected from viewAll.
-
-        this.resourceSelectionSubscription = this.awsResourceTypeSelectionService.getSelectedResource()
-        .subscribe(
-            selectedResourceInViewAll => {
-                if (this.awsResourceDetails !== undefined) {
-                    this.awsResourceDetails.forEach(element => {
-                        if (element.type === selectedResourceInViewAll) {
-
-                            // If the selected element from 'view-all' is already present in 'awsResourcesCache', then remove it
-                            for (let i = 0; i < this.awsResourcesCache.length; i++) {
-                                if (this.awsResourcesCache[i].type === selectedResourceInViewAll) {
-                                    this.awsResourcesCache.splice(i, 1);
-                                }
-                            }
-
-                            // Add the freshly selected resource to the first index of array 'awsResourcesCache
-                            this.awsResourcesCache.unshift(element);
-
-                            // Limit the items in 'awsResourcesCache' to maximum of 7
-                            if (this.awsResourcesCache.length > 7) {
-                                this.awsResourcesCache = this.awsResourcesCache.slice(0, 7);
-                            }
-
-                            this.selectedResource = Object.assign(element);
-
-                            this.selectResourceTile(this.selectedResource.type);
-
-                        }
-                    });
-                }
-            });
-      } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.setError(error);
-        this.logger.log('error', error);
+      if (this.resourceSelectionSubscription) {
+        this.resourceSelectionSubscription.unsubscribe();
       }
+
+      // SeelctedResource selected from viewAll.
+
+      this.resourceSelectionSubscription = this.awsResourceTypeSelectionService.getSelectedResource()
+        .subscribe(
+          selectedResourceInViewAll => {
+            if (this.awsResourceDetails !== undefined) {
+              this.awsResourceDetails.forEach(element => {
+                if (element.type === selectedResourceInViewAll) {
+
+                  // If the selected element from 'view-all' is already present in 'awsResourcesCache', then remove it
+                  for (let i = 0; i < this.awsResourcesCache.length; i++) {
+                    if (this.awsResourcesCache[i].type === selectedResourceInViewAll) {
+                      this.awsResourcesCache.splice(i, 1);
+                    }
+                  }
+
+                  // Add the freshly selected resource to the first index of array 'awsResourcesCache
+                  this.awsResourcesCache.unshift(element);
+
+                  // Limit the items in 'awsResourcesCache' to maximum of 7
+                  if (this.awsResourcesCache.length > 7) {
+                    this.awsResourcesCache = this.awsResourcesCache.slice(0, 7);
+                  }
+
+                  this.selectedResource = Object.assign(element);
+                  this.selectResourceTile(this.selectedResource);
+
+                }
+              });
+            }
+          });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.setError(error);
+      this.logger.log('error', error);
+    }
   }
 
-  getData()  {
-      this.setDataLoading();
-      this.getResourceTypeAndCountAndRecommendation();
+  getData() {
+    this.setDataLoading();
+    this.getResourceTypeAndCountAndRecommendation();
   }
 
   getResourceTypeAndCountAndRecommendation() {
-      try {
-        if (this.dataSubscription) {
-          this.dataSubscription.unsubscribe();
-        }
-        const queryParams =  {
-            'ag' : this.selectedAssetGroup,
-            'domain': this.selectedDomain
-        };
+    try {
+      if (this.dataSubscription) {
+        this.dataSubscription.unsubscribe();
+      }
+      const queryParams = {
+        'ag': this.selectedAssetGroup,
+        'domain': this.selectedDomain
+      };
 
-        const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
+      const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
 
-        this.dataSubscription = output.subscribe(results => {
-            try {
+      this.dataSubscription = output.subscribe(results => {
+        try {
 
-                const resourceTypes = results[0]['targettypes'];
-                let resourceTypeCount = results[1];
-                let recommendations = results[2];
+          const resourceTypes = results[0]['targettypes'];
+          let resourceTypeCount = results[1];
+          let recommendations = results[2];
 
-                this.setDataLoaded();
+          this.setDataLoaded();
 
-                this.awsResourceDetails = resourceTypes.map(function(resourceType){
+          this.awsResourceDetails = resourceTypes.map(function (resourceType) {
 
-                    if (resourceTypeCount !== undefined && resourceTypeCount !== null) {
-                        resourceTypeCount = results[1].assetcount;
-                        const countObj = resourceTypeCount.find(obj => obj.type === resourceType.type);
-                        resourceType.count = countObj ? countObj.count : 0;
-                    }
-
-                    if (recommendations !== undefined && recommendations !== null) {
-                        recommendations = results[2]['response'];
-                        let recommendationArray = [];
-                        recommendationArray = recommendations.filter((value) => {
-                            return value.targetType === resourceType.type;
-                        });
-                        resourceType.recommendations = recommendationArray;
-
-                        resourceType.recommendationAvailable = recommendationArray.length > 0 ? true : false;
-                    }
-
-                    return resourceType;
-                });
-
-                this.awsResourceDetails = this.removeTargetTypesOfCategoryOthers(this.awsResourceDetails, 'Other');
-
-                this.sortAwsResources();
-
-                // Update the aws resources in the common shared service
-                this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(this.awsResourceDetails);
-
-                this.assignIconsToResources();
-
-                this.setDataLoaded();
-                this.setupMainPageResourceTypes();
-
-            } catch (error) {
-                this.errorMessage = this.errorHandling.handleJavascriptError(error);
-                this.setError(error);
-                this.logger.log('error', error);
+            if (resourceTypeCount !== undefined && resourceTypeCount !== null) {
+              resourceTypeCount = results[1].assetcount;
+              const countObj = resourceTypeCount.find(obj => obj.type === resourceType.type);
+              resourceType.count = countObj ? countObj.count : 0;
             }
-        },
-        error => {
-            this.setError(error);
-            this.errorMessage = error;
-            this.logger.log('error', error);
+
+            if (recommendations !== undefined && recommendations !== null) {
+              recommendations = results[2]['response'];
+              let recommendationArray = [];
+              recommendationArray = recommendations.filter((value) => {
+                return value.targetType === resourceType.type;
+              });
+              resourceType.recommendations = recommendationArray;
+
+              resourceType.recommendationAvailable = recommendationArray.length > 0 ? true : false;
+            }
+
+            return resourceType;
+          });
+
+          this.awsResourceDetails = this.removeTargetTypesOfCategoryOthers(this.awsResourceDetails, 'Other');
+
+          this.sortAwsResources();
+
+          // Update the aws resources in the common shared service
+          this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(this.awsResourceDetails);
+
+          this.assignIconsToResources();
+
+          this.setDataLoaded();
+          this.setupMainPageResourceTypes();
+
+        } catch (error) {
+          this.errorMessage = this.errorHandling.handleJavascriptError(error);
+          this.setError(error);
+          this.logger.log('error', error);
         }
-        );
+      },
+        error => {
+          this.setError(error);
+          this.errorMessage = error;
+          this.logger.log('error', error);
+        }
+      );
     } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.setError(error);
-        this.logger.log('error', error);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.setError(error);
+      this.logger.log('error', error);
     }
   }
 
@@ -263,35 +337,35 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
     this.allAvailableCategories = [];
 
     this.awsResourceDetails.forEach(resources => {
-        const category = ICONS.categories[resources.category] === undefined ? 'Extra' : resources['category'];
-        resources.category = category;   // Update the category of current resource depending on the result of the above line
-        if (this.allAvailableCategories.indexOf(category) === -1) {
-            this.allAvailableCategories.push(category);
-            const obj = {
-                'name'   : category,
-                'color'  : ICONS.categories[category]
-            };
-            categoriesObj.push(obj);
-        }
+      const category = ICONS.categories[resources.category] === undefined ? 'Extra' : resources['category'];
+      resources.category = category;   // Update the category of current resource depending on the result of the above line
+      if (this.allAvailableCategories.indexOf(category) === -1) {
+        this.allAvailableCategories.push(category);
+        const obj = {
+          'name': category,
+          'color': ICONS.categories[category]
+        };
+        categoriesObj.push(obj);
+      }
     });
 
     // If extra categories are present, push them to the end
     if (this.allAvailableCategories.indexOf('Extra') > -1) {
-        const extraCategory = categoriesObj.splice(this.allAvailableCategories.indexOf('Extra'), 1);
-        categoriesObj.push(extraCategory);
+      const extraCategory = categoriesObj.splice(this.allAvailableCategories.indexOf('Extra'), 1);
+      categoriesObj.push(extraCategory);
     }
 
     this.awsResourceDetails.forEach(resources => {
-        resources['iconPath'] = ICONS.awsResources[resources.type];
+      resources['iconPath'] = ICONS.awsResources[resources.type];
     });
 
   }
 
   sortAwsResources() {
 
-    this.awsResourceDetails.sort(function(a, b) {
-        return b.count - a.count;     // For descending order
-        // return a.count - b.count;  // For ascending  order
+    this.awsResourceDetails.sort(function (a, b) {
+      return b.count - a.count;     // For descending order
+      // return a.count - b.count;  // For ascending  order
     });
 
     let computeCategoryPresent = false;
@@ -299,64 +373,64 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
     // Check if 'compute' category assets are there. If present, sort them with Compute category resources being first.
     const allResources = this.awsResourceDetails.slice();
     this.awsResourceDetails.forEach((element, index) => {
-        if (element.category.toLowerCase() === 'compute') {
-            computeCategoryPresent = true;
-            firstComputeIndex += 1;
-            allResources.splice(index, 1);
-            allResources.unshift(element);
-        }
+      if (element.category.toLowerCase() === 'compute') {
+        computeCategoryPresent = true;
+        firstComputeIndex += 1;
+        allResources.splice(index, 1);
+        allResources.unshift(element);
+      }
     });
 
     // Sort compute category items
     const computeCategoryResources = allResources.slice(0, firstComputeIndex);
-    computeCategoryResources.sort(function(a, b) {
-        return b.count - a.count;     // For descending order
-        // return a.count - b.count;  // For ascending  order
+    computeCategoryResources.sort(function (a, b) {
+      return b.count - a.count;     // For descending order
+      // return a.count - b.count;  // For ascending  order
     });
 
-    for ( let i = 0; i < computeCategoryResources.length; i++) {
-        allResources[i] = computeCategoryResources[i];
+    for (let i = 0; i < computeCategoryResources.length; i++) {
+      allResources[i] = computeCategoryResources[i];
     }
 
     if (computeCategoryPresent) {
-        this.awsResourceDetails = allResources.slice();
+      this.awsResourceDetails = allResources.slice();
     }
 
   }
 
-  setupMainPageResourceTypes () {
-      if (this.awsResourceDetails.length > 7) {
-          this.awsResourcesCache = this.awsResourceDetails.slice(0, 7);
-          this.showViewMore = true;
-      } else {
-          this.awsResourcesCache = this.awsResourceDetails.slice();
-          this.showViewMore = false;
-      }
-      if (!this.selectedResourceTypeFromUrl) {
-          this.selectResourceTile(this.awsResourceDetails[0].type);
-      } else {
-          this.selectResourceTile(this.selectedResourceTypeFromUrl);
-      }
+  setupMainPageResourceTypes() {
+    if (this.awsResourceDetails.length > 7) {
+      this.awsResourcesCache = this.awsResourceDetails.slice(0, 7);
+      this.showViewMore = true;
+    } else {
+      this.awsResourcesCache = this.awsResourceDetails.slice();
+      this.showViewMore = false;
+    }
+    if (!this.selectedResourceTypeFromUrl) {
+      this.selectResourceTile(this.awsResourceDetails[0]);
+    } else {
+      this.selectResourceTile(this.selectedResourceTypeFromUrl);
+      //look into it
+    }
   }
 
-  awsTileClicked(resources, index) {
-    this.selectedResource = this.awsResourcesCache[index];
+  awsTileClicked(resource) {
+    if (this.filteredResources.length == 0) {
+      return;
+    }
+    this.selectedResource = resource;
     this.selectedResourceRecommendation = this.selectedResource['recommendations'];
   }
 
   removeTargetTypesOfCategoryOthers(resourceTypes, categoryType) {
     const updatedResourceTypes = resourceTypes.filter((value) => {
-        return value.category.toLowerCase() !== categoryType.toLowerCase();
+      return value.category.toLowerCase() !== categoryType.toLowerCase();
     });
     return updatedResourceTypes;
   }
 
   selectResourceTile(resources) {
-    const tileIndex = this.awsResourcesCache.findIndex((value) => {
-        return value.type.toLowerCase() === resources.toLowerCase();
-    });
-
-    this.awsTileClicked(resources, tileIndex);
+    this.awsTileClicked(resources);
   }
 
   getResourceTypeObjectFromType(resources) {
@@ -368,13 +442,14 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
-        this.dataSubscription.unsubscribe();
-        this.routeSubscription.unsubscribe();
-        this.assetGroupSubscription.unsubscribe();
-        this.resourceSelectionSubscription.unsubscribe();
-        this.subscriptionDomain.unsubscribe();
+      this.dataSubscription.unsubscribe();
+      this.routeSubscription.unsubscribe();
+      this.assetGroupSubscription.unsubscribe();
+      this.resourceSelectionSubscription.unsubscribe();
+      this.subscriptionDomain.unsubscribe();
+      this.resourceTypeSelectionSubscription.unsubscribe();
     } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
     }
   }
 

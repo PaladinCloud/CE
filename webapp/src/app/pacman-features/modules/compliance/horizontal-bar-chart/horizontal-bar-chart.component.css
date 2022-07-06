@@ -1,0 +1,22 @@
+#horizontal-bar-chart {
+  height: 240px;
+  width: 100%;
+}
+
+.hide {
+  display: none;
+}
+
+::ng-deep .tick text {
+  text-transform: capitalize;
+  font: var(--text-body-2);
+}
+
+::ng-deep .label {
+  text-transform: capitalize;
+  font: var(--text-body-2);
+}
+
+::ng-deep .bar {
+  rx: 4px;
+}

@@ -109,14 +109,14 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     /** The filter repository. */
     @Autowired
     private FilterRepository filterRepository;
-    
+
     /** The system configuration service. */
     @Autowired
     private SystemConfigurationService systemConfigurationService;
-    
+
     @Value("${features.vulnerability.enabled:false}")
     private boolean qualysEnabled;
-    
+
     /** The es host. */
     @Value("${elastic-search.host}")
     private String esHost;
@@ -124,9 +124,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     /** The es port. */
     @Value("${elastic-search.port}")
     private int esPort;
-    
+
     /** The critical issue default time interval for calculating delta. */
-//    @Value("${critical.issues.defaulttime}")
+    // @Value("${critical.issues.defaulttime}")
     private String defaultTime = "24hrs";
 
     /** The Constant PROTOCOL. */
@@ -134,7 +134,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
     /** The es url. */
     private String esUrl;
-    
+
     /**
      * Inits the.
      */
@@ -229,8 +229,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Long> getPatching(String assetGroup, String targetType, String application) throws ServiceException {
-    	logger.info("input value for getPatching are {} {} {}",assetGroup,targetType,application);
+    public Map<String, Long> getPatching(String assetGroup, String targetType, String application)
+            throws ServiceException {
+        logger.info("input value for getPatching are {} {} {}", assetGroup, targetType, application);
         Long totalPatched;
         Long totalUnpatched = 0l;
         Long totalAssets = 0l;
@@ -248,18 +249,19 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             for (AssetCountDTO targettype : targetTypes) {
                 String type = targettype.getType();
                 if (EC2.equalsIgnoreCase(type) || VIRTUALMACHINE.equalsIgnoreCase(type)) {
-                    totalAssets += repository.getPatchabeAssetsCount(assetGroup, targettype.getType(),application,null,null);
-                    totalUnpatched += repository.getUnpatchedAssetsCount(assetGroup, targettype.getType(),application);
+                    totalAssets += repository.getPatchabeAssetsCount(assetGroup, targettype.getType(), application,
+                            null, null);
+                    totalUnpatched += repository.getUnpatchedAssetsCount(assetGroup, targettype.getType(), application);
                 }
             }
         } catch (DataException e) {
-        	logger.error("Error @ getPatching ", e);
+            logger.error("Error @ getPatching ", e);
             throw new ServiceException(e);
         }
-        if(totalUnpatched > totalAssets){
-        	totalUnpatched = totalAssets;
+        if (totalUnpatched > totalAssets) {
+            totalUnpatched = totalAssets;
         }
-        
+
         totalPatched = totalAssets - totalUnpatched;
         if (totalAssets > 0) {
             patchingPercentage = (totalPatched * HUNDRED) / totalAssets;
@@ -341,7 +343,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     @SuppressWarnings("rawtypes")
     public ResponseWithOrder getRulecompliance(Request request) throws ServiceException {
         // Ignoring input as we need to return all.
-    	logger.debug("getRulecompliance invoked with {}",request);
+        logger.debug("getRulecompliance invoked with {}", request);
         int size = 0;
         int from = 0;
         String assetGroup = request.getAg();
@@ -356,43 +358,45 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         ResponseWithOrder response = null;
         String rule = null;
         String ttypes = "";
-        String resourceTypeFilter = null; 
-        if(filters.containsKey(Constants.RESOURCE_TYPE) && StringUtils.isNotBlank(filters.get(Constants.RESOURCE_TYPE))) {
-            ttypes = "'"+filters.get(Constants.RESOURCE_TYPE).trim()+"'"; 
+        String resourceTypeFilter = null;
+        if (filters.containsKey(Constants.RESOURCE_TYPE)
+                && StringUtils.isNotBlank(filters.get(Constants.RESOURCE_TYPE))) {
+            ttypes = "'" + filters.get(Constants.RESOURCE_TYPE).trim() + "'";
             resourceTypeFilter = filters.get(Constants.RESOURCE_TYPE).trim();
-        }else if(!Strings.isNullOrEmpty(filters.get(CommonUtils.convertAttributetoKeyword(TARGET_TYPE)))) {
-            ttypes = "'"+filters.get(CommonUtils.convertAttributetoKeyword(TARGET_TYPE)).trim()+"'"; 
+        } else if (!Strings.isNullOrEmpty(filters.get(CommonUtils.convertAttributetoKeyword(TARGET_TYPE)))) {
+            ttypes = "'" + filters.get(CommonUtils.convertAttributetoKeyword(TARGET_TYPE)).trim() + "'";
             resourceTypeFilter = filters.get(CommonUtils.convertAttributetoKeyword(TARGET_TYPE)).trim();
         } else {
             ttypes = repository.getTargetTypeForAG(assetGroup, filters.get(DOMAIN));
         }
-        logger.debug("Types in scope for invocation {}",ttypes);
-        final List <Map<String, String>> dataSourceTargetType = repository.getDataSourceForTargetTypeForAG(assetGroup, filters.get(DOMAIN), resourceTypeFilter);
-        String application ;
-        if(filters.containsKey(Constants.APPS)) {
-        	application = filters.get(Constants.APPS);
-        }else {
-        	application = null;
+        logger.debug("Types in scope for invocation {}", ttypes);
+        final List<Map<String, String>> dataSourceTargetType = repository.getDataSourceForTargetTypeForAG(assetGroup,
+                filters.get(DOMAIN), resourceTypeFilter);
+        String application;
+        if (filters.containsKey(Constants.APPS)) {
+            application = filters.get(Constants.APPS);
+        } else {
+            application = null;
         }
-                            
+
         if (!Strings.isNullOrEmpty(ttypes)) {
             try {
                 List<Map<String, Object>> rules = new ArrayList<>();
-               
+
                 /*--For filters we need to take rule Id's which match the filter condition--*/
                 if (!Strings.isNullOrEmpty(filters.get(RULEID_KEYWORD))) {
 
                     rule = rule + "," + "'" + filters.get(RULEID_KEYWORD) + "'";
                     rules = repository.getRuleIdDetails(rule);
-                    if(!rules.isEmpty())
-                    	resourceTypeFilter = rules.get(0).get(TARGET_TYPE).toString();
+                    if (!rules.isEmpty())
+                        resourceTypeFilter = rules.get(0).get(TARGET_TYPE).toString();
                 } else {
-                	rules = repository.getRuleIdWithDisplayNameWithRuleCategoryQuery(
-                            ttypes, ruleCategory);                 
+                    rules = repository.getRuleIdWithDisplayNameWithRuleCategoryQuery(
+                            ttypes, ruleCategory);
                 }
-                
-                logger.debug("Rules in scope {}",rules);
-            
+
+                logger.debug("Rules in scope {}", rules);
+
                 if (!rules.isEmpty()) {
                     // Make map of rule severity,category
 
@@ -403,189 +407,198 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     Map<String, Object> ruleSevDetails = ruleSevCatDetails.parallelStream().collect(
                             Collectors.toMap(c -> c.get(RULEID).toString(), c -> c.get(SEVERITY),
                                     (oldvalue, newValue) -> newValue));
-                    
+
                     Map<String, Object> ruleAutoFixDetails = ruleSevCatDetails.parallelStream().collect(
                             Collectors.toMap(c -> c.get(RULEID).toString(), c -> c.get("autofix"), (oldvalue,
                                     newValue) -> newValue));
-                    
+
                     ExecutorService executor = Executors.newCachedThreadPool();
-                   
-                    
+
                     Map<String, Long> totalassetCount = new HashMap<>();
-                         
-                    totalassetCount.putAll(repository.getTotalAssetCount(assetGroup, filters.get(DOMAIN), application,resourceTypeFilter)); // Can't execute in thread as security context is not passed in feign.
-					 
-                    List<Map<String, Object>> ruleIdwithsScanDate  = new ArrayList<>();
-                    executor.execute(()->{
-                    	try {
-							ruleIdwithsScanDate.addAll(repository.getRulesLastScanDate());
-						} catch (DataException e) {
-							logger.error("Error fetching rule Last scan date",e);
-						}
-						
+
+                    totalassetCount.putAll(repository.getTotalAssetCount(assetGroup, filters.get(DOMAIN), application,
+                            resourceTypeFilter)); // Can't execute in thread as security context is not passed in feign.
+
+                    List<Map<String, Object>> ruleIdwithsScanDate = new ArrayList<>();
+                    executor.execute(() -> {
+                        try {
+                            ruleIdwithsScanDate.addAll(repository.getRulesLastScanDate());
+                        } catch (DataException e) {
+                            logger.error("Error fetching rule Last scan date", e);
+                        }
+
                     });
-                    
-                    Map<String,Integer> exemptedAssetsCount = new HashMap<>(); 
-                   // executor.execute(()->{
-                    	 try {
-                    		 if(filters.containsKey(Constants.RESOURCE_TYPE)) {// Currently exempted info is only used when resorucetype is passed. Temporary perf fix
-                    			 exemptedAssetsCount.putAll(repository.getExemptedAssetsCountByRule(assetGroup,application,filters.get(Constants.RESOURCE_TYPE)));
-                    		 }
-						} catch (DataException e) {
-							logger.error("Error fetching exempted asset count",e);
-						}
-                         
-                         
-                   // });
-                   
-                    Map<String, Object> untagMap =  new HashMap<>(); 
-                    
+
+                    Map<String, Integer> exemptedAssetsCount = new HashMap<>();
+                    // executor.execute(()->{
+                    try {
+                        if (filters.containsKey(Constants.RESOURCE_TYPE)) {// Currently exempted info is only used when
+                                                                           // resorucetype is passed. Temporary perf fix
+                            exemptedAssetsCount.putAll(repository.getExemptedAssetsCountByRule(assetGroup, application,
+                                    filters.get(Constants.RESOURCE_TYPE)));
+                        }
+                    } catch (DataException e) {
+                        logger.error("Error fetching exempted asset count", e);
+                    }
+
+                    // });
+
+                    Map<String, Object> untagMap = new HashMap<>();
+
                     List<Map<String, Object>> rulesTemp = rules;
                     String ttypesTemp = ttypes;
-                    executor.execute(()->{
-                    	
-                    	boolean tagginPolicyExists = rulesTemp.stream().filter(ruleObj-> ruleObj.get(RULEID).toString().contains(TAGGIG_POLICY)).findAny().isPresent();
-                      
-                        if(tagginPolicyExists)
-							try {
-								untagMap.putAll(repository.getTaggingByAG(assetGroup,ttypesTemp,application));
-							} catch (DataException e) {
-								logger.error("Error fetching tagging information ",e);
-							}                        
-                   });
+                    executor.execute(() -> {
+
+                        boolean tagginPolicyExists = rulesTemp.stream()
+                                .filter(ruleObj -> ruleObj.get(RULEID).toString().contains(TAGGING_POLICY)).findAny()
+                                .isPresent();
+
+                        if (tagginPolicyExists)
+                            try {
+                                untagMap.putAll(repository.getTaggingByAG(assetGroup, ttypesTemp, application));
+                            } catch (DataException e) {
+                                logger.error("Error fetching tagging information ", e);
+                            }
+                    });
                     final Map<String, Long> openIssuesByRuleByAG = new HashMap<>();
-                    executor.execute(()->{
-                    	try {
-							openIssuesByRuleByAG.putAll(repository.getNonCompliancePolicyByEsWithAssetGroup(
-							         assetGroup, null, filters, from, size, ttypesTemp));
-						} catch (DataException e) {
-							logger.error("Error fetching rule issue aggregations ",e);
+                    executor.execute(() -> {
+                        try {
+                            openIssuesByRuleByAG.putAll(repository.getNonCompliancePolicyByEsWithAssetGroup(
+                                    assetGroup, null, filters, from, size, ttypesTemp));
+                        } catch (DataException e) {
+                            logger.error("Error fetching rule issue aggregations ", e);
 
-						}
-                        
-                   });
-                    
-                   executor.shutdown();
-                    
-                   while(!executor.isTerminated()) {
-                	 
-                	   
-                   }
-                                 
+                        }
+
+                    });
+
+                    executor.shutdown();
+
+                    while (!executor.isTerminated()) {
+
+                    }
+
                     rules.forEach(ruleIdDetails -> {
-                                Map<String, String> ruleIdwithsScanDateMap = new HashMap<>();
-                                LinkedHashMap<String, Object> openIssuesByRule = new LinkedHashMap<>();
-                                Long assetCount = 0l;
-                                Long issuecountPerRuleAG = 0l;
-                                double compliancePercentage;
-                                double contributionPercentage = 0;
-                                String resourceType = null;
-                                String ruleId = null;
-                             
-                                if (!ruleIdwithsScanDate.isEmpty()) {
-                                    ruleIdwithsScanDateMap = ruleIdwithsScanDate.stream().collect(
-                                            Collectors.toMap(s -> (String) s.get(RULEID),
-                                                    s -> (String) s.get(MODIFIED_DATE)));
-                                }
+                        Map<String, String> ruleIdwithsScanDateMap = new HashMap<>();
+                        LinkedHashMap<String, Object> openIssuesByRule = new LinkedHashMap<>();
+                        Long assetCount = 0l;
+                        Long issuecountPerRuleAG = 0l;
+                        double compliancePercentage;
+                        double contributionPercentage = 0;
+                        String resourceType = null;
+                        String ruleId = null;
 
-                                ruleId = ruleIdDetails.get(RULEID).toString();
-                                resourceType = ruleIdDetails.get(TARGET_TYPE).toString();
-                                assetCount = (null != totalassetCount.get(resourceType)) ? totalassetCount
-                                        .get(resourceType) : 0l;
-                                if (null != openIssuesByRuleByAG.get(ruleId)) {
-                                    issuecountPerRuleAG = (null != openIssuesByRuleByAG.get(ruleId)) ? openIssuesByRuleByAG
-                                            .get(ruleId) : 0l;
-                                
-                                }
-                                if (ruleId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)|| ruleId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE)) {
-                                  
-                                	try {
-										assetCount = repository.getPatchabeAssetsCount(assetGroup, resourceType,application,null,null);
-										issuecountPerRuleAG = repository.getUnpatchedAssetsCount(assetGroup, resourceType,application);
-									} catch (DataException e) {
-										logger.error("Error fetching patching info",e);
-									}
-                                
-                                } else if (ruleId.contains(TAGGIG_POLICY)) {
-                                	issuecountPerRuleAG = 0l;
-                                    if (untagMap.get(resourceType) != null) {
-                                        String totaluntaggedStr = untagMap.get(resourceType).toString()
-                                                .substring(0, untagMap.get(resourceType).toString().length() - TWO);
-                                        issuecountPerRuleAG = Long.parseLong(totaluntaggedStr);
-                                    }
-                                } else {
-                                    if((ruleId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled) || ruleId.equalsIgnoreCase(SSM_AGENT_RULE)){
-                                        //qualys coverage require only running instances
-                                    	logger.info("qualys coverage require only running instances {}",ruleId);
-                                        try {
-                                        	if(StringUtils.isNotBlank(filters.get(Constants.APPS))) {
-                                        		assetCount = repository.getInstanceCountForQualys(assetGroup,"noncompliancepolicy",filters.get(Constants.APPS), "",resourceType);
-                                        	} else {
-                                        		assetCount = repository.getInstanceCountForQualys(assetGroup,"noncompliancepolicy","", "",resourceType);
-                                        	}
-                                            
-                                        } catch (DataException e) {
-                                            logger.error("Error fetching qualys data",e);
-                                        }
-                                    }
-    
-                                }
-                                if (issuecountPerRuleAG > assetCount) {
-                                    issuecountPerRuleAG = assetCount;
-                                }
-                                Long passed = assetCount - issuecountPerRuleAG;
-                                compliancePercentage = Math
-                                        .floor(((assetCount - issuecountPerRuleAG) * HUNDRED) / assetCount);
-                                if(assetCount==0){
-                                	compliancePercentage = 100;
-                                	issuecountPerRuleAG = 0l;
-                                	passed = 0l;
-                                	contributionPercentage = 0.0;
-                                }
-                                openIssuesByRule.put(SEVERITY, ruleSevDetails.get(ruleId));
-                                openIssuesByRule.put(NAME, ruleIdDetails.get(DISPLAY_NAME).toString());
-                                openIssuesByRule.put(COMPLIANCE_PERCENT, compliancePercentage);
-                                String lastScanDate = repository.getScanDate(ruleId, ruleIdwithsScanDateMap);
-                                if(lastScanDate!=null){
-                                	openIssuesByRule.put(LAST_SCAN, lastScanDate);
-                                }else{
-                                	openIssuesByRule.put(LAST_SCAN, "");	
-                                }
-								final String resourceTypeFinal = resourceType;
-								openIssuesByRule.put(RULE_CATEGORY, ruleCatDetails.get(ruleId));
-								openIssuesByRule.put(RESOURCE_TYPE, resourceType);
-								openIssuesByRule.put(PROVIDER, dataSourceTargetType.stream()
-										.filter(datasourceObj -> datasourceObj.get(TYPE).equals(resourceTypeFinal))
-										.findFirst().get().get(PROVIDER));
-								openIssuesByRule.put(RULEID, ruleId);
-								openIssuesByRule.put(ASSETS_SCANNED, assetCount);
-								openIssuesByRule.put(PASSED, passed);
-								openIssuesByRule.put(FAILED, issuecountPerRuleAG);
-								openIssuesByRule.put("contribution_percent", contributionPercentage);
-								openIssuesByRule.put("autoFixEnabled", ruleAutoFixDetails.get(ruleId));
-                                if(exemptedAssetsCount.containsKey(ruleId)) {
-                                	openIssuesByRule.put("exempted", exemptedAssetsCount.get(ruleId));
-                                	openIssuesByRule.put("isAssetsExempted", exemptedAssetsCount.get(ruleId).intValue()>0?true:false);
-                	        	} else {
-                	        		openIssuesByRule.put("exempted", 0);
-                	        		openIssuesByRule.put("isAssetsExempted", false);
-                	        	}
-                                
-                                if (!Strings.isNullOrEmpty(searchText)) {
-									for (Map.Entry<String, Object> issueByRule : openIssuesByRule.entrySet()) {
-										if (null != issueByRule.getValue() && issueByRule.getValue().toString().toLowerCase()
-												.contains(searchText.toLowerCase())) {
-											openIssuesByRuleList.add(openIssuesByRule);
-											break;
-										}
+                        if (!ruleIdwithsScanDate.isEmpty()) {
+                            ruleIdwithsScanDateMap = ruleIdwithsScanDate.stream().collect(
+                                    Collectors.toMap(s -> (String) s.get(RULEID),
+                                            s -> (String) s.get(MODIFIED_DATE)));
+                        }
 
-									}
-                                } else {
+                        ruleId = ruleIdDetails.get(RULEID).toString();
+                        resourceType = ruleIdDetails.get(TARGET_TYPE).toString();
+                        assetCount = (null != totalassetCount.get(resourceType)) ? totalassetCount
+                                .get(resourceType) : 0l;
+                        if (null != openIssuesByRuleByAG.get(ruleId)) {
+                            issuecountPerRuleAG = (null != openIssuesByRuleByAG.get(ruleId)) ? openIssuesByRuleByAG
+                                    .get(ruleId) : 0l;
+
+                        }
+                        if (ruleId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)
+                                || ruleId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE)) {
+
+                            try {
+                                assetCount = repository.getPatchabeAssetsCount(assetGroup, resourceType, application,
+                                        null, null);
+                                issuecountPerRuleAG = repository.getUnpatchedAssetsCount(assetGroup, resourceType,
+                                        application);
+                            } catch (DataException e) {
+                                logger.error("Error fetching patching info", e);
+                            }
+
+                        } else if (ruleId.contains(TAGGING_POLICY)) {
+                            issuecountPerRuleAG = 0l;
+                            if (untagMap.get(resourceType) != null) {
+                                String totaluntaggedStr = untagMap.get(resourceType).toString()
+                                        .substring(0, untagMap.get(resourceType).toString().length() - TWO);
+                                issuecountPerRuleAG = Long.parseLong(totaluntaggedStr);
+                            }
+                        } else {
+                            if ((ruleId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled)
+                                    || ruleId.equalsIgnoreCase(SSM_AGENT_RULE)) {
+                                // qualys coverage require only running instances
+                                logger.info("qualys coverage require only running instances {}", ruleId);
+                                try {
+                                    if (StringUtils.isNotBlank(filters.get(Constants.APPS))) {
+                                        assetCount = repository.getInstanceCountForQualys(assetGroup,
+                                                "noncompliancepolicy", filters.get(Constants.APPS), "", resourceType);
+                                    } else {
+                                        assetCount = repository.getInstanceCountForQualys(assetGroup,
+                                                "noncompliancepolicy", "", "", resourceType);
+                                    }
+
+                                } catch (DataException e) {
+                                    logger.error("Error fetching qualys data", e);
+                                }
+                            }
+
+                        }
+                        if (issuecountPerRuleAG > assetCount) {
+                            issuecountPerRuleAG = assetCount;
+                        }
+                        Long passed = assetCount - issuecountPerRuleAG;
+                        compliancePercentage = Math
+                                .floor(((assetCount - issuecountPerRuleAG) * HUNDRED) / assetCount);
+                        if (assetCount == 0) {
+                            compliancePercentage = 100;
+                            issuecountPerRuleAG = 0l;
+                            passed = 0l;
+                            contributionPercentage = 0.0;
+                        }
+                        openIssuesByRule.put(SEVERITY, ruleSevDetails.get(ruleId));
+                        openIssuesByRule.put(NAME, ruleIdDetails.get(DISPLAY_NAME).toString());
+                        openIssuesByRule.put(COMPLIANCE_PERCENT, compliancePercentage);
+                        String lastScanDate = repository.getScanDate(ruleId, ruleIdwithsScanDateMap);
+                        if (lastScanDate != null) {
+                            openIssuesByRule.put(LAST_SCAN, lastScanDate);
+                        } else {
+                            openIssuesByRule.put(LAST_SCAN, "");
+                        }
+                        final String resourceTypeFinal = resourceType;
+                        openIssuesByRule.put(RULE_CATEGORY, ruleCatDetails.get(ruleId));
+                        openIssuesByRule.put(RESOURCE_TYPE, resourceType);
+                        openIssuesByRule.put(PROVIDER, dataSourceTargetType.stream()
+                                .filter(datasourceObj -> datasourceObj.get(TYPE).equals(resourceTypeFinal))
+                                .findFirst().get().get(PROVIDER));
+                        openIssuesByRule.put(RULEID, ruleId);
+                        openIssuesByRule.put(ASSETS_SCANNED, assetCount);
+                        openIssuesByRule.put(PASSED, passed);
+                        openIssuesByRule.put(FAILED, issuecountPerRuleAG);
+                        openIssuesByRule.put("contribution_percent", contributionPercentage);
+                        openIssuesByRule.put("autoFixEnabled", ruleAutoFixDetails.get(ruleId));
+                        if (exemptedAssetsCount.containsKey(ruleId)) {
+                            openIssuesByRule.put("exempted", exemptedAssetsCount.get(ruleId));
+                            openIssuesByRule.put("isAssetsExempted",
+                                    exemptedAssetsCount.get(ruleId).intValue() > 0 ? true : false);
+                        } else {
+                            openIssuesByRule.put("exempted", 0);
+                            openIssuesByRule.put("isAssetsExempted", false);
+                        }
+
+                        if (!Strings.isNullOrEmpty(searchText)) {
+                            for (Map.Entry<String, Object> issueByRule : openIssuesByRule.entrySet()) {
+                                if (null != issueByRule.getValue() && issueByRule.getValue().toString().toLowerCase()
+                                        .contains(searchText.toLowerCase())) {
                                     openIssuesByRuleList.add(openIssuesByRule);
-
+                                    break;
                                 }
 
-                            });
+                            }
+                        } else {
+                            openIssuesByRuleList.add(openIssuesByRule);
+
+                        }
+
+                    });
                 }
                 openIssuesByRuleListFinal = openIssuesByRuleList;
                 // sorting by #Violation in desencing order
@@ -597,7 +610,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     response = new ResponseWithOrder(openIssuesByRuleListFinal, openIssuesByRuleListFinal.size());
                 }
             } catch (DataException e) {
-            	logger.error("Error @ getRulecompliance while getting the data from ES", e);
+                logger.error("Error @ getRulecompliance while getting the data from ES", e);
                 throw new ServiceException(e);
             }
         }
@@ -623,64 +636,64 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     /*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-	 * getRuleDetailsByApplicationFromES(java.lang.String, java.lang.String,
-	 * java.lang.String)
-	 */
-	public JsonArray getRuleDetailsByApplicationFromES(String assetGroup, String ruleId, String searchText)
-			throws DataException {
-		String responseJson = null;
-		JsonParser jsonParser;
-		JsonObject resultJson;
-		StringBuilder requestBody = null;
-		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
-				.append(SEARCH);
-		requestBody = new StringBuilder(
-				"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
-						+ ruleId + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}");
-		if (!StringUtils.isEmpty(searchText)) {
-			requestBody.append(",{\"match_phrase_prefix\":{\"_all\":\"" + searchText + "\"}}");
-		}
-		// additional filters for kernel compliance rule
-		if (EC2_KERNEL_COMPLIANCE_RULE.equalsIgnoreCase(ruleId)) {
-			requestBody.append(
-					",{\"has_parent\":{\"parent_type\":\"ec2\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename\":\"running\"}}],\"must_not\":[{\"match\":{\"platform\":\"windows\"}}]}}}}");
-		} else if (VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE.equalsIgnoreCase(ruleId)) {
-			requestBody.append(
-					",{\"has_parent\":{\"parent_type\":\"virtualmachine\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"status\":\""
-							+ RUNNING + "\"}}],\"must_not\":[{\"match\":{\"osType\":\"" + AZURE_WINDOWS + "\"}}]}}}}");
-		}
-		requestBody.append("]");
-		// additional filters for Tagging compliance rule
-		if (ruleId.contains(TAGGING_POLICY)) {
-			List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
-			if (!tagsList.isEmpty()) {
-				requestBody = requestBody.append(",\"should\":[");
-				for (String tag : tagsList) {
-					requestBody = requestBody.append("{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},");
-				}
-				requestBody.setLength(requestBody.length() - 1);
-				requestBody.append("]");
-				requestBody.append(",\"minimum_should_match\":1");
-			}
-		}
-		requestBody
-				.append("}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000}}}}");
-		try {
-			responseJson = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
-		} catch (Exception e) {
-			logger.error(ERROR_IN_US, e);
-			throw new DataException(e);
-		}
-		jsonParser = new JsonParser();
-		resultJson = (JsonObject) jsonParser.parse(responseJson);
-		JsonObject aggsJson = (JsonObject) jsonParser.parse(resultJson.get(AGGREGATIONS).toString());
-		return aggsJson.getAsJsonObject("NAME").getAsJsonArray(BUCKETS);
-	}
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
+     * getRuleDetailsByApplicationFromES(java.lang.String, java.lang.String,
+     * java.lang.String)
+     */
+    public JsonArray getRuleDetailsByApplicationFromES(String assetGroup, String ruleId, String searchText)
+            throws DataException {
+        String responseJson = null;
+        JsonParser jsonParser;
+        JsonObject resultJson;
+        StringBuilder requestBody = null;
+        StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
+                .append(SEARCH);
+        requestBody = new StringBuilder(
+                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                        + ruleId + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}");
+        if (!StringUtils.isEmpty(searchText)) {
+            requestBody.append(",{\"match_phrase_prefix\":{\"_all\":\"" + searchText + "\"}}");
+        }
+        // additional filters for kernel compliance rule
+        if (EC2_KERNEL_COMPLIANCE_RULE.equalsIgnoreCase(ruleId)) {
+            requestBody.append(
+                    ",{\"has_parent\":{\"parent_type\":\"ec2\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"statename\":\"running\"}}],\"must_not\":[{\"match\":{\"platform\":\"windows\"}}]}}}}");
+        } else if (VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE.equalsIgnoreCase(ruleId)) {
+            requestBody.append(
+                    ",{\"has_parent\":{\"parent_type\":\"virtualmachine\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"status\":\""
+                            + RUNNING + "\"}}],\"must_not\":[{\"match\":{\"osType\":\"" + AZURE_WINDOWS + "\"}}]}}}}");
+        }
+        requestBody.append("]");
+        // additional filters for Tagging compliance rule
+        if (ruleId.contains(TAGGING_POLICY)) {
+            List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
+            if (!tagsList.isEmpty()) {
+                requestBody = requestBody.append(",\"should\":[");
+                for (String tag : tagsList) {
+                    requestBody = requestBody.append("{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},");
+                }
+                requestBody.setLength(requestBody.length() - 1);
+                requestBody.append("]");
+                requestBody.append(",\"minimum_should_match\":1");
+            }
+        }
+        requestBody
+                .append("}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000}}}}");
+        try {
+            responseJson = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+        } catch (Exception e) {
+            logger.error(ERROR_IN_US, e);
+            throw new DataException(e);
+        }
+        jsonParser = new JsonParser();
+        resultJson = (JsonObject) jsonParser.parse(responseJson);
+        JsonObject aggsJson = (JsonObject) jsonParser.parse(resultJson.get(AGGREGATIONS).toString());
+        return aggsJson.getAsJsonObject("NAME").getAsJsonArray(BUCKETS);
+    }
 
-	/*
+    /*
      * (non-Javadoc)
      * 
      * @see com.tmobile.pacman.api.compliance.service.ComplianceService#
@@ -694,10 +707,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
         JsonArray buckets;
         try {
-            buckets = repository.getRuleDetailsByEnvironmentFromES(assetGroup, ruleId, application, searchText,targetType);
+            buckets = repository.getRuleDetailsByEnvironmentFromES(assetGroup, ruleId, application, searchText,
+                    targetType);
 
         } catch (DataException e) {
-        	logger.error("Error @ getRuleDetailsbyEnvironment while getting the env by rule and application from ES", e);
+            logger.error("Error @ getRuleDetailsbyEnvironment while getting the env by rule and application from ES",
+                    e);
             throw new ServiceException(e);
         }
         Gson googleJson = new Gson();
@@ -705,10 +720,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         Map<String, Long> issuesByApplcationListMap = issuesForApplcationByEnvList.parallelStream().collect(
                 Collectors.toMap(issue -> issue.get(KEY).toString(),
                         issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
-         
-        Map<String,Long>  assetCountByEnv = repository.getTotalAssetCountByEnvironment(assetGroup, application, targetType);
-        
-        formComplianceDetailsForApplicationByEnvironment(ruleId, assetCountByEnv, issuesByApplcationListMap,assetGroup,application,environmentList,targetType,searchText);
+
+        Map<String, Long> assetCountByEnv = repository.getTotalAssetCountByEnvironment(assetGroup, application,
+                targetType);
+
+        formComplianceDetailsForApplicationByEnvironment(ruleId, assetCountByEnv, issuesByApplcationListMap, assetGroup,
+                application, environmentList, targetType, searchText);
         return environmentList;
 
     }
@@ -871,12 +888,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             throws ServiceException {
         List<Map<String, Object>> ruleSevCatDetails = new ArrayList<>();
         for (Map<String, Object> ruleDetail : ruleDetails) {
-            logger.info("Fetching details for rule: {}",ruleDetail);
+            logger.info("Fetching details for rule: {}", ruleDetail);
             JsonParser parser = new JsonParser();
             List<Map<String, String>> paramsList;
             JsonObject ruleParamsJson;
             Map<String, Object> ruleSevCatDetail = new HashMap<>();
-            logger.info("Rule params for the rule: {}",(String) ruleDetail.get(RULE_PARAMS));
+            logger.info("Rule params for the rule: {}", (String) ruleDetail.get(RULE_PARAMS));
             ruleParamsJson = (JsonObject) parser.parse(ruleDetail.get(RULE_PARAMS).toString());
             paramsList = new Gson().fromJson(ruleParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
             }.getType());
@@ -932,16 +949,18 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                 violation = Arrays.stream(issueDetails.trim().split(", ")).map(s -> s.split("="))
                         .collect(Collectors.toMap(a -> a[0], // key
                                 a -> a[1] // value
-                                ));
+                        ));
                 violation.remove("violationReason");
                 violationList.add(violation);
             }
             return new PolicyViolationDetails(policyViolationByIssueId.get(TARGET_TYPE).toString(),
                     policyViolationByIssueId.get(ISSUE_STATUS).toString(), policyViolationByIssueId.get(SEVERITY)
-                            .toString(), policyViolationByIssueId.get(RULE_CATEGORY).toString(), resourceId,
+                            .toString(),
+                    policyViolationByIssueId.get(RULE_CATEGORY).toString(), resourceId,
                     policyViolated, policyDescription, policyViolationByIssueId.get(ISSUE_REASON).toString(),
                     policyViolationByIssueId.get(CREATED_DATE).toString(), policyViolationByIssueId.get(MODIFIED_DATE)
-                            .toString(), policyViolationByIssueId.get(POLICYID).toString(), ruleId, violationList);
+                            .toString(),
+                    policyViolationByIssueId.get(POLICYID).toString(), ruleId, violationList);
 
         } else {
             throw new ServiceException(NO_DATA_FOUND);
@@ -976,7 +995,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             ruledetails.put(RULE_DESC, rule.get(POLICY_DESC));
             ruledetails.put(DISPLAY_NAME, rule.get(DISPLAY_NAME));
             ruledetails.put(POLICY_VERSION, rule.get(POLICY_VERSION));
-
+            ruledetails.put(RESOLUTION_URL, rule.get(RESOLUTION_URL));
             if (null != rule.get(RESOLUTION)) {
                 resolution = Arrays.asList(rule.get(RESOLUTION).toString().split(","));
                 ruledetails.put(RESOLUTION, resolution);
@@ -1063,19 +1082,19 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     private int getSeverityWeightage(String severity) {
         int severityWeightage = 1;
         switch (severity) {
-        case "critical":
-            severityWeightage = TEN;
-            break;
-        case "high":
-            severityWeightage = FIVE;
-            break;
-        case "medium":
-            severityWeightage = THREE;
-            break;
-        case "low":
-            severityWeightage = ONE;
-            break;
-        default:
+            case "critical":
+                severityWeightage = TEN;
+                break;
+            case "high":
+                severityWeightage = FIVE;
+                break;
+            case "medium":
+                severityWeightage = THREE;
+                break;
+            case "low":
+                severityWeightage = ONE;
+                break;
+            default:
         }
         return severityWeightage;
     }
@@ -1195,30 +1214,30 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         return complainceByRules;
     }
 
-	@Override
-	public Map<String, String> getCurrentKernelVersions() {
-		return buildCriteriaMap(CommonUtil.getCurrentQuarterCriteriaKey());
-	}
-	
-	private Map<String, String> buildCriteriaMap(String compCriteriaMap) {
-		Map<String, String> kernelCriteriaMap = new TreeMap<>();
-		try {
-			String kernelSriteriaString = systemConfigurationService.getConfigValue(compCriteriaMap);
-			StringTokenizer st = new StringTokenizer(kernelSriteriaString, "|");
-			StringTokenizer keyValue;
-			logger.debug("criteria string {}" , kernelSriteriaString);
-			while (st.hasMoreTokens()) {
-				keyValue = new StringTokenizer(st.nextToken(), "#");
-				kernelCriteriaMap.put(keyValue.nextToken(),	keyValue.nextToken());
-			}
-			logger.debug("criteria map {} " , kernelCriteriaMap);
-			return kernelCriteriaMap;
-		} catch (Exception e) {
-			// create a empty map
-			logger.error("error parsing pacman.kernel.compliance.map from system configuration", e.getMessage());
-			return new TreeMap<>();
-		}
-	}
+    @Override
+    public Map<String, String> getCurrentKernelVersions() {
+        return buildCriteriaMap(CommonUtil.getCurrentQuarterCriteriaKey());
+    }
+
+    private Map<String, String> buildCriteriaMap(String compCriteriaMap) {
+        Map<String, String> kernelCriteriaMap = new TreeMap<>();
+        try {
+            String kernelSriteriaString = systemConfigurationService.getConfigValue(compCriteriaMap);
+            StringTokenizer st = new StringTokenizer(kernelSriteriaString, "|");
+            StringTokenizer keyValue;
+            logger.debug("criteria string {}", kernelSriteriaString);
+            while (st.hasMoreTokens()) {
+                keyValue = new StringTokenizer(st.nextToken(), "#");
+                kernelCriteriaMap.put(keyValue.nextToken(), keyValue.nextToken());
+            }
+            logger.debug("criteria map {} ", kernelCriteriaMap);
+            return kernelCriteriaMap;
+        } catch (Exception e) {
+            // create a empty map
+            logger.error("error parsing pacman.kernel.compliance.map from system configuration", e.getMessage());
+            return new TreeMap<>();
+        }
+    }
 
     @Override
     public IssueExceptionResponse addMultipleIssueException(IssuesException issuesException) throws ServiceException {
@@ -1237,9 +1256,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             throw new ServiceException(e);
         }
     }
-    
+
     private List<Map<String, Object>> formComplianceDetailsForApplicationByEnvironment(String ruleId,
-            Map<String, Long> assetCountbyEnvs, Map<String, Long> issuesForApplcationByEnvMap,String assetGroup,String application,List<Map<String, Object>> environmentList,String targetType,String searchText) throws ServiceException {
+            Map<String, Long> assetCountbyEnvs, Map<String, Long> issuesForApplcationByEnvMap, String assetGroup,
+            String application, List<Map<String, Object>> environmentList, String targetType, String searchText)
+            throws ServiceException {
         Map<String, Object> environment;
         Long assetCount;
         long issueCount = 0;
@@ -1248,24 +1269,30 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         double compliancePercentage;
         // Form Compliance Details for Application by Envi
         for (Map.Entry<String, Long> assetCountByEnv : assetCountbyEnvs.entrySet()) {
-        	environment = new HashMap<>();
+            environment = new HashMap<>();
             assetCount = assetCountByEnv.getValue();
             envFromAsset = assetCountByEnv.getKey();
 
             if ((ruleId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled) || ruleId.equalsIgnoreCase(SSM_AGENT_RULE)) {
                 try {
-                    assetCount = repository.getInstanceCountForQualys(assetGroup, "policydetailsbyenvironment", application, envFromAsset,targetType);
-                }catch (DataException e) {
-                	logger.error("Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the qualys or ssm from ES", e);
+                    assetCount = repository.getInstanceCountForQualys(assetGroup, "policydetailsbyenvironment",
+                            application, envFromAsset, targetType);
+                } catch (DataException e) {
+                    logger.error(
+                            "Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the qualys or ssm from ES",
+                            e);
                     throw new ServiceException(e);
                 }
             }
-            
+
             if (ruleId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)) {
                 try {
-                    assetCount = repository.getPatchabeAssetsCount(assetGroup,targetType, application, envFromAsset,searchText);
-                }catch (DataException e) {
-                	logger.error("Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the cloud kernel rule from ES", e);
+                    assetCount = repository.getPatchabeAssetsCount(assetGroup, targetType, application, envFromAsset,
+                            searchText);
+                } catch (DataException e) {
+                    logger.error(
+                            "Error @ formComplianceDetailsForApplicationByEnvironment while getting the asset count from the cloud kernel rule from ES",
+                            e);
                     throw new ServiceException(e);
                 }
             }
@@ -1293,64 +1320,71 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
         return environmentList;
     }
-   
-   @SuppressWarnings("unchecked")
-   public List<Map<String, Object>> getRuleDetailsbyApplication(String assetGroup, String ruleId, String searchText)
-           throws ServiceException {
-       Map<String, Long> assetcountbyAplications;
-       List<Map<String, Object>> applicationList = new ArrayList<>();
-       String targetType = null;
-       JsonArray buckets;
-       try {
-           buckets = repository.getRuleDetailsByApplicationFromES(assetGroup, ruleId, searchText);
-       } catch (DataException e) {
-       	logger.error("Error @ getRuleDetailsbyApplication while getting the application by rule from ES", e);
-           throw new ServiceException(e);
-       }
-       Gson googleJson = new Gson();
-       List<Map<String, Object>> issuesByApplcationList = googleJson.fromJson(buckets, ArrayList.class);
-       Map<String, Long> issuesByApplcationListMap = issuesByApplcationList.parallelStream().collect(
-               Collectors.toMap(issue -> issue.get(KEY).toString(),
-                       issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
-       targetType = getTargetTypeByRuleId(ruleId);
-       if (!Strings.isNullOrEmpty(targetType)) {
-           // Get AssetCount By application for Rule TargetType
 
-           if (ruleId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)) {
-               try {
-                   assetcountbyAplications = repository.getPatchableAssetsByApplication(assetGroup, searchText,
-                           targetType);
-               } catch (DataException e) {
-               	logger.error("Error @ getRuleDetailsbyApplication while getting the instance count for cloud kernel rule from ES", e);
-                   throw new ServiceException(e);
-               }
-           } else if ((ruleId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE))) {
-               try {
-                   assetcountbyAplications = repository.getPatchableAssetsByApplication(assetGroup, searchText,
-                           ONPREMSERVER);
-               } catch (DataException e) {
-               	logger.error("Error @ getRuleDetailsbyApplication while getting the instance count for onprem kernel rule from ES", e);
-                   throw new ServiceException(e);
-               }
-           } else if ((ruleId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled) || ruleId.equalsIgnoreCase(SSM_AGENT_RULE)) {
-               try{
-               assetcountbyAplications = repository.getInstanceCountForQualysByAppsOrEnv(assetGroup, "policydetailsbyapplication","","",targetType);
-               } catch (DataException e) {
-               	logger.error("Error @ getRuleDetailsbyApplication while getting the instance count for qualys from ES", e);
-                   throw new ServiceException(e);
-               }
-           }else {
-               assetcountbyAplications = repository.getAllApplicationsAssetCountForTargetType(assetGroup, targetType);
-           }
-           // Form Compliance Details by Application
-          formComplianceDetailsByApplication(applicationList, assetcountbyAplications,
-                   issuesByApplcationListMap);
-       } else {
-           throw new ServiceException("No Target Type associated");
-       }
-       return applicationList;
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getRuleDetailsbyApplication(String assetGroup, String ruleId, String searchText)
+            throws ServiceException {
+        Map<String, Long> assetcountbyAplications;
+        List<Map<String, Object>> applicationList = new ArrayList<>();
+        String targetType = null;
+        JsonArray buckets;
+        try {
+            buckets = repository.getRuleDetailsByApplicationFromES(assetGroup, ruleId, searchText);
+        } catch (DataException e) {
+            logger.error("Error @ getRuleDetailsbyApplication while getting the application by rule from ES", e);
+            throw new ServiceException(e);
+        }
+        Gson googleJson = new Gson();
+        List<Map<String, Object>> issuesByApplcationList = googleJson.fromJson(buckets, ArrayList.class);
+        Map<String, Long> issuesByApplcationListMap = issuesByApplcationList.parallelStream().collect(
+                Collectors.toMap(issue -> issue.get(KEY).toString(),
+                        issue -> (long) Double.parseDouble(issue.get(DOC_COUNT).toString())));
+        targetType = getTargetTypeByRuleId(ruleId);
+        if (!Strings.isNullOrEmpty(targetType)) {
+            // Get AssetCount By application for Rule TargetType
 
-   }
+            if (ruleId.contains(CLOUD_KERNEL_COMPLIANCE_POLICY)) {
+                try {
+                    assetcountbyAplications = repository.getPatchableAssetsByApplication(assetGroup, searchText,
+                            targetType);
+                } catch (DataException e) {
+                    logger.error(
+                            "Error @ getRuleDetailsbyApplication while getting the instance count for cloud kernel rule from ES",
+                            e);
+                    throw new ServiceException(e);
+                }
+            } else if ((ruleId.equalsIgnoreCase(ONPREM_KERNEL_COMPLIANCE_RULE))) {
+                try {
+                    assetcountbyAplications = repository.getPatchableAssetsByApplication(assetGroup, searchText,
+                            ONPREMSERVER);
+                } catch (DataException e) {
+                    logger.error(
+                            "Error @ getRuleDetailsbyApplication while getting the instance count for onprem kernel rule from ES",
+                            e);
+                    throw new ServiceException(e);
+                }
+            } else if ((ruleId.contains(CLOUD_QUALYS_POLICY) && qualysEnabled)
+                    || ruleId.equalsIgnoreCase(SSM_AGENT_RULE)) {
+                try {
+                    assetcountbyAplications = repository.getInstanceCountForQualysByAppsOrEnv(assetGroup,
+                            "policydetailsbyapplication", "", "", targetType);
+                } catch (DataException e) {
+                    logger.error(
+                            "Error @ getRuleDetailsbyApplication while getting the instance count for qualys from ES",
+                            e);
+                    throw new ServiceException(e);
+                }
+            } else {
+                assetcountbyAplications = repository.getAllApplicationsAssetCountForTargetType(assetGroup, targetType);
+            }
+            // Form Compliance Details by Application
+            formComplianceDetailsByApplication(applicationList, assetcountbyAplications,
+                    issuesByApplcationListMap);
+        } else {
+            throw new ServiceException("No Target Type associated");
+        }
+        return applicationList;
 
-	
+    }
+
 }

@@ -17,7 +17,7 @@ import { HttpModule } from "@angular/http";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { MatSelectModule } from "@angular/material";
+import { MatGridListModule, MatInputModule, MatMenuModule, MatSelectModule } from "@angular/material";
 import { AgGridModule } from "ag-grid-angular/main";
 import { CanvasSidePanelComponent } from "./canvas-side-panel/canvas-side-panel.component";
 import { ButtonIconComponent } from "./button-icon/button-icon.component";
@@ -30,6 +30,8 @@ import { TitleBurgerHeadComponent } from "./title-burger-head/title-burger-head.
 import { OverlayComponent } from "./overlay/overlay.component";
 import { OrderByPipe } from "./../shared/pipes/order-by.pipe";
 import { SearchFilterPipe } from "./../shared/pipes/search-filter.pipe";
+import { SearchPipe } from "./../shared/pipes/search.pipe";
+import { AssetSummarySearchFilterPipe } from "./pipes/asset-summary-search-filter.pipe";
 import { MainRoutingAnimationEventService } from "./services/main-routing-animation-event.service";
 import { RefactorFieldsService } from "./services/refactor-fields.service";
 import { RouterUtilityService } from "./services/router-utility.service";
@@ -91,21 +93,28 @@ import { CopyElementComponent } from "./copy-element/copy-element.component";
 import { ToastObservableService } from "./services/toast-observable.service";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { TableListComponent } from "./table-list/table-list.component";
+import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
+import { MatIconModule } from "@angular/material";
 
 @NgModule({
   imports: [
+    MatGridListModule,
+    MatSelectModule,
+    MatInputModule,
+    MatMenuModule,
+    MatIconModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
     SelectModule,
     HttpModule,
-    MatSelectModule,
     NgDatepickerModule,
     SelectDropDownModule,
     AgGridModule.withComponents([AgGridTableComponent]),
   ],
   declarations: [
+    FilterDropdownComponent,
     CanvasSidePanelComponent,
     ButtonIconComponent,
     ButtonComponent,
@@ -119,7 +128,9 @@ import { TableListComponent } from "./table-list/table-list.component";
     FilteredSelectorComponent,
     OrderByPipe,
     OrderBySumPipe,
+    SearchPipe,
     SearchFilterPipe,
+    AssetSummarySearchFilterPipe,
     BackNavigationComponent,
     BreadcrumbComponent,
     SearchInfoComponent,
@@ -159,6 +170,7 @@ import { TableListComponent } from "./table-list/table-list.component";
     TableListComponent,
   ],
   exports: [
+    DoughnutChartComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -179,6 +191,8 @@ import { TableListComponent } from "./table-list/table-list.component";
     OrderByPipe,
     OrderBySumPipe,
     SearchFilterPipe,
+    SearchPipe,
+    AssetSummarySearchFilterPipe,
     BreadcrumbComponent,
     SearchInfoComponent,
     DataTableComponent,
@@ -224,6 +238,8 @@ import { TableListComponent } from "./table-list/table-list.component";
     RefactorFieldsService,
     OrderByPipe,
     SearchFilterPipe,
+    SearchPipe,
+    AssetSummarySearchFilterPipe,
     MainRoutingAnimationEventService,
     AuthGuardService,
     RouterUtilityService,
@@ -236,4 +252,5 @@ import { TableListComponent } from "./table-list/table-list.component";
     FormService,
   ],
 })
-export class SharedModule {}
+export class SharedModule {
+}

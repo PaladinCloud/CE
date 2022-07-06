@@ -243,12 +243,12 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       currNodeParentId = parent.id;
       if (parent.children != undefined) {
         for (let child of parent.children) {
-          if (child.route == currentRoute) {
+          if (currentRoute.includes(child.route)) {
             currNodeId = child.id;
             return [currNodeId, currNodeParentId];
           }
         }
-      } else if (parent.route == currentRoute) {
+      } else if (currentRoute.includes(parent.route)) {
         currNodeId = parent.id;
         currNodeParentId = parent.id;
         return [currNodeId, currNodeParentId];
@@ -257,7 +257,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     return [1, 1];
   }
 
-  handleClick(node: TreeNode) {
+  selectNode(node: TreeNode) {
     node.toggleExpanded();
     this.currentNodeId = node.id;
     this.currentParentId = node.parent.id;

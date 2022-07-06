@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,7 +178,7 @@ public class Util {
                 .withCredentials(new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account,s3Role))).withRegion(s3Region).build();
 		S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, path));
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
-			return new ObjectMapper().readValue(reader.lines().collect(Collectors.joining("\n")),new TypeReference<List<Map<String, T>>>() {});
+			return new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY,true).readValue(reader.lines().collect(Collectors.joining("\n")),new TypeReference<List<Map<String, T>>>() {});
 	    }
 	}
 	

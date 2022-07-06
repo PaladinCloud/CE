@@ -12,16 +12,16 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, OnDestroy, ElementRef, ViewChild, Input, OnChanges} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
-import {AssetGroupObservableService} from '../../../core/services/asset-group-observable.service';
-import {AutorefreshService} from '../../services/autorefresh.service';
-import {SelectComplianceDropdown} from '../../services/select-compliance-dropdown.service';
-import {MultilineChartService} from '../../services/multilinechart.service';
-import {environment} from './../../../../environments/environment';
-import {IssueFilterService} from './../../services/issue-filter.service';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
+import { AutorefreshService } from '../../services/autorefresh.service';
+import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
+import { MultilineChartService } from '../../services/multilinechart.service';
+import { environment } from './../../../../environments/environment';
+import { IssueFilterService } from './../../services/issue-filter.service';
 import * as _ from 'lodash';
-import {UtilsService} from '../../../shared/services/utils.service';
+import { UtilsService } from '../../../shared/services/utils.service';
 import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
 
 @Component({
@@ -87,13 +87,13 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
 
 
     constructor(
-                private utils: UtilsService,
-                private multilineChartService: MultilineChartService,
-                private assetGroupObservableService: AssetGroupObservableService,
-                private autorefreshService: AutorefreshService,
-                private selectComplianceDropdown: SelectComplianceDropdown,
-                private issueFilterService: IssueFilterService,
-                private domainObservableService: DomainTypeObservableService) {
+        private utils: UtilsService,
+        private multilineChartService: MultilineChartService,
+        private assetGroupObservableService: AssetGroupObservableService,
+        private autorefreshService: AutorefreshService,
+        private selectComplianceDropdown: SelectComplianceDropdown,
+        private issueFilterService: IssueFilterService,
+        private domainObservableService: DomainTypeObservableService) {
 
 
         this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
@@ -102,10 +102,10 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
             });
 
         this.subscriptionDomain = this.domainObservableService.getDomainType().subscribe(domain => {
-                   this.selectedDomain = domain;
-                   this.getApplications();
-                   this.deleteFilters();
-             });
+            this.selectedDomain = domain;
+            this.getApplications();
+            this.deleteFilters();
+        });
 
         this.complianceDropdownSubscription = this.selectComplianceDropdown.getCompliance().subscribe(
             filtersObject => {
@@ -123,6 +123,7 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         const element = document.getElementById('inv');
         if (element) {
             this.widgetWidth = parseInt((window.getComputedStyle(element, null).getPropertyValue('width')).split('px')[0], 10);
+            this.widgetHeight = parseInt((window.getComputedStyle(element, null).getPropertyValue('height')).split('px')[0], 10);
         }
     }
 
@@ -134,12 +135,12 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
 
         const afterLoad = this;
         if (this.autoRefresh !== undefined) {
-          if ((this.autoRefresh === true ) || (this.autoRefresh.toString() === 'true')) {
+            if ((this.autoRefresh === true) || (this.autoRefresh.toString() === 'true')) {
 
-            this.autorefreshInterval = setInterval(function() {
-              afterLoad.getIssues();
-            }, this.durationParams);
-          }
+                this.autorefreshInterval = setInterval(function () {
+                    afterLoad.getIssues();
+                }, this.durationParams);
+            }
         }
 
         this.getApplications();
@@ -161,8 +162,8 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     getIssues() {
 
         if (this.multilineChartSubscription) {
-                this.multilineChartSubscription.unsubscribe();
-            }
+            this.multilineChartSubscription.unsubscribe();
+        }
 
 
         const queryParameters = {
@@ -236,8 +237,8 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     changeFilterType(filterType) {
         this.currentFilterType = filterType;
         this.filterTypesSubscription = this.issueFilterService.getFilters({
-                'ag': this.selectedAssetGroup
-            },
+            'ag': this.selectedAssetGroup
+        },
             (environment.base + this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL).url),
             'GET')
             .subscribe((response) => {
@@ -265,14 +266,14 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
     }
 
     changedDropdown(val) {
-        let option = _.find(this.filterTypeOptions, {optionName: val.id});
+        let option = _.find(this.filterTypeOptions, { optionName: val.id });
 
         if (option) {
 
             this.changeFilterType(option);
 
         } else {
-            option = _.find(this.filterTagOptions, {name: val.id});
+            option = _.find(this.filterTagOptions, { name: val.id });
             this.changeFilterTag(option);
         }
     }

@@ -67,7 +67,7 @@
                                         Recommendation Status
                                     </div>
                                     <div class="delete-img" [class.showNone]='showRecommend' (click)="showOtherDivRecommend()">
-                                        <img style="height: 1.8em;" src="../assets/png/delete.png">
+                                        <img style="height: 1.5em;" src="../assets/icons/x-icon.svg">
                                     </div>
                                 </header>
                                 <section class="text-wrapper">
@@ -89,7 +89,7 @@
                                         Status :
                                     </div>
                                     <div class="delete-img" [class.showNone]='showRevoke' (click)="showOtherDivRevoke()">
-                                        <img style="height: 1.8em;" src="../assets/png/delete.png">
+                                        <img style="height: 1.8em;" src="../assets/icons/x-icon.svg">
                                     </div>
                                 </header>
                                 <section class="text-wrapper">
@@ -112,7 +112,7 @@
                                         Status :
                                     </div>
                                     <div class="delete-img" [class.showNone]='showJira' (click)="showOtherDivJira()">
-                                        <img style="height: 1.8em;" src="../assets/png/delete.png">
+                                        <img style="height: 1.8em;" src="../assets/icons/x-icon.svg">
                                     </div>
                                 </header>
                                 <section class="text-wrapper">
@@ -139,7 +139,7 @@
                                         Add Exception
                                     </div>
                                     <div class="delete-img" [class.showNone]='showNone' (click)="showOtherDiv()">
-                                        <img style="height: 1.8em;" src="../assets/png/delete.png">
+                                        <img style="height: 1.8em;" src="../assets/icons/x-icon.svg">
                                     </div>
                                 </header>
                                 <section class="text-wrapper">
@@ -176,7 +176,7 @@
                                         Send Email
                                     </div>
                                     <div class="delete-img" [class.showNone]='showNone' (click)="showOtherDivEmail()">
-                                        <img style="height: 1.8em;" src="../assets/png/delete.png">
+                                        <img style="height: 1.8em;" src="../assets/icons/x-icon.svg">
                                     </div>
                                 </header>
                                 <section class="text-wrapper" *ngIf="!showTransactionEmail">
@@ -199,7 +199,7 @@
                                             <div class="text-wrapper-header">To</div>
                                             <ul class="input-wrapper">
                                                 <li class="list-inputs flex flex-align-center" *ngFor="let data of emailArray;let i = index">
-                                                    {{data}}<img class="crossmark-icon" (click)='removeData(i)' src="../assets/png/delete.png">
+                                                    {{data}}<img class="crossmark-icon" (click)='removeData(i)' src="../assets/icons/x-icon.svg">
                                                 </li>
                                                 <input type="text" placeholder="Enter User's Email" [(ngModel)]='queryValue' (keyup)=filter() class="inputarea-container" formControlName="ename" (keydown)="keyDown($event)">
                                             </ul>

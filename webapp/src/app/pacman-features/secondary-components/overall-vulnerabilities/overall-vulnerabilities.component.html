@@ -14,10 +14,12 @@
 
 <div class="vulnerability-overall-wrapper flex flex-col">
     <div class="sub-head">
-      <app-title-burger-head [helpId]="'w4'" [subHeadTitle]="'Overall Vulnerabilities Compliance'"></app-title-burger-head>
+        <app-title-burger-head [helpId]="'w4'" [subHeadTitle]="'Overall Vulnerabilities Compliance'">
+        </app-title-burger-head>
     </div>
     <div class="flex flex-col overall-vuln-wrap relative flex-align-center">
-        <app-error-message *ngIf='errorVal == -1 && errorSumVal == -1' [selectedValue]="errorMessage"></app-error-message>
+        <app-error-message *ngIf='errorVal == -1 && errorSumVal == -1' [selectedValue]="errorMessage">
+        </app-error-message>
         <div *ngIf='errorVal == 0 || errorSumVal == 0' class="loader"></div>
         <div class="flex flex-col" *ngIf='errorSumVal == 1 && errorVal != 0'>
             <div class="vuln-top-section flex flex-align-center" *ngIf='vulnData'>
@@ -30,7 +32,9 @@
                 </div>
                 <div class="flex flex-align-center each-wrap">
                     <div class="flex flex-align-end num-wrap">
-                        <div class="compliant-percent red-txt" [class.vuln-link]='vulnData.vulnerabilities' (click) = "vulnData.vulnerabilities > 0 && navigatePage()">{{vulnData.vulnerabilities | number}}</div>
+                        <div class="compliant-percent red-txt" [class.vuln-link]='vulnData.vulnerabilities'
+                            (click)="vulnData.vulnerabilities > 0 && navigatePage()">{{vulnData.vulnerabilities |
+                            number}}</div>
                     </div>
                     <div class="compliant-txt flex flex-col">
                         <div class="compliant-txt">Vulnerabilities</div>
@@ -40,14 +44,18 @@
             </div>
         </div>
         <div class="flex flex-col full-width center" id='vulnSummaryPie' *ngIf='errorVal == 1 && errorSumVal != 0'>
-            <app-doughnut-chart (emitClick)='pieClicked($event)' [selectedLevel]='selectedLevel' [ringData]='linksData' [isPieChart]='true' [chartContId]="'vulnSummaryPie'" [graphData]="modifiedResponse[selectedGraph]" [graphWidth]="widgetWidth" [flexTrue]="false" [graphHeight]="widgetHeight" [MainTextcolor]="'#000'" [innerRadious]="innerRadius" [outerRadious]='outerRadius' [strokeColor]="'#fff'"></app-doughnut-chart>
+            <app-doughnut-chart (emitClick)='pieClicked($event)' [selectedLevel]='selectedLevel' [ringData]='linksData'
+                [isPieChart]='true' [chartContId]="'vulnSummaryPie'" [graphData]="modifiedResponse[selectedGraph]"
+                [graphWidth]="widgetWidth" [flexTrue]="false" [graphHeight]="widgetHeight" [MainTextcolor]="'#000'"
+                [innerRadius]="innerRadius" [outerRadius]='outerRadius' [strokeColor]="'#fff'"></app-doughnut-chart>
         </div>
         <div class="flex flex-align-center links-wrapper" *ngIf='errorVal == 1 && errorSumVal != 0'>
             <div class="flex flex-align-center" *ngFor='let links of linksData; let i = index;'>
-                <div (click)='selectedLink = i; clearLinkInterval();' [class.active-link]='selectedLink === i' class="pointer">{{links.name}}</div>
+                <div (click)='selectedLink = i; clearLinkInterval();' [class.active-link]='selectedLink === i'
+                    class="pointer">{{links.name}}</div>
                 <div class="link-separators" *ngIf='i < linksData.length - 2 '>></div>
                 <div class="link-separators" *ngIf='i === linksData.length - 2 '>|</div>
-            </div> 
+            </div>
         </div>
     </div>
 </div>

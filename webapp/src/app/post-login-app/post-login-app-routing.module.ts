@@ -24,6 +24,8 @@ import { DomainOverlayComponent } from "./domain-overlay/domain-overlay.componen
 import { HelpTextComponent } from "../shared/help-text/help-text.component";
 import { OmnisearchComponent } from "../pacman-features/modules/omnisearch/omnisearch.component";
 import { VulnerabilityReportComponent } from "./vulnerability-report/vulnerability-report.component";
+import { ComplianceOverviewTrendComponent } from "../pacman-features/secondary-components/compliance-overview-trend/compliance-overview-trend.component";
+import { IssuesTrendHistoryComponent } from "../pacman-features/secondary-components/issues-trend-history/issues-trend-history.component";
 
 const routes: Routes = [
   {
@@ -75,6 +77,16 @@ const routes: Routes = [
       {
         path: "change-default-asset-group",
         component: ChangeDefaultAssetGroupComponent,
+        outlet: "modal",
+      },
+      {
+        path: "overall-compliance-trend",
+        component: ComplianceOverviewTrendComponent,
+        outlet: "modal",
+      },
+      {
+        path: "policy-violations-trend",
+        component: IssuesTrendHistoryComponent,
         outlet: "modal",
       },
       {

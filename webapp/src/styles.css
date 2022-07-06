@@ -104,7 +104,7 @@
 }
 
 body {
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 /* Utility classes */
@@ -226,7 +226,9 @@ b {
 }
 
 text.axis-title {
-  font-size: 12px;
+  font: var(--text-caption);
+  font-family: var(--text-light-font-family);
+  color: var(--text-low-emphasis);
 }
 
 .focus .axis.axis--y .tick text {
@@ -771,6 +773,7 @@ input:-webkit-autofill {
 
 .floating-widgets-section {
   width: 70%;
+  padding-right: 28px;
   height: 100%;
 }
 
@@ -1516,8 +1519,7 @@ li .details-left-value {
 /* Post login panel classes */
 
 .contextual-content-container {
-  padding: 0px 28px;
-  height: 100%;
+  height: calc(100vh - 100px);
   width: 100%;
   min-width: 600px;
   overflow: auto;
@@ -1603,6 +1605,7 @@ input.common-cb:checked + label {
   display: flex;
   flex-direction: column;
   height: 100%;
+  max-height: calc(80vh);
   /* flex-grow: 1; */
 }
 

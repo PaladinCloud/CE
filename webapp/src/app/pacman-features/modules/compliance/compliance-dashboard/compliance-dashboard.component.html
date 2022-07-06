@@ -12,86 +12,49 @@
  * limitations under the License.
  -->
 
- <div class="compliance-dashboard-wrapper flex flex-between">
-    <div class="floating-widgets-section flex flex-col">
-        <div class="floating-widgets-header flex flex-between">
-            <h1 class="">{{pageTitle}}</h1>
-            <div class='flex relative z-index' [class.hide]='true'>
-                <div class='drop-options'>
-                    <app-searchable-dropdown [firstDD]='true'
-                                             (selection)='changeFilterType($event)'
-                                             [placeholder]="'Select filter type'"
-                                             [items]='filterTypeLabels'></app-searchable-dropdown>
-                </div>
-                <div id='dropSearchBox' class='drop-search-box'>
-                    <app-searchable-dropdown (selection)='changeFilterTags($event)'
-                                             [placeholder]="'Search filter tags'"
-                                             [items]='filterTagLabels'></app-searchable-dropdown>
-                </div>
-            </div>
-        </div>
-        <div class='floating-widgets-filter-wrapper '>
-            <app-filtered-selector (deleteFilter)='deleteFilters($event)'
-                                   (deleteAllFilters)='deleteFilters($event)'
-                                   [(filteredArray)]='filters'></app-filtered-selector>
-        </div>
-        <div class="floating-widgets-container">
-            <section>
-                <ul>
-                    <li class="widget-wrapper">
-                        <div class="widget relative data-table-wrap" [class.no-min-height]='noMinHeight'>
-                            <div >
-                                <app-data-table 
-                                            (noScrollDetected)="noMinHeight=true"
-                                            [searchTextValues]='searchTxt'
-                                            [errorValue]='errorValue'
-                                            [parentName]="'policySummaryTableMessage'"
-                                            [showGenericMessage]='showGenericMessage'
-                                            [showingArr]='showingArr'
-                                            [outerArr]='outerArr'
-                                            [heightValue]="'calc(70vh - 14em)'"
-                                            [searchableHeader]='true'
-                                            [allColumns]='allColumns'
-                                            (selectedRow)='goToDetails($event)'
-                                            [dataHead]="'Policy Compliance Overview'"
-                                            [firstPaginator]='firstPaginator'
-                                            [lastPaginator]='lastPaginator'
-                                            [popRows]='popRows'
-                                            [totalRows]='totalRows'
-                                            [currentPointer]='currentPointer'
-                                            (searchRowTxt)='searchCalled($event)'
-                                            (searchTriggerred)='callNewSearch()'
-                                            (previousPageCalled)='prevPg()' 
-                                            (tabSelected)='tabValChange($event)'
-                                            [headerColName]="'Policy Severity'"
-                                            (nextPageCalled)='nextPg()' [direction]='-1'
-                                            [tabFilterProperty]="'Rule Category'"
-                                            [columnWhiteList]="[ 'compliance', 'Policy Title', 'Compliance %', 'Policy Severity',   'Last Scanned']"
-                                             [paginatorAbsent]='true'
-                                            [popRows]='popRows' 
-                                            (rowClickText)='handlePopClick($event)'
-                                            [searchPassed]='searchPassed'>
-                                </app-data-table>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="widget-wrapper">
-                        <div class="widget widget-container">
-                            <app-compliance-overview-trend></app-compliance-overview-trend>
-                        </div>
-                    </li>                    
-                    <li class="widget-wrapper">
-                        <div #widget class="widget widget-container">
-                            <app-issues-trend-history></app-issues-trend-history>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-        </div>
+<div class="container-wrapper">
+    <div class="container-1">
+        <mat-grid-list [cols]="breakpoint1" rowHeight="108px" gutterSize="20px" (window:resize)="onresize($event)">
+            <mat-grid-tile class="violation-tile" *ngFor="let card of violationCards">
+                <app-violations-card [card]="card"></app-violations-card>
+            </mat-grid-tile>
+        </mat-grid-list>
     </div>
-    <div class="fixed-widgets-section">
-        <div class="compliance-issues-container">
-            <app-compliance-issues></app-compliance-issues>
-        </div>
+    <div class="container-2">
+        <mat-grid-list [cols]="breakpoint2" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
+            <mat-grid-tile>
+                <app-card [card]="cards[0]"></app-card>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <app-card [card]="cards[1]" [policyData]="policyData"></app-card>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+    <div class="container-3" (window:resize)="onresize($event)">
+        <mat-grid-list [cols]="breakpoint4" rowHeight="504px">
+            <mat-grid-tile>
+                <app-data-table (noScrollDetected)="noMinHeight=true" [searchTextValues]='searchTxt'
+                    [errorValue]='errorValue' [parentName]="'policySummaryTableMessage'"
+                    [showGenericMessage]='showGenericMessage' [showingArr]='showingArr' [outerArr]='outerArr'
+                    [heightValue]="'calc(70vh - 14em)'" [searchableHeader]='true' [allColumns]='allColumns'
+                    (selectedRow)='goToDetails($event)' [dataHead]="'Policy Compliance Overview'"
+                    [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [popRows]='popRows'
+                    [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
+                    (searchTriggerred)='callNewSearch()' (previousPageCalled)='prevPg()'
+                    (tabSelected)='tabValChange($event)' [headerColName]="'Policy Severity'" (nextPageCalled)='nextPg()'
+                    [direction]='-1' [tabFilterProperty]="'Rule Category'"
+                    [columnWhiteList]="['Policy Title', 'Compliance %', 'Policy Severity', 'Last Scanned']"
+                    [paginatorAbsent]='true' [popRows]='popRows' (rowClickText)='handlePopClick($event)'
+                    [searchPassed]='searchPassed'>
+                </app-data-table>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+    <div class="container-4">
+        <mat-grid-list [cols]="breakpoint3" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
+            <mat-grid-tile>
+                <app-card [card]="cards[2]"></app-card>
+            </mat-grid-tile>
+        </mat-grid-list>
     </div>
 </div>

@@ -135,10 +135,10 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   errorMessage: any = [];
   public targetType: any = '';
   strokeColor = '#fff';
-  innerRadious: any = 65;
-  outerRadious: any = 50;
-  innerRadious1 = 60;
-  outerRadious1 = 47;
+  innerRadius: any = 65;
+  outerRadius: any = 50;
+  innerRadius1 = 60;
+  outerRadius1 = 47;
   colorSetCpu = ['#26ba9d', '#26ba9d', '#645ec5'];
   MainTextcolor = '#000';
   filterText: any = {};

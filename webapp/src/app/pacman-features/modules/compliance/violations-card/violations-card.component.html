@@ -1,0 +1,8 @@
+<mat-card class="violations-card">
+  <mat-card-title-group>
+    <mat-card-title>{{card.name}} Violations</mat-card-title>
+    <div class="card-{{card.id}}"><img src="/assets/icons/exclamation-triangle.svg" style="padding: 8px;" /></div>
+  </mat-card-title-group>
+  <mat-card-subtitle (click)="redirect()">{{card.num}}<img style="padding: 5px 12.5px;" src="/assets/icons/Path.svg" />
+  </mat-card-subtitle>
+</mat-card>
