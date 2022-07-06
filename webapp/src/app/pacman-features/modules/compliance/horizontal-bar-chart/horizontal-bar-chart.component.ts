@@ -31,23 +31,23 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
     window.onresize = (e) => {
       // ngZone.run will help to run change detection
       this.ngZone.run(() => {
-      this.width = (parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10)-100);
-      this.createSvg();
+        this.width = (parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20);
+        this.createSvg();
       });
-  };
- }
+    };
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.createSvg();
   }
 
- createSvg() {
-  d3.select("#horizontal-bar-chart > *").remove();
-  this.maxValue = this.data[0].count;
-  this.init();
-  this.initSvg();
-  this.drawAxisAndBars();
- }
+  createSvg() {
+    d3.select("#horizontal-bar-chart > *").remove();
+    this.maxValue = this.data[0].count;
+    this.init();
+    this.initSvg();
+    this.drawAxisAndBars();
+  }
 
   private getHeight(): number {
     if (this.data.length != 0) {
@@ -65,7 +65,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
     this.valueUpperLimit = this.maxValue;
     // set the dimensions and margins of the graph
     this.margin = { top: 0, right: 0, bottom: 0, left: 100 };
-    this.width = parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10)-100 - this.margin.left - this.margin.right;
+    this.width = parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20 - this.margin.left - this.margin.right;
     this.height = this.getHeight() - this.margin.top - this.margin.bottom;
   }
 
@@ -83,7 +83,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
       );
   }
 
-  processData() {}
+  processData() { }
 
   drawAxisAndBars() {
     // Add X axis
@@ -158,5 +158,5 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
       .attr("fill", "#506EA7");
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }

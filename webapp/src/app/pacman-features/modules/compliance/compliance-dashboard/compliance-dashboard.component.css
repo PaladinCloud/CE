@@ -67,16 +67,17 @@ app-data-table{
 }
 
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(1) {
-  width: 51.3%;
+  width: 48%;
+  margin-left: 8px;
 }
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(2) {
-  width: 14.2%;
+  width: 14%;
 }
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(3) {
-  width: 14.2%;
+  width: 15%;
 }
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(4) {
-  width: 18%;
+  width: 21%;
 }
 
 .container-3 /deep/ .data-table-inner-wrap {
