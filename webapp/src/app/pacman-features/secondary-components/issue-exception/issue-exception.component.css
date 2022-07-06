@@ -38,9 +38,9 @@
   box-shadow: 0 3px 4px 0 #0000001e, 0 2px 4px 0 #00000023;
   border: 1px solid #ededed;
   /* height: 100%; */
-  height: calc(80vh);
-top: 90px;
-right: 29px;
+  height: calc(100vh - 160px);
+top: 60px;
+right: 30px;
 }
 
 .recommend-flip {
