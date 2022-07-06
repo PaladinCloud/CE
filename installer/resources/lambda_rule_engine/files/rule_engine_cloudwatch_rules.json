@@ -5501,6 +5501,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key",
+    "ruleUUID": "Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key",
+    "policyId": "Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key",
+    "ruleName": "Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key",
+    "targetType": "virtualMachine",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-encryption-enabled-with-customer-managed-keys-for-Azure_VM_disks\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"The Azure Disk Encryption (ADE) service is using a service-managed key instead of a customer-managed key \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"Azure Disk Encryption (ADE) service will use the  customer-managed key to encrypt the disk volumes attached to the selected Microsoft Azure virtual machine.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Compute/virtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Virtual Machine Disk Volume Customer-Managed Key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key\",\"autofix\":false,\"alexaKeyword\":\"Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key\",\"ruleRestUrl\":\"\",\"targetType\":\"virtualMachine\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Virtual_Machine_Disk_Volume_Customer_Managed_Key",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Virtual Machine Disk Volume Customer-Managed Key",
+    "createdDate": "2022-05-25",
+    "modifiedDate": "2022-05-25",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "Azure_Check_Public_Access_For_Storage_Account",
     "ruleUUID": "azure_check_public_access_for_storage_account",
     "policyId": "Azure_Check_Public_Access_For_Storage_Account",
@@ -6095,5 +6117,4 @@
     "severity": "high",
     "category": "security"
   }
-
 ]

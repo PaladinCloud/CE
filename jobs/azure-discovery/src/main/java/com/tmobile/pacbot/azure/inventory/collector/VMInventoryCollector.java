@@ -1,8 +1,13 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,8 @@ public class VMInventoryCollector {
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
 
+	private String apiUrlTemplate="https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Compute/disks/%s?api-version=2021-12-01";
+
 
 	private static Logger log = LoggerFactory.getLogger(VMInventoryCollector.class);
 
@@ -37,83 +44,112 @@ public class VMInventoryCollector {
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 		
 		List<NetworkInterface> networkInterfaces = azure.networkInterfaces().list();
+		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 
 		PagedList<VirtualMachine> vms = azure.virtualMachines().list();
 		for (VirtualMachine virtualMachine : vms) {
 			try {
-				VirtualMachineVH vmVH = new VirtualMachineVH();
-				vmVH.setComputerName(virtualMachine.computerName() == null
-						? virtualMachine.instanceView().computerName() == null ? virtualMachine.name()
-								: virtualMachine.instanceView().computerName()
-						: virtualMachine.computerName());
-				vmVH.setName(virtualMachine.name());
-				vmVH.setRegion(virtualMachine.regionName());
-				vmVH.setSubscription(subscription.getSubscriptionId());
-				vmVH.setSubscriptionName(subscription.getSubscriptionName());
-	
-				virtualMachine.inner().networkProfile();
-				vmVH.setVmSize(virtualMachine.size().toString());
-				vmVH.setResourceGroupName(virtualMachine.resourceGroupName());
-	
-				vmVH.setStatus(virtualMachine.powerState() != null
-						? virtualMachine.powerState().toString().replace("PowerState/", "")
-						: "Unknown");
-				
-				if(virtualMachine.instanceView()!=null) {
-					vmVH.setOs(virtualMachine.instanceView().osName());
-					vmVH.setOsVersion(virtualMachine.instanceView().osVersion());
-				}
-				vmVH.setOsType(virtualMachine.osType()!=null?virtualMachine.osType().toString():"");
-	
-				vmVH.setNetworkInterfaceIds(virtualMachine.networkInterfaceIds());
-				vmVH.setAvailabilityZones(virtualMachine.availabilityZones());
-	
-				vmVH.setVmId(virtualMachine.vmId());
-				vmVH.setManagedDiskEnabled(virtualMachine.isManagedDiskEnabled());
-	
-				vmVH.setPrivateIpAddress(virtualMachine.getPrimaryNetworkInterface().primaryPrivateIP());
-				vmVH.setPublicIpAddress(virtualMachine.getPrimaryPublicIPAddress() != null
-						? virtualMachine.getPrimaryPublicIPAddress().ipAddress()
-						: "");
-	
-				vmVH.setAvailabilitySetId(virtualMachine.availabilitySetId());
-				vmVH.setProvisioningState(virtualMachine.provisioningState());
-				vmVH.setLicenseType(virtualMachine.licenseType());
-				vmVH.setId(virtualMachine.id());
-	
-				vmVH.setBootDiagnosticsEnabled(virtualMachine.isBootDiagnosticsEnabled());
-				vmVH.setBootDiagnosticsStorageUri(virtualMachine.bootDiagnosticsStorageUri());
-				vmVH.setManagedServiceIdentityEnabled(virtualMachine.isManagedServiceIdentityEnabled());
-				vmVH.setSystemAssignedManagedServiceIdentityTenantId(
-						virtualMachine.systemAssignedManagedServiceIdentityTenantId());
-				vmVH.setSystemAssignedManagedServiceIdentityPrincipalId(
-						virtualMachine.systemAssignedManagedServiceIdentityPrincipalId());
-				vmVH.setUserAssignedManagedServiceIdentityIds(virtualMachine.userAssignedManagedServiceIdentityIds());
-				vmVH.setTags(Util.tagsList(tagMap, virtualMachine.resourceGroupName(), virtualMachine.tags()));
-				vmVH.setPrimaryNetworkIntefaceId(virtualMachine.primaryNetworkInterfaceId());
-				vmVH.setPrimaryNCIMacAddress(virtualMachine.getPrimaryNetworkInterface().macAddress());
-			
-				setVmDisks(virtualMachine, vmVH);
-				setNsgs(virtualMachine, vmVH, networkInterfaces);
-				setVnetInfo(virtualMachine, vmVH);
-				setOtherVnets(virtualMachine, vmVH, networkInterfaces);
-				
-				if (virtualMachine.osProfile() != null) {
-					if (virtualMachine.osProfile().linuxConfiguration() != null) {
-						vmVH.setPasswordBasedAuthenticationDisabled(
-								virtualMachine.osProfile().linuxConfiguration().disablePasswordAuthentication());
-					}
-				}
-				if (virtualMachine.listExtensions() != null) {
-					if (virtualMachine.listExtensions().values() instanceof List) {
-						vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());
-					} else {
-						Collection<VirtualMachineExtension> virtualMachineExtensionValue = virtualMachine.listExtensions().values();
-						vmVH.setExtensionList(new ArrayList<>(virtualMachineExtensionValue));
-					}
-				}
-				
-				vmList.add(vmVH);
+				 String url = String.format(apiUrlTemplate,
+						URLEncoder.encode(subscription.getSubscriptionId(),
+								java.nio.charset.StandardCharsets.UTF_8.toString()),
+						URLEncoder.encode(virtualMachine.resourceGroupName(),
+								java.nio.charset.StandardCharsets.UTF_8.toString()),
+						URLEncoder.encode(virtualMachine.name(),
+								java.nio.charset.StandardCharsets.UTF_8.toString()));
+
+				String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+				log.info("response form API: {} : {}",
+						response,
+						virtualMachine.name().isEmpty() ? virtualMachine.name() : "");
+				log.info("subscriptionName: {}", subscription.getSubscriptionName());
+				JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+				JsonObject virtualMachineObject = responseObj.getAsJsonObject();
+				log.info("virtualMachineObject: {}", virtualMachineObject);
+
+				     if(virtualMachineObject!=null){
+
+						 VirtualMachineVH vmVH = new VirtualMachineVH();
+
+						 vmVH.setComputerName(virtualMachine.computerName() == null
+								 ? virtualMachine.instanceView().computerName() == null ? virtualMachine.name()
+								 : virtualMachine.instanceView().computerName()
+								 : virtualMachine.computerName());
+						 vmVH.setName(virtualMachine.name());
+						 vmVH.setRegion(virtualMachine.regionName());
+						 vmVH.setSubscription(subscription.getSubscriptionId());
+						 vmVH.setSubscriptionName(subscription.getSubscriptionName());
+
+						 virtualMachine.inner().networkProfile();
+						 vmVH.setVmSize(virtualMachine.size().toString());
+						 vmVH.setResourceGroupName(virtualMachine.resourceGroupName());
+
+						 vmVH.setStatus(virtualMachine.powerState() != null
+								 ? virtualMachine.powerState().toString().replace("PowerState/", "")
+								 : "Unknown");
+
+						 if(virtualMachine.instanceView()!=null) {
+							 vmVH.setOs(virtualMachine.instanceView().osName());
+							 vmVH.setOsVersion(virtualMachine.instanceView().osVersion());
+						 }
+						 vmVH.setOsType(virtualMachine.osType()!=null?virtualMachine.osType().toString():"");
+
+						 vmVH.setNetworkInterfaceIds(virtualMachine.networkInterfaceIds());
+						 vmVH.setAvailabilityZones(virtualMachine.availabilityZones());
+
+						 vmVH.setVmId(virtualMachine.vmId());
+						 vmVH.setManagedDiskEnabled(virtualMachine.isManagedDiskEnabled());
+
+						 vmVH.setPrivateIpAddress(virtualMachine.getPrimaryNetworkInterface().primaryPrivateIP());
+						 vmVH.setPublicIpAddress(virtualMachine.getPrimaryPublicIPAddress() != null
+								 ? virtualMachine.getPrimaryPublicIPAddress().ipAddress()
+								 : "");
+
+						 vmVH.setAvailabilitySetId(virtualMachine.availabilitySetId());
+						 vmVH.setProvisioningState(virtualMachine.provisioningState());
+						 vmVH.setLicenseType(virtualMachine.licenseType());
+						 vmVH.setId(virtualMachine.id());
+
+						 vmVH.setBootDiagnosticsEnabled(virtualMachine.isBootDiagnosticsEnabled());
+						 vmVH.setBootDiagnosticsStorageUri(virtualMachine.bootDiagnosticsStorageUri());
+						 vmVH.setManagedServiceIdentityEnabled(virtualMachine.isManagedServiceIdentityEnabled());
+						 vmVH.setSystemAssignedManagedServiceIdentityTenantId(
+								 virtualMachine.systemAssignedManagedServiceIdentityTenantId());
+						 vmVH.setSystemAssignedManagedServiceIdentityPrincipalId(
+								 virtualMachine.systemAssignedManagedServiceIdentityPrincipalId());
+						 vmVH.setUserAssignedManagedServiceIdentityIds(virtualMachine.userAssignedManagedServiceIdentityIds());
+						 vmVH.setTags(Util.tagsList(tagMap, virtualMachine.resourceGroupName(), virtualMachine.tags()));
+						 vmVH.setPrimaryNetworkIntefaceId(virtualMachine.primaryNetworkInterfaceId());
+						 vmVH.setPrimaryNCIMacAddress(virtualMachine.getPrimaryNetworkInterface().macAddress());
+
+						 setVmDisks(virtualMachine, vmVH);
+						 setNsgs(virtualMachine, vmVH, networkInterfaces);
+						 setVnetInfo(virtualMachine, vmVH);
+						 setOtherVnets(virtualMachine, vmVH, networkInterfaces);
+
+						 if (virtualMachine.osProfile() != null) {
+							 if (virtualMachine.osProfile().linuxConfiguration() != null) {
+								 vmVH.setPasswordBasedAuthenticationDisabled(
+										 virtualMachine.osProfile().linuxConfiguration().disablePasswordAuthentication());
+							 }
+						 }
+
+						 if (virtualMachine.listExtensions() != null) {
+							 if (virtualMachine.listExtensions().values() instanceof List) {
+								 vmVH.setExtensionList((List<VirtualMachineExtension>) virtualMachine.listExtensions().values());
+							 } else {
+								 Collection<VirtualMachineExtension> virtualMachineExtensionValue = virtualMachine.listExtensions().values();
+								 vmVH.setExtensionList(new ArrayList<>(virtualMachineExtensionValue));
+							 }
+						 }
+						 JsonObject properties = virtualMachineObject.getAsJsonObject("properties");
+						 if (properties != null) {
+							 HashMap<String, Object> propertiesMap = new Gson().fromJson(
+									 properties.toString(),
+									 HashMap.class);
+							 vmVH.setProperties(propertiesMap);
+						 }
+						 vmList.add(vmVH);
+				        }
 			}catch(Exception e) {
 				e.printStackTrace();
 				log.error("Error Collecting info for {} {} ",virtualMachine.computerName(),e.getMessage());

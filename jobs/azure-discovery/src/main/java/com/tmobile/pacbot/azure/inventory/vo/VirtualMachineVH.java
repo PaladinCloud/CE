@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,8 +19,7 @@ public class VirtualMachineVH extends AzureVH {
 	private List<String> networkInterfaceIds;
 	private StorageAccountTypes osDiskStorageAccountType;
 	private Set<AvailabilityZoneId> availabilityZones;
-	
-	
+
 	private boolean isManagedDiskEnabled;
 	private String availabilitySetId;
 	private String provisioningState;
@@ -51,10 +51,21 @@ public class VirtualMachineVH extends AzureVH {
 	private String vnetName;
 	private String primaryNCIMacAddress;
 	private String osType;
+
+	private Map<String, Object> properties;
 	
 	public String getOsType() {
 		return osType;
 	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, Object> properties) {
+		this.properties = properties;
+	}
+
 
 	public List< VirtualMachineExtension> getExtensionList() {
 		return extensionList;
