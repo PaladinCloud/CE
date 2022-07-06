@@ -14,51 +14,55 @@
 
 /* CSS styles of default asset group starts here */
 
-.default-asset-group-wrapper {
-    display: flex;
-    border: 1px solid #ffffff;
-    border-radius: 5px;
-    padding: .4em 1em;
-    font-size: 1em;
-    cursor: pointer;
-    align-items: center;
-    max-width: 30em;
+.defualt-asset-wrapper {
+  height: 55px;
+  border: 1px solid var(--neutral-200);
+  background: var(--neutral-100);
+  border-radius: 4px;
+  display: flex;
+  padding: 11px;
 }
 
-.default-asset-group-icon {
-    vertical-align: middle;
-    transition: 0.5s ease;
-    transform: scale(0);
-    transform-origin: center;
+.defualt-asset-image-wrapper {
+  background-color: var(--background-white);
+  width: 32px;
+  height: 32px;
+  padding: 8px;
 }
 
-.default-asset-group-icon.after-load {
-    transform: scale(1);
+.defualt-asset-image-wrapper img {
+  height: 16px;
+  width: 16px;
 }
 
-.default-asset-group-text {
-    color: #fff;
-    display: inline-block;
-    padding: 0 .9em 0 .4em;
-    vertical-align: middle;
-    padding-bottom: 2px;
-    text-transform: capitalize;
-    overflow: hidden;
-    user-select: none;
-    text-overflow: ellipsis;
+.defualt-asset-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  padding-left: 12px;
+  padding-right: 20px;
 }
 
-.mr-right-arrow {
-    color: #fff;
-    font-size: 2em;
-    padding-block-end: 1px;
-    vertical-align: middle;
+.defualt-asset-title {
+  width: 112px;
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body-2-font-size);
+  font-family: var(--text-medium-font-family);
+  color: var(--text-high-emphasis);
+  align-items: center;
+  padding-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.asset-group-overlay {
-    transition: 0.3s ease;
+.defualt-asset-count {
+  font-size: var(--text-caption-font-size);
+  font-family: var(--text-font-family);
+  font-weight: var(--text-light-font-weight);
+  color: var(--text-low-emphasis);
+  align-items: center;
+  padding-top: 3px;
 }
 
-
-
-/* CSS styles of default asset group ends here */
+.default-asset-icons-wrapper {
+  margin-top: 9.5px;
+}

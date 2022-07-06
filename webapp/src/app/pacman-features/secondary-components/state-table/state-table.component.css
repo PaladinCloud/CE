@@ -19,7 +19,7 @@
 }
 
 .header-title {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     text-align: left;
     width: 34%;
     font-size: 0.9em;
@@ -58,7 +58,7 @@
 .data-title {
     text-align: left;
     width: 34%;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     line-height: 1.8;
     text-overflow: ellipsis;
     margin-right: 2%;
@@ -73,7 +73,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: ex2-light;
+    font-family: var(--text-light-font-family);
     line-height: 1.8;
 }
 
@@ -98,7 +98,7 @@
 }
 
 .header-title-exec {
-    font-family: ex2-bold;
+    font-family: var(--text-medium-font-family);
     text-align: left;
     line-height: 1.3;
     width: 50%;

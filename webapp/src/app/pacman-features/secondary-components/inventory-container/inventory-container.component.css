@@ -12,33 +12,19 @@
  * limitations under the License.
  */
 
-.header{
-    padding: 0.6em 0.5em 0.7em 1em;
-    font-family: ex2-medium;
-    background-color: #fff;
-    color: #3f4a59;
-    border-top-left-radius: 0.4em;
-    border-top-right-radius: 0.4em;
-    border-bottom: 0.1em solid #d5dce2;
+
+.inventory-wrapper {
+  min-height: 22.83em;
+  height: 100%;
 }
 
-.inventory-wrapper{
-	min-height: 22.83em;
+.chart-wrapper {
+  height: 90%;
 }
 
-.chart-wrapper{
-	position: relative;
-  height: 28.8em;
-}
-
-.post{
-	top:15em;
-}
-
-.error_message_post{
-    position: absolute;
-    width: 100%;
-    top: 12em;
+app-multiline-chart{
+  height: 100%;
+  display: inline-flex;
 }
 
 .legend-color {
@@ -47,15 +33,14 @@
   margin: 0 1em;
 }
 
-.legend-text{
-    font-size: 1.05em;
+.legend-text {
+  font-size: 1.05em;
 }
 
-.legends-wrapper{
+.legends-wrapper {
   margin-top: 1.5em;
 }
-.chart-cont{
-  min-height: 40vh;
-  width: 100%;
-  position: relative;
+
+::ng-deep text.axis-title {
+  text-anchor: middle !important;
 }

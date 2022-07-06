@@ -78,7 +78,9 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
 		FileGenerator.writeToFile("azure-activitylogalert.data", "[", false);
 		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
-		FileGenerator.writeToFile("azure-webApp.data", "]", true);
+		FileGenerator.writeToFile("azure-webApp.data", "[", true);
+		FileGenerator.writeToFile("azure-subscription.data", "[", true);
+
 	}
 
 	public static void finalise() throws IOException {
@@ -117,12 +119,18 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-activitylogalert.data", "]", true);
 		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
 		FileGenerator.writeToFile("azure-webApp.data", "]", true);
+		FileGenerator.writeToFile("azure-subscription.data", "]", true);
+
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
 
 		FileGenerator.generateJson(vmMap, "azure-virtualmachine.data");
 
+	}
+
+	public static void generateSubscriptionFiles(List<SubscriptionVH> subscriptionVHList) throws IOException {
+		FileGenerator.generateJson(subscriptionVHList, "azure-subscription.data");
 	}
 
 	public static void generateStorageAccountFiles(List<StorageAccountVH> storageAccountMap) throws IOException {
@@ -273,7 +281,7 @@ public class FileManager {
 
 	}
 
-	public static void generateActivityLogFiles(List<ActivityLogAlertRuleVH> activityLogVHList) throws IOException {
+	public static void generateActivityLogFiles(List<ActivityLogVH> activityLogVHList) throws IOException {
 		FileGenerator.generateJson(activityLogVHList, "azure-activitylogalert.data");
 
 	}

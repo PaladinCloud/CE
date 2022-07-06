@@ -18,146 +18,148 @@
 
 .search-box-left,
 :host ::ng-deep app-searchable-dropdown {
-    font-size: 1.2em;
+  font-size: 1.2em;
 }
 
 :host ::ng-deep app-searchable-dropdown span.ui-select-placeholder.text-muted {
-    padding: 0 1em !important;
+  padding: 0 1em !important;
 }
 
-:host::ng-deep app-searchable-dropdown span.ui-select-match-text.pull-left.ui-select-allow-clear {
-    padding: 0 1em !important;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+:host::ng-deep
+  app-searchable-dropdown
+  span.ui-select-match-text.pull-left.ui-select-allow-clear {
+  padding: 0 1em !important;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 :host ::ng-deep app-searchable-dropdown input.form-control.ui-select-search {
-    padding: .4em 1em !important;
-    font-size: 1em;
+  padding: 0.4em 1em !important;
+  font-size: 1em;
 }
 
-:host ::ng-deep app-searchable-dropdown .ui-select-choices-row>a {
-    padding: 0.8em !important;
-    border: none;
+:host ::ng-deep app-searchable-dropdown .ui-select-choices-row > a {
+  padding: 0.8em !important;
+  border: none;
 }
 
-:host ::ng-deep app-searchable-dropdown .ui-select-choices-row>a:hover {
-    padding: 0.8em !important;
+:host ::ng-deep app-searchable-dropdown .ui-select-choices-row > a:hover {
+  padding: 0.8em !important;
 }
 
 .drop-options {
-    height: 3em;
-    width: 15em;
-    box-shadow: -2px 0px 6px 0px rgba(0, 0, 0, 0.5);
-    border-radius: 0;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border: 0;
-    border-right: solid 1px #c3cbd7;
-    line-height: 3em;
+  height: 3em;
+  width: 15em;
+  box-shadow: -2px 0px 6px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border: 0;
+  border-right: solid 1px #c3cbd7;
+  line-height: 3em;
 }
 
 :host ::ng-deep app-searchable-dropdown .filter-arrow {
-    border-left: 0.6em solid transparent;
-    border-right: 0.6em solid transparent;
-    border-top: 0.6em solid #e20074;
-    margin-left: 0.4em;
-    cursor: pointer;
-    pointer-events: none;
-    top: 50%;
-    right: 1em;
-    transform: translateY(-50%);
+  border-left: 0.6em solid transparent;
+  border-right: 0.6em solid transparent;
+  border-top: 0.6em solid var(--primary-400);
+  margin-left: 0.4em;
+  cursor: pointer;
+  pointer-events: none;
+  top: 50%;
+  right: 1em;
+  transform: translateY(-50%);
 }
 
 :host ::ng-deep app-searchable-dropdown .ui-select-choices {
-    box-shadow: -2px 3px 6px 0px rgba(0, 0, 0, 0.5);
-    border: 0;
-    position: relative;
-    z-index: 100;
+  box-shadow: -2px 3px 6px 0px rgba(0, 0, 0, 0.5);
+  border: 0;
+  position: relative;
+  z-index: 100;
 }
 
 /* *****************   css for select box ends here    ************************** */
 
 .search-box-right {
-    margin-left: 2em;
+  margin-left: 2em;
 }
 
 .search-btn {
-    border: none;
-    border-radius: 4px;
-    background-color: #ea1c80;
-    color: #fff;
-    display: inline-block;
-    padding: 1em 2.5em;
-    letter-spacing: 0.1em;
-    font-size: 1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    min-height: 2em;
-    min-width: 5em;
-    text-align: center;
-    transition: all 0.5s ease;
-    font-size: 1.2em;
-    box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: ex2-light;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--primary-400);
+  color: #fff;
+  display: inline-block;
+  padding: 1em 2.5em;
+  letter-spacing: 0.1em;
+  font-size: 1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  min-height: 2em;
+  min-width: 5em;
+  text-align: center;
+  transition: all 0.5s ease;
+  font-size: 1.2em;
+  box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
+  font-family: var(--text-light-font-family);
 }
 
 .search-btn:hover {
-    background-color: #d41074;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
+  background-color: var(--primary-500);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
 .search-box {
-    width: 20em;
-    border: none;
-    padding: 0.6em 1em;
-    box-shadow: -2px 0px 6px 0px rgba(0, 0, 0, 0.5);
-    border-radius: 0;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-right: solid 1px #c3cbd7;
-    -webkit-appearance: none;
-    font-size: 1.25em;
-    letter-spacing: 1px;
+  width: 20em;
+  border: none;
+  padding: 0.6em 1em;
+  box-shadow: -2px 0px 6px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-right: solid 1px #c3cbd7;
+  -webkit-appearance: none;
+  font-size: 1.25em;
+  letter-spacing: 1px;
 }
 
 .search-box.without-dropdown {
-    border-radius: 4px;
-    width: 25em;
+  border-radius: 4px;
+  width: 25em;
 }
 
 .terminated-checkbox {
-    font-size: 1.2em;
-    transition: all .2s;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: .7em;
-    display: inline-table;
+  font-size: 1.2em;
+  transition: all 0.2s;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.7em;
+  display: inline-table;
 }
 
 .search-btn-active {
-    background-color: #e20074;
+  background-color: var(--primary-400);
 }
-.search-btn-active:hover{
-    background-color: #c20064;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
+.search-btn-active:hover {
+  background-color: var(--primary-500);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
 }
 
 .search-btn-disabled {
-    background-color: #757575;
+  background-color: #757575;
 }
-.search-btn-disabled:hover{
-    background-color: #757575;
+.search-btn-disabled:hover {
+  background-color: #757575;
 }
 
 /deep/ .drop-options .ngx-dropdown-container button {
-    padding: 0em 1em !important;
-    vertical-align: middle;
-    line-height: 1.5 !important;
+  padding: 0em 1em !important;
+  vertical-align: middle;
+  line-height: 1.5 !important;
 }
 
 /deep/ .drop-options .ngx-dropdown-container button .nsdicon-angle-down {
-    line-height: 1.5 !important;
+  line-height: 1.5 !important;
 }

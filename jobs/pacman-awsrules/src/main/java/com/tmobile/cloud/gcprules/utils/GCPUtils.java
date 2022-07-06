@@ -24,7 +24,7 @@ public class GCPUtils {
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esURL, mustFilter,
                 new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
-        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson.toString());
+        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson);
 
         if (resultJson.has(PacmanRuleConstants.HITS)) {
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();

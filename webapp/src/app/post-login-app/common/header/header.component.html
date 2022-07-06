@@ -1,0 +1,37 @@
+<div class="header-wrapper">
+  <div class="header-search-wrapper" (click)="handleSearch()">
+    <div class="header-search-content-container">
+      <!-- <mat-icon
+        class="mat-icon"
+        matPrefix
+        svgIcon="customSearchIcon"
+      ></mat-icon> -->
+
+      <img src="/assets/icons/header-search.svg" alt="" />
+      <form class="header-search-form">
+        <mat-form-field class="header-search-full-width" appearance="fill">
+          <input type="search" matInput placeholder="Search" />
+        </mat-form-field>
+      </form>
+    </div>
+  </div>
+
+  <div class="header-user-wrapper">
+    <div class="header-user-content-wrapper">
+      <div class="user-image-wrapper">
+        <img src="/assets/images/user-image.png" alt="" />
+      </div>
+      <div class="user-info-wrapper">
+        <div class="user-name">Admin</div>
+        <div class="user-email">admin@paladin.com</div>
+      </div>
+      <div title="Logout" class="user-logout-modal-btn" >
+        <img
+          src="/assets/icons/logout-icon.svg"
+          alt=""
+          (click)="logout()"
+        />
+      </div>
+    </div>
+  </div>
+</div>

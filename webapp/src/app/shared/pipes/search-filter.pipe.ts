@@ -23,7 +23,7 @@ import { LoggerService } from '../services/logger.service';
 export class SearchFilterPipe implements PipeTransform {
   @Output() pipeError = new EventEmitter();
 
-  constructor(private loggerService: LoggerService) {}
+  constructor(private loggerService: LoggerService) { }
 
   transform(input: any, searchQuery: any): any {
     try {

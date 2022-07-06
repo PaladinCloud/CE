@@ -56,6 +56,7 @@ import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VpcPeeringConnection;
 import com.amazonaws.services.ec2.model.VpnConnection;
 import com.amazonaws.services.ec2.model.VpnGateway;
+import com.amazonaws.services.ecs.model.TaskDefinition;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticmapreduce.model.Cluster;
 import com.amazonaws.services.identitymanagement.model.Role;
@@ -63,7 +64,10 @@ import com.amazonaws.services.rds.model.DBSnapshot;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
+import com.tmobile.cso.pacman.inventory.vo.AMIVH;
+import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
+import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
@@ -91,6 +95,7 @@ import com.tmobile.cso.pacman.inventory.vo.Resource;
 import com.tmobile.cso.pacman.inventory.vo.SGRuleVH;
 import com.tmobile.cso.pacman.inventory.vo.SQSVH;
 import com.tmobile.cso.pacman.inventory.vo.SSLCertificateVH;
+import com.tmobile.cso.pacman.inventory.vo.SnapshotVH;
 import com.tmobile.cso.pacman.inventory.vo.TargetGroupVH;
 import com.tmobile.cso.pacman.inventory.vo.UserVH;
 import com.tmobile.cso.pacman.inventory.vo.VideoStreamVH;
@@ -263,6 +268,15 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -412,6 +426,15 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-daxcluster.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-awsathena.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -673,7 +696,82 @@ public class FileManager {
 		
 
 	}
+	
+	/**
+	 * Generate AWS AppFlow files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSAppFlowFiles(Map<String,List<AppFlowVH>> appFlowMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "flowDef.flowArn`flowDef.description`flowDef.flowName`flowDef.flowStatus`flowDef.sourceConnectorType`flowDef.destinationConnectorType`kmsArn";
+		keys = "discoverydate`accountid`accountname`region`flowarn`description`flowname`flowstatus`sourceconntype`destconntype`kmsarn";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow.data",keys);
+		fieldNames ="flowDef.flowArn`tags.key`tags.value";
+		keys ="discoverydate`accountid`accountname`region`flowarn`key`value";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-appflow-tags.data",keys);
+	}
 
+	/**
+	 * Generate AWS ECS files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSECSFiles(Map<String,List<TaskDefinition>> appFlowMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "taskDefinitionArn`family`taskRoleArn`executionRoleArn`revision`status`cpu`memory`registeredAt`registeredBy`containerDefinitions.logConfiguration.logDriver";
+		keys = "discoverydate`accountid`accountname`region`taskdefarn`family`taskrolearn`executionrolearn`revision`status`cpu`memory`registeredat`registeredby`logdriver";
+		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-ecs.data",keys);
+	}
+	
+	/**
+	 * Generate AWS ECS files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAccessAnalyzerFiles(Map<String,List<AccessAnalyzerVH>> analyzerMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "analyzer.arn`analyzer.lastResourceAnalyzed`analyzer.lastResourceAnalyzedAt`analyzer.name`analyzer.status`analyzer.type";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`lastresanalyzed`lastresanalyzedat`name`status`type";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer.data",keys);
+		// analyzer findings data
+		fieldNames = "analyzer.arn`finding.analyzedAt`finding.id`finding.isPublic`finding.resource`finding.resourceOwnerAccount`finding.status";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`analyzedat`id`ispublic`resource`resourceowneraccount`status";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-findings.data",keys);
+		// analyzer tags data 
+		fieldNames = "analyzer.arn`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`analyzerarn`key`value";
+		FileGenerator.generateJson(analyzerMap, fieldNames, "aws-accessanalyzer-tags.data",keys);
+	}
+	
+	/**
+	 * Generate AWS AMI files.
+	 *
+	 * @param amiMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAMIFiles(Map<String, List<AMIVH>> amiMap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "image.architecture`image.creationDate`image.imageId`image.imageLocation`image.imageType`image.publicValue`image.platform`image.platformDetails`image.state`image.name`image.rootDeviceType`image.rootDeviceName";
+		keys = "discoverydate`accountid`accountname`region`architecture`creationdate`imageid`imagelocation`imagetype`publicvalue`platform`platformdetails`state`name`rootdevicetype`rootdevicename";
+		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami.data", keys);
+		// ami blockDeviceMapping findings data
+		fieldNames = "image.imageId`blockDeviceMapping.deviceName`blockDeviceMapping.virtualName`blockDeviceMapping.ebs.snapshotId`blockDeviceMapping.ebs.volumeSize`blockDeviceMapping.ebs.volumeType`blockDeviceMapping.ebs.encrypted`blockDeviceMapping.ebs.deleteOnTermination";
+		keys = "discoverydate`accountid`accountname`region`imageid`devicename`virtualname`snapshotid`volumesize`volumetype`encrypted`deleteontermination";
+		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami-blockdevicemap.data", keys);
+		// ami tags data
+		fieldNames = "image.imageId`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`imageid`key`value";
+		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami-tags.data", keys);
+	}
+	
 	/**
 	 * Generate classic elb files.
 	 *
@@ -1041,15 +1139,15 @@ public class FileManager {
 	 * @param snapshotMap the snapshot map
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void generateSnapshotFiles(Map<String, List<Snapshot>> snapshotMap) throws IOException {
+	public static void generateSnapshotFiles(Map<String, List<SnapshotVH>> snapshotMap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "SnapshotId`Description`VolumeId`VolumeSize`Encrypted`DataEncryptionKeyId"
-				+ "`KmsKeyId`OwnerAlias`OwnerId`Progress`StartTime`State`StateMessage";
+		fieldNames = "snapshot.SnapshotId`snapshot.Description`snapshot.VolumeId`snapshot.VolumeSize`snapshot.Encrypted`snapshot.DataEncryptionKeyId"
+				+ "`snapshot.KmsKeyId`snapshot.OwnerAlias`snapshot.OwnerId`snapshot.Progress`snapshot.StartTime`snapshot.State`snapshot.StateMessage`isSnapshotPublic";
 		keys = "discoverydate`accountid`accountname`region`snapshotid`description`volumeid`volumesize`encrypted`dataencryptionkeyid`"
-				+ "kmskeyid`owneralias`ownerid`progress`starttime`state`statemessage";
+				+ "kmskeyid`owneralias`ownerid`progress`starttime`state`statemessage`ispublic";
 		FileGenerator.generateJson(snapshotMap, fieldNames, "aws-snapshot.data",keys);
-		fieldNames = "SnapshotId`tags.key`tags.value";
+		fieldNames = "snapshot.SnapshotId`snapshot.tags.key`snapshot.tags.value";
 		keys = "discoverydate`accountid`accountname`region`snapshotid`key`value";
 		FileGenerator.generateJson(snapshotMap, fieldNames, "aws-snapshot-tags.data",keys);
 	}

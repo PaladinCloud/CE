@@ -1,0 +1,169 @@
+/*
+ *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.contextual-menu-wrapper {
+  background-color: var(--background-white);
+  height: 100vh;
+  border-right: 1px solid var(--border-200);
+}
+
+.tree-component {
+  padding: 16px 0px 16px 16px;
+}
+
+::ng-deep .tree-children {
+  margin-left: 22px;
+  padding-left: 9px !important;
+  border-left: 2px solid var(--border-200);
+}
+
+::ng-deep tree-node-content,
+.know-your-app-content {
+  width: 155px !important;
+  display: ruby !important;
+  font-family: var(--text-medium-font-family);
+  font-style: normal;
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body2-font-size);
+  line-height: var(--text-line-height);
+  color: var(--text-medium-emphasis);
+  flex: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0px 16px 0px 12px !important;
+}
+
+#logo {
+  padding-top: 20px;
+  padding-left: 16px;
+  width: "146px";
+  height: "48px";
+}
+
+.icon {
+  float: left;
+}
+
+::ng-deep .node-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  width: 187px;
+  height: 44px;
+  border-radius: 4px;
+  flex: none;
+  align-self: stretch;
+  flex-grow: 0;
+  background: none !important;
+  box-shadow: none !important;
+  float: left;
+}
+
+.node-img {
+  height: 44px;
+  width: 32px;
+  padding: 14px 0px 14px 16px;
+  filter: invert(49%) sepia(6%) saturate(379%) hue-rotate(177deg)
+    brightness(92%) contrast(87%);
+}
+
+#app-logo {
+  padding: 20px 0px 20px 16px;
+}
+
+.asset-switcher-container {
+  padding: 0px 16px;
+}
+
+::ng-deep .angular-tree-component {
+  width: 225px !important;
+}
+
+::ng-deep .toggle-children-wrapper-expanded .toggle-children {
+  transform: rotate(180deg) !important;
+}
+
+::ng-deep .toggle-children {
+  height: 13px;
+  width: 13px;
+  background-image: url("/assets/icons/arrow.svg");
+}
+
+::ng-deep .node-wrapper-active tree-node-content {
+  color: var(--primary-500) !important;
+}
+
+::ng-deep .node-wrapper:hover,
+.know-your-app-wrapper:hover {
+  border-radius: 4px;
+  background-color: var(--neutral-100);
+}
+
+::ng-deep .tree-children .node-wrapper:hover {
+  width: 187px !important;
+}
+::ng-deep .node-wrapper-active {
+  border-radius: 4px;
+  background-color: var(--primary-100) !important;
+}
+
+.node-wrapper-active .node-img {
+  /* filter: invert(18%) sepia(99%) saturate(2410%) hue-rotate(209deg)
+    brightness(92%) contrast(109%); */
+  filter: invert(24%) sepia(73%) saturate(2569%) hue-rotate(186deg)
+    brightness(78%) contrast(111%);
+}
+
+::ng-deep .tree-children .node-wrapper-active {
+  background: none !important;
+}
+
+::ng-deep .tree-children .node-wrapper-active .node-content-wrapper {
+  width: 187px;
+  background-color: var(--primary-100) !important;
+}
+
+::ng-deep tree-viewport {
+  height: calc(100vh - 205px) !important;
+  overflow-x: hidden;
+}
+
+::ng-deep .tree-children tree-node-content {
+  color: var(--text-medium-emphasis);
+}
+
+::ng-deep .node-drop-slot {
+  height: 0px !important;
+}
+
+::ng-deep .node-wrapper {
+  width: 218px !important;
+  height: 44px !important;
+}
+
+.wrapper .node-img,
+.wrapper tree-node-expander {
+  filter: brightness(0);
+}
+
+.wrapper tree-node-content {
+  color: var(--text-high-emphasis);
+}
+
+.know-your-app-wrapper {
+  background-color: var(--background-white);
+  cursor: pointer;
+  margin-left: 16px;
+}

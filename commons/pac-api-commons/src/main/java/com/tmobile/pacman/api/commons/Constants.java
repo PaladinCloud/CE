@@ -13,12 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
- /**
-    Copyright (C) 2017 T Mobile Inc - All Rights Reserve
-    Purpose:
-    Author :kkumar
-    Modified Date: Oct 18, 2017
- **/
+/**
+   Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+   Purpose:
+   Author :kkumar
+   Modified Date: Oct 18, 2017
+**/
 package com.tmobile.pacman.api.commons;
 
 public interface Constants {
@@ -49,10 +49,10 @@ public interface Constants {
     String RULEID = "ruleId";
     String POLICYID = "policyId";
     String OPEN_ISSUES = "openIssues";
-    String EC2_MANDATORY_TAG_RULE = "PacMan_ec2mandatorytags_version-1_ec2mandatorytags_ec2";
-    String EC2_KERNEL_COMPLIANCE_RULE = "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Rule_ec2";
+    String EC2_MANDATORY_TAG_RULE = "ec2mandatorytags_version-1_ec2mandatorytags_ec2";
+    String EC2_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Rule_ec2";
     String VULNAR_SEVERITY_LEVEL = "vuln.list.hostAssetVuln.severitylevel";
-    String SSL_EXPIRY_RULE = "PacMan_certificate-expiry-policy_version-1_SSLcertificatesexpirywithin45days_cert";
+    String SSL_EXPIRY_RULE = "certificate-expiry-policy_version-1_SSLcertificatesexpirywithin45days_cert";
     String KEY = "key";
     String VALUE = "value";
     String PARAMS = "params";
@@ -66,7 +66,6 @@ public interface Constants {
     String TARGET_TYPE = "targetType";
     String RESOURCE_TYPE = "resourcetType";
     String POLICY_DESC = "policyDesc";
-    String TAGGIG_POLICY = "PacMan_TaggingRule_version-1";
     String TITLE = "title";
     String DESCRIPTION = "description";
     String METRIC_NAME = "metricName";
@@ -95,7 +94,7 @@ public interface Constants {
     String COMPLIANCE_PERCENTAGE = "compliance";
     String COMPLIANCE_PERCENT = "compliance_percent";
     String LAST_SCAN = "lastScan";
-    String TAGGING_POLICY = "PacMan_TaggingRule_version-1";
+    String TAGGING_POLICY = "TaggingRule_version-1";
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";
     String ACCOUNT_ID = "accountid";
@@ -123,8 +122,8 @@ public interface Constants {
     String PLATFORM = "platform";
     String STATE_NAME = "statename";
     String WINDOWS = "windows";
-    String ONPREM_KERNEL_COMPLIANCE_RULE = "PacMan_onpremisekernelversion_version-1_onpremKernelVersionRule_onpremserver";
-    String CLOUD_QUALYS_RULE="PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2";
+    String ONPREM_KERNEL_COMPLIANCE_RULE = "onpremisekernelversion_version-1_onpremKernelVersionRule_onpremserver";
+    String CLOUD_QUALYS_RULE = "Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2";
     String PROJECT_ID = "_projectid";
     String REPOSITORY_ID = "_repositoryid";
     String BRANCH = "branches";
@@ -155,8 +154,8 @@ public interface Constants {
     String EXP_IN = "expiringIn";
     String THIRTY = "30";
     String FOURTYFIVE = "45";
-    String SSL_CERT_45_DAYS_EXP_RULE = "PacMan_certificate-expiry-policy_version-1_SSLcertificatesexpirywithin45days_cert";
-    String SSL_CERT_30_DAYS_EXP_RULE = "PacMan_certificate-expiry-policy_version-1_certificates-expiry-next-30days_cert";
+    String SSL_CERT_45_DAYS_EXP_RULE = "certificate-expiry-policy_version-1_SSLcertificatesexpirywithin45days_cert";
+    String SSL_CERT_30_DAYS_EXP_RULE = "certificate-expiry-policy_version-1_certificates-expiry-next-30days_cert";
     String VALID_TO = "validto";
     String UNDERSCORE_COUNT = "_count";
     String ISSUE_DETAILS = "issueDetails";
@@ -256,21 +255,21 @@ public interface Constants {
     String VPC_ID = "vpcid";
     String SOURCE = "source";
     String ERROR_UNIQUEHOST = "Error in getUniqueHost from ES";
-    String ISSUE_COUNT_PER_RULE_AG= "issuecountPerRuleAG";
+    String ISSUE_COUNT_PER_RULE_AG = "issuecountPerRuleAG";
     String ASSET_COUNT = "assetCount";
     String CONTR_PERCENTAGE = "contributionPercentage";
-    String COMP_PERCENTAGE= "compliancePercentage";
-    String WORKING="working";
-    String EXE_EMAIL_SEND= "Exception in sendTextMail";
-    String APP_TAB_DETAILS="appTableDetails";
-    String CRITICAL_ISSUE_COUNT="criticalIssuesCount";
-    String TOP_APP_COUNT="topAppCount";
-    String EMAIL_SERVICE_STARTED ="Execution of Email Service for Asset Group Started";
-    String EMAIL_SERVICE_COMPLETED= "Email Service for Asset Group Succeessfully Completed";
+    String COMP_PERCENTAGE = "compliancePercentage";
+    String WORKING = "working";
+    String EXE_EMAIL_SEND = "Exception in sendTextMail";
+    String APP_TAB_DETAILS = "appTableDetails";
+    String CRITICAL_ISSUE_COUNT = "criticalIssuesCount";
+    String TOP_APP_COUNT = "topAppCount";
+    String EMAIL_SERVICE_STARTED = "Execution of Email Service for Asset Group Started";
+    String EMAIL_SERVICE_COMPLETED = "Email Service for Asset Group Succeessfully Completed";
     String PATCHING_EXCEPTION = "ServiceException in getPatchingDetails";
     String DISTRIBUTION = "distribution";
     String HIGHEST = "Highest";
-    String DIRECTORS  = "directors";
+    String DIRECTORS = "directors";
     String UNIQUE_QID = "unique-qid";
     String TOTAL_VULN_ASSETS = "totalVulnerableAssets";
     String UNIQUE_VULN_COUNT = "uniqueVulnCount";
@@ -280,8 +279,8 @@ public interface Constants {
     String SUB_ACTIONS = "subActions";
     String MATCHING_STRING = "matchingString";
     String FIRST_DISCOVERED_ON = "firstdiscoveredon";
-    String SSM_AGENT_RULE="PacMan_SSMAgentCheckRule_version-1_SSMAgentCheckRule_ec2";
-    String SERVICE_DNS_NAME="service.dns.name";
+    String SSM_AGENT_RULE = "SSMAgentCheckRule_version-1_SSMAgentCheckRule_ec2";
+    String SERVICE_DNS_NAME = "service.dns.name";
     String AUTHORIZATION = "Authorization";
     String BEARER = "bearer";
     String BASIC_AUTH = "basicAuth";
@@ -293,10 +292,10 @@ public interface Constants {
     String EVENTCATEGORY = "eventtypecategory";
     String EVENTSTATUS = "eventstatus";
     String FILTER_MANDATORY = "Filter is mandatory, pass the resourceid/docid/issueid/planid";
-    String EC2_QUALYS_RULEID = 	"PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2";
+    String EC2_QUALYS_RULEID = "Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2";
     String VIRTUALMACHINE = "virtualmachine";
-    String VIRTUALMACHINE_QUALYS_RULEID = "PacMan_Ec2InstanceScannedByQualys_version-1_VmInstanceScannedByQualys_virtualmachine";
-    String ONPREM_QUALYS_RULEID = "PacMan_Onprem-asset-scanned-by-qualys-API_version-1_OnpremassetscannedbyqualysAPI_onpremserver";
+    String VIRTUALMACHINE_QUALYS_RULEID = "Ec2InstanceScannedByQualys_version-1_VmInstanceScannedByQualys_virtualmachine";
+    String ONPREM_QUALYS_RULEID = "Onprem-asset-scanned-by-qualys-API_version-1_OnpremassetscannedbyqualysAPI_onpremserver";
     String AZURE = "azure";
     String MASTER_ALIAS = "ds-all";
     String ROOT_ALIAS = "*";
@@ -308,24 +307,24 @@ public interface Constants {
     String PROVIDERS = "providers";
     String ENVIRONMENTS = "environments";
     String ENV_COUNT = "envCount";
-	String PRODUCTION_ENV = "Prod";
-	String STAGE_ENV = "Stage";
-	String DEV_ENV = "Dev";
-	String NPE_ENV = "NPE";
-	String OTHER_ENV = "Others";
-	String UNTAGGED_ENV = "Untagged";
-	String PERCENTAGE="percentage";
-	String PROD_PATTERN = "^(((prod)(uction)?)|((prd).*))(:+(((prod)(uction)?)|((prd).*)))?"; 
-	String STG_PATTERN = "(^(stag|stg).*)|(.*:+(stag|stg).*)"; 
-	String DEV_PATTERN = "(^(dev|development).*)|(.*:+(dev).*)"; 
-	String NPE_PATTERN = "(^(npe|non.?prod(uction)?))|(.*:+(npe).*)";
-	String AZURE_WINDOWS = "Windows";
-	String CLOUD_KERNEL_COMPLIANCE_POLICY = "PacMan_cloud-kernel-compliance_version-1";
-	String RESOURCE_IDS = "resourceIds";
-   	String RULE_IDS = "ruleIds";
-	String TOTAL_VIOLATIONS = "totalViolations";
-	String CLOUD_QUALYS_POLICY="PacMan_Ec2InstanceScannedByQualys_version-1";
-	 String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "PacMan_cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
+    String PRODUCTION_ENV = "Prod";
+    String STAGE_ENV = "Stage";
+    String DEV_ENV = "Dev";
+    String NPE_ENV = "NPE";
+    String OTHER_ENV = "Others";
+    String UNTAGGED_ENV = "Untagged";
+    String PERCENTAGE = "percentage";
+    String PROD_PATTERN = "^(((prod)(uction)?)|((prd).*))(:+(((prod)(uction)?)|((prd).*)))?";
+    String STG_PATTERN = "(^(stag|stg).*)|(.*:+(stag|stg).*)";
+    String DEV_PATTERN = "(^(dev|development).*)|(.*:+(dev).*)";
+    String NPE_PATTERN = "(^(npe|non.?prod(uction)?))|(.*:+(npe).*)";
+    String AZURE_WINDOWS = "Windows";
+    String CLOUD_KERNEL_COMPLIANCE_POLICY = "cloud-kernel-compliance_version-1";
+    String RESOURCE_IDS = "resourceIds";
+    String RULE_IDS = "ruleIds";
+    String TOTAL_VIOLATIONS = "totalViolations";
+    String CLOUD_QUALYS_POLICY = "Ec2InstanceScannedByQualys_version-1";
+    String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
     String GCP = "gcp";
+    String RESOLUTION_URL = "resolutionUrl";
 }
-

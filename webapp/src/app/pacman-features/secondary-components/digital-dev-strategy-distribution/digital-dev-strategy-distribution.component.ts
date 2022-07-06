@@ -44,8 +44,8 @@ export class DigitalDevStrategyDistributionComponent implements OnInit, OnDestro
   widgetWidth = 200;
   widgetHeight = 200;
   MainTextcolor = '#000';
-  innerRadious: any = 80;
-  outerRadious: any = 50;
+  innerRadius: any = 80;
+  outerRadius: any = 50;
   strokeColor = '#fff';
   appFilter;
   private donutData = {};
@@ -87,11 +87,11 @@ export class DigitalDevStrategyDistributionComponent implements OnInit, OnDestro
       }
     } catch (error) {
       this.errorMessage = 'jsError';
-          this.getErrorValues();
+      this.getErrorValues();
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
   updateComponent() {
     /* All functions variables which are required to be set for component to be reloaded should go here */
     this.showLoader = true;
@@ -205,25 +205,25 @@ export class DigitalDevStrategyDistributionComponent implements OnInit, OnDestro
   handleLink(event) {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
 
-      const stateObj = {
-        'Gitflow' : 'Gitflow',
-        'Trunk' : 'Trunk',
-        'Feature branching': 'FeatureBranching',
-        'No branching strategy': 'None'
-      };
-      const filter = {
-         'strategyType': stateObj[event] || event,
-         'resourceType': 'dgtldsgn-branch',
-         'branchingStrategyType': 'repositories',
-         'tags.Application.keyword': this.appFilter
-      };
-      const params = this.utils.makeFilterObj(filter);
-      const apiTarget = {
-        'TypeAsset' : 'branching-strategy'
-      };
-      const newParams = Object.assign(params, apiTarget);
-      newParams['mandatory'] = 'resourceType|strategyType|branchingStrategyType';
-      this.router.navigate(['../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+    const stateObj = {
+      'Gitflow': 'Gitflow',
+      'Trunk': 'Trunk',
+      'Feature branching': 'FeatureBranching',
+      'No branching strategy': 'None'
+    };
+    const filter = {
+      'strategyType': stateObj[event] || event,
+      'resourceType': 'dgtldsgn-branch',
+      'branchingStrategyType': 'repositories',
+      'tags.Application.keyword': this.appFilter
+    };
+    const params = this.utils.makeFilterObj(filter);
+    const apiTarget = {
+      'TypeAsset': 'branching-strategy'
+    };
+    const newParams = Object.assign(params, apiTarget);
+    newParams['mandatory'] = 'resourceType|strategyType|branchingStrategyType';
+    this.router.navigate(['../../', 'assets', 'asset-list'], { relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
   }
 
   ngOnDestroy() {

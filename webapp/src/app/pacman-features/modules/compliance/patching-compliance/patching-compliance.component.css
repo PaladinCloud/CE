@@ -28,7 +28,7 @@
 /* Left side section */
 
 .floating-widgets-section {
-    width: 73%;
+    width: 75%;
     height: 100%;
 }
 
@@ -77,11 +77,11 @@
 }
 
 .mr-icon.active {
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 .mr-icon.active:hover {
-    color: #e20074;
+    color: var(--primary-400);
 }
 
 .mr-icon:hover {

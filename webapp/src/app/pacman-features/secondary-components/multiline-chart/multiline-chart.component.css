@@ -13,11 +13,11 @@
  */
 
 .sub-head {
-    padding: 0.8em;
-    background-color: #ffffff;
-    border: solid 1px #d6e2f1;
-    color: #555;
-    font-size: 1em;
+  padding: 0.8em;
+  background-color: var(--background-white);
+  border: solid 1px #d6e2f1;
+  color: #555;
+  font-size: 1em;
 }
 
 .multiline-brush-zoom-container {
@@ -27,3 +27,6 @@
   width: 100%;
 }
 
+.multiline-graph-container{
+  height: 100%;
+}

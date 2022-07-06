@@ -13,26 +13,26 @@
  */
 
 .all-ports-container {
-    border-radius: 3px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 0.25em 0 rgba(0, 0, 0, 0.15);
-    border: solid 1px #d6e2f1;
-    min-height: 10em;
+  border-radius: var(--border-radius);
+  background-color: var(--background-white);
+  box-shadow: 0 1px 0.25em 0 rgba(0, 0, 0, 0.15);
+  border: solid 1px #d6e2f1;
+  min-height: 10em;
 }
 
 .sub-head {
-    padding: 0.8em;
-    background-color: #ffffff;
-    border: solid 1px #d6e2f1;
-    color: #555;
-    font-size: 1em;
+  padding: 0.8em;
+  background-color: var(--background-white);
+  border: solid 1px #d6e2f1;
+  color: #555;
+  font-size: 1em;
 }
 
 .all-ports-content {
-    min-height: 10em;
-    font-size: 1em;
+  min-height: 10em;
+  font-size: 1em;
 }
 
 .all-ports-container /deep/ .data-table-wrap .table-cells {
-    width: 108px;
+  width: 108px;
 }

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import {trigger, state, animate, style, transition, query } from '@angular/animations';
+import { trigger, state, animate, style, transition, query } from '@angular/animations';
 
 export const fadeInOut =
     trigger('fadeInOut', [
@@ -28,7 +28,7 @@ export const fadeInOut =
 export const changeUnderlineColor =
     trigger('changeUnderlineColor', [
         state('pink', style({
-            'border-color': '#e20074'
+            'border-color': '#336cc9'
         })),
         transition('* <=> pink', animate('400ms ease-in-out'))
     ]);
@@ -36,7 +36,7 @@ export const changeUnderlineColor =
 export const changeTextColor =
     trigger('changeTextColor', [
         state('pink', style({
-            color: '#e20074'
+            color: '#336cc9'
         })),
         transition('* <=> pink', animate('400ms ease-in-out'))
     ]);
@@ -46,12 +46,12 @@ export const fadeAnimation =
 
     trigger('fadeAnimation', [
 
-        state('void', style({position: 'fixed', opacity: 0 })),
-        state('*', style({position: 'relative', opacity: 1 })),
+        state('void', style({ position: 'fixed', opacity: 0 })),
+        state('*', style({ position: 'relative', opacity: 1 })),
 
-        transition( '* => *', [
+        transition('* => *', [
             query(':enter, :leave',
-                style({position: 'absolute', width: '100%', height: '100%'}), {optional: true}),
+                style({ position: 'absolute', width: '100%', height: '100%' }), { optional: true }),
 
             query(':enter',
                 [
@@ -70,7 +70,7 @@ export const fadeAnimation =
 
             query(':enter',
                 [
-                    style({ opacity: 0  }),
+                    style({ opacity: 0 }),
                     animate('.3s', style({ opacity: 1 }))
                 ],
                 { optional: true }

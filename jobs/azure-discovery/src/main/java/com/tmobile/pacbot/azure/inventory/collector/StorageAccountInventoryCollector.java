@@ -61,6 +61,7 @@ public class StorageAccountInventoryCollector {
 							.setCustomerManagedKey(storageAccount.inner().encryption().keyVaultProperties().keyName());
 				}
 			}
+			storageAccountVH.setBlobPublicAccessAllowed(storageAccount.isBlobPublicAccessAllowed());
 			storageAccountList.add(storageAccountVH);
 		}
 		log.info("Target Type : {}  Total: {} ", "Storage Account", storageAccountList.size());

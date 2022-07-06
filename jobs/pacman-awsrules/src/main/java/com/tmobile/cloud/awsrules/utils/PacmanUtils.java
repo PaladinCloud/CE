@@ -1075,6 +1075,75 @@ public class PacmanUtils {
 			return true;
 		return false;
 	}
+	
+	/**
+	 * @param imageId
+	 * @param esAmiBlockDeviceMappingUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getUnencryptedSnapshotIds(String imageId, String esAmiBlockDeviceMappingUrl) throws Exception {
+
+		List<String> unencryptedSnapshots = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_IMAGE_ID_ATTRIBUTE), imageId);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esAmiBlockDeviceMappingUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String snapshoitId = source.get(PacmanRuleConstants.ES_SNAPSHOT_ID_ATTRIBUTE).getAsString();
+					String encrypted = source.get(PacmanRuleConstants.ES_ENCRYPTED_ATTRIBUTE).getAsString();
+					if (StringUtils.isNotEmpty(snapshoitId) && encrypted.equalsIgnoreCase(PacmanRuleConstants.FALSE)) {
+						unencryptedSnapshots.add(snapshoitId);
+					}
+				}
+			}
+
+		}
+		return unencryptedSnapshots;
+	}
+	
+	/**
+	 * @param analyzerArn
+	 * @param esFindingsUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getActiveAnalyzerFindings(String analyzerArn, String esFindingsUrl) throws Exception {
+
+		List<String> findings = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ANALYZER_ARN_ATTRIBUTE), analyzerArn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esFindingsUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String status = source.get(PacmanRuleConstants.STATUS).getAsString();
+					if (status.equalsIgnoreCase(PacmanRuleConstants.STATUS_ACTIVE)) {
+						findings.add(source.get(PacmanRuleConstants.ES_RESOURCE_ATTRIBUTE).getAsString());
+					}
+				}
+			}
+
+		}
+		return findings;
+	}
     
 	/**
 	 * @param kmsKeyId
@@ -1482,7 +1551,7 @@ public class PacmanUtils {
 					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
 					String protocol = source.get(PacmanRuleConstants.ELB_PROTOCOL).getAsString();
 
-					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_TLS)) {
+					if (protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_HTTPS) || protocol.equalsIgnoreCase(PacmanRuleConstants.PROTOCOL_SSL)) {
 						securedProtocols.add(protocol);
 					}
 				}

@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.api.commons.Constants;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
@@ -706,7 +707,7 @@ public class AssetRepositoryTest {
 
         Map<String, Object> asset1 = new HashMap<>();
         asset1.put("_resourceid", "a1");
-        asset1.put("policyId", "PacMan_TaggingRule_version-1");
+        asset1.put("policyId", Constants.TAGGING_POLICY);
         asset1.put("Environment", "Not Found");
 
         Map<String, Object> asset2 = new HashMap<>();

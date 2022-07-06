@@ -24,10 +24,10 @@ import { PolicyViolationSummaryService } from '../../../services/policy-violatio
 import { CpuUtilizationService } from '../../../services/cpu-utilization.service';
 import { DiskUtilizationService } from '../../../services/disk-utilization.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import {UtilsService} from '../../../../shared/services/utils.service';
-import {RefactorFieldsService} from './../../../../shared/services/refactor-fields.service';
-import {AssetCostService} from '../../../services/asset-cost.service';
-import {WorkflowService} from '../../../../core/services/workflow.service';
+import { UtilsService } from '../../../../shared/services/utils.service';
+import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
+import { AssetCostService } from '../../../services/asset-cost.service';
+import { WorkflowService } from '../../../../core/services/workflow.service';
 import { HostVulnerabilitiesSummaryService } from '../../../services/host-vulnerabilities-summary.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CONFIGURATIONS } from '../../../../../config/configurations';
@@ -36,7 +36,7 @@ import { CONFIGURATIONS } from '../../../../../config/configurations';
   selector: 'app-asset-details',
   templateUrl: './asset-details.component.html',
   styleUrls: ['./asset-details.component.css'],
-  providers: [ CommonResponseService, PolicyViolationSummaryService, HostVulnerabilitiesSummaryService, CpuUtilizationService, DiskUtilizationService, AssetCostService]
+  providers: [CommonResponseService, PolicyViolationSummaryService, HostVulnerabilitiesSummaryService, CpuUtilizationService, DiskUtilizationService, AssetCostService]
 })
 export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -65,8 +65,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   private routeSubscription: Subscription;
 
   /*variables for breadcrumb data*/
-  breadcrumbArray: any= ['Assets', 'Asset List'];
-  breadcrumbLinks: any= ['asset-dashboard', 'asset-list'];
+  breadcrumbArray: any = ['Assets', 'Asset List'];
+  breadcrumbLinks: any = ['asset-dashboard', 'asset-list'];
   breadcrumbPresent: any;
 
   filteredData = false;
@@ -92,10 +92,10 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedDD = '';
   currentObj: any = {};
   filterArr: any = [];
-  tagsArray: any= {};
+  tagsArray: any = {};
   labels: any;
-  dataObj: any= {};
-  genericAttributes: any= {};
+  dataObj: any = {};
+  genericAttributes: any = {};
   showEmail = false;
   private subscriptionToAssetGroup: Subscription;
   private getPolicyDataSubscription: Subscription;
@@ -127,18 +127,18 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   policyAvailable: any = [false, false, false, false];
   showLoader: any = [false, false, false, false, false, false, false, false, false, false, false, false];
-  hideContainer: any= [false, false, false, false, false, false, false, false];
-  summary: any= {
+  hideContainer: any = [false, false, false, false, false, false, false, false];
+  summary: any = {
     'violation': false,
     'vulnerabilities': false
   };
   errorMessage: any = [];
   public targetType: any = '';
   strokeColor = '#fff';
-  innerRadious: any = 65;
-  outerRadious: any = 50;
-  innerRadious1 = 60;
-  outerRadious1 = 47;
+  innerRadius: any = 65;
+  outerRadius: any = 50;
+  innerRadius1 = 60;
+  outerRadius1 = 47;
   colorSetCpu = ['#26ba9d', '#26ba9d', '#645ec5'];
   MainTextcolor = '#000';
   filterText: any = {};
@@ -151,65 +151,65 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('document:click', ['$event']) handleClick(event) {
     let clickedComponent = event.target;
-     let inside = false;
-     do {
-         if (clickedComponent === this.elementRef.nativeElement) {
-             inside = true;
-         }
-        clickedComponent = clickedComponent.parentNode;
-     } while (clickedComponent);
-      if (!inside) {
-          this.filteredList = [];
+    let inside = false;
+    do {
+      if (clickedComponent === this.elementRef.nativeElement) {
+        inside = true;
       }
+      clickedComponent = clickedComponent.parentNode;
+    } while (clickedComponent);
+    if (!inside) {
+      this.filteredList = [];
+    }
   }
 
   @HostListener('window:resize', ['$event']) onResize(event) {
     const element_cpuUtilization = document.getElementById('cpuUtilization');
     if (element_cpuUtilization) {
-        this.widgetWidth2 = parseInt((window.getComputedStyle(element_cpuUtilization, null).getPropertyValue('width')).split('px')[0], 10);
+      this.widgetWidth2 = parseInt((window.getComputedStyle(element_cpuUtilization, null).getPropertyValue('width')).split('px')[0], 10);
     }
     const element_statsDoughnut = document.getElementById('statsDoughnut');
     if (element_statsDoughnut) {
-        let widthValue = parseInt((window.getComputedStyle(element_statsDoughnut, null).getPropertyValue('width')).split('px')[0], 10);
-        widthValue = widthValue - 155;
-        if (widthValue > 150) {
-          this.widgetWidth = widthValue;
-        }
+      let widthValue = parseInt((window.getComputedStyle(element_statsDoughnut, null).getPropertyValue('width')).split('px')[0], 10);
+      widthValue = widthValue - 155;
+      if (widthValue > 150) {
+        this.widgetWidth = widthValue;
+      }
     }
   }
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
-              private activatedRoute: ActivatedRoute,
-              private commonResponseService: CommonResponseService,
-              private router: Router,
-              private utilityService: UtilsService,
-              private dataStore: DataCacheService,
-              private policyViolationSummaryService: PolicyViolationSummaryService,
-              private cpuUtilizationService: CpuUtilizationService,
-              private diskUtilizationService: DiskUtilizationService,
-              private errorHandling: ErrorHandlingService,
-              private assetCostService: AssetCostService,
-              private refactorFieldsService: RefactorFieldsService ,
-              private workflowService: WorkflowService,
-              private hostVulnerabilitiesSummaryService: HostVulnerabilitiesSummaryService,
-              private loggerService: LoggerService,
-              myElement: ElementRef) {
+    private activatedRoute: ActivatedRoute,
+    private commonResponseService: CommonResponseService,
+    private router: Router,
+    private utilityService: UtilsService,
+    private dataStore: DataCacheService,
+    private policyViolationSummaryService: PolicyViolationSummaryService,
+    private cpuUtilizationService: CpuUtilizationService,
+    private diskUtilizationService: DiskUtilizationService,
+    private errorHandling: ErrorHandlingService,
+    private assetCostService: AssetCostService,
+    private refactorFieldsService: RefactorFieldsService,
+    private workflowService: WorkflowService,
+    private hostVulnerabilitiesSummaryService: HostVulnerabilitiesSummaryService,
+    private loggerService: LoggerService,
+    myElement: ElementRef) {
 
-                this.configurations = CONFIGURATIONS;
+    this.configurations = CONFIGURATIONS;
 
-                this.elementRef = myElement;
-                this.getAssetGroup();
-              }
+    this.elementRef = myElement;
+    this.getAssetGroup();
+  }
 
-    ngAfterViewInit() {
-      try {
-        setTimeout(() => {
-          this.widgetWidth2 = parseInt((window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width')).split('px')[0], 10);
-        }, 0);
-      } catch (error) {
-          this.errorMessage[2] = this.errorHandling.handleJavascriptError(error);
-      }
+  ngAfterViewInit() {
+    try {
+      setTimeout(() => {
+        this.widgetWidth2 = parseInt((window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width')).split('px')[0], 10);
+      }, 0);
+    } catch (error) {
+      this.errorMessage[2] = this.errorHandling.handleJavascriptError(error);
     }
+  }
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
@@ -224,16 +224,16 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     const userMethod = environment.users.method;
     const queryparams = {};
     this.getUserSubscription = this.commonResponseService.getData(userUrl, userMethod, {}, queryparams).subscribe(
-        response => {
-          this.users = response.values;
-          for (let i = 0; i < this.users.length; i++) {
-            const userdetails = this.users[i].displayName + ' ' + '(' + this.users[i].userEmail + ')';
-            this.idDetailsName.push(userdetails);
-          }
-        },
-        error => {
-          this.loggerService.log('error', error);
-        });
+      response => {
+        this.users = response.values;
+        for (let i = 0; i < this.users.length; i++) {
+          const userdetails = this.users[i].displayName + ' ' + '(' + this.users[i].userEmail + ')';
+          this.idDetailsName.push(userdetails);
+        }
+      },
+      error => {
+        this.loggerService.log('error', error);
+      });
   }
 
   getAllData() {
@@ -285,8 +285,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.hideOpenPorts = false;
         this.installedSoftwares = false;
       }, 10);
-    if (this.activatedRoute.snapshot.queryParams) {
-      this.filterText = this.activatedRoute.snapshot.queryParams; /* <-- filterText is used to hit the api filter object */
+      if (this.activatedRoute.snapshot.queryParams) {
+        this.filterText = this.activatedRoute.snapshot.queryParams; /* <-- filterText is used to hit the api filter object */
       }
     } catch (error) {
       this.loggerService.log('errro', 'js error - ' + error);
@@ -297,22 +297,22 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     * this funtion stores the URL params
     */
     this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-        this.urlParams = params; // <<-- This urlParams is used while calling the api
-        this.resourceId = this.urlParams.resourceId; // Encoded resource id is used everywhere to pass to api's
-        this.decodedResourceId = decodeURIComponent(this.resourceId); // This is used only for Title of the page
-        this.resourceType = this.urlParams.resourceType;
-        this.updateComponent();
+      this.urlParams = params; // <<-- This urlParams is used while calling the api
+      this.resourceId = this.urlParams.resourceId; // Encoded resource id is used everywhere to pass to api's
+      this.decodedResourceId = decodeURIComponent(this.resourceId); // This is used only for Title of the page
+      this.resourceType = this.urlParams.resourceType;
+      this.updateComponent();
     });
   }
 
   getAssetGroup() {
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
       assetGroupName => {
-          this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
-          this.selectedAssetGroup = assetGroupName;
-          this.dataStore.setCurrentSelectedAssetGroup(this.selectedAssetGroup);
-          this.getRuleId();
-    });
+        this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+        this.selectedAssetGroup = assetGroupName;
+        this.dataStore.setCurrentSelectedAssetGroup(this.selectedAssetGroup);
+        this.getRuleId();
+      });
   }
 
   replaceUrl(url) {
@@ -336,16 +336,16 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getSummaryData = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
       response => {
         try {
-            if (response.attributes.length > 0) {
-              this.assetSummaryData = response.attributes;
-              this.showLoader[4] = true;
-            } else {
-              this.hideContainer[0] = true;
-              this.showLoader[4] = true;
-            }
-        } catch (error) {
-            this.showLoader[4] = false;
+          if (response.attributes.length > 0) {
+            this.assetSummaryData = response.attributes;
+            this.showLoader[4] = true;
+          } else {
             this.hideContainer[0] = true;
+            this.showLoader[4] = true;
+          }
+        } catch (error) {
+          this.showLoader[4] = false;
+          this.hideContainer[0] = true;
         }
       },
       error => {
@@ -370,8 +370,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.showLoader[5] = true;
           }
         } catch (error) {
-            this.showLoader[5] = false;
-            this.hideContainer[1] = true;
+          this.showLoader[5] = false;
+          this.hideContainer[1] = true;
         }
       },
       error => {
@@ -390,44 +390,44 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.assetDetailsSubscription = this.commonResponseService.getData(newUrl, method, {}, {}).subscribe(
       response => {
         try {
-            this.detailsData = response;
-            if (response.attributes.length > 0) {
-              const attributes = response.attributes;
-              const refactoredService = this.refactorFieldsService;
-              const formattedAttributes = attributes.map(function(attribute){
-                  attribute.name = refactoredService.getDisplayNameForAKey(attribute.name) || attribute.name;
-                  return attribute;
-              });
-              this.relatedData(formattedAttributes);
-              this.showLoader[6] = true;
-              this.showLoader[7] = true;
-              this.showLoader[9] = true;
-            } else {
-              this.hideContainer[2] = true;
-              this.hideContainer[3] = true;
-              this.hideContainer[4] = true;
-              this.hideContainer[5] = true;
-              this.showLoader[6] = true;
-              this.showLoader[7] = true;
-              this.showLoader[9] = true;
-            }
-            const keys = Object.keys(response.tags);
-            if (keys.length > 0) {
-              this.tagsData(response.tags);
-              this.showLoader[8] = true;
-            } else {
-              this.showLoader[8] = true;
-              this.hideContainer[4] = true;
-            }
+          this.detailsData = response;
+          if (response.attributes.length > 0) {
+            const attributes = response.attributes;
+            const refactoredService = this.refactorFieldsService;
+            const formattedAttributes = attributes.map(function (attribute) {
+              attribute.name = refactoredService.getDisplayNameForAKey(attribute.name) || attribute.name;
+              return attribute;
+            });
+            this.relatedData(formattedAttributes);
+            this.showLoader[6] = true;
+            this.showLoader[7] = true;
+            this.showLoader[9] = true;
+          } else {
+            this.hideContainer[2] = true;
+            this.hideContainer[3] = true;
+            this.hideContainer[4] = true;
+            this.hideContainer[5] = true;
+            this.showLoader[6] = true;
+            this.showLoader[7] = true;
+            this.showLoader[9] = true;
+          }
+          const keys = Object.keys(response.tags);
+          if (keys.length > 0) {
+            this.tagsData(response.tags);
+            this.showLoader[8] = true;
+          } else {
+            this.showLoader[8] = true;
+            this.hideContainer[4] = true;
+          }
         } catch (error) {
-             this.hideContainer[2] = true;
-             this.hideContainer[3] = true;
-             this.hideContainer[4] = true;
-             this.hideContainer[5] = true;
-             this.showLoader[6] = true;
-             this.showLoader[7] = true;
-             this.showLoader[8] = true;
-             this.showLoader[9] = true;
+          this.hideContainer[2] = true;
+          this.hideContainer[3] = true;
+          this.hideContainer[4] = true;
+          this.hideContainer[5] = true;
+          this.showLoader[6] = true;
+          this.showLoader[7] = true;
+          this.showLoader[8] = true;
+          this.showLoader[9] = true;
         }
       },
       error => {
@@ -456,14 +456,14 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   filterAttributesByCategories(data) {
     const categorisedData = {};
-      for (let i = 0; i < data.length; i++) {
-          if (categorisedData[data[i].category]) {
-              categorisedData[data[i].category].push(data[i]);
-          } else {
-              categorisedData[data[i].category] = [data[i]];
-          }
+    for (let i = 0; i < data.length; i++) {
+      if (categorisedData[data[i].category]) {
+        categorisedData[data[i].category].push(data[i]);
+      } else {
+        categorisedData[data[i].category] = [data[i]];
       }
-      return categorisedData;
+    }
+    return categorisedData;
   }
 
   /* Function for removing the RHS data from the dataObj in order to show it in the LHS
@@ -503,22 +503,22 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getPolicyDataSubscription = this.policyViolationSummaryService.getData(newUrl, method).subscribe(
       response => {
         try {
-            if (response !== undefined) {
-              if (response.totalCount !== 0) {
-                this.policyValue = false;
-                this.policyData = response;
-                this.policyAvailable[0] = true;
-                this.showLoader[0] = true;
-              } else {
-                this.policyValue = false;
-                this.showLoader[0] = true;
-                this.summary.violation = true;
-              }
+          if (response !== undefined) {
+            if (response.totalCount !== 0) {
+              this.policyValue = false;
+              this.policyData = response;
+              this.policyAvailable[0] = true;
+              this.showLoader[0] = true;
             } else {
-              this.policyValue = true;
+              this.policyValue = false;
+              this.showLoader[0] = true;
+              this.summary.violation = true;
             }
-        } catch (error) {
+          } else {
             this.policyValue = true;
+          }
+        } catch (error) {
+          this.policyValue = true;
         }
       },
       error => {
@@ -537,17 +537,17 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getHostDataSubscription = this.hostVulnerabilitiesSummaryService.getData(newUrl, method).subscribe(
       response => {
         try {
-            if (!this.utilityService.checkIfAPIReturnedDataIsEmpty(response) && (response.totalCount !== 0)) {
-                this.hostValue = false;
-                this.hostData = response;
-                this.policyAvailable[1] = true;
-                this.showLoader[1] = true;
-            } else {
-              this.hostValue = true;
-              this.policyAvailable[1] = false;
-            }
-        } catch (error) {
+          if (!this.utilityService.checkIfAPIReturnedDataIsEmpty(response) && (response.totalCount !== 0)) {
+            this.hostValue = false;
+            this.hostData = response;
+            this.policyAvailable[1] = true;
+            this.showLoader[1] = true;
+          } else {
             this.hostValue = true;
+            this.policyAvailable[1] = false;
+          }
+        } catch (error) {
+          this.hostValue = true;
         }
       },
       error => {
@@ -567,16 +567,16 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getCpuDataSubscription = this.cpuUtilizationService.getData(newUrl, method).subscribe(
       response => {
         try {
-            if (response[0].values.length > 0) {
-              this.showCpuData = false;
-              this.cpuData = response;
-              this.policyAvailable[2] = true;
-              this.showLoader[2] = true;
-            } else {
-              this.showCpuData = true;
-            }
-        } catch (error) {
+          if (response[0].values.length > 0) {
+            this.showCpuData = false;
+            this.cpuData = response;
+            this.policyAvailable[2] = true;
+            this.showLoader[2] = true;
+          } else {
             this.showCpuData = true;
+          }
+        } catch (error) {
+          this.showCpuData = true;
         }
       },
       error => {
@@ -596,12 +596,12 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getDiskDataSubscription = this.diskUtilizationService.getData(newUrl, method).subscribe(
       response => {
         try {
-            if (response[0].values.length > 0) {
-              this.diskData = response[0].values;
-              this.policyAvailable[3] = true;
-            }
+          if (response[0].values.length > 0) {
+            this.diskData = response[0].values;
+            this.policyAvailable[3] = true;
+          }
         } catch (error) {
-            this.loggerService.log('error', error);
+          this.loggerService.log('error', error);
         }
       },
       error => {
@@ -627,8 +627,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.showLoader[10] = true;
           }
         } catch (error) {
-            this.showLoader[10] = false;
-            this.hideContainer[6] = true;
+          this.showLoader[10] = false;
+          this.hideContainer[6] = true;
         }
       },
       error => {
@@ -644,26 +644,26 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     const newUrl = this.replaceUrl(url);
     const payload = {};
     const queryParams = {};
-      this.accessGroupSubscription = this.commonResponseService.getData(newUrl, method, payload, queryParams).subscribe(
-        response => {
-          try {
-            if (response.length > 0) {
-              this.accessGroupData = response;
-              this.showLoader[11] = true;
-            } else {
-              this.hideContainer[7] = true;
-              this.showLoader[11] = true;
-            }
-          } catch (error) {
-              this.showLoader[11] = false;
-              this.hideContainer[7] = true;
+    this.accessGroupSubscription = this.commonResponseService.getData(newUrl, method, payload, queryParams).subscribe(
+      response => {
+        try {
+          if (response.length > 0) {
+            this.accessGroupData = response;
+            this.showLoader[11] = true;
+          } else {
+            this.hideContainer[7] = true;
+            this.showLoader[11] = true;
           }
-        },
-        error => {
+        } catch (error) {
+          this.showLoader[11] = false;
           this.hideContainer[7] = true;
-          this.errorMessage[0] = 'apiResponseError';
         }
-      );
+      },
+      error => {
+        this.hideContainer[7] = true;
+        this.errorMessage[0] = 'apiResponseError';
+      }
+    );
   }
 
   navigateBack() {
@@ -683,10 +683,10 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const queryObj = event;
       // the api has to accept resoueceId and resourcetype ,,,,,,not accepting now
-      const eachParams = { 'severity.keyword' : queryObj.toLowerCase(), '_resourceid.keyword': this.resourceId , 'targetType.keyword' : this.resourceType};
+      const eachParams = { 'severity.keyword': queryObj.toLowerCase(), '_resourceid.keyword': this.resourceId, 'targetType.keyword': this.resourceType };
       const newParams = this.utilityService.makeFilterObj(eachParams);
-      if ( (queryObj !== undefined) ) {
-        this.router.navigate(['../../../../', 'compliance', 'issue-listing'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+      if ((queryObj !== undefined)) {
+        this.router.navigate(['../../../../', 'compliance', 'issue-listing'], { relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -701,10 +701,10 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
       const queryObj = this.utilityService.extractNumbersFromString(event);
-      const eachParams = { 'severitylevel' : queryObj, '_resourceid.keyword': this.resourceId};
+      const eachParams = { 'severitylevel': queryObj, '_resourceid.keyword': this.resourceId };
       const newParams = this.utilityService.makeFilterObj(eachParams);
       if ((queryObj !== undefined)) {
-        this.router.navigate(['../../../../', 'compliance', 'vulnerabilities'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
+        this.router.navigate(['../../../../', 'compliance', 'vulnerabilities'], { relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -712,17 +712,17 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-/* navigatePage, navigateDataTable function ends here */
+  /* navigatePage, navigateDataTable function ends here */
 
   sendEmail() {
-      this.showOppositeEmail = !this.showOppositeEmail;
-      this.showNone = !this.showNone;
-      if (this.showOppositeEmail === false) {
-        this.showTransactionEmail = false;
-        this.showLoadcompleteEmail = false;
-        this.filteredList = [];
-        this.queryValue = '';
-      }
+    this.showOppositeEmail = !this.showOppositeEmail;
+    this.showNone = !this.showNone;
+    if (this.showOppositeEmail === false) {
+      this.showTransactionEmail = false;
+      this.showLoadcompleteEmail = false;
+      this.filteredList = [];
+      this.queryValue = '';
+    }
   }
 
   postEmail(emailArrayList) {
@@ -733,7 +733,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       'attachmentUrl': this.configurations.optional.assetDetails.ASSET_DETAILS_TEMPLATE_URL,
       'from': this.configurations.optional.assetDetails.ASSET_DETAILS_FROM_ID,
       'mailTemplateUrl': this.configurations.optional.assetDetails.ASSET_DETAILS_TEMPLATE_URL,
-      'placeholderValues': {'link': locationValue, 'resourceId': this.decodedResourceId, 'targetType': this.resourceType},
+      'placeholderValues': { 'link': locationValue, 'resourceId': this.decodedResourceId, 'targetType': this.resourceType },
       'subject': 'Asset Details',
       'to': emailArrayList
     };
@@ -797,7 +797,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       if (this.queryValue !== '') {
         this.filteredList = this.idDetailsName.filter(
-          function(el) {
+          function (el) {
             return el.toLowerCase().indexOf(this.queryValue.toLowerCase()) > -1;
           }.bind(this)
         );
@@ -825,9 +825,9 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
             this.queryValue = this.retrieveEmailFromSelectedItem(this.queryValue);
             this.emailArray.push(this.queryValue);
           } else if (this.queryValue.length > 0) {
-              if (this.validateEmailInput(this.queryValue)) {
-                this.emailArray.push(this.queryValue);
-              }
+            if (this.validateEmailInput(this.queryValue)) {
+              this.emailArray.push(this.queryValue);
+            }
           }
           this.queryValue = '';
           if (this.emailArray.length < 1) {
@@ -896,14 +896,14 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   navigateToAWSNotifications(status) {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-    const eachParams = {'eventstatus': status, '_resourceid': this.resourceId};
+    const eachParams = { 'eventstatus': status, '_resourceid': this.resourceId };
     this.router.navigate(['../../../../compliance/health-notifications'],
-    { relativeTo: this.activatedRoute, queryParams: this.utilityService.makeFilterObj(eachParams), queryParamsHandling: 'merge'});
+      { relativeTo: this.activatedRoute, queryParams: this.utilityService.makeFilterObj(eachParams), queryParamsHandling: 'merge' });
   }
 
   ngOnDestroy() {
     try {
-       if (this.subscriptionToAssetGroup) {
+      if (this.subscriptionToAssetGroup) {
         this.subscriptionToAssetGroup.unsubscribe();
       }
       if (this.getPolicyDataSubscription) {

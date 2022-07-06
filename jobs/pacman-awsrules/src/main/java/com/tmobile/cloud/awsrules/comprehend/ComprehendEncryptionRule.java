@@ -71,28 +71,25 @@ public class ComprehendEncryptionRule extends BaseRule {
 
 		logger.debug("========ComprehendEncryptionRule started=========");
 
-		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
-		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-
 		MDC.put("executionId", ruleParam.get("executionId"));
 		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
 
 		Optional.ofNullable(ruleParam)
-				.filter(param -> (!PacmanUtils.doesAllHaveValue(severity, category)))
+				.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY), param.get(PacmanRuleConstants.CATEGORY))))
 				.map(param -> {logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 					throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 					});
 
 		RuleResult ruleResult = Optional.ofNullable(resourceAttributes)
 				.filter(resource -> StringUtils.isNullOrEmpty(resource.get(PacmanRuleConstants.ES_KMS_KEY_ID_ATTRIBUTE)))
-				.map(resource -> buildFailureAnnotation(ruleParam, severity, category))
+				.map(resource -> buildFailureAnnotation(ruleParam))
 				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 		
 		logger.debug("========ComprehendEncryptionRule ended=========");
 		return ruleResult;
 	}
 
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String severity, String category) {
+	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -100,9 +97,9 @@ public class ComprehendEncryptionRule extends BaseRule {
 		
 		annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 		annotation.put(PacmanSdkConstants.DESCRIPTION, "AWS Comprehend analysis job results are not encrypted");
-		annotation.put(PacmanRuleConstants.SEVERITY, severity);
+		annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
 		annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
-		annotation.put(PacmanRuleConstants.CATEGORY, category);
+		annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
 		annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
 		issue.put(PacmanRuleConstants.VIOLATION_REASON, "AWS Comprehend analysis job results are not encrypted");
 		issueList.add(issue);

@@ -150,7 +150,6 @@ public class VMInventoryCollector {
 						 }
 						 vmList.add(vmVH);
 				        }
-
 			}catch(Exception e) {
 				e.printStackTrace();
 				log.error("Error Collecting info for {} {} ",virtualMachine.computerName(),e.getMessage());

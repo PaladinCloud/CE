@@ -13,31 +13,31 @@
  */
 
 .policy-violations-container {
-    border-radius: 3px;
-    background-color: #ffffff;
-    min-height: 10em;
+  border-radius: var(--border-radius);
+  background-color: var(--background-white);
+  min-height: 10em;
 }
 
 .policy-violations-content {
-    min-height: 10em;
-    font-size: 1em;
+  min-height: 10em;
+  font-size: 1em;
 }
 
 .policy-violations-container /deep/ .data-table-wrap .table-cells:nth-child(1) {
-    width: 440px;
+  width: 440px;
 }
 
 .policy-violations-container /deep/ .data-table-wrap {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .policy-violations-container /deep/ .data-table-wrap .sub-head {
-    padding: 0.3em 0.8em;
-    background-color: #ffffff;
-    color: #555;
-    font-size: 1em;
-    border: none;
-    border-top-left-radius: 0.4em;
-    border-top-right-radius: 0.4em;
-    border-bottom: 0.1em solid #d5dce2;
+  padding: 16px 20px;
+  background-color: var(--background-white);
+  color: var(--text-high-emphasis);
+  font-size: var(--text-body-2-font-size);
+  border: none;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  border-bottom: 2px solid var(--border-100);
 }

@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
-import com.tmobile.pacbot.gcp.inventory.collector.VMInventoryCollector;
+import com.tmobile.pacbot.gcp.inventory.collector.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +19,31 @@ public class AssetFileGenerator {
 
 	@Autowired
 	GCPCredentialsProvider gcpCredentialsProvider;
-	/** The target types. */
+	/**
+	 * The target types.
+	 */
 	@Value("${targetTypes:}")
 	private String targetTypes;
 
-	/** The log. */
+	/**
+	 * The log.
+	 */
 	private static final Logger log = LoggerFactory.getLogger(AssetFileGenerator.class);
 
 	@Autowired
-    VMInventoryCollector vmInventoryCollector;
+	VMInventoryCollector vmInventoryCollector;
+	@Autowired
+	FirewallInventoryCollector firewallInventoryCollector;
+	@Autowired
+	StorageCollector storageInventoryCollector;
+	@Autowired
+	CloudSqlInventoryCollector cloudSqlInventoryCollector;
 
+	@Autowired
+	BigQueryInventoryCollector bigQueryInventoryCollector;
+
+	@Autowired
+	PubSubInventoryCollector pubSubInventoryCollector;
 
 	public void generateFiles(List<String> projects, String filePath) {
 
@@ -42,33 +57,6 @@ public class AssetFileGenerator {
 		for (String project : projects) {
 			log.info("Started Discovery for project {}", project);
 
-			// we need to revisit this once we support multiple orgs in gcp
-//			try {
-//				String accessToken = gcpCredentialsProvider.getAuthToken(project.getTenant());
-//				Azure azure = gcpCredentialsProvider.authenticate(project.getTenant(),project.getSubscriptionId());
-//				gcpCredentialsProvider.putClient(project.getTenant(),project.getSubscriptionId(), azure);
-//				gcpCredentialsProvider.putToken(project.getTenant(), accessToken);
-//
-//			} catch (Exception e) {
-//				log.error("Error authenticating for {}",project,e);
-//				continue;
-//			}
-		
-
-//			List<ResourceGroupVH> resourceGroupList = new ArrayList<ResourceGroupVH>();
-//			try {
-//				resourceGroupList = resourceGroupInventoryCollector.fetchResourceGroupDetails(project);
-//
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//
-//			}
-//			Map<String, Map<String, String>> tagMap = resourceGroupList.stream()
-//					.collect(Collectors.toMap(x -> x.getResourceGroupName().toLowerCase(), x -> x.getTags()));
-//
-//			List<PolicyDefinitionVH> policyDefinitionList = policyDefinitionInventoryCollector
-//					.fetchPolicyDefinitionDetails(project);
-
 			ExecutorService executor = Executors.newCachedThreadPool();
 
 			executor.execute(() -> {
@@ -81,7 +69,74 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-			
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("computefirewall"))) {
+					return;
+				}
+				try {
+					FileManager.generateFireWallFiles(firewallInventoryCollector.fetchFirewallInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("bigqueydataset"))) {
+					log.info("Target type bigqueydataset not found!!. Skipping collector");
+					return;
+				}
+				try {
+					log.info("Target type bigqueydataset configured. Executing collector");
+					FileManager.generateBigqueryFiles(bigQueryInventoryCollector.fetchBigqueryInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("bigqueytable"))) {
+					log.info("Target type bigqueytable not found!!. Skipping collector");
+					return;
+				}
+				try {
+					log.info("Target type bigqueytable configured. Executing collector");
+					FileManager.generateBigqueryTableFiles(bigQueryInventoryCollector.fetchBigqueryTableInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("computestorage"))) {
+					return;
+				}
+				try {
+					FileManager.generateStorageFiles(storageInventoryCollector.fetchStorageInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("pubsub"))) {
+					return;
+				}
+				try {
+					FileManager.generatePubSubFiles(pubSubInventoryCollector.fetchPubSubInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("cloudsql"))) {
+					return;
+				}
+				try {
+					FileManager.generateCloudSqlFiles(cloudSqlInventoryCollector.fetchCloudSqlInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 
 			while (!executor.isTerminated()) {
@@ -96,20 +151,20 @@ public class AssetFileGenerator {
 		}
 	}
 
-//	/**
-//	 * function for generating registered application file
-//	 */
-//	private void generateAzureAplicationList() {
-//
-//		if ((isTypeInScope("registeredApplication"))) {
-//			try {
-//				FileManager.generateRegisteredApplicationFiles(
-//						registeredApplicationInventoryCollector.fetchAzureRegisteredApplication());
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+	// /**
+	// * function for generating registered application file
+	// */
+	// private void generateAzureAplicationList() {
+	//
+	// if ((isTypeInScope("registeredApplication"))) {
+	// try {
+	// FileManager.generateRegisteredApplicationFiles(
+	// registeredApplicationInventoryCollector.fetchAzureRegisteredApplication());
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
+	// }
 
 	private boolean isTypeInScope(String type) {
 		if ("".equals(targetTypes)) {

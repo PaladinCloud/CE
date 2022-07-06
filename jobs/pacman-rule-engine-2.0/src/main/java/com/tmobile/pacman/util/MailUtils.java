@@ -249,6 +249,7 @@ public class MailUtils {
           String policyUrl = getPolicyKnowledgeBasePathURL(ruleParam);
           String name =CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_SILENT_FIX_ADMIN
                   + ruleParam.get(PacmanSdkConstants.RULE_ID));
+          String banner =CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_BANNER);          
           
           if(StringUtils.isNullOrEmpty(name)){
         	 name = resourceOwner.getName(); 
@@ -256,6 +257,7 @@ public class MailUtils {
           String postFixMessage = CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_FIX_MESSAGE_PREFIX
                   + ruleParam.get(PacmanSdkConstants.RULE_ID));
           context.setVariable("AUTOFIX_POST_FIX_MESSAGE", postFixMessage);
+          context.setVariable("EMAIL_BANNER", banner);
           context.setVariable("POLICY_URL", policyUrl);
           context.setVariable("NAME", "Hello "+name);
           context.setVariable("RESOURCE_TYPE", " Resource Type : "+ruleParam.get(PacmanSdkConstants.TARGET_TYPE));

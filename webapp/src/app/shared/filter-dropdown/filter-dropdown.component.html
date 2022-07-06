@@ -1,0 +1,46 @@
+<div class="item" (click)="$event.stopPropagation()">
+  <div class=" filter-header">
+    <span class="header-text" *ngIf="!isExpanded">Add Filter</span>
+    <div *ngIf="isExpanded" class="expanded-header">
+      <div class="header-wrapper">
+        <img (click)="closeExpander()" class="left-icon" src="/assets/images/chevron-left.svg">
+        <span class="expanded-header-text">{{filterName}}</span>
+      </div>
+      <app-searchable-dropdown *ngIf='filterTypeLabels.length' [firstDD]='true' (selection)='changeFilterType($event)'
+        [placeholder]="'Select filter type'" [items]='dropDownList'>
+      </app-searchable-dropdown>
+    </div>
+  </div>
+  <div class="filter-container">
+    <div class="search-container">
+      <div class="search-bar">
+        <div class="header-search-content-container">
+          <img _ngcontent-c3="" class="search-icon" alt="" src="/assets/icons/header-search.svg">
+          <input class="search-box" type="text" placeholder="Search" [(ngModel)]="searchText"
+            [ngModelOptions]="{standalone: true}">
+        </div>
+      </div>
+    </div>
+    <div class=" filter-content-container">
+      <div class="filter-content" *ngIf="!isExpanded">
+        <div *ngFor="let filterTypeLabel of filterTypeLabels | search: searchText" class="contextual-menu"
+          (click)="expand(filterTypeLabel)">
+          <div class="contextual-menu-text-content" title="{{filterTypeLabel}}">
+            <span>{{filterTypeLabel}}</span>
+          </div>
+          <div class="expander">
+            <img src="/assets/images/chevron-left.svg">
+          </div>
+        </div>
+      </div>
+      <div class="filter-content" *ngIf="isExpanded">
+        <div *ngFor="let filterTagLabel of filterTagLabels | search: searchText" class="contextual-menu"
+          (click)="selectFilter(filterTagLabel)">
+          <div class="contextual-menu-text-content" title="{{filterTagLabel}}">
+            <span>{{filterTagLabel}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

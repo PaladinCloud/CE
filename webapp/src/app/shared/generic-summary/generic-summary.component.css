@@ -12,72 +12,77 @@
  * limitations under the License.
  */
 
-.patching-summary-wrapper{
-	padding: 2em 1.5em;
+.patching-summary-wrapper {
+  padding: 2em 1.5em;
+  background-color: var(--background-white);
+  border-left: 2px solid var(--border-100);
+  border-right: 2px solid var(--border-100);
+  border-bottom: 2px solid var(--border-100);
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
 }
 
-.each-tile{
-	width: 50%;
-	border-right: 2px solid #ddd;
-    border-bottom: 2px solid #ddd;
-    padding: 0.9em;
-    text-align: center;
-} 
-
-.each-tile:nth-child(even){
-	border-right: none;
+.each-tile {
+  width: 50%;
+  border-right: 2px solid #ddd;
+  border-bottom: 2px solid #ddd;
+  padding: 0.9em;
+  text-align: center;
 }
 
-.each-tile:nth-last-child(2):nth-child(odd){
-	border-bottom: none;
+.each-tile:nth-child(even) {
+  border-right: none;
 }
 
-.each-tile:nth-last-child(1):nth-child(even){
-	border-bottom: none;
+.each-tile:nth-last-child(2):nth-child(odd) {
+  border-bottom: none;
 }
 
-.repeating-tiles .each-tile:nth-last-child(1){
-	border-bottom: none;
+.each-tile:nth-last-child(1):nth-child(even) {
+  border-bottom: none;
 }
 
-.value{
-	font-size: 2.7em;
-    max-width: 100%;
-	text-transform: capitalize;
-	display: inline-block;
+.repeating-tiles .each-tile:nth-last-child(1) {
+  border-bottom: none;
 }
 
-.text{
-	font-family: ex2-light;
-    font-size: 0.9em;
-    margin-top: 0.7em;
-    text-transform: capitalize;
+.value {
+  font-size: 2.7em;
+  max-width: 100%;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.text {
+  font: var(--text-overline);
+  color: var(--text-low-emphasis);
+  margin-top: 0.7em;
+  text-transform: capitalize;
 }
 
 span.percent {
-    font-size: 0.7em;
+  font-size: 0.7em;
 }
 
-
-.small{
-	font-size: 1.5em;
-	/*line-height: 1.4;*/
-	line-height: 1.8;
+.small {
+  font-size: 1.5em;
+  /*line-height: 1.4;*/
+  line-height: 1.8;
 }
 
-.image{
-	width: 27%;
-	height: 100%;
+.image {
+  width: 27%;
+  height: 100%;
 }
 
-.image-wrapper{
-	width: 1em;
-	height: 1em;
+.image-wrapper {
+  width: 1em;
+  height: 1em;
 }
 
-.flexClass{
-	display: flex;
-	align-items: center;
+.flexClass {
+  display: flex;
+  align-items: center;
 }
 /* .each-tile:not(:first-of-type){
     cursor: pointer;

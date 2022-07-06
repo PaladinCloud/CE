@@ -12,42 +12,38 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { environment } from './../../../../../environments/environment';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { environment } from "./../../../../../environments/environment";
 
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
-import * as moment from 'moment';
-import { UtilsService } from '../../../../shared/services/utils.service';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
-import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
-import { WorkflowService } from '../../../../core/services/workflow.service';
-import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
-import { AdminService } from '../../../services/all-admin.service';
+import { ActivatedRoute, Router } from "@angular/router";
+import { Subscription } from "rxjs/Subscription";
+import * as moment from "moment";
+import { UtilsService } from "../../../../shared/services/utils.service";
+import { LoggerService } from "../../../../shared/services/logger.service";
+import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
+import "rxjs/add/operator/filter";
+import "rxjs/add/operator/pairwise";
+import { RefactorFieldsService } from "./../../../../shared/services/refactor-fields.service";
+import { WorkflowService } from "../../../../core/services/workflow.service";
+import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
+import { AdminService } from "../../../services/all-admin.service";
 
 @Component({
-  selector: 'app-roles',
-  templateUrl: './roles.component.html',
-  styleUrls: ['./roles.component.css'],
-  providers: [
-    LoggerService,
-    ErrorHandlingService,
-    AdminService
-  ]
+  selector: "app-roles",
+  templateUrl: "./roles.component.html",
+  styleUrls: ["./roles.component.css"],
+  providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class RolesComponent implements OnInit, OnDestroy {
-  pageTitle = 'Roles';
+  pageTitle = "Roles";
   allPolicies = [];
-  breadcrumbArray = ['Admin'];
-  breadcrumbLinks = ['policies'];
+  breadcrumbArray = ["Admin"];
+  breadcrumbLinks = ["policies"];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;
   errorMessage;
-  showingArr = ['policyName', 'policyId', 'policyDesc'];
+  showingArr = ["policyName", "policyId", "policyDesc"];
   allColumns = [];
   totalRows = 0;
   currentBucket = [];
@@ -64,7 +60,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   totalPages;
   pageNumber = 0;
 
-  searchTxt = '';
+  searchTxt = "";
   dataTableData = [];
   tableDataLoaded = false;
   filters = [];
@@ -72,13 +68,13 @@ export class RolesComponent implements OnInit, OnDestroy {
   filterText = {};
   errorValue = 0;
   showGenericMessage = false;
-  dataTableDesc = '';
-  urlID = '';
+  dataTableDesc = "";
+  urlID = "";
   public labels;
   FullQueryParams;
   queryParamsWithoutFilter;
-  private previousUrl = '';
-  urlToRedirect = '';
+  private previousUrl = "";
+  urlToRedirect = "";
   private pageLevel = 0;
   public backButtonRequired;
   mandatory;
@@ -98,15 +94,13 @@ export class RolesComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService
   ) {
-
     this.routerParam();
     this.updateComponent();
   }
 
-
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    this.breadcrumbPresent = 'Roles List';
+    this.breadcrumbPresent = "Roles List";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
@@ -121,7 +115,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -132,10 +126,9 @@ export class RolesComponent implements OnInit, OnDestroy {
         this.showLoader = true;
         this.getPolicyDetails();
       }
-
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -145,97 +138,101 @@ export class RolesComponent implements OnInit, OnDestroy {
 
     const queryParams = {
       page: this.pageNumber,
-      size: this.paginatorSize
+      size: this.paginatorSize,
     };
 
-    if (this.searchTxt !== undefined && this.searchTxt !== '') {
-      queryParams['searchTerm'] = this.searchTxt;
+    if (this.searchTxt !== undefined && this.searchTxt !== "") {
+      queryParams["searchTerm"] = this.searchTxt;
     }
 
-    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(reponse => {
-      this.showLoader = false;
-      if (reponse[0].content !== undefined) {
-        this.allPolicies = reponse[0].content;
-        this.errorValue = 1;
-        this.searchCriteria = undefined;
-        const data = reponse[0];
-        this.tableDataLoaded = true;
-        this.dataTableData = reponse[0].content;
-        this.dataLoaded = true;
-        if (reponse[0].content.length === 0) {
-          this.errorValue = -1;
-          this.outerArr = [];
-          this.allColumns = [];
-        }
-
-        if (data.content.length > 0) {
-          this.isLastPage = data.last;
-          this.isFirstPage = data.first;
-          this.totalPages = data.totalPages;
-          this.pageNumber = data.number;
-
-          this.seekdata = false;
-
-          this.totalRows = data.totalElements;
-
-          this.firstPaginator = data.number * this.paginatorSize + 1;
-          this.lastPaginator = data.number * this.paginatorSize + this.paginatorSize;
-
-          this.currentPointer = data.number;
-
-          if (this.lastPaginator > this.totalRows) {
-            this.lastPaginator = this.totalRows;
+    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
+      (reponse) => {
+        this.showLoader = false;
+        if (reponse[0].content !== undefined) {
+          this.allPolicies = reponse[0].content;
+          this.errorValue = 1;
+          this.searchCriteria = undefined;
+          const data = reponse[0];
+          this.tableDataLoaded = true;
+          this.dataTableData = reponse[0].content;
+          this.dataLoaded = true;
+          if (reponse[0].content.length === 0) {
+            this.errorValue = -1;
+            this.outerArr = [];
+            this.allColumns = [];
           }
-          const updatedResponse = this.massageData(data.content);
-          this.processData(updatedResponse);
+
+          if (data.content.length > 0) {
+            this.isLastPage = data.last;
+            this.isFirstPage = data.first;
+            this.totalPages = data.totalPages;
+            this.pageNumber = data.number;
+
+            this.seekdata = false;
+
+            this.totalRows = data.totalElements;
+
+            this.firstPaginator = data.number * this.paginatorSize + 1;
+            this.lastPaginator =
+              data.number * this.paginatorSize + this.paginatorSize;
+
+            this.currentPointer = data.number;
+
+            if (this.lastPaginator > this.totalRows) {
+              this.lastPaginator = this.totalRows;
+            }
+            const updatedResponse = this.massageData(data.content);
+            this.processData(updatedResponse);
+          }
         }
-      }
-    },
-      error => {
+      },
+      (error) => {
         this.showGenericMessage = true;
         this.errorValue = -1;
         this.outerArr = [];
         this.dataLoaded = true;
         this.seekdata = true;
-        this.errorMessage = 'apiResponseError';
+        this.errorMessage = "apiResponseError";
         this.showLoader = false;
-      });
+      }
+    );
   }
 
   /*
-    * This function gets the urlparameter and queryObj
-    *based on that different apis are being hit with different queryparams
-    */
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
   routerParam() {
     try {
       // this.filterText saves the queryparam
-      const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
       if (currentQueryParams) {
-
         this.FullQueryParams = currentQueryParams;
 
-        this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
-        delete this.queryParamsWithoutFilter['filter'];
+        this.queryParamsWithoutFilter = JSON.parse(
+          JSON.stringify(this.FullQueryParams)
+        );
+        delete this.queryParamsWithoutFilter["filter"];
 
         /**
          * The below code is added to get URLparameter and queryparameter
          * when the page loads ,only then this function runs and hits the api with the
          * filterText obj processed through processFilterObj function
          */
-        this.filterText = this.utils.processFilterObj(
-          this.FullQueryParams
-        );
+        this.filterText = this.utils.processFilterObj(this.FullQueryParams);
 
         this.urlID = this.FullQueryParams.TypeAsset;
         // check for mandatory filters.
         if (this.FullQueryParams.mandatory) {
           this.mandatory = this.FullQueryParams.mandatory;
         }
-
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -246,7 +243,7 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   updateComponent() {
     this.outerArr = [];
-    this.searchTxt = '';
+    this.searchTxt = "";
     this.currentBucket = [];
     this.bucketNumber = 0;
     this.firstPaginator = 1;
@@ -263,9 +260,11 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   navigateBack() {
     try {
-      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+        this.router.routerState.snapshot.root
+      );
     } catch (error) {
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -275,15 +274,13 @@ export class RolesComponent implements OnInit, OnDestroy {
     const formattedFilters = data.map(function (datam) {
       const keysTobeChanged = Object.keys(datam);
       let newObj = {};
-      keysTobeChanged.forEach(element => {
+      keysTobeChanged.forEach((element) => {
         const elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element
-          ) || element;
+          refactoredService.getDisplayNameForAKey(element) || element;
         newObj = Object.assign(newObj, { [elementnew]: datam[element] });
       });
-      newObj['Actions'] = '';
-      newObj['Allocations'] = '';
+      newObj["Actions"] = "";
+      newObj["Allocations"] = "";
       newData.push(newObj);
     });
     return newData;
@@ -306,61 +303,64 @@ export class RolesComponent implements OnInit, OnDestroy {
       for (let row = 0; row < getData.length; row++) {
         innerArr = {};
         for (let col = 0; col < getCols.length; col++) {
-          if (getCols[col].toLowerCase() === 'actions') {
-            const dropDownItems = [ 'Edit Role', 'Config Users'];
+          if (getCols[col].toLowerCase() === "actions") {
+            const dropDownItems = ["Edit Role", "Config Users"];
             cellObj = {
               properties: {
-                'text-shadow': '0.33px 0',
-                'color': '#ed0295'
+                "text-shadow": "0.33px 0",
+                color: "#0047bb",
               },
               colName: getCols[col],
               hasPreImg: false,
-              imgLink: '',
+              imgLink: "",
               dropDownEnabled: true,
               dropDownItems: dropDownItems,
               statusProp: {
-                'color': '#ed0295'
-              }
+                color: "#0047bb",
+              },
             };
-          } else if (getCols[col].toLowerCase() === 'allocations') {
+          } else if (getCols[col].toLowerCase() === "allocations") {
             cellObj = {
-              link: '',
+              link: "",
               properties: {
-                color: ''
+                color: "",
               },
               colName: getCols[col],
               hasPreImg: false,
-              imgLink: '',
-              text: getData[row]['Users'].length,
-              valText: getData[row]['Users'].length
+              imgLink: "",
+              text: getData[row]["Users"].length,
+              valText: getData[row]["Users"].length,
             };
-          } else if (getCols[col].toLowerCase() === 'modified date' || getCols[col].toLowerCase() === 'created date') {
+          } else if (
+            getCols[col].toLowerCase() === "modified date" ||
+            getCols[col].toLowerCase() === "created date"
+          ) {
             cellObj = {
-              link: '',
+              link: "",
               properties: {
-                color: ''
+                color: "",
               },
-              colName: moment(getCols[col]).format('DD/MM/YYYY'),
+              colName: moment(getCols[col]).format("DD/MM/YYYY"),
               hasPreImg: false,
-              imgLink: '',
-              text: moment(getData[row][getCols[col]]).format('DD/MM/YYYY'),
-              valText: moment(getData[row][getCols[col]]).format('DD/MM/YYYY')
+              imgLink: "",
+              text: moment(getData[row][getCols[col]]).format("DD/MM/YYYY"),
+              valText: moment(getData[row][getCols[col]]).format("DD/MM/YYYY"),
             };
           } else {
             cellObj = {
-              link: '',
+              link: "",
               properties: {
-                color: ''
+                color: "",
               },
               colName: getCols[col],
               hasPreImg: false,
-              imgLink: '',
+              imgLink: "",
               text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]]
+              valText: getData[row][getCols[col]],
             };
           }
           innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = '';
+          totalVariablesObj[getCols[col]] = "";
         }
         this.outerArr.push(innerArr);
       }
@@ -369,74 +369,86 @@ export class RolesComponent implements OnInit, OnDestroy {
         this.outerArr = this.outerArr.splice(halfLength);
       }
       this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = ['Role Name', 'Created By', 'Allocations', 'Users', 'Actions'];
+      this.allColumns = [
+        "Role Name",
+        "Created By",
+        "Allocations",
+        "Users",
+        "Actions",
+      ];
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
   goToCreatRoles() {
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-      this.router.navigate(['../create-update-roles'], {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root
+      );
+      this.router.navigate(["create-update-roles"], {
         relativeTo: this.activatedRoute,
-        queryParamsHandling: 'merge',
-        queryParams: {
-        }
+        queryParamsHandling: "merge",
+        queryParams: {},
       });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
   goToViewUserRoles() {
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-      this.router.navigate(['../roles-allocation'], {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root
+      );
+      this.router.navigate(["roles-allocation"], {
         relativeTo: this.activatedRoute,
-        queryParamsHandling: 'merge',
-        queryParams: {
-        }
+        queryParamsHandling: "merge",
+        queryParams: {},
       });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
   goToDetails(row) {
-    if (row.col === 'Edit Role') {
+    if (row.col === "Edit Role") {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.router.navigate(['../create-update-roles'], {
+        this.workflowService.addRouterSnapshotToLevel(
+          this.router.routerState.snapshot.root
+        );
+        this.router.navigate(["create-update-roles"], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
+          queryParamsHandling: "merge",
           queryParams: {
-            roleId: row.row['Role Id'].text,
-            roleName: row.row['Role Name'].text
-          }
+            roleId: row.row["Role Id"].text,
+            roleName: row.row["Role Name"].text,
+          },
         });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
+        this.logger.log("error", error);
       }
     }
 
-    if (row.col === 'Config Users') {
+    if (row.col === "Config Users") {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.router.navigate(['../config-users'], {
+        this.workflowService.addRouterSnapshotToLevel(
+          this.router.routerState.snapshot.root
+        );
+        this.router.navigate(["config-users"], {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
+          queryParamsHandling: "merge",
           queryParams: {
-            roleId: row.row['Role Id'].text,
-            roleName: row.row['Role Name'].text
-          }
+            roleId: row.row["Role Id"].text,
+            roleName: row.row["Role Name"].text,
+          },
         });
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
+        this.logger.log("error", error);
       }
     }
   }
@@ -462,7 +474,7 @@ export class RolesComponent implements OnInit, OnDestroy {
         this.previousUrlSubscription.unsubscribe();
       }
     } catch (error) {
-      this.logger.log('error', '--- Error while unsubscribing ---');
+      this.logger.log("error", "--- Error while unsubscribing ---");
     }
   }
 }

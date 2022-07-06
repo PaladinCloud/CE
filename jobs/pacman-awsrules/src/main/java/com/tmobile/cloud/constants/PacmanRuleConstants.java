@@ -22,6 +22,7 @@
  **/
 package com.tmobile.cloud.constants;
 
+
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
@@ -30,6 +31,24 @@ public class PacmanRuleConstants {
     public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";
     public static final String GCP_ACCESS_CONFIGS = "accessConfigs";
     public static final String GCP_NAT_IP = "natIP";
+    public static final String USERS = "users";
+    public static final String ALL_USERS = "allUsers";
+    public static final String ALL_AUTH_USERS = "allAuthenticatedUsers";
+    public static final String SPECIAL_GROUP = "specialGroup";
+    public static final String IAM_MEMBER = "iamMember";
+    public static final String ITEMS = "items";
+    public static final String KEY = "key";
+    public static final String VALUE = "value";
+    public static final String TWO_FACTOR_AUTH = "enable-oslogin-2fa";
+    public static final String PUBSUB_KMS_NAME ="kmsKeyName" ;
+    public static final String VIOLATION_REASON_POLICYNAME ="policyName" ;
+    public static final String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
+    public static final String GCP_CMK = "hasKmsKeyName";
+    public static String GCP_CSEK = "hasSha256";
+    public static final String ADMIN_FOR_KEYS = "adminForKeys";
+    public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
+    public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
+    public static final String STORAGE_KMS_KEY_NAME = "defaultKmsKeyName";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -401,6 +420,16 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String FALSE = "false";
+    public static final String ES_SNAPSHOT_ID_ATTRIBUTE = "snapshotid";
+    public static final String ES_IMAGE_ID_ATTRIBUTE = "imageid";
+    public static final String ES_AMI_BLOCK_DEVICE_MAPPING_URL = "esAmiBlockDeviceMappingUrl";
+    public static final String ES_RESOURCE_ATTRIBUTE = "resource";
+    public static final String STATUS_ACTIVE = "Active";
+    public static final String ES_ACCESS_ANALYZER_FINDINGS_URL = "esFindingsUrl";
+    public static final String ES_ANALYZER_ARN_ATTRIBUTE = "analyzerarn";
+    public static final String ES_LOG_DRIVER_ATTRIBUTE = "logdriver";
+    public static final String ES_KMS_ARN_ATTRIBUTE = "kmsarn";
     public static final String ES_ENCRYPTION_OPTION_ATTRIBUTE = "encryptionoption";
     public static final String ES_SSE_STATUS_ATTRIBUTE = "ssestatus";
     public static final String ES_KEY_ARN_ATTRIBUTE = "keyarn";
@@ -418,6 +447,7 @@ public class PacmanRuleConstants {
     public static final String ES_SG_IP_PROTOCOL_ATTRIBUTE = "ipprotocol";
     public static final String ELB_V2_ARN_ATTRIBUTE = "loadBalancerarn";
     public static final String ELB_PROTOCOL = "protocol";
+    public static final String PROTOCOL_SSL = "SSL";
     public static final String PROTOCOL_HTTPS = "HTTPS";
     public static final String PROTOCOL_TLS = "TLS";
     public static final String ES_ELB_V2_LISTENER_URL = "esElbV2ListenerURL";
@@ -439,5 +469,16 @@ public class PacmanRuleConstants {
     public static final String KEYVAULTVALUE = "keyVaultValue";
     public static final String SUCCESS = "SUCCESS";
     public static final String PROPERTIESMAP = "propertiesMap";
+    public static final String DISABLED = "disabled";
+    public static final String DIRECTION = "direction";
+    public static final String SOURCERANGES = "sourceRanges";
+    public static final String INGRESS = "INGRESS";
+    public static final String PORTS = "ports";
+    public static final String ICMP = "icmp";
+    public static final String SOURCERANGE = "0.0.0.0/0";
+    public static final String ACL = "acl";
+    public static final String KMS_KEY_NAME = "kmsKeyName";
+    public static final String DESTINATIONRANGE = "destinationRanges";
+    public static final String EGRESS = "egress";
 
 }

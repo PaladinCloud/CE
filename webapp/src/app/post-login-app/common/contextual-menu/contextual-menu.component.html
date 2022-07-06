@@ -1,0 +1,63 @@
+<!--
+ *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * this file except in compliance with the License. A copy of the License is located at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * or in the "license" file accompanying this file. This file is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ * implied. See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+
+<div class="contextual-menu-wrapper" [ngStyle]="theme">
+  <div id="app-logo">
+    <img src="/assets/images/Paladin_Logo.svg" />
+  </div>
+  <!-- asset-switcher -->
+  <div class="asset-switcher-container">
+    <app-asset-switcher></app-asset-switcher>
+  </div>
+  <div class="tree-component">
+    <tree-root [nodes]="nodes" class="tree">
+      <ng-template #treeNodeWrapperTemplate let-node let-index="index">
+        <div *ngIf="
+          !(node.data.notDisplayIfAzure == true && agAndDomain.ag == 'azure')
+        " class="node-wrapper" [class.wrapper]="currentParentId == node.id && node.hasChildren"
+          [class.node-wrapper-active]="
+          node.id == currentNodeId && !node.hasChildren
+        " [style.padding-left]="node.getNodePadding()">
+          <div *ngIf="node.data?.image" class="icon">
+            <img class="node-img" src="/assets/icons/{{ node.data?.image }}.svg" alt="" />
+          </div>
+          <div class="node-content-wrapper" [class.node-content-wrapper-focused]="node.isFocused"
+            (click)="node.mouseAction('click', $event)" (dblclick)="node.mouseAction('dblClick', $event)"
+            (contextmenu)="node.mouseAction('contextMenu', $event)" (treeDrop)="node.onDrop($event)"
+            [treeAllowDrop]="node.allowDrop" [treeDrag]="node" [treeDragEnabled]="node.allowDrag()"
+            [class.node-content-wrapper-expanded]="node.isExpanded">
+            <tree-node-content *ngIf="node.hasChildren" class="{{ node.data.name }}" (click)="selectNode(node)"
+              [node]="node" [index]="index" title="{{ node.data.name }}"></tree-node-content>
+            <tree-node-content *ngIf="!node.hasChildren" [queryParams]="agAndDomain" class="{{ node.data.name }}"
+              [routerLink]="
+              node.data?.overlay
+                ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
+                : [node.data?.route]
+            " (click)="selectNode(node)" [node]="node" [index]="index" title="{{ node.data.name }}">
+            </tree-node-content>
+            <tree-node-expander [node]="node"></tree-node-expander>
+          </div>
+        </div>
+      </ng-template>
+    </tree-root>
+  </div>
+  <div class="know-your-app-wrapper node-wrapper" [queryParams]="agAndDomain" [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]">
+    <div class="icon icon-wrapper">
+      <img class="node-img" src="/assets/icons/stroke.svg" alt="" />
+    </div>
+    <div class="node-content-wrapper">
+      <div class="know-your-app-content">Know your app</div>
+    </div>
+  </div>
+</div>

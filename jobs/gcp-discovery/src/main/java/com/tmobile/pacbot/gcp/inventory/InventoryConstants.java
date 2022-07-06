@@ -25,4 +25,6 @@ public class InventoryConstants {
     /** The Constant INVENTORY. */
     public static final String SUBSCRIPTION_NAME = "subscriptionName";
 	public static final String CONFIG_CREDS = "config_creds";
+    public static final String CLOUD_TYPE_GCP = "gcp";
+    public static final String GCP_CLOUD_SQL_FILE ="gcp-cloudsql.data";
 }

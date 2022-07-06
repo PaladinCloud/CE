@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
-import com.tmobile.cloud.azurerules.NSGRule.PublicAccessforConfiguredPort;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -55,7 +54,6 @@ public class EncryptionforDatainRedisCache extends BaseRule {
             try {
                 isValid = validateRedisCacheServerEncryption(esUrl, mustFilter);
             } catch (Exception e) {
-                logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
@@ -92,7 +90,7 @@ public class EncryptionforDatainRedisCache extends BaseRule {
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
-        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson.toString());
+        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson);
 
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
@@ -102,32 +100,18 @@ public class EncryptionforDatainRedisCache extends BaseRule {
             if (hitsJsonArray.size() > 0) {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                logger.debug("Validating the data item: {}", jsonDataItem.toString());
-                JsonArray nonSSLPortJsonArray = jsonDataItem.getAsJsonObject()
-                        .get(PacmanRuleConstants.AZURE_NONSSLPORT).getAsJsonArray();
-                if (nonSSLPortJsonArray.size() > 0) {
-                    for (int i = 0; i < nonSSLPortJsonArray.size(); i++) {
-                        JsonObject nonSSLPortDataItem = ((JsonObject) nonSSLPortJsonArray
-                                .get(i));
+                logger.debug("Validating the data item: {}", jsonDataItem);
+                boolean nonSSLPortDataItem = jsonDataItem.getAsJsonObject()
+                        .get(PacmanRuleConstants.AZURE_NONSSLPORT).getAsBoolean();
 
-                        if (nonSSLPortDataItem.getAsBoolean()) {
-                            logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
-                            validationResult = false;
-                            break;
-                        } else {
-                            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-
-                        }
-
-                    }
-                    if (validationResult == true) {
-                        logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-                    }
-
+                if (nonSSLPortDataItem) {
+                    logger.info("The data-in-transit encryption is not enabled for the selected Azure Redis Cache server");
+                    validationResult = false;
                 } else {
                     logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-                    validationResult = false;
+
                 }
+
 
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);

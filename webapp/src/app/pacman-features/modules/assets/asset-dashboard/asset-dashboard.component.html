@@ -12,24 +12,11 @@
  * limitations under the License.
  -->
 
- <div class="asset-dashboard-wrapper flex flex-between">
-    <div class="asset-widgets-section ">
-        <div class="asset-widgets-header flex flex-between">
-            <h1 class="">{{pageTitle}}</h1>
-        </div>
-        <div class="asset-widget-container">
-            <div class='tracker-wrap'>
-                <app-asset-tracker [pageLevel]="pageLevel"></app-asset-tracker>
-            </div>
-            <div class="aws-resource-selection-container">
-                <app-aws-resource-details [pageLevel]="pageLevel"></app-aws-resource-details>
-            </div>
-            <div class='base-tiles-wrap flex' *ngIf="!oss">
-                <app-asset-application [pageLevel]="pageLevel" class="base-tile-each relative"></app-asset-application>
-                <app-asset-waf [pageLevel]="pageLevel" class="base-tile-each relative"></app-asset-waf>
-                <app-asset-crop [pageLevel]="pageLevel" class="base-tile-each relative"></app-asset-crop>
-                <app-asset-certificate [pageLevel]="pageLevel" class="base-tile-each relative"></app-asset-certificate>
-            </div>
+ <div class="container-wrapper">
+    <div class="asset-dashboard-wrapper flex flex-col">
+        <div class="asset-dashboard-header">Asset Overview</div>
+        <div class="asset-dashboard-container">
+            <app-aws-resource-details [pageLevel]="pageLevel"></app-aws-resource-details>
         </div>
     </div>
-</div>
+ </div>

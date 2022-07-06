@@ -45,8 +45,8 @@ export class DevStandardTotalStaleBranchesComponent implements OnInit, OnDestroy
   widgetWidth = 200;
   widgetHeight = 250;
   MainTextcolor = '#000';
-  innerRadious: any = 80;
-  outerRadious: any = 50;
+  innerRadius: any = 80;
+  outerRadius: any = 50;
   strokeColor = '#fff';
   private donutData = {};
   public errorMessage: any;
@@ -79,10 +79,10 @@ export class DevStandardTotalStaleBranchesComponent implements OnInit, OnDestroy
       }
     } catch (error) {
       this.errorMessage = 'jsError';
-          this.getErrorValues();
+      this.getErrorValues();
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
   updateComponent() {
     /* All functions variables which are required to be set for component to be reloaded should go here */
     this.errorValue = 0;
@@ -95,8 +95,8 @@ export class DevStandardTotalStaleBranchesComponent implements OnInit, OnDestroy
   }
   getDevStrategyDistribution() {
     if (this.getDevStrategyDistributionService) {
-        this.getDevStrategyDistributionService.unsubscribe();
-      }
+      this.getDevStrategyDistributionService.unsubscribe();
+    }
     const queryParams = {
       ag: this.selectedAssetGroup,
       application: this.filter
@@ -135,51 +135,51 @@ export class DevStandardTotalStaleBranchesComponent implements OnInit, OnDestroy
       this.errorMessage = message;
     }
   }
-      /**
-     * @function processData
-     * @param data gets the api response
-     * @description processes data for donut chart
-     */
-    processData(data) {
-      // expected data format
+  /**
+ * @function processData
+ * @param data gets the api response
+ * @description processes data for donut chart
+ */
+  processData(data) {
+    // expected data format
 
-      // donut chart legends and data value
-      const dataValue = [];
-      const legendText = [];
-      // push the required data to the declared array
-      if (data.response.activeBranches >= 0) {
-        dataValue.push(data.response.activeBranches);
-        legendText.push('active Branches');
+    // donut chart legends and data value
+    const dataValue = [];
+    const legendText = [];
+    // push the required data to the declared array
+    if (data.response.activeBranches >= 0) {
+      dataValue.push(data.response.activeBranches);
+      legendText.push('active Branches');
+    }
+    if (data.response.staleBranches >= 0) {
+      dataValue.push(data.response.staleBranches);
+      legendText.push('stale Branches');
+    }
+
+    // dataobj is the format of data expected by dunut chart
+
+    const dataObj = {
+      'color': ['#00BA9F', '#F73F5F', '#59616A', '#139EF0'],
+      'data': dataValue,
+      'legendWithText': legendText,
+      'legendTextcolor': '#000',
+      'totalCount': data.total,
+      'centerText': 'Total Branches',
+      'link': false,
+      'styling': {
+        'cursor': 'text'
       }
-      if (data.response.staleBranches >= 0) {
-        dataValue.push(data.response.staleBranches);
-        legendText.push('stale Branches');
-      }
-
-      // dataobj is the format of data expected by dunut chart
-
-      const dataObj = {
-          'color': ['#00BA9F', '#F73F5F', '#59616A', '#139EF0'],
-          'data': dataValue,
-          'legendWithText' : legendText,
-          'legendTextcolor': '#000',
-          'totalCount': data.total,
-          'centerText' : 'Total Branches',
-          'link': false,
-          'styling': {
-           'cursor': 'text'
-          }
-       };
-       // storing the final data in donutData variable to pass it to the donut chart component
-       this.donutData = dataObj;
+    };
+    // storing the final data in donutData variable to pass it to the donut chart component
+    this.donutData = dataObj;
   }
   ngOnDestroy() {
     if (this.getDevStrategyDistributionService) {
-        this.getDevStrategyDistributionService.unsubscribe();
-      }
-      if (this.subscriptionToAssetGroup) {
-        this.subscriptionToAssetGroup.unsubscribe();
-      }
+      this.getDevStrategyDistributionService.unsubscribe();
+    }
+    if (this.subscriptionToAssetGroup) {
+      this.subscriptionToAssetGroup.unsubscribe();
+    }
   }
 }
 
