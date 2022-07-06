@@ -1,6 +1,6 @@
 <div class="flex flex-align-center">
   <a
-    (click)="$event.stopPropagation(); handleAssetGroupFlow()"
+    (click)="$event.stopPropagation(); openAgModal()"
     class="asset-group-selection"
     [class.active]="showRecents && recentTiles.length"
   >

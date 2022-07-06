@@ -479,12 +479,4 @@ export class DataTableComponent implements OnInit, OnChanges {
   deleteFilters(event) {
     this.deleteAllFilters.emit(event);
   }
-
-  tableRowHovered(event, row, i) {
-    console.log(event.type, i, "iiiiiiiiiiiiiiiiiiiii");
-    this.isHovered = event.type == 'mouseover' ? true : false;
-    this.ishoveredRow = row;
-    this.ishoveredIndex = i;
-
-  }
 }

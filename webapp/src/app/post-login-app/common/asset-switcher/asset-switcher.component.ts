@@ -245,13 +245,6 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     );
   }
 
-  handleAssetGroupFlow() {
-    if (this.recentTiles.length) {
-      this.showRecents = !this.showRecents;
-    } else {
-      this.openAgModal();
-    }
-  }
 
   ngOnDestroy() {
     if (this.assetGroupSubscription) {
