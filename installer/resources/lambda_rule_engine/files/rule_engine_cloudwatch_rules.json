@@ -5428,7 +5428,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_PostgreSQL_Server_In_Transit_Encryption",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Enable PostgreSQL Server In-Transit Encryption",
+    "displayName": "Enable In-transit encryption for PostgreSQL Server",
     "createdDate": "2022-05-19",
     "modifiedDate": "2022-05-19",
     "severity": "high",
