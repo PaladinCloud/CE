@@ -277,7 +277,7 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
          */
     this.MainTextcolor = '#fff';
     this.strokeColor = 'eff3f6';
-    const colorTransData = ['#D40325', '#F75C03', '#FFE00D', '#FFB00D'];
+    const colorTransData = ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"];
     const graphLegend = ['Critical', 'High', 'Medium', 'Low'];
     const graphDataArray = [];
     const legendTextcolor = '#fff';
