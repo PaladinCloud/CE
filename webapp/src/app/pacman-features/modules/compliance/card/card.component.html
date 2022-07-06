@@ -7,32 +7,17 @@
       <app-progress-bar-chart [bars]="complianceData"></app-progress-bar-chart>
     </div>
     <div class="chart" *ngIf="card.id == 2">
-      <div class="graph-chart-cont relative" id="statsDoughnut">
-        <app-doughnut-chart
-          *ngIf="policyData"
-          [chartContId]="'statsDoughnut'"
-          [graphData]="policyData"
-          [graphWidth]="widgetWidth"
-          [flexTrue]="true"
-          [graphHeight]="widgetHeight"
-          [MainTextcolor]="MainTextcolor"
-          [innerRadius]="innerRadius"
-          [outerRadius]="outerRadius"
-          [strokeColor]="strokeColor"
-          (navigatePage)="navigateDataTable($event)"
-        >
+      <div class="graph-chart-cont relative" id="dashboardDoughnut">
+        <app-doughnut-chart *ngIf="policyData" [chartContId]="'dashboardDoughnut'" [graphData]="policyData"
+          [graphWidth]="widgetWidth" [flexTrue]="true" [graphHeight]="widgetHeight" [MainTextcolor]="MainTextcolor"
+          [innerRadius]="innerRadius" [outerRadius]="outerRadius" [strokeColor]="strokeColor"
+          (navigatePage)="navigateDataTable($event)">
         </app-doughnut-chart>
       </div>
     </div>
-    <div
-    class="chart"
-    *ngIf="card.id == 3 && assetsCountData.length > 0"
-    style="overflow-y: scroll"
-  >
-    <app-horizontal-bar-chart
-      [data]="assetsCountData"
-    ></app-horizontal-bar-chart>
-  </div>
+    <div class="chart" *ngIf="card.id == 3 && assetsCountData.length > 0" style="overflow-y: scroll">
+      <app-horizontal-bar-chart [data]="assetsCountData"></app-horizontal-bar-chart>
+    </div>
   </mat-card-content>
   <mat-card-actions>
     <button mat-button (click)="card.cardButtonAction()">

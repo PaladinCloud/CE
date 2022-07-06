@@ -197,7 +197,7 @@ app-filtered-selector{
   color: var(--primary-400);
 }
 
-.data-table-rows:hover a {
+.data-table-rows:hover .column-text {
   border-bottom: 1px solid var(--neutral-300);
 }
 
@@ -265,12 +265,11 @@ app-filtered-selector{
 }
 
 .details-wrapper{
-  width: 230px;
+  width: 65%;
   font: var(--text-body-2);
   color: var(--text-high-emphasis);
   overflow-wrap: anywhere;
 }
-
 
 .details-btn{
   position: relative;
@@ -328,6 +327,7 @@ app-filtered-selector{
   position: relative;
   flex-shrink: 0;
   padding: 16px 24px;
+  justify-content: space-between;
 }
 
 .data-table-paginator-wrap .paginator-size-selector {
@@ -432,7 +432,7 @@ app-filtered-selector{
   transform: translateX(101%);
   z-index: 12;
   background: white;
-  width: 32em;
+  width: 40%;
   transition: 0.3s ease;
   box-shadow: 0 3px 4px 0 #0000001e, 0 2px 4px 0 #00000023;
   max-width: 100%;
@@ -458,9 +458,9 @@ app-filtered-selector{
 }
 
 .details-bar-header {
-  background-color: #f9f9f9;
+  background-color: var(--background-white);
   padding: 0.6em 0.8em;
-  border: 1px solid #ccccccaa;
+  border: 1px solid var(--border-100);
   line-height: 1.9;
   flex-direction: row !important;
   height: inherit !important;
@@ -475,6 +475,7 @@ app-filtered-selector{
 }
 
 .details-cell {
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -607,7 +608,7 @@ color: var(--primary-500);
 .checkbox {
   width: 18px;
   height: 18px;
-  margin-left: 24px;
+  margin-left: 22px;
   flex-shrink: 0;
 }
 
