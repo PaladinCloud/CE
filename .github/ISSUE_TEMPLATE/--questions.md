@@ -1,6 +1,9 @@
 ---
 name: "❔ Questions"
-about: " Have any questions regarding how PacBot works?"
+about: " Have any questions regarding how PaladinCloud works?"
+title: "[Question]"
+labels: question
+assignees: ''
 
 ---
 

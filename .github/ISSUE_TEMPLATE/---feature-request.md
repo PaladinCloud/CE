@@ -1,6 +1,9 @@
 ---
 name: "\U0001F64B Feature request"
 about: Suggest an idea for this project
+title: "[Issue]"
+labels: enhancement
+assignees: ''
 
 ---
 
