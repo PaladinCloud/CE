@@ -13,10 +13,9 @@
  -->
 
  <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [isCustomParentRoute]="true" [parentRouteName]="'admin'" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+    <div class="padding-top"></div>
     <div class="floating-widgets-header flex flex-between">
         <div>
-            <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg">
             <h1 class="title-text">{{pageTitle}}</h1>
         </div>
         <div class="flex relative z-index textarea-button">

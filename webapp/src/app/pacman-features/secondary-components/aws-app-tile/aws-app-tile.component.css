@@ -30,6 +30,8 @@
 }
 
 .aws-app-details img {
+  width: 24px;
+  height: 24px;
   padding: 4px;
   background-color: var(--background-white);
 }

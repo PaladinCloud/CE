@@ -40,8 +40,8 @@ import { UploadFileService } from '../../../../services/upload-file-service';
 })
 export class DeleteStickyExceptionsComponent implements OnInit, OnDestroy {
   pageTitle: String = 'Delete Sticky Exception';
-  breadcrumbArray: any = ['Admin', 'Sticky Exceptions'];
-  breadcrumbLinks: any = ['policies', 'sticky-exceptions'];
+  breadcrumbArray: any = [ 'Sticky Exceptions'];
+  breadcrumbLinks: any = [ 'sticky-exceptions'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];

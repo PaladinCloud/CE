@@ -40,8 +40,8 @@ import { AdminService } from '../../../services/all-admin.service';
 export class RolesAllocationComponent implements OnInit, OnDestroy {
   pageTitle = 'User Role Allocations';
   allPolicies = [];
-  breadcrumbArray = ['Admin'];
-  breadcrumbLinks = ['policies'];
+  breadcrumbArray = ['Roles'];
+  breadcrumbLinks = ['roles'];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;

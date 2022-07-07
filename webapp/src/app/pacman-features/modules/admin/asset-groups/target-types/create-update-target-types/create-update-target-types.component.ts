@@ -38,8 +38,8 @@ import { AdminService } from '../../../../../services/all-admin.service';
 })
 export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   pageTitle: String = '';
-  breadcrumbArray: any = ['Admin', 'Target Types'];
-  breadcrumbLinks: any = ['policies', 'target-types'];
+  breadcrumbArray: any = [ 'Target Types'];
+  breadcrumbLinks: any = [ 'target-types'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];

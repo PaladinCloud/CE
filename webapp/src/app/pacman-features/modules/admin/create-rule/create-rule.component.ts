@@ -49,8 +49,8 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   isRuleIdValid = -1;
   isCreate;
   allPolicies = [];
-  breadcrumbArray = ['Admin', 'Rules'];
-  breadcrumbLinks = ['policies', 'rules'];
+  breadcrumbArray = ['Rules'];
+  breadcrumbLinks = ['rules'];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;

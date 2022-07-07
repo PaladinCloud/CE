@@ -64,8 +64,8 @@ import { DatepickerOptions } from 'ng2-datepicker';
 export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   @ViewChild('targetTypeRuleSelect') targetTypeRuleSelectComponent: SelectComponent;
   pageTitle: String = '';
-  breadcrumbArray: any = ['Admin', 'Sticky Exceptions'];
-  breadcrumbLinks: any = ['policies', 'sticky-exceptions'];
+  breadcrumbArray: any = [ 'Sticky Exceptions'];
+  breadcrumbLinks: any = [ 'sticky-exceptions'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];
