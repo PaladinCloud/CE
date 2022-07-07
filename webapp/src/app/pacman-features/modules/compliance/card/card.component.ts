@@ -85,6 +85,12 @@ export class CardComponent implements OnInit {
         try {
           this.complianceData = [];
           response[0].data.forEach((element) => {
+            if(element[1].title=="Governance"){
+              element[1].title="Operations";
+            }
+            else if(element[1].title=="Cost Optimization"){
+              element[1].title="Cost";
+            }
             if (element[1]["val"] <= 40) {
               element[1]["class"] = "red";
             } else if (element[1]["val"] <= 75) {

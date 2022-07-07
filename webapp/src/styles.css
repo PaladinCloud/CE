@@ -1912,3 +1912,7 @@ g.arc .bubble-text {
 .plus-mark {
   font-size: 2em;
 }
+
+.padding-top{
+  padding-top: 18px;
+}

@@ -41,8 +41,8 @@ import { CommonResponseService } from '../../../../../shared/services/common-res
 })
 export class CreateUpdateRolesComponent implements OnInit, OnDestroy {
   pageTitle = '';
-  breadcrumbArray = ['Admin', 'Roles'];
-  breadcrumbLinks = ['policies', 'roles'];
+  breadcrumbArray = ['Roles'];
+  breadcrumbLinks = [ 'roles'];
   breadcrumbPresent;
   outerArr = [];
   filters = [];

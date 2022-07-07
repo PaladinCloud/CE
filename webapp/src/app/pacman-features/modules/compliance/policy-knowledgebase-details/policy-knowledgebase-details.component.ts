@@ -36,8 +36,8 @@ import { CommonResponseService } from "../../../../shared/services/common-respon
 })
 export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   pageTitle = "Policy Details";
-  breadcrumbArray: any = ["Compliance", "Policy Knowledgebase"];
-  breadcrumbLinks: any = ["compliance-dashboard", "policy-knowledgebase"];
+  breadcrumbArray: any = ["Policy Knowledgebase"];
+  breadcrumbLinks: any = ["policy-knowledgebase"];
   breadcrumbPresent: any;
   selectedAssetGroup: string;
   subscriptionToAssetGroup: Subscription;

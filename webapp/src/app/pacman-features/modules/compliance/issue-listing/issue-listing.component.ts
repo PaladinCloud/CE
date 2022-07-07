@@ -58,7 +58,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   currentPointer = 0;
   seekdata = false;
   showLoader = true;
-  paginatorSize = 10;
+  paginatorSize = 25;
   searchTxt = "";
   popRows: any = ["Download Data"];
   filterTypeOptions: any = [];
@@ -299,6 +299,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTagOptions = response[0].response;
           this.filterTagLabels = _.map(response[0].response, "name");
+          this.filterTagLabels.sort((a,b)=>a.localeCompare(b));
         });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);

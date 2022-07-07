@@ -15,7 +15,8 @@ import { LoggerService } from "../../../shared/services/logger.service";
 export class HeaderComponent implements OnInit {
   showUserInfo = false;
   haveAdminPageAccess = false;
-  FirstName: string;
+  userName: string;
+  userEmail: string;
   userType;
   profilePictureSrc: any = "/assets/icons/profile-picture.svg";
   queryParams;
@@ -42,12 +43,19 @@ export class HeaderComponent implements OnInit {
     try {
       this.haveAdminPageAccess = this.permissions.checkAdminPermission();
       this.userType = this.haveAdminPageAccess ? "Admin" : "";
-      this.FirstName = "Guest";
+      this.userName = "Guest";
+      this.userEmail = "Guest"
       const detailsData = this.dataCacheService.getUserDetailsValue();
-      const firstNameData = detailsData.getFirstName();
-      if (firstNameData) {
-        this.FirstName = firstNameData;
+      const userNameData = detailsData.getFirstName();
+      const emailData = detailsData.getEmail();
+      if (userNameData) {
+        this.userName = userNameData;
       }
+      if(emailData){
+        this.userEmail = emailData;
+      }
+      // console.log("");
+      
       this.route.queryParams.subscribe((params) => {
         this.queryParams = params;
       });

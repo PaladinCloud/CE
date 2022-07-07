@@ -24,7 +24,7 @@
       class="contextual-menu-container"
       *ngIf="tvState != true && tvState != 'true'"
     >
-      <app-contextual-menu></app-contextual-menu>
+      <app-contextual-menu [haveAdminPageAccess]="haveAdminPageAccess"></app-contextual-menu>
     </div>
     <div class="contextual-container">
       <app-header></app-header>

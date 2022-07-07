@@ -65,8 +65,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   private routeSubscription: Subscription;
 
   /*variables for breadcrumb data*/
-  breadcrumbArray: any = ['Assets', 'Asset List'];
-  breadcrumbLinks: any = ['asset-dashboard', 'asset-list'];
+  breadcrumbArray: any = ['Asset List'];
+  breadcrumbLinks: any = ['asset-list'];
   breadcrumbPresent: any;
 
   filteredData = false;

@@ -50,7 +50,7 @@
                 <li *ngFor="let resource of filteredResources | assetSummarySearchFilter: searchTxt; let i = index"
                     (click)="awsTileClicked(resource)" class="flex">
                     <app-aws-app-tile [i]='i' class='full-width' [active]="selectedResource.type == resource.type"
-                        [awsResource]="resource" [awsResourceName]="resource.type" [resourceInstances]="resource.count">
+                        [awsResource]="resource" [awsResourceName]="resource.type" [resourceInstances]="resource.count" [assetGroup]="selectedAssetGroup">
                     </app-aws-app-tile>
                 </li>
             </ul>

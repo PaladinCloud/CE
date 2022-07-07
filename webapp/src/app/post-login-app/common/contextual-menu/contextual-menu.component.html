@@ -24,8 +24,9 @@
     <tree-root [nodes]="nodes" class="tree">
       <ng-template #treeNodeWrapperTemplate let-node let-index="index">
         <div *ngIf="
-          !(node.data.notDisplayIfAzure == true && agAndDomain.ag == 'azure')
-        " class="node-wrapper" [class.wrapper]="currentParentId == node.id && node.hasChildren"
+          (haveAdminPageAccess || (node.data.name!='Admin'))
+        ">
+        <div *ngIf="!(node.data.notDisplayIfAzure == true && agAndDomain.ag == 'azure')" class="node-wrapper" [class.wrapper]="currentParentId == node.id && node.hasChildren"
           [class.node-wrapper-active]="
           node.id == currentNodeId && !node.hasChildren
         " [style.padding-left]="node.getNodePadding()">
@@ -49,6 +50,8 @@
             <tree-node-expander [node]="node"></tree-node-expander>
           </div>
         </div>
+      </div>
+      
       </ng-template>
     </tree-root>
   </div>
