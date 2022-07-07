@@ -37,8 +37,8 @@ import { AdminService } from '../../../../../services/all-admin.service';
 })
 export class CreateUpdateDomainComponent implements OnInit, OnDestroy {
   pageTitle = '';
-  breadcrumbArray: any = ['Admin', 'Domains'];
-  breadcrumbLinks: any = ['policies', 'domains'];
+  breadcrumbArray: any = [ 'Domains'];
+  breadcrumbLinks: any = [ 'domains'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];

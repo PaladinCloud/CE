@@ -232,11 +232,7 @@
   <div *ngIf="
      !paginatorAbsent && outerArr && outerArr.length > 0 && errorValue > 0
    " class="data-table-paginator-wrap flex flex-align-center" [class.pagination-wrap]="checkBox">
-    <!-- <div class="checked-list" *ngIf="checkBox">
-     Selected:
-     <span class="checked-list-length">{{ checkedList.length }}</span>
-   </div> -->
-    <div class="paginator-size-selector" *ngIf="dataHead=='Policy Violations'">
+    <div class="paginator-size-selector" *ngIf="dataHead=='Policy Violations' && false">
       <label for="rowsPerPage">Rows Per Page:</label>
       <select name="rowsPerPage" id="rowsPerPage">
         <option *ngFor="let pageSize of pageSizes" [selected]="paginatorSize == pageSize"
@@ -246,7 +242,7 @@
         </option>
       </select>
     </div>
-    <div *ngIf="dataHead!='Policy Violations'"></div>
+    <div *ngIf="true"></div>
     <div class="flex flex-end">
       <div class="paginator-txt">
         {{ firstPaginator

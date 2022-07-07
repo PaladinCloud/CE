@@ -49,8 +49,8 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   pageTitle = 'Update Job Execution Manager';
   allJobNames = [];
-  breadcrumbArray = ['Admin', 'Job Execution Manager'];
-  breadcrumbLinks = ['policies', 'job-execution-manager'];
+  breadcrumbArray = ['Job Execution Manager'];
+  breadcrumbLinks = [ 'job-execution-manager'];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;

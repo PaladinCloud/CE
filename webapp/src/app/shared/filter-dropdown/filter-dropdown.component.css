@@ -197,3 +197,8 @@ padding-left: 10px;
 .checkbox{
   padding-right: 8px;
 }
+
+.no-content {
+  display: flex;
+  justify-content: center;
+}

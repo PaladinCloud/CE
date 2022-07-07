@@ -22,7 +22,7 @@ import { LoggerService } from '../../../shared/services/logger.service';
   providers: [LoggerService]
 })
 export class AwsAppTileComponent implements OnInit {
-
+  @Input() assetGroup;
   @Input() awsResourceName = 'AWS';
   @Input() resourceInstances = '3122';
   @Input() active = false;

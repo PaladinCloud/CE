@@ -152,7 +152,7 @@ export class ComplianceDashboardComponent implements OnInit {
     {
       id: 1,
       header: "Category Compliance",
-      footer: "View by Asset type",
+      footer: "View Trends",
       cardButtonAction: this.openOverAllComplianceTrendModal,
     },
     {

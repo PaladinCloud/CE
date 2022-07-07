@@ -38,8 +38,8 @@ import { AdminService } from '../../../services/all-admin.service';
 })
 export class EnableDisableRuleComponent implements OnInit, OnDestroy {
   pageTitle: String = 'Disable Rule';
-  breadcrumbArray: any = ['Admin', 'Rules'];
-  breadcrumbLinks: any = ['policies', 'rules'];
+  breadcrumbArray: any = [ 'Rules'];
+  breadcrumbLinks: any = [ 'rules'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];

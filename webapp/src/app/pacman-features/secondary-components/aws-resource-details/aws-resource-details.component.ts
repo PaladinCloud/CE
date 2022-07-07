@@ -87,6 +87,7 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
         this.filteredResources.push(element);
       }
     });
+    this.filteredResources.sort((a,b)=>b.count - a.count);
     this.selectedResource = this.filteredResources[0];
   }
 
@@ -132,6 +133,8 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
         this.awsResources = allAwsResources;
         this.getAllCategories();
         this.filteredResources = this.awsResources.slice();
+        this.filteredResources.sort((a,b)=>b.count - a.count);
+        this.selectedResource = this.filteredResources[0];
       },
       error => {
         this.logger.log('error', error);
@@ -406,12 +409,12 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
       this.awsResourcesCache = this.awsResourceDetails.slice();
       this.showViewMore = false;
     }
-    if (!this.selectedResourceTypeFromUrl) {
-      this.selectResourceTile(this.awsResourceDetails[0]);
-    } else {
-      this.selectResourceTile(this.selectedResourceTypeFromUrl);
-      //look into it
-    }
+    // if (!this.selectedResourceTypeFromUrl) {
+    //   this.selectResourceTile(this.awsResourceDetails[0]);
+    // } else {
+    //   this.selectResourceTile(this.selectedResourceTypeFromUrl);
+    //   //look into it
+    // }
   }
 
   awsTileClicked(resource) {

@@ -63,8 +63,8 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
 
   pageTitle: String = 'Update Rule';
   allPolicies: any = [];
-  breadcrumbArray: any = ['Admin', 'Rules'];
-  breadcrumbLinks: any = ['policies', 'rules'];
+  breadcrumbArray: any = [ 'Rules'];
+  breadcrumbLinks: any = [ 'rules'];
   breadcrumbPresent: any;
   outerArr: any = [];
   dataLoaded: boolean = false;
