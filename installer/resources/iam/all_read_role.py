@@ -37,7 +37,7 @@ class AllReadIAMFullAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
 
 class AllReadConfigRolePolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = AllReadRole.get_output_attr('name')
-    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"
 
 
 class AllReadSupportAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
