@@ -3689,7 +3689,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_SSH_Authentication_virtualmachine",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Password Based Authentication Type should be Disabled",
+    "displayName": "Disable Password Authentication",
     "createdDate": "2022-05-06",
     "modifiedDate": "2022-05-06",
     "severity": "high",
