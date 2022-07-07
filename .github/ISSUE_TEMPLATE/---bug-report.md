@@ -1,18 +1,21 @@
 ---
 name: "\U0001F41B Bug report"
 about: Create a bug to help us improve
+title: "[BUG]"
+labels: bug
+assignees: ''
 
 ---
 
 <!---
 Verify first that your issue/request is not already reported on GitHub.
-Also test if the latest release.
+Also, test on the latest release.
 -->
 
-## Micro services
+## Microservices
 - Spring boot Applications:
- <!--Which Spring boot application have the issue, pick items below and delete the rest-->
- -  Admin Service
+ <!--Which Spring boot application has the issue, pick items below and delete the rest-->
+ - Admin Service
  - Auth Service
  - Asset Service
  - Compliance Service
