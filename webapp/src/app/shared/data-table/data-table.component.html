@@ -21,7 +21,7 @@
       (enterPressed)="triggerSearch()">
     </app-title-burger-head>
   </div>
-  <div class="add-filter-container" *ngIf="checkedList.length == 0">
+  <div class="add-filter-container" *ngIf="checkedList.length == 0 && dataHead=='Policy Violations'">
     <div class="add-filter-wrapper">
       <div class="add-filter-button-wrapper">
         <button [matMenuTriggerFor]="menu" class="add-filter-button">
@@ -43,7 +43,7 @@
     </div>
   </div>
 
-  <div class="alternate-filter-container" *ngIf="checkedList.length > 0">
+  <div class="alternate-filter-container" *ngIf="checkedList.length > 0 && dataHead=='Policy Violations'">
     <div class="alternate-filter-wrapper">
       <div class="filters-selected-text">
         {{ checkedList.length }} items selected
@@ -150,7 +150,7 @@
                  currentRowData = row; goToDetails(currentRowData, column)
                " *ngIf="row[column].link && row[column].text">
                 <div class="flex flex-align-center each-cell-list-row">
-                  <div>{{ row[column].text }}</div>
+                  <div class="column-text">{{ row[column].text }}</div>
                   <app-copy-element [class.hide]="
                      ((!row[column].text &&
                        row[column].text !== 0 &&
@@ -231,12 +231,12 @@
   <!-- Table Pagination Strip -->
   <div *ngIf="
      !paginatorAbsent && outerArr && outerArr.length > 0 && errorValue > 0
-   " class="data-table-paginator-wrap flex flex-end flex-align-center" [class.pagination-wrap]="checkBox">
+   " class="data-table-paginator-wrap flex flex-align-center" [class.pagination-wrap]="checkBox">
     <!-- <div class="checked-list" *ngIf="checkBox">
      Selected:
      <span class="checked-list-length">{{ checkedList.length }}</span>
    </div> -->
-    <div class="paginator-size-selector">
+    <div class="paginator-size-selector" *ngIf="dataHead=='Policy Violations'">
       <label for="rowsPerPage">Rows Per Page:</label>
       <select name="rowsPerPage" id="rowsPerPage">
         <option *ngFor="let pageSize of pageSizes" [selected]="paginatorSize == pageSize"
@@ -246,6 +246,7 @@
         </option>
       </select>
     </div>
+    <div *ngIf="dataHead!='Policy Violations'"></div>
     <div class="flex flex-end">
       <div class="paginator-txt">
         {{ firstPaginator

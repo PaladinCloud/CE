@@ -21,7 +21,6 @@ import { AssetTrackerComponent } from "./../../secondary-components/asset-tracke
 import { TrackerBarComponent } from "./../../secondary-components/tracker-bar/tracker-bar.component";
 import { AwsAppTileComponent } from "./../../secondary-components/aws-app-tile/aws-app-tile.component";
 import { AwsResourceDetailsComponent } from "./../../secondary-components/aws-resource-details/aws-resource-details.component";
-import { ViewAllResourcesComponent } from "./../../secondary-components/view-all-resources/view-all-resources.component";
 import { MultilineChartComponent } from "./../../secondary-components/multiline-chart/multiline-chart.component";
 import { InventoryContainerComponent } from "./../../secondary-components/inventory-container/inventory-container.component";
 import { UtilizationContainerComponent } from "./../../secondary-components/utilization-container/utilization-container.component";
@@ -45,9 +44,11 @@ import { InstalledSoftwaresComponent } from "./../../secondary-components/instal
 import { OnpremAssetsComponent } from "./onprem-assets/onprem-assets.component";
 import { AgGridModule } from "ag-grid-angular/main";
 import { AwsNotificationsComponent } from "./aws-notifications/aws-notifications.component";
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   imports: [
+    MatSelectModule,
     CommonModule,
     AssetsRoutingModule,
     SharedModule,
@@ -60,7 +61,6 @@ import { AwsNotificationsComponent } from "./aws-notifications/aws-notifications
     AwsAppTileComponent,
     AwsResourceDetailsComponent,
     InventoryContainerComponent,
-    ViewAllResourcesComponent,
     MultilineChartComponent,
     UtilizationContainerComponent,
     AssetInfoComponent,
@@ -84,4 +84,4 @@ import { AwsNotificationsComponent } from "./aws-notifications/aws-notifications
     AwsNotificationsComponent,
   ],
 })
-export class AssetsModule {}
+export class AssetsModule { }

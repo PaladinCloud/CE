@@ -58,7 +58,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   currentPointer = 0;
   seekdata = false;
   showLoader = true;
-  paginatorSize = 25;
+  paginatorSize = 10;
   searchTxt = "";
   popRows: any = ["Download Data"];
   filterTypeOptions: any = [];

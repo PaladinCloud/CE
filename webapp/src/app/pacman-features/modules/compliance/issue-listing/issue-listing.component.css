@@ -43,52 +43,59 @@ app-data-table{
     min-height: 17em;
 } 
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(3) {
-    width: 190px;
+app-issue-exception{
+    height: 100%;
+    width: 100%;
+}
+
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(1) {
+    width: 58px;
+    margin-left: 24px;
 }
 
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(2) {
     width: 260px;
 }
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(4) {
-    width: 160px;
-}
-
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(5) {
-    width: 100px;
-}
-
-
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(1) {
-    width: 58px;
-}
-
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(2) {
-    width: 260px;
-}
-
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(3) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(3) {
     width: 190px;
 }
 
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(4) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(4) {
     width: 150px;
 }
 
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(5) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(5) {
     width: 107px;
 }
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(6) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(6) {
     width: 105px;
 }
-.violations-table /deep/ .data-table-wrap .table-cells:nth-child(7) {
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(7) {
     width: 193px;
 }
 
-.violations-table /deep/ .data-table-wrap .table-cells {
-    width: 130px;
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(1) {
+    width: 260px;
+    margin-left: 8px;
 }
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(2) {
+    width: 190px;
+}
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(3) {
+    width: 150px;
+}
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(4) {
+    width: 107px;
+}
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(5) {
+    width: 105px;
+}
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(6) {
+    width: 193px;
+}
+
+
 .violations-table /deep/ .data-table-wrap {
     border: 1px solid #dce1e8;
     border-top: none;

@@ -157,18 +157,17 @@ export class ComplianceDashboardComponent implements OnInit {
     },
     {
       id: 2,
+      header: "Violations by Severity",
+      footer: "View Trends",
+      cardButtonAction: this.openOverPolicyViolationsTrendModal,
+    },
+    {
+      id: 3,
       header: "Asset Summary",
       footer: "View all Assets",
       cardButtonAction: this.navigateToAssetSummary,
     },
   ];
-
-  SeverityCard = {
-    id: 3,
-    header: "Violations by Severity",
-    footer: "View Trends",
-    cardButtonAction: this.openOverPolicyViolationsTrendModal,
-  };
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,

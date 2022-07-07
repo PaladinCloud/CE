@@ -37,6 +37,7 @@ export class FilterDropdownComponent implements OnInit {
   }
 
   closeExpander() {
+    this.filterTagLabels = [];
     this.isExpanded = false;
   }
 }

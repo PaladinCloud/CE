@@ -27,7 +27,6 @@ import { PolicyKnowledgebaseDetailsComponent } from "../../pacman-features/modul
 import { CertificatesComponent } from "../../pacman-features/modules/compliance/certificates/certificates.component";
 import { VulnerabilitiesComponent } from "../../pacman-features/modules/compliance/vulnerabilities/vulnerabilities.component";
 import { AssetDashboardComponent } from "../../pacman-features/modules/assets/asset-dashboard/asset-dashboard.component";
-import { ViewAllResourcesComponent } from "../../pacman-features/secondary-components/view-all-resources/view-all-resources.component";
 import { AssetDetailsComponent } from "../../pacman-features/modules/assets/asset-details/asset-details.component";
 import { AssetListComponent } from "../../pacman-features/modules/assets/asset-list/asset-list.component";
 import { OnpremAssetsComponent } from "../../pacman-features/modules/assets/onprem-assets/onprem-assets.component";
@@ -246,13 +245,6 @@ export const ASSETS_ROUTES = [
   {
     path: "asset-dashboard",
     component: AssetDashboardComponent,
-    children: [
-      {
-        path: "all-resources",
-        component: ViewAllResourcesComponent,
-        outlet: "modal",
-      },
-    ],
     data: {
       title: "Asset Dashboard",
     },

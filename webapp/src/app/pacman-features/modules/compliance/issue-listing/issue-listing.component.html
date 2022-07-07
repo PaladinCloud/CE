@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
-<div class="violations-table">
+<div class="violations-table" [class.admin-rights]='adminAccess'>
     <app-data-table [(cbModel)]="cbModel" (cbClicked)="checkBoxClicked($event)" [checkBox]="adminAccess"
         [searchTextValues]="searchTxt" [showGenericMessage]="showGenericMessage" [errorValue]="errorValue"
         [parentName]="'policyDetailsTableMessage'" [showingArr]="showingArr" [outerArr]="outerArr"

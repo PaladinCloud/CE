@@ -1,9 +1,12 @@
 import {
   Component,
+  ElementRef,
   Input,
+  NgZone,
   OnChanges,
   OnInit,
   SimpleChanges,
+  ViewChild,
 } from "@angular/core";
 import * as d3 from "d3";
 
@@ -22,10 +25,23 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
   valueUpperLimit;
   barHeight = 26;
   padding = 0.5;
+  @ViewChild('barChart') barChart: ElementRef;
 
-  constructor() {}
+  constructor(private ngZone: NgZone) {
+    window.onresize = (e) => {
+      // ngZone.run will help to run change detection
+      this.ngZone.run(() => {
+        this.width = (parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20);
+        this.createSvg();
+      });
+    };
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.createSvg();
+  }
+
+  createSvg() {
     d3.select("#horizontal-bar-chart > *").remove();
     this.maxValue = this.data[0].count;
     this.init();
@@ -49,7 +65,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
     this.valueUpperLimit = this.maxValue;
     // set the dimensions and margins of the graph
     this.margin = { top: 0, right: 0, bottom: 0, left: 100 };
-    this.width = 518 - this.margin.left - this.margin.right;
+    this.width = parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20 - this.margin.left - this.margin.right;
     this.height = this.getHeight() - this.margin.top - this.margin.bottom;
   }
 
@@ -67,7 +83,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
       );
   }
 
-  processData() {}
+  processData() { }
 
   drawAxisAndBars() {
     // Add X axis
@@ -142,5 +158,5 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
       .attr("fill", "#506EA7");
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 }

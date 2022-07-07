@@ -778,7 +778,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       if (data["searchCategory"].toLowerCase() === "assets") {
         this.router
           .navigate(
-            ["../../../../assets/asset-detail", resourceType, resourceID],
+            ["../../../../assets/asset-list", resourceType, resourceID],
             { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
           )
           .then((response) => {
@@ -792,7 +792,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
           });
       } else if (data["searchCategory"].toLowerCase() === "policy violations") {
         this.router
-          .navigate(["../../../../compliance/issue-details", resourceID], {
+          .navigate(["../../../../compliance/issue-listing/issue-details", resourceID], {
             relativeTo: this.activatedRoute,
             queryParamsHandling: "merge",
           })
