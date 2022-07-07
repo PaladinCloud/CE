@@ -32,9 +32,8 @@ def need_to_enable_gcp():
 
 def get_gcp_project_ids():
     if need_to_enable_gcp():
-        gcp_credentials = Settings.get('GCP_CREDENTIALS', {})
-        project_id = gcp_credentials["project_id"]
-        # return ",".join(project_id)
-        return project_id
+        project_ids = Settings.get('GCP_PROJECT_IDS', [])
+        projects = ",".join(map(str, project_ids))
+        return projects
     else:
         return ""
