@@ -30,7 +30,7 @@ ES_VOLUME_SIZE = 20
 MAKE_ALB_INTERNAL = True
 ALB_PROTOCOL = "HTTP"
 SSL_CERTIFICATE_ARN = ""  # Required only if ALB_PROTOCOL is defined as HTTPS
-PALADINCLOUD_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.pacbot.com
+PALADINCLOUD_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.paladincloud.com
 
 
 # MAIL Server configuration
@@ -60,7 +60,7 @@ ENABLE_VULNERABILITY_FEATURE = False
 QUALYS_API_URL = ""  # Qualys API Url without trailing slash
 QUALYS_INFO = ""  # Base64 encoded user:password of qualys
 
-# This settings enable Vulnerability feature and servie
+# Settings for enable AZURE  
 ENABLE_AZURE = False
 # Tenants should be a list of dict containing tenantId, clientId and secretId
 AZURE_TENANTS = [
@@ -75,7 +75,9 @@ AZURE_TENANTS = [
         'secretId': "s222"
     },
 ]
+# Settings for enable GCP 
 ENABLE_GCP = False
+GCP_PROJECT_IDS = []
 GCP_CREDENTIALS = {}
 
 #job/rules intervals
