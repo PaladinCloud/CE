@@ -4679,7 +4679,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Azure_Create_Update_Storage_Account_log_alert",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Enable Create or Update Storage Account events.",
+    "displayName": "Enable Create or Update Storage Account Log Alert",
     "createdDate": "2022-05-23",
     "modifiedDate": "2022-05-23",
     "severity": "high",
