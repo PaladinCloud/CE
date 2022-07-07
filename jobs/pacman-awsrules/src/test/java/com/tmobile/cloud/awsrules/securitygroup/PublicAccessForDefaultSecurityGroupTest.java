@@ -1,18 +1,4 @@
-package com.tmobile.cloud.awsrules.vpc;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anySetOf;
-import static org.mockito.Matchers.anyString;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package com.tmobile.cloud.awsrules.securitygroup;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,16 +6,30 @@ import org.mockito.InjectMocks;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anySetOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ PacmanUtils.class})
-public class VPCPublicAccessForDefaultSecurityGroupTest {
+public class PublicAccessForDefaultSecurityGroupTest {
 
     @InjectMocks
-    VPCPublicAccessForDefaultSecurityGroup vpcPublicAccessForDefaultSecurityGroup;
+    PublicAccessForDefaultSecurityGroup publicAccessForDefaultSecurityGroup;
  
     @Test
     public void executeTest() throws Exception {
@@ -38,21 +38,21 @@ public class VPCPublicAccessForDefaultSecurityGroupTest {
         
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         
-        when(PacmanUtils.getDefaultSecurityGroupsByVpcId(anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
+        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString())).thenReturn(getListSecurityGroupId());
         when(PacmanUtils.getUnrestrictedSecurityGroupsById(anySetOf(String.class),anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
-        assertThat(vpcPublicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
+        assertThat(publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getDefaultSecurityGroupsByVpcId(anyString(),anyString(),anyString())).thenReturn(getListSecurityGroupId());
+        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString())).thenReturn(getListSecurityGroupId());
         when(PacmanUtils.getUnrestrictedSecurityGroupsById(anySetOf(String.class),anyString(),anyString(),anyString())).thenReturn(new ArrayList<>());
-        assertThat(vpcPublicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
+        assertThat(publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getDefaultSecurityGroupsByVpcId(anyString(),anyString(),anyString())).thenThrow(new Exception());
+        when(PacmanUtils.getDefaultSecurityGroupsByName(anyString(),anyString())).thenThrow(new Exception());
         assertThatThrownBy( 
-                () -> vpcPublicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
+                () -> publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
         
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(false);
         assertThatThrownBy(
-                () -> vpcPublicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+                () -> publicAccessForDefaultSecurityGroup.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
         
     }
     
@@ -64,8 +64,8 @@ public class VPCPublicAccessForDefaultSecurityGroupTest {
         commonMap.put("ruleCategory", "security");
         commonMap.put("type", "Task");
         commonMap.put("accountid", "12345");
-        commonMap.put("ruleId", "PacMan_AwsVpcPublicAccessDefaultSecurityGroup_version-1_AwsVpcPublicAccessDefaultSecurityGroup_ec2");
-        commonMap.put("policyId", "PacMan_AwsVpcPublicAccessDefaultSecurityGroup_version-1");
+        commonMap.put("ruleId", "AwsPublicAccessDefaultSecurityGroup_version-1_AwsPublicAccessDefaultSecurityGroup_ec2");
+        commonMap.put("policyId", "AwsPublicAccessDefaultSecurityGroup_version-1");
         commonMap.put("policyVersion", "version-1");
         commonMap.put("securityGroupName", "default");
         commonMap.put("statename", "running");
@@ -84,6 +84,6 @@ public class VPCPublicAccessForDefaultSecurityGroupTest {
     
     @Test
     public void getHelpTextTest(){
-        assertThat(vpcPublicAccessForDefaultSecurityGroup.getHelpText(), is(notNullValue()));
+        assertThat(publicAccessForDefaultSecurityGroup.getHelpText(), is(notNullValue()));
     }
 }
