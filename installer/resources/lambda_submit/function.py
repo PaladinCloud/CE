@@ -46,7 +46,7 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
             'JOB_QUEUE': BatchJobsQueue.get_input_attr('name'),
             'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
             'CONFIG_URL': ApplicationLoadBalancer.get_api_base_url() + "/config/batch,inventory/prd/latest",
-            'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
+            'CONFIG_CREDENTIALS': "dXNlcjpwYWxhZGluY2xvdWQ=",
             'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"
         }
     }
@@ -82,14 +82,14 @@ class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         'environmentVariables': [
             {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
             ) + "/config/batch,inventory/prd/latest"},
-            {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
+            {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url(
             ) + "/api/config/rule/prd/latest"}
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint",
                 'value': "com.tmobile.cso.pacman"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "accountinfo",
                 'value': AwsAccount.get_output_attr('account_id')},
         ]
@@ -129,7 +129,7 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
                 'value': ApplicationLoadBalancer.get_api_version_url('compliance')},
             {'name': "AUTH_API_URL",
                 'value': ApplicationLoadBalancer.get_api_version_url('auth')},
-            {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
+            {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url(
             ) + "/api/config/rule/prd/latest"}
         ] + ([{
@@ -139,7 +139,7 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
             {'encrypt': False, 'key': "datasource", 'value': "aws"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "apiauthinfo",
                 'value': "MjJlMTQ5MjItODdkNy00ZWU0LWE0NzAtZGEwYmIxMGQ0NWQzOmNzcldwYzVwN0pGRjR2RVpCa3dHQ0FoNjdrR1FHd1h2NDZxdWc3djVad3RLZw=="}
         ]
@@ -189,7 +189,7 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
         'params': [
             {'encrypt': False, 'key': "package_hint",
                 'value': "com.tmobile.cso.pacbot"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
         ]
     })
 
@@ -235,7 +235,7 @@ class CloudNotificationCollectorCloudWatchEventTarget(CloudWatchEventTargetResou
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "conf_src",
                 'value': "api-prd,application-prd"},
         ]
@@ -273,7 +273,7 @@ class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "job_hint", 'value': "qualys-kb"},
         ]
     })
@@ -312,7 +312,7 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "job_hint", 'value': "qualys"},
             {'encrypt': False, 'key': "server_type", 'value': "ec2"},
             {'encrypt': False, 'key': "datasource", 'value': "aws"}
@@ -357,7 +357,7 @@ class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
                 'value': "com.tmobile.pacbot"},
             {'encrypt': False, 'key': "file.path",
                 'value': "/home/ec2-user/azure-data"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "tenants", 'value': get_azure_tenants()}
         ]
     })
@@ -398,7 +398,7 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         'params': [
             {'encrypt': False, 'key': "package_hint",
                 'value': "com.tmobile.cso.pacman"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "datasource", 'value': "azure"},
             {'encrypt': False, 'key': "s3.data", 'value': "azure-inventory"}
         ]
@@ -442,7 +442,7 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
                 'value': "com.tmobile.pacbot"},
             {'encrypt': False, 'key': "file.path",
                 'value': "/home/ec2-user/gcp-data"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "project_ids",
                 'value': get_gcp_project_ids()}
         ]
@@ -484,7 +484,7 @@ class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         'params': [
             {'encrypt': False, 'key': "package_hint",
                 'value': "com.tmobile.cso.pacman"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'encrypt': False, 'key': "datasource", 'value': "gcp"},
             {'encrypt': False, 'key': "s3.data", 'value': "gcp-inventory"}
         ]

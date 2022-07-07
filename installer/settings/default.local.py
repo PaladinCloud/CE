@@ -30,7 +30,7 @@ ES_VOLUME_SIZE = 20
 MAKE_ALB_INTERNAL = True
 ALB_PROTOCOL = "HTTP"
 SSL_CERTIFICATE_ARN = ""  # Required only if ALB_PROTOCOL is defined as HTTPS
-PALADINCLOUD_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.pacbot.com
+PALADINCLOUD_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.paladincloud.com
 
 
 # MAIL Server configuration
@@ -79,4 +79,4 @@ ENABLE_GCP = False
 GCP_CREDENTIALS = {}
 
 #job/rules intervals
-JOB_SCHEDULER_INTERVAL_IN_HOURS = 6 #default is 6hr interval, user can increase or decrease the interval
+JOB_SCHEDULER_INTERVAL_IN_HOURS = 6 #default is 6hr interval, user can increase or decrease the interval (range 1-24)

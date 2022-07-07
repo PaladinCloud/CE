@@ -33,7 +33,7 @@ class SubmitAndRuleEngineJobDefinition(BatchJobDefinitionResource):
             {'name': "ES_URI", 'value': ESDomain.get_http_url_with_port()},
             {'name': "HEIMDALL_URI", 'value': ESDomain.get_http_url_with_port()},
             {'name': "PACMAN_API_URI", 'value': ApplicationLoadBalancer.get_api_base_url()},
-            {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
+            {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWxhZGluY2xvdWQ="},
             {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"}
         ]
     })

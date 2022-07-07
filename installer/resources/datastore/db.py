@@ -30,7 +30,7 @@ class MySQLDatabase(RDSResource):
     engine = "mysql"
     engine_version = "5.7.37"
     allocated_storage = 10
-    username = "pacbot"
+    username = "paladincloud"
     password = "***REMOVED***"
     parameter_group_name = DBParameterGroup.get_input_attr('name')
     option_group_name = DBOptionGroup.get_input_attr('name')

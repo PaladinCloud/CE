@@ -26,7 +26,7 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
         'variables': {
             'JOB_QUEUE': RuleEngineJobQueue.get_input_attr('name'),
             'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
-            'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
+            'CONFIG_CREDENTIALS': "dXNlcjpwYWxhZGluY2xvdWQ=",
             'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"
         }
     }
