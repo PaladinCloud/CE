@@ -5017,7 +5017,7 @@
   },
   {
     "ruleId": "Enable_Azure_Account_Create_or_Update_Network_Security_Group_Rule_Event_log_alert",
-    "ruleUUID": "azure_Enable_Acc_Create_or_Update_Network_Security_Group_Rule_log_alert",
+    "ruleUUID": "azure_Enable_Acc_Create_or_Update_NSG_Rule_log_alert",
     "policyId": "Enable_Azure_Account_Create_or_Update_Network_Security_Group_Rule_Event_log_alert",
     "ruleName": "Enable_Azure_Account_Create_or_Update_Network_Security_Group_Rule_Event_log_alert",
     "targetType": "subscription",
@@ -5028,7 +5028,7 @@
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "ManageRule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Acc_Create_or_Update_Network_Security_Group_Rule_log_alert",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Acc_Create_or_Update_NSG_Rule_log_alert",
     "status": "ENABLED",
     "userId": "ASGC",
     "displayName": "Enable \"Create/Update Network Security Group Rule\" log alert",
