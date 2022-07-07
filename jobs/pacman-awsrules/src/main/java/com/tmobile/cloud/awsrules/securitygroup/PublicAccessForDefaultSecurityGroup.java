@@ -1,19 +1,4 @@
-/*******************************************************************************
- * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- ******************************************************************************/
-package com.tmobile.cloud.awsrules.vpc;
+package com.tmobile.cloud.awsrules.securitygroup;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,9 +22,9 @@ import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.PacmanRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 
-@PacmanRule(key = "check-for-vpc-default-security-group-public-access", desc = "checks for vpc has public access for default security group", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class VPCPublicAccessForDefaultSecurityGroup extends BaseRule {
-    private static final Logger logger = LoggerFactory.getLogger(VPCPublicAccessForDefaultSecurityGroup.class);
+@PacmanRule(key = "check-for-default-security-group-public-access", desc = "checks for default security group has public access", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class PublicAccessForDefaultSecurityGroup extends BaseRule {
+    private static final Logger logger = LoggerFactory.getLogger(PublicAccessForDefaultSecurityGroup.class);
 
     /**
      * The method will get triggered from Rule Engine with following parameters
@@ -48,13 +33,13 @@ public class VPCPublicAccessForDefaultSecurityGroup extends BaseRule {
      * 
      * ************* Following are the Rule Parameters********* <br><br>
      * 
-     * ruleKey : check-for-ec2-public-access <br><br>
+     * ruleKey : check-for-default-security-group-public-access <br><br>
      * 
      * severity : Enter the value of severity <br><br>
      * 
      * ruleCategory : Enter the value of category <br><br>
      * 
-     * esEc2SgURL : Enter the EC2 with SG URL <br><br>
+     * esSgURL : Enter the SG URL <br><br>
      * 
      * esSgRulesUrl : Enter the SG Rule URL <br><br>
      * 
@@ -73,7 +58,7 @@ public class VPCPublicAccessForDefaultSecurityGroup extends BaseRule {
 	@Override
 	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
-		logger.debug("========VPCPublicAccessForDefaultSecurityGroup started=========");
+		logger.debug("========PublicAccessForDefaultSecurityGroup started=========");
 		String esSgURL = null;
 		String esSgRulesURL = null;
 		Annotation annotation = null;
@@ -90,7 +75,6 @@ public class VPCPublicAccessForDefaultSecurityGroup extends BaseRule {
 		String cidrIpv6 = ruleParam.get(PacmanRuleConstants.CIDRIPV6);
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-		String vpcId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
 		String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
 		String securityGroupName = ruleParam.get(PacmanRuleConstants.SECURITY_GROUP_NAME);
 
@@ -111,21 +95,21 @@ public class VPCPublicAccessForDefaultSecurityGroup extends BaseRule {
 		}
 
 		try {
-			List<String> listSecurityGroupID = PacmanUtils.getDefaultSecurityGroupsByVpcId(vpcId, esSgURL, securityGroupName);
+			List<String> listSecurityGroupID = PacmanUtils.getDefaultSecurityGroupsByName(esSgURL, securityGroupName);
 			securityGroupsSet.addAll(listSecurityGroupID);
 			List<String> listUnrestrictedSecGroup = PacmanUtils.getUnrestrictedSecurityGroupsById(securityGroupsSet, esSgRulesURL, cidrIpv6, cidrIp);
 			unrestrictedSecurityGroupsSet.addAll(listUnrestrictedSecGroup);
 
 			if (!unrestrictedSecurityGroupsSet.isEmpty()) {
 				annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-				annotation.put(PacmanSdkConstants.DESCRIPTION, "VPC with default security group public access found!!");
+				annotation.put(PacmanSdkConstants.DESCRIPTION, "Default security group with public access found!!");
 				annotation.put(PacmanRuleConstants.SEVERITY, severity);
 				annotation.put(PacmanRuleConstants.CATEGORY, category);
-				annotation.put(PacmanRuleConstants.RESOURCE_ID, vpcId);
-				issue.put(PacmanRuleConstants.VIOLATION_REASON, "VPC with default security group public access found!!");
+				annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+				issue.put(PacmanRuleConstants.VIOLATION_REASON, "Default security group with public access found!!");
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
-				logger.debug("========VPCPublicAccessForDefaultSecurityGroup ended with an annotation {} : =========", annotation);
+				logger.debug("========PublicAccessForDefaultSecurityGroup ended with an annotation {} : =========", annotation);
 				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 
@@ -133,13 +117,13 @@ public class VPCPublicAccessForDefaultSecurityGroup extends BaseRule {
 			logger.error("error: ", exception);
 			throw new RuleExecutionFailedExeption(exception.getMessage());
 		}
-		logger.debug("========VPCPublicAccessForDefaultSecurityGroup ended=========");
+		logger.debug("========PublicAccessForDefaultSecurityGroup ended=========");
 		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
     @Override
     public String getHelpText() {
-        return "checks entirely for vpc has public access for default security group";
+        return "checks entirely for default security group has public access";
     }
 
 }
