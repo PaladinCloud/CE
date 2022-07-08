@@ -4437,7 +4437,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_encryption_for_data_in_RedisCache",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Enable Redis Cache SSL",
+    "displayName": "Enable In-transit encryption for Redis Cache Server",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
