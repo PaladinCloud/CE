@@ -24,6 +24,7 @@ import { DownloadService } from "../shared/services/download.service";
 import { DomainTypeObservableService } from "../core/services/domain-type-observable.service";
 import { ThemeObservableService } from "../core/services/theme-observable.service";
 import { WorkflowService } from "../core/services/workflow.service";
+import { PermissionGuardService } from "../core/services/permission-guard.service";
 
 declare var Offline: any;
 
@@ -39,6 +40,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   queryParameters: any = {};
   private agAndDomainKey: string;
   showPacLoader: any = [];
+  private haveAdminPageAccess = false;
 
   private themeSubscription: Subscription;
   private activatedRouteSubscription: Subscription;
@@ -50,6 +52,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   isOffline = false;
 
   constructor(
+    private permissions: PermissionGuardService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private assetGroupObservableService: AssetGroupObservableService,
@@ -69,6 +72,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.haveAdminPageAccess = this.permissions.checkAdminPermission();
     try {
       this.agAndDomainKey = "";
 

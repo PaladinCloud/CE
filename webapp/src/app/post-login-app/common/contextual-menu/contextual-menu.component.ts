@@ -41,6 +41,7 @@ import { NavigationEnd, Router } from "@angular/router";
 export class ContextualMenuComponent implements OnInit, OnDestroy {
   currentParentId: number = 1;
   currentNodeId: number = 1;
+  @Input() haveAdminPageAccess;
   nodes = [
     {
       id: 1,

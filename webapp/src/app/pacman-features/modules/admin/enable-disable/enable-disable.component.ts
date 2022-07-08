@@ -177,12 +177,12 @@ export class EnableDisableRuleJobComponent implements OnInit, OnDestroy {
     this.pageTitle = isRule ? 'Enable Rule' : 'Enable Job';
     this.breadcrumbPresent = this.pageTitle;
     if (isRule) {
-      this.breadcrumbArray = ['Admin', 'Rules'];
-      this.breadcrumbLinks = ['policies', 'rules'];
+      this.breadcrumbArray = ['Rules'];
+      this.breadcrumbLinks = [ 'rules'];
       this.ruleOrJobId = this.ruleId;
     } else {
-      this.breadcrumbArray = ['Admin', 'Job Execution Manager'];
-      this.breadcrumbLinks = ['policies', 'job-execution-manager'];
+      this.breadcrumbArray = ['Job Execution Manager'];
+      this.breadcrumbLinks = [ 'job-execution-manager'];
       this.ruleOrJobId = this.jobId;
     }
 

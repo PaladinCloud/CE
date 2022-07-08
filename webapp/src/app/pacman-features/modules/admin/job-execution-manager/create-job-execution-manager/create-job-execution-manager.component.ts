@@ -47,8 +47,8 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   pageTitle = 'Create Job Execution Manager';
   allJobNames = [];
-  breadcrumbArray = ['Admin', 'Job Execution Manager'];
-  breadcrumbLinks = ['policies', 'job-execution-manager'];
+  breadcrumbArray = ['Job Execution Manager'];
+  breadcrumbLinks = ['job-execution-manager'];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;

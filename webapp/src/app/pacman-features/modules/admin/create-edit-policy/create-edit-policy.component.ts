@@ -49,7 +49,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   pageTitle: String = 'Policies';
   issueListingdata: any;
   selectedAssetGroup: String;
-  breadcrumbArray: any = ['Admin'];
+  breadcrumbArray: any = ['Policies'];
   breadcrumbLinks: any = ['asset-dashboard'];
 
   breadcrumbPresent: any;

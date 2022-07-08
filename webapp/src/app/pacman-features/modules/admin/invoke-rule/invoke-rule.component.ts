@@ -38,8 +38,8 @@ import { AdminService } from '../../../services/all-admin.service';
 })
 export class InvokeRuleComponent implements OnInit, OnDestroy {
   pageTitle: String = 'Invoke Rule';
-  breadcrumbArray: any = ['Admin', 'Rules'];
-  breadcrumbLinks: any = ['policies', 'rules'];
+  breadcrumbArray: any = [ 'Rules'];
+  breadcrumbLinks: any = [ 'rules'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];
