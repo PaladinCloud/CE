@@ -43,9 +43,17 @@ app-data-table{
     min-height: 17em;
 } 
 
-app-issue-exception{
+.wrapper {
+    position: relative;
     height: 100%;
-    width: 100%;
+}
+
+app-issue-exception{
+    position: absolute;
+    z-index: 15;
+    top: 0;
+    right: 0;
+    height: inherit;
 }
 
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(1) {
@@ -54,7 +62,7 @@ app-issue-exception{
 }
 
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(2) {
-    width: 25%;
+    width: 30%;
 }
 
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(3) {
@@ -62,37 +70,37 @@ app-issue-exception{
 }
 
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(4) {
-    width: 17%;
+    width: 16%;
 }
 
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(5) {
-    width: 9%;
-}
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(6) {
     width: 8%;
 }
+.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(6) {
+    width: 7%;
+}
 .violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(7) {
-    width: 15%;
+    width: 13%;
 }
 
 .violations-table  /deep/ .data-table-wrap .table-cells:nth-child(1) {
-    width: 25%;
+    width: 30%;
     margin-left: 8px;
 }
 .violations-table  /deep/ .data-table-wrap .table-cells:nth-child(2) {
     width: 20%;
 }
 .violations-table  /deep/ .data-table-wrap .table-cells:nth-child(3) {
-    width: 17%;
+    width: 16%;
 }
 .violations-table  /deep/ .data-table-wrap .table-cells:nth-child(4) {
-    width: 9%;
-}
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(5) {
     width: 8%;
 }
+.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(5) {
+    width: 7%;
+}
 .violations-table  /deep/ .data-table-wrap .table-cells:nth-child(6) {
-    width: 15%;
+    width: 13%;
 }
 .violations-table /deep/ .data-table-inner-wrap {
 width: 100% !important;
@@ -106,11 +114,8 @@ width: 100% !important;
 .violations-table /deep/ .data-table-rows {
 width: 100% !important;
 }
-.violations-table  /deep/ .head-cells {
-    padding: 16px 10px;
-}
-.violations-table  /deep/ .row-cells {
-    padding: 16px 10px;
+.violations-table  /deep/ .table-cells {
+    padding: 16px 10px !important;
 }
 
 .violations-table /deep/ .data-table-wrap {

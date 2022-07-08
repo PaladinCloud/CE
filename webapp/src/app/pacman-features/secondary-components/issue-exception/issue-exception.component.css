@@ -17,7 +17,6 @@
 }
 
 .actions-wrapper {
-  position: absolute;
   background-color: rgba(239, 243, 246, 0.5);
   border-radius: 0.3em;
   border: 0.5px solid #c3cbd7;
@@ -27,20 +26,12 @@
   backface-visibility: hidden;
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  z-index: 15;
-  /* top: 0; */
-  /* right: 0; */
-  bottom: 0;
-  margin: auto;
   width: 35em;
   background-color: var(--background-white);
   color: #000;
   box-shadow: 0 3px 4px 0 #0000001e, 0 2px 4px 0 #00000023;
   border: 1px solid #ededed;
-  /* height: 100%; */
-  height: calc(100vh - 160px);
-top: 60px;
-right: 30px;
+  height: 100%;
 }
 
 .recommend-flip {
