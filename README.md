@@ -92,23 +92,23 @@ typical [installation](https://github.com/PaladinCloud/Rev1/wiki/Installation) t
 
 # Paladin Cloud User Interface
 
-**insert Overview Screen**
+**Overview Screen**
+<img src=./wiki/images/compliance_compliance-dashboard-Readme.png>
 
-**insert Violation List View**
+**Violation List View**
+<img src=./wiki/images/violations-list.png>
 
-**insert Violation Trend View by category**
+**Asset Detail View**
+<img src=./wiki/images/Asset-360-Readme.png>
 
-**insert Asset Dashboard**
+**Search results**
+<img src=./wiki/images/Search-Results-Readme.png>
 
-**insert Asset Detail View**
+**Category Summary**
+<img src=./wiki/images/category-compliance-readme.png>
 
-**insert Recommendations**
-
-**insert Search results**
-
-**insert Category Summary**
-
-**insert Asset Group Selection**
+**Asset Group Selection**
+<img src=./wiki/images/asset-group-selection-Readme.png>
 
 # Installation
 
