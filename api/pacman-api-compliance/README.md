@@ -1,5 +1,8 @@
-# PacBot - API - Compliance
-Compliance Service is Spring boot application and it calculates compliance of your AWS assets by each resource type. Compliance percentage is derived from assets and policy metrics(based on number of assets passed/failed for given policy)
+# Paladin - API - Compliance
+
+Compliance Service is Spring boot application, and it calculates compliance of your AWS assets by each resource type.
+Compliance percentage is derived from assets and policy metrics(based on number of assets passed/failed for given
+policy)
 
 PacBot Compliance reporting has below categories.
 

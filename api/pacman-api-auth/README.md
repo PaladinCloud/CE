@@ -1,4 +1,4 @@
-# PacBot - API - Auth
+# Paladin - API - Auth
 This is a microservice which contains APIs related to OAuth for authentication of API requests
 
 ## How to set it up?

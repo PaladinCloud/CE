@@ -1,4 +1,4 @@
-# PacMan - API - Notifications
+# Paladin - API - Notifications
 This is the notification microservice. This microservice contains APIs for sending out email notifications to users that can be configured.
 
 ## How to set it up?

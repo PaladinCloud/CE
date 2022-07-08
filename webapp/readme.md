@@ -1,6 +1,6 @@
 # webapp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.4.4.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.8.
 
 ## Project brief structure
 
@@ -15,26 +15,14 @@ This is a multi module project. These are the modules available:
         - Assets
         - Omni Search
         - Admin
-        - Tools
-    - _Shared Module_: This module contans all components, services, constant files which are shared across the application
-
-### Feature modules
-
-<img src="./../wiki/images/ui/modules.png">
-
-All feature modules are configurable to be shown or hidden on need basis.
+    - _Shared Module_: This module contains all components, services, constant files which are shared across the
+      application
 
 ## Configurations
 
-Application can be configured to suit your needs, These are the types of configurations available here:
-
- * _Auth type_: By default, if no values are set in auth configuration, a login screen will ask for username and password, if you have added PacMan to your azure ad, you can provide 'clientId' and 'tenant' values in configuration to enable SSO
- * _Feature modules visibility_: Each feature module can be configured to be displayed or hidden on need basis.
- * _Cloud domains_: Production, staging and dev environment domains can be configured here
- * _PacMan Issues_: This configuration is required if you want your users to create jira ticket for the issues reported by PacBot and send those issues to respective teams
-
-All the configurations can be done at this [file](src/config/configuration.ts).
-Check the details about each configuration value [here](https://github.com/tmobile/pacbot/wiki/UI-Configuration)
+* All the configurations can be done at this [file](src/config/configuration.ts).
+* Check the details about each configuration
+  value [here](https://github.com/PaladinCloud/CE/wiki/How-To-Configure-the-UI)
 
 ## Development & Build
 
@@ -43,7 +31,8 @@ You need to set up your development environment before you can do anything.
 
 Install [Node.js® and npm](https://nodejs.org/en/download/) if they are not already on your machine.
 
-> Verify that you are running at least node 6.9.x and npm 3.x.x by running node -v and npm -v in a terminal/console window. Older versions produce errors, but newer versions are fine.
+> Verify that you are running at least node 14.x.x and npm 6.x.x by running node -v and npm -v in a terminal/console
+> window. Older versions produce errors, but newer versions are fine.
 
 Then install the [Angular CLI](https://github.com/angular/angular-cli) globally. You can install angular cli using npm:
 ```
@@ -59,7 +48,7 @@ npm install -g bower
 
 ### Setup Web app
 
-If you are doing this setup, menas you have already cloned the repository.
+If you are doing this setup, means you have already cloned the repository.
 
 Go to `webapp` folder from your terminal/console and run the following commands to install node and bower modules
 
@@ -70,9 +59,11 @@ bower install
 
 Yay! you are good to start the application.
 
-Before we proceed to running the application, one last check, look at the application [configuration](src/config/configurations.ts) and ensure required configurations have values, optional configuration can be skipped for now.
+Before we proceed to running the application, one last check, look at the
+application [configuration](src/config/configurations.ts) and ensure required configurations have values, optional
+configuration can be skipped for now.
 
-Check the details about each configuration value [here](https://github.com/tmobile/pacbot/wiki/UI-Configuration)
+Check the details about each configuration value [here](https://github.com/PaladinCloud/CE/wiki/How-To-Configure-the-UI)
 
 *Let's start the application!*
 
