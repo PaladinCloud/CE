@@ -101,8 +101,8 @@ REQUIRE_SUBNETS_ON_DIFFERENT_ZONE = True
 
 PACBOT_CODE_DIR = str(CURRENT_FILE_PATH.parent.parent)
 PACBOT_LOGIN_CREDENTIALS = {
-    'Admin': "admin@paladincloud.io / PaladinAdmin@Boom!!",
-    'User': "user@paladincloud.io / PaladinUser@Boom!!"
+    'Admin': "admin@paladincloud.io / PaladinAdmin!!",
+    'User': "user@paladincloud.io / PaladinUser!!"
 }
 
 MAKE_ALB_INTERNAL = True
