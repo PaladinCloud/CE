@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -18,26 +18,25 @@ import {
   OnDestroy,
   Input,
   Output,
-  EventEmitter
-} from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
-import { AutorefreshService } from '../../services/autorefresh.service';
-import { environment } from './../../../../environments/environment';
-import { CommonResponseService } from '../../../shared/services/common-response.service';
-import { LoggerService } from '../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
-import { WorkflowService } from '../../../core/services/workflow.service';
-import { RefactorFieldsService } from './../../../shared/services/refactor-fields.service';
+  EventEmitter,
+} from "@angular/core";
+import { Subscription } from "rxjs/Subscription";
+import { ActivatedRoute, Router } from "@angular/router";
+import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
+import { AutorefreshService } from "../../services/autorefresh.service";
+import { environment } from "./../../../../environments/environment";
+import { CommonResponseService } from "../../../shared/services/common-response.service";
+import { LoggerService } from "../../../shared/services/logger.service";
+import { ErrorHandlingService } from "../../../shared/services/error-handling.service";
+import { WorkflowService } from "../../../core/services/workflow.service";
+import { RefactorFieldsService } from "./../../../shared/services/refactor-fields.service";
 
 @Component({
-  selector: 'app-pacman-policy-violations',
-  templateUrl: './pacman-policy-violations.component.html',
-  styleUrls: ['./pacman-policy-violations.component.css'],
-  providers: [CommonResponseService, AutorefreshService]
+  selector: "app-pacman-policy-violations",
+  templateUrl: "./pacman-policy-violations.component.html",
+  styleUrls: ["./pacman-policy-violations.component.css"],
+  providers: [CommonResponseService, AutorefreshService],
 })
-
 export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   public somedata: any;
   public outerArr: any;
@@ -64,14 +63,14 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   lastPaginator: number;
   currentPointer = 0;
   errorValue = 0;
-  searchTxt = '';
+  searchTxt = "";
   showGenericMessage = false;
   firstTimeLoad = true;
 
   private urlToRedirect: string;
   @Input() pageLevel: number;
-  @Input() resourceId = '';
-  @Input() resourceType = 'ec2';
+  @Input() resourceId = "";
+  @Input() resourceType = "ec2";
   @Output() errorOccured = new EventEmitter<any>();
 
   constructor(
@@ -83,16 +82,17 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private workflowService: WorkflowService,
-    private refactorFieldsService: RefactorFieldsService,
+    private refactorFieldsService: RefactorFieldsService
   ) {
     this.durationParams = this.autorefreshService.getDuration();
     this.durationParams = parseInt(this.durationParams, 10);
     this.autoRefresh = this.autorefreshService.autoRefresh;
-    this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
-      assetGroupName => {
-          this.selectedAssetGroup = assetGroupName;
-          this.updateComponent();
-    });
+    this.subscriptionToAssetGroup = this.assetGroupObservableService
+      .getAssetGroup()
+      .subscribe((assetGroupName) => {
+        this.selectedAssetGroup = assetGroupName;
+        this.updateComponent();
+      });
   }
 
   ngOnInit() {
@@ -104,7 +104,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     if (this.resourceId) {
       /* All functions variables which are required to be set for component to be reloaded should go here */
       this.outerArr = [];
-      this.searchTxt = '';
+      this.searchTxt = "";
       this.currentBucket = [];
       this.bucketNumber = 0;
       this.dataTableData = [];
@@ -122,25 +122,33 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
 
   goToDetails(row) {
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-      if (row.col.toLowerCase() === 'policy name') {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root
+      );
+      if (row.col.toLowerCase() === "policy name") {
         this.router.navigate(
           [
-            '/pl/compliance/policy-knowledgebase-details',
-            row.row['Rule Id'].text,
-            'false'
+            "/pl/compliance/policy-knowledgebase-details",
+            row.row["Rule Id"].text,
+            "false",
           ],
-          { relativeTo: this.activatedRoute, queryParamsHandling: 'merge' }
+          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
         );
-      } else if (row.col.toLowerCase() === 'last scanned') {
+      } else if (row.col.toLowerCase() === "last scanned") {
         this.router.navigate(
-          ['../../../../', 'compliance', 'issue-listing', 'issue-details', row.row['Issue ID'].text],
-          { relativeTo: this.activatedRoute, queryParamsHandling: 'merge' }
+          [
+            "../../../../",
+            "compliance",
+            "issue-listing",
+            "issue-details",
+            row.row["Issue ID"].text,
+          ],
+          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
         );
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+      this.logger.log("error", error);
     }
   }
 
@@ -150,7 +158,6 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   }
 
   getAllPatchingDetails() {
-
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }
@@ -159,13 +166,13 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       filter: {},
       from: this.bucketNumber * this.paginatorSize,
       searchtext: this.searchTxt,
-      size: this.paginatorSize
+      size: this.paginatorSize,
     };
 
     const queryParam = {
       from: this.bucketNumber * this.paginatorSize,
       searchtext: this.searchTxt,
-      size: this.paginatorSize
+      size: this.paginatorSize,
     };
 
     this.errorValue = 0;
@@ -175,12 +182,11 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       environment.pacmanPolicyViolations.method;
 
     this.dataSubscription = this.commonResponseService
-      .getData( newUrl, pacmanPolicyViolationsMethod, payload, queryParam)
+      .getData(newUrl, pacmanPolicyViolationsMethod, payload, queryParam)
       .subscribe(
-        response => {
+        (response) => {
           this.showGenericMessage = false;
           try {
-
             this.errorValue = 1;
             this.showLoader = false;
             this.seekdata = false;
@@ -189,7 +195,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
             this.dataComing = true;
 
             if (response.response.length === 0 && this.firstTimeLoad) {
-              this.errorMessage = 'noPolicyFound';
+              this.errorMessage = "noPolicyFound";
             }
             this.firstTimeLoad = false;
             this.totalRows = response.total;
@@ -209,7 +215,6 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
               this.currentBucket[this.bucketNumber] = updatedResponse;
               this.processData(updatedResponse);
             }
-
           } catch (e) {
             this.errorValue = 0;
             this.errorMessage = this.errorHandling.handleJavascriptError(e);
@@ -217,7 +222,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
             this.errorOccured.emit();
           }
         },
-        error => {
+        (error) => {
           this.showGenericMessage = true;
           this.errorMessage = error;
           this.getErrorValues();
@@ -227,13 +232,13 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   }
 
   replaceUrl(url) {
-    let replacedUrl = url.replace('{resourceId}', this.resourceId.toString());
+    let replacedUrl = url.replace("{resourceId}", this.resourceId.toString());
     replacedUrl = replacedUrl.replace(
-      '{assetGroup}',
+      "{assetGroup}",
       this.selectedAssetGroup.toString()
     );
     replacedUrl = replacedUrl.replace(
-      '{resourceType}',
+      "{resourceType}",
       this.resourceType.toString()
     );
     return replacedUrl;
@@ -247,18 +252,20 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   }
   massageData(data) {
     /*
-   * added by Trinanjan 14/02/2017
-   * the funciton replaces keys of the table header data to a readable format
- */
+     * added by Trinanjan 14/02/2017
+     * the funciton replaces keys of the table header data to a readable format
+     */
     const refactoredService = this.refactorFieldsService;
     const newData = [];
-    const formattedFilters = data.map(function(eachRow) {
+    const formattedFilters = data.map(function (eachRow) {
       const KeysTobeChanged = Object.keys(eachRow);
       let newObj = {};
-      KeysTobeChanged.forEach(element => {
+      KeysTobeChanged.forEach((element) => {
         const elementnew =
           refactoredService.getDisplayNameForAKey(
-            element.toLocaleLowerCase()
+            element.toLocaleLowerCase() == "lastscan"
+              ? "status"
+              : element.toLocaleLowerCase()
           ) || element;
         newObj = Object.assign(newObj, { [elementnew]: eachRow[element] });
       });
@@ -279,113 +286,114 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     }
 
     const getCols = Object.keys(getData[0]);
+    console.log("get cols", getCols);
 
-    for ( let row = 0; row < getData.length; row++) {
+    for (let row = 0; row < getData.length; row++) {
       innerArr = {};
-      for ( let col = 0; col < getCols.length; col++) {
-        if (getCols[col].toLowerCase() === 'last scanned') {
-          if (getData[row][getCols[col]].toLowerCase() === 'pass') {
+      for (let col = 0; col < getCols.length; col++) {
+        if (getCols[col].toLowerCase() === "status") {
+          if (getData[row][getCols[col]].toLowerCase() === "pass") {
             cellObj = {
-              link: '',
+              link: "",
               properties: {
-                color: 'rgb(0, 185, 70)',
-                'font-family': 'ex2-medium',
-                'text-transform': 'capitalize'
+                color: "rgb(0, 185, 70)",
+                "font-family": "ex2-medium",
+                "text-transform": "capitalize",
               },
               colName: getCols[col],
               hasPreImg: false,
-              imgLink: '',
+              imgLink: "",
               valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]]
+              text: getData[row][getCols[col]],
             };
           } else {
             cellObj = {
-              link: 'true',
+              link: "true",
               properties: {
-                color: '#d40325',
-                'font-family': 'ex2-medium',
-                'text-transform': 'capitalize'
+                color: "#d40325",
+                "font-family": "ex2-medium",
+                "text-transform": "capitalize",
               },
-              imgProp: { cursor: 'pointer' },
+              imgProp: { cursor: "pointer" },
               colName: getCols[col],
               hasPostImg: true,
               hasPreImg: false,
-              imgLink: '../assets/icons/left-arrow.svg',
+              imgLink: "../assets/icons/left-arrow.svg",
               valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]]
+              text: getData[row][getCols[col]],
             };
           }
-        } else if (getCols[col].toLowerCase() === 'scan history') {
+        } else if (getCols[col].toLowerCase() === "scan history") {
           const arr = [];
-          for ( let ele = 0; ele < getData[row][getCols[col]].length; ele++) {
+          for (let ele = 0; ele < getData[row][getCols[col]].length; ele++) {
             let obj = {};
-            if (getData[row][getCols[col]][ele] === 'pass') {
+            if (getData[row][getCols[col]][ele] === "pass") {
               obj = {
                 text: getData[row][getCols[col]][ele],
                 styling: {
-                  height: '0.66em',
-                  width: '0.66em',
-                  background: 'rgb(0, 185, 70)',
-                  'border-radius': '50%',
-                  margin: '0em 1em 0em 0em'
-                }
+                  height: "0.66em",
+                  width: "0.66em",
+                  background: "rgb(0, 185, 70)",
+                  "border-radius": "50%",
+                  margin: "0em 1em 0em 0em",
+                },
               };
             } else {
               obj = {
                 text: getData[row][getCols[col]][ele],
                 styling: {
-                  height: '0.66em',
-                  width: '0.66em',
-                  background: 'rgb(212, 3, 37)',
-                  'border-radius': '50%',
-                  margin: '0em 1em 0em 0em'
-                }
+                  height: "0.66em",
+                  width: "0.66em",
+                  background: "rgb(212, 3, 37)",
+                  "border-radius": "50%",
+                  margin: "0em 1em 0em 0em",
+                },
               };
             }
             arr.push(obj);
           }
 
           cellObj = {
-            link: '',
+            link: "",
             properties: {
-              color: ''
+              color: "",
             },
             colName: getCols[col],
             isArray: true,
             hasPreImg: false,
-            imgLink: '',
+            imgLink: "",
             valText: getData[row][getCols[col]],
-            text: arr
+            text: arr,
           };
-        } else if (getCols[col].toLowerCase() === 'policy name') {
+        } else if (getCols[col].toLowerCase() === "policy name") {
           cellObj = {
-            link: 'true',
+            link: "true",
             properties: {
-              'text-transform': 'lowercase',
-              'text-shadow': '0.1px 0'
+              "text-transform": "lowercase",
+              "text-shadow": "0.1px 0",
             },
             colName: getCols[col],
             hasPreImg: false,
-            imgLink: '',
+            imgLink: "",
             text: getData[row][getCols[col]],
-            valText: getData[row][getCols[col]]
+            valText: getData[row][getCols[col]],
           };
         } else {
           cellObj = {
-            link: '',
+            link: "",
             properties: {
-              color: ''
+              color: "",
             },
             colName: getCols[col],
             hasPreImg: false,
-            imgLink: '',
+            imgLink: "",
             valText: getData[row][getCols[col]],
-            text: getData[row][getCols[col]]
+            text: getData[row][getCols[col]],
           };
         }
 
         innerArr[getCols[col]] = cellObj;
-        totalVariablesObj[getCols[col]] = '';
+        totalVariablesObj[getCols[col]] = "";
       }
       this.outerArr.push(innerArr);
     }
