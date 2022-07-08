@@ -1,4 +1,4 @@
-# PacBot - Data Shipper
+# Paladin - Data Shipper
 This is a batch job that queries a database in which asset related information is stored such as vulnerability, compliance etc. and uploads them into an Elastic Search Index
 
 ## How to set it up?

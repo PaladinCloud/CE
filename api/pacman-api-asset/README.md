@@ -1,4 +1,4 @@
-# PacMan - API - Assets
+# Paladin - API - Assets
 Any enterprise will have a number of assets under its IT infrastructure. These assets could be hosted on an on premises data center or could be on a private cloud or a public cloud like AWS. This microservice consolidates all such information about assets and presents it to the user in different perspectives. The Assets Dashboard and the Assets Listing page in the UI invokes this microservice to render all the required data. This microservice contains all such APIs related to assets. For e.g. getting a count of assets, listing attributes on assets, searching for assets etc. The assets could be onprem or could be inside a cloud.
 
 ## How to set it up?

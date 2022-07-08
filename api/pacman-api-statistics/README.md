@@ -1,4 +1,4 @@
-# PacMan - API - Statistics
+# Paladin - API - Statistics
 This micro service is responsible for providing all the services for querying continuous compliance statistics Data. It provides all supporting APIs required to host the Statistics Dashboard
 
 ## How to set it up?

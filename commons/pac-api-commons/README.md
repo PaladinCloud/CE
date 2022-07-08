@@ -1,4 +1,4 @@
-# PacMan - Commons
+# Paladin - Commons
 This is a commons library. This contains common utilities which are used across Pacman utilities. Utilities include APIs to invoke ElasticSearch requests etc.
 
 ## How to set it up?
