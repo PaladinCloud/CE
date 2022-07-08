@@ -20,7 +20,7 @@
 .resource-tiles-container {
   height: calc(100% - 100px);
   overflow-y: auto;
-  padding-top: 16px;
+  padding: 16px 12px 0px 0px;
 }
 
 .resource-details-container {
@@ -65,6 +65,7 @@ app-inventory-container{
 }
 
 .asset-info-container{
+  display: none;
   padding: 20px 0px; 
   width: 250px;
 }

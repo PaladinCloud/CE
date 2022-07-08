@@ -67,17 +67,23 @@ app-data-table{
 }
 
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(1) {
-  width: 48%;
+  width: 40%;
   margin-left: 8px;
 }
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(2) {
-  width: 14%;
+  width: 13%;
 }
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(3) {
-  width: 15%;
+  width: 14%;
 }
 .container-3 /deep/ .data-table-wrap .table-cells:nth-child(4) {
-  width: 21%;
+  width: 14%;
+}
+.container-3 /deep/ .data-table-wrap .table-cells:nth-child(5) {
+  width: 17%;
+}
+.container-3  /deep/ .table-cells {
+  padding: 16px 10px !important;
 }
 
 .container-3 /deep/ .data-table-inner-wrap {

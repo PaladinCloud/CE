@@ -134,7 +134,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
           ],
           { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
         );
-      } else if (row.col.toLowerCase() === "last scanned") {
+      } else if (row.col.toLowerCase() === 'status') {
         this.router.navigate(
           [
             "../../../../",
@@ -264,12 +264,13 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
         const elementnew =
           refactoredService.getDisplayNameForAKey(
             element.toLocaleLowerCase() == "lastscan"
-              ? "status"
-              : element.toLocaleLowerCase()
+            ? "status"
+            : element.toLocaleLowerCase()
           ) || element;
         newObj = Object.assign(newObj, { [elementnew]: eachRow[element] });
       });
       newData.push(newObj);
+
     });
     return newData;
   }
@@ -290,9 +291,9 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
 
     for (let row = 0; row < getData.length; row++) {
       innerArr = {};
-      for (let col = 0; col < getCols.length; col++) {
-        if (getCols[col].toLowerCase() === "status") {
-          if (getData[row][getCols[col]].toLowerCase() === "pass") {
+      for ( let col = 0; col < getCols.length; col++) {
+        if (getCols[col].toLowerCase() === 'status') {
+          if (getData[row][getCols[col]].toLowerCase() === 'pass') {
             cellObj = {
               link: "",
               properties: {

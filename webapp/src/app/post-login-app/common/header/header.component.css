@@ -123,10 +123,16 @@
   padding: 6px;
 }
 
-.user-image-wrapper > img {
+.user-image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 32px;
   width: 32px;
   border-radius: 4px;
+  text-transform: capitalize;
+  color: var(--text-medium-emphasis);
+  background-color: var(--background-grey);
 }
 
 .user-info-wrapper {
