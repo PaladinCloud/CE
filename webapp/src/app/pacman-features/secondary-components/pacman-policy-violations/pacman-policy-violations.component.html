@@ -34,7 +34,7 @@
                         (searchRowTxt)='searchCalled($event)'
                         (searchTriggerred)='callNewSearch()'
                         (selectedRow)=' goToDetails($event)'
-                        [columnWhiteList]="[ 'Policy Name', 'Last Scanned', 'frequency']">
+                        [columnWhiteList]="[ 'Policy Name', 'Status', 'frequency']">
         </app-data-table>
         <div class="error_msg">
             <app-error-message *ngIf='errorValue === 1 && dataTableData.length === 0' [selectedValue]="errorMessage"></app-error-message>
