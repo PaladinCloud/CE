@@ -43,10 +43,6 @@ public class CheckDiskEncryption extends BaseRule {
         logger.info("Executing Azure Security rule");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String[] port = ruleParam.get(PacmanRuleConstants.PORT).split(",");
-        String protocol = ruleParam.get(PacmanRuleConstants.PROTOCOL);
-        logger.info("check Public Access for the   port: {} ", ((Object[]) port));
-        logger.info("check Public Access for the Protocol : {} ", protocol);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
