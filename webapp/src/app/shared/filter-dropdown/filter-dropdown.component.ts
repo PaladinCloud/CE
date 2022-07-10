@@ -9,6 +9,7 @@ export class FilterDropdownComponent implements OnInit {
 
   @Input() filterTypeLabels = [];
   @Input() filterTagLabels = [];
+  @Input() isFilterTagLoaded;
   @Output() selection = new EventEmitter();
   @Output() selectedFilters = new EventEmitter();
   filterName: String;

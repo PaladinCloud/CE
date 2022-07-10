@@ -175,6 +175,7 @@ export class DataTableComponent implements OnInit, OnChanges {
   ishoveredRow: boolean = false;
   ishoveredIndex;
   isHovered: boolean;
+  @Input() isFilterTagLoaded;
 
 
   errorMessage = "apiResponseError";

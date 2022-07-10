@@ -36,7 +36,7 @@
           [filteredArray]="filteredArray"></app-filtered-selector>
         <mat-menu #menu="matMenu" yPosition="below">
           <app-filter-dropdown [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
-            (selection)='changeFilterType($event)' (selectedFilters)="changeFilterTags($event)">
+            (selection)='changeFilterType($event)' (selectedFilters)="changeFilterTags($event)" [isFilterTagLoaded]="isFilterTagLoaded">
           </app-filter-dropdown>
         </mat-menu>
       </div>

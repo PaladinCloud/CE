@@ -39,7 +39,7 @@
             [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
             (removeAllCheckedEventEmitter)="handleRemoveAllChecked($event)" (selectedFilterType)='changeFilterType($event)'
             (selectedFilter)="changeFilterTags($event)" (deleteAllFilters)="deleteFilters($event)"
-            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters" [doNotDisplaySearch]="doNotDisplaySearch">
+            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters" [doNotDisplaySearch]="doNotDisplaySearch" [isFilterTagLoaded]="isFilterTagLoaded">
         </app-data-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"

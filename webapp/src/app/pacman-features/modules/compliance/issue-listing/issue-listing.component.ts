@@ -94,6 +94,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public backButtonRequired;
   public agAndDomain = {};
   private doNotDisplaySearch=true;
+  isFilterTagLoaded = false;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -282,6 +283,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
+    this.isFilterTagLoaded = false;
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
@@ -301,6 +303,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTagOptions = response[0].response;
           this.filterTagLabels = _.map(response[0].response, "name");
           this.filterTagLabels.sort((a,b)=>a.localeCompare(b));
+          this.isFilterTagLoaded = true;
         });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
