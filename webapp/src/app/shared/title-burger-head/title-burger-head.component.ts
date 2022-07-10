@@ -50,6 +50,7 @@ export class TitleBurgerHeadComponent implements OnInit, OnDestroy {
   private assetGroupSubscription: Subscription;
   selectedAssetGroup;
 
+  @Input() doNotDisplaySearch;
   @Input() subHeadTitle;
   @Input() routeTo;
   @Input() routeParams: {};

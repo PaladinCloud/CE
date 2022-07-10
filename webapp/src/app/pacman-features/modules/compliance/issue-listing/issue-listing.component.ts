@@ -93,6 +93,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public pageLevel = 0;
   public backButtonRequired;
   public agAndDomain = {};
+  private doNotDisplaySearch=true;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -482,11 +483,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const KeysTobeChanged = Object.keys(responseData);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
+        if(element=="PolicyName") {
+          const elementnew = "Rule Name";
+          newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+        }
+        else {
         const elementnew =
           refactoredService.getDisplayNameForAKey(
             element.toLocaleLowerCase()
           ) || element;
-        newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+          newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+        }
       });
       newData.push(newObj);
     });
@@ -527,7 +534,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               valText: getData[row][getCols[col]],
             };
           } else if (
-            getCols[col].toLowerCase() === "policy name" ||
+            getCols[col].toLowerCase() === "rule name" ||
             getCols[col].toLowerCase() === "issue id"
           ) {
             cellObj = {
@@ -694,7 +701,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           .catch((error) => {
             this.logger.log("error", "Error in navigation - " + error);
           });
-      } else if (row.col.toLowerCase() === "policy name") {
+      } else if (row.col.toLowerCase() === "rule name") {
         this.router
           .navigate(
             [

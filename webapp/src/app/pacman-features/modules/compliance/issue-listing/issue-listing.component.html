@@ -23,7 +23,7 @@
             [parentName]="'policyDetailsTableMessage'" [showingArr]="showingArr" [outerArr]="outerArr"
             [searchableHeader]="true" [allColumns]="allColumns" [dataHead]="'Policy Violations'"
             (selectedRow)="goToDetails($event)" [columnWhiteList]="[
-                      'Policy Name',
+                      'Rule Name',
                       'Issue ID',
                       'Resource ID',
                       'Status',
@@ -39,7 +39,7 @@
             [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
             (removeAllCheckedEventEmitter)="handleRemoveAllChecked($event)" (selectedFilterType)='changeFilterType($event)'
             (selectedFilter)="changeFilterTags($event)" (deleteAllFilters)="deleteFilters($event)"
-            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters">
+            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters" [doNotDisplaySearch]="doNotDisplaySearch">
         </app-data-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"

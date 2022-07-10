@@ -29,7 +29,7 @@
             <app-searchable-dropdown (selection)='selectionDD($event)' [placeholder]="'Search filter tags'"
                 [items]='dropDowndata'></app-searchable-dropdown>
         </div>
-        <div class='relative search-container' *ngIf='showSearch && subHeadTitle!="Policy Violations"'>
+        <div class='relative search-container' *ngIf='showSearch && !doNotDisplaySearch'>
             <input required type='text' class='header-search-input' id='headSearch{{tableIdAppend}}' (keydown)="keyDownFunction($event)" [(ngModel)]='searchQuery' (ngModelChange)='searchCalled()'>
             <label class='absolute search-label' for='headSearch{{tableIdAppend}}'> <img class='pointer' style="height: 1.33em;" src='../assets/icons/search.svg'></label>
         </div>
