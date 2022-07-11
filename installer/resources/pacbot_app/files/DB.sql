@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `cf_PatchStats_Kernel` (
 /*Table structure for table `cf_Policy` */
 
 CREATE TABLE IF NOT EXISTS `cf_Policy` (
-  `policyId` varchar(75) COLLATE utf8_bin NOT NULL,
+  `policyId` varchar(200) COLLATE utf8_bin NOT NULL,
   `policyName` varchar(200) COLLATE utf8_bin DEFAULT NULL,
   `policyDesc` text COLLATE utf8_bin,
   `resolution` longtext COLLATE utf8_bin,
