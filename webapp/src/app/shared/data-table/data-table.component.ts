@@ -170,9 +170,12 @@ export class DataTableComponent implements OnInit, OnChanges {
   @Output() deleteAllFilters = new EventEmitter<any>();
   @Output() deleteFilter = new EventEmitter<any>();
   @Input() filteredArray = [];
+  @Input() doNotDisplaySearch;
+
   ishoveredRow: boolean = false;
   ishoveredIndex;
   isHovered: boolean;
+  @Input() isFilterTagLoaded;
 
 
   errorMessage = "apiResponseError";
