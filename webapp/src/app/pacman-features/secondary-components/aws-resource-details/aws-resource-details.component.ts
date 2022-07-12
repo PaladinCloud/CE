@@ -24,6 +24,7 @@ import { ICONS } from './../../../shared/constants/icons-mapping';
 import { DomainTypeObservableService } from '../../../core/services/domain-type-observable.service';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { CONFIGURATIONS } from './../../../../config/configurations';
+import { UtilsService } from '../../../shared/services/utils.service';
 
 @Component({
   selector: 'app-aws-resource-details',
@@ -42,6 +43,7 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   //  private selectedResource: any;
   private activeFilterCategory: any;
   private searchTxt = '';
+  routeTo = 'asset-list';
 
   private resourceTypeSelectionSubscription: Subscription;
   selectedResource: any = {
@@ -141,7 +143,9 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
       }
     );
   }
-  constructor(private fetchResourcesService: FetchResourcesService,
+  constructor(
+    private utils: UtilsService,
+    private fetchResourcesService: FetchResourcesService,
     private route: ActivatedRoute,
     private assetGroupObservableService: AssetGroupObservableService,
     private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,

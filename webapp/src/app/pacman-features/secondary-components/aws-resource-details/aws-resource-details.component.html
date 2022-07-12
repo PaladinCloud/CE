@@ -54,7 +54,7 @@
                     </app-aws-app-tile>
                 </li>
             </ul>
-            <div class="no-content" *ngIf="filteredResources.length == 0">No Items Available In This Category</div>
+            <div class="no-content" *ngIf="filteredResources.length == 0"><app-empty-state message="No Items Available In This Category"></app-empty-state></div>
         </div>
     </div>
     <div class="resource-details-container flex-col" *ngIf="dataLoaded">
@@ -65,7 +65,9 @@
                 <app-asset-info [targetType]="selectedResource.type" [pageLevel]="pageLevel"></app-asset-info>
             </div>
         </div>
-        <div class="multiline-chart-header">Inventory</div>
+        <div class="multiline-chart-header">
+            <app-title-burger-head [subHeadTitle]="'Inventory'" [arrow]="'true'" [routeParams]="utils.makeFilterObj({ 'resourceType': selectedResource.type })" [routeTo]="routeTo" [pageLevel]="pageLevel"></app-title-burger-head>
+        </div>
         <div class="multiline-chart" *ngIf="selectedResource !== undefined">
             <app-inventory-container [targetType]="selectedResource.type" [pageLevel]="pageLevel">
             </app-inventory-container>

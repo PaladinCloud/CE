@@ -35,7 +35,9 @@
       </div>
       <div class="filter-content" *ngIf="isExpanded">
         <div *ngIf="!isFilterTagLoaded" class="loader absolute"></div>
-        <div *ngIf="isFilterTagLoaded && filterTagLabels.length==0" class="no-content">No filter tags exist</div>
+        <div *ngIf="isFilterTagLoaded && filterTagLabels.length==0" class="no-content">
+          <app-empty-state message="No filter tags exist !"></app-empty-state>
+        </div>
         <div *ngFor="let filterTagLabel of filterTagLabels | search: searchText" class="contextual-menu"
           (click)="selectFilter(filterTagLabel)">
           <div class="contextual-menu-text-content" title="{{filterTagLabel}}">

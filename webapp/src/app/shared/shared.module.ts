@@ -95,6 +95,7 @@ import { SelectDropDownModule } from "ngx-select-dropdown";
 import { TableListComponent } from "./table-list/table-list.component";
 import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
 import { MatIconModule } from "@angular/material";
+import { EmptyStateComponent } from "./empty-state/empty-state.component";
 
 @NgModule({
   imports: [
@@ -114,6 +115,7 @@ import { MatIconModule } from "@angular/material";
     AgGridModule.withComponents([AgGridTableComponent]),
   ],
   declarations: [
+    EmptyStateComponent,
     FilterDropdownComponent,
     CanvasSidePanelComponent,
     ButtonIconComponent,
@@ -170,6 +172,7 @@ import { MatIconModule } from "@angular/material";
     TableListComponent,
   ],
   exports: [
+    EmptyStateComponent,
     DoughnutChartComponent,
     CommonModule,
     FormsModule,
