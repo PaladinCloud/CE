@@ -12,7 +12,10 @@
  * limitations under the License.
  -->
 
- <div class="error-handling" *ngIf="errorMessages != undefined">
+ <div *ngIf="selectedValue == 'noDataAvailable'">
+     <app-empty-state [message]="errorMessages.description"></app-empty-state>
+ </div>
+ <div class="error-handling" *ngIf="errorMessages != undefined && selectedValue != 'noDataAvailable'">
     <p class="bold-text">
         {{errorMessages.title}}
     </p>

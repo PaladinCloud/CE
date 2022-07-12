@@ -109,6 +109,7 @@ export class ComplianceDashboardComponent implements OnInit {
     link: boolean;
     styling: { cursor: string };
   };
+  isPolicyDataLoaded: boolean = false;
   pacmanIssues: any;
   pacmanCategories: any[];
   showdata: boolean;
@@ -254,17 +255,21 @@ export class ComplianceDashboardComponent implements OnInit {
                 dataValue.push(this.violationCards[i].num);
               }
               this.fetchedViolations = true;
-              this.policyData = {
-                color: ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"],
-                data: dataValue,
-                legend: ["Critical", "High", "Medium", "Low"],
-                legendTextcolor: "#000",
-                totalCount: totalCount,
-                link: true,
-                styling: {
-                  cursor: "pointer",
-                },
-              };
+              this.isPolicyDataLoaded = false;
+              if(dataValue){
+                this.policyData = {
+                  color: ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"],
+                  data: dataValue,
+                  legend: ["Critical", "High", "Medium", "Low"],
+                  legendTextcolor: "#000",
+                  totalCount: totalCount,
+                  link: true,
+                  styling: {
+                    cursor: "pointer",
+                  },
+                };
+              }
+              this.isPolicyDataLoaded = true;
               this.loaded = true;
               this.showdata = true;
               this.error = false;
