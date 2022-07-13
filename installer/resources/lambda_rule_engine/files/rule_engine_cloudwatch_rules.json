@@ -2699,7 +2699,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_vnet_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Assign Vnet mandatory tags",
+    "displayName": "Assign Virtual Network mandatory tags",
     "createdDate": "2019-10-25",
     "modifiedDate": "2019-10-25",
     "severity": "high",
