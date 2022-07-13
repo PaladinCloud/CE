@@ -4092,6 +4092,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AwsAsgInactiveSecurityGroup_version-1_AwsAsgInactiveSecurityGroup_asg",
+    "ruleUUID": "aws_asg_config_should_use_active_security_group",
+    "policyId": "AwsAsgInactiveSecurityGroup_version-1",
+    "ruleName": "AWS_Asg_launch_configuration_should_use_active_security _groups",
+    "targetType": "asg",
+    "assetGroup": "aws",
+    "alexaKeyword": "AwsAsgWithMissingSecurityGroup",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-asg-referencing-inactive-sg\",\"encrypt\":false},{\"key\":\"esSgURL\",\"value\":\"\/aws\/sg\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esAsgLcURL\",\"value\":\"\/aws\/asg_launchconfig\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AwsAsgInactiveSecurityGroup_version-1_AwsAsgInactiveSecurityGroup_asg\",\"autofix\":false,\"alexaKeyword\":\"AwsAsgWithMissingSecurityGroup\",\"ruleRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"policyId\":\"AwsAsgInactiveSecurityGroup_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_asg_config_should_use_active_security_group\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_asg_config_should_use_active_security_group",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny ASG launch configuration referencing missing security group",
+    "createdDate": "2022-07-13",
+    "modifiedDate": "2022-07-13",
+    "severity": "critical",
+    "category": "security"
+  },
+  {
     "ruleId": "Aws_AMI_encryption_version-1_aws_enable_encryption_ami",
     "ruleUUID": "aws_ami_should_be_encrypted",
     "policyId": "Aws_AMI_encryption_version-1",
