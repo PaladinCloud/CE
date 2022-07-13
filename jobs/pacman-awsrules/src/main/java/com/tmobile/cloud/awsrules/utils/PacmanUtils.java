@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -1068,6 +1069,77 @@ public class PacmanUtils {
         }
         return list;
     }
+    
+	/**
+	 * @param secGroups
+	 * @param esSgUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getInactiveSecurityGroups(Set<String> secGroups, String esSgUrl) throws Exception {
+
+		Set<String> securityGroups = new HashSet<>();
+		List<String> invactiveSecGroups = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_ID), secGroups);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esSgUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String groupId = source.get(PacmanRuleConstants.GROUP_ID).getAsString();
+					if(StringUtils.isNotEmpty(groupId))
+						securityGroups.add(source.get(PacmanRuleConstants.GROUP_ID).getAsString());
+				}
+			}
+
+		}
+		if(!CollectionUtils.isNullOrEmpty(secGroups)) 
+			invactiveSecGroups = secGroups.stream().filter(group -> !securityGroups.contains(group)).collect(Collectors.toList());
+		
+		return invactiveSecGroups;
+	}
+    
+	/**
+	 * @param arn
+	 * @param esAsgLcUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getAsgSecurityGroupsByArn(String arn, String esAsgLcUrl) throws Exception {
+
+		List<String> securityGroups = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ASG_ARN_ATTRIBUTE), arn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esAsgLcUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String groupId = source.get(PacmanRuleConstants.SECURITY_GROUPS).getAsString();
+					if(StringUtils.isNotEmpty(groupId)) {
+						securityGroups.addAll(Arrays.asList(groupId.split(",")));
+					}
+				}
+			}
+
+		}
+		return securityGroups;
+	}
     
 	/**
 	 * @param kmsKeyId
