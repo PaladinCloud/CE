@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "^4.4.7",
     "@angular/platform-server": "^4.4.7",
     "@angular/router": "^4.4.7",
+    "@types/geojson": "7946.0.8",
     "@types/lodash": "4.14.112",
     "ag-grid": "^16.0.1",
     "ag-grid-angular": "^16.0.0",
