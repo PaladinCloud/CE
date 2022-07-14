@@ -50,7 +50,7 @@ export class PatchingGraphComponent implements OnInit, OnChanges {
   @Input() idUnique: any;
   @Input() today: any;
 
-  @ViewChild('graphContainer') graphContainer: ElementRef;
+  @ViewChild('graphContainer', {static: false}) graphContainer: ElementRef;
 
   private margin = { top: 15, right: 20, bottom: 30, left: 60 };
 

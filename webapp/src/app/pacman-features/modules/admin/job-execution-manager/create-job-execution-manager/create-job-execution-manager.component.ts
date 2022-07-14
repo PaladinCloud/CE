@@ -42,8 +42,8 @@ import { ErrorHandlingService } from '../../../../../shared/services/error-handl
   ]
 })
 export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('jobFrequencyMonthDay') jobFrequencyMonthDayComponent: SelectComponent;
+  @ViewChild('targetType', {static: false}) targetTypeSelectComponent: SelectComponent;
+  @ViewChild('jobFrequencyMonthDay', {static: false}) jobFrequencyMonthDayComponent: SelectComponent;
 
   pageTitle = 'Create Job Execution Manager';
   allJobNames = [];

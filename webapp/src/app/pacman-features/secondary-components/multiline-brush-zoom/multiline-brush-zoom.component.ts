@@ -54,7 +54,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
 
   @Output() error: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild("graphContainer") graphContainer: ElementRef;
+  @ViewChild("graphContainer", {static: false}) graphContainer: ElementRef;
 
   private margin = { top: 15, right: 20, bottom: 30, left: 60 };
   private margin2 = {

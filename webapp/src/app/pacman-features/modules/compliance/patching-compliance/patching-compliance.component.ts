@@ -32,7 +32,7 @@ import { WorkflowService } from '../../../../core/services/workflow.service';
 
 export class PatchingComplianceComponent implements OnInit, OnDestroy {
 
-  @ViewChild('widget') widgetContainer: ElementRef;
+  @ViewChild('widget', {static: false}) widgetContainer: ElementRef;
 
   pageTitle = 'Cloud - Linux OS Patching';
   widgetWidth: number;

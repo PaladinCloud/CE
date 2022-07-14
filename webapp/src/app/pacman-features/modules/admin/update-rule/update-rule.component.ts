@@ -43,11 +43,11 @@ import { UploadFileService } from '../../../services/upload-file-service';
   ]
 })
 export class UpdateRuleComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
+  @ViewChild('targetType', {static: false}) targetTypeSelectComponent: SelectComponent;
   // @ViewChild('ruleFrequencyMonthDay') ruleFrequencyMonthDayComponent: SelectComponent;
-  @ViewChild('ruleFrequency') ruleFrequencyComponent: SelectComponent;
-  @ViewChild('ruleSeverity') ruleSeverityComponent: SelectComponent;
-  @ViewChild('ruleCategory') ruleCategoryComponent: SelectComponent;
+  @ViewChild('ruleFrequency', {static: false}) ruleFrequencyComponent: SelectComponent;
+  @ViewChild('ruleSeverity', {static: false}) ruleSeverityComponent: SelectComponent;
+  @ViewChild('ruleCategory', {static: false}) ruleCategoryComponent: SelectComponent;
 
   ruleFrequencyMonth: any;
   ruleFrequencyDay: any;

@@ -49,7 +49,7 @@ export class MultilineChartComponent implements OnInit, OnChanges {
   @Input() translateChange: any;
   @Input() fullArea: any;
 
-  @ViewChild('widgetContainer') widgetContainer: ElementRef;
+  @ViewChild('widgetContainer', {static: false}) widgetContainer: ElementRef;
 
   private margin = {top: 15, right: 20, bottom: 30, left: 60};
 

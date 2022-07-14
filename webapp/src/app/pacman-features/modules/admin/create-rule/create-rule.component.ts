@@ -42,8 +42,8 @@ import { UploadFileService } from '../../../services/upload-file-service';
   ]
 })
 export class CreateRuleComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('ruleFrequencyMonthDay') ruleFrequencyMonthDayComponent: SelectComponent;
+  @ViewChild('targetType', {static: false}) targetTypeSelectComponent: SelectComponent;
+  @ViewChild('ruleFrequencyMonthDay', {static: false}) ruleFrequencyMonthDayComponent: SelectComponent;
   ruleLoader = false;
   pageTitle = 'Create Rule';
   isRuleIdValid = -1;

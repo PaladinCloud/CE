@@ -36,7 +36,7 @@ import {AutorefreshService} from '../../services/autorefresh.service';
 
 export class TaggingComplianceTrendComponent implements OnInit, OnDestroy {
 
-  @ViewChild('taggingComplianceOverviewContainer') widgetContainer: ElementRef;
+  @ViewChild('taggingComplianceOverviewContainer', {static: false}) widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;

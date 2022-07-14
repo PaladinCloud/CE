@@ -40,7 +40,7 @@ import { WorkflowService } from '../../../../core/services/workflow.service';
   ]
 })
 export class VulnerabilitiesComplianceComponent implements OnInit, OnDestroy {
-  @ViewChild('widget') widgetContainer: ElementRef;
+  @ViewChild('widget', {static: false}) widgetContainer: ElementRef;
 
   pageTitle = 'Vulnerabilities';
   widgetWidth: number;

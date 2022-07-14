@@ -59,8 +59,8 @@ import { UploadFileService } from '../../../../services/upload-file-service';
   ]
 })
 export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
-  @ViewChild('attributeValueElement') attributeValueElement: SelectComponent;
-  @ViewChild('targetType') targetTypeElement: SelectComponent;
+  @ViewChild('attributeValueElement', {static: false}) attributeValueElement: SelectComponent;
+  @ViewChild('targetType', {static: false}) targetTypeElement: SelectComponent;
 
   pageTitle = 'Create Asset Group';
   breadcrumbArray = ['Asset Groups'];

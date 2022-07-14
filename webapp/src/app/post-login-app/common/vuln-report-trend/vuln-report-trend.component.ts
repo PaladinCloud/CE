@@ -43,7 +43,7 @@ import { AssetTilesService } from '../../../core/services/asset-tiles.service';
 
 export class VulnReportTrendComponent implements OnDestroy, OnChanges, AfterViewInit {
 
-  @ViewChild( VulnTrendGraphComponent ) child;
+  @ViewChild( VulnTrendGraphComponent, {static: false}) child;
 
   vulnReportSubscription: Subscription;
   subscriptionToAssetGroup: Subscription;

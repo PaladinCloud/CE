@@ -25,7 +25,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
   valueUpperLimit;
   barHeight = 26;
   padding = 0.5;
-  @ViewChild('barChart') barChart: ElementRef;
+  @ViewChild('barChart', {static: false}) barChart: ElementRef;
 
   constructor(private ngZone: NgZone) {
     window.onresize = (e) => {

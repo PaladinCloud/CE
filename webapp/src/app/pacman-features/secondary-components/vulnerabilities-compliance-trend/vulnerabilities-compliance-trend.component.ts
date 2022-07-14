@@ -35,7 +35,7 @@ import { AutorefreshService } from '../../services/autorefresh.service';
 })
 export class VulnerabilitiesComplianceTrendComponent implements OnInit, OnDestroy {
 
-  @ViewChild('vulnerabilitiesComplianceOverviewContainer') widgetContainer: ElementRef;
+  @ViewChild('vulnerabilitiesComplianceOverviewContainer', {static: false}) widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;

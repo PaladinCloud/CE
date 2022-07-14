@@ -40,7 +40,7 @@ import { CONFIGURATIONS } from '../../../../../config/configurations';
 })
 export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('widgetCpu') widgetContainer: ElementRef;
+  @ViewChild('widgetCpu', {static: false}) widgetContainer: ElementRef;
 
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
   resourceId: string;

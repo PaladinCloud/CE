@@ -78,7 +78,7 @@ export class StatsOverlayComponent implements OnInit, OnDestroy, AfterViewInit {
   public strokeColor = 'transparent';
   public totalAutoFixesApplied: any = '';
   private autorefreshInterval;
-  @ViewChild('statsDoughnut') widgetContainer: ElementRef;
+  @ViewChild('statsDoughnut', {static: false}) widgetContainer: ElementRef;
   config;
 
   constructor(

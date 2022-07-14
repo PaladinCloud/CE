@@ -23,7 +23,7 @@ import { Component, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewC
 
 export class TableListComponent implements OnChanges, OnInit {
 
-  @ViewChild('tableInp') tableInp: ElementRef;
+  @ViewChild('tableInp', {static: false}) tableInp: ElementRef;
 
   checkValue = false;
   selectedValue;

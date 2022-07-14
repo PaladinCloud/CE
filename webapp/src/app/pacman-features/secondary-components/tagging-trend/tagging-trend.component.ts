@@ -32,7 +32,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class TaggingTrendComponent implements OnInit, OnDestroy {
 
-  @ViewChild('certificateHistoryContainer') widgetContainer: ElementRef;
+  @ViewChild('certificateHistoryContainer', {static: false}) widgetContainer: ElementRef;
 
     private assetGroupSubscription: Subscription;
     private complianceDropdownSubscription: Subscription;

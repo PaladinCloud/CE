@@ -31,7 +31,7 @@ export class SearchbarDropdownComponent implements AfterViewInit {
     ************ Component details ends here  ******************
    */
 
-  @ViewChild('omniInp') omniInp: ElementRef;
+  @ViewChild('omniInp', {static: false}) omniInp: ElementRef;
 
   @Input() dropdownData: any; // --> stores the dropdown for search category
   @Input() searchboxPlaceHolder: any; // --> search box placeholder

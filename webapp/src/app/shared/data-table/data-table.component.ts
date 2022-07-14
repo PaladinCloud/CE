@@ -166,7 +166,7 @@ export class DataTableComponent implements OnInit, OnChanges {
   @Input() filterTagLabels = [];
   @Output() selectedFilterType = new EventEmitter<any>();
   @Output() selectedFilter = new EventEmitter<any>();
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger, {static: false}) trigger: MatMenuTrigger;
   @Output() deleteAllFilters = new EventEmitter<any>();
   @Output() deleteFilter = new EventEmitter<any>();
   @Input() filteredArray = [];
