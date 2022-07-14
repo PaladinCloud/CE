@@ -36,7 +36,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
 })
 export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy {
 
-  @ViewChild('policyHistoryContainer', {static: false}) widgetContainer: ElementRef;
+  @ViewChild('policyHistoryContainer') widgetContainer: ElementRef;
 
     private assetGroupSubscription: Subscription;
     private domainSubscription: Subscription;

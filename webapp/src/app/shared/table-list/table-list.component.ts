@@ -13,7 +13,7 @@
  */
 
 
-import { Component, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef, Renderer, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewChild, ElementRef, OnInit, Renderer2 } from '@angular/core';
 
 @Component({
   selector: 'app-table-list',
@@ -23,7 +23,7 @@ import { Component, Input, OnChanges, SimpleChanges, Output, EventEmitter, ViewC
 
 export class TableListComponent implements OnChanges, OnInit {
 
-  @ViewChild('tableInp', {static: false}) tableInp: ElementRef;
+  @ViewChild('tableInp') tableInp: ElementRef;
 
   checkValue = false;
   selectedValue;
@@ -44,7 +44,7 @@ export class TableListComponent implements OnChanges, OnInit {
   @Output() showHelpContent = new EventEmitter();
 
   constructor(
-    private renderer: Renderer) {
+    private renderer: Renderer2) {
   }
 
   /**
@@ -161,7 +161,7 @@ export class TableListComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges) {
 
     if (this.tableInp) {
-      this.renderer.invokeElementMethod(this.tableInp.nativeElement, 'focus');
+      this.tableInp.nativeElement.focus();
     }
 
     // const DataChanges = changes['DataObject'];

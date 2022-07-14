@@ -16,9 +16,10 @@
  * Created by adityaagarwal on 10/23/17.
  */
 
-import { Pipe, PipeTransform, Output, EventEmitter } from '@angular/core';
+import { Pipe, PipeTransform, Output, EventEmitter, Directive } from '@angular/core';
 import { LoggerService } from '../services/logger.service';
 
+@Directive()
 @Pipe({ name: 'searchFilter' })
 export class SearchFilterPipe implements PipeTransform {
   @Output() pipeError = new EventEmitter();

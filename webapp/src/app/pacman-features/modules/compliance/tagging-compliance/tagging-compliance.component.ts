@@ -28,7 +28,7 @@ import {WorkflowService} from '../../../../core/services/workflow.service';
 })
 export class TaggingComplianceComponent implements OnInit , OnDestroy {
 
-  @ViewChild('widget', {static: false}) widgetContainer: ElementRef;
+  @ViewChild('widget') widgetContainer: ElementRef;
     pageTitle = 'Tagging';
     widgetWidth: number;
     widgetHeight: number;

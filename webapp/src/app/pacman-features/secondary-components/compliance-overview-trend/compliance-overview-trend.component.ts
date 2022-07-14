@@ -45,7 +45,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 export class ComplianceOverviewTrendComponent
   implements OnInit, OnDestroy, AfterViewInit
 {
-  @ViewChild("complianceOverviewContainer", {static: false}) widgetContainer: ElementRef;
+  @ViewChild("complianceOverviewContainer") widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;

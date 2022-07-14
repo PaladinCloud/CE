@@ -63,7 +63,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
   ]
 })
 export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
-  @ViewChild('targetTypeRuleSelect', {static: false}) targetTypeRuleSelectComponent: SelectComponent;
+  @ViewChild('targetTypeRuleSelect') targetTypeRuleSelectComponent: SelectComponent;
   pageTitle: String = '';
   breadcrumbArray: any = [ 'Sticky Exceptions'];
   breadcrumbLinks: any = [ 'sticky-exceptions'];

@@ -34,7 +34,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
 
 export class PacmanIssuesComponent implements OnInit, OnDestroy {
 
-  @ViewChild('countval', {static: false}) varcount: ElementRef;
+  @ViewChild('countval') varcount: ElementRef;
   pacmanIssues: any;
   subscriptionToAssetGroup: Subscription;
   subscriptionDomain: Subscription;

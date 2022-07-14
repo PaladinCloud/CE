@@ -43,7 +43,7 @@ import { RefactorFieldsService } from "../../../../shared/services/refactor-fiel
   ],
 })
 export class ComplianceDashboardComponent implements OnInit {
-  @ViewChild("widget", {static: false}) widgetContainer: ElementRef;
+  @ViewChild("widget") widgetContainer: ElementRef;
 
   pageTitle = "Overview";
   complianceDropdowns: any;

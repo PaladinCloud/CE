@@ -37,7 +37,7 @@ import { CommonResponseService } from '../../../shared/services/common-response.
 })
 export class PatchingTrendComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @ViewChild('patchProgressContainer', {static: false}) widgetContainer: ElementRef;
+  @ViewChild('patchProgressContainer') widgetContainer: ElementRef;
 
   selectedAssetGroup: string;
   durationParams: any;

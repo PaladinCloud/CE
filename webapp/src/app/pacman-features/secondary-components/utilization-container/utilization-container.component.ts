@@ -31,9 +31,9 @@ import { UtilsService } from '../../../shared/services/utils.service';
 
 export class UtilizationContainerComponent implements OnInit, OnDestroy {
 
-  @ViewChild('widgetCpu', {static: false}) widgetContainer: ElementRef;
-  @ViewChild('widgetNet', {static: false}) widgetContainerNetwork: ElementRef;
-  @ViewChild('widgetDisk', {static: false}) widgetContainerDisk: ElementRef;
+  @ViewChild('widgetCpu') widgetContainer: ElementRef;
+  @ViewChild('widgetNet') widgetContainerNetwork: ElementRef;
+  @ViewChild('widgetDisk') widgetContainerDisk: ElementRef;
 
   widgetWidth: number;
   widgetHeight: number;

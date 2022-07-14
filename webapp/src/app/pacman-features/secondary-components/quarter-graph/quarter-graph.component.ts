@@ -47,7 +47,7 @@ export class QuarterGraphComponent implements OnInit, OnChanges, OnDestroy,  Aft
   durationParams: any;
   autoRefresh: boolean;
 
-  @ViewChild('widgetQuarter', {static: false}) widgetContainer: ElementRef;
+  @ViewChild('widgetQuarter') widgetContainer: ElementRef;
 
   private margin = {top: 15, right: 20, bottom: 30, left: 60};
 

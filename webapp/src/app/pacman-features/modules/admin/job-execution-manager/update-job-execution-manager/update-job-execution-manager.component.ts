@@ -44,8 +44,8 @@ import { AdminUtilityService } from '../../commons/utility-service';
   ]
 })
 export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType', {static: false}) targetTypeSelectComponent: SelectComponent;
-  @ViewChild('jobFrequencyMonthDay', {static: false}) jobFrequencyMonthDayComponent: SelectComponent;
+  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
+  @ViewChild('jobFrequencyMonthDay') jobFrequencyMonthDayComponent: SelectComponent;
 
   pageTitle = 'Update Job Execution Manager';
   allJobNames = [];

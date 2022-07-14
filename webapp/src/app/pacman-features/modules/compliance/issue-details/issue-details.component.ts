@@ -60,7 +60,7 @@ const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
 export class IssueDetailsComponent implements OnInit, OnDestroy {
   /* global variables for email template and add exception*/
-  @ViewChild(PolicyViolationDescComponent, {static: false}) policyViolationDescComponent: PolicyViolationDescComponent;
+  @ViewChild(PolicyViolationDescComponent) policyViolationDescComponent: PolicyViolationDescComponent;
 
   public queryValue = '';
   public filteredList = [];
@@ -72,7 +72,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   public grantedDateValue: any;
   searchTxt = '';
 
-  @ViewChild('query', {static: false}) vc: ElementRef;
+  @ViewChild('query') vc: ElementRef;
 
   dataForm: FormGroup;
   user: FormGroup;

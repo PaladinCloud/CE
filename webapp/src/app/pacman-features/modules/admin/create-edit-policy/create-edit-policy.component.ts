@@ -36,7 +36,7 @@ import { Router } from '@angular/router';
 })
 
 export class CreateEditPolicyComponent implements OnInit, OnDestroy {
-  @ViewChild('policyForm', {static: false}) policyForm: NgForm;
+  @ViewChild('policyForm') policyForm: NgForm;
   policyId: any;
   isPolicyIdValid: any = -1;
   policyUrl: any;

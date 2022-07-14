@@ -60,7 +60,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   public agAndDomain = {};
   currentPageLevel = 0;
 
-  @ViewChild('pkInp', {static: false}) pkInp: ElementRef;
+  @ViewChild('pkInp') pkInp: ElementRef;
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
     private renderer: Renderer2,

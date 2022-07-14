@@ -37,7 +37,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
 
 export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy {
 
-    @ViewChild('widget', {static: false}) widgetContainer: ElementRef;
+    @ViewChild('widget') widgetContainer: ElementRef;
     @Input() targetType: any;
 
     widgetWidth: number;

@@ -83,7 +83,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
   updateNoteSubscription: Subscription;
   deleteNoteSubscription: Subscription;
 
-  @ViewChild('container', {static: false}) vulnReportGraph: ElementRef;
+  @ViewChild('container') vulnReportGraph: ElementRef;
 
   constructor(private logger: LoggerService,
               private commonResponseService: CommonResponseService, private utils: UtilsService) { }

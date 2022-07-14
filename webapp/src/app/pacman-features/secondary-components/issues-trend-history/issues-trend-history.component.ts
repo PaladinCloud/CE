@@ -41,7 +41,7 @@ import { ActivatedRoute, Router } from "@angular/router";
   },
 })
 export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
-  @ViewChild("issuesHistoryContainer", {static: false}) widgetContainer: ElementRef;
+  @ViewChild("issuesHistoryContainer") widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;

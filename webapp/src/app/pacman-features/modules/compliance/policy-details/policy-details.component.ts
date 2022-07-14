@@ -31,7 +31,7 @@ import {WorkflowService} from '../../../../core/services/workflow.service';
 })
 export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
-  @ViewChild('widget', {static: false}) widgetContainer: ElementRef;
+  @ViewChild('widget') widgetContainer: ElementRef;
 
   pageTitle = 'policy compliance';
   widgetWidth: number;

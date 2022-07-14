@@ -35,7 +35,7 @@ import { AutorefreshService } from '../../services/autorefresh.service';
 })
 export class CertificateAssetsTrendComponent implements OnInit, OnDestroy {
 
-  @ViewChild('certificatesAssetsOverviewContainer', {static: false}) widgetContainer: ElementRef;
+  @ViewChild('certificatesAssetsOverviewContainer') widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;
