@@ -70,6 +70,9 @@ import com.amazonaws.services.autoscaling.AmazonAutoScalingClientBuilder;
 import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsRequest;
 import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsResult;
+import com.amazonaws.services.autoscaling.model.DescribeLaunchConfigurationsRequest;
+import com.amazonaws.services.autoscaling.model.DescribeLaunchConfigurationsResult;
+import com.amazonaws.services.autoscaling.model.LaunchConfiguration;
 import com.amazonaws.services.certificatemanager.AWSCertificateManager;
 import com.amazonaws.services.certificatemanager.AWSCertificateManagerClientBuilder;
 import com.amazonaws.services.certificatemanager.model.CertificateDetail;
@@ -288,6 +291,8 @@ import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.file.ErrorManageUtil;
 import com.tmobile.cso.pacman.inventory.file.FileGenerator;
 import com.tmobile.cso.pacman.inventory.vo.AMIVH;
+import com.tmobile.cso.pacman.inventory.vo.ASGLaunchConfigVH;
+import com.tmobile.cso.pacman.inventory.vo.ASGVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessKeyMetadataVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
@@ -466,28 +471,45 @@ public class InventoryUtil {
 	 * @param accountName the account name
 	 * @return the map
 	 */
-	public static Map<String,List<AutoScalingGroup>> fetchAsg(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
+	public static Map<String,List<ASGVH>> fetchAsg(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
 
-		AmazonAutoScaling asgClient;
-		Map<String,List<AutoScalingGroup>> asgList = new LinkedHashMap<>();
+		
+		Map<String,List<ASGVH>> asgListMap = new LinkedHashMap<>();
 
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ASG\" , \"region\":\"" ;
 		for(Region region : RegionUtils.getRegions()){
 			try{
 				if(!skipRegions.contains(region.getName())){
+					List<ASGVH> asgList = new ArrayList<>();
 					List<AutoScalingGroup> asgListTemp = new ArrayList<>();
-					asgClient = AmazonAutoScalingClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+					AmazonAutoScaling asgClient = AmazonAutoScalingClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
 					String nextToken = null;
 					DescribeAutoScalingGroupsResult  describeResult ;
+					
 					do{
 						describeResult =  asgClient.describeAutoScalingGroups(new DescribeAutoScalingGroupsRequest().withNextToken(nextToken).withMaxRecords(asgMaxRecord));
 						asgListTemp.addAll(describeResult.getAutoScalingGroups());
 						nextToken = describeResult.getNextToken();
 					}while(nextToken!=null);
-
+					
 					if(!asgListTemp.isEmpty() ){
-						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ASG "+region.getName()+" >> " + asgListTemp.size());
-						asgList.put(accountId+delimiter+accountName+delimiter+region.getName(), asgListTemp);
+						asgListTemp.forEach(asg -> {
+							DescribeLaunchConfigurationsResult launchConfigurationsRestul = asgClient
+									.describeLaunchConfigurations(new DescribeLaunchConfigurationsRequest()
+											.withLaunchConfigurationNames(asg.getLaunchConfigurationName()));
+							List<LaunchConfiguration> launchConfigurationsList = launchConfigurationsRestul.getLaunchConfigurations();
+							List<ASGLaunchConfigVH> lauchConfigVHList = launchConfigurationsList.stream()
+							.map(launchconfig -> new ASGLaunchConfigVH(launchconfig,
+									Optional.ofNullable(launchconfig.getSecurityGroups())
+									.map(sgList -> sgList.stream()
+											.collect(Collectors.joining(",")))
+									.orElse("")))
+							.collect(Collectors.toList());
+							asgList.add(new ASGVH(asg, lauchConfigVHList));
+						});
+						
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ASG "+region.getName()+" >> " + asgList.size());
+						asgListMap.put(accountId+delimiter+accountName+delimiter+region.getName(), asgList);
 					}
 			   	}
 			}catch(Exception e){
@@ -495,7 +517,7 @@ public class InventoryUtil {
 				ErrorManageUtil.uploadError(accountId,region.getName(),"asg",e.getMessage());
 			}
 		}
-		return asgList;
+		return asgListMap;
 	}
 
 	/**
