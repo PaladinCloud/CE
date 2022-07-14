@@ -21,7 +21,6 @@ import { ErrorHandlingService } from "../../shared/services/error-handling.servi
 
 
 import {Http, Headers, RequestOptions, ResponseContentType} from '@angular/http';
-import {forEach} from '@angular/router/src/utils/collection';
 import {DataCacheService} from '../../core/services/data-cache.service';
 import { environment } from '../../../environments/environment';
 import { UtilsService } from '../../shared/services/utils.service';
