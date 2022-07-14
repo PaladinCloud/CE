@@ -17,7 +17,7 @@
  */
 import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import { Headers, RequestOptions } from '@angular/http';
+import { HttpHeaders, HttpRequest } from "@angular/common/http";
 
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
@@ -43,9 +43,7 @@ export class PacmanIssuesService {
     percent_keys: any;
     pacman_data: any;
 
-    headers: any = new Headers({ 'Content-Type': 'application/json' });
-
-    options: any = new RequestOptions({ headers: this.headers });
+    headers: any = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     getData(queryParams, pacmanIssuesUrl, pacmanIssuesMethod): Observable<any> {
 

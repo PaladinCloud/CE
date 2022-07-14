@@ -20,7 +20,6 @@ import { ErrorHandlingService } from "../../shared/services/error-handling.servi
 
 
 
-import {Http, Headers, RequestOptions, ResponseContentType} from '@angular/http';
 import {DataCacheService} from '../../core/services/data-cache.service';
 import { environment } from '../../../environments/environment';
 import { UtilsService } from '../../shared/services/utils.service';
@@ -34,7 +33,7 @@ import { map } from 'rxjs/operators';
 export class UploadFileService {
 
   constructor(
-    private http: Http,
+    private http: HttpClient,
     @Inject(HttpService) 
     private httpService: HttpService,
     private errorHandling: ErrorHandlingService,
