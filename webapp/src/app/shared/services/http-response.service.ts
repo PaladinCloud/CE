@@ -16,7 +16,7 @@ import {Injectable} from '@angular/core';
 
 
 
-import { Headers, ResponseContentType} from '@angular/http';
+import { HttpHeaders, HttpResponse as ResponseContentType} from '@angular/common/http';
 import {HttpClient} from '@angular/common/http';
 import {HttpResponse} from '../models/http-response';
 import {Observable} from 'rxjs';
@@ -54,7 +54,7 @@ export class HttpService {
     baseUrl: string;
     cloudBaseUrl: string;
 
-    getBlobResponse(url, method, payload = { responseType: ResponseContentType.Blob }, queryParams = {}) {
+    getBlobResponse(url, method, payload = { responseType: ResponseContentType }, queryParams = {}) {
         if (method.toUpperCase() === 'GET') {
             try {
                 let updatedUrl = url;
@@ -63,7 +63,7 @@ export class HttpService {
                 if (url.indexOf('/api/') !== 0) {
                     updatedUrl += this.convertQueryParametersToString(queryParams);
                 }
-                const headers = {headers: new Headers({})};
+                const headers = {headers: new HttpHeaders({})};
                 return this.getData(updatedUrl, headers);
 
             } catch (error) {
