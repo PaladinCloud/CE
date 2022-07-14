@@ -92,7 +92,7 @@ export const CONTENT = {
           },
           {
             'title': 'Data Lake',
-            'description': APP_NAME + ' data lake uses a variety of storage technologies offered by AWS, they include S3, Redshift, RDS and Elastic Search'
+            'description': APP_NAME + ' data lake uses a variety of storage technologies offered by AWS, they include S3, RDS and Elastic Search'
           }
         ]
     },
