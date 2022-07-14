@@ -33,11 +33,11 @@
     min-height: 17em;
 } 
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.issue-listing-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 178px;
 }
 
 
-.issue-listing-wrapper /deep/ .data-table-wrap .table-cells {
+.issue-listing-wrapper ::ng-deep .data-table-wrap .table-cells {
     width: 130px;
 }

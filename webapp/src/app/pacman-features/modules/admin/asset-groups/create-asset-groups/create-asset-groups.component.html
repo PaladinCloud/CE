@@ -57,8 +57,8 @@
                                     <div class="header-text ">{{stepTitle}}</div>
                                 </div>
                                 <ul class="target-type-input parameters" *ngIf="!isCreate && stepIndex==3 && showWidget">
-                                    <ng-select #targetType name="targetType" [(ngModel)]="targetTypeValue" [allowClear]="true" [items]="remainingTargetTypes" placeholder="Select Target Type" required>
-                                    </ng-select>
+                                    <!-- <ng-select #targetType name="targetType" [(ngModel)]="targetTypeValue" [allowClear]="true" [items]="remainingTargetTypes" placeholder="Select Target Type" required>
+                                    </ng-select> -->
                                     <button class="target-type-btn tmbutton btm30 ib" [disabled]="targetTypeValue=='' || targetTypeValue.length==0" (click)="addTagetType(targetTypeValue)">+ Add</button>
                                 </ul>
                                 <input type="text" class="searchBox" placeholder="Filter Attributes..." [(ngModel)]="searchTerm" (ngModelChange)="searchAttribute()" *ngIf="stepIndex==3 && showWidget">
@@ -356,17 +356,17 @@
                                                 <div class="input-box">
                                                     <ul class="parameters">
                                                         <label>Select Name :</label>
-                                                        <ng-select #attributeNameElement [allowClear]="true" name="attributeName" [(ngModel)]="attributeName" (selected)='getTargetTypeAttributeValues($event.text)' [items]="selectedAttributeDetails" placeholder="Select Name" required>
-                                                        </ng-select>
+                                                        <!-- <ng-select #attributeNameElement [allowClear]="true" name="attributeName" [(ngModel)]="attributeName" (selected)='getTargetTypeAttributeValues($event.text)' [items]="selectedAttributeDetails" placeholder="Select Name" required>
+                                                        </ng-select> -->
                                                     </ul>
                                                     <ul class="parameters">
                                                         <label>Select Value : 
                                                             <span *ngIf="isAttributeAlreadyAdded==0" class="not-available">(Already Added)</span>
                                                             <span *ngIf="isAttributeAlreadyAdded==1" class="available"></span>
                                                         </label>
-                                                        <ng-select #attributeValueElement [allowClear]="true" name="attributeValue" [(ngModel)]="attributeValue" (selected)='selectAttributes($event)' (input)="typedAttributes($event.target.value)" [items]="targetTypeAttributeValues" placeholder="Select Value"
+                                                        <!-- <ng-select #attributeValueElement [allowClear]="true" name="attributeValue" [(ngModel)]="attributeValue" (selected)='selectAttributes($event)' (input)="typedAttributes($event.target.value)" [items]="targetTypeAttributeValues" placeholder="Select Value"
                                                             required>
-                                                        </ng-select>
+                                                        </ng-select> -->
                                                     </ul>
                                                     <button class="tmbutton btm30 ib" [disabled]="attributeValue=='' || attributeName.length==0 || isAttributeAlreadyAdded !== -1" (click)="addAttributes(attributeName, attributeValue)">+ Add</button>
                                                 </div>

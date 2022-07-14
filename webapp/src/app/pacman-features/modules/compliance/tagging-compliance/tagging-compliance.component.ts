@@ -15,7 +15,7 @@
 import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { SelectComplianceDropdown } from './../../../services/select-compliance-dropdown.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Router} from '@angular/router';
 import {LoggerService} from '../../../../shared/services/logger.service';
 import {WorkflowService} from '../../../../core/services/workflow.service';

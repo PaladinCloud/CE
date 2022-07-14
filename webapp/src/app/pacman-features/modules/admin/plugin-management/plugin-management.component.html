@@ -20,7 +20,7 @@
                         <div class="widget flex flex-col full-height">
                             <div class="relative flex flex-col full-height">
                                   <app-data-table class="flex flex-col full-height" [columnWhiteList]="['Plugin Name', 'Plugin ID']" [parentName]='errorMessage' [searchTextValues]='searchTxt' [errorValue]='errorValue' [outerArr]='outerArr' [allColumns]='allColumns'
-                                  [dataHead]="'Plugin Management'" [searchableHeader]='true' (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' 
+                                  [dataHead]="'Plugin Management'" [searchableHeader]='true' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' 
                                   (searchRowTxt)='searchCalled($event)' (searchTriggerred)='callNewSearch()' [searchPassed]='searchPassed' (menuClick)='handleDropdown($event);' [buttonsArr]='actionsArr' [buttonColumn]="'Action'" >
                                   </app-data-table>
                             </div>

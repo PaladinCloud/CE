@@ -19,7 +19,7 @@
     min-height: 17em;
 }
 
-/deep/ .ag-grid-wrapper .ag-theme-material.full-width.table-wrap, /deep/ .ag-grid-wrapper app-ag-grid-table {
+::ng-deep .ag-grid-wrapper .ag-theme-material.full-width.table-wrap, ::ng-deep .ag-grid-wrapper app-ag-grid-table {
     height: 100vh;
     display: flex;
     flex-direction: column;

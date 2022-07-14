@@ -16,12 +16,12 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { environment } from './../../../../../environments/environment';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
+
+
 import * as _ from "lodash";
 import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
@@ -52,6 +52,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   ruleFrequencyMonth: any;
   ruleFrequencyDay: any;
 
+  ruleDetailsLoader:boolean;
   ruleFrequencyMonths: any;
   ruleFrequencyDays: any;
   ruleFrequencyModeValue: any;

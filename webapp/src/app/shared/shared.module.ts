@@ -13,11 +13,10 @@
  */
 
 import { NgModule } from "@angular/core";
-import { HttpModule } from "@angular/http";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { MatGridListModule, MatInputModule, MatMenuModule, MatSelectModule } from "@angular/material";
+import { MatSelectModule } from "@angular/material/select";
 import { AgGridModule } from "ag-grid-angular/main";
 import { CanvasSidePanelComponent } from "./canvas-side-panel/canvas-side-panel.component";
 import { ButtonIconComponent } from "./button-icon/button-icon.component";
@@ -42,7 +41,7 @@ import { HttpService } from "./services/http-response.service";
 import { UtilsService } from "./services/utils.service";
 import { SearchableDropdownComponent } from "./searchable-dropdown/searchable-dropdown.component";
 import { SelectModule } from "ng2-select";
-import { NgDatepickerModule } from "ng2-datepicker";
+import { DatepickerModule } from "ng2-datepicker";
 import { BackNavigationComponent } from "./back-navigation/back-navigation.component";
 import { FilteredSelectorComponent } from "./filtered-selector/filtered-selector.component";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
@@ -94,25 +93,26 @@ import { ToastObservableService } from "./services/toast-observable.service";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { TableListComponent } from "./table-list/table-list.component";
 import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
-import { MatIconModule } from "@angular/material";
+import { MatIconModule } from "@angular/material/icon";
+ import {MatMenuModule} from '@angular/material/menu'; 
 import { EmptyStateComponent } from "./empty-state/empty-state.component";
+import { MatGridListModule } from "@angular/material/grid-list";
 
 @NgModule({
   imports: [
     MatGridListModule,
     MatSelectModule,
-    MatInputModule,
-    MatMenuModule,
     MatIconModule,
+    MatMenuModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    SelectModule,
-    HttpModule,
-    NgDatepickerModule,
+    // SelectModule,
+    // HttpModule,
+    // DatepickerModule,
     SelectDropDownModule,
-    AgGridModule.withComponents([AgGridTableComponent]),
+    AgGridModule
   ],
   declarations: [
     EmptyStateComponent,
@@ -178,7 +178,6 @@ import { EmptyStateComponent } from "./empty-state/empty-state.component";
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    HttpModule,
     CanvasSidePanelComponent,
     ButtonIconComponent,
     ButtonComponent,
@@ -255,5 +254,4 @@ import { EmptyStateComponent } from "./empty-state/empty-state.component";
     FormService,
   ],
 })
-export class SharedModule {
-}
+export class SharedModule { }

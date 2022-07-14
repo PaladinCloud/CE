@@ -251,7 +251,7 @@
   height: 100%;
 }
 
-.onprem-graph-wrap /deep/ .app-button {
+.onprem-graph-wrap ::ng-deep .app-button {
   border-radius: 0px !important;
   background-color: var(--background-white) !important;
   color: var(--primary-500) !important;
@@ -264,7 +264,7 @@
   border-bottom: 1px solid var(--primary-500) !important;
 }
 
-.onprem-graph-wrap /deep/ .app-button:hover {
+.onprem-graph-wrap ::ng-deep .app-button:hover {
   background-color: var(--background-white) !important;
   box-shadow: none !important;
   text-shadow: 1px 0 !important;

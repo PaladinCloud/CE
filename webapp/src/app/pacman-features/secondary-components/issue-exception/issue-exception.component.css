@@ -301,8 +301,8 @@
   background-color: var(--primary-500);
 }
 
-.textarea-button /deep/ .app-button,
-.textarea-button-first-screen /deep/ .app-button {
+.textarea-button ::ng-deep .app-button,
+.textarea-button-first-screen ::ng-deep .app-button {
   min-width: 5em !important;
   min-height: 2em !important;
   width: 8em;
@@ -402,7 +402,7 @@
   margin: 1em 0 0.5em 0;
 }
 
-.contact-btn /deep/ .app-button {
+.contact-btn ::ng-deep .app-button {
   min-width: 5em !important;
   min-height: 2em !important;
   width: 8em;
@@ -427,7 +427,7 @@
   margin: 0.5em 0 1em 0;
 }
 
-.copy-btn /deep/ .app-button {
+.copy-btn ::ng-deep .app-button {
   min-width: 5em !important;
   min-height: 2em !important;
   width: 8em;
@@ -444,7 +444,7 @@
   cursor: not-allowed;
 }
 
-.disable-btn /deep/ button {
+.disable-btn ::ng-deep button {
   background-color: #c0c0c0;
 }
 

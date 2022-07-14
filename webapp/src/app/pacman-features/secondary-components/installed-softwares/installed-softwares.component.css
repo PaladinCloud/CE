@@ -33,6 +33,6 @@
   font-size: 1em;
 }
 
-/*.all-ports-container /deep/ .data-table-wrap .table-cells {
+/*.all-ports-container ::ng-deep .data-table-wrap .table-cells {
     width: 108px;
 }*/

@@ -14,7 +14,7 @@
 
 import { Injectable, Injector } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { AdalService } from './adal.service';

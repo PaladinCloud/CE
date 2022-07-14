@@ -22,7 +22,6 @@
   <section class="post-login-body flex" [@mainRouterTransition]="getState(o)">
     <div
       class="contextual-menu-container"
-      *ngIf="tvState != true && tvState != 'true'"
     >
       <app-contextual-menu [haveAdminPageAccess]="haveAdminPageAccess"></app-contextual-menu>
     </div>

@@ -16,7 +16,7 @@
  * Created by adityaagarwal on 10/23/17.
  */
 
-import { Pipe, PipeTransform, Output, EventEmitter } from '@angular/core';
+import { Pipe, PipeTransform, Output, EventEmitter, Directive } from '@angular/core';
 import { LoggerService } from '../services/logger.service';
 
 @Pipe({ name: 'searchFilter' })

@@ -35,7 +35,7 @@ import { AutorefreshService } from '../../../services/autorefresh.service';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { IssueAuditService } from '../../../services/issue-audit.service';
 import { environment } from './../../../../../environments/environment';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { UtilsService } from '../../../../shared/services/utils.service';

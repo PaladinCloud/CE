@@ -17,15 +17,15 @@ import { environment } from './../../../../../environments/environment';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { IssueListingService } from '../../../services/issue-listing.service';
 import { IssueFilterService } from '../../../services/issue-filter.service';
 import * as _ from 'lodash';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
+
+
 import { DownloadService } from '../../../../shared/services/download.service';
 import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';

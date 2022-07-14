@@ -29,7 +29,7 @@ import { Subscription } from "rxjs";
 import { LoggerService } from "../../../shared/services/logger.service";
 import { DownloadService } from "../../../shared/services/download.service";
 import { DataCacheService } from "../../../core/services/data-cache.service";
-import { TreeNode } from "angular-tree-component";
+import { TreeNode } from "@circlon/angular-tree-component";
 import { NavigationEnd, Router } from "@angular/router";
 
 @Component({
@@ -235,7 +235,6 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     const currNodes = this.getCurrentNodesFromRoute(currentRoute);
     this.currentNodeId = currNodes[0];
     this.currentParentId = currNodes[1];
-    console.log("AgAndDomain:" + this.agAndDomain["ag"]);
   }
 
   getCurrentNodesFromRoute(currentRoute) {

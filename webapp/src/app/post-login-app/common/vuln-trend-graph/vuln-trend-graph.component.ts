@@ -24,7 +24,7 @@ import {
   EventEmitter,
   Output
 } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as d3 from 'd3-selection';
@@ -73,7 +73,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
   currentNoteId;
   dateSelected;
   options: DatepickerOptions  = {
-    displayFormat: 'MMM D[,] YYYY',
+    format: 'MMM D[,] YYYY',
     maxDate: new Date(),
     minDate: new Date('1970-01-01')
   };

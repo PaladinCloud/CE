@@ -13,7 +13,8 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { combineLatest, Observable } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { HttpService } from '../../shared/services/http-response.service';
 
 @Injectable()
@@ -25,9 +26,9 @@ export class AdminService {
     const url = policyUrl;
     const method = policyMethod;
     try {
-        return Observable.combineLatest(this.httpService.getHttpResponse(url, method, payload, queryParams)
-            .map(response => this.massageData(response) )
-            .catch(this.handleError)
+        return combineLatest(this.httpService.getHttpResponse(url, method, payload, queryParams)
+            .pipe(map(response => this.massageData(response) ))
+            .pipe(catchError(this.handleError))
         );
     } catch (error) {
         this.handleError(error);

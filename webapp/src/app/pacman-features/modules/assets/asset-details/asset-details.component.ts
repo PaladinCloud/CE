@@ -14,7 +14,7 @@
 
 import { Component, OnInit, ElementRef, ViewChild, OnDestroy, AfterViewInit, HostListener } from '@angular/core';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from './../../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';

@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 /**
  * @type Service
  * @desc erro handling, this service is used to log errors, log info for debugging, log silent javascript errors.
@@ -23,7 +25,6 @@ import { Injectable  } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LoggerService } from './logger.service';
 import { UtilsService } from './utils.service';
-import { Observable } from 'rxjs/Rx';
 import { EXPECTATION_FAILED, SERVICE_UNAVAILABLE, NOT_FOUND } from 'http-status-codes';
 
 @Injectable()
@@ -71,7 +72,7 @@ export class ErrorHandlingService {
                 errorMessage = 'apiResponseError';
           }
 
-        return Observable.throw(errorMessage);
+        return observableThrowError(errorMessage);
     }
 
     handleJavascriptError(error: any) {

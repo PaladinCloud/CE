@@ -78,18 +78,18 @@
                                             </div>
                                             <div class="input-form">
                                                 <label>Severity *</label>
-                                                <ng-select name="ruleSeverity" (selected)='onSelectSeverity($event.text)' [allowClear]="true" [items]="ruleSeverities" placeholder="Select Rule Severity" #ruleSeverity required>
-                                                </ng-select>
+                                                <!-- <ng-select name="ruleSeverity" (selected)='onSelectSeverity($event.text)' [allowClear]="true" [items]="ruleSeverities" placeholder="Select Rule Severity" #ruleSeverity required> -->
+                                                <!-- </ng-select> -->
                                             </div>
                                             <div class="input-form">
                                                 <label>Category *</label>
-                                                <ng-select name="ruleCategory" (selected)='onSelectCategory($event.text)' [allowClear]="true" [items]="ruleCategories" placeholder="Select Rule Category" #ruleCategory required>
-                                                </ng-select>
+                                                <!-- <ng-select name="ruleCategory" (selected)='onSelectCategory($event.text)' [allowClear]="true" [items]="ruleCategories" placeholder="Select Rule Category" #ruleCategory required> -->
+                                                <!-- </ng-select> -->
                                             </div>
                                             <div class="freq-col-row input-form">
                                                 <label>Rule Frequency*</label>
-                                                <ng-select name="ruleFrequency" [(ngModel)]="ruleFrequency" (selected)='onSelectFrequency($event.text)' [allowClear]="true" [items]="allFrequencies" placeholder="Select Frequency" required>
-                                                </ng-select>
+                                                <!-- <ng-select name="ruleFrequency" [(ngModel)]="ruleFrequency" (selected)='onSelectFrequency($event.text)' [allowClear]="true" [items]="allFrequencies" placeholder="Select Frequency" required> -->
+                                                <!-- </ng-select> -->
                                             </div>
                                             <div class="freq-col-row input-form" *ngIf="selectedFrequency==='Minutes'">
                                                 <div class="freq-col-sm freq-pright freq-col-middle">
@@ -173,19 +173,19 @@
                                                 </div>
                                                 <div class="freq-col-sm-6 freq-pright">
                                                     <div class="input-form"> {{ruleFrequencyMonth|json}}
-                                                        <ng-select name="ruleFrequencyMonth" [(ngModel)]="ruleFrequencyMonth" (selected)='onSelectFrequencyMonth($event)' [allowClear]="true" [items]="allMonths" placeholder="Select Month" required>
-                                                        </ng-select>
+                                                        <!-- <ng-select name="ruleFrequencyMonth" [(ngModel)]="ruleFrequencyMonth" (selected)='onSelectFrequencyMonth($event)' [allowClear]="true" [items]="allMonths" placeholder="Select Month" required> -->
+                                                        <!-- </ng-select> -->
                                                     </div>
                                                 </div>
                                                 <div class="freq-col-sm-5 input-form"> {{ruleFrequencyDay|json}}
-                                                    <ng-select name="ruleFrequencyDay" [(ngModel)]="ruleFrequencyDay" [allowClear]="true" [items]="allMonthDays" placeholder="Select Day" required>
-                                                    </ng-select>
+                                                    <!-- <ng-select name="ruleFrequencyDay" [(ngModel)]="ruleFrequencyDay" [allowClear]="true" [items]="allMonthDays" placeholder="Select Day" required> -->
+                                                    <!-- </ng-select> -->
                                                 </div>
                                             </div>
                                             <div class="input-form">
                                                 <label>Would you want to scan your rule against an asset group?</label>
-                                                <ng-select name="assetGroup" [(ngModel)]="assetGroup" [allowClear]="true" [items]="assetGroupNames" placeholder="Select Asset Group">
-                                                </ng-select>
+                                                <!-- <ng-select name="assetGroup" [(ngModel)]="assetGroup" [allowClear]="true" [items]="assetGroupNames" placeholder="Select Asset Group"> -->
+                                                <!-- </ng-select> -->
                                             </div>
                                             <div class="input-form">
                                                 <label>Would you want to set a PacMan Alexa skill keyword?*

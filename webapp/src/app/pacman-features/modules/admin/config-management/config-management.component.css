@@ -390,11 +390,11 @@ table {
   width: 17vw;
 }
 
-.history-wrapper /deep/ .searchable-dropdown-wrapper {
+.history-wrapper ::ng-deep .searchable-dropdown-wrapper {
   z-index: 5;
 }
 
-.history-wrapper /deep/ .filter-arrow {
+.history-wrapper ::ng-deep .filter-arrow {
   top: 45% !important;
 }
 
@@ -463,7 +463,7 @@ table {
   padding-right: 1em;
 }
 
-.rollback-button /deep/ app-button button {
+.rollback-button ::ng-deep app-button button {
   min-width: 2em;
   min-height: 1em;
   font-size: 0.9em;
@@ -473,8 +473,8 @@ table {
   padding: 0.6em 2em;
 }
 
-.rollback-button /deep/ app-button button:hover,
-.rollback-button /deep/ app-button button:active {
+.rollback-button ::ng-deep app-button button:hover,
+.rollback-button ::ng-deep app-button button:active {
   background-color: #e20064;
   color: #fff;
 }
@@ -521,7 +521,7 @@ table {
   height: 100%;
 }
 
-.revert-btn-wrapper /deep/ app-button button {
+.revert-btn-wrapper ::ng-deep app-button button {
   min-width: 8em;
 }
 

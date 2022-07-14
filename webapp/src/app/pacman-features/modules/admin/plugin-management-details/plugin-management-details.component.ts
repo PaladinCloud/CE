@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import { environment } from './../../../../../environments/environment';
 import {WorkflowService} from '../../../../core/services/workflow.service';
 import {LoggerService} from '../../../../shared/services/logger.service';

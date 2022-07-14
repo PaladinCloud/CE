@@ -17,13 +17,13 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+import { Observable ,  ReplaySubject } from 'rxjs';
+
 import { HttpService } from './http-response.service';
 import { ErrorHandlingService } from './error-handling.service';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { ToastObservableService } from '../../post-login-app/common/services/toast-observable.service';
 import { LoggerService } from './logger.service';
+import { map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -100,7 +100,7 @@ export class DownloadService {
 
         try {
             return this.httpService.getBlobResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         const downloadResponse = response['_body'] || response;
 
                         const downloadUrlBlob = URL.createObjectURL(downloadResponse);
@@ -119,7 +119,7 @@ export class DownloadService {
                             document.body.removeChild(file);
                         }, 10);
                         return 'downloaded';
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

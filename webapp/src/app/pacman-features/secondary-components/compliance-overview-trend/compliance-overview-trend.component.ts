@@ -22,7 +22,7 @@ import {
   AfterViewInit,
 } from "@angular/core";
 import { ComplianceOverviewService } from "../../services/compliance-overview.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
 import { SelectComplianceDropdown } from "../../services/select-compliance-dropdown.service";
 import { LoggerService } from "../../../shared/services/logger.service";
@@ -62,10 +62,10 @@ export class ComplianceOverviewTrendComponent
   private graphWidth: any;
   private subtractGraphWidthBy = 50;
   private graphData: any;
-  private dataLoaded: any = false;
-  private error: any = false;
+  public dataLoaded: any = false;
+  public error: any = false;
   private loading: any = false;
-  private errorMessage: any = "jsError";
+  public errorMessage: any = "jsError";
   private distributedFiltersObject: any = {};
 
   // Graph customization variables
@@ -249,13 +249,13 @@ export class ComplianceOverviewTrendComponent
 
   ngOnInit() {
     try {
-      this.graphWidth =
+      this.graphWidth = this.widgetContainer?
         parseInt(
           window
             .getComputedStyle(this.widgetContainer.nativeElement, null)
             .getPropertyValue("width"),
           10
-        ) - this.subtractGraphWidthBy;
+        ) - this.subtractGraphWidthBy:700;
     } catch (error) {
       this.setError("jsError");
     }

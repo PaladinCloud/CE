@@ -40,19 +40,19 @@
   height: calc(100vh - 17.5em);
 }
 
-.onprem-button-wrap /deep/ .app-button {
+.onprem-button-wrap ::ng-deep .app-button {
   margin: 0 0 0 2em;
   background-color: var(--primary-400);
   color: #fff;
   padding: 0.7em 1.5em;
 }
 
-.onprem-button-wrap /deep/ .app-button:hover {
+.onprem-button-wrap ::ng-deep .app-button:hover {
   background-color: var(--primary-400);
   color: #fff;
 }
 
-.asset-update-wrapper /deep/ ul.ui-select-choices {
+.asset-update-wrapper ::ng-deep ul.ui-select-choices {
   max-height: 9em !important;
   z-index: 2;
   position: relative;
@@ -171,7 +171,7 @@
   overflow: hidden;
 }
 
-.asset-update-wrapper /deep/ .app-button.disabled {
+.asset-update-wrapper ::ng-deep .app-button.disabled {
   color: #fff;
   background-color: #a4a4a4;
 }
@@ -370,13 +370,13 @@
   line-height: 1.5;
 }
 
-.cancel-update /deep/ .app-button {
+.cancel-update ::ng-deep .app-button {
   background-color: var(--background-white);
   color: var(--primary-500);
   margin-top: 1em;
 }
 
-.cancel-update /deep/ .app-button:hover {
+.cancel-update ::ng-deep .app-button:hover {
   background-color: var(--background-white);
   color: var(--primary-500);
   box-shadow: none;

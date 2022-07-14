@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { ToastObservableService } from '../services/toast-observable.service';
 
 @Component({

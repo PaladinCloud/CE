@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -31,7 +31,7 @@ import { PatchingSponsorService } from '../../services/patching-sponsor.service'
 export class PatchingSponsorComponent implements OnInit, OnDestroy {
 
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
 
   getContextMenuItems: any;
   gridApi: any;
@@ -40,7 +40,7 @@ export class PatchingSponsorComponent implements OnInit, OnDestroy {
 
   initComplete = false;
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
   @Output() errorOccurred = new EventEmitter();

@@ -34,7 +34,7 @@ import { TargetTypesComponent } from "./asset-groups/target-types/target-types.c
 import { CreateUpdateDomainComponent } from "./asset-groups/domains/create-update-domain/create-update-domain.component";
 import { CreateUpdateTargetTypesComponent } from "./asset-groups/target-types/create-update-target-types/create-update-target-types.component";
 import { CreateStickyExceptionsComponent } from "./sticky-exceptions/create-sticky-exceptions/create-sticky-exceptions.component";
-import { NgDatepickerModule } from "ng2-datepicker";
+import { DatepickerModule } from "ng2-datepicker";
 import { RolesComponent } from "./roles/roles.component";
 import { RolesAllocationComponent } from "./roles-allocation/roles-allocation.component";
 import { CreateUpdateRolesComponent } from "./roles/create-update-roles/create-update-roles.component";
@@ -55,8 +55,8 @@ import { ConfigManagementComponent } from "./config-management/config-management
     CommonModule,
     SharedModule,
     AdminRoutingModule,
-    SelectModule,
-    NgDatepickerModule,
+    // SelectModule,
+    // DatepickerModule,
   ],
   declarations: [
     PoliciesComponent,

@@ -14,27 +14,26 @@
 
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from "../../shared/services/error-handling.service";
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import {Http, Headers, RequestOptions, ResponseContentType} from '@angular/http';
-import {forEach} from '@angular/router/src/utils/collection';
+
+
+
 import {DataCacheService} from '../../core/services/data-cache.service';
 import { environment } from '../../../environments/environment';
 import { UtilsService } from '../../shared/services/utils.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { HttpResponse } from '../../shared/models/http-response';
 import { CONFIGURATIONS } from '../../../config/configurations';
+import { map } from 'rxjs/operators';
 
 
 @Injectable()
 export class UploadFileService {
 
   constructor(
-    private http: Http,
+    private http: HttpClient,
     @Inject(HttpService) 
     private httpService: HttpService,
     private errorHandling: ErrorHandlingService,
@@ -70,10 +69,10 @@ export class UploadFileService {
 
     try {
       return this.httpService.getHttpResponse(url, method, formdata)
-        .map(response => {
+        .pipe(map(response => {
             return this.massageData(response);
-        })
-        .catch(error => this.errorHandling.handleAPIError(error));
+        }))
+        // .catch(error => this.errorHandling.handleAPIError(error));
     } catch(error){
         this.errorHandling.handleJavascriptError(error);
     }
@@ -132,10 +131,10 @@ export class UploadFileService {
 
   postData(url, payload, headers) {
     let httpObservable = this.http.post(url, payload, headers)
-        .map(response => {
+        .pipe(map(response => {
             return response['_body'] ? JSON.parse(response['_body']) : response;                
-        })
-        .catch(error => this.errorHandling.handleAPIError(error));
+        }))
+        // .catch(error => this.errorHandling.handleAPIError(error));
     return httpObservable;
   }
 
@@ -155,14 +154,14 @@ export class UploadFileService {
 
   getData(url, headers) {
     let httpObservable = this.http.get(url,headers)
-      .map(response => {
+      .pipe(map(response => {
           if(url.match("logout-session")){
               return response;
           } else {    
               return response['data'];
           }
-      })
-      .catch(error => this.errorHandling.handleAPIError(error));
+      }))
+      // .catch(error => this.errorHandling.handleAPIError(error));
     return httpObservable;
   }
 

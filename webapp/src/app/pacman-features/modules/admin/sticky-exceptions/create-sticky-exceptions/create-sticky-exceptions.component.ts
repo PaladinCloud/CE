@@ -12,11 +12,11 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ViewChild, trigger, state, style, transition, animate } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { environment } from './../../../../../../environments/environment';
 
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import * as frLocale from 'date-fns/locale/en';
 import {WorkflowService} from '../../../../../core/services/workflow.service';
@@ -24,14 +24,15 @@ import * as moment from 'moment';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
+
+
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
 import {  FormGroup, FormControl, Validators } from '@angular/forms';
 import { SelectComponent } from 'ng2-select';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { DatepickerOptions } from 'ng2-datepicker';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-admin-create-sticky-exceptions',
@@ -115,9 +116,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   options: DatepickerOptions = {
     minYear: this.date.getFullYear(),
     maxYear: 2030,
-    displayFormat: 'DD/MM/YYYY',
-    barTitleFormat: 'DD/MM/YYYY',
-    firstCalendarDay: 0, 
+    format: 'DD/MM/YYYY',
+    firstCalendarDay: 0,
     locale: frLocale
   };
 

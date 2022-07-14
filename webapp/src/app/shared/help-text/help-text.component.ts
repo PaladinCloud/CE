@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HelpObservableService } from '../../post-login-app/common/services/help-observable.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../services/logger.service';
 

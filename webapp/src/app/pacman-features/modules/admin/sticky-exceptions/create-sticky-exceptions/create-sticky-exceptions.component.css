@@ -1583,28 +1583,28 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
   .main-calendar-days
   .day-unit.is-selected,
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
   .main-calendar-days
   .year-unit.is-selected,
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
   .main-calendar-years
   .day-unit.is-selected,
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1622,14 +1622,14 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container {
   width: 100% !important;
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1639,7 +1639,7 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1648,7 +1648,7 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1658,7 +1658,7 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-input {
   border-radius: 0.2em !important;
@@ -1666,7 +1666,7 @@ button.attrbutton:hover {
   width: 100% !important;
 }
 
-.sticky-exceptions-wrapper /deep/ .row-cells div:first-letter {
+.sticky-exceptions-wrapper ::ng-deep .row-cells div:first-letter {
   text-transform: inherit !important;
 }
 
@@ -1705,24 +1705,24 @@ button.attrbutton:hover {
   display: inline-block;
 }
 
-.floating-widgets-section /deep/ .data-table-wrap.loading {
+.floating-widgets-section ::ng-deep .data-table-wrap.loading {
   max-height: calc(100vh - 21em) !important;
   min-height: calc(100vh - 21em) !important;
 }
 
-.floating-widgets-section /deep/ .data-table-inner-wrap {
+.floating-widgets-section ::ng-deep .data-table-inner-wrap {
   height: auto;
 }
 
-.floating-widgets-section /deep/ .data-table-content {
+.floating-widgets-section ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-content {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-inner-wrap {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
   max-height: 8em;
   overflow-y: auto;
 }

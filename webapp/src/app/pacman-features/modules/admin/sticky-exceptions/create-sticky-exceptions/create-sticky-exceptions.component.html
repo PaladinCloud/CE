@@ -84,8 +84,8 @@
                                             </div>
                                             <div class="input-form" *ngIf="isCreate">
                                                 <label>Select Asset Group * <a (click)="navigateToCreateAssetGroup()">(Create New)</a></label>
-                                                <ng-select [allowClear]="true" name="exceptionDetailsForm.assetGroup" [(ngModel)]="exceptionDetailsForm.assetGroup" [items]="allAssetGroupNames" placeholder="Select Asset Group">
-                                                </ng-select>
+                                                <!-- <ng-select [allowClear]="true" name="exceptionDetailsForm.assetGroup" [(ngModel)]="exceptionDetailsForm.assetGroup" [items]="allAssetGroupNames" placeholder="Select Asset Group"> -->
+                                                <!-- </ng-select> -->
                                             </div>
                                             <div class="input-box" *ngIf="!isCreate">
                                                 <label>Exception Name</label>
@@ -104,7 +104,7 @@
                                         <div class="formctnright">
                                             <div class="input-box">
                                                 <label>Expiry Date *</label>
-                                                <ng-datepicker [options]="options" (ngModelChange)='getDateData($event)' [(ngModel)]="exceptionDetailsForm.expiry"></ng-datepicker>
+                                                <!-- <picker (ngModelChange)='getDateData($event)' [(ngModel)]="exceptionDetailsForm.expiry"></picker> -->
                                             </div>
                                             <div class="bm10 input-box">
                                                 <label>Exception Reason *</label>
@@ -222,8 +222,8 @@
                                                 <div class="input-box">
                                                     <ul class="parameters rules">
                                                         <label>Select Rule Name :</label>
-                                                        <ng-select #targetTypeRuleSelect name="attributeName" [(ngModel)]="attributeName" [allowClear]="true" [items]="selectedAllRules" placeholder="Select Rule Name" required>
-                                                        </ng-select>
+                                                        <!-- <ng-select #targetTypeRuleSelect name="attributeName" [(ngModel)]="attributeName" [allowClear]="true" [items]="selectedAllRules" placeholder="Select Rule Name" required> -->
+                                                        <!-- </ng-select> -->
                                                     </ul>
                                                     <button class="tmbutton btm30 ib" [disabled]="attributeName.length==0" (click)="addAttributes(attributeName, attributeValue)">+ Add</button>
                                                 </div>

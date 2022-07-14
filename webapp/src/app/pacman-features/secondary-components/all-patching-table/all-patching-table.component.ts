@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, Input } from "@angular/core";
 import { CommonResponseService } from "../../../shared/services/common-response.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { DownloadService } from "../../../shared/services/download.service";
 import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
