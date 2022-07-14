@@ -62,6 +62,13 @@
             <artifactId>google-cloud-kms</artifactId>
             <version>2.5.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-cloudtasks</artifactId>
+            <version>v2-rev23-1.25.0</version>
+        </dependency>
+
+
 
         <dependency>
             <groupId>com.google.auth</groupId>

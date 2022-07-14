@@ -5,6 +5,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.api.services.cloudtasks.v2.CloudTasks;
 import com.google.api.services.sqladmin.SQLAdmin;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.bigquery.BigQueryOptions;
@@ -18,10 +19,9 @@ import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+
 import com.google.common.collect.Lists;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.pubsub.v1.ProjectName;
-import com.google.pubsub.v1.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -135,6 +135,16 @@ public class GCPCredentialsProvider {
         }
         return topicAdminClient;
     }
+
+    public CloudTasks createCloudTasksService() throws IOException, GeneralSecurityException {
+        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+        return new CloudTasks.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials()))
+                .build();
+    }
+
+
+
 
     // close the client in destroy method
     @PreDestroy
