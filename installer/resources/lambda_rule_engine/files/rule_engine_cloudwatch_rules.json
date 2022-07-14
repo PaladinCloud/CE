@@ -4107,7 +4107,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_asg_config_should_use_active_security_group",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deny ASG launch configuration referencing missing security group",
+    "displayName": "Missing security group in ASG launch configuration",
     "createdDate": "2022-07-13",
     "modifiedDate": "2022-07-13",
     "severity": "critical",
