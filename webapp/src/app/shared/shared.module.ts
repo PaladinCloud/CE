@@ -17,7 +17,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { MatGridListModule, MatInputModule, MatMenuModule, MatSelectModule } from "@angular/material";
+import { MatSelectModule } from "@angular/material/select";
 import { AgGridModule } from "ag-grid-angular/main";
 import { CanvasSidePanelComponent } from "./canvas-side-panel/canvas-side-panel.component";
 import { ButtonIconComponent } from "./button-icon/button-icon.component";
@@ -96,12 +96,13 @@ import { TableListComponent } from "./table-list/table-list.component";
 import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
 import { MatIconModule } from "@angular/material";
 import { EmptyStateComponent } from "./empty-state/empty-state.component";
+import { MatGridListModule } from "@angular/material/grid-list";
 
 @NgModule({
   imports: [
     MatGridListModule,
     MatSelectModule,
-    MatInputModule,
+    MatIconModule,
     MatMenuModule,
     MatIconModule,
     CommonModule,

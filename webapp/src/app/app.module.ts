@@ -17,8 +17,8 @@ import { NgModule, ErrorHandler } from '@angular/core';
 import { RouterModule, Routes, RouterLink, RouterLinkActive } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatSelectModule } from '@angular/material';
-import { AngularFontAwesomeModule } from 'angular-font-awesome';
+import { MatSelectModule } from '@angular/material/select';
+// import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
@@ -42,7 +42,7 @@ import { ErrorHandlingService } from './shared/services/error-handling.service';
         ReactiveFormsModule,
         HttpClientModule,
         RouterModule,
-        AngularFontAwesomeModule,
+        // AngularFontAwesomeModule,
         AppRoutingModule,
         LandingPageModule,
         PostLoginAppModule,
