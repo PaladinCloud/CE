@@ -12,9 +12,10 @@
  * limitations under the License.
  */
 
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import { AdalService } from './adal.service';
 import { CONFIGURATIONS } from './../../../config/configurations';
 import { OnPremAuthenticationService } from './onprem-authentication.service';
@@ -26,6 +27,7 @@ import { DataCacheService } from './data-cache.service';
 import { UtilsService } from '../../shared/services/utils.service';
 import { environment } from '../../../environments/environment';
 import { CommonResponseService } from '../../shared/services/common-response.service';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class AuthService {
@@ -84,12 +86,12 @@ export class AuthService {
     authenticateUserOnPrem(url, method, payload, headers) {
 
         return this.httpService.getHttpResponse(url, method, payload, {}, headers)
-        .map(response => {
+        .pipe(map(response => {
             return response;
-        })
-        .catch(error => {
-            return Observable.throw(error.message || error);
-        });
+        }))
+        // .pipe(catchError(error => {
+        //     return observableThrowError(error.message || error);
+        // }));
     }
 
     refreshToken() {

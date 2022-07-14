@@ -12,15 +12,17 @@
  * limitations under the License.
  */
 
+
+import {throwError as observableThrowError,  Observable, combineLatest } from 'rxjs';
 /**
  * Created by adityaagarwal on 23/11/17.
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class IssueListingService {
@@ -35,9 +37,9 @@ export class IssueListingService {
             const method = listingMethod;
             const payload = listingPayload;
             const queryParams = {};
-            return Observable.combineLatest(
+            return combineLatest(
                 this.httpService.getHttpResponse(url, method, payload, queryParams)
-                .map(response => {
+                .pipe(map(response => {
                     try {
                         this.dataCheck(response);
                         return response['data'];
@@ -45,7 +47,7 @@ export class IssueListingService {
                         this.errorHandling.handleJavascriptError(error);
                     }
                 })
-            );
+            ));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -59,7 +61,7 @@ export class IssueListingService {
     }
 
     handleError(error: any): Observable<any> {
-        return Observable.throw(error.message || error);
+        return observableThrowError(error.message || error);
     }
 
 }

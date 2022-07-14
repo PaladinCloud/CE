@@ -1,9 +1,7 @@
 
-import { _throw as observableThrowError } from 'rxjs/observable/throw';
-import { Observable } from 'rxjs/Rx';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import {throwError as observableThrowError ,  Observable ,  BehaviorSubject } from 'rxjs';
 
-import {take, filter, catchError, switchMap, finalize} from 'rxjs/operators';
+import {take, filter, catchError, switchMap, finalize, retry} from 'rxjs/operators';
 import { Injectable, Injector } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpRequest, HttpHandler, HttpSentEvent, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpUserEvent, HttpErrorResponse } from '@angular/common/http';
 
@@ -47,7 +45,7 @@ export class RequestInterceptorService implements HttpInterceptor {
                         authService.doLogout();
                     }
 
-                    return Observable.throw(error);
+                    return observableThrowError(error);
                 }
 
                 if (error instanceof HttpErrorResponse) {
@@ -62,7 +60,7 @@ export class RequestInterceptorService implements HttpInterceptor {
                 } else {
                     return observableThrowError(error);
                 }
-            })).retry(3);
+            }), retry(3));
     }
 
     handle400Error(error) {

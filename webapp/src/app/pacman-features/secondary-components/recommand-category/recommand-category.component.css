@@ -23,15 +23,15 @@
     height: 100%;
 }
 
-.tagging-instances-content /deep/ .data-table-wrap .sub-head {
+.tagging-instances-content ::ng-deep .data-table-wrap .sub-head {
     border: solid 0.5px #f0f0f0;
 }
 
-.tagging-instances-content /deep/ .head-cell-wrapper{
+.tagging-instances-content ::ng-deep .head-cell-wrapper{
     text-align: left;
 }
 
-.cost-table-wrapper /deep/ .table-cells {
+.cost-table-wrapper ::ng-deep .table-cells {
     max-width: 500px;
     width: 100% !important;
 }

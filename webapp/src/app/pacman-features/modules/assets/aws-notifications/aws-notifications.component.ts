@@ -16,12 +16,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { environment } from './../../../../../environments/environment';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { IssueListingService } from '../../../services/issue-listing.service';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
+
 import {RefactorFieldsService} from './../../../../shared/services/refactor-fields.service';
 import {WorkflowService} from '../../../../core/services/workflow.service';
 

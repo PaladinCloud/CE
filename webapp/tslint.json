@@ -14,8 +14,7 @@
     "eofline": true,
     "forin": true,
     "import-blacklist": [
-      true,
-      "rxjs"
+      true
     ],
     "import-spacing": true,
     "indent": [
@@ -26,7 +25,7 @@
     "label-position": true,
     "max-line-length": [
       true,
-      {"limit": 140, "ignore-pattern": "^import |^export {(.*?)}"} // pattern will ignore all import, exports and all class declarations implementing interfaces.
+      {"limit": 140, "ignore-pattern": "^import |^export {(.*?)}"}
     ],
     "member-access": false,
     "member-ordering": [

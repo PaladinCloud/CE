@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {AssetGroupObservableService} from '../../core/services/asset-group-observable.service';
 import {DomainTypeObservableService} from '../../core/services/domain-type-observable.service';
 import { RoutingService } from '../../core/services/routing.service';

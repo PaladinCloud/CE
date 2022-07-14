@@ -31,7 +31,7 @@
   color: #555;
   font-size: 1em;
 }
-.tagging-instances-container /deep/ .table-cells {
+.tagging-instances-container ::ng-deep .table-cells {
   max-width: 500px;
   width: 100% !important;
 }

@@ -18,7 +18,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { ErrorHandlingService } from './error-handling.service';
 import { ToastObservableService } from './toast-observable.service';
 import { LoggerService } from './logger.service';

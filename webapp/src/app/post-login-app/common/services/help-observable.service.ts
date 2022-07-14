@@ -16,11 +16,12 @@
  * Created by adityaagarwal on 11/02/18.
  */
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 
@@ -39,9 +40,9 @@ export class HelpObservableService {
 
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return response;
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

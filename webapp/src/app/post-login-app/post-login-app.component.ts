@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { moduleTransition } from "./common/animations/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AssetGroupObservableService } from "../core/services/asset-group-observable.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { MainRoutingAnimationEventService } from "../shared/services/main-routing-animation-event.service";
 import { LoggerService } from "../shared/services/logger.service";
 import { DataCacheService } from "../core/services/data-cache.service";

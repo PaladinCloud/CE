@@ -666,11 +666,11 @@ label {
   height: 56px;
 }
 
-.floating-widgets-section /deep/ .data-table-wrap.loading {
+.floating-widgets-section ::ng-deep .data-table-wrap.loading {
   max-height: calc(100vh - 21em) !important;
   min-height: calc(100vh - 21em) !important;
 }
 
-.floating-widgets-section /deep/ .data-table-inner-wrap {
+.floating-widgets-section ::ng-deep .data-table-inner-wrap {
   height: auto;
 }

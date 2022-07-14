@@ -20,7 +20,7 @@ import {
   OnChanges,
   SimpleChanges,
 } from "@angular/core";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { DataCacheService } from "../../../core/services/data-cache.service";
 import { WorkflowService } from "../../../core/services/workflow.service";
 import { LoggerService } from "../../../shared/services/logger.service";

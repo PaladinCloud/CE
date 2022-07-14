@@ -16,7 +16,7 @@ import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {fadeInOut} from './../common/animations/animations';
 import {OnPremAuthenticationService} from '../../core/services/onprem-authentication.service';
 import {Router} from '@angular/router';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {UtilsService} from '../../shared/services/utils.service';
 import { AssetTilesService } from '../../core/services/asset-tiles.service';
@@ -85,7 +85,7 @@ export class LoginComponent implements OnInit {
                 environment.login.method,
                 payload, {} )
                 .subscribe(
-                    result => {
+                    (result:any) => {
                         this.loginPending = false;
                         if (result.success) {
                             this.takeActionPostLogin(result);

@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy , Input} from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { environment } from './../../../../environments/environment';

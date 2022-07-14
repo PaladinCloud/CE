@@ -18,9 +18,9 @@ import { RouterModule, Routes, RouterLink, RouterLinkActive } from '@angular/rou
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material';
-import { AngularFontAwesomeModule } from 'angular-font-awesome/angular-font-awesome';
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { HttpClientModule } from '@angular/common/http';
-import 'rxjs/add/operator/toPromise';
+
 import { AppComponent } from './app.component';
 
 /* Feature modules */

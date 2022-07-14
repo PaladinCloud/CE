@@ -14,7 +14,7 @@
 
 import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IssuesHistoryService } from '../../services/issues-history.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 import { environment } from '../../../../environments/environment';

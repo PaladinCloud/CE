@@ -14,7 +14,7 @@
 
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 import {FilterManagementService} from '../services/filter-management.service';
 import {AssetGroupObservableService} from '../../core/services/asset-group-observable.service';

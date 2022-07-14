@@ -15,8 +15,8 @@
 import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 import { FetchResourcesService } from './../../services/fetch-resources.service';
 import { ActivatedRoute } from '@angular/router';
-import 'rxjs/add/operator/switchMap';
-import { Subscription } from 'rxjs/Subscription';
+
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { AwsResourceTypeSelectionService } from './../../services/aws-resource-type-selection.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
@@ -280,7 +280,7 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
 
           const resourceTypes = results[0]['targettypes'];
           let resourceTypeCount = results[1];
-          let recommendations = results[2];
+          let recommendations:any = results[2];
 
           this.setDataLoaded();
 

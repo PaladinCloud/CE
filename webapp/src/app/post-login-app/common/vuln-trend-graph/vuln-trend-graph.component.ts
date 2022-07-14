@@ -24,7 +24,7 @@ import {
   EventEmitter,
   Output
 } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as d3 from 'd3-selection';

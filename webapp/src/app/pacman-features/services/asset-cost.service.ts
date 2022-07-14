@@ -14,10 +14,11 @@
 
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 
@@ -33,7 +34,7 @@ export class AssetCostService {
         const costArray = [];
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         if (Object.keys(response).length > 0) {
                             for (let i = 0; i < Object.keys(response).length; i++) {
                                 costArray.push({
@@ -43,7 +44,7 @@ export class AssetCostService {
                             }
                         }
                         return costArray;
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

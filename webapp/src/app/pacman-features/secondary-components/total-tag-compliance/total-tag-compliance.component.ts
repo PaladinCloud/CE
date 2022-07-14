@@ -16,7 +16,7 @@ import { Component, OnInit, ViewEncapsulation, OnDestroy, Input } from '@angular
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { TaggingComplianceService } from '../../services/tagging-compliance.service';
 import { AutorefreshService } from '../../services/autorefresh.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';

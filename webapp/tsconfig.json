@@ -1,6 +1,9 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    // "preserveWhitespaces": "off",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -14,7 +17,9 @@
     "lib": [
       "es2017",
       "dom"
-   ]
+    ],
+    "module": "es2015",
+    "baseUrl": "./"
   },
   "exclude": [
     "node_modules"

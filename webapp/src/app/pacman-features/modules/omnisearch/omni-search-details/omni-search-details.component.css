@@ -633,7 +633,7 @@
   background-color: var(--primary-500);
 }
 
-.textarea-button /deep/ .app-button {
+.textarea-button ::ng-deep .app-button {
   min-width: 5em !important;
   min-height: 2em !important;
   width: 8em;
@@ -677,11 +677,11 @@
   font-family: var(--text-light-font-family);
 }
 
-.search-details-wrapper /deep/ ngx-select-dropdown,
-.search-details-wrapper /deep/ .ngx-dropdown-container {
+.search-details-wrapper ::ng-deep ngx-select-dropdown,
+.search-details-wrapper ::ng-deep .ngx-dropdown-container {
   height: 100%;
 }
-.search-details-wrapper /deep/ .ngx-dropdown-button {
+.search-details-wrapper ::ng-deep .ngx-dropdown-button {
   height: 100%;
   border: none !important;
   border-top-right-radius: 0px !important;

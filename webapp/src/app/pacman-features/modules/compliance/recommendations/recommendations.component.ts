@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { environment } from './../../../../../environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';

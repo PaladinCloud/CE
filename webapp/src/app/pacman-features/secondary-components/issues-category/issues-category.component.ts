@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute, UrlSegment, Router } from '@angular/router';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { WorkflowService } from '../../../core/services/workflow.service';

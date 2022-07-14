@@ -12,14 +12,16 @@
  * limitations under the License.
  */
 
+
+import {throwError as observableThrowError,  Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
-import { Observable } from 'rxjs/Observable';
 import { DataCacheService } from './data-cache.service';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
 import {AuthSessionStorageService} from './auth-session-storage.service';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class OnPremAuthenticationService {
@@ -31,7 +33,7 @@ export class OnPremAuthenticationService {
   ) {}
 
   handleError(error: any): Observable<any> {
-    return Observable.throw(error.message || error);
+    return observableThrowError(error.message || error);
   }
 
   logout() {
@@ -40,10 +42,10 @@ export class OnPremAuthenticationService {
 
     const logoutObserver = this.httpService
       .getHttpResponse(logoutUrl, logoutMethod, {}, {})
-      .map(response => {
+      .pipe(map(response => {
         return response;
-      })
-      .catch(error => this.handleError(error));
+      }))
+      .pipe(catchError(error => this.handleError(error)));
 
     logoutObserver.subscribe(
       response => {

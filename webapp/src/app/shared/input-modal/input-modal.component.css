@@ -105,11 +105,11 @@
   width: 100%;
 }
 
-/deep/ .searchable-dropdown-wrapper {
+::ng-deep .searchable-dropdown-wrapper {
   z-index: 20;
 }
 
-/deep/ .filter-arrow {
+::ng-deep .filter-arrow {
   top: 50% !important;
 }
 
@@ -117,6 +117,6 @@
   padding-left: 0;
 }
 
-/deep/ .dropdown-wrapper .ngx-dropdown-container button {
+::ng-deep .dropdown-wrapper .ngx-dropdown-container button {
   border: none !important;
 }

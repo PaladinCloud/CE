@@ -18,7 +18,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { OmniSearchDataService } from "../../../services/omni-search-data.service";
 import { environment } from "./../../../../../environments/environment";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { AutorefreshService } from "../../../services/autorefresh.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";

@@ -31,6 +31,6 @@
 	max-height: 50em;
 }
 
-:host /deep/ .ag-theme-material .ag-header-cell-label .ag-header-cell-text {
+:host ::ng-deep .ag-theme-material .ag-header-cell-label .ag-header-cell-text {
     text-transform: none !important;
 }

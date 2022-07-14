@@ -12,10 +12,10 @@
  * limitations under the License.
  */
 
-.certificates-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.certificates-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 285px;
 }
 
-.certificates-wrapper /deep/ .data-table-wrap .table-cells {
+.certificates-wrapper ::ng-deep .data-table-wrap .table-cells {
     width: 120px;
 }

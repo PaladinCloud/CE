@@ -14,7 +14,7 @@
 
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { GridOptions } from 'ag-grid';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';

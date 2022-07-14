@@ -13,7 +13,7 @@
  */
 
 import { NgModule } from "@angular/core";
-import { HttpModule } from "@angular/http";
+import { HttpClientModule } from "@angular/common/http";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
@@ -109,7 +109,7 @@ import { EmptyStateComponent } from "./empty-state/empty-state.component";
     ReactiveFormsModule,
     RouterModule,
     SelectModule,
-    HttpModule,
+    HttpClientModule,
     NgDatepickerModule,
     SelectDropDownModule,
     AgGridModule.withComponents([AgGridTableComponent]),
@@ -178,7 +178,7 @@ import { EmptyStateComponent } from "./empty-state/empty-state.component";
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    HttpModule,
+    HttpClientModule,
     CanvasSidePanelComponent,
     ButtonIconComponent,
     ButtonComponent,
