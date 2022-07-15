@@ -48,6 +48,9 @@ public class AssetFileGenerator {
 	@Autowired
 	KmsKeyInventoryCollector kmsKeyInventoryCollector;
 
+	@Autowired
+	DataProcInventoryCollector dataProcInventoryCollector;
+
 	public void generateFiles(List<String> projects, String filePath) {
 
 		try {
@@ -150,6 +153,17 @@ public class AssetFileGenerator {
 				}
 			});
 
+			executor.execute(() -> {
+				if (!(isTypeInScope("dataproc"))) {
+					return;
+				}
+				try {
+					FileManager.generateDataProcFiles(dataProcInventoryCollector.fetchDataProcInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 
 			while (!executor.isTerminated()) {
@@ -164,20 +178,7 @@ public class AssetFileGenerator {
 		}
 	}
 
-	// /**
-	// * function for generating registered application file
-	// */
-	// private void generateAzureAplicationList() {
-	//
-	// if ((isTypeInScope("registeredApplication"))) {
-	// try {
-	// FileManager.generateRegisteredApplicationFiles(
-	// registeredApplicationInventoryCollector.fetchAzureRegisteredApplication());
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// }
+
 
 	private boolean isTypeInScope(String type) {
 		if ("".equals(targetTypes)) {

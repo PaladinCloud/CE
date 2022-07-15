@@ -53,8 +53,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-bigquerytable.data", "[", false);
         FileGenerator.writeToFile(InventoryConstants.GCP_CLOUD_SQL_FILE, "[", false);
         FileGenerator.writeToFile(InventoryConstants.GCP_KMS_KEY_FILE, "[", false);
+        FileGenerator.writeToFile("gcp-dataproc.data", "[", false);
         FileGenerator.writeToFile("gcp-pubsub.data", "[", false);
-
     }
 
     public static void finalise() throws IOException {
@@ -67,6 +67,7 @@ public class FileManager {
         FileGenerator.writeToFile(InventoryConstants.GCP_CLOUD_SQL_FILE, "]", true);
         FileGenerator.writeToFile(InventoryConstants.GCP_KMS_KEY_FILE, "]", true);
         FileGenerator.writeToFile("gcp-pubsub.data", "]", true);
+        FileGenerator.writeToFile("gcp-dataproc.data", "]", true);
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -103,5 +104,9 @@ public class FileManager {
     }
     public static void generateKmsKeyFiles(List<KMSKeyVH> keyList) {
         FileGenerator.generateJson(keyList, InventoryConstants.GCP_KMS_KEY_FILE);
+    }
+
+    public static void generateDataProcFiles(List<ClusterVH> clustList) {
+        FileGenerator.generateJson(clustList,"gcp-dataproc.data");
     }
 }

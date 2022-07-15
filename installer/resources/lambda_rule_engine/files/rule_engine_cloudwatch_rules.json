@@ -6335,5 +6335,28 @@
     "modifiedDate": "2022-07-05",
     "severity": null,
     "category": null
+  },
+  {
+    "ruleId": "GCP_DataProc_CMK_Encryption",
+    "ruleUUID": "GCP_DataProc_CMK_Encryption",
+    "policyId": "GCP_DataProc_CMK_Encryption",
+    "ruleName": "GCP_DataProc_CMK_Encryption",
+    "targetType": "dataproc",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "DataProcCMKEncryption",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-customer-managed-key-encryption\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that data proc clusters are encrypted using Customer-Managed Keys (CMKs).\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Dataproc clusters is not encrypted using a Customer-Managed Key (CMK)\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_dataproc/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Dataproc clusters Encryption with Customer-Managed Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_DataProc_CMK_Encryption\",\"autofix\":false,\"alexaKeyword\":\"DataProcCMKEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"dataproc\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_DataProc_CMK_Encryption\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"GCP_DataProc_CMK_Encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/GCP_DataProc_CMK_Encryption",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Use CMEK to encrypt Dataproc Clusters",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
+    "severity": "high",
+    "category": "security"
   }
+
 ]

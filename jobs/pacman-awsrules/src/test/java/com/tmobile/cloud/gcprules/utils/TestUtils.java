@@ -424,5 +424,38 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonForDataProcEncryptCMKsSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\"_cloudType\":\"GCP\",\"region\":\"us-east1\",\"id\":\"cluster-4174\",\"projectName\":\"cool-bay-349411\",\"kmsKeyName\":\"projects/cool-bay-349411/locations/us-east1/keyRings/cool-bay-349411-cloudsql-key-ring/cryptoKeys/cool-bay-cloudsql-cmk\",\"discoverydate\":\"2022-07-19 10:00:00+0000\",\"_resourceid\":\"cluster-4174\",\"_docid\":\"cluster-4174\",\"_entity\":\"true\",\"_entitytype\":\"dataproc\",\"firstdiscoveredon\":\"2022-07-19 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-07-19 11:00:00+0000\"}", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitsJsonForDataProcEncryptCMKsFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-central1\",\n" +
+                "          \"id\": \"cluster-fc36\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"kmsKeyName\": null,\n" +
+                "          \"discoverydate\": \"2022-07-19 10:00:00+0000\",\n" +
+                "          \"_resourceid\": \"cluster-fc36\",\n" +
+                "          \"_docid\": \"cluster-fc36\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"dataproc\",\n" +
+                "          \"firstdiscoveredon\": \"2022-07-19 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-07-19 11:00:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 
 }
