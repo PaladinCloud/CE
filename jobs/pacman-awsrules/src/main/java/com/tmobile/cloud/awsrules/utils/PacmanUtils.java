@@ -1071,6 +1071,77 @@ public class PacmanUtils {
     }
     
 	/**
+	 * @param imageSet
+	 * @param esAmiUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static Set<String> getMissingAMIs(Set<String> imageSet, String esAmiUrl) throws Exception {
+
+		Set<String> imageIds = new HashSet<>();
+		Set<String> missingImages = new HashSet<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_IMAGE_ID_ATTRIBUTE), imageSet);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esAmiUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String imageId = source.get(PacmanRuleConstants.ES_IMAGE_ID_ATTRIBUTE).getAsString();
+					if(StringUtils.isNotEmpty(imageId))
+						imageIds.add(imageId);
+				}
+			}
+
+		}
+		if(!CollectionUtils.isNullOrEmpty(imageSet)) 
+			missingImages = imageSet.stream().filter(image -> !imageIds.contains(image)).collect(Collectors.toSet());
+		
+		return missingImages;
+	}
+    
+	/**
+	 * @param arn
+	 * @param esAsgLcUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getImagesByAsgArn(String arn, String esAsgLcUrl) throws Exception {
+
+		List<String> images = new ArrayList<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ASG_ARN_ATTRIBUTE), arn);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esAsgLcUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String imageId = source.get(PacmanRuleConstants.ES_IMAGE_ID_ATTRIBUTE).getAsString();
+					if(StringUtils.isNotEmpty(imageId)) {
+						images.add(imageId);
+					}
+				}
+			}
+
+		}
+		return images;
+	}
+    
+	/**
 	 * @param secGroups
 	 * @param esSgUrl
 	 * @return
