@@ -38,7 +38,7 @@ export class DevStandardPullRequestAgeComponent implements OnInit, OnDestroy, On
   private dataSubscription: Subscription;
   private subscriptionToAssetGroup: Subscription;
 
-  private errorValue = 0;
+  public errorValue = 0;
   public graphData: any = [];
   private legend_text: any;
   private total = 0;

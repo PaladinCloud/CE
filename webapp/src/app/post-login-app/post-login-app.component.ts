@@ -40,7 +40,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   queryParameters: any = {};
   private agAndDomainKey: string;
   showPacLoader: any = [];
-  private haveAdminPageAccess = false;
+  public haveAdminPageAccess = false;
 
   private themeSubscription: Subscription;
   private activatedRouteSubscription: Subscription;
@@ -153,7 +153,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       "Setting the page reload interval to: " + timeoutInterval
     );
     const reloadTimeout = setTimeout(function () {
-      window.location.reload(true);
+      window.location.reload();
     }, timeoutInterval);
 
     return reloadTimeout;

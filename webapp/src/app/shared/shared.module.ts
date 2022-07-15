@@ -94,7 +94,8 @@ import { ToastObservableService } from "./services/toast-observable.service";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { TableListComponent } from "./table-list/table-list.component";
 import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
-import { MatIconModule } from "@angular/material";
+import { MatIconModule } from "@angular/material/icon";
+ import {MatMenuModule} from '@angular/material/menu'; 
 import { EmptyStateComponent } from "./empty-state/empty-state.component";
 import { MatGridListModule } from "@angular/material/grid-list";
 
@@ -104,16 +105,15 @@ import { MatGridListModule } from "@angular/material/grid-list";
     MatSelectModule,
     MatIconModule,
     MatMenuModule,
-    MatIconModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    SelectModule,
-    HttpClientModule,
-    NgDatepickerModule,
+    // SelectModule,
+    // HttpClientModule,
+    // NgDatepickerModule,
     SelectDropDownModule,
-    AgGridModule.withComponents([AgGridTableComponent]),
+    AgGridModule
   ],
   declarations: [
     EmptyStateComponent,
@@ -256,5 +256,4 @@ import { MatGridListModule } from "@angular/material/grid-list";
     FormService,
   ],
 })
-export class SharedModule {
-}
+export class SharedModule { }

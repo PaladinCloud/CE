@@ -37,12 +37,12 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   //  @Input() filteredResources: any;
   private awsResources: any = [];
   private activeTileIndex: any = 0;
-  private categories = [];
+  public categories = [];
   private categoryNames = [];
-  private filteredResources: any = [];
+  public filteredResources: any = [];
   //  private selectedResource: any;
-  private activeFilterCategory: any;
-  private searchTxt = '';
+  public activeFilterCategory: any;
+  public searchTxt = '';
   routeTo = 'asset-list';
 
   private resourceTypeSelectionSubscription: Subscription;

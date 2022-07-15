@@ -37,7 +37,7 @@ export class DevStaleBranchApplicationsComponent implements OnInit, OnDestroy, O
   gridColumnApi: any;
   columns: any = [];
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
   @Input() filter: any;

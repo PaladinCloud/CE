@@ -55,8 +55,8 @@ import { ConfigManagementComponent } from "./config-management/config-management
     CommonModule,
     SharedModule,
     AdminRoutingModule,
-    SelectModule,
-    NgDatepickerModule,
+    // SelectModule,
+    // NgDatepickerModule,
   ],
   declarations: [
     PoliciesComponent,

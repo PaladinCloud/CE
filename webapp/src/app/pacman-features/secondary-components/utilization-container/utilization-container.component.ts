@@ -46,8 +46,8 @@ export class UtilizationContainerComponent implements OnInit, OnDestroy {
   durationParams: any;
   autoRefresh: boolean;
 
-  private error = false;
-  private dataLoaded = false;
+  public error = false;
+  public dataLoaded = false;
   private autorefreshInterval;
   graphData: any;
   networkData: any;

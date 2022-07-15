@@ -57,8 +57,8 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         'Applications': ''
     };
 
-    private error = false;
-    private dataLoaded = false;
+    public error = false;
+    public dataLoaded = false;
     graphData: any;
     colorSet: any = [];
     errorMessage: any;

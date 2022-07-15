@@ -58,8 +58,8 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
 
   private graphWidth: any;
   private graphData: any;
-  private dataLoaded: any = false;
-  private error: any = false;
+  public dataLoaded: any = false;
+  public error: any = false;
   private loading: any = false;
   private errorMessage: any = "jsError";
   private distributedFiltersObject: any = {};

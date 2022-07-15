@@ -54,8 +54,9 @@ import { TreeModule } from "@circlon/angular-tree-component";
 import { ContextualMenuComponent } from "./common/contextual-menu/contextual-menu.component";
 import { AssetSwitcherComponent } from "./common/asset-switcher/asset-switcher.component";
 import { HeaderComponent } from "./common/header/header.component";
-import { MatIconModule, MatInputModule } from "@angular/material";
 import { HttpClientModule } from "@angular/common/http";
+import { MatIconModule } from "@angular/material/icon";
+ import {MatInputModule} from '@angular/material/input'; 
 
 @NgModule({
   imports: [

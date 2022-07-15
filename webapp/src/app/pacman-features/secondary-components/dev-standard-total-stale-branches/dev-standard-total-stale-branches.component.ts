@@ -50,7 +50,7 @@ export class DevStandardTotalStaleBranchesComponent implements OnInit, OnDestroy
   strokeColor = '#fff';
   private donutData = {};
   public errorMessage: any;
-  private errorValue = 0;
+  public errorValue = 0;
   @Input() filter: any;
   constructor(
     private errorHandling: ErrorHandlingService,

@@ -63,6 +63,8 @@ export class PullRequestLineMetricsComponent implements OnInit, OnDestroy, OnCha
       });
   }
 
+  sidebarOpened:boolean;
+
   // Subscription variables
   onpremSubscription: Subscription;
   subscriptionToAssetGroup: Subscription;

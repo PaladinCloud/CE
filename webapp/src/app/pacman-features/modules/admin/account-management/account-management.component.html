@@ -15,7 +15,7 @@
                         <div class="widget flex flex-col full-height">
                             <div class="relative flex flex-col full-height">
                                 <app-data-table class="flex flex-col full-height" [errorValue]='errorValue' [outerArr]='outerArr' [allColumns]='allColumns'
-                                    [dataHead]="'Account Management'" [parentName]='errorMessage' (selectedRow)='goToDetails($event)'
+                                    [dataHead]="'Account Management'" [parentName]='errorMessage'
                                     [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows'
                                     [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' (searchTriggerred)='callNewSearch()'
                                     [searchPassed]='searchPassed' (menuClick)='handleDropdown($event);' [searchableHeader]='true'

@@ -40,7 +40,7 @@ export class PatchingSponsorComponent implements OnInit, OnDestroy {
 
   initComplete = false;
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
   @Output() errorOccurred = new EventEmitter();

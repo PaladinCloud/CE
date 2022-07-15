@@ -39,7 +39,7 @@ export class OnpremAssetsComponent implements OnInit, OnDestroy {
   private targetSubscription: Subscription;
   private updateSubscription: Subscription;
   private dataSubscription: Subscription;
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   public backButtonRequired;
   pageTitle = 'Update Asset Data';
   breadcrumbArray: any = ['Assets'];

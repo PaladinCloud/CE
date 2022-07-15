@@ -22,4 +22,4 @@ import { ToolsRoutingModule } from "./tools-routing.module";
   imports: [CommonModule, SharedModule, ToolsRoutingModule],
   declarations: [ToolsLandingPageComponent],
 })
-export class ToolsModule {}
+export class ToolsModule { }

@@ -18,7 +18,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable ,  Subject } from 'rxjs';
-import { MatCardLgImage } from '@angular/material';
+import { MatCardLgImage } from '@angular/material/card';
 
 @Injectable()
 

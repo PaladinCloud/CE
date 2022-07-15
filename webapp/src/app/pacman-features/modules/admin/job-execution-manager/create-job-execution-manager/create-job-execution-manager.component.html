@@ -81,8 +81,8 @@
                                             </div>
                                             <div class="freq-col-row input-form">
                                                 <label>Job Frequency *</label>
-                                                <ng-select name="jobFrequency" ngModel (selected)='onSelectFrequency($event)' [allowClear]="true" [items]="allFrequencies" placeholder="Select Frequency" required>
-                                                </ng-select>
+                                                <!-- <ng-select name="jobFrequency" ngModel (selected)='onSelectFrequency($event)' [allowClear]="true" [items]="allFrequencies" placeholder="Select Frequency" required> -->
+                                                <!-- </ng-select> -->
                                             </div>
                                             <div class="freq-col-row input-form" *ngIf="selectedFrequency==='Minutes'">
                                                 <div class="freq-col-sm freq-pright freq-col-middle">
@@ -166,13 +166,13 @@
                                                 </div>
                                                 <div class="freq-col-sm-6 freq-pright">
                                                     <div class="input-form">
-                                                        <ng-select name="jobFrequencyMonth" ngModel (selected)='onSelectFrequencyMonth($event)' [allowClear]="true" [items]="allMonths" placeholder="Select Month" required>
-                                                        </ng-select>
+                                                        <!-- <ng-select name="jobFrequencyMonth" ngModel (selected)='onSelectFrequencyMonth($event)' [allowClear]="true" [items]="allMonths" placeholder="Select Month" required> -->
+                                                        <!-- </ng-select> -->
                                                     </div>
                                                 </div>
                                                 <div class="freq-col-sm-5 input-form">
-                                                    <ng-select name="jobFrequencyDay" ngModel [allowClear]="true" [items]="allMonthDays" placeholder="Select Day" #jobFrequencyMonthDay required>
-                                                    </ng-select>
+                                                    <!-- <ng-select name="jobFrequencyDay" ngModel [allowClear]="true" [items]="allMonthDays" placeholder="Select Day" #jobFrequencyMonthDay required> -->
+                                                    <!-- </ng-select> -->
                                                 </div>
                                             </div>
                                             <div class="rule-type input-box">

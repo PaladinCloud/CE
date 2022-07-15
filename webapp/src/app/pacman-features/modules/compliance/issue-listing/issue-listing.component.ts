@@ -92,7 +92,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public pageLevel = 0;
   public backButtonRequired;
   public agAndDomain = {};
-  private doNotDisplaySearch=true;
+  public doNotDisplaySearch=true;
   isFilterTagLoaded = false;
 
   constructor(
@@ -143,6 +143,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.paginatorSize = event;
     this.getData();
   }
+
+  handleAddFilterClick(e){}
 
   /*
    * This function gets the urlparameter and queryObj

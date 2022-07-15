@@ -28,6 +28,7 @@ import {LoggerService} from '../../../shared/services/logger.service';
 
 export class VulnReportTablesComponent implements OnDestroy, OnChanges {
 
+  detailsPopup:boolean;
   assetGroupSubscription: Subscription;
   remediationTableSubscription: Subscription;
   performersTableSubscription: Subscription;

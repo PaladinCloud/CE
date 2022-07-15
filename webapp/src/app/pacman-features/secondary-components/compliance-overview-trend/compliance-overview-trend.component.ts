@@ -62,8 +62,8 @@ export class ComplianceOverviewTrendComponent
   private graphWidth: any;
   private subtractGraphWidthBy = 50;
   private graphData: any;
-  private dataLoaded: any = false;
-  private error: any = false;
+  public dataLoaded: any = false;
+  public error: any = false;
   private loading: any = false;
   private errorMessage: any = "jsError";
   private distributedFiltersObject: any = {};

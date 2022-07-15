@@ -37,13 +37,13 @@ export class DevPullRequestApplicationsComponent implements OnInit, OnDestroy, O
   gridColumnApi: any;
   columns: any = [];
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
 
   @Input() filter: any;
 
-  errorValue = 0;
+  public errorValue = 0;
 
   constructor(  private devPullRequestApplicationService: DevPullRequestApplicationService,
           private assetGroupObservableService: AssetGroupObservableService,

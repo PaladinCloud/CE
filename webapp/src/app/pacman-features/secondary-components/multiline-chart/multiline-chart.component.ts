@@ -93,7 +93,7 @@ export class MultilineChartComponent implements OnInit, OnChanges {
 
   private graphData: any = [];
   public error = false;
-  private dataLoaded = false;
+  public dataLoaded = false;
 
   constructor(private ngZone: NgZone) {
 

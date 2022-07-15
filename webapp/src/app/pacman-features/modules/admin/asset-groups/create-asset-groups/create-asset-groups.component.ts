@@ -62,6 +62,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   @ViewChild('attributeValueElement') attributeValueElement: SelectComponent;
   @ViewChild('targetType') targetTypeElement: SelectComponent;
 
+  backButtonRequired:boolean=false;
   pageTitle = 'Create Asset Group';
   breadcrumbArray = ['Asset Groups'];
   breadcrumbLinks = [ 'asset-groups'];

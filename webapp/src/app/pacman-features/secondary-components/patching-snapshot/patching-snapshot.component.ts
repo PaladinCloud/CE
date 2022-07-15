@@ -39,7 +39,7 @@ export class PatchingSnapshotComponent implements OnInit, OnDestroy {
   columns: any = [];
   initComplete = false;
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
 

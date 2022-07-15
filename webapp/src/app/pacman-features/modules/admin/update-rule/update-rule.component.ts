@@ -52,6 +52,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   ruleFrequencyMonth: any;
   ruleFrequencyDay: any;
 
+  ruleDetailsLoader:boolean;
   ruleFrequencyMonths: any;
   ruleFrequencyDays: any;
   ruleFrequencyModeValue: any;

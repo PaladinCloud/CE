@@ -12,10 +12,13 @@
  * limitations under the License.
  -->
 
-<mat-card class="asset-card">
-    <!-- <mat-card-title-group> -->
+<!-- <mat-card class="asset-card">
       <mat-card-title>Without application tag</mat-card-title>
-    <!-- </mat-card-title-group> -->
     <mat-card-subtitle (click)="untaggedApplicationData > 0 && NavigatetoAsset('untagged')">{{untaggedApplicationData | number}}<img style="padding: 5px 12.5px;" src="/assets/icons/Path.svg" />
     </mat-card-subtitle>
-</mat-card>
+</mat-card> -->
+<div class="asset-card">
+  <div>Without application</div>
+  <div (click)="untaggedApplicationData > 0 && NavigatetoAsset('untagged')">{{untaggedApplicationData | number}}<img style="padding: 5px 12.5px;" src="/assets/icons/Path.svg" />
+    </div>
+</div>

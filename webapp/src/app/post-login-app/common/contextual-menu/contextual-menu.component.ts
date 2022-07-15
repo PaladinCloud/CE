@@ -235,7 +235,6 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     const currNodes = this.getCurrentNodesFromRoute(currentRoute);
     this.currentNodeId = currNodes[0];
     this.currentParentId = currNodes[1];
-    console.log("AgAndDomain:" + this.agAndDomain["ag"]);
   }
 
   getCurrentNodesFromRoute(currentRoute) {

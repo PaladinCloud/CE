@@ -33,7 +33,7 @@ export class IssuesCategoryComponent implements OnInit, OnDestroy {
   @Input() categoriesHeader: string;
   @Input() categoriesTitle: string;
   @Input() categoriesSubTitle: string;
-  @Input() categoriesTotal: string;
+  @Input() categoriesTotal: number;
   @Input() categoriesPostTitle: string;
   @Input() categoriesVal: number;
   @Input() categoriesLoaded: string;
