@@ -29,7 +29,7 @@ import { Subscription } from "rxjs";
 import { LoggerService } from "../../../shared/services/logger.service";
 import { DownloadService } from "../../../shared/services/download.service";
 import { DataCacheService } from "../../../core/services/data-cache.service";
-import { TreeNode } from "angular-tree-component";
+import { TreeNode } from "@circlon/angular-tree-component";
 import { NavigationEnd, Router } from "@angular/router";
 
 @Component({

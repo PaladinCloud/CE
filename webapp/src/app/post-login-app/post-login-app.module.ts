@@ -50,7 +50,7 @@ import { VulnReportStatsComponent } from "./common/vuln-report-stats/vuln-report
 import { VulnTrendGraphComponent } from "./common/vuln-trend-graph/vuln-trend-graph.component";
 import { VulnReportWorkflowComponent } from "./common/vuln-report-workflow/vuln-report-workflow.component";
 import { CopyElementService } from "../shared/services/copy-element.service";
-import { TreeModule } from "angular-tree-component";
+import { TreeModule } from "@circlon/angular-tree-component";
 import { ContextualMenuComponent } from "./common/contextual-menu/contextual-menu.component";
 import { AssetSwitcherComponent } from "./common/asset-switcher/asset-switcher.component";
 import { HeaderComponent } from "./common/header/header.component";
