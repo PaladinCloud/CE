@@ -422,6 +422,7 @@ public class PacmanRuleConstants {
     public static final String PORT_5432 = "5432";
     public static final String FALSE = "false";
     public static final String ES_ASG_LC_URL = "esAsgLcURL";
+    public static final String ES_AMI_URL = "esAmiUrl";
     public static final String ES_ASG_ARN_ATTRIBUTE = "autoscalinggrouparn";
     public static final String ES_CONFIG_ARN_ATTRIBUTE = "launchconfigurationarn";
     public static final String ES_SNAPSHOT_ID_ATTRIBUTE = "snapshotid";
