@@ -461,6 +461,7 @@ app-filtered-selector{
   display: flex;
   flex-direction: row;
   align-items: flex-start;
+  justify-content: center;
   padding: 0px;
   flex: none;
   order: 0;
