@@ -5604,10 +5604,10 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_check_public_access_for_storage_account",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Check if access for Azure Storage Account is public",
+    "displayName": "Deny public access to Storage Account",
     "createdDate": "2022-06-03",
     "modifiedDate": "2022-06-03",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
