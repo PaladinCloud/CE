@@ -69,6 +69,7 @@ import com.tmobile.cso.pacman.inventory.vo.ASGVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
 import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
+import com.tmobile.cso.pacman.inventory.vo.BackupVaultVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
@@ -279,6 +280,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -438,6 +440,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -777,6 +780,21 @@ public class FileManager {
 		fieldNames = "image.imageId`tags.key`tags.value";
 		keys = "discoverydate`accountid`accountname`region`imageid`key`value";
 		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami-tags.data", keys);
+	}
+	
+	/**
+	 * Generate AWS AMI files.
+	 *
+	 * @param amiMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateBackupvalut(Map<String, List<BackupVaultVH>> bvmap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "backupvault.backupVaultName`backupvault.backupVaultArn`backupvault.encryptionKeyArn`backupvault.locked`backupvault.numberOfRecoveryPoints`backupvault.creationDate`backupvault.creatorRequestId`accessPolicy";
+		keys = "discoverydate`accountid`accountname`region`backupVaultName`backupVaultArn`encryptionKeyArn`locked`numberOfRecoveryPoints`creationDate`creatorRequestId`accessPolicy";
+		FileGenerator.generateJson(bvmap, fieldNames, "aws-backupvault.data", keys);
+		
 	}
 	
 	/**
