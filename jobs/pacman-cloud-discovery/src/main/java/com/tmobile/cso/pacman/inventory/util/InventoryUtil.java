@@ -73,6 +73,13 @@ import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsResult;
 import com.amazonaws.services.autoscaling.model.DescribeLaunchConfigurationsRequest;
 import com.amazonaws.services.autoscaling.model.DescribeLaunchConfigurationsResult;
 import com.amazonaws.services.autoscaling.model.LaunchConfiguration;
+import com.amazonaws.services.backup.AWSBackup;
+import com.amazonaws.services.backup.AWSBackupClientBuilder;
+import com.amazonaws.services.backup.model.BackupVaultListMember;
+import com.amazonaws.services.backup.model.GetBackupVaultAccessPolicyRequest;
+import com.amazonaws.services.backup.model.GetBackupVaultAccessPolicyResult;
+import com.amazonaws.services.backup.model.ListBackupVaultsRequest;
+import com.amazonaws.services.backup.model.ListBackupVaultsResult;
 import com.amazonaws.services.certificatemanager.AWSCertificateManager;
 import com.amazonaws.services.certificatemanager.AWSCertificateManagerClientBuilder;
 import com.amazonaws.services.certificatemanager.model.CertificateDetail;
@@ -298,6 +305,7 @@ import com.tmobile.cso.pacman.inventory.vo.AccessKeyMetadataVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
 import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
 import com.tmobile.cso.pacman.inventory.vo.Attribute;
+import com.tmobile.cso.pacman.inventory.vo.BackupVaultVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
@@ -1159,6 +1167,72 @@ public class InventoryUtil {
 						.filter(devMap -> devMap.getEbs() != null && devMap.getEbs().getSnapshotId() != null)
 						.collect(Collectors.toList()))
 				.orElse(Collections.emptyList());
+	}
+	
+
+	/**
+	 * Fetch Amazon Backup Vaults.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
+	 * @return the map
+	 */
+	public static Map<String, List<BackupVaultVH>> fetchBackupVaults(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String accountId, String accountName) {
+
+		Map<String, List<BackupVaultVH>> backupVaultMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"backupvault\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AWSBackup backupClient = AWSBackupClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+
+					List<BackupVaultListMember> backupVaultList = new ArrayList<>();
+					String token = null;
+					do {
+						ListBackupVaultsResult backupValuResult = backupClient
+								.listBackupVaults(new ListBackupVaultsRequest()).withNextToken(token);
+						backupVaultList.addAll(backupValuResult.getBackupVaultList());
+						token = backupValuResult.getNextToken();
+					} while (token != null);
+
+					List<BackupVaultVH> backupVaultVHList = new ArrayList<>();
+					if (!backupVaultList.isEmpty()) {
+						backupVaultList.forEach(backupValut -> {
+							String poilicy = null;
+							try {
+								GetBackupVaultAccessPolicyResult backupuVaultPolicy = backupClient
+										.getBackupVaultAccessPolicy(new GetBackupVaultAccessPolicyRequest()
+												.withBackupVaultName(backupValut.getBackupVaultName()));
+								if (backupuVaultPolicy != null) {
+									poilicy = backupuVaultPolicy.getPolicy();
+								}
+							} catch (Exception e) {
+								log.warn(backupValut.getBackupVaultName()
+										+ " backup vault is not associated with policy");
+							}
+
+							backupVaultVHList.add(new BackupVaultVH(backupValut, poilicy));
+						});
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : backupvault " + region.getName()
+								+ " >> " + backupVaultVHList.size());
+						backupVaultMap.put(accountId + delimiter + accountName + delimiter + region.getName(),
+								backupVaultVHList);
+					}
+				}
+			} catch (Exception e) {
+				if (region.isServiceSupported(AWSAccessAnalyzer.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, region.getName(), "backupvault", e.getMessage());
+				}
+			}
+		}
+		return backupVaultMap;
 	}
 	
 	/**
