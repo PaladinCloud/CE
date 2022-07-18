@@ -783,9 +783,9 @@ public class FileManager {
 	}
 	
 	/**
-	 * Generate AWS AMI files.
+	 * Generate AWS Backup vault files.
 	 *
-	 * @param amiMap the file info map
+	 * @param backupvalut the file info map
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static void generateBackupvalut(Map<String, List<BackupVaultVH>> bvmap) throws IOException {
