@@ -1,5 +1,7 @@
 from core.terraform.resources.aws.elasticsearch import ElasticsearchDomainResource, ElasticsearchDomainPolicyResource
 from core.terraform.resources.aws.cloudwatch import CloudWatchLogGroupResource, CloudWatchLogResourcePolicy
+from core.terraform.resources.aws.kms import KMSkey
+from resources.datastore.kms import AWSKMSkey
 from core.providers.aws.boto3.iam import create_iam_service_linked_role
 from resources.vpc.security_group import InfraSecurityGroupResource
 from core.config import Settings
@@ -49,7 +51,7 @@ class ESDomain(ElasticsearchDomainResource):
     cloudwatch_log_group_arn = ESCloudWatchLogGroup.get_output_attr('arn')
     log_type = "ES_APPLICATION_LOGS"
     enabled = True
-    kms_key_id = KMSkey.get_output_attr('arn')
+    kms_key_id = AWSKMSkey.get_output_attr('arn')
 
     @classmethod
     def get_http_url_with_port(cls):

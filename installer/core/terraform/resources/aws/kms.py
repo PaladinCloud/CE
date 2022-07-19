@@ -2,7 +2,7 @@ from core.terraform.resources import TerraformResource, TerraformData
 from core.config import Settings
 from core.providers.aws.boto3 import kms
 class KMSkey(TerraformResource):
-    resource_instance_name = "aws_iam_role"
+    resource_instance_name = "aws_kms_key"
     available_args = {
         'description': {'required': True, 'prefix': True, 'sep': '_'},
         'tags': {'required': False}
