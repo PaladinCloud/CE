@@ -36,6 +36,19 @@ class ElasticsearchDomainResource(TerraformResource):
                 'volume_size': {'required': True},
             }
         },
+        'node_to_node_encryption': {
+             'required' : True,
+             'inline_args':{
+                    'enabled' : {'required': True},
+            }
+         },
+        'encrypt_at_rest': {
+             'required' : True,
+             'inline_args':{
+                    'enabled' : {'required': True},
+                    'kms_key_id': {'required': True}
+            }
+         },
         'vpc_options': {
             'required': True,
             'inline_args': {

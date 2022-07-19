@@ -47,6 +47,7 @@ PROCESS_RESOURCES = {
     'vpc.security_group': {'tags': ["security"]},
     'datastore.db': {'tags': ["rds", "datastore"]},
     'datastore.es': {'tags': ["es", "datastore"]},
+    'datastore.kms': {'tags': ["kms", "datastore"]},
     'pacbot_app.alb': {'tags': ["infra"]},
     'pacbot_app.alb_target_groups': {'tags': ["infra", "deploy"]},
     'pacbot_app.alb_listener_rules': {'tags': ["infra", "deploy"]},

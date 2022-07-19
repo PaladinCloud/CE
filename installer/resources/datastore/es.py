@@ -35,7 +35,7 @@ class ESCloudWatchLogResourcePolicy(CloudWatchLogResourcePolicy):
 
 class ESDomain(ElasticsearchDomainResource):
     domain_name = "data"
-    elasticsearch_version = "5.5"
+    elasticsearch_version = "6.5"
     instance_type = Settings.get('ES_INSTANCE_TYPE', "m4.large.elasticsearch")
     instance_count = 1
     dedicated_master_enabled = False
@@ -48,6 +48,8 @@ class ESDomain(ElasticsearchDomainResource):
     subnet_ids = [Settings.get('VPC')['SUBNETS'][0]]
     cloudwatch_log_group_arn = ESCloudWatchLogGroup.get_output_attr('arn')
     log_type = "ES_APPLICATION_LOGS"
+    enabled = True
+    kms_key_id = KMSkey.get_output_attr('arn')
 
     @classmethod
     def get_http_url_with_port(cls):
