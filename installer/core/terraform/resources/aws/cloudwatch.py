@@ -19,7 +19,8 @@ class CloudWatchEventRuleResource(TerraformResource):
         'event_pattern': {'required': False},
         'role_arn ': {'required': False},
         'is_enabled ': {'required': False},
-        'description': {'required': False}
+        'description': {'required': False},
+        'tags':{'required': False}
     }
     description = Settings.RESOURCE_DESCRIPTION
 
