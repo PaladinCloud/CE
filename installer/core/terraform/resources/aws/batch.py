@@ -26,7 +26,8 @@ class BatchComputeEnvironmentResource(TerraformResource):
                 'security_group_ids': {'required': True},
                 'subnets': {'required': True},
                 'resource_type': {'required': True, 'tf_arg_key': "type"},
-                'compute_resources_tags': {'required': False, 'tf_arg_key': "tags"}
+                'compute_resources_tags': {'required': False, 'tf_arg_key': "tags"},
+                'tags': {'required': False}
             }
         },
         'service_role': {'required': True},
@@ -76,7 +77,8 @@ class BatchJobDefinitionResource(TerraformResource):
             }
         },
         'container_properties': {'required': True},
-        'parameters': {'required': False}
+        'parameters': {'required': False},
+        'tags': {'required': False}
     }
 
     def check_exists_before(self, input, tf_outputs):
@@ -115,7 +117,8 @@ class BatchJobQueueResource(TerraformResource):
         'name': {'required': True, 'prefix': True, 'sep': '-'},
         'state': {'required': True},
         'priority': {'required': True},
-        'compute_environments': {'required': True}
+        'compute_environments': {'required': True},
+        'tags': {'required': False}
     }
 
     def check_exists_before(self, input, tf_outputs):

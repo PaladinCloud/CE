@@ -65,7 +65,8 @@ class ALBListenerResource(TerraformResource):
             }
         },
         'ssl_policy': {'required': False},
-        'certificate_arn': {'required': False}
+        'certificate_arn': {'required': False},
+        'tags': {'required': False}
     }
 
     def validate_input_args(self):
@@ -106,7 +107,8 @@ class ALBListenerRuleResource(TerraformResource):
             'required': True,
             'inline_args': {
                 'condition_field': {'required': True, 'tf_arg_key': 'field'},
-                'condition_values': {'required': True, 'tf_arg_key': 'values'}
+                'condition_values': {'required': True, 'tf_arg_key': 'values'},
+                'tags': {'required': False}
             }
         }
     }
