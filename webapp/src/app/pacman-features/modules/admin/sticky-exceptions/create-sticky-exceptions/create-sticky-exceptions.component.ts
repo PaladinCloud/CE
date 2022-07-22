@@ -18,7 +18,7 @@ import { environment } from './../../../../../../environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
-import * as frLocale from 'date-fns/locale/en';
+// import * as frLocale from 'date-fns/locale/en';
 import {WorkflowService} from '../../../../../core/services/workflow.service';
 import * as moment from 'moment';
 import { UtilsService } from '../../../../../shared/services/utils.service';
@@ -31,7 +31,6 @@ import { AdminService } from '../../../../services/all-admin.service';
 import {  FormGroup, FormControl, Validators } from '@angular/forms';
 import { SelectComponent } from 'ng2-select';
 import { UploadFileService } from '../../../../services/upload-file-service';
-import { DatepickerOptions } from 'ng2-datepicker';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -71,11 +70,11 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   outerArr: any = [];
   filters: any = [];
   date = new Date();
-  dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate();
+  dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate(); 
   exceptionDetailsForm: any = {
     name: '',
     reason: '',
-    expiry: this.dateToday,
+    expiry: this.date,
     assetGroup: []
   }
 
@@ -112,14 +111,6 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     { title: 'Enter Exception Details', hide: false },
     { title: 'Exempt Target Types', hide: true }
   ];
-
-  options: DatepickerOptions = {
-    minYear: this.date.getFullYear(),
-    maxYear: 2030,
-    format: 'DD/MM/YYYY',
-    firstCalendarDay: 0,
-    locale: frLocale
-  };
 
   isCreate: boolean = false;
   successTitle: String = '';

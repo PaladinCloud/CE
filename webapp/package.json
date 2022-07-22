@@ -41,7 +41,6 @@
     "html2canvas": "^1.2",
     "lodash": "^4.17.21",
     "moment": "^2.24.0",
-    "ng2-datepicker": "^12.0.0",
     "ng2-select": "^2.0.0",
     "ngx-highlight": "^0.0.3",
     "ngx-infinite-scroll": "^0.8.3",

@@ -104,7 +104,12 @@
                                         <div class="formctnright">
                                             <div class="input-box">
                                                 <label>Expiry Date *</label>
-                                                <!-- <picker (ngModelChange)='getDateData($event)' [(ngModel)]="exceptionDetailsForm.expiry"></picker> -->
+                                                <mat-form-field appearance="outline">
+                                                    <input matInput [matDatepicker]="picker" (ngModelChange)='getDateData($event)' [(ngModel)]="exceptionDetailsForm.expiry" >
+                                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                                    <mat-datepicker #picker></mat-datepicker>
+                                                </mat-form-field>
                                             </div>
                                             <div class="bm10 input-box">
                                                 <label>Exception Reason *</label>

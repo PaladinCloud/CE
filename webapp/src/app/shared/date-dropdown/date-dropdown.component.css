@@ -33,3 +33,19 @@
 	border: 1px solid #aaa !important;
     width: 100% !important;
 }
+
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+	position: relative !important;
+}
+
+::ng-deep .date-wrapper .mat-form-field-subscript-wrapper {
+	position:static !important;
+}
+
+::ng-deep .date-wrapper .mat-form-field-appearance-outline .mat-form-field-outline {
+	color: #aaa;
+}
+
+::ng-deep .date-wrapper .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+	color: #aaa;
+}

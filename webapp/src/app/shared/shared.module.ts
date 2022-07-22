@@ -41,7 +41,6 @@ import { HttpService } from "./services/http-response.service";
 import { UtilsService } from "./services/utils.service";
 import { SearchableDropdownComponent } from "./searchable-dropdown/searchable-dropdown.component";
 import { SelectModule } from "ng2-select";
-import { DatepickerModule } from "ng2-datepicker";
 import { BackNavigationComponent } from "./back-navigation/back-navigation.component";
 import { FilteredSelectorComponent } from "./filtered-selector/filtered-selector.component";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
@@ -97,6 +96,9 @@ import { MatIconModule } from "@angular/material/icon";
  import {MatMenuModule} from '@angular/material/menu'; 
 import { EmptyStateComponent } from "./empty-state/empty-state.component";
 import { MatGridListModule } from "@angular/material/grid-list";
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from "@angular/material/input";
 
 @NgModule({
   imports: [
@@ -110,7 +112,9 @@ import { MatGridListModule } from "@angular/material/grid-list";
     RouterModule,
     // SelectModule,
     // HttpModule,
-    // DatepickerModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     SelectDropDownModule,
     AgGridModule
   ],

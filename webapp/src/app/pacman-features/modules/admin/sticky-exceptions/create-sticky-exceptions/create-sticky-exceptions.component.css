@@ -1143,7 +1143,7 @@ label {
   font-size: 16px;
   font-weight: 600;
   color: #ffffff;
-  z-index: 99;
+  z-index: 12;
   position: relative;
 }
 
@@ -1157,7 +1157,7 @@ label {
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
   background-color: var(--primary-400);
-  z-index: 99;
+  z-index: 12;
   position: relative;
 }
 
@@ -1725,4 +1725,22 @@ button.attrbutton:hover {
 .filter-absent.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
   max-height: 8em;
   overflow-y: auto;
+}
+
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+  position: relative !important;
+}
+::ng-deep #cdk-overlay-1 {
+  top: 280px!important;
+}
+::ng-deep .formctnright .mat-form-field-subscript-wrapper {
+  position: static !important;
+}
+
+::ng-deep .formctnright .mat-form-field-appearance-outline .mat-form-field-outline {
+	color: #aaa;
+}
+
+::ng-deep .formctnright .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+	color: #aaa;
 }
