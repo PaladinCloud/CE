@@ -152,6 +152,36 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <finalName>pacbot-gcp-discovery</finalName>
+                    <filters>
+                        <filter>
+                            <artifact>org.languagetool:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/services/io.grpc.LoadBalancerProvider</exclude>
+                                <exclude>META-INF/services/io.grpc.NameResolverProvider</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        </transformer>
+                    </transformers>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
                 <executions>

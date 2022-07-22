@@ -19,26 +19,29 @@ public class GCPlocationUtil {
     GCPCredentialsProvider gcpCredentialsProvider;
 
     private static final String PROJECT_PREFIX="projects/";
+    List<String> locations=new ArrayList<>();
 
     public List<String> getLocations(String projectName) throws GeneralSecurityException, IOException {
-        CloudTasks cloudTasksService =gcpCredentialsProvider.createCloudTasksService();
-        CloudTasks.Projects.Locations.List request =
-                cloudTasksService.projects().locations().list(PROJECT_PREFIX+projectName);
+        if(locations.isEmpty()) {
+            CloudTasks cloudTasksService = gcpCredentialsProvider.createCloudTasksService();
+            CloudTasks.Projects.Locations.List request =
+                    cloudTasksService.projects().locations().list(PROJECT_PREFIX + projectName);
 
-        ListLocationsResponse response;
-        List<String> locations=new ArrayList<>();
-        do {
-            response = request.execute();
-            if (response.getLocations() == null) {
-                continue;
-            }
-            for(Location l:response.getLocations()){
-                locations.add(l.getLocationId());
-            }
-            request.setPageToken(response.getNextPageToken());
-        } while (response.getNextPageToken() != null);
-        locations.add("us");
-        locations.add("global");
+            ListLocationsResponse response;
+
+            do {
+                response = request.execute();
+                if (response.getLocations() == null) {
+                    continue;
+                }
+                for (Location l : response.getLocations()) {
+                    locations.add(l.getLocationId());
+                }
+                request.setPageToken(response.getNextPageToken());
+            } while (response.getNextPageToken() != null);
+            locations.add("us");
+            locations.add("global");
+        }
         return locations;
     }
 }

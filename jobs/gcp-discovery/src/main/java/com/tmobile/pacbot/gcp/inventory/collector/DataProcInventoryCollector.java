@@ -3,6 +3,7 @@ package com.tmobile.pacbot.gcp.inventory.collector;
 import com.google.cloud.dataproc.v1.Cluster;
 import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.util.GCPlocationUtil;
 import com.tmobile.pacbot.gcp.inventory.vo.ClusterVH;
 
 import org.slf4j.Logger;
@@ -17,15 +18,22 @@ import java.util.List;
 public class DataProcInventoryCollector {
     @Autowired
     GCPCredentialsProvider gcpCredentialsProvider;
+    @Autowired
+    GCPlocationUtil gcPlocationUtil;
     private static final Logger logger = LoggerFactory.getLogger(DataProcInventoryCollector.class);
     public List<ClusterVH> fetchDataProcInventory(String project)  {
         List<ClusterVH> clusterVHList=new ArrayList<>();
-        String[] regions={"us-east1","us-central1"};
+
         try {
+            List<String> regions= gcPlocationUtil.getLocations(project);
+            regions.remove("us");
+            regions.remove("global");
+            logger.debug("Number of regions {}",regions.size());
+            logger.debug("Regions are:{}",regions);
             for(String region:regions) {
                 ClusterControllerClient clusterControllerClient = gcpCredentialsProvider.getDataProcClient(region);
                 ClusterControllerClient.ListClustersPagedResponse clusters = clusterControllerClient.listClusters(project, region);
-                logger.debug("List populated");
+                logger.debug("List populated for region {}",region);
                 for (Cluster cluster : clusters.iterateAll()) {
                     logger.debug("Iterating list for region {}",region);
                     ClusterVH clusterVH = new ClusterVH();
@@ -36,6 +44,7 @@ public class DataProcInventoryCollector {
                     clusterVH.setRegion(region);
                     clusterVHList.add(clusterVH);
                 }
+                clusterControllerClient.close();
             }
         } catch (Exception e) {
             logger.debug(e.getMessage());
