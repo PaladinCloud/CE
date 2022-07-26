@@ -26,6 +26,7 @@ public class ESEncryptionUsingKMSCMKsRule extends BaseRule {
 	public static final String ES_PROP_ENCRYPTION_ENABLED = "encryptionenabled";
 	public static final String ES_PROP_KMS_KEY = "encryptionkmskey";
 	public static final String ES_PROP_KMS_DEFAULT_VALUE = "(Default) aws/es";
+	public static final String ES_PROP_VERSION = "elasticsearchversion";
 
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -78,13 +79,15 @@ public class ESEncryptionUsingKMSCMKsRule extends BaseRule {
 		if (resourceAttributes != null) {
 			String esEncryEnable = StringUtils.trim(resourceAttributes.get(ES_PROP_ENCRYPTION_ENABLED));
 			String eskmsKey = StringUtils.trim(resourceAttributes.get(ES_PROP_KMS_KEY));
-			String issueDescription = "ES domain are not encrypted!!";
+			String issueDescription = "ES domain are not encrypted. OpenSearch domain should be encrypted with CMKs for version 5.1 or greater !!";
 
-			if (esEncryEnable == null || "".equals(esEncryEnable) || eskmsKey == null || "".equals(eskmsKey)
-					|| ES_PROP_KMS_DEFAULT_VALUE.equalsIgnoreCase(eskmsKey)) {
+			if (Double.parseDouble(resourceAttributes.get(ES_PROP_VERSION)) >= 5.1 &&
+					(esEncryEnable == null || "".equals(esEncryEnable) || eskmsKey == null || "".equals(eskmsKey)
+					|| ES_PROP_KMS_DEFAULT_VALUE.equalsIgnoreCase(eskmsKey))) {
 				if (PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(esEncryEnable)
 						&& ES_PROP_KMS_DEFAULT_VALUE.equalsIgnoreCase(eskmsKey)) {
-					issueDescription = " ES domain is encrypted with default AWS KMS key";
+					issueDescription = " ES domain is encrypted with default AWS KMS key. "
+							+ "OpenSearch domain should be encrypted with CMKs for version 5.1 or greater !!";
 				}
 				List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
 				LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
