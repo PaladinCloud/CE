@@ -20,7 +20,7 @@ import { ErrorHandlingService } from "../../shared/services/error-handling.servi
 
 
 
-import {DataCacheService} from '../../core/services/data-cache.service';
+import { DataCacheService } from '../../core/services/data-cache.service';
 import { environment } from '../../../environments/environment';
 import { UtilsService } from '../../shared/services/utils.service';
 import { LoggerService } from '../../shared/services/logger.service';
@@ -34,19 +34,19 @@ export class UploadFileService {
 
   constructor(
     private http: HttpClient,
-    @Inject(HttpService) 
+    @Inject(HttpService)
     private httpService: HttpService,
     private errorHandling: ErrorHandlingService,
     private utilityService: UtilsService,
     private logger: LoggerService,
-    private dataStore: DataCacheService) {        
-      this.envName = environment.envName;
-      if ( this.envName === 'dev' ) {
-        this.baseUrl = CONFIGURATIONS.required.domains.DEV_BASE_URL;
-    } else if ( this.envName === 'stg' ) {
-        this.baseUrl = CONFIGURATIONS.required.domains.STG_BASE_URL;
+    private dataStore: DataCacheService) {
+    this.envName = environment.envName;
+    if (this.envName === 'dev') {
+      this.baseUrl = CONFIGURATIONS.required.domains.DEV_BASE_URL;
+    } else if (this.envName === 'stg') {
+      this.baseUrl = CONFIGURATIONS.required.domains.STG_BASE_URL;
     } else {
-        this.baseUrl = CONFIGURATIONS.required.domains.PROD_BASE_URL;
+      this.baseUrl = CONFIGURATIONS.required.domains.PROD_BASE_URL;
     }
     this.cloudBaseUrl = CONFIGURATIONS.required.domains.CLOUD_BASE_URL;
   }
@@ -60,7 +60,7 @@ export class UploadFileService {
 
     let formdata: FormData = new FormData();
     formdata.append('file', file);
-    
+
     for (var key in formDataValues) {
       if (formDataValues.hasOwnProperty(key)) {
         formdata.append(key, formDataValues[key]);
@@ -70,23 +70,23 @@ export class UploadFileService {
     try {
       return this.httpService.getHttpResponse(url, method, formdata)
         .pipe(map(response => {
-            return this.massageData(response);
+          return this.massageData(response);
         }))
-        // .catch(error => this.errorHandling.handleAPIError(error));
-    } catch(error){
-        this.errorHandling.handleJavascriptError(error);
+      // .catch(error => this.errorHandling.handleAPIError(error));
+    } catch (error) {
+      this.errorHandling.handleJavascriptError(error);
     }
   }
 
   //Function for getting just the auth token....
-  getAuthValue(){
+  getAuthValue() {
     /*const authToken = this.dataStore.getUserDetailsValue();
     const authTokenValue = authToken.getAuthToken();
     return authTokenValue;*/
   }
 
   //Function for creating just the header object...
-  getHeaders(){
+  getHeaders() {
     const headersValue = {};
     /* Auth token is not required now */
     // headersValue = {headers: new Headers({'Authorization': this.getAuthValue()})};
@@ -97,75 +97,75 @@ export class UploadFileService {
     this.payload = JSON.stringify(payload);
     // TODO GET NOT TESTED YET
     if (method.toUpperCase() === 'GET') {
-        try {
-            let updatedUrl = url;
-            updatedUrl = updatedUrl.replace('{{baseUrl}}', this.baseUrl);
-            updatedUrl = updatedUrl.replace('{{cloudBaseUrl}}', this.cloudBaseUrl);
-            if (url.indexOf('/api/') !== 0) {
-                updatedUrl += this.convertQueryParametersToString(queryParams);
-            }
-            /* Removing the http caching for now as sometimes cached data is shown for new values as well. This needs thorough checking                 */
-            //return this.httpCacheService.get(updatedUrl, this.getData(updatedUrl));
-            return this.getData(updatedUrl,headers);
-
-        } catch (error) {
-            this.errorHandling.handleJavascriptError(error);
+      try {
+        let updatedUrl = url;
+        updatedUrl = updatedUrl.replace('{{baseUrl}}', this.baseUrl);
+        updatedUrl = updatedUrl.replace('{{cloudBaseUrl}}', this.cloudBaseUrl);
+        if (url.indexOf('/api/') !== 0) {
+          updatedUrl += this.convertQueryParametersToString(queryParams);
         }
+        /* Removing the http caching for now as sometimes cached data is shown for new values as well. This needs thorough checking                 */
+        //return this.httpCacheService.get(updatedUrl, this.getData(updatedUrl));
+        return this.getData(updatedUrl, headers);
+
+      } catch (error) {
+        this.errorHandling.handleJavascriptError(error);
+      }
     } else if (method.toUpperCase() === 'POST') {
-        try {
+      try {
 
-            let updatedUrl = url;
-            updatedUrl = updatedUrl.replace('{{baseUrl}}', this.baseUrl);
-            updatedUrl = updatedUrl.replace('{{cloudBaseUrl}}', this.cloudBaseUrl);
-            if (url.indexOf('/api/') !== 0 && Object.keys(queryParams).length != 0) {
-                updatedUrl += this.convertQueryParametersToString(queryParams);
-            }
-         
-            return this.postData(updatedUrl, payload, headers);
-            
-        } catch (error) {
-            this.errorHandling.handleJavascriptError(error);
+        let updatedUrl = url;
+        updatedUrl = updatedUrl.replace('{{baseUrl}}', this.baseUrl);
+        updatedUrl = updatedUrl.replace('{{cloudBaseUrl}}', this.cloudBaseUrl);
+        if (url.indexOf('/api/') !== 0 && Object.keys(queryParams).length != 0) {
+          updatedUrl += this.convertQueryParametersToString(queryParams);
         }
+
+        return this.postData(updatedUrl, payload, headers);
+
+      } catch (error) {
+        this.errorHandling.handleJavascriptError(error);
+      }
     }
   }
 
   postData(url, payload, headers) {
     let httpObservable = this.http.post(url, payload, headers)
-        .pipe(map(response => {
-            return response['_body'] ? JSON.parse(response['_body']) : response;                
-        }))
-        // .catch(error => this.errorHandling.handleAPIError(error));
+      .pipe(map(response => {
+        return response['_body'] ? JSON.parse(response['_body']) : response;
+      }))
+    // .catch(error => this.errorHandling.handleAPIError(error));
     return httpObservable;
   }
 
   convertQueryParametersToString(queryParams: any) {
     var queryParamString = '';
     if (!this.utilityService.isObjectEmpty(queryParams)) {
-        queryParamString += '?';
-        Object.keys(queryParams).forEach((param) => {
-            queryParamString += (queryParams[param] !== '' && queryParams[param] !== undefined) ? param + '=' + encodeURIComponent(queryParams[param]) + '&' : '';
-        });
-        if (queryParamString[queryParamString.length - 1] == '&') {
-            queryParamString = queryParamString.substr(0, queryParamString.length - 1);
-        }
+      queryParamString += '?';
+      Object.keys(queryParams).forEach((param) => {
+        queryParamString += (queryParams[param] !== '' && queryParams[param] !== undefined) ? param + '=' + encodeURIComponent(queryParams[param]) + '&' : '';
+      });
+      if (queryParamString[queryParamString.length - 1] == '&') {
+        queryParamString = queryParamString.substr(0, queryParamString.length - 1);
+      }
     }
     return queryParamString;
   };
 
   getData(url, headers) {
-    let httpObservable = this.http.get(url,headers)
+    let httpObservable = this.http.get(url, headers)
       .pipe(map(response => {
-          if(url.match("logout-session")){
-              return response;
-          } else {    
-              return response['data'];
-          }
+        if (url.match("logout-session")) {
+          return response;
+        } else {
+          return response['data'];
+        }
       }))
-      // .catch(error => this.errorHandling.handleAPIError(error));
+    // .catch(error => this.errorHandling.handleAPIError(error));
     return httpObservable;
   }
 
   massageData(data): any {
     return data;
- } 
+  }
 }

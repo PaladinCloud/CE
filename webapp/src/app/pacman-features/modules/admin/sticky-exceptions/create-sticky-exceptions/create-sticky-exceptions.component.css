@@ -12,6 +12,11 @@
  * limitations under the License.
  */
 
+ app-dropdown {
+   width: 100%;
+   height: 100%;
+ }
+
 .floating-widgets-section {
   height: 100%;
   width: 100%;

@@ -18,7 +18,6 @@ import { environment } from './../../../../../../environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
-import * as frLocale from 'date-fns/locale/en';
 import {WorkflowService} from '../../../../../core/services/workflow.service';
 import * as moment from 'moment';
 import { UtilsService } from '../../../../../shared/services/utils.service';
@@ -118,7 +117,6 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     maxYear: 2030,
     format: 'DD/MM/YYYY',
     firstCalendarDay: 0,
-    locale: frLocale
   };
 
   isCreate: boolean = false;

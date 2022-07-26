@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import {trigger, state, style, transition, animate} from "@angular/animations";
+import { trigger, state, style, transition, animate } from "@angular/animations";
 import { environment } from './../../../../../../environments/environment';
 
 import { Router } from '@angular/router';
@@ -59,20 +59,18 @@ import { UploadFileService } from '../../../../services/upload-file-service';
   ]
 })
 export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
-  @ViewChild('attributeValueElement') attributeValueElement: SelectComponent;
-  @ViewChild('targetType') targetTypeElement: SelectComponent;
 
-  backButtonRequired:boolean=false;
+  backButtonRequired: boolean = false;
   pageTitle = 'Create Asset Group';
   breadcrumbArray = ['Asset Groups'];
-  breadcrumbLinks = [ 'asset-groups'];
+  breadcrumbLinks = ['asset-groups'];
   breadcrumbPresent;
   highlightedText;
   progressText;
   outerArr = [];
   filters = [];
   isGroupNameValid = -1;
-  targetTypeValue = [];
+  targetTypeValue: string = "";
   assetForm = {
     dataSourceName: 'aws',
     groupName: '',
@@ -150,7 +148,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   state = 'closed';
   menuState = 'out';
   selectedIndex = -1;
-  selectedAttributeDetails= [];
+  selectedAttributeDetails = [];
   selectedAttributeIndex = '';
 
   selectTdChoosedItems = {};
@@ -235,7 +233,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
       console.log('attributeDetail==============>', attributeDetail);
       this.selectedAttributeDetails = attributeDetail.allAttributesName;
       this.selectedAttributes = attributeDetail.attributes;
-      this.selectedAttributeIndex = '/aws_' +attributeDetail.targetName+ '/_search?filter_path=aggregations.alldata.buckets.key';
+      this.selectedAttributeIndex = '/aws_' + attributeDetail.targetName + '/_search?filter_path=aggregations.alldata.buckets.key';
     }
   }
 
@@ -279,7 +277,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   public selectAttributes(value: any): void {
-    this.checkAttributeAlreadyTaken(value.text);
+    this.checkAttributeAlreadyTaken(value);
   }
 
 
@@ -311,8 +309,6 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     attrNameObj.aggs.alldata.terms.field = attributeName + '.keyword';
     attrNameObj.aggs.alldata.terms.size = 10000;
     this.isAttributeAlreadyAdded = -1;
-    this.attributeValueElement.disabled = true;
-    this.attributeValueElement.placeholder = 'Loading Values...';
     this.attributeValue = [];
     this.targetTypeAttributeValues = [];
     const url = environment.listTargetTypeAttributeValues.url;
@@ -332,34 +328,29 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
                 allCurrentAttributeValues['id'] = attrValue.key;
                 this.targetTypeAttributeValues.push(allCurrentAttributeValues);
               });
-              this.attributeValueElement.items = this.targetTypeAttributeValues;
             }
           }
         }
-        this.attributeValueElement.disabled = false;
-        this.attributeValueElement.placeholder = 'Select Value';
 
-      } else {
-        this.attributeValueElement.disabled = false;
-        this.attributeValueElement.placeholder = '';
       }
     },
       error => {
         this.targetTypeAttributeValues = [];
-        this.attributeValueElement.disabled = false;
-        this.attributeValueElement.placeholder = 'Select Value';
       });
   }
 
+  getSelectedOption(option: any) {
+    this.targetTypeValue = option;
+  }
+
   addTagetType(targetTypeValue) {
-    const targetTypeName = targetTypeValue[0].text;
+    const targetTypeName = targetTypeValue;
     const targetTypeDetails1 = _.find(this.remainingTargetTypesFullDetails, { targetName: targetTypeName });
     const targetTypeDetails2 = _.find(this.remainingTargetTypes, { id: targetTypeName });
     this.allAttributeDetails.push(targetTypeDetails1);
     const itemIndex2 = this.remainingTargetTypes.indexOf(targetTypeDetails2);
     this.remainingTargetTypes.splice(itemIndex2, 1);
-    this.targetTypeElement.items = this.remainingTargetTypes;
-    this.targetTypeValue = [];
+    this.targetTypeValue = "";
   }
 
   addAttributes(attributeName, attributeValue) {
@@ -518,9 +509,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
               this.errorMessage = 'apiResponseError';
               this.showLoader = false;
             });
-          } else {
-            this.goToNextStep();
-          }
+        } else {
+          this.goToNextStep();
+        }
       } else {
         this.goToNextStep();
       }

@@ -42,9 +42,6 @@ import { ErrorHandlingService } from '../../../../../shared/services/error-handl
   ]
 })
 export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('jobFrequencyMonthDay') jobFrequencyMonthDayComponent: SelectComponent;
-
   pageTitle = 'Create Job Execution Manager';
   allJobNames = [];
   breadcrumbArray = ['Job Execution Manager'];
@@ -160,7 +157,7 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   ) {
     /* Check route parameter */
     this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-    // Fetch the required params from this object.
+      // Fetch the required params from this object.
     });
     this.routerParam();
     this.updateComponent();
@@ -201,6 +198,10 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
     }
   }
 
+  onSelectFrequencyDay(event: any) {
+
+  }
+
   createNewJob(form: NgForm) {
     this.hideContent = true;
     this.jobLoader = true;
@@ -224,17 +225,17 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
       this.jobLoader = false;
       this.isJobSuccess = true;
     },
-    error => {
-      this.isJobFailed = true;
-      this.showGenericMessage = true;
-      this.errorValue = -1;
-      this.outerArr = [];
-      this.dataLoaded = true;
-      this.seekdata = true;
-      this.errorMessage = 'apiResponseError';
-      this.showLoader = false;
-      this.jobLoader = false;
-    });
+      error => {
+        this.isJobFailed = true;
+        this.showGenericMessage = true;
+        this.errorValue = -1;
+        this.outerArr = [];
+        this.dataLoaded = true;
+        this.seekdata = true;
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+        this.jobLoader = false;
+      });
     // this.selectedFiles = undefined
   }
 
@@ -384,11 +385,11 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
       this.isJobNameValid = -1;
     } else {
       const isKeywordExits = this.jobNames.findIndex(item => jobNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-        if (isKeywordExits === -1) {
-          this.isJobNameValid = 1;
-        } else {
-          this.isJobNameValid = 0;
-        }
+      if (isKeywordExits === -1) {
+        this.isJobNameValid = 1;
+      } else {
+        this.isJobNameValid = 0;
+      }
     }
   }
 
@@ -431,10 +432,10 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
     this.isJobCreationUpdationSuccess = false;
     const url = environment.allJobIdList.url;
     const method = environment.allJobIdList.method;
-    this.adminService.executeHttpAction(url, method, {}, {jobName: this.jobName}).subscribe(reponse => {
+    this.adminService.executeHttpAction(url, method, {}, { jobName: this.jobName }).subscribe(reponse => {
       this.jobDetailsLoader = false;
       this.contentHidden = false;
-      this.jobNames =  reponse[0];
+      this.jobNames = reponse[0];
     },
       error => {
         this.jobDetailsLoader = false;
@@ -444,35 +445,36 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   }
 
   onSelectFrequency(frequencyType) {
-    this.selectedFrequency = frequencyType.text;
+    this.selectedFrequency = frequencyType;
   }
 
   onSelectFrequencyMonth(selectedMonth) {
-    this.jobFrequencyMonthDayComponent.placeholder = 'Select Day';
-    if (this.jobFrequencyMonthDayComponent.active) {
-      this.jobFrequencyMonthDayComponent.active.length = 0;
-    }
     const monthDays: any = [];
-    const daysCount = this.getNumberOfDays((selectedMonth.id-1));
+    const daysCount = this.getNumberOfDays(selectedMonth);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
     this.allMonthDays = monthDays;
-    this.jobFrequencyMonthDayComponent.items = monthDays;
   }
 
 
   private getNumberOfDays = function (month) {
     const year = new Date().getFullYear();
     const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == month) {
+        monthId = id;
+      }
+    }
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 
   /*
     * This function gets the urlparameter and queryObj
     *based on that different apis are being hit with different queryparams
     */
-   routerParam() {
+  routerParam() {
     try {
 
       const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
@@ -494,9 +496,9 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   updateUrlWithNewFilters(filterArr) {
     this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
-        this.filterArray,
-        'filterkey',
-        'value'
+      this.filterArray,
+      'filterkey',
+      'value'
     ); // <-- TO update the queryparam which is passed in the filter of the api
     this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(this.appliedFilters.pageLevelAppliedFilters);
 
@@ -506,8 +508,8 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
      */
 
     const updatedFilters = Object.assign(
-        this.appliedFilters.pageLevelAppliedFilters,
-        this.appliedFilters.queryParamsWithoutFilter
+      this.appliedFilters.pageLevelAppliedFilters,
+      this.appliedFilters.queryParamsWithoutFilter
     );
 
     /*

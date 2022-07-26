@@ -12,6 +12,11 @@
  * limitations under the License.
  */
 
+ .yearly-wrapper{
+   display: flex;
+   height: 50px;
+ }
+
 .floating-widgets-section {
   height: 100%;
   width: 100%;

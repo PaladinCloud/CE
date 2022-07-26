@@ -44,13 +44,10 @@ import { AdminUtilityService } from '../../commons/utility-service';
   ]
 })
 export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('jobFrequencyMonthDay') jobFrequencyMonthDayComponent: SelectComponent;
-
   pageTitle = 'Update Job Execution Manager';
   allJobNames = [];
   breadcrumbArray = ['Job Execution Manager'];
-  breadcrumbLinks = [ 'job-execution-manager'];
+  breadcrumbLinks = ['job-execution-manager'];
   breadcrumbPresent;
   outerArr = [];
   dataLoaded = false;
@@ -59,12 +56,12 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   errorMessage;
   showingArr = ['policyName', 'policyId', 'policyDesc'];
   allColumns = [];
-  totalRows= 0;
+  totalRows = 0;
   currentBucket = [];
-  bucketNumber= 0;
-  firstPaginator= 1;
+  bucketNumber = 0;
+  firstPaginator = 1;
   lastPaginator;
-  currentPointer= 0;
+  currentPointer = 0;
   seekdata = false;
   showLoader = true;
   jobDetailsLoader = true;
@@ -79,11 +76,11 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   jobLoaderFailure = false;
   isFileChanged = false;
 
-  paginatorSize= 25;
+  paginatorSize = 25;
   isLastPage;
   isFirstPage;
   totalPages;
-  pageNumber= 0;
+  pageNumber = 0;
 
   allJobParamKeys = [];
   allEnvParamKeys = [];
@@ -102,7 +99,7 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   filters = [];
   searchCriteria;
   filterText = {};
-  errorValue= 0;
+  errorValue = 0;
   showGenericMessage = false;
   dataTableDesc = '';
   urlID = '';
@@ -169,7 +166,7 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   ) {
     /* Check route parameter */
     this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-    // Fetch the required params from this object.
+      // Fetch the required params from this object.
     });
     this.routerParam();
     this.updateComponent();
@@ -223,7 +220,7 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
     this.jobName = jobForm.jobName;
     existingJobModel.jobName = this.jobId;
     existingJobModel.jobDesc = jobForm.jobDesc;
-    existingJobModel.jobFrequency = this.buildRuleFrequencyCronJob(jobForm);
+    existingJobModel.jobFrequency = this.buildRuleFrequencyCronJob(this.jobFrequency);
     existingJobModel.jobType = jobForm.jobType;
     existingJobModel.jobParams = this.buildJobParams();
     existingJobModel.jobExecutable = this.jobJarFileName;
@@ -241,17 +238,17 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
       this.jobLoader = false;
       this.isJobSuccess = true;
     },
-    error => {
-      this.isJobFailed = true;
-      this.showGenericMessage = true;
-      this.errorValue = -1;
-      this.outerArr = [];
-      this.dataLoaded = true;
-      this.seekdata = true;
-      this.errorMessage = 'apiResponseError';
-      this.showLoader = false;
-      this.jobLoader = false;
-    });
+      error => {
+        this.isJobFailed = true;
+        this.showGenericMessage = true;
+        this.errorValue = -1;
+        this.outerArr = [];
+        this.dataLoaded = true;
+        this.seekdata = true;
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+        this.jobLoader = false;
+      });
   }
 
   buildJobParams() {
@@ -270,20 +267,20 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-  buildRuleFrequencyCronJob(jobForm) {
-    const selectedFrequencyType = jobForm.jobFrequency[0].text;
+  buildRuleFrequencyCronJob(jobFrequency) {
+    const selectedFrequencyType = jobFrequency[0].text;
     const cronDetails = Object();
     cronDetails.interval = selectedFrequencyType;
     if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = jobForm.jobFrequencyMonth[0].id;
-      cronDetails.month = (jobForm.jobFrequencyMonth[0].id + 1);
+      cronDetails.day = this.jobFrequencyMonth;
+      cronDetails.month = this.jobFrequencyMonth[0];
     } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = parseInt(jobForm.jobFrequencyMonths, 10);
-      cronDetails.day = parseInt(jobForm.jobFrequencyDays, 10);
+      cronDetails.duration = parseInt(this.jobFrequencyMonths, 10);
+      cronDetails.day = parseInt(this.jobFrequencyDays, 10);
     } else if (selectedFrequencyType === 'Weekly') {
-      cronDetails.week = jobForm.weekName;
+      cronDetails.week = this.weekName;
     } else {
-      cronDetails.duration = parseInt(jobForm.jobFrequencyModeValue, 10);
+      cronDetails.duration = parseInt(this.jobFrequencyModeValue, 10);
     }
 
     return this.generateExpression(cronDetails);
@@ -436,11 +433,11 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
     this.isJobCreationUpdationSuccess = false;
     const url = environment.jobDetailsById.url;
     const method = environment.jobDetailsById.method;
-    this.adminService.executeHttpAction(url, method, {}, {jobId: this.jobId}).subscribe(jobDetailsResponse => {
+    this.adminService.executeHttpAction(url, method, {}, { jobId: this.jobId }).subscribe(jobDetailsResponse => {
       this.jobDetailsLoader = false;
       this.hideContent = false;
       this.jobDetails = jobDetailsResponse[0];
-      if(jobDetailsResponse[0].jobParams) {
+      if (jobDetailsResponse[0].jobParams) {
         const jobParams = JSON.parse(jobDetailsResponse[0].jobParams);
         this.allEnvironments = jobParams.environmentVariables;
         this.allJobParams = jobParams.params;
@@ -475,24 +472,24 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   }
 
   onSelectFrequencyMonth(selectedMonth) {
-    this.jobFrequencyMonthDayComponent.placeholder = 'Select Day';
-    if (this.jobFrequencyMonthDayComponent.active) {
-      this.jobFrequencyMonthDayComponent.active.length = 0;
-    }
     const monthDays = [];
-    const daysCount = this.getNumberOfDays(selectedMonth.id);
+    const daysCount = this.getNumberOfDays(selectedMonth);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
     this.allMonthDays = monthDays;
-    this.jobFrequencyMonthDayComponent.items = monthDays;
   }
-
 
   getNumberOfDays = function (month) {
     const year = new Date().getFullYear();
     const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == month) {
+        monthId = id;
+      }
+    }
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 
   /*
@@ -500,7 +497,7 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
     *based on that different apis are being hit with different queryparams
    */
 
-   routerParam() {
+  routerParam() {
     try {
 
       const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
@@ -521,9 +518,9 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   updateUrlWithNewFilters(filterArr) {
     this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
-        this.filterArray,
-        'filterkey',
-        'value'
+      this.filterArray,
+      'filterkey',
+      'value'
     ); // <-- TO update the queryparam which is passed in the filter of the api
     this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(this.appliedFilters.pageLevelAppliedFilters);
 
@@ -533,8 +530,8 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
      */
 
     const updatedFilters = Object.assign(
-        this.appliedFilters.pageLevelAppliedFilters,
-        this.appliedFilters.queryParamsWithoutFilter
+      this.appliedFilters.pageLevelAppliedFilters,
+      this.appliedFilters.queryParamsWithoutFilter
     );
 
     /*

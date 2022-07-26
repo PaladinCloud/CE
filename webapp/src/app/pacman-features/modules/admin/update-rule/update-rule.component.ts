@@ -46,13 +46,11 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
   // @ViewChild('ruleFrequencyMonthDay') ruleFrequencyMonthDayComponent: SelectComponent;
   @ViewChild('ruleFrequency') ruleFrequencyComponent: SelectComponent;
-  @ViewChild('ruleSeverity') ruleSeverityComponent: SelectComponent;
-  @ViewChild('ruleCategory') ruleCategoryComponent: SelectComponent;
 
   ruleFrequencyMonth: any;
   ruleFrequencyDay: any;
 
-  ruleDetailsLoader:boolean;
+  ruleDetailsLoader: boolean;
   ruleFrequencyMonths: any;
   ruleFrequencyDays: any;
   ruleFrequencyModeValue: any;
@@ -60,12 +58,12 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   weekName: any;
   ruleRestUrl: any;
   alexaKeywords: any;
-  assetGroup: any = [];
+  assetGroup = [];
 
   pageTitle: String = 'Update Rule';
   allPolicies: any = [];
-  breadcrumbArray: any = [ 'Rules'];
-  breadcrumbLinks: any = [ 'rules'];
+  breadcrumbArray: any = ['Rules'];
+  breadcrumbLinks: any = ['rules'];
   breadcrumbPresent: any;
   outerArr: any = [];
   dataLoaded: boolean = false;
@@ -307,11 +305,10 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
 
   private buildAndUpdateRuleModel(ruleForm) {
     let newRuleModel = Object();
-    newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
+    newRuleModel.assetGroup = this.assetGroup;
     newRuleModel.ruleId = this.FullQueryParams.ruleId;
-    newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
     newRuleModel.alexaKeyword = ruleForm.alexaKeywords;
-    newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(ruleForm);
+    newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(this.ruleFrequency);
     newRuleModel.ruleExecutable = this.ruleJarFileName;
     newRuleModel.ruleRestUrl = this.getRuleRestUrl(ruleForm);
     newRuleModel.ruleType = ruleForm.ruleType;
@@ -356,20 +353,20 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildRuleFrequencyCronJob(ruleForm) {
-    let selectedFrequencyType = ruleForm.ruleFrequency[0].text;
+  private buildRuleFrequencyCronJob(ruleFrequency) {
+    let selectedFrequencyType = ruleFrequency[0].text;
     let cronDetails = Object();
     cronDetails.interval = selectedFrequencyType;
     if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = ruleForm.ruleFrequencyDay[0].id;
-      cronDetails.month = (ruleForm.ruleFrequencyMonth[0].id + 1);
+      cronDetails.day = this.ruleFrequencyDay;
+      cronDetails.month = this.ruleFrequencyMonth;
     } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = parseInt(ruleForm.ruleFrequencyMonths);
-      cronDetails.day = parseInt(ruleForm.ruleFrequencyDays);
+      cronDetails.duration = parseInt(this.ruleFrequencyMonths);
+      cronDetails.day = parseInt(this.ruleFrequencyDays);
     } else if (selectedFrequencyType === 'Weekly') {
-      cronDetails.week = ruleForm.weekName;
+      cronDetails.week = this.weekName;
     } else {
-      cronDetails.duration = parseInt(ruleForm.ruleFrequencyModeValue);
+      cronDetails.duration = parseInt(this.ruleFrequencyModeValue);
     }
 
     return this.generateExpression(cronDetails);
@@ -545,11 +542,9 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
           for (let i = ruleParams.params.length - 1; i >= 0; i -= 1) {
             if (ruleParams.params[i].key == 'severity') {
               this.selectedSeverity = ruleParams.params[i].value;
-              this.ruleSeverityComponent.active.push(new SelectItem(ruleParams.params[i].value));
               ruleParams.params.splice(i, 1);
             } else if (ruleParams.params[i].key == 'ruleCategory') {
               this.selectedCategory = ruleParams.params[i].value;
-              this.ruleCategoryComponent.active.push(new SelectItem(ruleParams.params[i].value));
               ruleParams.params.splice(i, 1);
             }
           }
@@ -742,10 +737,6 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
     this.selectedFrequency = selectedFrequency;
   }
 
-  onSelectFrequencyMonthDay(selectedMonthDay) {
-
-  }
-
   onSelectSeverity(selectedSeverity) {
     this.selectedSeverity = selectedSeverity;
   }
@@ -756,7 +747,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
 
   onSelectFrequencyMonth(selectedMonth) {
     let monthDays: any = [];
-    let daysCount = this.getNumberOfDays(selectedMonth.id);
+    let daysCount = this.getNumberOfDays(selectedMonth);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
@@ -767,7 +758,13 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   private getNumberOfDays = function (month) {
     let year = new Date().getFullYear();
     let isLeap = ((year % 4) == 0 && ((year % 100) != 0 || (year % 400) == 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == month) {
+        monthId = id;
+      }
+    }
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   }
 
 

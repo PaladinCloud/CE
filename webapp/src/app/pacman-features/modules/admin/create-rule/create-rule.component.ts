@@ -42,8 +42,6 @@ import { UploadFileService } from '../../../services/upload-file-service';
   ]
 })
 export class CreateRuleComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('ruleFrequencyMonthDay') ruleFrequencyMonthDayComponent: SelectComponent;
   ruleLoader = false;
   pageTitle = 'Create Rule';
   isRuleIdValid = -1;
@@ -349,6 +347,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   private buildCreateRuleModel(ruleForm) {
+    console.log(ruleForm, "ffffffffff");
     const newRuleModel = Object();
     newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
     newRuleModel.ruleId = ruleForm.policyId[0].text + '_' + ruleForm.ruleName + '_' + ruleForm.targetType[0].text;
@@ -542,12 +541,6 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { dataSourceName: datasourceName }).subscribe(reponse => {
       this.showLoader = false;
       this.targetTypesNames = reponse[0];
-      if (this.targetTypesNames.length > 0) {
-        this.targetTypeSelectComponent.disabled = false;
-        this.targetTypeSelectComponent.placeholder = 'Select Target Type';
-      } else {
-        this.targetTypeSelectComponent.placeholder = 'No Target Available';
-      }
     },
       error => {
         this.allPolicyIds = [];
@@ -577,12 +570,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   public onSelectDatasource(datasourceName: any): void {
-    this.targetTypeSelectComponent.items = [];
-    this.targetTypeSelectComponent.disabled = true;
-    if (this.targetTypeSelectComponent.active) {
-      this.targetTypeSelectComponent.active.length = 0;
-    }
-    this.getTargetTypeNamesByDatasourceName(datasourceName.text);
+    this.getTargetTypeNamesByDatasourceName(datasourceName);
   }
 
   addEnvironmentParameters(parametersInput: any, isEncrypted: any) {
@@ -619,7 +607,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   onSelectPolicyId(policyId: any) {
-    this.selectedPolicyId = policyId.text;
+    this.selectedPolicyId = policyId;
     this.isRuleIdAvailable(this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType);
   }
   onSelectTargetType(targetType: any) {
@@ -627,28 +615,29 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     this.isRuleIdAvailable(this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType);
   }
   onSelectFrequency(frequencyType) {
-    this.selectedFrequency = frequencyType.text;
+    this.selectedFrequency = frequencyType;
   }
 
   onSelectFrequencyMonth(selectedMonth) {
-    this.targetTypeSelectComponent.placeholder = 'Select Day';
-    if (this.ruleFrequencyMonthDayComponent.active) {
-      this.ruleFrequencyMonthDayComponent.active.length = 0;
-    }
     const monthDays: any = [];
-    const daysCount = this.getNumberOfDays((selectedMonth.id-1));
+    const daysCount = this.getNumberOfDays(selectedMonth);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
     this.allMonthDays = monthDays;
-    this.ruleFrequencyMonthDayComponent.items = monthDays;
   }
 
 
   private getNumberOfDays = function (month) {
     const year = new Date().getFullYear();
     const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == month) {
+        monthId = id;
+      }
+    }
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 
 
