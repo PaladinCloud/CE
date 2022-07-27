@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# ---------------------------------
+# -----Amazon Linux-----
+# ---------------------------------
+
 ## Install git
 sudo yum -y install git
 
