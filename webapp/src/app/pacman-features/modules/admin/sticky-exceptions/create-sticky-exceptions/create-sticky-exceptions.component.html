@@ -95,9 +95,10 @@
                                             <div class="input-form" *ngIf="isCreate">
                                                 <label>Select Asset Group * <a
                                                         (click)="navigateToCreateAssetGroup()">(Create New)</a></label>
-                                                <!-- <app-dropdown [items]="allAssetGroupNames"
-                                                    [modelName]="exceptionDetailsForm.assetGroup"
-                                                    [placeholder]="'Select Asset Group'"></app-dropdown> -->
+                                                <app-dropdown [items]="allAssetGroupNames"
+                                                    [selectedItem]="exceptionDetailsForm.assetGroup"
+                                                    (selected)="onSelectAssetGroup($event)"
+                                                    [placeholder]="'Select Asset Group'"></app-dropdown>
                                             </div>
                                             <div class="input-box" *ngIf="!isCreate">
                                                 <label>Exception Name</label>
@@ -122,7 +123,15 @@
                                         <div class="formctnright">
                                             <div class="input-box">
                                                 <label>Expiry Date *</label>
-                                                <!-- <picker (ngModelChange)='getDateData($event)' [(ngModel)]="exceptionDetailsForm.expiry"></picker> -->
+                                                <mat-form-field appearance="outline">
+                                                    <input matInput [matDatepicker]="picker"
+                                                        (ngModelChange)='getDateData($event)'
+                                                        [(ngModel)]="exceptionDetailsForm.expiry">
+                                                    <mat-hint>MM/DD/YYYY</mat-hint>
+                                                    <mat-datepicker-toggle matSuffix [for]="picker">
+                                                    </mat-datepicker-toggle>
+                                                    <mat-datepicker #picker></mat-datepicker>
+                                                </mat-form-field>
                                             </div>
                                             <div class="bm10 input-box">
                                                 <label>Exception Reason *</label>
@@ -262,10 +271,11 @@
                                                 <div class="input-box">
                                                     <ul class="parameters rules">
                                                         <label>Select Rule Name :</label>
-                                                        <!-- <app-dropdown [items]="selectedAllRules"
-                                                            [modelName]="attributeName"
+                                                        <app-dropdown [items]="selectedAllRules"
+                                                            [selectedItem]="attributeName"
+                                                            (selected)="onSelectRuleName($event)"
                                                             [placeholder]="'Select Rule Name Required'">
-                                                        </app-dropdown> -->
+                                                        </app-dropdown>
                                                     </ul>
                                                     <button class="tmbutton btm30 ib"
                                                         [disabled]="attributeName.length==0"

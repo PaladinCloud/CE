@@ -142,6 +142,12 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  selectedMonth: any;
+  selectedMonthId: number;
+  frequencyDay: any;
+  frequencyMonth: any;
+  weekName: any;
+  jobFrequencyModeValue: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -198,8 +204,8 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectFrequencyDay(event: any) {
-
+  onSelectFrequencyDay(frequencyDay: any) {
+    this.frequencyDay = frequencyDay;
   }
 
   createNewJob(form: NgForm) {
@@ -212,11 +218,13 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
     this.jobName = jobForm.jobName;
     newJobModel.jobName = jobForm.jobName;
     newJobModel.jobDesc = jobForm.jobDesc;
-    newJobModel.jobFrequency = this.buildRuleFrequencyCronJob(jobForm);
+    newJobModel.jobFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
     newJobModel.jobType = jobForm.jobType;
     newJobModel.jobParams = this.buildJobParams();
     newJobModel.jobExecutable = this.jobJarFileName;
     newJobModel.isFileChanged = true;
+
+    console.log(newJobModel);
 
     const url = environment.createJob.url;
     const method = environment.createJob.method;
@@ -255,20 +263,20 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildRuleFrequencyCronJob(jobForm) {
-    const selectedFrequencyType = jobForm.jobFrequency[0].text;
+  private buildRuleFrequencyCronJob(selectedFrequency) {
+    const selectedFrequencyType = selectedFrequency;
     const cronDetails = Object();
     cronDetails.interval = selectedFrequencyType;
     if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = jobForm.jobFrequencyMonth[0].id;
-      cronDetails.month = (jobForm.jobFrequencyMonth[0].id + 1);
+      cronDetails.day = this.frequencyDay;
+      cronDetails.month = this.selectedMonthId;
     } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = parseInt(jobForm.jobFrequencyMonths, 10);
-      cronDetails.day = parseInt(jobForm.jobFrequencyDays, 10);
+      cronDetails.duration = this.frequencyMonth;
+      cronDetails.day = this.frequencyDay;
     } else if (selectedFrequencyType === 'Weekly') {
-      cronDetails.week = jobForm.weekName;
+      cronDetails.week = this.weekName;
     } else {
-      cronDetails.duration = parseInt(jobForm.jobFrequencyModeValue, 10);
+      cronDetails.duration = this.jobFrequencyModeValue;
     }
 
     return this.generateExpression(cronDetails);
@@ -450,7 +458,14 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   onSelectFrequencyMonth(selectedMonth) {
     const monthDays: any = [];
-    const daysCount = this.getNumberOfDays(selectedMonth);
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == selectedMonth) {
+        monthId = id;
+      }
+    }
+    this.selectedMonthId = monthId;
+    const daysCount = this.getNumberOfDays(monthId);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
@@ -458,15 +473,10 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   }
 
 
-  private getNumberOfDays = function (month) {
+  private getNumberOfDays = function (monthId) {
     const year = new Date().getFullYear();
     const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    let monthId = 0;
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].text == month) {
-        monthId = id;
-      }
-    }
+
     return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 

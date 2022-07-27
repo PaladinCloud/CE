@@ -172,7 +172,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off" name="jobFrequencyDays"
-                                                            ngModel class="inputarea-container" appOnlyNumber required>
+                                                            [(ngModel)]="frequencyDay" class="inputarea-container"
+                                                            appOnlyNumber required>
                                                     </ul>
                                                 </div>
                                                 <div class="freq-col-sm freq-pright freq-col-middle">
@@ -181,7 +182,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off" name="jobFrequencyMonths"
-                                                            ngModel class="inputarea-container" appOnlyNumber required>
+                                                            [(ngModel)]="frequencyMonth" class="inputarea-container"
+                                                            appOnlyNumber required>
                                                     </ul>
                                                 </div>
                                                 <div class="freq-col-sm freq-pright freq-col-middle">
@@ -201,7 +203,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="freq-col-sm-5 input-form">
-                                                    <app-dropdown [items]="allMonthDays" [placeholder]="'Select Day'">
+                                                    <app-dropdown [items]="allMonthDays"
+                                                        (selected)="onSelectFrequencyDay($event)"
+                                                        [placeholder]="'Select Day'">
                                                     </app-dropdown>
                                                 </div>
                                             </div>

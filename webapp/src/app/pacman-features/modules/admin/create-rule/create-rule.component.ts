@@ -144,6 +144,18 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  selectedCategory: any;
+  selectedSeverity: any;
+  selectedMonthId: number;
+  selectedDay: any;
+  selectedAssetGroup: any;
+  selectedMonths: any;
+  selectedDays: any;
+  selectedWeekName: any;
+  alexaKeyword: any;
+  dataSourceName: any;
+  ruleFrequencyModeValue: any;
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -346,28 +358,31 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
       });
   }
 
+  onSelectAssetGroup(selectedAssetGroup) {
+    this.selectedAssetGroup = selectedAssetGroup;
+  }
+
   private buildCreateRuleModel(ruleForm) {
-    console.log(ruleForm, "ffffffffff");
     const newRuleModel = Object();
-    newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
-    newRuleModel.ruleId = ruleForm.policyId[0].text + '_' + ruleForm.ruleName + '_' + ruleForm.targetType[0].text;
+    newRuleModel.assetGroup = this.selectedAssetGroup;
+    newRuleModel.ruleId = this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType;
     newRuleModel.ruleId = newRuleModel.ruleId.replace(/\s/g, '-');
-    newRuleModel.policyId = ruleForm.policyId[0].text;
-    newRuleModel.ruleName = ruleForm.ruleName;
-    newRuleModel.targetType = ruleForm.targetType[0].text;
-    newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
-    newRuleModel.alexaKeyword = ruleForm.alexaKeywords;
-    newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(ruleForm);
+    newRuleModel.policyId = this.selectedPolicyId;
+    newRuleModel.ruleName = this.selectedRuleName;
+    newRuleModel.targetType = this.selectedTargetType;
+    newRuleModel.alexaKeyword = this.alexaKeyword;
+    newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
     newRuleModel.ruleExecutable = this.ruleJarFileName;
     newRuleModel.ruleRestUrl = this.getRuleRestUrl(ruleForm);
     newRuleModel.ruleType = ruleForm.ruleType;
     newRuleModel.isFileChanged = true;
-    newRuleModel.dataSource = ruleForm.dataSource[0].text;
+    newRuleModel.dataSource = this.dataSourceName;
     newRuleModel.ruleParams = this.buildRuleParams();
-    newRuleModel.isAutofixEnabled = ruleForm.isAutofixEnabled;
+    newRuleModel.isAutofixEnabled = this.isAutofixEnabled;
     newRuleModel.displayName = ruleForm.ruleDisplayName;
-    newRuleModel.severity = ruleForm.ruleSeverity[0].text;
-    newRuleModel.category = ruleForm.ruleCategory[0].text;
+    newRuleModel.severity = this.selectedSeverity;
+    newRuleModel.category = this.selectedCategory;
+
     const url = environment.createRule.url;
     const method = environment.createRule.method;
     if (ruleForm.ruleType === 'Classic') {
@@ -401,20 +416,29 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildRuleFrequencyCronJob(ruleForm) {
-    const selectedFrequencyType = ruleForm.ruleFrequency[0].text;
+  onSelectCategory(selectedCategory) {
+    this.selectedCategory = selectedCategory;
+  }
+
+  onSelectSeverity(selectedSeverity) {
+    this.selectedSeverity = selectedSeverity;
+  }
+
+
+  private buildRuleFrequencyCronJob(selectedFrequency) {
+    const selectedFrequencyType = selectedFrequency;
     const cronDetails = Object();
     cronDetails.interval = selectedFrequencyType;
     if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = ruleForm.ruleFrequencyMonth[0].id;
-      cronDetails.month = (ruleForm.ruleFrequencyMonth[0].id + 1);
+      cronDetails.day = this.selectedDay;
+      cronDetails.month = this.selectedMonthId;
     } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = parseInt(ruleForm.ruleFrequencyMonths, 10);
-      cronDetails.day = parseInt(ruleForm.ruleFrequencyDays, 10);
+      cronDetails.duration = this.selectedMonths;
+      cronDetails.day = this.selectedDays;
     } else if (selectedFrequencyType === 'Weekly') {
-      cronDetails.week = ruleForm.weekName;
+      cronDetails.week = this.selectedWeekName;
     } else {
-      cronDetails.duration = parseInt(ruleForm.ruleFrequencyModeValue, 10);
+      cronDetails.duration = this.ruleFrequencyModeValue;
     }
 
     return this.generateExpression(cronDetails);
@@ -570,6 +594,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   public onSelectDatasource(datasourceName: any): void {
+    this.dataSourceName = datasourceName;
     this.getTargetTypeNamesByDatasourceName(datasourceName);
   }
 
@@ -594,6 +619,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   isAlexaKeywordAvailable(alexaKeyword) {
+    this.alexaKeyword = alexaKeyword;
     if (alexaKeyword.trim().length === 0) {
       this.isAlexaKeywordValid = -1;
     } else {
@@ -611,16 +637,27 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     this.isRuleIdAvailable(this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType);
   }
   onSelectTargetType(targetType: any) {
-    this.selectedTargetType = targetType.text;
+    this.selectedTargetType = targetType;
     this.isRuleIdAvailable(this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType);
   }
-  onSelectFrequency(frequencyType) {
+  onSelectFrequency(frequencyType: any) {
     this.selectedFrequency = frequencyType;
   }
 
-  onSelectFrequencyMonth(selectedMonth) {
+  onSelectFrequencyDay(selectedDay: any) {
+    this.selectedDay = selectedDay;
+  }
+
+  onSelectFrequencyMonth(selectedMonth: any) {
     const monthDays: any = [];
-    const daysCount = this.getNumberOfDays(selectedMonth);
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == selectedMonth) {
+        monthId = id;
+      }
+    }
+    this.selectedMonthId = monthId;
+    const daysCount = this.getNumberOfDays(monthId);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
@@ -628,15 +665,9 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
 
-  private getNumberOfDays = function (month) {
+  private getNumberOfDays = function (monthId: any) {
     const year = new Date().getFullYear();
     const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    let monthId = 0;
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].text == month) {
-        monthId = id;
-      }
-    }
     return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 

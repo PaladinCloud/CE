@@ -17,6 +17,10 @@
   width: 100%;
 }
 
+.freq-col-row{
+  display: flex !important;
+}
+
 .floating-widgets-container {
   overflow: hidden;
 }

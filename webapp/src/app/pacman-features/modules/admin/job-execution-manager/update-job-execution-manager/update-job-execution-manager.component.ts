@@ -90,8 +90,6 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   jobFrequency;
   jobFrequencyDay;
   jobFrequencyMonth;
-  jobFrequencyMonths;
-  jobFrequencyDays;
   weekName;
   jobFrequencyModeValue;
   initVals = [];
@@ -150,6 +148,9 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   public backButtonRequired;
   private routeSubscription: Subscription;
   private previousUrlSubscription: Subscription;
+  selectedMonth: any;
+  selectedDay: any;
+  selectedMonthId: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -220,7 +221,7 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
     this.jobName = jobForm.jobName;
     existingJobModel.jobName = this.jobId;
     existingJobModel.jobDesc = jobForm.jobDesc;
-    existingJobModel.jobFrequency = this.buildRuleFrequencyCronJob(this.jobFrequency);
+    existingJobModel.jobFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
     existingJobModel.jobType = jobForm.jobType;
     existingJobModel.jobParams = this.buildJobParams();
     existingJobModel.jobExecutable = this.jobJarFileName;
@@ -268,15 +269,15 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
   }
 
   buildRuleFrequencyCronJob(jobFrequency) {
-    const selectedFrequencyType = jobFrequency[0].text;
+    const selectedFrequencyType = jobFrequency;
     const cronDetails = Object();
     cronDetails.interval = selectedFrequencyType;
     if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = this.jobFrequencyMonth;
-      cronDetails.month = this.jobFrequencyMonth[0];
+      cronDetails.day = this.jobFrequencyDay;
+      cronDetails.month = this.selectedMonthId;
     } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = parseInt(this.jobFrequencyMonths, 10);
-      cronDetails.day = parseInt(this.jobFrequencyDays, 10);
+      cronDetails.duration = this.jobFrequencyMonth;
+      cronDetails.day = this.jobFrequencyDay;
     } else if (selectedFrequencyType === 'Weekly') {
       cronDetails.week = this.weekName;
     } else {
@@ -423,7 +424,6 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
     this.allEnvironments.splice(index, 1);
   }
 
-
   getJobDetails() {
     this.hideContent = true;
     this.jobLoader = false;
@@ -449,11 +449,13 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
       this.onSelectFrequency(frequencyforEdit.interval);
 
       if (frequencyforEdit.interval.toLowerCase() === 'yearly') {
-        this.jobFrequencyDay = [{ text: frequencyforEdit.day, id: frequencyforEdit.day }];
-        this.jobFrequencyMonth = [this.allMonths[parseInt(frequencyforEdit.month, 10) - 1]];
+        this.jobFrequencyDay = frequencyforEdit.day;
+        this.jobFrequencyMonth = this.allMonths[parseInt(frequencyforEdit.month, 10) - 1].text;
+        this.onSelectFrequencyMonth(this.jobFrequencyMonth);
+
       } else if (frequencyforEdit.interval.toLowerCase() === 'monthly') {
-        this.jobFrequencyMonths = frequencyforEdit.duration;
-        this.jobFrequencyDays = frequencyforEdit.day;
+        this.jobFrequencyMonth = frequencyforEdit.duration;
+        this.jobFrequencyDay = frequencyforEdit.day;
       } else if (frequencyforEdit.interval.toLowerCase() === 'weekly') {
         this.weekName = frequencyforEdit.week;
       } else {
@@ -467,28 +469,35 @@ export class UpdateJobExecutionManagerComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSelectFrequency(frequencyType) {
+  onSelectFrequency(frequencyType: any) {
     this.selectedFrequency = frequencyType;
   }
 
-  onSelectFrequencyMonth(selectedMonth) {
+  onSelectFrequencyMonth(selectedMonth: any) {
     const monthDays = [];
-    const daysCount = this.getNumberOfDays(selectedMonth);
-    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
-      monthDays.push({ id: dayNo, text: dayNo.toString() });
-    }
-    this.allMonthDays = monthDays;
-  }
-
-  getNumberOfDays = function (month) {
-    const year = new Date().getFullYear();
-    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
     let monthId = 0;
     for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].text == month) {
+      if (this.allMonths[id].text == selectedMonth) {
         monthId = id;
       }
     }
+    this.selectedMonthId = monthId;
+    const daysCount = this.getNumberOfDays(monthId);
+    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
+      monthDays.push({ id: dayNo, text: dayNo.toString() });
+    }
+
+    this.allMonthDays = monthDays;
+  }
+
+  onSelectedDay(day: any) {
+    this.jobFrequencyDay = day;
+  }
+
+  getNumberOfDays = function (monthId: any) {
+    const year = new Date().getFullYear();
+    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
+
     return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 

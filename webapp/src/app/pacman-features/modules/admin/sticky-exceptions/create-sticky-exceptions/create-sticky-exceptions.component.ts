@@ -18,7 +18,8 @@ import { environment } from './../../../../../../environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as _ from 'lodash';
-import {WorkflowService} from '../../../../../core/services/workflow.service';
+// import * as frLocale from 'date-fns/locale/en';
+import { WorkflowService } from '../../../../../core/services/workflow.service';
 import * as moment from 'moment';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
@@ -27,10 +28,9 @@ import { ErrorHandlingService } from '../../../../../shared/services/error-handl
 
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
-import {  FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { SelectComponent } from 'ng2-select';
 import { UploadFileService } from '../../../../services/upload-file-service';
-import { DatepickerOptions } from 'ng2-datepicker';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -64,8 +64,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   @ViewChild('targetTypeRuleSelect') targetTypeRuleSelectComponent: SelectComponent;
   pageTitle: String = '';
-  breadcrumbArray: any = [ 'Sticky Exceptions'];
-  breadcrumbLinks: any = [ 'sticky-exceptions'];
+  breadcrumbArray: any = ['Sticky Exceptions'];
+  breadcrumbLinks: any = ['sticky-exceptions'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];
@@ -74,7 +74,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   exceptionDetailsForm: any = {
     name: '',
     reason: '',
-    expiry: this.dateToday,
+    expiry: this.date,
     assetGroup: []
   }
 
@@ -111,13 +111,6 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     { title: 'Enter Exception Details', hide: false },
     { title: 'Exempt Target Types', hide: true }
   ];
-
-  options: DatepickerOptions = {
-    minYear: this.date.getFullYear(),
-    maxYear: 2030,
-    format: 'DD/MM/YYYY',
-    firstCalendarDay: 0,
-  };
 
   isCreate: boolean = false;
   successTitle: String = '';
@@ -241,7 +234,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.selectedIndex = index;
 
     attributeDetail.rules;
-    if(attributeDetail.allRules.length === 0) {
+    if (attributeDetail.allRules.length === 0) {
       this.targetTypeRuleSelectComponent.placeholder = 'No Rules Available';
     } else {
       this.targetTypeRuleSelectComponent.items = attributeDetail.allRules;
@@ -260,7 +253,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     }
     this.attributeValue = '';
     this.attributeName = [];
-    if(this.allAttributeDetails[this.selectedIndex].allRules.length === 0) {
+    if (this.allAttributeDetails[this.selectedIndex].allRules.length === 0) {
       this.targetTypeRuleSelectComponent.placeholder = 'No Rules Available';
     } else {
       this.targetTypeRuleSelectComponent.placeholder = 'Select Rule Name';
@@ -276,7 +269,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.targetTypeRuleSelectComponent.items = this.selectedAllRules;
     }
 
-    if(this.allAttributeDetails[this.selectedIndex].allRules.length === 0) {
+    if (this.allAttributeDetails[this.selectedIndex].allRules.length === 0) {
       this.targetTypeRuleSelectComponent.placeholder = 'No Rules Available';
     } else {
       this.targetTypeRuleSelectComponent.placeholder = 'Select Rule Name';
@@ -313,12 +306,12 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     if (exceptionNameKeyword.trim().length == 0) {
       this.isExceptionNameValid = -1;
     } else {
-        let isKeywordExits = this.exceptionNames.findIndex(item => exceptionNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-        if (isKeywordExits === -1) {
-          this.isExceptionNameValid = 1;
-        } else {
-          this.isExceptionNameValid = 0;
-        }
+      let isKeywordExits = this.exceptionNames.findIndex(item => exceptionNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());
+      if (isKeywordExits === -1) {
+        this.isExceptionNameValid = 1;
+      } else {
+        this.isExceptionNameValid = 0;
+      }
     }
   }
 
@@ -366,16 +359,16 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.assetLoaderTitle = this.exceptionName;
     var url = environment.getAllStickyExceptionDetails.url;
     var method = environment.getAllStickyExceptionDetails.method;
-    this.adminService.executeHttpAction(url, method, {}, {exceptionName: exceptionName, dataSource: 'aws'}).subscribe(reponse => {
+    this.adminService.executeHttpAction(url, method, {}, { exceptionName: exceptionName, dataSource: 'aws' }).subscribe(reponse => {
       this.assetLoader = false;
       this.pageContent[0].hide = false;
       this.stickyExceptionDetails = reponse[0];
-     
+
       this.exceptionDetailsForm = {
         name: reponse[0].exceptionName,
         reason: reponse[0].exceptionReason,
-        expiry: moment(reponse[0].expiryDate).format('YYYY-MM-DD') ,
-        assetGroup: [{text: reponse[0].groupName, id: reponse[0].groupName}]
+        expiry: moment(reponse[0].expiryDate).format('YYYY-MM-DD'),
+        assetGroup: [{ text: reponse[0].groupName, id: reponse[0].groupName }]
       }
       this.selectedAssetGroup = reponse[0].groupName;
     },
@@ -403,7 +396,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.assetLoader = false;
       this.showLoader = false;
       if (reponse.length > 0) {
-        reponse[0].sort(function(a, b){
+        reponse[0].sort(function (a, b) {
           return b.rules.length - a.rules.length;
         });
         reponse[0] = _.orderBy(reponse[0], ['added'], ['desc']);
@@ -424,20 +417,20 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   nextStep() {
     if (this.stepIndex + 1 === 1) {
-      if(this.isCreate) {
+      if (this.isCreate) {
         this.collectTargetTypes();
       } else {
         let selectedAssetGroup = this.exceptionDetailsForm.assetGroup[0].text;
-        if(this.stickyExceptionDetails.groupName === selectedAssetGroup) {
+        if (this.stickyExceptionDetails.groupName === selectedAssetGroup) {
           this.allAttributeDetails = this.stickyExceptionDetails.targetTypes;
           this.allAttributeDetailsCopy = _.cloneDeep(this.allAttributeDetails);
           this.goToNextStep();
         } else {
           this.collectTargetTypes();
         }
-      } 
+      }
       this.searchAttribute();
-    } 
+    }
     else {
       this.goToNextStep();
     }
@@ -483,6 +476,13 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     }
   }
 
+  onSelectRuleName(ruleName: any) {
+    this.attributeName = ruleName;
+  }
+
+  onSelectAssetGroup(assetGroup: any) {
+    this.exceptionDetailsForm.assetGroup = assetGroup;
+  }
   createException(exceptionFormDetails) {
     let exceptionDetails = this.marshallingCreateExceptionData(exceptionFormDetails);
     this.loadingContent = 'creation';
@@ -596,7 +596,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       return tag.targetName.indexOf(term) >= 0;
     });
 
-    this.allAttributeDetails.sort(function(a, b){
+    this.allAttributeDetails.sort(function (a, b) {
       return b.rules.length - a.rules.length;
     });
     this.allAttributeDetails = _.orderBy(this.allAttributeDetails, ['added'], ['desc']);

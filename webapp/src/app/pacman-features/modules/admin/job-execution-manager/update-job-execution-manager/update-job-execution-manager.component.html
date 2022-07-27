@@ -84,7 +84,8 @@
                                             <div class="freq-col-row input-form">
                                                 <label>Job Frequency *</label>
                                                 <app-dropdown [items]="allFrequencies"
-                                                    (selected)='onSelectFrequency($event)' [selectedItem]="jobFrequency"
+                                                    (selected)='onSelectFrequency($event)'
+                                                    [selectedItem]="selectedFrequency"
                                                     [placeholder]="'Select Frequency'">
                                                 </app-dropdown>
                                             </div>
@@ -192,7 +193,7 @@
                                                     Every
                                                 </div>
                                                 <div class="freq-col-sm-6 freq-pright">
-                                                    <div class="input-form"> {{jobFrequencyMonth|json}}
+                                                    <div class="input-form">
                                                         <app-dropdown [items]="allMonths"
                                                             (selected)='onSelectFrequencyMonth($event)'
                                                             [selectedItem]="jobFrequencyMonth"
@@ -200,9 +201,10 @@
                                                         </app-dropdown>
                                                     </div>
                                                 </div>
-                                                <div class="freq-col-sm-5 input-form"> {{jobFrequencyDay|json}}
+                                                <div class="freq-col-sm-5 input-form">
                                                     <app-dropdown [items]="allMonthDays"
-                                                        [selectedItem]="jobFrequencyMonth" [placeholder]="'Select Day'">
+                                                        (selected)="onSelectedDay($event)"
+                                                        [selectedItem]="jobFrequencyDay" [placeholder]="'Select Day'">
                                                     </app-dropdown>
                                                 </div>
                                             </div>

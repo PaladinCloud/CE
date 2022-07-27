@@ -45,8 +45,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   filters: any = [];
 
   targetTypes: any = {
-    domain: [],
-    category: [],
+    domain: '',
+    category: '',
     name: '',
     desc: '',
     config: ''
@@ -148,8 +148,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     let method = environment.createTargetType.method;
     this.selectedTargetTypeName = targetTypes.name;
     let targetTypeDetails = {
-      domain: targetTypes.domain[0].text,
-      category: targetTypes.category[0].text,
+      domain: this.targetTypes.domain,
+      category: this.targetTypes.category,
       name: targetTypes.name,
       desc: targetTypes.desc,
       config: targetTypes.config,
@@ -160,8 +160,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       this.isTargetTypeCreationUpdationSuccess = true;
       this.targetTypeLoader = false;
       this.targetTypes = {
-        domain: [],
-        category: [],
+        domain: '',
+        category: '',
         name: '',
         desc: '',
         config: ''
@@ -184,8 +184,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     let method = environment.updateTargetType.method;
     this.selectedTargetTypeName = targetTypes.name;
     let targetTypeDetails = {
-      domain: targetTypes.domain[0].text,
-      category: targetTypes.category[0].text,
+      domain: this.targetTypes.domain,
+      category: this.targetTypes.category,
       name: targetTypes.name,
       desc: targetTypes.desc,
       config: targetTypes.config,
@@ -196,8 +196,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       this.isTargetTypeCreationUpdationSuccess = true;
       this.targetTypeLoader = false;
       this.targetTypes = {
-        domain: [],
-        category: [],
+        domain: '',
+        category: '',
         name: '',
         desc: '',
         config: ''
@@ -209,11 +209,11 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         this.isTargetTypeCreationUpdationFailed = true;
       })
   }
-  onSelectTargetTypeDomain(targetType: any) {
-    this.targetTypes.domain = targetType;
+  onSelectTargetTypeDomain(domain: any) {
+    this.targetTypes.domain = domain;
   }
-  onSelectTargetTypeCategory(targetType: any) {
-    this.targetTypes.category = targetType;
+  onSelectTargetTypeCategory(category: any) {
+    this.targetTypes.category = category;
   }
   closeErrorMessage() {
     if (this.failedTitle === 'Loading Failed') {
@@ -340,8 +340,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       this.allSelectedTargettypeDetails = reponse[0];
       this.hideContent = false;
       this.targetTypeLoader = false;
-      this.targetTypes.domain = [{ text: this.allSelectedTargettypeDetails.domain, id: this.allSelectedTargettypeDetails.domain }];
-      this.targetTypes.category = [{ text: this.allSelectedTargettypeDetails.category, id: this.allSelectedTargettypeDetails.category }];
+      this.targetTypes.domain = this.allSelectedTargettypeDetails.domain;
+      this.targetTypes.category = this.allSelectedTargettypeDetails.category;
       this.targetTypes.name = this.allSelectedTargettypeDetails.targetName;
       this.targetTypes.desc = this.allSelectedTargettypeDetails.targetDesc;
       this.targetTypes.config = this.allSelectedTargettypeDetails.targetConfig;

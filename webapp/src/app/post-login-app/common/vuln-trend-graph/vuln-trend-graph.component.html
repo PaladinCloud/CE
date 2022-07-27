@@ -92,7 +92,7 @@
             <div class='input-wrap'>
                 <div class='input-title'>Date</div>
                 <div class='datepicker-wrap'>
-                    <app-date-dropdown [dateToday]='dateSelected' [options]='options' [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>
+                    <app-date-dropdown [dateToday]='dateSelected' [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>
                 </div>
             </div>
             <div class='input-wrap' *ngIf='recentData.length'>

@@ -21,6 +21,10 @@
   overflow: hidden;
 }
 
+.freq-col-row{
+  display: flex !important;
+}
+
 .floating-widgets-container:hover {
   overflow: auto;
   overflow: overlay;

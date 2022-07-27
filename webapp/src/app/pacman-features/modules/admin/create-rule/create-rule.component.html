@@ -114,12 +114,14 @@
                                             <div class="input-form">
                                                 <label>Severity *</label>
                                                 <app-dropdown [items]="ruleSeverities"
+                                                    (selected)="onSelectSeverity($event)"
                                                     [placeholder]="'Select Rule Severity'">
                                                 </app-dropdown>
                                             </div>
                                             <div class="input-form">
                                                 <label>Category *</label>
                                                 <app-dropdown [items]="ruleCategories"
+                                                    (selected)="onSelectCategory($event)"
                                                     [placeholder]="'Select Rule Category'">
                                                 </app-dropdown>
                                             </div>
@@ -138,7 +140,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off"
-                                                            name="ruleFrequencyModeValue" ngModel
+                                                            name="ruleFrequencyModeValue"
+                                                            [(ngModel)]="ruleFrequencyModeValue"
                                                             class="inputarea-container" [maxlength]="2" appOnlyNumber
                                                             required>
                                                     </ul>
@@ -155,7 +158,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off"
-                                                            name="ruleFrequencyModeValue" ngModel
+                                                            name="ruleFrequencyModeValue"
+                                                            [(ngModel)]="ruleFrequencyModeValue"
                                                             class="inputarea-container" [maxlength]="2" appOnlyNumber
                                                             required>
                                                     </ul>
@@ -172,7 +176,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off"
-                                                            name="ruleFrequencyModeValue" ngModel
+                                                            name="ruleFrequencyModeValue"
+                                                            [(ngModel)]="ruleFrequencyModeValue"
                                                             class="inputarea-container" appOnlyNumber required>
                                                     </ul>
                                                 </div>
@@ -183,25 +188,25 @@
                                             <div class="freq-radio rule-type input-box"
                                                 *ngIf="selectedFrequency==='Weekly'">
                                                 <input type="radio" id="mon" value="MON" name="weekName" class="ib"
-                                                    checked="checked" ngModel required>
+                                                    checked="checked" [(ngModel)]="selectedWeekName" required>
                                                 <label for="mon" class="mon db">MON</label>
                                                 <input type="radio" id="tue" value="TUE" name="weekName" class="ib"
-                                                    ngModel required>
+                                                    [(ngModel)]="selectedWeekName" required>
                                                 <label for="tue" class="tue db">TUE</label>
                                                 <input type="radio" id="wed" value="WED" name="weekName" class="ib"
-                                                    ngModel required>
+                                                    [(ngModel)]="selectedWeekName" required>
                                                 <label for="wed" class="wed db">WED</label>
                                                 <input type="radio" id="thu" value="THU" name="weekName" class="ib"
-                                                    ngModel required>
+                                                    [(ngModel)]="selectedWeekName" required>
                                                 <label for="thu" class="thu db">THU</label>
                                                 <input type="radio" id="fri" value="FRI" name="weekName" class="ib"
-                                                    ngModel required>
+                                                    [(ngModel)]="selectedWeekName" required>
                                                 <label for="fri" class="fri db">FRI</label>
                                                 <input type="radio" id="sat" value="SAT" name="weekName" class="ib"
-                                                    ngModel required>
+                                                    [(ngModel)]="selectedWeekName" required>
                                                 <label for="sat" class="sat db">SAT</label>
                                                 <input type="radio" id="sun" value="SUN" name="weekName" class="ib"
-                                                    ngModel required>
+                                                    [(ngModel)]="selectedWeekName" required>
                                                 <label for="sun" class="sun db">SUN</label>
                                             </div>
 
@@ -212,7 +217,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off" name="ruleFrequencyDays"
-                                                            ngModel class="inputarea-container" appOnlyNumber required>
+                                                            [(ngModel)]="selectedDays" class="inputarea-container"
+                                                            appOnlyNumber required>
                                                     </ul>
                                                 </div>
                                                 <div class="freq-col-sm freq-pright freq-col-middle">
@@ -221,7 +227,8 @@
                                                 <div class="freq-col-sm-1 freq-pright">
                                                     <ul class="input-wrapper">
                                                         <input type="text" autocomplete="off" name="ruleFrequencyMonths"
-                                                            ngModel class="inputarea-container" appOnlyNumber required>
+                                                            [(ngModel)]="selectedMonths" ngModel
+                                                            class="inputarea-container" appOnlyNumber required>
                                                     </ul>
                                                 </div>
                                                 <div class="freq-col-sm freq-pright freq-col-middle">
@@ -244,6 +251,7 @@
                                                     </div>
                                                     <div class="freq-col-sm-5 input-form">
                                                         <app-dropdown [items]="allMonthDays"
+                                                            (selected)='onSelectFrequencyDay($event)'
                                                             [placeholder]="'Select Day'">
                                                         </app-dropdown>
                                                     </div>
@@ -253,6 +261,7 @@
                                             <div class="input-form">
                                                 <label>Would you want to scan your rule against an asset group?</label>
                                                 <app-dropdown [items]="assetGroupNames"
+                                                    (selected)="onSelectAssetGroup($event)"
                                                     [placeholder]="'Select Asset Group'">
                                                 </app-dropdown>
                                             </div>
@@ -265,7 +274,7 @@
                                                         class="available">(Available)</span>
                                                 </label>
                                                 <ul class="input-wrapper">
-                                                    <input type="text" autocomplete="off" name="alexaKeywords" ngModel
+                                                    <input type="text" autocomplete="off" name="alexaKeywords"
                                                         class="inputarea-container"
                                                         (input)="isAlexaKeywordAvailable($event.target.value)"
                                                         placeholder="Enter Alexa skill keyword" required>

@@ -205,7 +205,7 @@
                                                     Every
                                                 </div>
                                                 <div class="freq-col-sm-6 freq-pright">
-                                                    <div class="input-form"> {{ruleFrequencyMonth|json}}
+                                                    <div class="input-form">
                                                         <app-dropdown [items]="allMonths"
                                                             [selectedItem]="ruleFrequencyMonth"
                                                             (selected)='onSelectFrequencyMonth($event)'
@@ -213,9 +213,11 @@
                                                         </app-dropdown>
                                                     </div>
                                                 </div>
-                                                <div class="freq-col-sm-5 input-form"> {{ruleFrequencyDay|json}}
+                                                <div class="freq-col-sm-5 input-form">
                                                     <app-dropdown [items]="allMonthDays"
-                                                        [selectedItem]="ruleFrequencyDay" [placeholder]="'Select Day'">
+                                                        [selectedItem]="ruleFrequencyDay"
+                                                        (selected)='onSelectFrequencyDay($event)'
+                                                        [placeholder]="'Select Day'">
                                                     </app-dropdown>
                                                 </div>
                                             </div>
