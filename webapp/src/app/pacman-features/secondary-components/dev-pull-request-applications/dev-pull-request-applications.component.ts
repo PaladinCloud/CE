@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, SimpleChanges, OnDestroy, Input, OnChanges } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
@@ -30,20 +30,20 @@ import { DevPullRequestApplicationService } from '../../services/dev-pull-reques
 export class DevPullRequestApplicationsComponent implements OnInit, OnDestroy, OnChanges {
 
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
 
   getContextMenuItems: any;
   gridApi: any;
   gridColumnApi: any;
   columns: any = [];
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
 
   @Input() filter: any;
 
-  errorValue = 0;
+  public errorValue = 0;
 
   constructor(  private devPullRequestApplicationService: DevPullRequestApplicationService,
           private assetGroupObservableService: AssetGroupObservableService,

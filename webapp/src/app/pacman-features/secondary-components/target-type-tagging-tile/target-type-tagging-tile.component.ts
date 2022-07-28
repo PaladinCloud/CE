@@ -26,8 +26,8 @@ export class TargetTypeTaggingTileComponent implements OnInit {
   @Input() awsResourceDetails: any  = {};
 
   imagePath: any;
-  private untagged: any = '30%';
-  private tagged: any = '70%';
+  public untagged: any = '30%';
+  public tagged: any = '70%';
   @Output() navigatePage: EventEmitter<any> = new EventEmitter();
   imagePathFound = true;
 

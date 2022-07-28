@@ -70,7 +70,7 @@
   word-break: break-word;
 }
 
-.table-head-wrapper /deep/ .head-cell-wrapper {
+.table-head-wrapper ::ng-deep .head-cell-wrapper {
   text-align: left;
 }
 

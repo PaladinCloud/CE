@@ -154,12 +154,12 @@
   background-color: #757575;
 }
 
-/deep/ .drop-options .ngx-dropdown-container button {
+::ng-deep .drop-options .ngx-dropdown-container button {
   padding: 0em 1em !important;
   vertical-align: middle;
   line-height: 1.5 !important;
 }
 
-/deep/ .drop-options .ngx-dropdown-container button .nsdicon-angle-down {
+::ng-deep .drop-options .ngx-dropdown-container button .nsdicon-angle-down {
   line-height: 1.5 !important;
 }

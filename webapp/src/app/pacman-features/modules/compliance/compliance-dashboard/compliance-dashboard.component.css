@@ -66,38 +66,38 @@ app-data-table{
   width: 100%;
 }
 
-.container-3 /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
   width: 40%;
   margin-left: 8px;
 }
-.container-3 /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
   width: 13%;
 }
-.container-3 /deep/ .data-table-wrap .table-cells:nth-child(3) {
+.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(3) {
   width: 14%;
 }
-.container-3 /deep/ .data-table-wrap .table-cells:nth-child(4) {
+.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(4) {
   width: 14%;
 }
-.container-3 /deep/ .data-table-wrap .table-cells:nth-child(5) {
+.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(5) {
   width: 17%;
 }
-.container-3  /deep/ .table-cells {
+.container-3  ::ng-deep .table-cells {
   padding: 16px 10px !important;
 }
 
-.container-3 /deep/ .data-table-inner-wrap {
+.container-3 ::ng-deep .data-table-inner-wrap {
   padding-top: 10px;
   width: 100% !important;
 }
-.container-3 /deep/ .data-table-inner-content {
+.container-3 ::ng-deep .data-table-inner-content {
   width: 100% !important;
 }
 
-.container-3 /deep/ .data-table-head {
+.container-3 ::ng-deep .data-table-head {
   width: 100% !important;
 }
 
-.container-3 /deep/ .data-table-rows {
+.container-3 ::ng-deep .data-table-rows {
   width: 100% !important;
 }

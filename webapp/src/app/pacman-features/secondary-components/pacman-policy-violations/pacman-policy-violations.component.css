@@ -23,15 +23,15 @@
   font-size: 1em;
 }
 
-.policy-violations-container /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.policy-violations-container ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
   width: 440px;
 }
 
-.policy-violations-container /deep/ .data-table-wrap {
+.policy-violations-container ::ng-deep .data-table-wrap {
   box-shadow: none;
 }
 
-.policy-violations-container /deep/ .data-table-wrap .sub-head {
+.policy-violations-container ::ng-deep .data-table-wrap .sub-head {
   padding: 16px 20px;
   background-color: var(--background-white);
   color: var(--text-high-emphasis);

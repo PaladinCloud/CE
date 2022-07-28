@@ -13,7 +13,7 @@
  */
 
 
-import { Pipe, PipeTransform, Output, EventEmitter } from '@angular/core';
+import { Pipe, PipeTransform, Output, EventEmitter, Directive } from '@angular/core';
 import { LoggerService } from '../services/logger.service';
 
 @Pipe({ name: 'search' })

@@ -11,7 +11,7 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  -->
-<a (click)="closeOverallComplianceTrendModal()">
+<a (click)="closeOverallComplianceTrendModal('')">
   <app-overlay></app-overlay>
 </a>
 <div #issuesHistoryContainer class="issue-trend-wrapper-3">
@@ -21,7 +21,7 @@
         <app-title-burger-head
           [subHeadTitle]="'Trend of Number of Policy Violations'"
         ></app-title-burger-head>
-        <div class="delete-title" (click)="closeOverallComplianceTrendModal()">
+        <div class="delete-title" (click)="closeOverallComplianceTrendModal('')">
           <img
             _ngcontent-c41=""
             class="delete-icon"

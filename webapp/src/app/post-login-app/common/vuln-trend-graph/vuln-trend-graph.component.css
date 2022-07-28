@@ -409,11 +409,11 @@
   font-family: var(--text-light-font-family);
 }
 
-/deep/ span.ui-select-match-text.pull-left.ui-select-allow-clear {
+::ng-deep span.ui-select-match-text.pull-left.ui-select-allow-clear {
   text-transform: capitalize;
 }
 
-/deep/ .ui-select-choices-row > a {
+::ng-deep .ui-select-choices-row > a {
   text-transform: capitalize;
 }
 

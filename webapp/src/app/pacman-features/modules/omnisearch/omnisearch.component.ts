@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { fadeAnimation } from '../../../shared/animations/animations';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { LoggerService } from '../../../shared/services/logger.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { RouterUtilityService } from '../../../shared/services/router-utility.service';
 import { WorkflowService } from '../../../core/services/workflow.service';
 

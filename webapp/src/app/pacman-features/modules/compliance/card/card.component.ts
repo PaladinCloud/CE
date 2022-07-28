@@ -51,8 +51,12 @@ export class CardComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.agAndDomain["ag"] = params["ag"];
       this.agAndDomain["domain"] = params["domain"];
-      this.getComplianceData();
-      this.getAssetsCountData();
+      if(this.agAndDomain["ag"] && this.agAndDomain["domain"]){
+        console.log(JSON.stringify(this.agAndDomain));
+        
+        this.getComplianceData();
+        this.getAssetsCountData();
+      }
     });
   }
 

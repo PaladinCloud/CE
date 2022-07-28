@@ -17,10 +17,10 @@
         <div class="sub-head">
             <app-title-burger-head [subHeadTitle]="'Patch Progress'"></app-title-burger-head>
         </div>
-        <div class="sub-head-text" *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')">
+        <div class="sub-head-text" *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph')">
             This report shows progress towards compliance to kernel versions that will be mandatory on the final day of the quarter.
         </div>
-        <div class="right text-right" *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')">
+        <div class="right text-right" *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph')">
             <div class="quarter-desc clearfix relative" (click)='showOtherDiv()'>
                 <div class='pp-time left'>{{year}}
                 </div>
@@ -34,8 +34,8 @@
             </a>
         </div>
         <div id="current">
-            <app-patching-graph *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')" [today]='todayValue' [lastDate]='lastDate' [internal_target]='internal_target' [position]='true' [end_date]='end_date' [amiavail_date]='amiavail_date' [showLegend]="showGraphLegend" [axis]='true' [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData" [idUnique]="'current'"></app-patching-graph>
-            <div class="relative x-axes-wrap" *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')">
+            <app-patching-graph *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph')" [today]='todayValue' [lastDate]='lastDate' [internal_target]='internal_target' [position]='true' [end_date]='end_date' [amiavail_date]='amiavail_date' [showLegend]="showGraphLegend" [axis]='true' [yAxisLabel]="yAxisLabel" [graphWidth]="graphWidth" [graphLinesData]="graphData" [idUnique]="'current'"></app-patching-graph>
+            <div class="relative x-axes-wrap" *ngIf="(dataLoaded && graphData) && (hiddenComponent=='onpremPatchingGraph')">
                 <div class="percent-wrap flex clearfix">
                     <div class="x-percent" *ngFor='let data of weekValue | slice:0:weekValue.length'>{{data}}
                         <span class="percent-value" *ngIf='data != ""'>%</span>
@@ -69,12 +69,12 @@
                 </div>
             </div>
         </div>
-        <div class="loader" *ngIf="(!dataLoaded && !error) && (hiddenComponent!='onpremPatchingGraph' || hiddenComponent!='patchingTrend') "></div>
+        <div class="loader" *ngIf="(!dataLoaded && !error) && (hiddenComponent!='onpremPatchingGraph') "></div>
         <div class="error-msg-block">
-            <app-error-message *ngIf="error && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')" [selectedValue]="errorMessage"></app-error-message>
+            <app-error-message *ngIf="error && (hiddenComponent=='onpremPatchingGraph')" [selectedValue]="errorMessage"></app-error-message>
         </div>
     </div>
-    <div class="pp-quarter-overlay absolute clearfix" *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')" [class.displaySide]='showOpposite'>
+    <div class="pp-quarter-overlay absolute clearfix" *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph')" [class.displaySide]='showOpposite'>
         <ul class="patching-year-wrapper left">
             <li class="patching-each-year" *ngFor='let data of yearArray; let i = index ' [class.fade]="i != 0" [class.selected]="isActive(i)" (click)='getMetaData(data,i)'>{{data}}</li>
         </ul>
@@ -88,7 +88,7 @@
                 <ul>
                     <li class="patching-each-quarter clearfix" *ngIf='quarterDataArray[0] != undefined'>
                         <div class="ind-quarter" id="q0">
-                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend') " [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[0].data" [idUnique]="'q0'"></app-quarter-graph>
+                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph') " [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[0].data" [idUnique]="'q0'"></app-quarter-graph>
                             <div class="quarterNumText">Q{{quarterDataArray[0].key}}</div>
                         </div>
                         <div class="patching-each-quarter-desc left">
@@ -120,7 +120,7 @@
                     </li>
                     <li class="patching-each-quarter clearfix" *ngIf='quarterDataArray[1] != undefined'>
                         <div class="ind-quarter" id="q1">
-                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')" [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[1].data" [idUnique]="'q1'"></app-quarter-graph>
+                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph')" [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[1].data" [idUnique]="'q1'"></app-quarter-graph>
                             <div class="quarterNumText">Q{{quarterDataArray[1].key}}</div>
                         </div>
                         <div class="patching-each-quarter-desc left">
@@ -152,7 +152,7 @@
                     </li>
                     <li class="patching-each-quarter clearfix" *ngIf='quarterDataArray[2] != undefined'>
                         <div class="ind-quarter" id="q2">
-                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')" [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[2].data" [idUnique]="'q2'"></app-quarter-graph>
+                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph')" [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[2].data" [idUnique]="'q2'"></app-quarter-graph>
                             <div class="quarterNumText">Q{{quarterDataArray[2].key}}</div>
                         </div>
                         <div class="patching-each-quarter-desc left">
@@ -184,7 +184,7 @@
                     </li>
                     <li class="patching-each-quarter clearfix" *ngIf='quarterDataArray[3] != undefined'>
                         <div class="ind-quarter" id="q3">
-                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph' || hiddenComponent=='patchingTrend')" [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[3].data" [idUnique]="'q3'"></app-quarter-graph>
+                            <app-quarter-graph *ngIf="dataLoaded && (hiddenComponent=='onpremPatchingGraph')" [graphWidth]="graphWidth-546" [dataResponse]="quarterDataArray[3].data" [idUnique]="'q3'"></app-quarter-graph>
                             <div class="quarterNumText">Q{{quarterDataArray[3].key}}</div>
                         </div>
                         <div class="patching-each-quarter-desc left">

@@ -28,7 +28,7 @@ import { environment } from "./../../../environments/environment";
 import { DomainTypeObservableService } from "../../core/services/domain-type-observable.service";
 import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
 import { RouterUtilityService } from "../../shared/services/router-utility.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { WorkflowService } from "../../core/services/workflow.service";
 import { FetchResourcesService } from "../../pacman-features/services/fetch-resources.service";
 

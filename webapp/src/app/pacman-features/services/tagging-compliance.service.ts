@@ -15,11 +15,12 @@
 /**
  * Created by adityaagarwal on 12/10/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { combineLatest, Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TaggingComplianceService {
@@ -31,16 +32,16 @@ export class TaggingComplianceService {
         const method = taggingComplianceMethod;
         const payload = {};
         try {
-          return Observable.combineLatest(
+          return combineLatest(
             this.httpService.getHttpResponse(url, method, payload, queryParams)
-            .map(response => {
+            .pipe(map(response => {
                 try {
                     return this.massageData(response);
                 } catch (error) {
                     this.errorHandler.handleJavascriptError(error);
                 }
             })
-          );
+          ));
         } catch (error) {
             this.errorHandler.handleJavascriptError(error);
         }
@@ -50,7 +51,7 @@ export class TaggingComplianceService {
         const queryParams = {};
         try {
           return this.httpService.getHttpResponse(taggingSummaryUrl, taggingSummaryMethod, payload, queryParams)
-            .map(response => {
+            .pipe(map(response => {
                 try {
                     const data = response['data'].response;
                     data.sort(function(a, b) {
@@ -60,7 +61,7 @@ export class TaggingComplianceService {
                 } catch (error) {
                     this.errorHandler.handleJavascriptError(error);
                 }
-            });
+            }));
         } catch (error) {
             this.errorHandler.handleJavascriptError(error);
         }

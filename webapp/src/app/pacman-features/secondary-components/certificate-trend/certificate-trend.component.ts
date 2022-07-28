@@ -14,7 +14,7 @@
 
 import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { IssuesHistoryService } from '../../services/issues-history.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 import { environment } from '../../../../environments/environment';
@@ -47,10 +47,10 @@ export class CertificateTrendComponent implements OnInit, OnDestroy {
 
     private graphWidth: any;
     private graphData: any;
-    private dataLoaded:  any = false;
-    private error: any = false;
+    public dataLoaded:  any = false;
+    public error: any = false;
     private loading: any = false;
-    private errorMessage: any = 'apiResponseError';
+    public errorMessage: any = 'apiResponseError';
     // Graph customization variables
     private yAxisLabel = 'Number of Policy Violations';
     private showGraphLegend = true;

@@ -23,7 +23,7 @@
             [MainTextcolor]='MainTextcolor' [innerRadius]='innerRadius' [outerRadius]='outerRadius'
             [strokeColor]="strokeColor"></app-doughnut-chart>
     </div>
-    <article class='center error_handling' *ngIf="!datacoming">
+    <article class='center error_handling' *ngIf="!dataComing">
         <div class="error_msg">
             <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
         </div>

@@ -14,7 +14,7 @@
 
 import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ComplianceOverviewService } from '../../services/compliance-overview.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -46,10 +46,10 @@ export class TaggingAssetsTrendComponent implements OnInit, OnDestroy {
   autoRefresh: boolean;
   private graphWidth: any;
   private graphData: any;
-  private dataLoaded: any = false;
-  private error: any = false;
+  public dataLoaded: any = false;
+  public error: any = false;
   private loading: any = false;
-  private errorMessage: any = 'apiResponseError';
+  public errorMessage: any = 'apiResponseError';
   private distributedFiltersObject: any = {};
   private autorefreshInterval;
 
@@ -179,7 +179,7 @@ export class TaggingAssetsTrendComponent implements OnInit, OnDestroy {
         }
 
       try {
-          this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
+          this.graphWidth = this.widgetContainer?parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10):700;
       } catch (error) {
           this.errorMessage = this.errorHandling.handleJavascriptError(error);
           this.setError(error);

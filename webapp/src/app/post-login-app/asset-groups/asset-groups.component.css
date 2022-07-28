@@ -245,7 +245,7 @@ img.delete-icon {
   right: initial;
 }
 
-.left-most /deep/ .mr-user-dropdown-wrapper::after {
+.left-most ::ng-deep .mr-user-dropdown-wrapper::after {
   left: 7%;
   right: initial;
 }

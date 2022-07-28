@@ -15,7 +15,7 @@
 import {Component, OnDestroy, OnChanges, SimpleChanges, Input, Output, EventEmitter} from '@angular/core';
 import {AssetGroupObservableService} from '../../../core/services/asset-group-observable.service';
 import {CommonResponseService} from '../../../shared/services/common-response.service';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import {environment} from '../../../../environments/environment';
 import {LoggerService} from '../../../shared/services/logger.service';
 
@@ -28,6 +28,7 @@ import {LoggerService} from '../../../shared/services/logger.service';
 
 export class VulnReportTablesComponent implements OnDestroy, OnChanges {
 
+  detailsPopup:boolean;
   assetGroupSubscription: Subscription;
   remediationTableSubscription: Subscription;
   performersTableSubscription: Subscription;

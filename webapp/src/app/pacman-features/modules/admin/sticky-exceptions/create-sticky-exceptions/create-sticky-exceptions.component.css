@@ -12,6 +12,15 @@
  * limitations under the License.
  */
 
+ app-dropdown {
+   width: 100%;
+   height: 100%;
+ }
+ 
+ ::ng-deep #cdk-overlay-0 {
+  top: 280px!important;
+}
+
 .floating-widgets-section {
   height: 100%;
   width: 100%;
@@ -1143,7 +1152,7 @@ label {
   font-size: 16px;
   font-weight: 600;
   color: #ffffff;
-  z-index: 99;
+  z-index: 12;
   position: relative;
 }
 
@@ -1157,7 +1166,7 @@ label {
   -webkit-transition: all 0.3s ease-in;
   transition: all 0.3s ease-in;
   background-color: var(--primary-400);
-  z-index: 99;
+  z-index: 12;
   position: relative;
 }
 
@@ -1583,28 +1592,28 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
   .main-calendar-days
   .day-unit.is-selected,
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
   .main-calendar-days
   .year-unit.is-selected,
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
   .main-calendar-years
   .day-unit.is-selected,
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1622,14 +1631,14 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container {
   width: 100% !important;
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1639,7 +1648,7 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1648,7 +1657,7 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-calendar-container
   .main-calendar-container
@@ -1658,7 +1667,7 @@ button.attrbutton:hover {
 }
 
 .sticky-exceptions-wrapper
-  /deep/
+  ::ng-deep
   .ngx-datepicker-container
   .ngx-datepicker-input {
   border-radius: 0.2em !important;
@@ -1666,7 +1675,7 @@ button.attrbutton:hover {
   width: 100% !important;
 }
 
-.sticky-exceptions-wrapper /deep/ .row-cells div:first-letter {
+.sticky-exceptions-wrapper ::ng-deep .row-cells div:first-letter {
   text-transform: inherit !important;
 }
 
@@ -1705,24 +1714,42 @@ button.attrbutton:hover {
   display: inline-block;
 }
 
-.floating-widgets-section /deep/ .data-table-wrap.loading {
+.floating-widgets-section ::ng-deep .data-table-wrap.loading {
   max-height: calc(100vh - 21em) !important;
   min-height: calc(100vh - 21em) !important;
 }
 
-.floating-widgets-section /deep/ .data-table-inner-wrap {
+.floating-widgets-section ::ng-deep .data-table-inner-wrap {
   height: auto;
 }
 
-.floating-widgets-section /deep/ .data-table-content {
+.floating-widgets-section ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-content {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-inner-wrap {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
   max-height: 8em;
   overflow-y: auto;
+}
+
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+  position: relative !important;
+}
+::ng-deep #cdk-overlay-1 {
+  top: 280px!important;
+}
+::ng-deep .formctnright .mat-form-field-subscript-wrapper {
+  position: static !important;
+}
+
+::ng-deep .formctnright .mat-form-field-appearance-outline .mat-form-field-outline {
+	color: #aaa;
+}
+
+::ng-deep .formctnright .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+	color: #aaa;
 }

@@ -42,7 +42,7 @@ export class MainFilterComponent implements OnInit {
    * @desc  This component paints the omni search filter
    */
 
-  private hideFilter = true;
+  public hideFilter = true;
   @Output() filterOptionClicked: EventEmitter<any> = new EventEmitter();
   @Output() filterOpenEvent: EventEmitter<any> = new EventEmitter();
 
@@ -59,7 +59,7 @@ export class MainFilterComponent implements OnInit {
    * @desc filterData gets data to paint the entire filter
    * filterQuery is the query Obj that is send to the parent for post request
    */
-  filterData: {};
+  filterData;
   showLoader = true;
   public errorMessage; // -> error messages
   filterQuery = {}; // after filter options are appplied it is saved in filterQuery

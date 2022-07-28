@@ -34,7 +34,10 @@ export class SearchableDropdownComponent implements OnInit, OnChanges {
   secondDDSelected = false;
   placeholderVisible = true;
   @Input() dataModel;
-  config = {
+  config ;
+
+  ngOnInit() {
+    this.config = {
     displayKey: 'optionName', // if objects array passed which key to be displayed defaults to description
     search: false, // true/false for the search functionlity defaults to false,
     height: '25em', // height of the list so that if there are more no of items it can show a scroll defaults to auto. With auto height scroll will never appear
@@ -45,9 +48,7 @@ export class SearchableDropdownComponent implements OnInit, OnChanges {
     noResultsFound: 'No data available', // text to be displayed when no items are found while searching
     searchPlaceholder: 'Search' // label thats displayed in search input,
     // searchOnKey: 'name' // key on which search should be performed this will be selective search. if undefined this will be extensive search on all keys
-    };
-
-  ngOnInit() {
+    }
     if (this.initValue) {
       this.dataModel = this.initValue;
       this.placeholderVisible = false;

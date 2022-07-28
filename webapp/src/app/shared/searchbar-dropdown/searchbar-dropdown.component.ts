@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, AfterViewInit, Input, EventEmitter, Output, ViewChild, ElementRef, Renderer } from '@angular/core';
+import { Component, AfterViewInit, Input, EventEmitter, Output, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { DataCacheService } from '../../core/services/data-cache.service';
 import { LoggerService } from '../../shared/services/logger.service';
 
@@ -48,14 +48,14 @@ export class SearchbarDropdownComponent implements AfterViewInit {
   constructor(
     private dataStore: DataCacheService,
     private logger: LoggerService,
-    private renderer: Renderer
+    private renderer: Renderer2
   ) {}
 
   ngAfterViewInit() {
     try {
 
       if (this.omniInp) {
-        this.renderer.invokeElementMethod(this.omniInp.nativeElement, 'focus');
+        this.omniInp.nativeElement.focus();
       }
       // Onload passing same value as the selected value
       this.selectedFilterType = {

@@ -16,7 +16,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { moduleTransition } from "./common/animations/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AssetGroupObservableService } from "../core/services/asset-group-observable.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { MainRoutingAnimationEventService } from "../shared/services/main-routing-animation-event.service";
 import { LoggerService } from "../shared/services/logger.service";
 import { DataCacheService } from "../core/services/data-cache.service";
@@ -40,7 +40,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   queryParameters: any = {};
   private agAndDomainKey: string;
   showPacLoader: any = [];
-  private haveAdminPageAccess = false;
+  public haveAdminPageAccess = false;
 
   private themeSubscription: Subscription;
   private activatedRouteSubscription: Subscription;
@@ -153,7 +153,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       "Setting the page reload interval to: " + timeoutInterval
     );
     const reloadTimeout = setTimeout(function () {
-      window.location.reload(true);
+      window.location.reload();
     }, timeoutInterval);
 
     return reloadTimeout;

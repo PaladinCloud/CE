@@ -31,7 +31,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
     window.onresize = (e) => {
       // ngZone.run will help to run change detection
       this.ngZone.run(() => {
-        this.width = (parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20);
+        this.width = this.barChart?(parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20):1000;
         this.createSvg();
       });
     };
@@ -65,7 +65,7 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
     this.valueUpperLimit = this.maxValue;
     // set the dimensions and margins of the graph
     this.margin = { top: 0, right: 0, bottom: 0, left: 100 };
-    this.width = parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20 - this.margin.left - this.margin.right;
+    this.width = this.barChart?parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20 - this.margin.left - this.margin.right:700;
     this.height = this.getHeight() - this.margin.top - this.margin.bottom;
   }
 

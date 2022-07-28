@@ -15,13 +15,13 @@
 /**
  * Created by Mohammed_Furqan on 10/10/17.
  */
-import { Observable } from 'rxjs/Rx';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import { Observable ,  combineLatest, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { environment } from './../../../environments/environment';
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { catchError, map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -37,12 +37,12 @@ export class FetchResourcesService {
             const url = environment.resourceCount.url;
             const method = environment.resourceCount.method;
             return this.httpService.getHttpResponse(url, method, {}, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return response;
-                    })
-                    .catch(error => {
-                        return Observable.of(null);
-                    });
+                    }))
+                    .pipe(catchError(error => {
+                        return of(null);
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -53,9 +53,9 @@ export class FetchResourcesService {
             const url = environment.resourceCategories.url;
             const method = environment.resourceCategories.method;
             return this.httpService.getHttpResponse(url, method, {}, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return response;
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -66,12 +66,12 @@ export class FetchResourcesService {
             const url = environment.recommendationStatus.url;
             const method = environment.recommendationStatus.method;
             return this.httpService.getHttpResponse(url, method, {}, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return response;
-                    })
-                    .catch(error => {
-                        return Observable.of(null);
-                    });
+                    }))
+                    // .catch(error => {
+                    //     return of(null);
+                    // });
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

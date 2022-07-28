@@ -19,7 +19,7 @@ import {
   OnDestroy,
   OnChanges
 } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../../shared/services/common-response.service';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { AutorefreshService } from '../../services/autorefresh.service';

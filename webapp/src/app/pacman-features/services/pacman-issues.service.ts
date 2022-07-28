@@ -15,12 +15,13 @@
 /**
  * Created by sauravdutta on 11/10/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import { Headers, RequestOptions } from '@angular/http';
-import 'rxjs/add/operator/toPromise';
+import { HttpHeaders, HttpRequest } from "@angular/common/http";
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PacmanIssuesService {
@@ -42,9 +43,7 @@ export class PacmanIssuesService {
     percent_keys: any;
     pacman_data: any;
 
-    headers: any = new Headers({ 'Content-Type': 'application/json' });
-
-    options: any = new RequestOptions({ headers: this.headers });
+    headers: any = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     getData(queryParams, pacmanIssuesUrl, pacmanIssuesMethod): Observable<any> {
 
@@ -54,14 +53,14 @@ export class PacmanIssuesService {
 
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                .map(response => {
+                .pipe(map(response => {
                     try {
                         this.dataCheck(response);
                         return this.massageData(response);
                     } catch (error) {
                         this.errorHandling.handleJavascriptError(error);
                     }
-                });
+                }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -99,7 +98,7 @@ export class PacmanIssuesService {
                     break;
                 case 'low':
                     this.lowValue = data[`distribution`].distribution_by_severity[this.checkKey];
-
+                    break;
                 default:
             }
         } // end of for loop
