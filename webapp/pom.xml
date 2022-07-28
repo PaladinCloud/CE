@@ -64,19 +64,19 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>npm run ng build -- --env=prod --output-hashing=all</id>
+						<id>npm run ng build --env=prod --output-hashing=all</id>
 						<goals>
 							<goal>npm</goal>
 						</goals>
 						<phase>generate-resources</phase>
 						<configuration>
-							<arguments>run ng build -- --env=prod --output-hashing=all</arguments>
+							<arguments>run ng build --env=prod --output-hashing=all</arguments>
 						</configuration>
 					</execution>
                 </executions>
                 <configuration>
-                    <nodeVersion>v16.16.0</nodeVersion>
-                    <npmVersion>7.0.0</npmVersion>
+                    <nodeVersion>v16.10.0</nodeVersion>
+                    <npmVersion>8.0.0</npmVersion>
      				<workingDirectory>${pom.parent.basedir}</workingDirectory>
                 </configuration>
             </plugin>
