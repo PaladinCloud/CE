@@ -43,8 +43,6 @@ import { UploadFileService } from '../../../services/upload-file-service';
   ]
 })
 export class UpdateRuleComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('ruleFrequency') ruleFrequencyComponent: SelectComponent;
 
   ruleFrequencyMonth: any;
   ruleFrequencyDay: any;
@@ -486,12 +484,6 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { dataSourceName: datasourceName }).subscribe(reponse => {
       this.showLoader = false;
       this.targetTypesNames = reponse[0];
-      if (this.targetTypesNames.length > 0) {
-        this.targetTypeSelectComponent.disabled = false;
-        this.targetTypeSelectComponent.placeholder = 'Select Target Type';
-      } else {
-        this.targetTypeSelectComponent.placeholder = 'No Target Available';
-      }
     },
       error => {
         this.allPolicyIds = [];
@@ -596,11 +588,6 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   }
 
   public onSelectDatasource(datasourceName: any): void {
-    this.targetTypeSelectComponent.items = [];
-    this.targetTypeSelectComponent.disabled = true;
-    if (this.targetTypeSelectComponent.active) {
-      this.targetTypeSelectComponent.active.length = 0;
-    }
     this.getTargetTypeNamesByDatasourceName(datasourceName.text);
   }
 
