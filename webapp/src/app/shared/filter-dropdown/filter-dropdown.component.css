@@ -179,10 +179,11 @@ padding-left: 10px;
 }
 
 .filter-content{
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  height: fit-content;
+  height: 100%;
 }
 .innerList{
   width: 100%;
