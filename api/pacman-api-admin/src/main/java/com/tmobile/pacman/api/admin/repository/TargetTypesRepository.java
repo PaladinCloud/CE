@@ -43,7 +43,7 @@ public interface TargetTypesRepository extends JpaRepository<TargetTypes, String
 	
 	public List<TargetTypes> findByDomainIn(List<String> domains);
 	
-	@Query(value = "SELECT t.targetName AS targetName,t.targetDesc AS targetDesc,t.category AS category,t.dataSourceName AS dataSourceName,t.targetConfig AS targetConfig,t.endpoint AS endpoint, t.domain AS domain FROM TargetTypes t WHERE "
+	@Query(value = "SELECT t.targetName AS targetName, t.displayName AS displayName, t.targetDesc AS targetDesc,t.category AS category,t.dataSourceName AS dataSourceName,t.targetConfig AS targetConfig,t.endpoint AS endpoint, t.domain AS domain FROM TargetTypes t WHERE "
 			+ "LOWER(t.targetName) LIKE %:searchTerm% OR "
 			+ "LOWER(t.targetDesc) LIKE %:searchTerm% OR "
 			+ "LOWER(t.category) LIKE %:searchTerm% OR "
