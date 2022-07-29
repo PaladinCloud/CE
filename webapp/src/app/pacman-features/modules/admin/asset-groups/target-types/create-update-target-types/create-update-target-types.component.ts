@@ -224,6 +224,9 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   onSelectTargetTypeCategory(category: any) {
     this.targetTypes.category = category;
   }
+   onSelectDataSource(dataSource: any) {
+    this.targetTypes.dataSource = dataSource;
+  }
   closeErrorMessage() {
     if (this.failedTitle === 'Loading Failed') {
       this.getDomainAndCategoryDetails();
