@@ -15,11 +15,12 @@
 /**
  * Created by sauravdutta on 11/10/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PolicyAcrossApplicationService {
@@ -36,10 +37,10 @@ export class PolicyAcrossApplicationService {
 
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         this.dataCheck(response);
                         return this.massageData(response);
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

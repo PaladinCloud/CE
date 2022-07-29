@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewEncapsulation, OnDestroy, Input, ViewChild, OnChanges, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, Input, ViewChild, OnChanges, ElementRef, SimpleChanges, AfterViewInit } from '@angular/core';
 import { PolicyTrendService } from '../../services/policy-trend.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -34,7 +34,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
   }
 
 })
-export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy {
+export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
   @ViewChild('policyHistoryContainer') widgetContainer: ElementRef;
 
@@ -53,10 +53,10 @@ export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy {
 
     private graphWidth: any;
     private graphData: any;
-    private dataLoaded:  any = false;
-    private error: any = false;
+    public dataLoaded:  any = false;
+    public error: any = false;
     private loading: any = false;
-    private errorMessage: any = 'apiResponseError';
+    public errorMessage: any = 'apiResponseError';
 
     // Graph customization variables
     private yAxisLabel = 'Compliance %';
@@ -207,10 +207,16 @@ export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy {
             }, this.durationParams);
           }
         }
-      setTimeout(() => {
+    }
+
+    ngAfterViewInit(){
+      if(this.widgetContainer){
         this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
         this.init();
-      }, 0);
+      }else{
+        this.graphWidth = 700;
+        this.init();
+      }
     }
 
     ngOnDestroy() {

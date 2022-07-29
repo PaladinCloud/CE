@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input, OnChanges } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
@@ -57,8 +57,8 @@ export class InventoryContainerComponent implements OnInit, OnChanges, OnDestroy
         'Applications': ''
     };
 
-    private error = false;
-    private dataLoaded = false;
+    public error = false;
+    public dataLoaded = false;
     graphData: any;
     colorSet: any = [];
     errorMessage: any;

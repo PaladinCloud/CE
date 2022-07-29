@@ -16,12 +16,12 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { environment } from './../../../../../environments/environment';
 
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
+
+
 import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
@@ -42,8 +42,6 @@ import { UploadFileService } from '../../../services/upload-file-service';
   ]
 })
 export class CreateRuleComponent implements OnInit, OnDestroy {
-  @ViewChild('targetType') targetTypeSelectComponent: SelectComponent;
-  @ViewChild('ruleFrequencyMonthDay') ruleFrequencyMonthDayComponent: SelectComponent;
   ruleLoader = false;
   pageTitle = 'Create Rule';
   isRuleIdValid = -1;
@@ -146,6 +144,18 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  selectedCategory: any;
+  selectedSeverity: any;
+  selectedMonthId: number;
+  selectedDay: any;
+  selectedAssetGroup: any;
+  selectedMonths: any;
+  selectedDays: any;
+  selectedWeekName: any;
+  alexaKeyword: any;
+  dataSourceName: any;
+  ruleFrequencyModeValue: any;
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -348,27 +358,31 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
       });
   }
 
+  onSelectAssetGroup(selectedAssetGroup) {
+    this.selectedAssetGroup = selectedAssetGroup;
+  }
+
   private buildCreateRuleModel(ruleForm) {
     const newRuleModel = Object();
-    newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
-    newRuleModel.ruleId = ruleForm.policyId[0].text + '_' + ruleForm.ruleName + '_' + ruleForm.targetType[0].text;
+    newRuleModel.assetGroup = this.selectedAssetGroup;
+    newRuleModel.ruleId = this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType;
     newRuleModel.ruleId = newRuleModel.ruleId.replace(/\s/g, '-');
-    newRuleModel.policyId = ruleForm.policyId[0].text;
-    newRuleModel.ruleName = ruleForm.ruleName;
-    newRuleModel.targetType = ruleForm.targetType[0].text;
-    newRuleModel.assetGroup = ruleForm.assetGroup[0].text;
-    newRuleModel.alexaKeyword = ruleForm.alexaKeywords;
-    newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(ruleForm);
+    newRuleModel.policyId = this.selectedPolicyId;
+    newRuleModel.ruleName = this.selectedRuleName;
+    newRuleModel.targetType = this.selectedTargetType;
+    newRuleModel.alexaKeyword = this.alexaKeyword;
+    newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
     newRuleModel.ruleExecutable = this.ruleJarFileName;
     newRuleModel.ruleRestUrl = this.getRuleRestUrl(ruleForm);
     newRuleModel.ruleType = ruleForm.ruleType;
     newRuleModel.isFileChanged = true;
-    newRuleModel.dataSource = ruleForm.dataSource[0].text;
+    newRuleModel.dataSource = this.dataSourceName;
     newRuleModel.ruleParams = this.buildRuleParams();
-    newRuleModel.isAutofixEnabled = ruleForm.isAutofixEnabled;
+    newRuleModel.isAutofixEnabled = this.isAutofixEnabled;
     newRuleModel.displayName = ruleForm.ruleDisplayName;
-    newRuleModel.severity = ruleForm.ruleSeverity[0].text;
-    newRuleModel.category = ruleForm.ruleCategory[0].text;
+    newRuleModel.severity = this.selectedSeverity;
+    newRuleModel.category = this.selectedCategory;
+
     const url = environment.createRule.url;
     const method = environment.createRule.method;
     if (ruleForm.ruleType === 'Classic') {
@@ -402,20 +416,29 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     }
   }
 
-  private buildRuleFrequencyCronJob(ruleForm) {
-    const selectedFrequencyType = ruleForm.ruleFrequency[0].text;
+  onSelectCategory(selectedCategory) {
+    this.selectedCategory = selectedCategory;
+  }
+
+  onSelectSeverity(selectedSeverity) {
+    this.selectedSeverity = selectedSeverity;
+  }
+
+
+  private buildRuleFrequencyCronJob(selectedFrequency) {
+    const selectedFrequencyType = selectedFrequency;
     const cronDetails = Object();
     cronDetails.interval = selectedFrequencyType;
     if (selectedFrequencyType === 'Yearly') {
-      cronDetails.day = ruleForm.ruleFrequencyMonth[0].id;
-      cronDetails.month = (ruleForm.ruleFrequencyMonth[0].id + 1);
+      cronDetails.day = this.selectedDay;
+      cronDetails.month = this.selectedMonthId;
     } else if (selectedFrequencyType === 'Monthly') {
-      cronDetails.duration = parseInt(ruleForm.ruleFrequencyMonths, 10);
-      cronDetails.day = parseInt(ruleForm.ruleFrequencyDays, 10);
+      cronDetails.duration = this.selectedMonths;
+      cronDetails.day = this.selectedDays;
     } else if (selectedFrequencyType === 'Weekly') {
-      cronDetails.week = ruleForm.weekName;
+      cronDetails.week = this.selectedWeekName;
     } else {
-      cronDetails.duration = parseInt(ruleForm.ruleFrequencyModeValue, 10);
+      cronDetails.duration = this.ruleFrequencyModeValue;
     }
 
     return this.generateExpression(cronDetails);
@@ -542,12 +565,6 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { dataSourceName: datasourceName }).subscribe(reponse => {
       this.showLoader = false;
       this.targetTypesNames = reponse[0];
-      if (this.targetTypesNames.length > 0) {
-        this.targetTypeSelectComponent.disabled = false;
-        this.targetTypeSelectComponent.placeholder = 'Select Target Type';
-      } else {
-        this.targetTypeSelectComponent.placeholder = 'No Target Available';
-      }
     },
       error => {
         this.allPolicyIds = [];
@@ -577,12 +594,8 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   public onSelectDatasource(datasourceName: any): void {
-    this.targetTypeSelectComponent.items = [];
-    this.targetTypeSelectComponent.disabled = true;
-    if (this.targetTypeSelectComponent.active) {
-      this.targetTypeSelectComponent.active.length = 0;
-    }
-    this.getTargetTypeNamesByDatasourceName(datasourceName.text);
+    this.dataSourceName = datasourceName;
+    this.getTargetTypeNamesByDatasourceName(datasourceName);
   }
 
   addEnvironmentParameters(parametersInput: any, isEncrypted: any) {
@@ -606,6 +619,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   isAlexaKeywordAvailable(alexaKeyword) {
+    this.alexaKeyword = alexaKeyword;
     if (alexaKeyword.trim().length === 0) {
       this.isAlexaKeywordValid = -1;
     } else {
@@ -619,36 +633,42 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   onSelectPolicyId(policyId: any) {
-    this.selectedPolicyId = policyId.text;
+    this.selectedPolicyId = policyId;
     this.isRuleIdAvailable(this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType);
   }
   onSelectTargetType(targetType: any) {
-    this.selectedTargetType = targetType.text;
+    this.selectedTargetType = targetType;
     this.isRuleIdAvailable(this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType);
   }
-  onSelectFrequency(frequencyType) {
-    this.selectedFrequency = frequencyType.text;
+  onSelectFrequency(frequencyType: any) {
+    this.selectedFrequency = frequencyType;
   }
 
-  onSelectFrequencyMonth(selectedMonth) {
-    this.targetTypeSelectComponent.placeholder = 'Select Day';
-    if (this.ruleFrequencyMonthDayComponent.active) {
-      this.ruleFrequencyMonthDayComponent.active.length = 0;
-    }
+  onSelectFrequencyDay(selectedDay: any) {
+    this.selectedDay = selectedDay;
+  }
+
+  onSelectFrequencyMonth(selectedMonth: any) {
     const monthDays: any = [];
-    const daysCount = this.getNumberOfDays((selectedMonth.id-1));
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == selectedMonth) {
+        monthId = id;
+      }
+    }
+    this.selectedMonthId = monthId;
+    const daysCount = this.getNumberOfDays(monthId);
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
     this.allMonthDays = monthDays;
-    this.ruleFrequencyMonthDayComponent.items = monthDays;
   }
 
 
-  private getNumberOfDays = function (month) {
+  private getNumberOfDays = function (monthId: any) {
     const year = new Date().getFullYear();
     const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
   };
 
 

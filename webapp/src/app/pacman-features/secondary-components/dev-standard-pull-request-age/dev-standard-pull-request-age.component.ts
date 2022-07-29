@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, Inject, OnDestroy, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription ,  Observable } from 'rxjs';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -21,9 +21,9 @@ import { ErrorHandlingService } from '../../../shared/services/error-handling.se
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { WorkflowService } from '../../../core/services/workflow.service';
 import { HttpService } from '../../../shared/services/http-response.service';
-import { Observable } from 'rxjs/Rx';
 import { UtilsService } from '../../../shared/services/utils.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dev-standard-pull-request-age',
@@ -34,11 +34,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class DevStandardPullRequestAgeComponent implements OnInit, OnDestroy, OnChanges {
 
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
   private dataSubscription: Subscription;
   private subscriptionToAssetGroup: Subscription;
 
-  private errorValue = 0;
+  public errorValue = 0;
   public graphData: any = [];
   private legend_text: any;
   private total = 0;
@@ -215,9 +215,9 @@ export class DevStandardPullRequestAgeComponent implements OnInit, OnDestroy, On
 
     try {
         return this.httpService.getHttpResponse(url, method, payloadPassed, queryParams)
-                .map(response => {
+                .pipe(map(response => {
                     return response;
-                });
+                }));
     } catch (error) {
         this.errorHandling.handleJavascriptError(error);
     }

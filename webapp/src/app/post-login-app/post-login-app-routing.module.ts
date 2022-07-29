@@ -47,32 +47,32 @@ const routes: Routes = [
         path: "compliance",
         data: { sequence: 1 },
         loadChildren:
-          "./../pacman-features/modules/compliance/compliance.module#ComplianceModule",
+          () => import('./../pacman-features/modules/compliance/compliance.module').then(m => m.ComplianceModule),
       },
       {
         path: "assets",
         data: { sequence: 2 },
         loadChildren:
-          "./../pacman-features/modules/assets/assets.module#AssetsModule",
+          () => import('./../pacman-features/modules/assets/assets.module').then(m => m.AssetsModule),
       },
       {
         path: "tools",
         data: { sequence: 3 },
         loadChildren:
-          "./../pacman-features/modules/tools/tools.module#ToolsModule",
+          () => import('./../pacman-features/modules/tools/tools.module').then(m => m.ToolsModule),
       },
       {
         path: "omnisearch",
         component: OmnisearchComponent,
         data: { sequence: 4 },
         loadChildren:
-          "./../pacman-features/modules/omnisearch/omnisearch.module#OmnisearchModule",
+          () => import('./../pacman-features/modules/omnisearch/omnisearch.module').then(m => m.OmnisearchModule),
       },
       {
         path: "admin",
         data: { sequence: 5 },
         loadChildren:
-          "./../pacman-features/modules/admin/admin.module#AdminModule",
+          () => import('./../pacman-features/modules/admin/admin.module').then(m => m.AdminModule),
       },
       {
         path: "change-default-asset-group",

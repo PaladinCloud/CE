@@ -93,14 +93,14 @@ export class MultilineChartComponent implements OnInit, OnChanges {
 
   private graphData: any = [];
   public error = false;
-  private dataLoaded = false;
+  public dataLoaded = false;
 
   constructor(private ngZone: NgZone) {
 
   window.onresize = (e) => {
         // ngZone.run will help to run change detection
         this.ngZone.run(() => {
-        this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
+        this.graphWidth = this.widgetContainer?parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10):700;
         });
     };
    }

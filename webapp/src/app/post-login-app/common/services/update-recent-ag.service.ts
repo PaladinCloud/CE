@@ -13,11 +13,12 @@
  */
 
 
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class UpdateRecentAGService {
@@ -33,9 +34,9 @@ export class UpdateRecentAGService {
 
          try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return this.massageData(response);
-                    });
+                    }));
         } catch (error) {
             this.errorHandlingService.handleJavascriptError(error);
         }

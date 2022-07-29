@@ -114,7 +114,7 @@
                     <img *ngIf="searchCard['imagePath']" class="search-card-targettype-icon absolute" src="{{searchCard['imagePath']}}">
                 </div>
             </section>
-            <article class='center error_handling' *ngIf="!datacoming">
+            <article class='center error_handling' *ngIf="!dataComing">
                 <div class="error_msg">
                     <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
                 </div>

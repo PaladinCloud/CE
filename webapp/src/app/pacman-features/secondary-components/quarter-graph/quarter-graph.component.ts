@@ -87,8 +87,8 @@ export class QuarterGraphComponent implements OnInit, OnChanges, OnDestroy,  Aft
   nonZeroValues: any = [];
 
   private graphData: any = [];
-  private error = false;
-  private dataLoaded = false;
+  public error = false;
+  public dataLoaded = false;
 
   private autorefreshInterval;
 

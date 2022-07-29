@@ -19,9 +19,10 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  AfterViewInit,
 } from "@angular/core";
 import { IssuesHistoryService } from "../../services/issues-history.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
 import { SelectComplianceDropdown } from "../../services/select-compliance-dropdown.service";
 import { environment } from "../../../../environments/environment";
@@ -40,7 +41,7 @@ import { ActivatedRoute, Router } from "@angular/router";
     "(window:resize)": "onResize($event)",
   },
 })
-export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
+export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("issuesHistoryContainer") widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
@@ -58,10 +59,10 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
 
   private graphWidth: any;
   private graphData: any;
-  private dataLoaded: any = false;
-  private error: any = false;
+  public dataLoaded: any = false;
+  public error: any = false;
   private loading: any = false;
-  private errorMessage: any = "jsError";
+  public errorMessage: any = "jsError";
   private distributedFiltersObject: any = {};
 
   // Graph customization variables
@@ -238,18 +239,22 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
       }
     }
 
+    
+    // this.init();
+  }
+
+  ngAfterViewInit(): void {
     try {
-      this.graphWidth =
+      this.graphWidth = this.widgetContainer?
         parseInt(
           window
             .getComputedStyle(this.widgetContainer.nativeElement, null)
             .getPropertyValue("width"),
           10
-        ) - this.subtractGraphWidthBy;
+        ) - this.subtractGraphWidthBy:700;
     } catch (error) {
       this.setError("jsError");
     }
-    // this.init();
   }
 
   ngOnDestroy() {

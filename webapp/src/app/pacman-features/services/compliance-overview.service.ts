@@ -15,11 +15,12 @@
 /**
  * Created by Mohammed_Furqan on 10/10/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 
 
@@ -38,7 +39,7 @@ export class ComplianceOverviewService {
         try {
 
             return this.httpService.getHttpResponse(url, method, payload, queryParameters)
-                        .map(response => this.massageDailyResponse(response['data'].response));
+                        .pipe(map(response => this.massageDailyResponse(response['data'].response)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -57,7 +58,7 @@ export class ComplianceOverviewService {
             };
 
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                        .map(response => this.massageWeeklyResponse(response['data'].response));
+                        .pipe(map(response => this.massageWeeklyResponse(response['data'].response)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

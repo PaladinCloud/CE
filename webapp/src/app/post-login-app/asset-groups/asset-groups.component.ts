@@ -17,7 +17,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { AssetTilesService } from '../../core/services/asset-tiles.service';
 import { AssetGroupObservableService } from '../../core/services/asset-group-observable.service';
 import { UpdateRecentAGService } from './../common/services/update-recent-ag.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AutorefreshService } from '../../pacman-features/services/autorefresh.service';
 import { environment } from './../../../environments/environment';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';

@@ -17,6 +17,10 @@
   width: 100%;
 }
 
+.freq-col-row{
+  display: flex !important;
+}
+
 .floating-widgets-container {
   overflow: hidden;
 }
@@ -31,31 +35,31 @@
   padding-bottom: 4px;
 }
 
-.issue-listing-wrapper /deep/ .data-table-wrap {
+.issue-listing-wrapper ::ng-deep .data-table-wrap {
   min-height: calc(100vh - 24em);
 }
 
-.issue-listing-wrapper /deep/ .data-table-content {
+.issue-listing-wrapper ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.issue-listing-wrapper /deep/ .data-table-inner-wrap {
+.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
   max-height: calc(100vh - 35em);
 }
 
-.issue-listing-wrapper /deep/ .data-table-wrap.loading {
+.issue-listing-wrapper ::ng-deep .data-table-wrap.loading {
   min-height: calc(100vh - 24em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-wrap {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-wrap {
   min-height: calc(100vh - 21em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-content {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-inner-wrap {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
   max-height: 8em;
   overflow-y: auto;
 }

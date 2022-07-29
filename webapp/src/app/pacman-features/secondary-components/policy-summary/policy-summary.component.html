@@ -20,7 +20,7 @@
           <app-generic-summary   [data]='dataValue' [colors]="colors" [percent]='percent' [headerText]="'Certificate Summary'" (navigatePage)="navigatePage($event)"></app-generic-summary>
   </div>
  
-  <article class='center error_handling' *ngIf='!datacoming'>
+  <article class='center error_handling' *ngIf='!dataComing'>
       <div class="error_msg">
           <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
       </div>

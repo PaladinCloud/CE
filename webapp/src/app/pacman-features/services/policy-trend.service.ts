@@ -15,13 +15,14 @@
 /**
  * Created by TJ SAHA on 20/12/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { environment } from './../../../environments/environment';
 import { HttpService } from '../../shared/services/http-response.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PolicyTrendService {
@@ -36,7 +37,7 @@ export class PolicyTrendService {
         try {
             const queryParams = {};
             return this.httpService.getHttpResponse(historyUrl, method, payload, queryParams)
-                .map(response => this.massageResponse(response['data'].response));
+                .pipe(map(response => this.massageResponse(response['data'].response)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

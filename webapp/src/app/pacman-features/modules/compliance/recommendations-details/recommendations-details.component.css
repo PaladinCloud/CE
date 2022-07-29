@@ -36,11 +36,11 @@
   cursor: not-allowed;
 }
 
-.disabled /deep/ button {
+.disabled ::ng-deep button {
   background-color: #c0c0c0;
 }
 
-.table-head-wrapper /deep/ .cell-list-wrapper .cell-list-details {
+.table-head-wrapper ::ng-deep .cell-list-wrapper .cell-list-details {
   padding-top: 5px;
 }
 
@@ -81,6 +81,6 @@
   letter-spacing: 0.2px;
 }
 
-.table-head-wrapper /deep/ .head-cell-wrapper {
+.table-head-wrapper ::ng-deep .head-cell-wrapper {
   text-align: left;
 }

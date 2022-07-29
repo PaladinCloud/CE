@@ -17,7 +17,7 @@ import { TitleCasePipe } from '@angular/common';
 import { environment } from '../../../../../environments/environment';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { LoggerService } from '../../../../shared/services/logger.service';
 
 @Component({

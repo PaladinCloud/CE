@@ -12,14 +12,13 @@
  * limitations under the License.
  */
 
-/**
- * Created by Saurav Dutta on 4/11/17.
- */
-import { Observable } from 'rxjs/Rx';
+
+import {throwError as observableThrowError,  Observable, combineLatest, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { environment } from '../../../environments/environment';
 import { HttpService } from '../../shared/services/http-response.service';
+import { map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -39,10 +38,10 @@ export class MultilineChartServiceCpu {
             const queryParams = {};
             allObservables.push(
                 this.httpService.getHttpResponse(MultilineChartCpuUrl, method, payload, queryParameters)
-                    .map(response => this.massageResponse(response))
-                    .catch(error => this.handleCombiningError(error))
-            );
-            return allObservables.length > 0 ? Observable.combineLatest(allObservables) : Observable.of([]);
+                    .pipe(map(response => this.massageResponse(response))
+                    // .catch(error => this.handleCombiningError(error))
+            ));
+            return allObservables.length > 0 ? combineLatest(allObservables) : of([]);
         } catch (error) {
             this.handleError(error);
         }
@@ -99,15 +98,15 @@ export class MultilineChartServiceCpu {
     handleCombiningError(error: any): Observable<any> {
         const errorMessage = error.message;
         if (errorMessage === 'no data found') {
-            return Observable.of(this.massageResponse([]));
+            return of(this.massageResponse([]));
         } else {
-            return Observable.throw(error.message || error);
+            return observableThrowError(error.message || error);
         }
     }
 
     handleError(error: any): Observable<any> {
         console.error('An error occurred : ', error); // for demo purposes only
-        return Observable.throw(error.message || error);
+        return observableThrowError(error.message || error);
     }
     handlePromiseError(error: any): Promise<any> {
         console.error('An error occurred : ', error); // for demo purposes only

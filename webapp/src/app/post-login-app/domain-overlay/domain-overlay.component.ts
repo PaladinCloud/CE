@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../core/services/asset-group-observable.service';
 import { DataCacheService } from '../../core/services/data-cache.service';
 import { OverallComplianceService } from '../../pacman-features/services/overall-compliance.service';

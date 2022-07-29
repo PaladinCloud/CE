@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit,  SimpleChanges, OnDestroy, Input, OnChanges } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
@@ -30,14 +30,14 @@ import { DevStaleBranchApplicationService } from '../../services/dev-stale-branc
 export class DevStaleBranchApplicationsComponent implements OnInit, OnDestroy, OnChanges {
 
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
 
   getContextMenuItems: any;
   gridApi: any;
   gridColumnApi: any;
   columns: any = [];
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
   @Input() filter: any;

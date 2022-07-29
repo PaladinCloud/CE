@@ -12,9 +12,9 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { IssuesHistoryService } from '../../services/issues-history.service';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { SelectComplianceDropdown } from '../../services/select-compliance-dropdown.service';
 import { environment } from '../../../../environments/environment';
@@ -30,7 +30,7 @@ import { environment } from '../../../../environments/environment';
     '(window:resize)': 'onResize($event)'
   }
 })
-export class TaggingTrendComponent implements OnInit, OnDestroy {
+export class TaggingTrendComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('certificateHistoryContainer') widgetContainer: ElementRef;
 
@@ -47,10 +47,10 @@ export class TaggingTrendComponent implements OnInit, OnDestroy {
 
     private graphWidth: any;
     private graphData: any;
-    private dataLoaded:  any = false;
-    private error: any = false;
+    public dataLoaded:  any = false;
+    public error: any = false;
     private loading: any = false;
-    private errorMessage: any = 'apiResponseError';
+    public errorMessage: any = 'apiResponseError';
 
     // Graph customization variables
     private yAxisLabel = 'Number of Tagging Policy Violations';
@@ -155,7 +155,10 @@ export class TaggingTrendComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-      this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
+    }
+
+    ngAfterViewInit(): void {
+      this.graphWidth = this.widgetContainer?parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10):700;
     }
 
     ngOnDestroy() {

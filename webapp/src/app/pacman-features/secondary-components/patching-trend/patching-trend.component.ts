@@ -19,7 +19,7 @@ import { DataCacheService } from '../../../core/services/data-cache.service';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { AllPatchingProgressService } from '../../services/patching-progress.service';
 import { environment } from './../../../../environments/environment';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
 import { CommonResponseService } from '../../../shared/services/common-response.service';

@@ -34,42 +34,42 @@
   width: 100%;
   height: 100%;
 }
-/deep/ input.form-control.ui-select-search {
+::ng-deep input.form-control.ui-select-search {
   height: 100% !important;
   width: 100% !important;
   border: none !important;
   padding: 0 0.6em !important;
 }
 
-/deep/ span.ui-select-placeholder.text-muted {
+::ng-deep span.ui-select-placeholder.text-muted {
   height: 100% !important;
   width: 100% !important;
   padding: 0 0.6em !important;
   min-height: 2em;
 }
 
-/deep/ span.ui-select-match-text.pull-left.ui-select-allow-clear {
+::ng-deep span.ui-select-match-text.pull-left.ui-select-allow-clear {
   height: 100% !important;
   width: 100% !important;
   padding: 0 0.6em !important;
 }
 
-/deep/ .drop-search-box span.ui-select-placeholder.text-muted {
+::ng-deep .drop-search-box span.ui-select-placeholder.text-muted {
   padding: 0 1em 0 2.5em !important;
 }
 
-/deep/
+::ng-deep
   .drop-search-box
   span.ui-select-match-text.pull-left.ui-select-allow-clear {
   padding: 0 1em 0 2.5em !important;
   text-transform: capitalize;
 }
 
-/deep/ .drop-search-box input.form-control.ui-select-search {
+::ng-deep .drop-search-box input.form-control.ui-select-search {
   padding: 0 1em 0 2.5em !important;
 }
 
-/deep/ .ui-select-choices-row > a {
+::ng-deep .ui-select-choices-row > a {
   background-color: white !important;
   padding: 3px 0.6em !important;
   white-space: normal !important;
@@ -78,20 +78,20 @@
   /*text-transform: capitalize;*/
 }
 
-/deep/ .ui-select-choices-row > a:first-letter {
+::ng-deep .ui-select-choices-row > a:first-letter {
   text-transform: uppercase;
 }
 
-/deep/ .ui-select-choices-row > a:hover {
+::ng-deep .ui-select-choices-row > a:hover {
   background-color: var(--primary-400) !important;
   padding: 3px 0.6em !important;
 }
 
-/deep/ .ui-select-choices-row.active > a {
+::ng-deep .ui-select-choices-row.active > a {
   background-color: var(--primary-400) !important;
 }
 
-/deep/ ul.ui-select-choices {
+::ng-deep ul.ui-select-choices {
   border-radius: var(--border-radius);
   background-color: var(--background-white);
   box-shadow: 0 2px 4px 0 #00000050;
@@ -99,10 +99,10 @@
   max-height: 25em !important;
 }
 
-/deep/ .drop-search-box .ui-select-choices-row > a {
+::ng-deep .drop-search-box .ui-select-choices-row > a {
   padding: 3px 2.2em !important;
 }
 
-/deep/ .drop-search-box .ui-select-choices-row > a:hover {
+::ng-deep .drop-search-box .ui-select-choices-row > a:hover {
   padding: 3px 2.2em !important;
 }

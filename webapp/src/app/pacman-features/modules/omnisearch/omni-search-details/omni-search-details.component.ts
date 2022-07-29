@@ -18,11 +18,10 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { OmniSearchDataService } from "../../../services/omni-search-data.service";
 import { environment } from "./../../../../../environments/environment";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { AutorefreshService } from "../../../services/autorefresh.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
-import { DatepickerOptions } from "ng2-datepicker";
 import {
   trigger,
   state,
@@ -84,10 +83,6 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
   durationParams: any;
   autoRefresh: boolean;
   datacoming;
-  options: DatepickerOptions = {
-    displayFormat: "MMM D[,] YYYY",
-    minDate: new Date(),
-  };
   autorefreshInterval;
   filterPresent = false; // -> To show and hide filter block
   stopPreviousDataSubscription = false; // -> this flag is used to cancel previous data subscription when multiple filter values are clicked

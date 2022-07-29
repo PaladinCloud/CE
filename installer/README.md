@@ -14,7 +14,7 @@ Paladin Inventory Collector          : Cloudwatch Rules, AWS Batch, AWS ElasticS
 * IAM Policies
 * S3 Bucket
 * RDS
-  * MySQL 5.6.X
+  * MySQL 5.7.X
 * Elasticsearch Service
   * Elasticsearch version 5.5
 * Batch
@@ -45,7 +45,7 @@ Paladin installer is developed using Python and Terraform. For the installer to 
 dependencies installed correctly.
 
 * Software Dependencies:
-  1. Python supported version is 3.4 or above
+  1. Python supported version is 3.7 (There is an open issue with 3.9 and we will fix in next release)
   2. Following python packages are required.
 
   - docker-py (1.10)]
@@ -54,7 +54,7 @@ dependencies installed correctly.
   - gitpython
 
   3. Install the Terraform from https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
-  4. Install `node` version 8.15.0 or higher (max 14.x.x)
+  4. Install `node` version >=8.15.0 and <= 14.x.x
   5. Install `npm` version 6.4.1 or higher
   6. Install the following npm packages
 
@@ -89,9 +89,10 @@ dependencies installed correctly.
     Recommended to use Amazon Linux / CentOS 7 / Ubuntu
 ```
 2. System Configurations:
+
 ```
-    Recommended instance type: t2.large (Minimum 8GB memory) or more
-    VPC: Same as where Paladin Cloud is desired to be installed. This is required for installer script to connect to MySQL DB
+    Recommended instance type: t2.large (Minimum 8GB memory and 20GB disk space) or more
+    VPC: Same as where Paladin Cloud is desired to be installed. This is required for the installer script to connect to MySQL DB
 ```
 3. Install Git
 
@@ -99,7 +100,7 @@ dependencies installed correctly.
     sudo yum install git
 ```
 
-4. Install Pip & required modules
+4. Install Pip & required modules (from the install directory under the downloaded code)
 ```
     sudo yum install -y epel-release python3-pip
     sudo pip3 install -r requirements.txt
@@ -115,7 +116,7 @@ dependencies installed correctly.
 ```
      wget https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
      unzip terraform_0.11.15_linux_amd64.zip
-     mv terraform /usr/bin/
+     sudo mv terraform /usr/bin/
 ```
 
 7. To install Node 14.X (instructions for Amazon Linux 2)
@@ -138,7 +139,7 @@ dependencies installed correctly.
 1. Navigate to releases and download the latest stable source code as a zip file
    from [here](https://github.com/PaladinCloud/CE/releases/latest)
 2. Unzip the archive in a directory.
-3. Go to installer directory, once the zip file is extracted
+3. Go to the installer directory, once the zip file is extracted
 
 4. Create settings/local.py file by copying from settings/default.local.py
 
@@ -149,17 +150,20 @@ dependencies installed correctly.
    SUBNET IDS (2 Subnets are required. Both the subnets should not be in the same AZ.)
 ```
 
-6. Run the installer. (Go grab a coffee now :), it would take a while to provision the AWS resources)
+6. Review other values in the local.py and update them, if needed.
+
+7. Run the installer. (Go grab a coffee now :), it would take a while to provision the AWS resources)
 ```
     sudo python3 manager.py install
 ```
 
-7. Installation logs will be available in logs directory
+8. Installation logs will be available in the log directory
+
 ```
-    tail -f logs/debug.log -> To see the debug log
-    tail -f logs/error.log -> To see the error log
-    tail -f logs/terraform_install.log -> To see Terraform Installation log
-    tail -f logs/terraform_destroy.log -> To see Terraform Destroy log
+    tail -f log/debug.log -> To see the debug log
+    tail -f log/error.log -> To see the error log
+    tail -f log/terraform_install.log -> To see Terraform Installation log
+    tail -f log/terraform_destroy.log -> To see Terraform Destroy log
 ```
 
 **Once the installation is complete, go to the Paladin ELB URL to access the web application. Use the default
@@ -168,15 +172,20 @@ credentials**
 Admin User : admin@paladincloud.io / PaladinAdmin!!<br/>
 Readonly User : user@paladincloud.io / PaladinUser!!
 
+9. In case of any failures, please check the troubleshooting
+   steps [here](https://github.com/PaladinCloud/CE/wiki/Installation#troubleshooting).
+
 ## Redeploy
 
 Use this process if you want to update without changing your endpoints and URL AND don't want to lose your existing
 data. Please follow the below steps to redeploy Paladin
 
 * Go to PaldinCloud/Rev1 source code and pull the latest changes
+
 ```
     git pull --rebase
 ```
+
 * Go to paladin-installer directory
 
 1. Run the below command to redeploy the application
@@ -189,9 +198,13 @@ This process will terminate all the AWS resources created during installation.
     sudo python3 manager.py destroy
 ```
 ## Troubleshooting
-* Verify Permission required by the installer are correct.
-* Verify Dependencies are installer properly
-* If you are still having problems contact CommunitySupport@PaladinCloud.io
+
+* Verify Permission required by the installer is correct.
+* Verify Dependencies are installed properly
+* Please look at the common causes of the failures in the FAQs
+  document [here](https://github.com/PaladinCloud/CE/wiki/Installation-FAQs).
+* If you are still having problems contact CommunitySupport@PaladinCloud.io or raise an
+  issue [here](https://github.com/PaladinCloud/CE/issues/new/choose).
 
 ## How to setup SSL
 
@@ -276,7 +289,6 @@ Go to local.py file
    Run the command, sudo python3 manager.py upgrade to upgrade the server instance type
    ```
 ### changing the scheduler interval for running the jobs and rules
-
 * To change the scheduler interval, follow the below steps:
   1. Go to local.py file
   2. Set JOB_SCHEDULER_INTERVAL_IN_HOURS to the required interval in hours.

@@ -15,13 +15,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { environment } from './../../../../../../../environments/environment';
 
-import {  Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { UtilsService } from '../../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../../../shared/services/error-handling.service';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/pairwise';
+
+
 import { WorkflowService } from '../../../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../../services/all-admin.service';
@@ -38,15 +38,15 @@ import { AdminService } from '../../../../../services/all-admin.service';
 })
 export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   pageTitle: String = '';
-  breadcrumbArray: any = [ 'Target Types'];
-  breadcrumbLinks: any = [ 'target-types'];
+  breadcrumbArray: any = ['Target Types'];
+  breadcrumbLinks: any = ['target-types'];
   breadcrumbPresent: any;
   outerArr: any = [];
   filters: any = [];
 
   targetTypes: any = {
-    domain: [],
-    category: [],
+    domain: '',
+    category: '',
     name: '',
     desc: '',
     config: '',
@@ -146,13 +146,13 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     this.hideContent = true;
     this.targetTypeLoader = true;
     this.isTargetTypeCreationUpdationFailed = false;
-    this.isTargetTypeCreationUpdationSuccess= false;
+    this.isTargetTypeCreationUpdationSuccess = false;
     let url = environment.createTargetType.url;
     let method = environment.createTargetType.method;
     this.selectedTargetTypeName = targetTypes.name;
     let targetTypeDetails = {
-      domain: targetTypes.domain[0].text,
-      category: targetTypes.category[0].text,
+      domain: this.targetTypes.domain,
+      category: this.targetTypes.category,
       name: targetTypes.name,
       desc: targetTypes.desc,
       config: targetTypes.config,
@@ -161,11 +161,11 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     }
     this.adminService.executeHttpAction(url, method, targetTypeDetails, {}).subscribe(reponse => {
       this.successTitle = 'Target type Created';
-      this.isTargetTypeCreationUpdationSuccess= true;
+      this.isTargetTypeCreationUpdationSuccess = true;
       this.targetTypeLoader = false;
       this.targetTypes = {
-        domain: [],
-        category: [],
+        domain: '',
+        category: '',
         name: '',
         desc: '',
         displayName:'',
@@ -185,13 +185,13 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     this.hideContent = true;
     this.targetTypeLoader = true;
     this.isTargetTypeCreationUpdationFailed = false;
-    this.isTargetTypeCreationUpdationSuccess= false;
+    this.isTargetTypeCreationUpdationSuccess = false;
     let url = environment.updateTargetType.url;
     let method = environment.updateTargetType.method;
     this.selectedTargetTypeName = targetTypes.name;
     let targetTypeDetails = {
-      domain: targetTypes.domain[0].text,
-      category: targetTypes.category[0].text,
+      domain: this.targetTypes.domain,
+      category: this.targetTypes.category,
       name: targetTypes.name,
       desc: targetTypes.desc,
       config: targetTypes.config,
@@ -200,11 +200,11 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     }
     this.adminService.executeHttpAction(url, method, targetTypeDetails, {}).subscribe(reponse => {
       this.successTitle = 'Target type Updated';
-      this.isTargetTypeCreationUpdationSuccess= true;
+      this.isTargetTypeCreationUpdationSuccess = true;
       this.targetTypeLoader = false;
       this.targetTypes = {
-        domain: [],
-        category: [],
+        domain: '',
+        category: '',
         name: '',
         desc: '',
         config: '',
@@ -218,9 +218,14 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         this.isTargetTypeCreationUpdationFailed = true;
       })
   }
-
+  onSelectTargetTypeDomain(domain: any) {
+    this.targetTypes.domain = domain;
+  }
+  onSelectTargetTypeCategory(category: any) {
+    this.targetTypes.category = category;
+  }
   closeErrorMessage() {
-    if(this.failedTitle === 'Loading Failed') {
+    if (this.failedTitle === 'Loading Failed') {
       this.getDomainAndCategoryDetails();
     } else {
       this.hideContent = false;
@@ -256,7 +261,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
           this.pageTitle = 'Create New Target Type';
           this.breadcrumbPresent = 'Create Target Type';
           this.isCreate = true;
-          this.getDomainAndCategoryDetails(); 
+          this.getDomainAndCategoryDetails();
         }
 
         /**
@@ -279,8 +284,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       this.logger.log('error', error);
     }
   }
-  
-  highlightName: string ='';
+
+  highlightName: string = '';
   allDomainDetails: any = [];
   allCategoryDetails: any = [];
   getDomainAndCategoryDetails() {
@@ -289,7 +294,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     this.loadingContent = 'loading';
     this.highlightName = 'Domain and Category details'
     this.isTargetTypeCreationUpdationFailed = false;
-    this.isTargetTypeCreationUpdationSuccess= false;
+    this.isTargetTypeCreationUpdationSuccess = false;
     let url = environment.domains.url;
     let method = environment.domains.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(domainsReponse => {
@@ -299,7 +304,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       let targetCategoryMethod = environment.getTargetTypesCategories.method;
       this.adminService.executeHttpAction(targetCategoryUrl, targetCategoryMethod, {}, {}).subscribe(categoryReponse => {
         this.allCategoryDetails = categoryReponse[0];
-        if(this.isCreate) {
+        if (this.isCreate) {
           this.hideContent = false;
           this.targetTypeLoader = false;
         } else {
@@ -358,15 +363,15 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     this.loadingContent = 'loading';
     this.highlightName = 'Target Type details'
     this.isTargetTypeCreationUpdationFailed = false;
-    this.isTargetTypeCreationUpdationSuccess= false;
+    this.isTargetTypeCreationUpdationSuccess = false;
     let url = environment.getTargetTypesByName.url;
     let method = environment.getTargetTypesByName.method;
-    this.adminService.executeHttpAction(url, method, {}, {targetTypeName: targetTypeName}).subscribe(reponse => {
+    this.adminService.executeHttpAction(url, method, {}, { targetTypeName: targetTypeName }).subscribe(reponse => {
       this.allSelectedTargettypeDetails = reponse[0];
       this.hideContent = false;
       this.targetTypeLoader = false;
-      this.targetTypes.domain = [{text: this.allSelectedTargettypeDetails.domain, id:this.allSelectedTargettypeDetails.domain}];
-      this.targetTypes.category = [{text: this.allSelectedTargettypeDetails.category, id:this.allSelectedTargettypeDetails.category}];
+      this.targetTypes.domain = this.allSelectedTargettypeDetails.domain;
+      this.targetTypes.category = this.allSelectedTargettypeDetails.category;
       this.targetTypes.name = this.allSelectedTargettypeDetails.targetName;
       this.targetTypes.desc = this.allSelectedTargettypeDetails.targetDesc;
       this.targetTypes.config = this.allSelectedTargettypeDetails.targetConfig;

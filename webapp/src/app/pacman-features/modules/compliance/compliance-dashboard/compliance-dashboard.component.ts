@@ -16,7 +16,7 @@ import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { SelectComplianceDropdown } from "./../../../services/select-compliance-dropdown.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { environment } from "./../../../../../environments/environment";
 import { ActivatedRoute, UrlSegment, Router } from "@angular/router";
 import { IssueFilterService } from "../../../services/issue-filter.service";

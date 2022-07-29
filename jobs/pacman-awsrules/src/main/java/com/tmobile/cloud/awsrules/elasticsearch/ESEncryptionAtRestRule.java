@@ -25,6 +25,7 @@ public class ESEncryptionAtRestRule extends BaseRule {
 
 
 	public static final String ES_PROP_ENCRYPTION_ENABLED = "encryptionenabled";
+	public static final String ES_PROP_VERSION = "elasticsearchversion";
 
 
 	/**
@@ -80,12 +81,14 @@ public class ESEncryptionAtRestRule extends BaseRule {
 		if (resourceAttributes != null) {
 			String esEncryEnable = StringUtils.trim(resourceAttributes.get(ES_PROP_ENCRYPTION_ENABLED));
 
-				if (esEncryEnable == null || "".equals(esEncryEnable) 
-						|| !PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(esEncryEnable) ) {
+				if (Double.parseDouble(resourceAttributes.get(ES_PROP_VERSION)) >= 5.1 &&
+						(esEncryEnable == null || "".equals(esEncryEnable) 
+						|| !PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(esEncryEnable) )) {
 					List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
 					LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-					annotation.put(PacmanSdkConstants.DESCRIPTION, "ES domain are not encrypted!!");
+					annotation.put(PacmanSdkConstants.DESCRIPTION, "ES domain are not encrypted."
+							+ "At rest encryption should be enabled for OpenSearch with version 5.1 or greater!!");
 					annotation.put(PacmanRuleConstants.SEVERITY, severity);;
 					annotation.put(PacmanRuleConstants.CATEGORY, category);
 					issue.put(PacmanRuleConstants.VIOLATION_REASON,

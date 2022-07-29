@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, Inject, Input, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter, HostListener, AfterViewInit } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
@@ -28,7 +28,7 @@ import { CommonResponseService } from '../../../shared/services/common-response.
 })
 export class VulnReportDistributionComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
   private InfraDataSubscription: Subscription;
   private EnvDataSubscription: Subscription;
   private VulnTypeDataSubscription: Subscription;

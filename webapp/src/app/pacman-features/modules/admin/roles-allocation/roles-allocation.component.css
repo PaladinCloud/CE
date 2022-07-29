@@ -77,18 +77,18 @@
     width: 8.25em !important;
 }
 
-.roles-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.roles-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 100px;
 }
 
-.roles-wrapper /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.roles-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
     width: 100px;
 }
 
-.roles-wrapper /deep/ .data-table-wrap .table-cells:nth-child(3) {
+.roles-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(3) {
     width: 600px;
 }
 
-.roles-wrapper /deep/ .details-bar-inner .details-cell:nth-child(1) {
+.roles-wrapper ::ng-deep .details-bar-inner .details-cell:nth-child(1) {
     display: none;
 }

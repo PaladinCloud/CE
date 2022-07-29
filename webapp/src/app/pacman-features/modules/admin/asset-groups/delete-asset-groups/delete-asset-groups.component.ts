@@ -16,15 +16,13 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef 
 import { environment } from "./../../../../../../environments/environment";
 
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import * as _ from "lodash";
 import { UtilsService } from "../../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../../shared/services/error-handling.service";
 import { NavigationStart } from "@angular/router";
 import { Event, NavigationEnd } from "@angular/router";
-import "rxjs/add/operator/filter";
-import "rxjs/add/operator/pairwise";
 import { RoutesRecognized } from "@angular/router";
 import { RefactorFieldsService } from "./../../../../../shared/services/refactor-fields.service";
 import { WorkflowService } from "../../../../../core/services/workflow.service";

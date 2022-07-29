@@ -16,9 +16,9 @@
  * Created by sauravdutta on 10/18/17.
  */
 
-import { Observable } from 'rxjs/Rx';
+import { combineLatest, Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import {DataCacheService} from './data-cache.service';
@@ -26,6 +26,7 @@ import {environment} from './../../../environments/environment';
 import {AssetGroupObservableService} from './asset-group-observable.service';
 import {LoggerService} from '../../shared/services/logger.service';
 import { DomainTypeObservableService } from './domain-type-observable.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AssetTilesService {
@@ -43,9 +44,9 @@ export class AssetTilesService {
         const payload = {};
 
         try {
-          return Observable.combineLatest(
+          return combineLatest(
             this.httpService.getHttpResponse(url, method, payload, queryParams)
-            .map(response => this.massageData(response) )
+            .pipe(map(response => this.massageData(response) ))
           );
         } catch (error) {
             this.errorHandlingService.handleJavascriptError(error);
@@ -58,9 +59,9 @@ export class AssetTilesService {
         const method = assetMethod;
         const payload = {};
         try {
-          return Observable.combineLatest(
+          return combineLatest(
             this.httpService.getHttpResponse(url, method, payload)
-            .map(response => this.massageData(response) )
+            .pipe(map(response => this.massageData(response) ))
           );
         } catch (error) {
             this.errorHandlingService.handleJavascriptError(error);
@@ -73,8 +74,8 @@ export class AssetTilesService {
                 'defaultAssetGroup': groupName,
                 'userId': userId
             };
-            return this.httpService.getHttpResponse(url, method, payload)
-                   .map(response => response);
+            return this.httpService.getHttpResponse(url, method, payload).pipe(map(response => response))
+                   ;
         } catch (error) {
             this.errorHandlingService.handleJavascriptError(error);
         }

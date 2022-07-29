@@ -13,11 +13,12 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import * as _ from 'lodash';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class DevStaleBranchApplicationService {
@@ -33,9 +34,9 @@ export class DevStaleBranchApplicationService {
         this.getMethod = tableMethod;
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return this.massageData(response);
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
