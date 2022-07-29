@@ -19,6 +19,7 @@ import {
   OnDestroy,
   ViewChild,
   ElementRef,
+  AfterViewInit,
 } from "@angular/core";
 import { IssuesHistoryService } from "../../services/issues-history.service";
 import { Subscription } from "rxjs";
@@ -40,7 +41,7 @@ import { ActivatedRoute, Router } from "@angular/router";
     "(window:resize)": "onResize($event)",
   },
 })
-export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
+export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("issuesHistoryContainer") widgetContainer: ElementRef;
 
   private assetGroupSubscription: Subscription;
@@ -238,6 +239,11 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
       }
     }
 
+    
+    // this.init();
+  }
+
+  ngAfterViewInit(): void {
     try {
       this.graphWidth = this.widgetContainer?
         parseInt(
@@ -249,7 +255,6 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.setError("jsError");
     }
-    // this.init();
   }
 
   ngOnDestroy() {

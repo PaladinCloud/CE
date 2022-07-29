@@ -27,7 +27,7 @@
                     <mat-select>
                         <mat-option (click)="filterByCategory(category)"
                             [ngClass]="{'active' : activeFilterCategory.name == category.name}"
-                            *ngFor="let category of categories; let i = index" value="category.name">{{category.name}}
+                            *ngFor="let category of categories; let i = index">{{category.name}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>

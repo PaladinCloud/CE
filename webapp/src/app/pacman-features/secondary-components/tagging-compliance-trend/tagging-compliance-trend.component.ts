@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ComplianceOverviewService } from '../../services/compliance-overview.service';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
@@ -34,7 +34,7 @@ import {AutorefreshService} from '../../services/autorefresh.service';
   }
 })
 
-export class TaggingComplianceTrendComponent implements OnInit, OnDestroy {
+export class TaggingComplianceTrendComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('taggingComplianceOverviewContainer') widgetContainer: ElementRef;
 
@@ -187,8 +187,10 @@ export class TaggingComplianceTrendComponent implements OnInit, OnDestroy {
             }, this.durationParams);
           }
         }
+  }
 
-      try {
+  ngAfterViewInit(){
+    try {
           this.graphWidth = this.widgetContainer?parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10):700;
       } catch (error) {
           this.errorMessage = this.errorHandling.handleJavascriptError(error);

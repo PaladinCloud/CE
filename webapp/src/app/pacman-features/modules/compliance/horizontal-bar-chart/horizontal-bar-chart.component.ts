@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   Input,
@@ -15,7 +16,7 @@ import * as d3 from "d3";
   templateUrl: "./horizontal-bar-chart.component.html",
   styleUrls: ["./horizontal-bar-chart.component.css"],
 })
-export class HorizontalBarChartComponent implements OnInit, OnChanges {
+export class HorizontalBarChartComponent implements OnInit, OnChanges, AfterViewInit {
   margin;
   width;
   height;
@@ -38,6 +39,11 @@ export class HorizontalBarChartComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.createSvg();
+  }
+
+  ngAfterViewInit(): void {
+    this.width = this.barChart?parseInt(window.getComputedStyle(this.barChart.nativeElement, null).getPropertyValue('width'), 10) - 20 - this.margin.left - this.margin.right:700;
     this.createSvg();
   }
 
