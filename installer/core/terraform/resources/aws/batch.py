@@ -78,7 +78,6 @@ class BatchJobDefinitionResource(TerraformResource):
         },
         'container_properties': {'required': True},
         'parameters': {'required': False},
-        'tags': {'required': False}
     }
 
     def check_exists_before(self, input, tf_outputs):
@@ -118,7 +117,6 @@ class BatchJobQueueResource(TerraformResource):
         'state': {'required': True},
         'priority': {'required': True},
         'compute_environments': {'required': True},
-        'tags': {'required': False}
     }
 
     def check_exists_before(self, input, tf_outputs):
