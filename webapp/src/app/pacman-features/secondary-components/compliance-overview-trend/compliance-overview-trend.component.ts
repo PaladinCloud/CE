@@ -156,6 +156,18 @@ export class ComplianceOverviewTrendComponent
   }
 
   ngAfterViewInit() {
+     try {
+      this.graphWidth = this.widgetContainer?
+        parseInt(
+          window
+            .getComputedStyle(this.widgetContainer.nativeElement, null)
+            .getPropertyValue("width"),
+          10
+        ) - this.subtractGraphWidthBy:700;
+    } catch (error) {
+      this.setError("jsError");
+    }
+    
     const afterLoad = this;
     if (this.autoRefresh !== undefined) {
       if (this.autoRefresh === true || this.autoRefresh.toString() === "true") {
@@ -248,17 +260,7 @@ export class ComplianceOverviewTrendComponent
   }
 
   ngOnInit() {
-    try {
-      this.graphWidth = this.widgetContainer?
-        parseInt(
-          window
-            .getComputedStyle(this.widgetContainer.nativeElement, null)
-            .getPropertyValue("width"),
-          10
-        ) - this.subtractGraphWidthBy:700;
-    } catch (error) {
-      this.setError("jsError");
-    }
+   
   }
 
   ngOnDestroy() {

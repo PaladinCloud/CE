@@ -143,5 +143,5 @@ app-inventory-container{
 }
 
 ::ng-deep .mat-select-arrow-wrapper {
-  vertical-align: top !important;
+  align-items: start !important;
 }

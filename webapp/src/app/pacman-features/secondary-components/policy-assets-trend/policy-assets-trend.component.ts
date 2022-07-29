@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewEncapsulation, OnDestroy, Input, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { PolicyTrendService } from '../../services/policy-trend.service';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
@@ -33,7 +33,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
   }
 })
 
-export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy {
+export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
 
   @ViewChild('policyAssetsTrendContainer') widgetContainer: ElementRef;
 
@@ -207,11 +207,16 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy 
             }, this.durationParams);
           }
         }
+    }
 
-        setTimeout(() => {
-          this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
-          this.init();
-        }, 0);
+    ngAfterViewInit(){
+      if(this.widgetContainer){
+        this.graphWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
+        this.init();
+      }else{
+        this.graphWidth = 700;
+        this.init();
+      }
     }
 
     ngOnDestroy() {

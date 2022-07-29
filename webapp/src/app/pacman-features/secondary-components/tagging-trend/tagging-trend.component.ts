@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { IssuesHistoryService } from '../../services/issues-history.service';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
@@ -30,7 +30,7 @@ import { environment } from '../../../../environments/environment';
     '(window:resize)': 'onResize($event)'
   }
 })
-export class TaggingTrendComponent implements OnInit, OnDestroy {
+export class TaggingTrendComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('certificateHistoryContainer') widgetContainer: ElementRef;
 
@@ -155,6 +155,9 @@ export class TaggingTrendComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+    }
+
+    ngAfterViewInit(): void {
       this.graphWidth = this.widgetContainer?parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10):700;
     }
 
