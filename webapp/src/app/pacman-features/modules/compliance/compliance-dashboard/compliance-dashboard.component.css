@@ -15,8 +15,7 @@
  .container-wrapper {
   display: flex;
   flex-direction: column;
-  padding: 28px 28px 28px 28px;
-  height: 100%;
+  padding: 28px;
   width: 100%;
   min-width: 550px;
 }

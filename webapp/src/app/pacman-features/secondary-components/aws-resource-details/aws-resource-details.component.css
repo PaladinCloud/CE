@@ -13,7 +13,7 @@
  */
 
 .resource-tiles-container {
-  height: calc(100% - 100px);
+  /* height: calc(100% - 100px); */
   overflow-y: auto;
   padding: 16px 12px 0px 0px;
 }
@@ -84,7 +84,7 @@ app-inventory-container{
 }
 
 .view-all-resources-wrapper {
-  height: calc(100vh - 100px);
+  height: calc(100vh - 177px);
 }
 
 .left-section {
