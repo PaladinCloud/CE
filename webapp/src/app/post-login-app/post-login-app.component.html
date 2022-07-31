@@ -13,27 +13,42 @@
  -->
 
 <div
-  class="pacman-logged-in-section flex flex-col"
+  class="pacman-logged-in-section"
   [class.is-offine]="isOffline"
   [ngStyle]="
     theme !== undefined && { 'background-image': 'url(' + theme.bg + ')' }
   "
 >
-  <section class="post-login-body flex" [@mainRouterTransition]="getState(o)">
-    <div
-      class="contextual-menu-container"
-    >
-      <app-contextual-menu [haveAdminPageAccess]="haveAdminPageAccess"></app-contextual-menu>
-    </div>
-    <div class="contextual-container">
-      <app-header></app-header>
-      <div class="contextual-content-container">
-        <router-outlet
-          #o="outlet"
-          (deactivate)="onDeactivate($event)"
-        ></router-outlet>
-      </div>
-    </div>
+  <section class="post-login-body" [@mainRouterTransition]="getState(o)">
+    <app-header></app-header>
+    <button class="sidenav-expander flex flex-center" mat-button (click)="sidenavExpanderClicked()" [ngStyle]="{ 'left.px':sidenavExpanderLeft, 'transform': rotationVar}"><img src="/assets/icons/Path.svg" /></button>
+    <mat-sidenav-container autosize [hasBackdrop]="false">
+        <mat-sidenav
+        #sidenav
+        [class.expanded-sidenav]="isExpanded || isShowing"
+        [class.collapsed-sidenav]="!isExpanded && !isShowing"
+        [mode]="mode"
+        opened="true"
+        (mouseenter)="mouseenter()"
+        (mouseleave)="mouseleave()">
+          <div
+            class="contextual-menu-container"
+          >
+            <app-contextual-menu [haveAdminPageAccess]="haveAdminPageAccess"></app-contextual-menu>
+          </div>
+        </mat-sidenav>
+      <mat-sidenav-content>
+        <!-- <div class="contextual-container"> -->
+          <!-- <app-header></app-header> -->
+          <div class="contextual-content-container">
+            <router-outlet
+              #o="outlet"
+              (deactivate)="onDeactivate($event)"
+            ></router-outlet>
+          </div>
+        <!-- </div> -->
+      </mat-sidenav-content>
+    </mat-sidenav-container>
   </section>
   <div
     class="next-level-routing-container"

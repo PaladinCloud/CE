@@ -50,6 +50,42 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   private pageReloadInterval; // Default time is 30 minutes in miliseconds
   private reloadTimeout;
   isOffline = false;
+  isExpanded = true;
+  isShowing = false;
+  mode: String = 'side';
+  sidenavExpanderLeft= 252;
+  rotationVar='rotate(180deg)';
+
+  sidenavExpanderClicked() {
+    this.isExpanded = !this.isExpanded;
+    if (this.isExpanded) {
+      this.sidenavExpanderLeft = 252;
+      this.rotationVar='rotate(180deg)';
+    }
+    else {
+      this.sidenavExpanderLeft = 54;
+      this.rotationVar='rotate(0)';
+    }
+  }
+
+  mouseenter() {
+    this.mode = 'side';
+    this.sidenavExpanderLeft = 252;
+    this.rotationVar='rotate(180deg)';
+    if (!this.isExpanded) {
+      this.isShowing = true;
+      this.mode = 'over';
+    }
+  }
+
+  mouseleave() {
+    this.mode = 'side'
+    if (!this.isExpanded) {
+      this.isShowing = false;
+      this.sidenavExpanderLeft = 54;
+      this.rotationVar='rotate(0)';
+    }
+  }
 
   constructor(
     private permissions: PermissionGuardService,
