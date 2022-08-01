@@ -49,9 +49,6 @@
   padding: 7px 0px;
 }
 
-::ng-deep .cdk-overlay-pane {
-  top: 188px !important;
-}
 
 .filter-container{
   width: 100%;

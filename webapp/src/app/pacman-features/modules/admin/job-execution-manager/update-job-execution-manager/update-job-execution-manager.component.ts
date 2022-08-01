@@ -26,7 +26,6 @@ import { WorkflowService } from '../../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
 import { NgForm } from '@angular/forms';
-import { SelectComponent } from 'ng2-select';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { ErrorHandlingService } from '../../../../../shared/services/error-handling.service';
 import { AdminUtilityService } from '../../commons/utility-service';
