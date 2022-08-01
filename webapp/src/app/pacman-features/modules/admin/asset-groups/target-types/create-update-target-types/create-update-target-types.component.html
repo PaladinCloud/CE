@@ -50,8 +50,11 @@
                                             </div>
                                             <div class="input-form">
                                                 <label>Select Category *</label>
-                                                <ng-select [allowClear]="true" name="exceptionDetailsForm.assetGroup" [items]="allCategoryDetails" [(ngModel)]="targetTypes.category" placeholder="Select Category">
-                                                </ng-select>
+                                                <app-dropdown [items]="allCategoryDetails"
+                                                    (selected)='onSelectTargetTypeCategory($event)'
+                                                    [selectedItem]="targetTypes.category"
+                                                    [placeholder]="'Select Category'">
+                                                </app-dropdown>
                                             </div>
                                             <div class="input-box">
                                                 <label>Display Name *</label>

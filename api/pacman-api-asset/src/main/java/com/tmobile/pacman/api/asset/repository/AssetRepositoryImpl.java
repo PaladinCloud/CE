@@ -185,7 +185,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 	@Override
 	public List<Map<String, Object>> getAllTargetTypes(String datasource) {
 
-		String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target_updated ";
+		String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target ";
 		if(datasource!=null) {
 			query = query + "where lower(dataSourceName) = '"+datasource.toLowerCase()+"'";
 		}
