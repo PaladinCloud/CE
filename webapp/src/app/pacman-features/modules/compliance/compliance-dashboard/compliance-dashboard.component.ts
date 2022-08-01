@@ -16,7 +16,7 @@ import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { SelectComplianceDropdown } from "./../../../services/select-compliance-dropdown.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { environment } from "./../../../../../environments/environment";
 import { ActivatedRoute, UrlSegment, Router } from "@angular/router";
 import { IssueFilterService } from "../../../services/issue-filter.service";
@@ -109,6 +109,7 @@ export class ComplianceDashboardComponent implements OnInit {
     link: boolean;
     styling: { cursor: string };
   };
+  isPolicyDataLoaded: boolean = false;
   pacmanIssues: any;
   pacmanCategories: any[];
   showdata: boolean;
@@ -254,17 +255,21 @@ export class ComplianceDashboardComponent implements OnInit {
                 dataValue.push(this.violationCards[i].num);
               }
               this.fetchedViolations = true;
-              this.policyData = {
-                color: ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"],
-                data: dataValue,
-                legend: ["Critical", "High", "Medium", "Low"],
-                legendTextcolor: "#000",
-                totalCount: totalCount,
-                link: true,
-                styling: {
-                  cursor: "pointer",
-                },
-              };
+              this.isPolicyDataLoaded = false;
+              if(dataValue){
+                this.policyData = {
+                  color: ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"],
+                  data: dataValue,
+                  legend: ["Critical", "High", "Medium", "Low"],
+                  legendTextcolor: "#000",
+                  totalCount: totalCount,
+                  link: true,
+                  styling: {
+                    cursor: "pointer",
+                  },
+                };
+              }
+              this.isPolicyDataLoaded = true;
               this.loaded = true;
               this.showdata = true;
               this.error = false;

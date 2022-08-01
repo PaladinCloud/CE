@@ -25,7 +25,7 @@ public class ESNodetoNodeEncryptionRule extends BaseRule {
 
 
 	public static final String ES_PROP_NODE_ENCRYPTION = "nodetonodeencryption";
-
+	public static final String ES_PROP_VERSION = "elasticsearchversion";
 
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -80,12 +80,14 @@ public class ESNodetoNodeEncryptionRule extends BaseRule {
 		if (resourceAttributes != null) {
 			String nodeEncy = StringUtils.trim(resourceAttributes.get(ES_PROP_NODE_ENCRYPTION));
 
-				if (nodeEncy == null || "".equals(nodeEncy) 
-						|| !PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(nodeEncy) ) {
+				if (Double.parseDouble(resourceAttributes.get(ES_PROP_VERSION)) >= 6.0 &&
+						(nodeEncy == null || "".equals(nodeEncy) 
+						|| !PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(nodeEncy)) ) {
 					List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
 					LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-					annotation.put(PacmanSdkConstants.DESCRIPTION, "ES node to node encryption not enabled!!");
+					annotation.put(PacmanSdkConstants.DESCRIPTION, "ES node to node encryption not enabled."
+							+ "Node to node encryption should be enabled for OpenSearch with version 6.0 or greater!! ");
 					annotation.put(PacmanRuleConstants.SEVERITY, severity);;
 					annotation.put(PacmanRuleConstants.CATEGORY, category);
 					issue.put(PacmanRuleConstants.VIOLATION_REASON,

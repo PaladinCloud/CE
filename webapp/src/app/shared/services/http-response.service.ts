@@ -13,18 +13,19 @@
  */
 
 import {Injectable} from '@angular/core';
-import 'rxjs/add/operator/toPromise';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import { Headers, ResponseContentType} from '@angular/http';
+
+
+
+import { HttpHeaders, HttpResponse as ResponseContentType} from '@angular/common/http';
 import {HttpClient} from '@angular/common/http';
 import {HttpResponse} from '../models/http-response';
-import {Observable} from 'rxjs/Rx';
+import {Observable} from 'rxjs';
 import {UtilsService} from './utils.service';
 import {DataCacheService} from '../../core/services/data-cache.service';
 import {ErrorHandlingService} from './error-handling.service';
 import {environment} from '../../../environments/environment';
 import {CONFIGURATIONS} from '../../../config/configurations';
+import { map } from 'rxjs/operators';
 
 
 @Injectable()
@@ -53,7 +54,7 @@ export class HttpService {
     baseUrl: string;
     cloudBaseUrl: string;
 
-    getBlobResponse(url, method, payload = { responseType: ResponseContentType.Blob }, queryParams = {}) {
+    getBlobResponse(url, method, payload = { responseType: "blob" }, queryParams = {}) {
         if (method.toUpperCase() === 'GET') {
             try {
                 let updatedUrl = url;
@@ -62,7 +63,7 @@ export class HttpService {
                 if (url.indexOf('/api/') !== 0) {
                     updatedUrl += this.convertQueryParametersToString(queryParams);
                 }
-                const headers = {headers: new Headers({})};
+                const headers = {headers: new HttpHeaders({})};
                 return this.getData(updatedUrl, headers);
 
             } catch (error) {
@@ -166,14 +167,14 @@ export class HttpService {
     getData(url, headers) {
 
         const httpObservable = this.http.get(url, headers)
-            .map(response => {
+            .pipe(map(response => {
                 if (url.match('logout-session')) {
                     return response;
                 } else {
                     return response['data'];
                 }
-            })
-            .catch(error => this.errorHandling.handleAPIError(error));
+            }))
+            // .catch(error => this.errorHandling.handleAPIError(error));
 
     return httpObservable;
 
@@ -182,13 +183,13 @@ export class HttpService {
     postData(url, payload, headers) {
 
         const httpObservable = this.http.post(url, payload, headers)
-            .map(response => {
+            .pipe(map(response => {
                 if (!response) {
                     return response;
                 }
                 return response['_body'] ? JSON.parse(response['_body']) : response;
-            })
-            .catch(error => this.errorHandling.handleAPIError(error));
+            }))
+            // .catch(error => this.errorHandling.handleAPIError(error));
 
         return httpObservable;
 
@@ -197,13 +198,13 @@ export class HttpService {
     putData(url, payload, headers) {
 
         const httpObservable = this.http.put(url, payload, headers)
-            .map(response => {
+            .pipe(map(response => {
                 if (!response) {
                     return response;
                 }
                 return response['_body'] ? JSON.parse(response['_body']) : response;
-            })
-            .catch(error => this.errorHandling.handleAPIError(error));
+            }))
+            // .catch(error => this.errorHandling.handleAPIError(error));
 
         return httpObservable;
 
@@ -213,10 +214,10 @@ export class HttpService {
 
     deleteData(url, headers) {
         const httpObservable = this.http.delete(url, headers)
-            .map(response => {
+            .pipe(map(response => {
                 return response['_body'] ? JSON.parse(response['_body']) : response;
-            })
-            .catch(error => this.errorHandling.handleAPIError(error));
+            }))
+            // .catch(error => this.errorHandling.handleAPIError(error));
 
         return httpObservable;
     }
@@ -225,10 +226,10 @@ export class HttpService {
         const httpObservable = this.http.post(url, payload, {
             responseType: 'blob'
         })
-        .map(response => {
+        .pipe(map(response => {
             return response;
-        })
-        .catch(error => this.errorHandling.handleAPIError(error));
+        }))
+        // .catch(error => this.errorHandling.handleAPIError(error));
 
         return httpObservable;
     }

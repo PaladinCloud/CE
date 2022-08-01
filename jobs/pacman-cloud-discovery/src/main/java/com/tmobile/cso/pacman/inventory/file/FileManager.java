@@ -65,9 +65,11 @@ import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
 import com.tmobile.cso.pacman.inventory.vo.AMIVH;
+import com.tmobile.cso.pacman.inventory.vo.ASGVH;
 import com.tmobile.cso.pacman.inventory.vo.AccessAnalyzerVH;
 import com.tmobile.cso.pacman.inventory.vo.AccountVH;
 import com.tmobile.cso.pacman.inventory.vo.AppFlowVH;
+import com.tmobile.cso.pacman.inventory.vo.BackupVaultVH;
 import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
@@ -138,6 +140,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-asg-instances.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-asg-elb.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-asg-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-asg-launchconfig.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-stack.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-stack-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-dynamodb.data",InventoryConstants.OPEN_ARRAY, false);
@@ -277,6 +280,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -296,6 +300,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-asg-instances.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-asg-elb.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-asg-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-asg-launchconfig.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-stack.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-stack-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-dynamodb.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -435,6 +440,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -514,28 +520,32 @@ public class FileManager {
 	 * @param instanceMap the instance map
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void generateAsgFiles(Map<String,List<AutoScalingGroup>> instanceMap) throws IOException {
+	public static void generateAsgFiles(Map<String,List<ASGVH>> instanceMap) throws IOException {
 
 		String fieldNames;
 		String keys;
 
-		fieldNames ="AutoScalingGroupARN`AutoScalingGroupName`AvailabilityZones`CreatedTime`DefaultCooldown`DesiredCapacity`HealthCheckGracePeriod`HealthCheckType`LaunchConfigurationName`MaxSize`MinSize`"
-				+ "NewInstancesProtectedFromScaleIn`PlacementGroup`Status`SuspendedProcesses`TargetGroupARNs`TerminationPolicies`VPCZoneIdentifier";
+		fieldNames ="asg.AutoScalingGroupARN`asg.AutoScalingGroupName`asg.AvailabilityZones`asg.CreatedTime`asg.DefaultCooldown`asg.DesiredCapacity`asg.HealthCheckGracePeriod`asg.HealthCheckType`asg.LaunchConfigurationName`asg.MaxSize`asg.MinSize`"
+				+ "asg.NewInstancesProtectedFromScaleIn`asg.PlacementGroup`asg.Status`asg.SuspendedProcesses`asg.TargetGroupARNs`asg.TerminationPolicies`asg.VPCZoneIdentifier";
 		keys ="discoverydate`accountid`accountname`region`autoscalinggrouparn`autoscalinggroupname`availabilityzones`createdtime`defaultcooldown`desiredcapacity`healthcheckgraceperiod`healthchecktype`"
 				+ "launchconfigurationname`maxsize`minsize`newinstancesprotectedfromscalein`placementgroup`status`suspendedprocesses`targetgrouparns`terminationpolicies`vpczoneidentifier";
 		FileGenerator.generateJson(instanceMap, fieldNames, "aws-asg.data",keys);
 
-		fieldNames ="AutoScalingGroupARN`instances.instanceid";
+		fieldNames ="asg.AutoScalingGroupARN`asg.instances.instanceid";
 		keys ="discoverydate`accountid`accountname`region`autoscalinggrouparn`instancesinstanceid";
 		FileGenerator.generateJson(instanceMap, fieldNames, "aws-asg-instances.data",keys);
 
-		fieldNames ="AutoScalingGroupARN`LoadBalancerNames";
+		fieldNames ="asg.AutoScalingGroupARN`asg.LoadBalancerNames";
 		keys ="discoverydate`accountid`accountname`region`autoscalinggrouparn`loadbalancernames";
 		FileGenerator.generateJson(instanceMap, fieldNames, "aws-asg-elb.data",keys);
 
-		fieldNames ="AutoScalingGroupARN`tags.key`tags.value";
+		fieldNames ="asg.AutoScalingGroupARN`asg.tags.key`asg.tags.value";
 		keys ="discoverydate`accountid`accountname`region`autoscalinggrouparn`key`value";
 		FileGenerator.generateJson(instanceMap, fieldNames, "aws-asg-tags.data",keys);
+		
+		fieldNames = "asg.AutoScalingGroupARN`lauchConfigList.lauchConfig.launchConfigurationName`lauchConfigList.lauchConfig.launchConfigurationARN`lauchConfigList.lauchConfig.imageId`lauchConfigList.lauchConfig.keyName`lauchConfigList.lauchConfig.instanceMonitoring.enabled`lauchConfigList.lauchConfig.iamInstanceProfile`lauchConfigList.lauchConfig.ebsOptimized`lauchConfigList.securityGroups";
+		keys = "discoverydate`accountid`accountname`region`autoscalinggrouparn`lcname`lcarn`imageid`keyname`monitorenable`iamprofile`ebsoptimized`securitygroups";
+		FileGenerator.generateJson(instanceMap, fieldNames, "aws-asg-launchconfig.data",keys);
 
 	}
 
@@ -770,6 +780,21 @@ public class FileManager {
 		fieldNames = "image.imageId`tags.key`tags.value";
 		keys = "discoverydate`accountid`accountname`region`imageid`key`value";
 		FileGenerator.generateJson(amiMap, fieldNames, "aws-ami-tags.data", keys);
+	}
+	
+	/**
+	 * Generate AWS Backup vault files.
+	 *
+	 * @param backupvalut the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateBackupvalut(Map<String, List<BackupVaultVH>> bvmap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "backupvault.backupVaultName`backupvault.backupVaultArn`backupvault.encryptionKeyArn`backupvault.locked`backupvault.numberOfRecoveryPoints`backupvault.creationDate`backupvault.creatorRequestId`accessPolicy";
+		keys = "discoverydate`accountid`accountname`region`backupVaultName`backupVaultArn`encryptionKeyArn`locked`numberOfRecoveryPoints`creationDate`creatorRequestId`accessPolicy";
+		FileGenerator.generateJson(bvmap, fieldNames, "aws-backupvault.data", keys);
+		
 	}
 	
 	/**

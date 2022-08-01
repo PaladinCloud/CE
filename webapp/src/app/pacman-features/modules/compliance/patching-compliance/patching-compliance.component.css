@@ -125,19 +125,19 @@
     /*border-bottom: 1px solid #dbe7f1;*/
 }
 
-.patching-dashboard-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.patching-dashboard-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 160px;
 }
 
-.patching-dashboard-wrapper /deep/ .data-table-wrap .table-cells:nth-child(3) {
+.patching-dashboard-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(3) {
     /*width: 160px;*/
 }
 
-.patching-dashboard-wrapper /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.patching-dashboard-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
     width: 200px;
 }
 
-.patching-dashboard-wrapper /deep/ .data-table-wrap .table-cells {
+.patching-dashboard-wrapper ::ng-deep .data-table-wrap .table-cells {
     width: 140px;
 }
 

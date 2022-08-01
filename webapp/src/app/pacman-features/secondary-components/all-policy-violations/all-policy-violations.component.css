@@ -31,10 +31,10 @@
   font-size: 1em;
 }
 
-.all-patch-container /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.all-patch-container ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
   width: 320px;
 }
 
-.all-patch-container /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.all-patch-container ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
   width: 160px;
 }

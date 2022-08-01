@@ -30,11 +30,11 @@
                 </div>
                 <div class='mr-multicloud-wrapper flex flex-col flex-align-center flex-center'>
                     <div class='mr-multicloud flex flex-row flex-align-center flex-center'>
-                        <img class='each-cloud' alt='Azure' width="50px" src="{{content.homePage.azureLogo}}">
-                        <div class='each-cloud plus-mark'>+</div>
                         <img class='each-cloud' alt='AWS' width="50px" src="{{content.homePage.awsLogo}}">
                         <div class='each-cloud plus-mark'>+</div>
-                        <img class='each-cloud' alt='AWS' width="50px" src="{{content.homePage.gcpLogo}}">
+                        <img class='each-cloud' alt='Azure' width="50px" src="{{content.homePage.azureLogo}}">
+                        <div class='each-cloud plus-mark'>+</div>
+                        <img class='each-cloud' alt='GCP' width="50px" src="{{content.homePage.gcpLogo}}">
                     </div>
                     <div class='mr-multicloud-text'>Multi-Cloud Supported</div>
                 </div>
@@ -68,7 +68,7 @@
     <div class="mr-each-sec mr-get-started">
         <h2 class="mr-get-started-title">GET STARTED</h2>
         <h3 class="mr-get-started-subtitle">Ready to easily monitor your compliance and assets?</h3>
-        <app-button class="mr-login-btn mr-get-started-btn" (onClickInner)="openLoginMenu($event)">Login
+        <app-button class="mr-login-btn mr-get-started-btn" (onClickInner)="openLoginMenu()">Login
         </app-button>
     </div>
     <div class="mr-each-sec mr-footer-bottom" id="mr-feature-section">

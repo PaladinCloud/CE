@@ -1102,6 +1102,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "ami", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("backupvault"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "backupvault");
+					FileManager.generateBackupvalut(InventoryUtil.fetchBackupVaults(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "backupvault\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "backupvault", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

@@ -12,11 +12,6 @@
  * limitations under the License.
  */
 
-/* .resource-details-wrapper {
-  width: auto;
-  height: auto;
-} */
-
 .resource-tiles-container {
   height: calc(100% - 100px);
   overflow-y: auto;
@@ -96,7 +91,7 @@ app-inventory-container{
   font: var(--text-body-2);
   color: var(--text-medium-emphasis);
   width: 34%;
-  min-width: 250px;
+  min-width: 280px;
   padding: 16px 0px 16px 24px;
 }
 
@@ -104,12 +99,16 @@ app-inventory-container{
   width: auto;
 }
 
+.search-bar-wrapper {
+  padding: 16px 12px 16px 0px;
+}
+
 .search-bar {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 8px 12px;
-  width: 310px;
+  width: auto;
   height: 36px;
   background: var(--background-grey);
   border-radius: 4px;
@@ -126,7 +125,7 @@ app-inventory-container{
 
 .list-header {
   width: auto;
-  margin: 0px 12px 0px 0px;
+  padding: 0px 12px 0px 0px;
 }
 
 .list-header-wrapper{
@@ -144,5 +143,5 @@ app-inventory-container{
 }
 
 ::ng-deep .mat-select-arrow-wrapper {
-  vertical-align: top !important;
+  align-items: start !important;
 }

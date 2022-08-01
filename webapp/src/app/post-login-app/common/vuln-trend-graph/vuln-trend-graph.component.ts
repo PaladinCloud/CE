@@ -24,7 +24,7 @@ import {
   EventEmitter,
   Output
 } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 import { LoggerService } from '../../../shared/services/logger.service';
 import * as d3 from 'd3-selection';
@@ -32,7 +32,6 @@ import * as d3Shape from 'd3-shape';
 import * as d3Scale from 'd3-scale';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
-import { DatepickerOptions } from 'ng2-datepicker';
 import { CommonResponseService } from '../../../shared/services/common-response.service';
 import { environment } from './../../../../environments/environment';
 import { UtilsService } from '../../../shared/services/utils.service';
@@ -72,11 +71,6 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
   recentData = [];
   currentNoteId;
   dateSelected;
-  options: DatepickerOptions  = {
-    displayFormat: 'MMM D[,] YYYY',
-    maxDate: new Date(),
-    minDate: new Date('1970-01-01')
-  };
 
   updateNoteState = 1;
 
@@ -86,7 +80,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
   @ViewChild('container') vulnReportGraph: ElementRef;
 
   constructor(private logger: LoggerService,
-              private commonResponseService: CommonResponseService, private utils: UtilsService) { }
+    private commonResponseService: CommonResponseService, private utils: UtilsService) { }
 
   ngOnInit() {
     this.setCurrentScopeAndAgList();
@@ -99,10 +93,10 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
       const widthChange = changes['parentWidth'];
       const agName = changes['agName'];
 
-      if (DataChange && DataChange.currentValue ) {
+      if (DataChange && DataChange.currentValue) {
         this.plotGraph(DataChange.currentValue);
-        this.agList = [{id: 'global', text: 'Global'}, { text: this.agName, id: this.selectedAssetGroup}];
-        this.activeScope = [{id: this.selectedAssetGroup, text: this.agName}];
+        this.agList = [{ id: 'global', text: 'Global' }, { text: this.agName, id: this.selectedAssetGroup }];
+        this.activeScope = [{ id: this.selectedAssetGroup, text: this.agName }];
       } else if (widthChange && widthChange.currentValue) {
         const currentWidth = widthChange.currentValue;
         const prevWidth = widthChange.previousValue;
@@ -112,8 +106,8 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
           }, 10);
         }
       } else if (agName && agName.currentValue) {
-          this.agName = agName.currentValue;
-          this.setCurrentScopeAndAgList();
+        this.agName = agName.currentValue;
+        this.setCurrentScopeAndAgList();
       }
     } catch (e) {
       this.logger.log('error', e);
@@ -121,8 +115,8 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   setCurrentScopeAndAgList() {
-    this.agList = [{id: 'global', text: 'Global'}, { text: this.agName, id: this.selectedAssetGroup}];
-    this.activeScope = [{id: this.selectedAssetGroup, text: this.agName}];
+    this.agList = [{ id: 'global', text: 'Global' }, { text: this.agName, id: this.selectedAssetGroup }];
+    this.activeScope = [{ id: this.selectedAssetGroup, text: this.agName }];
   }
 
   plotGraph(data) {
@@ -135,87 +129,87 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
     }
     const graphThis = this;
     const margin = { top: 45, right: 20, bottom: 20, left: 70 },
-    width =
-    parseInt(this.parentWidth, 10) -
-      margin.left -
-      margin.right,
-    height =
-    200 -
-      margin.top -
-      margin.bottom;
+      width =
+        parseInt(this.parentWidth, 10) -
+        margin.left -
+        margin.right,
+      height =
+        200 -
+        margin.top -
+        margin.bottom;
 
-      const x = d3Scale.scalePoint().range([0, width]);
-      x.domain(newData.map(d => d['date']));
+    const x = d3Scale.scalePoint().range([0, width]);
+    x.domain(newData.map(d => d['date']));
 
-      const y0 = d3Scale.scaleLinear().range([height, 0]);
+    const y0 = d3Scale.scaleLinear().range([height, 0]);
 
-      // Scale the range of the data for each axes
-      y0.domain([
-        d3Array.min(newData, function(d) {
-          return Math.min(
-            d['new'],
-            d['open'],
-            5
-          );
-        }),
-        d3Array.max(newData, function(d) {
-          return Math.max(
-            d['new'],
-            d['open'],
-            5
-          );
-        })
-      ]);
+    // Scale the range of the data for each axes
+    y0.domain([
+      d3Array.min(newData, function (d) {
+        return Math.min(
+          d['new'],
+          d['open'],
+          5
+        );
+      }),
+      d3Array.max(newData, function (d) {
+        return Math.max(
+          d['new'],
+          d['open'],
+          5
+        );
+      })
+    ]);
 
-      // Area plotting of graph under line
+    // Area plotting of graph under line
 
-      const area1 = d3Shape.area()
-        .x(function(d) { return x(d['date']); })
-        .y0(height)
-        .y1(function(d) { return y0(d['open']); });
+    const area1 = d3Shape.area()
+      .x(function (d) { return x(d['date']); })
+      .y0(height)
+      .y1(function (d) { return y0(d['open']); });
 
-      const area2 = d3Shape.area()
-        .x(function(d) { return x(d['date']); })
-        .y0(height)
-        .y1(function(d) { return y0(d['new']); });
+    const area2 = d3Shape.area()
+      .x(function (d) { return x(d['date']); })
+      .y0(height)
+      .y1(function (d) { return y0(d['new']); });
 
 
-      // Line plot definition
+    // Line plot definition
 
-      const valueline1 = d3Shape
-        .line()
-        .x(function(d) {
-          return x(d['date']);
-        })
-        .y(function(d) {
-          graphThis.findMaxVal(d);
-          return y0(d['open']);
-        });
-
-      const valueline2 = d3Shape
-        .line()
-        .x(function(d) {
-          return x(d['date']);
-        })
-        .y(function(d) {
-          graphThis.findMaxVal(d);
-          return y0(d['new']);
-        });
-
-      // set dimentions of svg
-      const svg = d3
-        .select('#' + this.svgId)
-        .attr('width', width + margin.left + margin.right)
-        .attr('height', height + margin.top + margin.bottom)
-        .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-
-      // format the data
-      newData.forEach(function(d) {
-        d['date'] = new Date(d['date']);
-        d['open'] = +d['open'];
-        d['new'] = +d['new'];
+    const valueline1 = d3Shape
+      .line()
+      .x(function (d) {
+        return x(d['date']);
+      })
+      .y(function (d) {
+        graphThis.findMaxVal(d);
+        return y0(d['open']);
       });
+
+    const valueline2 = d3Shape
+      .line()
+      .x(function (d) {
+        return x(d['date']);
+      })
+      .y(function (d) {
+        graphThis.findMaxVal(d);
+        return y0(d['new']);
+      });
+
+    // set dimentions of svg
+    const svg = d3
+      .select('#' + this.svgId)
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // format the data
+    newData.forEach(function (d) {
+      d['date'] = new Date(d['date']);
+      d['open'] = +d['open'];
+      d['new'] = +d['new'];
+    });
 
     // Add the X Bottom Axis
     svg
@@ -223,12 +217,12 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
       .attr('transform', 'translate(0,' + height + ')')
       .attr('class', 'bottomAxis')
       .call(d3Axis.axisBottom(x))
-      .call(make_x_gridlines().tickSize(-height).tickValues(x.domain().filter(function(d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4 )); })))
-        .selectAll('text')
-        .style('text-anchor', 'end')
-        .attr('dx', '1.3em')
-        .attr('dy', '1.3em')
-        .text(function(d, i) { return newData[i * (graphThis.months[graphThis.selectedMonth] * 4 )].dateStr; });
+      .call(make_x_gridlines().tickSize(-height).tickValues(x.domain().filter(function (d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4)); })))
+      .selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('dx', '1.3em')
+      .attr('dy', '1.3em')
+      .text(function (d, i) { return newData[i * (graphThis.months[graphThis.selectedMonth] * 4)].dateStr; });
 
     // Add areas and lines respectively
 
@@ -239,26 +233,26 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
       .enter()
       .append('text')
       .classed('label', true)
-      .text(function(d) { return ''; })
+      .text(function (d) { return ''; })
       .style('font-size', '0px')
-      .attr('x', function(d, i) {
-            graphThis.graphY[d['dateStr']] = y0(d['open']);
-            graphThis.graphX[d['dateStr']] = x(d['date']);
-            return x(d['date']);
+      .attr('x', function (d, i) {
+        graphThis.graphY[d['dateStr']] = y0(d['open']);
+        graphThis.graphX[d['dateStr']] = x(d['date']);
+        return x(d['date']);
       });
 
     svg.append('path')
-        .data([data])
-        .attr('class', 'area')
-        .style('clip-path', 'none')
-        .attr('d', area1);
+      .data([data])
+      .attr('class', 'area')
+      .style('clip-path', 'none')
+      .attr('d', area1);
 
     svg.append('path')
-       .data([data])
-       .attr('class', 'area')
-       .style('clip-path', 'none')
-       .style('fill', '#f2425f')
-       .attr('d', area2);
+      .data([data])
+      .attr('class', 'area')
+      .style('clip-path', 'none')
+      .style('fill', '#f2425f')
+      .attr('d', area2);
 
     svg
       .append('path')
@@ -282,86 +276,86 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
       .data(data)
       .enter()
       .append('rect')
-      .filter(function(d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4 )); })
+      .filter(function (d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4)); })
       .attr('fill', '#fff')
       .attr('fill-opacity', '0.6')
       .attr('height', '16px')
       .attr('rx', 3)
       .attr('ry', 3)
       .attr('width', '36px')
-      .attr('x', function(d, i) {
+      .attr('x', function (d, i) {
         return x(d['date']);
       })
-      .attr('y', function(d, i) {
-          return y0(d['new']) - y0(d['open']) > 8 ? y0(d['open']) : y0(d['new']) - 8;
+      .attr('y', function (d, i) {
+        return y0(d['new']) - y0(d['open']) > 8 ? y0(d['open']) : y0(d['new']) - 8;
       })
-      .style('transform', function(d, i) { return i === 0 ? 'translate(2px, -24px)' : 'translate(-18px, -24px)'; });
+      .style('transform', function (d, i) { return i === 0 ? 'translate(2px, -24px)' : 'translate(-18px, -24px)'; });
 
     svg.append('g')
-        .classed('labels-group', true)
-        .selectAll('text')
-        .data(data)
-        .enter()
-        .append('text')
-        .filter(function(d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4  )); })
-        .classed('label', true)
-        .text(function(d) { return d['open']; })
-        .style('font-size', '9px')
-        .style('text-anchor', 'middle')
-        .style('fill', '#60727f')
-        .style('transform', function(d, i) { return i === 0 ? 'translate(19px, -8px)' : 'translate(0px, -8px)'; })
-        .attr('x', function(d, i) {
-              return x(d['date']);
-        })
-        .attr('y', function(d, i) {
-              return y0(d['new']) - y0(d['open']) > 8 ? y0(d['open']) : y0(d['new']) - 8;
-        })
-        .attr('dy', '-5');
+      .classed('labels-group', true)
+      .selectAll('text')
+      .data(data)
+      .enter()
+      .append('text')
+      .filter(function (d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4)); })
+      .classed('label', true)
+      .text(function (d) { return d['open']; })
+      .style('font-size', '9px')
+      .style('text-anchor', 'middle')
+      .style('fill', '#60727f')
+      .style('transform', function (d, i) { return i === 0 ? 'translate(19px, -8px)' : 'translate(0px, -8px)'; })
+      .attr('x', function (d, i) {
+        return x(d['date']);
+      })
+      .attr('y', function (d, i) {
+        return y0(d['new']) - y0(d['open']) > 8 ? y0(d['open']) : y0(d['new']) - 8;
+      })
+      .attr('dy', '-5');
 
     svg.append('g')
-        .selectAll('rect')
-        .data(data)
-        .enter()
-        .append('rect')
-        .filter(function(d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4  )); })
-        .attr('fill', '#fff')
-        .attr('fill-opacity', '0.6')
-        .attr('height', '16px')
-        .attr('rx', 3)
-        .attr('ry', 3)
-        .attr('width', '36px')
-        .attr('x', function(d, i) {
-          return x(d['date']);
-        })
-        .attr('y', function(d, i) {
-              return y0(d['new']);
-        })
-        .style('transform', function(d, i) { return i === 0 ? 'translate(2px, -16px)' : 'translate(-18px, -16px)'; });
+      .selectAll('rect')
+      .data(data)
+      .enter()
+      .append('rect')
+      .filter(function (d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4)); })
+      .attr('fill', '#fff')
+      .attr('fill-opacity', '0.6')
+      .attr('height', '16px')
+      .attr('rx', 3)
+      .attr('ry', 3)
+      .attr('width', '36px')
+      .attr('x', function (d, i) {
+        return x(d['date']);
+      })
+      .attr('y', function (d, i) {
+        return y0(d['new']);
+      })
+      .style('transform', function (d, i) { return i === 0 ? 'translate(2px, -16px)' : 'translate(-18px, -16px)'; });
 
     svg.append('g')
-        .classed('labels-group', true)
-        .selectAll('text')
-        .data(data)
-        .enter()
-        .append('text')
-        .filter(function(d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4  )); })
-        .classed('label', true)
-        .text(function(d) { return d['new']; })
-        .style('font-size', '9px')
-        .style('fill', '#ed0004')
-        .style('transform', function(d, i) { return i === 0 ? 'translateX(19px)' : 'translateX(0px)'; })
-        .style('text-anchor', 'middle')
-        .attr('x', function(d, i) {
-            return x(d['date']);
-        })
-        .attr('y', function(d, i) {
-              return y0(d['new']);
-        })
-        .attr('dy', '-5');
+      .classed('labels-group', true)
+      .selectAll('text')
+      .data(data)
+      .enter()
+      .append('text')
+      .filter(function (d, i) { return !(i % (graphThis.months[graphThis.selectedMonth] * 4)); })
+      .classed('label', true)
+      .text(function (d) { return d['new']; })
+      .style('font-size', '9px')
+      .style('fill', '#ed0004')
+      .style('transform', function (d, i) { return i === 0 ? 'translateX(19px)' : 'translateX(0px)'; })
+      .style('text-anchor', 'middle')
+      .attr('x', function (d, i) {
+        return x(d['date']);
+      })
+      .attr('y', function (d, i) {
+        return y0(d['new']);
+      })
+      .attr('dy', '-5');
 
     // gridlines in x axis function
     function make_x_gridlines() {
-        return d3Axis.axisBottom(x).ticks(5);
+      return d3Axis.axisBottom(x).ticks(5);
     }
 
   }
@@ -377,7 +371,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
           obj['open'],
           obj['new']
         );
-        for ( let i = 5; i > 0; i--) {
+        for (let i = 5; i > 0; i--) {
           this.axisValues['y0'].push(Math.ceil(this.maxVal[0] / 5 * i));
         }
         this.axisValues['y0'] = this.axisValues['y0'].slice(
@@ -392,37 +386,35 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  graphClicked(data, index, from? ) {
+  graphClicked(data, index, from?) {
     try {
-      if ( this.adminAccess && this.notesResponse > 0 ) {
+      if (this.adminAccess && this.notesResponse > 0) {
         let newNote = true;
         this.recentData = [];
         const firstDate = new Date(this.graphData[0].date);
         firstDate.setDate(firstDate.getDate() - 1);
-        this.options['minDate'] = firstDate;
-        this.options['maxDate'] = this.graphData[this.graphData.length - 1].date;
         this.dateSelected = data.date;
-        this.recentData.push({date: this.graphData[index].dateStr, data: this.graphData[index].open, selectedDate: true});
-        if ( index !== this.graphData.length - 1) {
-          this.recentData.push({date: this.graphData[index + 1].dateStr, data: this.graphData[index + 1].open, selectedDate: false});
+        this.recentData.push({ date: this.graphData[index].dateStr, data: this.graphData[index].open, selectedDate: true });
+        if (index !== this.graphData.length - 1) {
+          this.recentData.push({ date: this.graphData[index + 1].dateStr, data: this.graphData[index + 1].open, selectedDate: false });
         }
         if (index !== 0) {
-          this.recentData.unshift({date: this.graphData[index - 1].dateStr, data: this.graphData[index - 1].open, selectedDate: false});
+          this.recentData.unshift({ date: this.graphData[index - 1].dateStr, data: this.graphData[index - 1].open, selectedDate: false });
         }
-        for ( let i = 0; i < this.notesData.length; i++ ) {
-          if ( data.dateStr === this.notesData[i].dateStr ) {
-            if (this.notesData[i].data.length === 1 ) {
+        for (let i = 0; i < this.notesData.length; i++) {
+          if (data.dateStr === this.notesData[i].dateStr) {
+            if (this.notesData[i].data.length === 1) {
               newNote = false;
               // edit existing note
               this.openNotesModal = true;
               this.editMode = true;
-              if ( data.dateStr === this.notesData[i].dateStr ) {
+              if (data.dateStr === this.notesData[i].dateStr) {
                 this.currentNoteId = this.notesData[i].data[0].noteId;
                 this.notesText = this.notesData[i].data[0].note;
-                if ( this.notesData[i].data[0].type === 'Global') {
-                  this.activeScope = [{id: 'global', text: 'Global'}];
+                if (this.notesData[i].data[0].type === 'Global') {
+                  this.activeScope = [{ id: 'global', text: 'Global' }];
                 } else {
-                  this.activeScope = [{id: this.selectedAssetGroup, text: this.agName}];
+                  this.activeScope = [{ id: this.selectedAssetGroup, text: this.agName }];
                 }
               }
             } else {
@@ -432,14 +424,14 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
                 this.openNotesModal = false;
                 this.notesData[i].vibrate = true;
                 const self = this;
-                setTimeout(function(){
+                setTimeout(function () {
                   self.notesData[i].vibrate = false;
                 }, 400);
               }
               if (from === 'datepicker') {
 
-                for ( let j = 0; j < this.notesData[i].data.length; j++ ) {
-                  if ( (this.activeScope[0].id === 'global' && this.notesData[i].data[j].type === 'Global') || ( this.activeScope[0].id !== 'global' && this.notesData[i].data[j].type !== 'Global' )) {
+                for (let j = 0; j < this.notesData[i].data.length; j++) {
+                  if ((this.activeScope[0].id === 'global' && this.notesData[i].data[j].type === 'Global') || (this.activeScope[0].id !== 'global' && this.notesData[i].data[j].type !== 'Global')) {
                     this.notesText = this.notesData[i].data[j].note;
                     this.editMode = true;
                   }
@@ -454,7 +446,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
           this.openNotesModal = true;
           this.notesText = '';
           this.editMode = false;
-          this.activeScope = [{id: this.selectedAssetGroup, text: this.agName}];
+          this.activeScope = [{ id: this.selectedAssetGroup, text: this.agName }];
         }
       }
     } catch (e) {
@@ -465,17 +457,17 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
   selectAg(tag) {
     this.activeScope[0] = tag;
     let newNote = true;
-    for ( let i = 0; i < this.notesData.length; i++) {
-      if ( this.dateSelected.toISOString().slice(0, 10) ===  this.notesData[i].date.toISOString().slice(0, 10) ) {
+    for (let i = 0; i < this.notesData.length; i++) {
+      if (this.dateSelected.toISOString().slice(0, 10) === this.notesData[i].date.toISOString().slice(0, 10)) {
         if (this.notesData[i].data.length === 1) {
-          if ( (this.notesData[i].data[0].type === 'Global' && this.activeScope[0].id === 'global') || (this.notesData[i].data[0].type === 'AssetGroup' && this.activeScope[0].id !== 'global') ) {
+          if ((this.notesData[i].data[0].type === 'Global' && this.activeScope[0].id === 'global') || (this.notesData[i].data[0].type === 'AssetGroup' && this.activeScope[0].id !== 'global')) {
             this.notesText = this.notesData[i].data[0].note;
             this.editMode = true;
             newNote = false;
           }
         } else {
-          for ( let j = 0; j < this.notesData[i].data.length; j++ ) {
-            if ( (this.activeScope[0].id === 'global' && this.notesData[i].data[j].type === 'Global') || (this.activeScope[0].id !== 'global' && this.notesData[i].data[j].type === 'AssetGroup') ) {
+          for (let j = 0; j < this.notesData[i].data.length; j++) {
+            if ((this.activeScope[0].id === 'global' && this.notesData[i].data[j].type === 'Global') || (this.activeScope[0].id !== 'global' && this.notesData[i].data[j].type === 'AssetGroup')) {
               this.notesText = this.notesData[i].data[j].note;
               this.editMode = true;
               newNote = false;
@@ -486,7 +478,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
       }
     }
 
-    if ( newNote ) {
+    if (newNote) {
       this.notesText = '';
       this.editMode = false;
     }
@@ -494,33 +486,31 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
 
   noteClicked(data) {
     try {
-      if ( this.adminAccess && this.notesResponse > 0 ) {
+      if (this.adminAccess && this.notesResponse > 0) {
         this.openNotesModal = true;
         this.editMode = true;
         this.currentNoteId = data.noteId;
         const firstDate = new Date(this.graphData[0].date);
         firstDate.setDate(firstDate.getDate() - 1);
-        this.options['minDate'] = firstDate;
-        this.options['maxDate'] = this.graphData[this.graphData.length - 1].date;
         this.dateSelected = this.utils.getDateAndTime(data.date); //new Date(data.date);
         this.notesText = data.note;
-        for ( let i = 0; i < this.graphData.length; i++) {
+        for (let i = 0; i < this.graphData.length; i++) {
           this.recentData = [];
           if (this.graphData[i].dateStr.replace('/', '-') === (data.date).slice(-5)) {
-            this.recentData.push({date: this.graphData[i].dateStr, data: this.graphData[i].open, selectedDate: true});
-            if ( i !== this.graphData.length - 1) {
-              this.recentData.push({date: this.graphData[i + 1].dateStr, data: this.graphData[i + 1].open, selectedDate: false});
+            this.recentData.push({ date: this.graphData[i].dateStr, data: this.graphData[i].open, selectedDate: true });
+            if (i !== this.graphData.length - 1) {
+              this.recentData.push({ date: this.graphData[i + 1].dateStr, data: this.graphData[i + 1].open, selectedDate: false });
             }
             if (i !== 0) {
-              this.recentData.unshift({date: this.graphData[i - 1].dateStr, data: this.graphData[i - 1].open, selectedDate: false});
+              this.recentData.unshift({ date: this.graphData[i - 1].dateStr, data: this.graphData[i - 1].open, selectedDate: false });
             }
             break;
           }
         }
         if (data.type.toLowerCase() === 'assetgroup') {
-          this.activeScope = [{id: this.selectedAssetGroup, text: this.agName}];
+          this.activeScope = [{ id: this.selectedAssetGroup, text: this.agName }];
         } else {
-          this.activeScope = [{id: 'global', text: 'Global'}];
+          this.activeScope = [{ id: 'global', text: 'Global' }];
         }
       }
     } catch (e) {
@@ -530,8 +520,8 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
 
   getDateData(date) {
     try {
-      for (let i = 0; i < this.graphData.length; i++ ) {
-        if (date.getDate() === (this.graphData[i].date).getDate() && date.getMonth() === (this.graphData[i].date).getMonth() ) {
+      for (let i = 0; i < this.graphData.length; i++) {
+        if (date.getDate() === (this.graphData[i].date).getDate() && date.getMonth() === (this.graphData[i].date).getMonth()) {
           this.graphClicked(this.graphData[i], i, 'datepicker');
           break;
         }
@@ -581,24 +571,24 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
         const updateNoteMethod = environment.postVulnTrendNotes.method;
         this.updateNoteSubscription = this.commonResponseService.getData(
           updateNoteUrl, updateNoteMethod, notesPayload, updateNoteParam).subscribe(
-          response => {
+            response => {
 
-            try {
-              this.openNotesModal = false;
-              this.updateNoteState = 1;
-              const self = this;
-              setTimeout(() => {
-                self.fetchNewNotes.emit();
-              }, 10);
-            } catch (e) {
-              this.logger.log('error', e);
+              try {
+                this.openNotesModal = false;
+                this.updateNoteState = 1;
+                const self = this;
+                setTimeout(() => {
+                  self.fetchNewNotes.emit();
+                }, 10);
+              } catch (e) {
+                this.logger.log('error', e);
+                this.updateNoteState = -1;
+              }
+            },
+            error => {
+              this.logger.log('error', error);
               this.updateNoteState = -1;
-            }
-          },
-          error => {
-            this.logger.log('error', error);
-            this.updateNoteState = -1;
-          });
+            });
       }
     } catch (e) {
       this.logger.log('error', e);
@@ -610,7 +600,7 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
 
     try {
 
-      if (this.updateNoteState !== 0 ) {
+      if (this.updateNoteState !== 0) {
 
         if (this.updateNoteSubscription) {
           this.updateNoteSubscription.unsubscribe();
@@ -627,26 +617,26 @@ export class VulnTrendGraphComponent implements OnChanges, OnInit, OnDestroy {
         const deleteNoteMethod = environment.deleteVulnNote.method;
         this.deleteNoteSubscription = this.commonResponseService.getData(
           deleteNoteUrl, deleteNoteMethod).subscribe(
-          response => {
+            response => {
 
-            try {
-              this.openNotesModal = false;
-              const self = this;
-              setTimeout(() => {
-                self.fetchNewNotes.emit();
-              }, 200);
-              this.updateNoteState = 1;
-            } catch (e) {
-              this.logger.log('error', e);
+              try {
+                this.openNotesModal = false;
+                const self = this;
+                setTimeout(() => {
+                  self.fetchNewNotes.emit();
+                }, 200);
+                this.updateNoteState = 1;
+              } catch (e) {
+                this.logger.log('error', e);
+                this.updateNoteState = -1;
+              }
+            },
+            error => {
+              this.logger.log('error', error);
               this.updateNoteState = -1;
-            }
-          },
-          error => {
-            this.logger.log('error', error);
-            this.updateNoteState = -1;
-          });
+            });
 
-        }
+      }
 
     } catch (e) {
       this.logger.log('error', e);

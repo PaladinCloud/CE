@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../../shared/services/common-response.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AutorefreshService } from '../../services/autorefresh.service';

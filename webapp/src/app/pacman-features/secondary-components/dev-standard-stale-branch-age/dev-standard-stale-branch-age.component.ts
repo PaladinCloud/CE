@@ -13,15 +13,15 @@
  */
 
 import { Component, OnInit, Inject, OnDestroy, Input, SimpleChanges, OnChanges } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription ,  Observable } from 'rxjs';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../shared/services/error-handling.service';
 import { AssetGroupObservableService } from '../../../core/services/asset-group-observable.service';
 import { HttpService } from '../../../shared/services/http-response.service';
-import { Observable } from 'rxjs/Rx';
 import { UtilsService } from '../../../shared/services/utils.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dev-standard-stale-branch-age',
@@ -32,11 +32,11 @@ import { UtilsService } from '../../../shared/services/utils.service';
 export class DevStandardStaleBranchAgeComponent implements OnInit, OnDestroy , OnChanges {
 
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
   private dataSubscription: Subscription;
   private subscriptionToAssetGroup: Subscription;
 
-  private errorValue = 0;
+  public errorValue = 0;
   public graphData: any = [];
   private legend_text: any;
 
@@ -180,9 +180,9 @@ export class DevStandardStaleBranchAgeComponent implements OnInit, OnDestroy , O
 
     try {
         return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                .map(response => {
+                .pipe(map(response => {
                     return response;
-                });
+                }));
     } catch (error) {
         this.errorHandling.handleJavascriptError(error);
     }

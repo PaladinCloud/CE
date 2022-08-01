@@ -32,7 +32,7 @@
 }
 
 .host-vulnerabilities-container
-  /deep/
+  ::ng-deep
   .data-table-wrap
   .table-cells:nth-child(1) {
   width: 220px;

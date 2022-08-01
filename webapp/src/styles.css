@@ -17,7 +17,7 @@
 /* External imported themes */
 
 @import "./reset.css";
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~font-awesome/css/font-awesome.css";
 @import "./variables.css";
 @import "./angular-tree-component.css";

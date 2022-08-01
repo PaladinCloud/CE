@@ -17,8 +17,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable ,  ReplaySubject } from 'rxjs';
 import { DataCacheService } from './data-cache.service';
 
 @Injectable()

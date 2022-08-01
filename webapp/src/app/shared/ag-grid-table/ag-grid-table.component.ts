@@ -21,7 +21,7 @@ export class AgGridTableComponent implements OnInit, OnChanges {
   @Output() previousPageCalled = new EventEmitter<any>();
   @Output() searchTriggerred = new EventEmitter<any>();
   @Output() searchRowTxt = new EventEmitter<any>();
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   gridApi: any;
   popRows = ['Download Data'];
   searchTxt = '';

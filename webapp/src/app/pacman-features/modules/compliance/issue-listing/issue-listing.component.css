@@ -56,69 +56,69 @@ app-issue-exception{
     height: inherit;
 }
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 58px;
     margin-left: 24px;
 }
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
     width: 30%;
 }
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(3) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(3) {
     width: 20%;
 }
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(4) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(4) {
     width: 16%;
 }
 
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(5) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(5) {
     width: 8%;
 }
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(6) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(6) {
     width: 7%;
 }
-.violations-table.admin-rights /deep/ .data-table-wrap .table-cells:nth-child(7) {
+.violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(7) {
     width: 13%;
 }
 
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.violations-table  ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 30%;
     margin-left: 8px;
 }
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(2) {
+.violations-table  ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
     width: 20%;
 }
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(3) {
+.violations-table  ::ng-deep .data-table-wrap .table-cells:nth-child(3) {
     width: 16%;
 }
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(4) {
+.violations-table  ::ng-deep .data-table-wrap .table-cells:nth-child(4) {
     width: 8%;
 }
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(5) {
+.violations-table  ::ng-deep .data-table-wrap .table-cells:nth-child(5) {
     width: 7%;
 }
-.violations-table  /deep/ .data-table-wrap .table-cells:nth-child(6) {
+.violations-table  ::ng-deep .data-table-wrap .table-cells:nth-child(6) {
     width: 13%;
 }
-.violations-table /deep/ .data-table-inner-wrap {
+.violations-table ::ng-deep .data-table-inner-wrap {
 width: 100% !important;
 }
-.violations-table /deep/ .data-table-inner-content {
+.violations-table ::ng-deep .data-table-inner-content {
 width: 100% !important;
 }
-.violations-table /deep/ .data-table-head {
+.violations-table ::ng-deep .data-table-head {
 width: 100% !important;
 }
-.violations-table /deep/ .data-table-rows {
+.violations-table ::ng-deep .data-table-rows {
 width: 100% !important;
 }
-.violations-table  /deep/ .table-cells {
+.violations-table  ::ng-deep .table-cells {
     padding: 16px 10px !important;
 }
 
-.violations-table /deep/ .data-table-wrap {
+.violations-table ::ng-deep .data-table-wrap {
     border: 1px solid #dce1e8;
     border-top: none;
 }
@@ -150,7 +150,7 @@ width: 100% !important;
     pointer-events: none;
     cursor: not-allowed;
 }
-.disabled /deep/ button {
+.disabled ::ng-deep button {
     background-color: #c0c0c0; 
 }
 

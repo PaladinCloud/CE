@@ -210,7 +210,7 @@
   border-bottom-right-radius: var(--border-radius);
 }
 
-.button-parent /deep/ .app-button {
+.button-parent ::ng-deep .app-button {
   border-radius: 0.3em;
   background-color: #3f4a59;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.32);
@@ -225,11 +225,11 @@
   font-family: var(--text-light-font-family);
 }
 
-.button-parent /deep/ .app-button:hover {
+.button-parent ::ng-deep .app-button:hover {
   background-color: #566d9b;
 }
 
-.button-parent /deep/ .app-button img {
+.button-parent ::ng-deep .app-button img {
   margin: 0 1em;
 }
 

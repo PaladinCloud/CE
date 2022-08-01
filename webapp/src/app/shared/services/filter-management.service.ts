@@ -12,14 +12,16 @@
  * limitations under the License.
  */
 
+
+import {throwError as observableThrowError,  Observable, combineLatest } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from './http-response.service';
 import {environment} from '../../../environments/environment';
 import {UtilsService} from './utils.service';
 import {LoggerService} from './logger.service';
 import {RefactorFieldsService} from './refactor-fields.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class FilterManagementService {
@@ -39,11 +41,11 @@ export class FilterManagementService {
         queryParams['filterId'] = filterId;
 
         try {
-            return Observable.combineLatest(
+            return combineLatest(
                 this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => this.massageData(response) )
-                    .catch(this.handleError)
-            );
+                    .pipe(map(response => this.massageData(response) )
+                    // .catch(this.handleError)
+            ));
         } catch (error) {
             this.handleError(error);
         }
@@ -56,10 +58,10 @@ export class FilterManagementService {
         const method = 'GET';
 
         try {
-            return Observable.combineLatest(
+            return combineLatest(
                 this.httpService.getHttpResponse(url, method, payload, queryParam)
-                    .map(response => this.massageData(response) )
-                    .catch(this.handleError)
+                    .pipe(map(response => this.massageData(response) ))
+                    // .catch(this.handleError)
             );
         } catch (error) {
             this.handleError(error);
@@ -103,7 +105,7 @@ export class FilterManagementService {
     }
 
     handleError(error: any): Observable<any> {
-        return Observable.throw(error.message || error);
+        return observableThrowError(error.message || error);
     }
 
     massageData(data): any {

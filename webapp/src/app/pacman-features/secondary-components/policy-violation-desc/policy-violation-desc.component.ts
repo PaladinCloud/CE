@@ -16,7 +16,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
 import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
-import { Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs";
 import { WorkflowService } from "../../../core/services/workflow.service";
 import { LoggerService } from "../../../shared/services/logger.service";
 

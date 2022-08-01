@@ -3,10 +3,14 @@
     {{ card.header }}
   </mat-card-header>
   <mat-card-content>
-    <div class="chart" *ngIf="card.id == 1 && complianceData.length > 0">
-      <app-progress-bar-chart [bars]="complianceData"></app-progress-bar-chart>
+    <div class="chart" *ngIf="card.id == 1">
+      <div [class.loader]="!isComplianceDataLoaded"></div>
+      <app-empty-state *ngIf="isComplianceDataLoaded && complianceData.length == 0" message="There is nothing to show !"></app-empty-state>
+      <app-progress-bar-chart *ngIf="complianceData.length > 0" [bars]="complianceData"></app-progress-bar-chart>
     </div>
     <div class="chart" *ngIf="card.id == 2">
+      <div [class.loader]="!isPolicyDataLoaded"></div>
+      <app-empty-state *ngIf="isPolicyDataLoaded && !policyData" message="There is nothing to show !"></app-empty-state>
       <div class="graph-chart-cont relative" id="dashboardDoughnut">
         <app-doughnut-chart *ngIf="policyData" [chartContId]="'dashboardDoughnut'" [graphData]="policyData"
           [graphWidth]="widgetWidth" [flexTrue]="true" [graphHeight]="widgetHeight" [MainTextcolor]="MainTextcolor"
@@ -15,8 +19,10 @@
         </app-doughnut-chart>
       </div>
     </div>
-    <div class="chart" *ngIf="card.id == 3 && assetsCountData.length > 0" style="overflow-y: scroll">
-      <app-horizontal-bar-chart [data]="assetsCountData"></app-horizontal-bar-chart>
+    <div class="chart" *ngIf="card.id == 3" style="overflow-y: scroll">
+      <div [class.loader]="!isAssetsCountDataLoaded"></div>
+      <app-empty-state *ngIf="isAssetsCountDataLoaded && assetsCountData.length==0" message="There is nothing to show !"></app-empty-state>
+      <app-horizontal-bar-chart *ngIf="assetsCountData.length > 0" [data]="assetsCountData"></app-horizontal-bar-chart>
     </div>
   </mat-card-content>
   <mat-card-actions>

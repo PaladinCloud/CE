@@ -20,7 +20,7 @@ import {
   FormBuilder,
   Validators
 } from '@angular/forms';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { environment } from './../../../../environments/environment';
 import { CommonResponseService } from '../../../shared/services/common-response.service';
 import { DataCacheService } from '../../../core/services/data-cache.service';

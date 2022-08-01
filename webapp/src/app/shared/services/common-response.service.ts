@@ -13,11 +13,12 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+import { Observable } from 'rxjs';
+
 import { HttpService } from './http-response.service';
 import { LoggerService } from './logger.service';
 import { ErrorHandlingService } from './error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class CommonResponseService {
@@ -34,9 +35,9 @@ export class CommonResponseService {
         const queryParams = dataQuery;
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams, headers)
-                    .map(response => {
+                    .pipe(map(response => {
                         return response;
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
             this.logger.log('error', error);

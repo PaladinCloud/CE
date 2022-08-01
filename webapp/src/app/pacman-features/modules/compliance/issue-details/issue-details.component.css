@@ -681,7 +681,7 @@ a.button:hover {
   margin-bottom: 1em;
 }
 
-.issue-details-wrapper /deep/ .data-table-wrap .table-cells:nth-last-child(1) {
+.issue-details-wrapper ::ng-deep .data-table-wrap .table-cells:nth-last-child(1) {
   width: 220px;
 }
 
@@ -694,7 +694,7 @@ a.button:hover {
   margin-bottom: 1em;
 }
 
-.issue-details-wrapper /deep/ .data-table-wrap .table-cells:nth-child(1) {
+.issue-details-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
   width: 160px;
 }
 

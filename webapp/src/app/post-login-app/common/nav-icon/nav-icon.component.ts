@@ -15,7 +15,7 @@
 import {Component, Input, OnInit, OnDestroy } from '@angular/core';
 import {AssetGroupObservableService} from '../../../core/services/asset-group-observable.service';
 import {DomainTypeObservableService} from '../../../core/services/domain-type-observable.service';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 import { LoggerService } from '../../../shared/services/logger.service';
 import { RoutingService } from '../../../core/services/routing.service';
 import { Router } from '@angular/router';

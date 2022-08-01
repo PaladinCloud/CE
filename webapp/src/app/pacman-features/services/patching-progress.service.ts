@@ -17,11 +17,12 @@
  */
 
 import { Injectable, Inject } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
-import 'rxjs/add/operator/toPromise';
+import { combineLatest, Observable, of } from 'rxjs';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
 import { UtilsService } from '../../shared/services/utils.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class AllPatchingProgressService {
@@ -71,19 +72,19 @@ export class AllPatchingProgressService {
                   currentPayload['quarter'] = quarters;
                   allObservables.push(
                       this.httpService.getHttpResponse(patchingProgressUrl, patchingProgressMethod, currentPayload, {})
-                          .map(response => this.massageDataYearly(quarters, response))
-                          .catch(error => this.handleCombiningError(quarters, error))
-                  );
+                          .pipe(map(response => this.massageDataYearly(quarters, response))
+                          // .catch(error => this.handleCombiningError(quarters, error))
+                  ));
               });
-              return allObservables.length > 0 ? Observable.combineLatest(allObservables) : Observable.of([]);
+              return allObservables.length > 0 ? combineLatest(allObservables) : of([]);
             } else {
               this.year = 2018;
               try {
                   return this.httpService.getHttpResponse(url, method, {}, {})
-                          .map(response => {
+                          .pipe(map(response => {
                               return [this.massageDataYearly(1, response)];
-                          })
-                          .catch(error => this.handleCombiningError(1, error));
+                          }))
+                          // .catch(error => this.handleCombiningError(1, error));
               } catch (error) {
                   this.errorHandling.handleJavascriptError(error);
               }
@@ -96,9 +97,9 @@ export class AllPatchingProgressService {
     getQuarterData(payload, url, method, queryParams): Observable<any> {
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .map(response => {
+                    .pipe(map(response => {
                         return this.massageQuarterData(response);
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
@@ -365,9 +366,9 @@ export class AllPatchingProgressService {
 
     handleCombiningError(quarters, error: any): Observable<any> {
         if (quarters === 'null') {
-          return Observable.of(this.massageDataYearly('null', []));
+          return of(this.massageDataYearly('null', []));
         } else {
-          return Observable.of(this.massageDataYearly(quarters, []));
+          return of(this.massageDataYearly(quarters, []));
         }
     }
 

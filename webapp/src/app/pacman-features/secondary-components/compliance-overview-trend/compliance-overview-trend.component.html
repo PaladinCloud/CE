@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
-<a (click)="closeOverallComplianceTrendModal()">
+<a (click)="closeOverallComplianceTrendModal('')">
   <app-overlay></app-overlay>
 </a>
 <div #complianceOverviewContainer class="issue-trend-wrapper-2">
@@ -22,7 +22,7 @@
         <app-title-burger-head
           [subHeadTitle]="'Overall Compliance Trend'"
         ></app-title-burger-head>
-        <div class="delete-title" (click)="closeOverallComplianceTrendModal()">
+        <div class="delete-title" (click)="closeOverallComplianceTrendModal('')">
           <img
             _ngcontent-c41=""
             class="delete-icon"

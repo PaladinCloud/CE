@@ -13,7 +13,7 @@
  */
 
 import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { AutorefreshService } from '../../services/autorefresh.service';
 import { environment } from './../../../../environments/environment';
 import { LoggerService } from '../../../shared/services/logger.service';
@@ -31,7 +31,7 @@ import { PatchingSnapshotService } from '../../services/patching-snapshot.servic
 export class PatchingSnapshotComponent implements OnInit, OnDestroy {
 
   selectedAssetGroup: string;
-  private errorMessage = 'apiResponseError';
+  public errorMessage = 'apiResponseError';
 
   getContextMenuItems: any;
   gridApi: any;
@@ -39,7 +39,7 @@ export class PatchingSnapshotComponent implements OnInit, OnDestroy {
   columns: any = [];
   initComplete = false;
 
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   private subscriptionToAssetGroup: Subscription;
   private dataSubscription: Subscription;
 

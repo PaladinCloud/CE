@@ -15,13 +15,14 @@
 /**
  * Created by Mohammed_Furqan on 10/10/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { environment } from './../../../environments/environment';
 import { HttpService } from '../../shared/services/http-response.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class IssuesHistoryService {
@@ -35,13 +36,13 @@ export class IssuesHistoryService {
     getData(url, method, payload, queryParameters): Observable<any> {
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParameters)
-                .map(response => {
+                .pipe(map(response => {
                     if (method === 'POST') {
                         return this.massagePostResponse(response);
                     } else {
                         return this.massageGetResponse(response);
                     }
-                });
+                }));
         } catch (error) {
             this.logger.log('error', error);
             this.errorHandling.handleJavascriptError(error);
@@ -53,9 +54,9 @@ export class IssuesHistoryService {
         const method = environment.severity.method;
         try {
             return this.httpService.getHttpResponse(url, method, {}, queryParameters)
-                    .map(response => {
+                    .pipe(map(response => {
                         return response;
-                    });
+                    }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }

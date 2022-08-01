@@ -34,7 +34,7 @@ import {
   trigger,
 } from "@angular/animations";
 import { RefactorFieldsService } from "../../shared/services/refactor-fields.service";
-import { MatMenuTrigger } from "@angular/material";
+// import { MatMenuTrigger } from "@angular/material";
 
 @Component({
   selector: "app-data-table",
@@ -166,13 +166,16 @@ export class DataTableComponent implements OnInit, OnChanges {
   @Input() filterTagLabels = [];
   @Output() selectedFilterType = new EventEmitter<any>();
   @Output() selectedFilter = new EventEmitter<any>();
-  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  // @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @Output() deleteAllFilters = new EventEmitter<any>();
   @Output() deleteFilter = new EventEmitter<any>();
   @Input() filteredArray = [];
+  @Input() doNotDisplaySearch;
+
   ishoveredRow: boolean = false;
   ishoveredIndex;
   isHovered: boolean;
+  @Input() isFilterTagLoaded;
 
 
   errorMessage = "apiResponseError";
@@ -473,7 +476,7 @@ export class DataTableComponent implements OnInit, OnChanges {
 
   changeFilterTags(filterName) {
     this.selectedFilter.emit(filterName);
-    this.trigger.closeMenu();
+    // this.trigger.closeMenu();
   }
 
   deleteFilters(event) {

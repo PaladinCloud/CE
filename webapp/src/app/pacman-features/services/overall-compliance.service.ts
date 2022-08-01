@@ -15,11 +15,12 @@
 /**
  * Created by adityaagarwal on 12/10/17.
  */
-import { Observable } from 'rxjs/Rx';
+import { combineLatest, Observable } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
-import 'rxjs/add/operator/toPromise';
+
 import { HttpService } from '../../shared/services/http-response.service';
 import { RefactorFieldsService } from '../../shared/services/refactor-fields.service';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class OverallComplianceService {
@@ -33,11 +34,11 @@ export class OverallComplianceService {
       const method = overallComplainceMethod;
       const payload = {};
         try {
-          return Observable.combineLatest(
+          return combineLatest(
             this.httpService.getHttpResponse(url, method, payload, queryParams)
-            .map(response => this.massageData(response, noMassage))
-            .catch(this.handleError)
-          );
+            .pipe(map(response => this.massageData(response, noMassage))
+            // .catch(this.handleError)
+          ));
         } catch (error) {
             this.handleError(error);
         }

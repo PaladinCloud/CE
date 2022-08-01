@@ -52,6 +52,19 @@ public class ESNodetoNodeEncryptionRuleTest {
 		RuleResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
+	
+	@Test
+	public void esNodeWithLowerVersion() {
+		Map<String, String> ruleParam = new HashMap<>();
+		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
+		ruleParam.put(PacmanSdkConstants.RULE_ID, "esEncryptionAtRestRule");
+		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
+		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
+
+		Map<String, String> resourceAttribute = getResourceWithLowerVersion("ES1234");
+		RuleResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
+		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
+	}
 
 	@Test
 	public void getHelpTextTest() {
@@ -64,6 +77,7 @@ public class ESNodetoNodeEncryptionRuleTest {
 		clusterObj.put("name", "AWS-ES");
 		clusterObj.put("creationTimestamp", "2022-01-10T13:00:38.628-08:00");
 		clusterObj.put("nodetonodeencryption", "true");
+		clusterObj.put("elasticsearchversion", "6.0");
 
 		return clusterObj;
 	}
@@ -74,6 +88,18 @@ public class ESNodetoNodeEncryptionRuleTest {
 		clusterObj.put("name", "AWS-ES");
 		clusterObj.put("creationTimestamp", "2022-01-10T13:00:38.628-08:00");
 		clusterObj.put("nodetonodeencryption", "false");
+		clusterObj.put("elasticsearchversion", "6.0");
+
+		return clusterObj;
+	}
+	
+	private Map<String, String> getResourceWithLowerVersion(String clusterID) {
+		Map<String, String> clusterObj = new HashMap<>();
+		clusterObj.put("_resourceid", clusterID);
+		clusterObj.put("name", "AWS-ES");
+		clusterObj.put("creationTimestamp", "2022-01-10T13:00:38.628-08:00");
+		clusterObj.put("nodetonodeencryption", "false");
+		clusterObj.put("elasticsearchversion", "5.5");
 
 		return clusterObj;
 	}

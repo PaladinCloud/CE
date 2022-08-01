@@ -29,6 +29,9 @@ export class CardComponent implements OnInit {
   @Input() cardButtonAction;
   complianceData = [];
   assetsCountData = [];
+  isComplianceDataLoaded:boolean = false;
+  isAssetsCountDataLoaded: boolean = false;
+  @Input() isPolicyDataLoaded: boolean = false;
 
   private overallComplianceUrl = environment.overallCompliance.url;
   private overallComplianceMethod = environment.overallCompliance.method;
@@ -48,8 +51,12 @@ export class CardComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.agAndDomain["ag"] = params["ag"];
       this.agAndDomain["domain"] = params["domain"];
-      this.getComplianceData();
-      this.getAssetsCountData();
+      if(this.agAndDomain["ag"] && this.agAndDomain["domain"]){
+        console.log(JSON.stringify(this.agAndDomain));
+        
+        this.getComplianceData();
+        this.getAssetsCountData();
+      }
     });
   }
 
@@ -58,6 +65,7 @@ export class CardComponent implements OnInit {
       .getAllResourceCounts(this.agAndDomain)
       .subscribe((results) => {
         try {
+          this.isAssetsCountDataLoaded = false;
           this.assetsCountData = [];
 
           for (let asset of results["assetcount"]) {
@@ -68,6 +76,8 @@ export class CardComponent implements OnInit {
           }
 
           this.assetsCountData.sort((a, b) => b.count - a.count);
+
+          this.isAssetsCountDataLoaded = true;
         } catch (error) {
           this.loggerService.log("error", error);
         }
@@ -83,6 +93,7 @@ export class CardComponent implements OnInit {
       )
       .subscribe((response) => {
         try {
+          this.isComplianceDataLoaded = false;
           this.complianceData = [];
           response[0].data.forEach((element) => {
             if (element[1]["val"] <= 40) {
@@ -94,6 +105,7 @@ export class CardComponent implements OnInit {
             }
             this.complianceData.push(element[1]);
           });
+          this.isComplianceDataLoaded = true;
         } catch (e) {
           console.log(e);
         }

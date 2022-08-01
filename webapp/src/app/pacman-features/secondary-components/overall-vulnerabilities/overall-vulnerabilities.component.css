@@ -102,6 +102,6 @@
   text-shadow: 0.2px 0;
 }
 
-#vulnSummaryPie /deep/ .graph-outer-container {
+#vulnSummaryPie ::ng-deep .graph-outer-container {
   display: inline-block;
 }

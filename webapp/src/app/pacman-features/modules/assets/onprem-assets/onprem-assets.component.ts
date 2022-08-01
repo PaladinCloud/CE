@@ -14,7 +14,7 @@
 
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { GridOptions } from 'ag-grid';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
@@ -39,7 +39,7 @@ export class OnpremAssetsComponent implements OnInit, OnDestroy {
   private targetSubscription: Subscription;
   private updateSubscription: Subscription;
   private dataSubscription: Subscription;
-  private gridOptions: GridOptions;
+  public gridOptions: GridOptions;
   public backButtonRequired;
   pageTitle = 'Update Asset Data';
   breadcrumbArray: any = ['Assets'];

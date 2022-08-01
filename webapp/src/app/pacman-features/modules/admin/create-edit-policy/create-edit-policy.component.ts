@@ -18,7 +18,7 @@ import { ErrorHandlingService } from '../../../../shared/services/error-handling
 import { AdminService } from '../../../services/all-admin.service';
 import { environment } from './../../../../../environments/environment';
 import { NgForm } from '@angular/forms';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';

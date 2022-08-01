@@ -33,6 +33,7 @@
   width: 24px;
   height: 24px;
   padding: 4px;
+  margin-right: 8px;
   background-color: var(--background-white);
 }
 
@@ -40,7 +41,7 @@
   text-transform: capitalize;
   font-weight: var(--text-light-font-weight);
   font-size: var(--text-body-1-font-size);
-  width: 77%;
+  width: auto;
   overflow: hidden;
   text-overflow: ellipsis;
   align-self: center;

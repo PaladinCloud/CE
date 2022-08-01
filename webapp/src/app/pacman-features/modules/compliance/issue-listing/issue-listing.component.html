@@ -13,17 +13,17 @@
  -->
 
 <div class="violations-table" [class.admin-rights]='adminAccess'>
+    <div class="flex flex-align-center" style="padding-bottom: 18px; " *ngIf="backButtonRequired">
+        <img class="arrow-img" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg">
+        <h1 class="title-text nowrap-ellipsis">{{pageTitle}}</h1>
+    </div>
     <div class="wrapper">
-        <div class="flex flex-align-center" style="padding-bottom: 18px; " *ngIf="backButtonRequired">
-            <img class="arrow-img" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg">
-            <h1 class="title-text nowrap-ellipsis">{{pageTitle}}</h1>
-        </div>
         <app-data-table [(cbModel)]="cbModel" (cbClicked)="checkBoxClicked($event)" [checkBox]="adminAccess"
             [searchTextValues]="searchTxt" [showGenericMessage]="showGenericMessage" [errorValue]="errorValue"
             [parentName]="'policyDetailsTableMessage'" [showingArr]="showingArr" [outerArr]="outerArr"
             [searchableHeader]="true" [allColumns]="allColumns" [dataHead]="'Policy Violations'"
             (selectedRow)="goToDetails($event)" [columnWhiteList]="[
-                      'Policy Name',
+                      'Rule Name',
                       'Issue ID',
                       'Resource ID',
                       'Status',
@@ -39,7 +39,7 @@
             [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
             (removeAllCheckedEventEmitter)="handleRemoveAllChecked($event)" (selectedFilterType)='changeFilterType($event)'
             (selectedFilter)="changeFilterTags($event)" (deleteAllFilters)="deleteFilters($event)"
-            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters">
+            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters" [doNotDisplaySearch]="doNotDisplaySearch" [isFilterTagLoaded]="isFilterTagLoaded">
         </app-data-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"

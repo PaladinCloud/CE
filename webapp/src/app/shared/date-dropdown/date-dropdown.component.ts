@@ -14,7 +14,6 @@
 
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-import { DatepickerOptions } from 'ng2-datepicker';
 
 @Component({
   selector: 'app-date-dropdown',
@@ -25,7 +24,6 @@ import { DatepickerOptions } from 'ng2-datepicker';
 export class DateDropdownComponent implements OnInit {
 
   @Input() dataForm: FormGroup;
-  @Input() options: DatepickerOptions;
   date = new Date();
   @Input() dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate();
   @Output() dataSent = new EventEmitter();

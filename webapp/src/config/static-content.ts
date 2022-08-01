@@ -21,11 +21,11 @@ export const CONTENT = {
     'productLogo': '/assets/images/Paladin_Logo_KO.svg',
     'companyLogo': '/assets/icons/tmo-black.svg',
     'heading': APP_NAME,
-    'subHeading': 'Policy as Code Manager',
+    'subHeading': 'Security as Code',
     'awsLogo': '/assets/icons/aws-color.svg',
     'azureLogo': '/assets/icons/azure-color.svg',
     'gcpLogo': '/assets/icons/gcp-color.svg',
-    'productBrief': 'A platform for continuous compliance monitoring, compliance reporting and security automation for Cloud.',
+    'productBrief': 'A platform for continuous monitoring of cloud services to help developers and security teams identify and remediate security risks in their cloud environments to protect their applications.',
     'applicationCore': [
       {
         'title': 'Assess',
@@ -92,7 +92,7 @@ export const CONTENT = {
           },
           {
             'title': 'Data Lake',
-            'description': APP_NAME + ' data lake uses a variety of storage technologies offered by AWS, they include S3, Redshift, RDS and Elastic Search'
+            'description': APP_NAME + ' data lake uses a variety of storage technologies offered by AWS, they include S3, RDS and Elastic Search'
           }
         ]
     },

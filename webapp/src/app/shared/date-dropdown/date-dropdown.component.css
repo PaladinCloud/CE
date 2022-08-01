@@ -12,24 +12,40 @@
  * limitations under the License.
  */
 
-.date-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container{
+.date-wrapper ::ng-deep .ngx-datepicker-container .ngx-datepicker-calendar-container{
     width: 100% !important;
 }
 
-.date-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-day-names .day-name-unit{
+.date-wrapper ::ng-deep .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-day-names .day-name-unit{
 	font-size: 0.8em !important;
 }
 
-.date-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-days{
+.date-wrapper ::ng-deep .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-days{
 	max-height: 40vh !important;
 }
 
-.date-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-days .day-unit{
+.date-wrapper ::ng-deep .ngx-datepicker-container .ngx-datepicker-calendar-container .main-calendar-container .main-calendar-days .day-unit{
 	height: 4vh !important;
 }
 
-.date-wrapper /deep/ .ngx-datepicker-container .ngx-datepicker-input{
+.date-wrapper ::ng-deep .ngx-datepicker-container .ngx-datepicker-input{
 	border-radius: 0.2em !important;
 	border: 1px solid #aaa !important;
     width: 100% !important;
+}
+
+::ng-deep .cdk-overlay-connected-position-bounding-box {
+	position: relative !important;
+}
+
+::ng-deep .date-wrapper .mat-form-field-subscript-wrapper {
+	position:static !important;
+}
+
+::ng-deep .date-wrapper .mat-form-field-appearance-outline .mat-form-field-outline {
+	color: #aaa;
+}
+
+::ng-deep .date-wrapper .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick {
+	color: #aaa;
 }

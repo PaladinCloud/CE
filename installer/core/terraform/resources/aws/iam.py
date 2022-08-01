@@ -61,7 +61,7 @@ class IAMRolePolicyResource(TerraformResource):
         'policy': {'required': True},
         'path': {'required': False},
         'arn': {'required': False},
-        'description': {'required': False}
+        'description': {'required': False},
     }
 
     description = Settings.RESOURCE_DESCRIPTION
@@ -112,7 +112,7 @@ class IAMInstanceProfileResource(TerraformResource):
     resource_instance_name = "aws_iam_instance_profile"
     available_args = {
         'name': {'required': True, 'prefix': True, 'sep': '_'},
-        'role': {'required': True},
+        'role': {'required': True},    
     }
 
     def check_exists_before(self, input, tf_outputs):
@@ -162,6 +162,7 @@ class IamServiceLinkedRole(TerraformResource):
         'aws_service_name': {'required': True},
         'custom_suffix ': {'required': False},
         'description': {'required': False},
+        'tags': {'required': False} 
     }
 
     description = Settings.RESOURCE_DESCRIPTION

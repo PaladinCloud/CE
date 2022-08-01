@@ -14,7 +14,7 @@
 
  <div class="form-input">
     <label [@changeTextColor]="_throwError" [@labelFocus]="animationLabelState">{{inputLabel}}</label>
-    <input autofocus='autofocus' (click)="onClick($event)" on-focus="onFocus($event)" on-focusout="onFocusout($event)" [ngModel]="value" (ngModelChange)="onChanges($event)" [type]="config.type">
+    <input autofocus='autofocus' (click)="onClick()" on-focus="onFocus()" on-focusout="onFocusout()" [ngModel]="value" (ngModelChange)="onChanges($event)" [type]="config.type">
     <div [@changeUnderlineColor]="_throwError" class="underline"></div>
     <div [@changeUnderlineColor]="_throwError" [@underlineFocus]="animationUnderlineState" class="underline-overlay"></div>
 </div>

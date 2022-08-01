@@ -21,6 +21,10 @@
   overflow: hidden;
 }
 
+.freq-col-row{
+  display: flex !important;
+}
+
 .floating-widgets-container:hover {
   overflow: auto;
   overflow: overlay;
@@ -1399,24 +1403,24 @@ button.tmbutton:disabled:hover {
   margin-bottom: 20px;
 }
 
-.floating-widgets-section /deep/ .data-table-wrap.loading {
+.floating-widgets-section ::ng-deep .data-table-wrap.loading {
   max-height: calc(100vh - 21em) !important;
   min-height: calc(100vh - 21em) !important;
 }
 
-.floating-widgets-section /deep/ .data-table-inner-wrap {
+.floating-widgets-section ::ng-deep .data-table-inner-wrap {
   height: auto;
 }
 
-.floating-widgets-section /deep/ .data-table-content {
+.floating-widgets-section ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-content {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-content {
   max-height: calc(100vh - 30em);
 }
 
-.filter-absent.issue-listing-wrapper /deep/ .data-table-inner-wrap {
+.filter-absent.issue-listing-wrapper ::ng-deep .data-table-inner-wrap {
   max-height: 8em;
   overflow-y: auto;
 }

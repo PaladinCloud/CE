@@ -22,7 +22,7 @@ import {
   ElementRef,
   AfterViewInit
 } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../shared/services/common-response.service';
 import { AutorefreshService } from '../../pacman-features/services/autorefresh.service';
 import { environment } from '../../../environments/environment';

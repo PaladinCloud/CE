@@ -12,6 +12,12 @@
  * limitations under the License.
  -->
 
- <div class="date-wrapper" [formGroup]="user">
-	<ng-datepicker [options]='options' formControlName="dateValue" [(ngModel)]="dateToday" (ngModelChange)='searchCalled($event)'></ng-datepicker>
+<div class="date-wrapper" [formGroup]="user">
+	<mat-form-field appearance="outline">
+		<input matInput [matDatepicker]="picker" formControlName="dateValue" [(ngModel)]="date"
+			(ngModelChange)='searchCalled($event)'>
+		<mat-hint>MM/DD/YYYY</mat-hint>
+		<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+		<mat-datepicker #picker></mat-datepicker>
+	</mat-form-field>
 </div>
