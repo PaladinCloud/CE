@@ -19,7 +19,7 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
     function_name = "ruleengine"
     role = LambdaRole.get_output_attr('arn')
     handler = RULE_ENGINE_JOB_FILE_NAME + ".lambda_handler"
-    runtime = "python3.6"
+    runtime = "python3.9"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaRuleEngineZipFile.get_output_attr('id')
     environment = {
