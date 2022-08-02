@@ -20,7 +20,6 @@ import { AdminRoutingModule } from "./admin-routing.module";
 import { RulesComponent } from "./rules/rules.component";
 import { CreateRuleComponent } from "./create-rule/create-rule.component";
 import { CreateEditPolicyComponent } from "./create-edit-policy/create-edit-policy.component";
-import { SelectModule } from "ng2-select";
 import { CreateJobExecutionManagerComponent } from "./job-execution-manager/create-job-execution-manager/create-job-execution-manager.component";
 import { JobExecutionManagerComponent } from "./job-execution-manager/job-execution-manager.component";
 import { UpdateRuleComponent } from "./update-rule/update-rule.component";
@@ -60,7 +59,6 @@ import { MatInputModule } from "@angular/material/input";
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    // SelectModule,
   ],
   declarations: [
     PoliciesComponent,
