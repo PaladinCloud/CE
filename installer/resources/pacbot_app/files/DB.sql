@@ -373,6 +373,7 @@ CREATE TABLE IF NOT EXISTS `cf_SystemConfiguration` (
 
 CREATE TABLE IF NOT EXISTS `cf_Target` (
   `targetName` varchar(75) COLLATE utf8_bin NOT NULL,
+  `displayName` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   `targetDesc` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `category` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `dataSourceName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
@@ -3022,3 +3023,6 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSource
 
 
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('recommendation.categories','fault_tolerance, cost_optimizing, security, performance','application','prd','latest','admin@pacbot.org','09/06/2019 06:07:43','','');
+
+/* Update DisplayName  to TargetName if the value is null in Target table */
+update cf_Target set displayName = targetName where displayName is null;

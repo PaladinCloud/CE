@@ -33,4 +33,6 @@ public interface TargetTypesProjections {
 	public String getEndpoint();
 
 	public String getDomain();
+	
+	public String getDisplayName();
 }

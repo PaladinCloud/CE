@@ -367,6 +367,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
       this.allColumns = Object.keys(totalVariablesObj);
       this.allColumns = [
         "Target Name",
+      	"Display Name",
         "Target Desc",
         "Target Config",
         "Domain",

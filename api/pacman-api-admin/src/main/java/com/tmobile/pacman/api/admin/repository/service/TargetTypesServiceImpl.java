@@ -187,6 +187,7 @@ public class TargetTypesServiceImpl implements TargetTypesService {
 			existingTargetType.setCategory(targetTypesDetails.getCategory());
 			existingTargetType.setDataSourceName(targetTypesDetails.getDataSource());
 			existingTargetType.setTargetConfig(targetTypesDetails.getConfig());
+			existingTargetType.setDisplayName(targetTypesDetails.getDisplayName());
 			existingTargetType.setUserId(userId);
 			String endpoint = config.getElasticSearch().getDevIngestHost() + ":" + config.getElasticSearch().getDevIngestPort() + "/" + targetTypesDetails.getDataSource() + "_"+ targetTypesDetails.getName() + "/" + targetTypesDetails.getName();
 			existingTargetType.setEndpoint(endpoint);
@@ -241,6 +242,7 @@ public class TargetTypesServiceImpl implements TargetTypesService {
 			newTargetType.setCategory(targetTypeRequest.getCategory());
 			newTargetType.setDataSourceName(targetTypeRequest.getDataSource());
 			newTargetType.setTargetConfig(targetTypeRequest.getConfig());
+			newTargetType.setDisplayName(targetTypeRequest.getDisplayName());
 			newTargetType.setStatus("");
 			newTargetType.setUserId(userId);
 			String endpoint = config.getElasticSearch().getDevIngestHost() + ":" + config.getElasticSearch().getDevIngestPort() + "/" + targetTypeRequest.getDataSource() + "_"+ targetName + "/" + targetName;

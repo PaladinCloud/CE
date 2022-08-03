@@ -443,6 +443,10 @@ public class TargetTypesControllerTest {
 			public String getCategory() {
 				return "Category123";
 			}
+			@Override
+			public String getDisplayName() {
+				return "TargetNameDisplayName123";
+			}
 		};
 	}
 }

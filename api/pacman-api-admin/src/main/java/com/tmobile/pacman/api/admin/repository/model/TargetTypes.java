@@ -33,6 +33,7 @@ public class TargetTypes {
 	@Id
 	@Column(name = "targetName", unique = true, nullable = false)
 	private String targetName;
+	private String displayName;
 	private String targetDesc;
 	private String category;
 	private String dataSourceName;
@@ -43,6 +44,15 @@ public class TargetTypes {
 	private Date createdDate;
 	private Date modifiedDate;
 	private String domain;
+
+	
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
 	public String getTargetName() {
 		return targetName;

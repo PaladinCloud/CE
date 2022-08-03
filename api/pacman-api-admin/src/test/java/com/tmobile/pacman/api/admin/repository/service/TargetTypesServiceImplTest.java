@@ -431,6 +431,10 @@ public class TargetTypesServiceImplTest {
 			public String getCategory() {
 				return "Category123";
 			}
+			@Override
+			public String getDisplayName() {
+				return "TargetNameDisplayName123";
+			}
 		};
 	}
 }

@@ -48,7 +48,39 @@
                                                     [placeholder]="'Select Asset Group'">
                                                 </app-dropdown>
                                             </div>
-                                            <div class="input-box" *ngIf="isCreate">
+                                            <div class="input-form">
+                                                <label>Select Category *</label>
+                                                <app-dropdown [items]="allCategoryDetails"
+                                                    (selected)='onSelectTargetTypeCategory($event)'
+                                                    [selectedItem]="targetTypes.category"
+                                                    [placeholder]="'Select Category'">
+                                                </app-dropdown>
+                                            </div>
+                                            <div class="input-box">
+                                                <label>Display Name *</label>
+                                                <ul class="input-wrapper">
+                                                    <input type="text" name="displayName" class="inputarea-container" [(ngModel)]="targetTypes.displayName" placeholder="Enter Target Type Display Name" autocomplete="off">
+                                                </ul>
+                                            </div>
+                                            <div class="bm10 input-box">
+                                                <label>Description *</label>
+                                                <ul>
+                                                    <textarea name="description" class="textarea-container " [(ngModel)]="targetTypes.desc" placeholder="Enter Target Type Description"></textarea>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+                                        <div class="formctnright">
+                                         <div class="input-form">
+                                                <label>Data Source *</label>
+                                                <app-dropdown [items]="datasourceDetails"
+																									(selected)='onSelectDataSource($event)'												
+												[selectedItem]="targetTypes.dataSource" 
+												placeholder="'Select Datasource'">
+                                                 </app-dropdown>
+                                            </div>
+
+                                             <div class="input-box" *ngIf="isCreate">
                                                 <label>Target Type Name *</label>
                                                 <ul class="input-wrapper">
                                                     <input type="text" name="type" class="inputarea-container"
@@ -61,27 +93,7 @@
                                                 <label>Target Type Name *</label>
                                                 <div class="text-value">{{targetTypes.name}}</div>
                                             </div>
-
-                                            <div class="bm10 input-box">
-                                                <label>Description *</label>
-                                                <ul>
-                                                    <textarea name="description" class="textarea-container "
-                                                        [(ngModel)]="targetTypes.desc"
-                                                        placeholder="Enter Target Type Description"></textarea>
-                                                </ul>
-                                            </div>
-
-                                        </div>
-                                        <div class="formctnright">
-                                            <div class="input-form">
-                                                <label>Select Category *</label>
-                                                <app-dropdown [items]="allCategoryDetails"
-                                                    (selected)='onSelectTargetTypeCategory($event)'
-                                                    [selectedItem]="targetTypes.category"
-                                                    [placeholder]="'Select Category'">
-                                                </app-dropdown>
-                                            </div>
-
+											 
                                             <div class="bm10 input-box">
                                                 <label>Config *</label>
                                                 <ul>
@@ -97,14 +109,10 @@
 
                             <div class="data-table-paginator-wrap flex flex-center flex-align-center">
                                 <a class="save-container flex flex-row-reverse" *ngIf="isCreate">
-                                    <button class="submit-btn uppercase" (click)="createTargetType(targetTypes)"
-                                        [disabled]="targetTypes.name==='' || targetTypes.desc==='' || targetTypes.domain.length==0 || targetTypes.category.length==0 || targetTypes.config===''"><i
-                                            class="fa fa-check"></i> CREATE</button>
+                                    <button class="submit-btn uppercase" (click)="createTargetType(targetTypes)" [disabled]="targetTypes.name==='' || targetTypes.desc==='' || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config===''"><i class="fa fa-check"></i> CREATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse" *ngIf="!isCreate">
-                                    <button class="submit-btn uppercase" (click)="updateTargetType(targetTypes)"
-                                        [disabled]="targetTypes.name==='' || targetTypes.desc==='' || targetTypes.domain.length==0 || targetTypes.category.length==0 || targetTypes.config===''"><i
-                                            class="fa fa-check"></i> UPDATE</button>
+                                    <button class="submit-btn uppercase" (click)="updateTargetType(targetTypes)" [disabled]="targetTypes.name==='' || targetTypes.desc==='' || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config===''"><i class="fa fa-check"></i> UPDATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse">
                                     <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i

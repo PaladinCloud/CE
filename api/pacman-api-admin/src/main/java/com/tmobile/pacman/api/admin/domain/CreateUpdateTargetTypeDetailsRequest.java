@@ -25,9 +25,19 @@ public class CreateUpdateTargetTypeDetailsRequest {
 	private String name;
 	private String desc;
 	private String config;
+	private String displayName;
 
+	
 	public String getDataSource() {
 		return dataSource;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public String getDomain() {
