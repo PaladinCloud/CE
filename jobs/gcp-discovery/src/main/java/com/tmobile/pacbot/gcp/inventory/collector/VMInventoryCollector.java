@@ -53,6 +53,8 @@ public class VMInventoryCollector {
                         virtualMachineVH.setDescription(instance.getDescription());
                         virtualMachineVH.setRegion(zoneName);
                         virtualMachineVH.setStatus(instance.getStatus());
+                        logger.info("On hoost maintainenece attribute");
+                        virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
                         this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);
                         this.setNetworkInterfaces(instance, virtualMachineVH);
@@ -86,8 +88,6 @@ public class VMInventoryCollector {
             networkInterfaceVH.setName(networkInterface.getName());
             networkInterfaceVH.setNetwork(networkInterface.getNetwork());
             networkInterfaceVH.setId(networkInterface.getName());
-            // TODO: Add subnetwork
-            // networkInterfaceVH.setSubnetwork(networkInterface.getSubnetwork());
 
             List<AccessConfigVH> accessConfigVHList = new ArrayList<>();
             for (AccessConfig accessConfig : networkInterface.getAccessConfigsList()) {
