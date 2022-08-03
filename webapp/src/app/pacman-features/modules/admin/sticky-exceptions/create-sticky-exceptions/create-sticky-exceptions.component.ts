@@ -29,7 +29,6 @@ import { ErrorHandlingService } from '../../../../../shared/services/error-handl
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { SelectComponent } from 'ng2-select';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
@@ -62,7 +61,6 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
   ]
 })
 export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
-  @ViewChild('targetTypeRuleSelect') targetTypeRuleSelectComponent: SelectComponent;
   pageTitle: String = '';
   breadcrumbArray: any = ['Sticky Exceptions'];
   breadcrumbLinks: any = ['sticky-exceptions'];
@@ -234,12 +232,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.selectedIndex = index;
 
     attributeDetail.rules;
-    if (attributeDetail.allRules.length === 0) {
-      this.targetTypeRuleSelectComponent.placeholder = 'No Rules Available';
-    } else {
-      this.targetTypeRuleSelectComponent.items = attributeDetail.allRules;
-      this.targetTypeRuleSelectComponent.placeholder = 'Select Rule Name';
-    }
+
   }
 
   addAttributes(attributeName, attributeValue) {
@@ -249,15 +242,9 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     if (itemIndex !== -1) {
       this.allAttributeDetails[this.selectedIndex].allRules.splice(itemIndex, 1);
       this.selectedAllRules = this.allAttributeDetails[this.selectedIndex].allRules;
-      this.targetTypeRuleSelectComponent.items = this.selectedAllRules;
     }
     this.attributeValue = '';
     this.attributeName = [];
-    if (this.allAttributeDetails[this.selectedIndex].allRules.length === 0) {
-      this.targetTypeRuleSelectComponent.placeholder = 'No Rules Available';
-    } else {
-      this.targetTypeRuleSelectComponent.placeholder = 'Select Rule Name';
-    }
   }
 
   deleteAttributes(attributeName, itemIndex) {
@@ -266,13 +253,6 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     if (itemIndex !== -1) {
       this.allAttributeDetails[this.selectedIndex].allRules.push(ruleDetails);
       this.selectedAllRules = this.allAttributeDetails[this.selectedIndex].allRules;
-      this.targetTypeRuleSelectComponent.items = this.selectedAllRules;
-    }
-
-    if (this.allAttributeDetails[this.selectedIndex].allRules.length === 0) {
-      this.targetTypeRuleSelectComponent.placeholder = 'No Rules Available';
-    } else {
-      this.targetTypeRuleSelectComponent.placeholder = 'Select Rule Name';
     }
   }
 

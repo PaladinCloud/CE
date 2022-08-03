@@ -17,7 +17,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
 import { MatSelectModule } from "@angular/material/select";
-import { AgGridModule } from "ag-grid-angular/main";
+import { AgGridModule } from "ag-grid-angular";
 import { CanvasSidePanelComponent } from "./canvas-side-panel/canvas-side-panel.component";
 import { ButtonIconComponent } from "./button-icon/button-icon.component";
 import { ErrorMessageComponent } from "./error-message/error-message.component";
@@ -40,7 +40,6 @@ import { RouterUtilityService } from "./services/router-utility.service";
 import { HttpService } from "./services/http-response.service";
 import { UtilsService } from "./services/utils.service";
 import { SearchableDropdownComponent } from "./searchable-dropdown/searchable-dropdown.component";
-import { SelectModule } from "ng2-select";
 import { BackNavigationComponent } from "./back-navigation/back-navigation.component";
 import { FilteredSelectorComponent } from "./filtered-selector/filtered-selector.component";
 import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
@@ -69,7 +68,6 @@ import { ExceptionManagementService } from "./services/exception-management.serv
 import { MainFilterComponent } from "./main-filter/main-filter.component";
 import { RadioButtonComponent } from "./radio-button/radio-button.component";
 import { CheckBoxBtnComponent } from "./check-box-btn/check-box-btn.component";
-import { InfiniteScrollModule } from "ngx-infinite-scroll";
 import { FilterManagementService } from "./services/filter-management.service";
 import { GenericPageFilterComponent } from "./generic-page-filter/generic-page-filter.component";
 import { CommonPageTemplateComponent } from "./common-page-template/common-page-template.component";
@@ -97,7 +95,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { EmptyStateComponent } from "./empty-state/empty-state.component";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { DropdownComponent } from "./dropdown/dropdown.component";
-import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from "@angular/material/input";
 
@@ -111,8 +109,6 @@ import { MatInputModule } from "@angular/material/input";
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
-    // SelectModule,
-    // HttpModule,
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -221,7 +217,6 @@ import { MatInputModule } from "@angular/material/input";
     MainFilterComponent,
     RadioButtonComponent,
     CheckBoxBtnComponent,
-    InfiniteScrollModule,
     GenericPageFilterComponent,
     WidgetSectionStarterComponent,
     BarChartComponent,

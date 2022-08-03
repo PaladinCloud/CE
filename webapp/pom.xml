@@ -75,8 +75,8 @@
 					</execution>
                 </executions>
                 <configuration>
-                    <nodeVersion>v16.10.0</nodeVersion>
-                    <npmVersion>7.24.0</npmVersion>
+                    <nodeVersion>v16.13.2</nodeVersion>
+                    <npmVersion>8.1.2</npmVersion>
      				<workingDirectory>${pom.parent.basedir}</workingDirectory>
                 </configuration>
             </plugin>
