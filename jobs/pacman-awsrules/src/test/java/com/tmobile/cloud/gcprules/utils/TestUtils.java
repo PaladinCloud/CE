@@ -457,5 +457,141 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonForVMTerminateFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west4-b\",\n" +
+                "          \"id\": \"4705952002456105765\",\n" +
+                "          \"projectName\": \"my-project-22-354616\",\n" +
+                "          \"name\": \"paladin-instance-1\",\n" +
+                "          \"description\": \"\",\n" +
+                "          \"disks\": [\n" +
+                "            {\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"0\",\n" +
+                "              \"projectName\": \"my-project-22-354616\",\n" +
+                "              \"name\": \"paladin-instance-1\",\n" +
+                "              \"sizeInGB\": 10,\n" +
+                "              \"type\": \"PERSISTENT\",\n" +
+                "              \"hasSha256\": false,\n" +
+                "              \"hasKmsKeyName\": false,\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"tags\": {\n" +
+                "            \"application\": \"paladincloud\",\n" +
+                "            \"enviornment\": \"gcp-demo\"\n" +
+                "          },\n" +
+                "          \"machineType\": \"https://www.googleapis.com/compute/v1/projects/my-project-22-354616/zones/us-west4-b/machineTypes/e2-micro\",\n" +
+                "          \"status\": \"TERMINATED\",\n" +
+                "          \"networkInterfaces\": [\n" +
+                "            {\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"nic0\",\n" +
+                "              \"projectName\": null,\n" +
+                "              \"name\": \"nic0\",\n" +
+                "              \"accessConfigs\": [\n" +
+                "                {\n" +
+                "                  \"_cloudType\": \"GCP\",\n" +
+                "                  \"region\": null,\n" +
+                "                  \"id\": \"External NAT\",\n" +
+                "                  \"projectName\": \"my-project-22-354616\",\n" +
+                "                  \"name\": \"External NAT\",\n" +
+                "                  \"natIP\": \"\",\n" +
+                "                  \"discoverydate\": null\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"network\": \"https://www.googleapis.com/compute/v1/projects/my-project-22-354616/global/networks/default\",\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"items\": [],\n" +
+                "          \"onHostMaintainence\": \"TERMINATE\",\n" +
+                "          \"discoverydate\": \"2022-08-02 10:00:00+0000\",\n" +
+                "          \"_resourceid\": \"4705952002456105765\",\n" +
+                "          \"_docid\": \"4705952002456105765\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-07-20 15:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-08-02 11:03:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitsJsonForVMMigrateSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west4-b\",\n" +
+                "          \"id\": \"4705952002456105765\",\n" +
+                "          \"projectName\": \"my-project-22-354616\",\n" +
+                "          \"name\": \"paladin-instance-1\",\n" +
+                "          \"description\": \"\",\n" +
+                "          \"disks\": [\n" +
+                "            {\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"0\",\n" +
+                "              \"projectName\": \"my-project-22-354616\",\n" +
+                "              \"name\": \"paladin-instance-1\",\n" +
+                "              \"sizeInGB\": 10,\n" +
+                "              \"type\": \"PERSISTENT\",\n" +
+                "              \"hasSha256\": false,\n" +
+                "              \"hasKmsKeyName\": false,\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"tags\": {\n" +
+                "            \"application\": \"paladincloud\",\n" +
+                "            \"enviornment\": \"gcp-demo\"\n" +
+                "          },\n" +
+                "          \"machineType\": \"https://www.googleapis.com/compute/v1/projects/my-project-22-354616/zones/us-west4-b/machineTypes/e2-micro\",\n" +
+                "          \"status\": \"TERMINATED\",\n" +
+                "          \"networkInterfaces\": [\n" +
+                "            {\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"nic0\",\n" +
+                "              \"projectName\": null,\n" +
+                "              \"name\": \"nic0\",\n" +
+                "              \"accessConfigs\": [\n" +
+                "                {\n" +
+                "                  \"_cloudType\": \"GCP\",\n" +
+                "                  \"region\": null,\n" +
+                "                  \"id\": \"External NAT\",\n" +
+                "                  \"projectName\": \"my-project-22-354616\",\n" +
+                "                  \"name\": \"External NAT\",\n" +
+                "                  \"natIP\": \"\",\n" +
+                "                  \"discoverydate\": null\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"network\": \"https://www.googleapis.com/compute/v1/projects/my-project-22-354616/global/networks/default\",\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"items\": [],\n" +
+                "          \"onHostMaintainence\": \"MIGRATE\",\n" +
+                "          \"discoverydate\": \"2022-08-02 10:00:00+0000\",\n" +
+                "          \"_resourceid\": \"4705952002456105765\",\n" +
+                "          \"_docid\": \"4705952002456105765\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-07-20 15:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-08-02 11:03:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 
 }
