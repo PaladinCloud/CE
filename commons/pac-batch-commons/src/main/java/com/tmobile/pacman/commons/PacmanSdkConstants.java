@@ -23,7 +23,6 @@
 
 package com.tmobile.pacman.commons;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface PacmanSdkConstants.
  */
@@ -297,4 +296,5 @@ public interface PacmanSdkConstants {
 	String CLOUD_INSIGHT_USER = "CLOUD_INSIGHT_USER";
 	
 	String CLOUD_INSIGHT_PASSWORD = "CLOUD_INSIGHT_PASSWORD";
+    String OPERATIONS ="operations" ;
 }
