@@ -26,6 +26,9 @@ package com.tmobile.cloud.constants;
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
+
+    public static final String TCP = "TCP";
+
     public static final String NAME = "name";
     public static final String ES_VM_URL = "esvmURL";
     public static final String GCP_NETWORK_INTERFACE = "networkInterfaces";

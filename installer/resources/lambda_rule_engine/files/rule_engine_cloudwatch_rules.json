@@ -6357,6 +6357,27 @@
     "modifiedDate": "2022-07-19",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Network_Security_for_SQLSERVER",
+    "ruleUUID": "azure_enable_network_security_SQLSERVER",
+    "policyId": "Enable_Network_Security_for_SQLSERVER",
+    "ruleName": "Enable_Network_Security_for_SQLSERVER",
+    "targetType": "nsg",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Enable Network Security for SQLSERVER",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"udp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1434\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny public access to SQL Server port 1434\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for SQLSERVER\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Network_Security_for_SQLSERVER\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_SQLSERVER\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_enable_network_security_SQLSERVER",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny public access to SQL Server port 1434",
+    "createdDate": "2022-05-02",
+    "modifiedDate": "2022-05-02",
+    "severity": "critical",
+    "category": "security"
   }
-
 ]
