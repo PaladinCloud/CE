@@ -6367,7 +6367,7 @@
     "assetGroup": "Azure",
     "alexaKeyword": "Enable Network Security for SQLSERVER",
     "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"udp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1434\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny public access to SQL Server port 1434\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for SQLSERVER\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Network_Security_for_SQLSERVER\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_SQLSERVER\",\"ruleType\":\"ManageRule\"}",
-    "ruleFrequency": "0 0/6 * * ? *",
+     "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "ManageRule",
@@ -6379,6 +6379,27 @@
     "modifiedDate": "2022-05-02",
     "severity": "critical",
     "category": "security"
+   },
+   {
+    "ruleId": "GCP_VM_Instance_Migrate",
+    "ruleUUID": "GCP_VM_Instance_Migrate",
+    "policyId": "GCP_VM_Instance_Migrate",
+    "ruleName": "GCP_VM_Instance_Migrate",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "VMInstanceMigrate",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vminstance-migrate-on-maintenance\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"checks if virtual machine instance will be migrated on maintenance\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VM instance will be terminated on maintenance event\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_vminstance/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VM instance should be migrated during maintenance\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_VM_Instance_Migrate\",\"autofix\":false,\"alexaKeyword\":\"VMInstanceMigrate\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_VM_Instance_Migrate\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"GCP_VM_Instance_Migrate\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/GCP_VM_Instance_Migrate",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "VM instance should be migrated during maintenance",
+    "createdDate": "2022-08-01",
+    "modifiedDate": "2022-08-01",
+    "severity": "high",
+    "category": "operations"
   }
-
 ]
