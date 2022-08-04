@@ -95,7 +95,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
     }
 
     private boolean validatePostgresqlServerAccess(String esUrl, Map<String, Object> mustFilter, String[] validatePort,
-            String validateProtocol) throws Exception {
+                                                   String validateProtocol) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
         JsonParser parser = new JsonParser();
@@ -123,17 +123,18 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                                 .get(PacmanRuleConstants.SECURITY_RULE_SOURCEADDRESSPREFIXES).getAsJsonArray();
                         String protocol = nBoundarySecurityDataItem.getAsJsonObject()
                                 .get(PacmanRuleConstants.PROTOCOL).getAsString();
+                        JsonArray destinationPortRanges=nBoundarySecurityDataItem.getAsJsonObject()
+                                .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray();
+
                         if (sourceAddressPrefixes != null && (protocol.equalsIgnoreCase(validateProtocol)||protocol.equalsIgnoreCase(PacmanRuleConstants.PORT_ANY)
-                                && checkDestinationPort(nBoundarySecurityDataItem.getAsJsonObject()
-                                        .get(PacmanRuleConstants.DESTINATIONPORTRANGES).getAsJsonArray(),
-                                        validatePort,validateProtocol))) {
+                                && checkDestinationPort(destinationPortRanges,validatePort))) {
                             for (int srcAdsIndex = 0; srcAdsIndex < sourceAddressPrefixes.size(); srcAdsIndex++) {
                                 if (sourceAddressPrefixes.get(srcAdsIndex).getAsString()
                                         .equals(PacmanRuleConstants.PORT_ANY)
                                         || sourceAddressPrefixes.get(srcAdsIndex).getAsString()
-                                                .equals(PacmanRuleConstants.ANY)
+                                        .equals(PacmanRuleConstants.ANY)
                                         || sourceAddressPrefixes.get(srcAdsIndex).getAsString()
-                                                .equals(PacmanRuleConstants.INTERNET)) {
+                                        .equals(PacmanRuleConstants.INTERNET)) {
                                     logger.info("Port: {} has unrestricted Access", ((Object[]) validatePort));
                                     validationResult = false;
                                     break;
@@ -163,10 +164,9 @@ public class PublicAccessforConfiguredPort extends BaseRule {
         return validationResult;
     }
 
-    private boolean checkDestinationPort(JsonArray destinationPorts, String[] validatePorts,String protocol) {
+    private boolean checkDestinationPort(JsonArray destinationPorts, String[] validatePorts) {
         logger.info("checkDestinationPort");
-        if(protocol.equals(PacmanRuleConstants.UDP))
-            return true;
+
         for (int i = 0; i < destinationPorts.size(); i++) {
             if (ArrayUtils.contains(validatePorts, destinationPorts.get(i).toString())
                     || ArrayUtils.contains(validatePorts, PacmanRuleConstants.PORT_ANY)) {
