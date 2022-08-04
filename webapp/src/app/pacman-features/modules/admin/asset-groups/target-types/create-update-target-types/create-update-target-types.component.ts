@@ -49,7 +49,9 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     category: '',
     name: '',
     desc: '',
-    config: ''
+    config: '',
+    dataSource:[],
+    displayName:''
   };
 
   isCreate: boolean = false;
@@ -80,7 +82,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   queryParamsWithoutFilter: any;
   urlToRedirect: any = '';
   mandatory: any;
-
+  datasourceDetails = [];
+  
   public labels: any;
   private previousUrl: any = '';
   private pageLevel = 0;
@@ -153,7 +156,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       name: targetTypes.name,
       desc: targetTypes.desc,
       config: targetTypes.config,
-      dataSource: 'aws'
+      displayName: targetTypes.displayName,
+     dataSource: targetTypes.dataSource[0].text
     }
     this.adminService.executeHttpAction(url, method, targetTypeDetails, {}).subscribe(reponse => {
       this.successTitle = 'Target type Created';
@@ -164,7 +168,9 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         category: '',
         name: '',
         desc: '',
-        config: ''
+        displayName:'',
+        config: '',
+        dataSource:[]
       };
     },
       error => {
@@ -189,7 +195,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       name: targetTypes.name,
       desc: targetTypes.desc,
       config: targetTypes.config,
-      dataSource: 'aws'
+      displayName: targetTypes.displayName,
+      dataSource: targetTypes.dataSource[0].text
     }
     this.adminService.executeHttpAction(url, method, targetTypeDetails, {}).subscribe(reponse => {
       this.successTitle = 'Target type Updated';
@@ -200,7 +207,9 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         category: '',
         name: '',
         desc: '',
-        config: ''
+        config: '',
+        displayName:'',
+        dataSource:[]
       };
     },
       error => {
@@ -214,6 +223,9 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   }
   onSelectTargetTypeCategory(category: any) {
     this.targetTypes.category = category;
+  }
+   onSelectDataSource(dataSource: any) {
+    this.targetTypes.dataSource = dataSource;
   }
   closeErrorMessage() {
     if (this.failedTitle === 'Loading Failed') {
@@ -290,6 +302,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     let method = environment.domains.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(domainsReponse => {
       this.allDomainDetails = this.deMarshalDomain(domainsReponse[0]);
+      this.getDatasourceDetails();
       let targetCategoryUrl = environment.getTargetTypesCategories.url;
       let targetCategoryMethod = environment.getTargetTypesCategories.method;
       this.adminService.executeHttpAction(targetCategoryUrl, targetCategoryMethod, {}, {}).subscribe(categoryReponse => {
@@ -325,7 +338,27 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         this.targetTypeLoader = false;
       })
   }
+	getDatasourceDetails() {
+		const url = environment.datasourceDetails.url;
+		const method = environment.datasourceDetails.method;
+		this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+			const fullDatasourceNames = [];
+			for (let index = 0; index < reponse[0].length; index++) {
+				let domainItem = {};
+				domainItem['id'] = reponse[0][index].dataSourceName;
+				domainItem['text'] = reponse[0][index].dataSourceName;
+				fullDatasourceNames.push(domainItem);
 
+			}
+			this.datasourceDetails = fullDatasourceNames;
+		},
+			error => {
+
+				this.datasourceDetails = [];
+				this.errorMessage = 'apiResponseError';
+				this.showLoader = false;
+			});
+	}
   allSelectedTargettypeDetails: any;
   getTargetTypeDetails(targetTypeName) {
     this.hideContent = true;
@@ -345,6 +378,8 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       this.targetTypes.name = this.allSelectedTargettypeDetails.targetName;
       this.targetTypes.desc = this.allSelectedTargettypeDetails.targetDesc;
       this.targetTypes.config = this.allSelectedTargettypeDetails.targetConfig;
+      this.targetTypes.displayName = this.allSelectedTargettypeDetails.displayName;
+      this.targetTypes.dataSource = [{text: this.allSelectedTargettypeDetails.dataSourceName, id:this.allSelectedTargettypeDetails.dataSourceName}];
     },
       error => {
         this.errorValue = -1;
@@ -370,6 +405,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     }
     return fullDomains;
   }
+  
   /**
    * This function get calls the keyword service before initializing
    * the filter array ,so that filter keynames are changed
