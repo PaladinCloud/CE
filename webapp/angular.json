@@ -106,8 +106,7 @@
               "node_modules/offline-js/themes/offline-theme-chrome.css",
               "node_modules/offline-js/themes/offline-language-english.css",
               "node_modules/ag-grid/dist/styles/ag-grid.css",
-              "node_modules/ag-grid/dist/styles/ag-theme-blue.css",
-              "node_modules/ngx-select-dropdown/dist/assets/style.css"
+              "node_modules/ag-grid/dist/styles/ag-theme-blue.css"
             ],
             "assets": [
               "src/assets",
