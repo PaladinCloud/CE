@@ -84,16 +84,6 @@ public class PublicAccessPortAutofix extends BaseFix {
         return false;
     }
 
-//    @Override
-//    public boolean isFixCandidate(String resourceId, String resourceType, Map<String, Object> clientMap, Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
-//        String groupName = issue.get("groupname");
-//        LOGGER.info("Checking if resource is eligible for autofix");
-//        String testResourceId = "subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-paladincloud/providers/Microsoft.Network/networkSecurityGroups/test-nsg-autofix";
-//        if (StringUtils.isNullOrEmpty(resourceId)) return false;
-//        boolean b = resourceId.equalsIgnoreCase(testResourceId);
-//        return b;
-//    }
-
     @Override
     public AutoFixTransaction addDetailsToTransactionLog(Map<String, String> annotation) {
         LinkedHashMap<String, String> transactionParams = new LinkedHashMap();

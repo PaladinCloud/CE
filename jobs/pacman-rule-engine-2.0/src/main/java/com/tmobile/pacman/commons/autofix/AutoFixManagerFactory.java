@@ -2,6 +2,7 @@ package com.tmobile.pacman.commons.autofix;
 
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.common.PacmanSdkConstants;
+import com.tmobile.pacman.commons.autofix.manager.AwsAutofixManager;
 import com.tmobile.pacman.commons.autofix.manager.AzureAutofixManager;
 import com.tmobile.pacman.commons.autofix.manager.GcpAutofixManager;
 import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
@@ -13,16 +14,19 @@ public class AutoFixManagerFactory {
     }
 
     public static IAutofixManger getAutofixManager(String assetType){
+        IAutofixManger autofixManger=null;
         switch (assetType.toUpperCase()){
             case "AZURE":
-                return new AzureAutofixManager();
+                autofixManger= new AzureAutofixManager();
+                break;
             case "GCP":
-                return new GcpAutofixManager();
+                autofixManger= new GcpAutofixManager();
+                break;
             case "AWS":
             default:
-                new AzureAutofixManager();
+                autofixManger=new AwsAutofixManager();
         }
-        return null;
+        return autofixManger;
     }
 }
 
