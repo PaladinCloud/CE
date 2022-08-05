@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.microsoft.azure.PagedList;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.keyvault.Key;
+import com.microsoft.azure.management.keyvault.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +36,9 @@ public class VaultInventoryCollector {
 
 	public List<VaultVH> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
 
-		List<VaultVH> vaultList = new ArrayList<VaultVH>();
+		List<VaultVH> vaultList = new ArrayList();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 
 		String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
 		try {
@@ -89,7 +94,20 @@ public class VaultInventoryCollector {
 						HashMap<String, Object> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
 						vaultVH.setTags(tagsMap);
 					}
-
+					String id =vaultVH.getId();
+					int beginningIndex=id.indexOf("resourceGroups")+15;
+					String resourceGroupName=(vaultVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+					log.debug("Resource group name: {}",resourceGroupName);
+					vaultVH.setResourceGroupName(resourceGroupName);
+					PagedList<Vault> vaults=azure.vaults().listByResourceGroup(resourceGroupName);
+					//				.keys().list().get(0).attributes().expires()
+					for(Vault vault:vaults){
+						PagedList<Key> keys=vault.keys().list();
+						for(Key key:keys)
+						{
+							vaultVH.setKeyExpirationDate(key.attributes().expires().toString());
+						}
+					}
 					vaultList.add(vaultVH);
 				}
 			}
