@@ -51,6 +51,9 @@ public class AssetFileGenerator {
 	@Autowired
 	DataProcInventoryCollector dataProcInventoryCollector;
 
+	@Autowired
+	GKEClusterInventoryCollector gkeClusterInventoryCollector;
+
 	public void generateFiles(List<String> projects, String filePath) {
 
 		try {
@@ -106,7 +109,8 @@ public class AssetFileGenerator {
 				}
 				try {
 					log.info("Target type bigqueytable configured. Executing collector");
-					FileManager.generateBigqueryTableFiles(bigQueryInventoryCollector.fetchBigqueryTableInventory(project));
+					FileManager.generateBigqueryTableFiles(
+							bigQueryInventoryCollector.fetchBigqueryTableInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -163,6 +167,16 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("gkecluster"))) {
+					return;
+				}
+				try {
+					FileManager.generateGKEClusterFiles(gkeClusterInventoryCollector.fetchGKEClusterInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 
 			executor.shutdown();
 
@@ -177,8 +191,6 @@ public class AssetFileGenerator {
 		} catch (IOException e) {
 		}
 	}
-
-
 
 	private boolean isTypeInScope(String type) {
 		if ("".equals(targetTypes)) {

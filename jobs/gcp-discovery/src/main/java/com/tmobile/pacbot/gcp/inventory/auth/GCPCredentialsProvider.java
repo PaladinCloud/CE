@@ -13,6 +13,10 @@ import com.google.cloud.compute.v1.FirewallsClient;
 import com.google.cloud.compute.v1.FirewallsSettings;
 import com.google.cloud.compute.v1.InstancesClient;
 import com.google.cloud.compute.v1.InstancesSettings;
+import com.google.cloud.compute.v1.Zone;
+import com.google.cloud.compute.v1.ZoneList;
+import com.google.cloud.compute.v1.ZonesClient;
+import com.google.cloud.compute.v1.ZonesSettings;
 import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.google.cloud.dataproc.v1.ClusterControllerSettings;
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
@@ -31,6 +35,8 @@ import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import com.google.cloud.container.v1.ClusterManagerSettings;
+import com.google.cloud.container.v1.ClusterManagerClient;
 
 @Component
 public class GCPCredentialsProvider {
@@ -49,8 +55,8 @@ public class GCPCredentialsProvider {
     private SQLAdmin sqlAdmin;
 
     private KeyManagementServiceClient kmsKeyServiceClient;
-
-
+    private ClusterManagerClient clusterManagerClient;
+    private ZonesClient zonesClient;
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -113,12 +119,12 @@ public class GCPCredentialsProvider {
         if (sqlAdmin == null) {
             HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-            sqlAdmin = new SQLAdmin.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials()))
+            sqlAdmin = new SQLAdmin.Builder(httpTransport, jsonFactory,
+                    new HttpCredentialsAdapter(this.getCredentials()))
                     .build();
         }
         return sqlAdmin;
     }
-
 
     public KeyManagementServiceClient getKmsKeyServiceClient() throws IOException {
         if (kmsKeyServiceClient == null) {
@@ -131,27 +137,49 @@ public class GCPCredentialsProvider {
     }
 
     public TopicAdminClient getTopicClient() throws IOException {
-        if(topicAdminClient==null) {
-            TopicAdminSettings topicAdminSettings=TopicAdminSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-            topicAdminClient =TopicAdminClient.create(topicAdminSettings);
+        if (topicAdminClient == null) {
+            TopicAdminSettings topicAdminSettings = TopicAdminSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            topicAdminClient = TopicAdminClient.create(topicAdminSettings);
         }
         return topicAdminClient;
     }
 
     public ClusterControllerClient getDataProcClient(String region) throws IOException {
         String url = region + "-dataproc.googleapis.com:443";
-        ClusterControllerSettings clusterControllerSettings = ClusterControllerSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).setEndpoint(url).build();
+        ClusterControllerSettings clusterControllerSettings = ClusterControllerSettings.newBuilder()
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).setEndpoint(url)
+                .build();
         return ClusterControllerClient.create(clusterControllerSettings);
     }
-        public CloudTasks createCloudTasksService() throws IOException, GeneralSecurityException {
+
+    public CloudTasks createCloudTasksService() throws IOException, GeneralSecurityException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
         return new CloudTasks.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials()))
                 .build();
     }
 
+    public ZonesClient Zonesclient() throws IOException, GeneralSecurityException {
+        if (zonesClient == null) {
+            ZonesSettings zonesSettings = ZonesSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            zonesClient = ZonesClient.create(zonesSettings);
+        }
 
+        return zonesClient;
+    }
 
+    public ClusterManagerClient getClusterManagerClient() throws IOException {
+
+        if (clusterManagerClient == null) {
+            ClusterManagerSettings clusterManagerSettings = ClusterManagerSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            clusterManagerClient = ClusterManagerClient.create(clusterManagerSettings);
+
+        }
+        return clusterManagerClient;
+    }
 
     // close the client in destroy method
     @PreDestroy

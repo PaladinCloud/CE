@@ -596,7 +596,7 @@ public class AssetFileGenerator {
 			});
 
 			executor.execute(() -> {
-				if (!(isTypeInScope("webApp"))) {
+				if (!(isTypeInScope("webapp"))) {
 					return;
 				}
 				try {

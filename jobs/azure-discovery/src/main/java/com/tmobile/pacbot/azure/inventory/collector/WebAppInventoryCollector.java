@@ -23,12 +23,12 @@ public class WebAppInventoryCollector {
     @Autowired
     AzureCredentialProvider azureCredentialProvider;
 
-
     private static Logger log = LoggerFactory.getLogger(WebAppInventoryCollector.class);
+
     public List<WebAppVH> fetchWebAppDetails(SubscriptionVH subscription) {
         List<WebAppVH> webAppList = new ArrayList<>();
 
-        Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
+        Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
 
         PagedList<WebApp> webApps = azure.webApps().list();
 
@@ -41,13 +41,13 @@ public class WebAppInventoryCollector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
+                webAppVH.setId(webApp.id());
                 webAppList.add(webAppVH);
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
-                log.error("Error Collecting info for {} ",e.getMessage());
+                log.error("Error Collecting info for {} ", e.getMessage());
             }
         }
-    return webAppList;
+        return webAppList;
     }
 }

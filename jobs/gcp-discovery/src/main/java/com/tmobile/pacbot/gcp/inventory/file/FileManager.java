@@ -55,6 +55,8 @@ public class FileManager {
         FileGenerator.writeToFile(InventoryConstants.GCP_KMS_KEY_FILE, "[", false);
         FileGenerator.writeToFile("gcp-dataproc.data", "[", false);
         FileGenerator.writeToFile("gcp-pubsub.data", "[", false);
+        FileGenerator.writeToFile("gcp-gkecluster.data", "[", false);
+
     }
 
     public static void finalise() throws IOException {
@@ -68,6 +70,8 @@ public class FileManager {
         FileGenerator.writeToFile(InventoryConstants.GCP_KMS_KEY_FILE, "]", true);
         FileGenerator.writeToFile("gcp-pubsub.data", "]", true);
         FileGenerator.writeToFile("gcp-dataproc.data", "]", true);
+        FileGenerator.writeToFile("gcp-gkecluster.data", "]", true);
+
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -86,6 +90,7 @@ public class FileManager {
         FileGenerator.generateJson(dataMap, "gcp-bigquerydataset.data");
 
     }
+
     public static void generateBigqueryTableFiles(List<BigQueryTableVH> dataMap) throws IOException {
         FileGenerator.generateJson(dataMap, "gcp-bigquerytable.data");
 
@@ -94,19 +99,24 @@ public class FileManager {
     public static void generateStorageFiles(List<StorageVH> storageList) {
         FileGenerator.generateJson(storageList, "gcp-cloudstorage.data");
     }
+
     public static void generateCloudSqlFiles(List<CloudSqlVH> cloudsqlList) {
         FileGenerator.generateJson(cloudsqlList, InventoryConstants.GCP_CLOUD_SQL_FILE);
     }
 
-
     public static void generatePubSubFiles(List<TopicVH> pubsubList) {
-        FileGenerator.generateJson(pubsubList,"gcp-pubsub.data");
+        FileGenerator.generateJson(pubsubList, "gcp-pubsub.data");
     }
+
     public static void generateKmsKeyFiles(List<KMSKeyVH> keyList) {
         FileGenerator.generateJson(keyList, InventoryConstants.GCP_KMS_KEY_FILE);
     }
 
     public static void generateDataProcFiles(List<ClusterVH> clustList) {
-        FileGenerator.generateJson(clustList,"gcp-dataproc.data");
+        FileGenerator.generateJson(clustList, "gcp-dataproc.data");
+    }
+
+    public static void generateGKEClusterFiles(List<GKEClusterVH> clustList) {
+        FileGenerator.generateJson(clustList, "gcp-gkecluster.data");
     }
 }

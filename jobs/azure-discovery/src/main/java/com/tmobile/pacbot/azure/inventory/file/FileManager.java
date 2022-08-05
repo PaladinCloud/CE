@@ -78,7 +78,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-subnets.data", "[", false);
 		FileGenerator.writeToFile("azure-activitylogalert.data", "[", false);
 		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
-		FileGenerator.writeToFile("azure-webApp.data", "[", true);
+		FileGenerator.writeToFile("azure-webapp.data", "[", false);
 		FileGenerator.writeToFile("azure-subscription.data", "[", true);
 
 	}
@@ -118,7 +118,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-subnets.data", "]", true);
 		FileGenerator.writeToFile("azure-activitylogalert.data", "]", true);
 		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
-		FileGenerator.writeToFile("azure-webApp.data", "]", true);
+		FileGenerator.writeToFile("azure-webapp.data", "]", true);
 		FileGenerator.writeToFile("azure-subscription.data", "]", true);
 
 	}
@@ -292,7 +292,7 @@ public class FileManager {
 	}
 
 	public static void generateWebAppFiles(List<WebAppVH> webAppVHList) throws IOException {
-		FileGenerator.generateJson(webAppVHList, "azure-webApp.data");
+		FileGenerator.generateJson(webAppVHList, "azure-webapp.data");
 
 	}
 }
