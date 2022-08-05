@@ -9,7 +9,7 @@
                     <mat-form-field>
                         <mat-select [formControl]="searchInColumns" multiple>
                             <mat-option *ngFor="let column of whiteListColumns" [value]="column">
-                            {{column}}
+                            {{columnNamesMap[column]}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -22,7 +22,7 @@
                     <mat-select #select multiple>
                         <mat-option #allColumnsSelected (click)="toggleAllSelection()" value="0">Select All</mat-option>
                         <mat-option (click)="optionClick()" *ngFor="let column of displayedColumns" [value]="column">
-                        {{column}}
+                        {{columnNamesMap[column]}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="table-content-container">
-        <app-table [dataSource]="dataSource" [columnWidths]="columnWidths" [displayedColumns]="whiteListColumns"></app-table>
+        <app-table [dataSource]="dataSource" [columnWidths]="columnWidths" [displayedColumns]="whiteListColumns" [columnNamesMap]="columnNamesMap"></app-table>
     </div>
     </div>
 </div>

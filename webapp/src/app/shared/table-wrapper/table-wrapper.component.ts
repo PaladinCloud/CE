@@ -13,6 +13,7 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
 
   @Input() data;
   @Input() columnWidths;
+  @Input() columnNamesMap;
   mainDataSource;
   dataSource;
   
