@@ -1,0 +1,21 @@
+table {
+  width: 100%;
+  height: 650px;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+tr {
+  display: flex;
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell{
+  border:none;
+}
+
+tr.mat-header-row{
+  height: 52px;
+  padding: 16px 0px;
+}
