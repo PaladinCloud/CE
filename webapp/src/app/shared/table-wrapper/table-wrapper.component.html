@@ -1,0 +1,37 @@
+<div class="table-container flex flex-col">
+    <div class="table-wrapper">
+        <div class="table-header flex flex-row">
+        <div class="search-bar-container flex flex-row">
+            <div class="search-bar-wrapper flex flex-row">
+                <img src="/assets/icons/header-search.svg" matPrefix alt="" />
+                <input type="search" matInput (keyup)="customFilter($event)" placeholder="Search" />
+                <div class="search-in-columns" matSuffix>
+                    <mat-form-field>
+                        <mat-select [formControl]="searchInColumns" multiple>
+                            <mat-option *ngFor="let column of whiteListColumns" [value]="column">
+                            {{column}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div class="add-remove-columns-container">
+            <div class="add-remove-columns-wrapper">
+                <mat-form-field>
+                    <mat-select #select multiple>
+                        <mat-option #allColumnsSelected (click)="toggleAllSelection()" value="0">Select All</mat-option>
+                        <mat-option (click)="optionClick()" *ngFor="let column of displayedColumns" [value]="column">
+                        {{column}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <span> Columns </span>
+            </div>
+        </div>
+    </div>
+    <div class="table-content-container">
+        <app-table [dataSource]="dataSource" [columnWidths]="columnWidths" [displayedColumns]="whiteListColumns"></app-table>
+    </div>
+    </div>
+</div>

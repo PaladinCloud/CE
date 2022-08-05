@@ -21,8 +21,20 @@
             </div>
         </div>
     </div>
-    <div class='pk-top-header'>Repository of all the policies currently enforced.</div>
-    <div class='policy-knowledgebase-content flex flex-col'>
+    <div class="type-count-container">
+        <div class="type-count-wrapper flex flex-row">
+            <div class="type-count-content-container" *ngFor="let tab of tabName">
+                <div class="type-count-content-wrapper flex flex-col">
+                    <div class="type-name capitalize">{{tab}}</div>
+                    <div class="type-count">{{ typeObj[tab] }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class='policy-knowledgebase-conten'>
+        <app-table-wrapper *ngIf="knowledgebaseData.length>0" [data]="knowledgebaseData" [columnWidths]="columnWidths"></app-table-wrapper>
+    </div>
+    <!-- <div class='policy-knowledgebase-content flex flex-col'>
         <div class='pk-top-content' [class.hide]='knowledgebaseData.length == 0'>
             <div class='tabs-container flex flex-align-center'>
                 <div (click)='selectedTabName = tabs;' class='pk-tabs capitalize' *ngFor="let tabs of tabName "
@@ -81,5 +93,5 @@
                 </div>
             </article>
         </div>
-    </div>
+    </div> -->
 </div>

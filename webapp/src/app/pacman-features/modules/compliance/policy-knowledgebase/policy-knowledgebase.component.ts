@@ -59,6 +59,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   urlToRedirect: any = '';
   public agAndDomain = {};
   currentPageLevel = 0;
+  columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
@@ -100,7 +101,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     try {
       const getData = data;
       this.typeObj = {
-        'All': 0
+        'All Policies': 0
       };
       for (let i = 0; i < getData.length; i++) {
         this.typeObj[getData[i].ruleCategory] = 0;
@@ -109,22 +110,33 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       this.typeObj[`high`] = 0;
       this.typeObj[`medium`] = 0;
       this.typeObj[`low`] = 0;
+      this.typeObj["cost"]=0;
+      this.typeObj["operations"]=0;
+      this.typeObj["security"]=0;
+      this.typeObj["tagging"]=0;
       for (let i = 0; i < getData.length; i++) {
         this.typeObj[getData[i].severity] = 0;
       }
       this.typeObj[`Auto Fix`] = 0;
       delete this.typeObj[''];
       for (let i = 0; i < getData.length; i++) {
-        this.typeObj['All']++;
-        this.typeObj[getData[i].ruleCategory]++;
+        this.typeObj['All Policies']++;
+        if(getData[i].ruleCategory=="costOptimization"){
+          this.typeObj["cost"]++;
+        }else{
+          this.typeObj[getData[i].ruleCategory]++;
+        }
         this.typeObj[getData[i].severity]++;
         if (getData[i].autoFixEnabled === true) {
           this.typeObj['Auto Fix']++;
         }
       }
+      console.log("TypeObj: ", this.typeObj);
+      
       let typeArr = [];
       typeArr = Object.keys(this.typeObj);
-      this.tabName = typeArr;
+      // this.tabName = typeArr;
+      this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
       this.selectedTabName = this.tabName[this.selectedTab];
     } catch (error) {
       this.logger.log('error', error);
