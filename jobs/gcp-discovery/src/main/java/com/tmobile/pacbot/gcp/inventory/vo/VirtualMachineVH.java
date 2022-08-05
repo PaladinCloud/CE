@@ -1,6 +1,5 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
-import com.google.cloud.compute.v1.Items;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,16 @@ public class VirtualMachineVH extends GCPVH {
     private List<NetworkInterfaceVH> networkInterfaces;
 
     private List<ItemInterfaceVH> items;
+
+    private String onHostMaintainence;
+
+    public String getOnHostMaintainence() {
+        return onHostMaintainence;
+    }
+
+    public void setOnHostMaintainence(String onHostMaintainence) {
+        this.onHostMaintainence = onHostMaintainence;
+    }
 
     public String getName() {
         return name;
