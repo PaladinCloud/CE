@@ -76,6 +76,7 @@ public class VPCNetworkRule extends BaseRule {
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
                     issue.put(PacmanRuleConstants.VIOLATION_REASON, violtionReason);
+                    annotation.put(PacmanRuleConstants.FIREWALL_RULE_NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========EC2WithPublicIPAccess ended with an annotation {} : =========", annotation);

@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
+import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
 import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -305,7 +307,7 @@ public class RuleExecutor {
         logger.info("Elapsed time in minutes for evaluation: " + CommonUtils.getElapseTimeSince(startTime));
         ruleEngineStats.put("timeTakenToEvaluvate", CommonUtils.getElapseTimeSince(startTime));
         startTime = System.nanoTime();
-        AutoFixManager autoFixManager = new AutoFixManager();
+        IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager(ruleParam.get(PacmanSdkConstants.ASSET_GROUP_KEY));
         // process rule evaluations the annotations based on result
         try {
             if (evaluations.size() > 0) {

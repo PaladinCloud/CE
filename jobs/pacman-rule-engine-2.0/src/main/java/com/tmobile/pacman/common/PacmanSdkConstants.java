@@ -611,5 +611,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     
     /** The boolean true. */
     String BOOLEAN_TRUE = "true";
+    String SUBSCRIPTION = "subscription";
+    String PROJECT_NAME = "projectName";
 
 }

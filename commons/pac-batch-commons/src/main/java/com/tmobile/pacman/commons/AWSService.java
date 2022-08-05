@@ -91,7 +91,11 @@ public enum AWSService {
     EFS("efs"),
 
     /** The redshift. */
-    REDSHIFT("redshift");
+	REDSHIFT("redshift"),
+
+	VPCFIREWALL("vpcfirewall"),
+
+	NSG("nsg");
 
 	/** The service name. */
 	String serviceName;

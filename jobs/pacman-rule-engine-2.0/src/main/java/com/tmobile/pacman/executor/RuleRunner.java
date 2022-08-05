@@ -19,6 +19,7 @@ package com.tmobile.pacman.executor;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.rule.RuleResult;
 
 // TODO: Auto-generated Javadoc
@@ -38,5 +39,18 @@ public interface RuleRunner {
      */
     public List<RuleResult> runRules(List<Map<String, String>> resources, Map<String, String> ruleParam,
             String executionId) throws Exception;
-
+    default void populateAnnotationParams(RuleResult result,Map<String, String> resource, Map<String, String> ruleParam ){
+        String assetGroup=ruleParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
+        switch (assetGroup.toUpperCase()){
+            case "AWS":
+                result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanSdkConstants.ACCOUNT_ID));
+                break;
+            case "AZURE":
+                result.getAnnotation().put(PacmanSdkConstants.SUBSCRIPTION, resource.get(PacmanSdkConstants.SUBSCRIPTION));
+                break;
+            case "GCP":
+                result.getAnnotation().put(PacmanSdkConstants.PROJECT_NAME, resource.get(PacmanSdkConstants.PROJECT_NAME));
+                break;
+        }
+    }
 }

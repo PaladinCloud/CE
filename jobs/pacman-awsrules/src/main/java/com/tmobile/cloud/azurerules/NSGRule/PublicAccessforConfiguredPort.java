@@ -77,6 +77,7 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                 annotation.put(PacmanSdkConstants.DESCRIPTION, violationReason +"Ports :"+ port);
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
+                annotation.put(PacmanRuleConstants.NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
