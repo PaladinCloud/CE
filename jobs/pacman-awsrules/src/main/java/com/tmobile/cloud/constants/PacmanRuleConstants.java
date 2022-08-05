@@ -22,7 +22,6 @@
  **/
 package com.tmobile.cloud.constants;
 
-
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
@@ -40,8 +39,8 @@ public class PacmanRuleConstants {
     public static final String KEY = "key";
     public static final String VALUE = "value";
     public static final String TWO_FACTOR_AUTH = "enable-oslogin-2fa";
-    public static final String PUBSUB_KMS_NAME ="kmsKeyName" ;
-    public static final String VIOLATION_REASON_POLICYNAME ="policyName" ;
+    public static final String PUBSUB_KMS_NAME = "kmsKeyName";
+    public static final String VIOLATION_REASON_POLICYNAME = "policyName";
     public static final String BLOB_PUBLIC_ACCESS_ALLOWED = "blobPublicAccessAllowed";
     public static final String GCP_CMK = "hasKmsKeyName";
     public static final String GCP_CSEK = "hasSha256";
@@ -487,5 +486,7 @@ public class PacmanRuleConstants {
     public static final String KMS_KEY_NAME = "kmsKeyName";
     public static final String DESTINATIONRANGE = "destinationRanges";
     public static final String EGRESS = "egress";
+    public static final String HTTP20ENABLED = "http20Enabled";
+    public static final String MASTRERAUTHORRIZEDNETWORKCONFIG = "masterAuthorizedNetworksConfig";
 
 }
