@@ -267,6 +267,7 @@ public class MailUtils {
           }
           context.setVariable("AUTOFIX_POST_FIX_MESSAGE", postFixMessage);
           context.setVariable("EMAIL_BANNER", banner);
+          context.setVariable("CLOUD_TYPE", getCloudType(ruleParam));
           context.setVariable("POLICY_URL", policyUrl);
           context.setVariable("NAME", "Hello "+name);
           context.setVariable("RESOURCE_TYPE", " Resource Type : "+ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
@@ -295,6 +296,16 @@ public class MailUtils {
           policyUrlMap.put("RULE_ID", ruleParam.get(PacmanSdkConstants.RULE_ID));
           policyUrl = StrSubstitutor.replace(policyUrl, policyUrlMap);
           return policyUrl;
+      }
+
+      private static String getCloudType(Map<String, String> ruleParam){
+          String assetGroup=ruleParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
+          //default value
+          String cloudType="AWS";
+          if(assetGroup!=null && !assetGroup.isEmpty()){
+              cloudType=assetGroup.toUpperCase();
+          }
+          return cloudType;
       }
 
 }
