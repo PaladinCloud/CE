@@ -12,6 +12,7 @@ export class TableComponent implements OnInit {
   @Input() dataSource;
   @Input() columnWidths;
   @Input() displayedColumns;
+  @Input() columnNamesMap;
 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 

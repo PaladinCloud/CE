@@ -60,6 +60,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   public agAndDomain = {};
   currentPageLevel = 0;
   columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
+  columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
