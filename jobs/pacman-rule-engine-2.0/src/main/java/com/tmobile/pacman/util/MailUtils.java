@@ -256,6 +256,15 @@ public class MailUtils {
           }
           String postFixMessage = CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_FIX_MESSAGE_PREFIX
                   + ruleParam.get(PacmanSdkConstants.RULE_ID));
+          if(postFixMessage!=null) {
+              Map<String,String> data=new HashMap<>();
+              final String[] resourceid = {""};
+              silentautoFixTrans.forEach(log->{
+                  resourceid[0] = resourceid[0] +log.getResourceId()+", ";
+              });
+              data.put("RESOURCE_ID", resourceid[0]);
+              postFixMessage = StrSubstitutor.replace(postFixMessage, data);
+          }
           context.setVariable("AUTOFIX_POST_FIX_MESSAGE", postFixMessage);
           context.setVariable("EMAIL_BANNER", banner);
           context.setVariable("POLICY_URL", policyUrl);

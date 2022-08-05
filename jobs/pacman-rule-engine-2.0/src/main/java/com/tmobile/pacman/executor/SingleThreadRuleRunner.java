@@ -119,7 +119,7 @@ public class SingleThreadRuleRunner implements RuleRunner {
                     }
                     result.getAnnotation().put(PacmanSdkConstants.RESOURCE_ID,
                             resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                    result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_ID, resource.get("accountid"));
+                    populateAnnotationParams(result,resource,ruleParam);
                     result.getAnnotation().put(PacmanSdkConstants.REGION, resource.get("region"));
                     result.getAnnotation().put(PacmanSdkConstants.RULE_CATEGORY, RuleExecutionUtils
                             .getRuleAttribute(result, ruleParam, ruleAnnotation, PacmanSdkConstants.RULE_CATEGORY));

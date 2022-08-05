@@ -24,7 +24,7 @@ public class AzureCredentialProvider {
 	Map<String,Azure> azureClients; ;
 	Map<String,String> apiTokens;
 	
-	AzureCredentialProvider() {
+	public AzureCredentialProvider() {
 		azureClients = new HashMap<>();
 		apiTokens = new HashMap<>();
 	}

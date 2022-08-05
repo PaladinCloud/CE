@@ -49,6 +49,7 @@ public class PacmanRuleConstants {
     public static final String ADMIN_FOR_SECRETS = "adminForSecrets";
     public static final String ADMIN_FOR_CERTIFICTAES = "adminForCertificates";
     public static final String STORAGE_KMS_KEY_NAME = "defaultKmsKeyName";
+    public static final String FIREWALL_RULE_NAME = "firewallRuleName";
     public static final String GCP_ON_HOST_MAINTENANCE ="onHostMaintainence" ;
     public static final String MIGRATE ="MIGRATE" ;
 
