@@ -1,9 +1,9 @@
 <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
   <ng-container *ngFor="let column of displayedColumns;" [matColumnDef]="column">
     <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name"> {{ columnNamesMap[column] }} </th>
-    <td [style.flex]="columnWidths[column]" mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+    <td [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> {{ element[column] }} </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr (click)="goToDetails(row)" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>

@@ -301,6 +301,7 @@
 
 .type-count-content-wrapper .type-count{
     font: var(--text-headline-5);
+    color: var(--text-high-emphasis);
 }
 
 .type-count-content-container{

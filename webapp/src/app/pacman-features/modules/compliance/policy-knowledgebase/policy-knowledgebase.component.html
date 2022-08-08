@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class='policy-knowledgebase-conten'>
-        <app-table-wrapper *ngIf="knowledgebaseData.length>0" [data]="knowledgebaseData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap"></app-table-wrapper>
+        <app-table-wrapper (rowSelectEventEmitter)="gotoNextPage($event)" *ngIf="knowledgebaseData.length>0" [data]="knowledgebaseData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap"></app-table-wrapper>
     </div>
     <!-- <div class='policy-knowledgebase-content flex flex-col'>
         <div class='pk-top-content' [class.hide]='knowledgebaseData.length == 0'>
