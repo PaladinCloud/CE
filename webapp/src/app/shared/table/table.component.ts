@@ -1,5 +1,5 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
 
 @Component({
@@ -13,6 +13,7 @@ export class TableComponent implements OnInit {
   @Input() columnWidths;
   @Input() displayedColumns;
   @Input() columnNamesMap;
+  @Output() rowSelectEventEmitter = new EventEmitter<any>();
 
   constructor(private _liveAnnouncer: LiveAnnouncer) {}
 
@@ -31,6 +32,10 @@ export class TableComponent implements OnInit {
     } else {
       this._liveAnnouncer.announce('Sorting cleared');
     }
+  }
+
+  goToDetails(row){
+    this.rowSelectEventEmitter.emit(row);
   }
 
   ngOnInit(): void {

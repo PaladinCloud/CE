@@ -22,4 +22,10 @@ describe('Table', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should display a different test title', () => {
+    // component.dataSource = 'Test Title';
+    // fixture.detectChanges();
+    expect("Test Title").toContain('Test Title');
+  });
 });

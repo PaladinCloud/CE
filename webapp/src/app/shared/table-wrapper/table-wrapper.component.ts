@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
@@ -14,6 +14,8 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
   @Input() data;
   @Input() columnWidths;
   @Input() columnNamesMap;
+  @Output() rowSelectEventEmitter = new EventEmitter<any>();
+
   mainDataSource;
   dataSource;
   
@@ -42,6 +44,10 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
     }
   }
 
+  handleRowSelect(row){
+    this.rowSelectEventEmitter.emit(row);
+  }
+
    optionClick() {
     this.whiteListColumns = [];
     let newStatus = true;
@@ -63,13 +69,14 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
   }
 
   customFilter(event){ 
-    if(this.searchInColumns.value==null || (this.searchInColumns.value as any[]).length==0){
-      return;
-    }   
     let searchTxt = event.target.value.toLowerCase();
+    let columnsToSearchIN = this.searchInColumns.value;
+    if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
+      columnsToSearchIN = this.whiteListColumns;
+    }   
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
-      for(const i in this.searchInColumns.value) {
-        const col = this.searchInColumns.value[i];
+      for(const i in columnsToSearchIN) {
+        const col = columnsToSearchIN[i];
         if(String(item[col]).toLowerCase().match(searchTxt)){                    
           return true;
         }
