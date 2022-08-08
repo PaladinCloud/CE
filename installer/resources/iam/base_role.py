@@ -45,6 +45,10 @@ class BaseAWSSupportPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/AWSSupportAccess"
 
+class BaseCloudWatchEventFullAcessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = BaseRole.get_output_attr('name')
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchEventsFullAccess"
+
 
 class ECSTaskExecutionRolePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [

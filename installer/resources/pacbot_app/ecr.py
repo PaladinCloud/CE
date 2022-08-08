@@ -13,6 +13,7 @@ import sys
 
 class APIEcrRepository(ECRRepository):
     name = "microservices"
+    force_delete = True
 
     def pre_terraform_apply(self):
         status, msg = create_iam_service_linked_role(
@@ -25,8 +26,9 @@ class APIEcrRepository(ECRRepository):
 
 class UIEcrRepository(ECRRepository):
     name = "webapp"
+    force_delete = True
 
-
+    
 class BaseDockerImageBuild:
     image_creation_script = "create_docker_image_and_push_to_ecr.py"
     dest_dir = get_terraform_scripts_and_files_dir()
@@ -104,3 +106,19 @@ class UIDockerImageBuild(NullResource, BaseDockerImageBuild):
     def pre_generate_terraform(self):
         self.check_docker_image_permission()
         self.copy_docker_files()
+
+# class SchedulerECRRepository(ECRRepository):
+#     name = "schedule"
+#     force_delete = True
+    
+# class SchedulerImageBuild(NullResource, BaseDockerImageBuild):
+#     DEPENDS_ON = [SchedulerECRRepository, BucketStorage]
+#     docker_dir = "api_docker"
+#     ecr_repo =  SchedulerECRRepository.get_output_attr('repository_url')
+
+#     def get_provisioners(self):
+#         return self.get_app_provisioners()
+
+#     def pre_generate_terraform(self):
+#         self.check_docker_image_permission()
+#         self.copy_docker_files()

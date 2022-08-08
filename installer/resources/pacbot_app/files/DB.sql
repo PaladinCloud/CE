@@ -84,7 +84,16 @@ SET @QUALYS_INFO='$QUALYS_INFO';
 SET @QUALYS_API_URL='$QUALYS_API_URL';
 SET @AZURE_CREDENTIALS='$AZURE_CREDENTIALS';
 SET @GCP_CREDENTIALS='$GCP_CREDENTIALS';
-
+SET @JOB_SCHEDULE_INTERVAL='$JOB_SCHEDULE_INTERVAL';
+SET @JOB_SCHEDULE_INITIALDELAY='$JOB_SCHEDULE_INITIALDELAY';
+SET @JOB_SCHEDULE_INITIALDELAY_SHIPPER='$JOB_SCHEDULE_INITIALDELAY_SHIPPER';
+SET @JOB_SCHEDULE_INITIALDELAY_RULES='$JOB_SCHEDULE_INITIALDELAY_RULES';
+SET @AZURE_EVENTBRIDGE_BUS_DETAILS='$AZURE_EVENTBRIDGE_BUS_DETAILS';
+SET @GCP_EVENTBRIDGE_BUS_DETAILS='$GCP_EVENTBRIDGE_BUS_DETAILS';
+SET @AWS_EVENTBRIDGE_BUS_DETAILS='$AWS_EVENTBRIDGE_BUS_DETAILS';
+SET @AZURE_ENABLED='$AZURE_ENABLED';
+SET @GCP_ENABLED='$GCP_ENABLED';
+SET @ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES='$ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES'; 
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -828,8 +837,8 @@ CREATE TABLE IF NOT EXISTS pac_config_properties
 (
    cfkey varchar(250),
    value text,
-   application varchar(50),
-   profile varchar(15),
+   application varchar(50), 
+   profile varchar(15), 
    label varchar(10),
    createdBy varchar(200),
    createdDate varchar(50),
@@ -2211,6 +2220,17 @@ INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('spri
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('spring.mail.test-connection','Description PlaceHolder');
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('email.banner','Description PlaceHolder');
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('pacbot.autofix.resourceowner.fallbak.email','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.interval','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.rules.initial.delay','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.shipper.initial.delay','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.role','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.collector.initial.delay','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('azure.enabled','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('gcp.enabled','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('aws.eventbridge.bus.details','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('azure.eventbridge.bus.details','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('gcp.eventbridge.bus.details','Description PlaceHolder');
+INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('scheduler.total.batches','Description PlaceHolder');
 
 
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) VALUES('pacman.es.host','Description PlaceHolder');
@@ -2501,6 +2521,21 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.properties.mail.smtp.ssl.trust',concat(@MAIL_SERVER,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.properties.mail.smtp.starttls.enable',concat(@MAIL_SMTP_SSL_ENABLE,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.test-connection',concat(@MAIL_SMTP_SSL_TEST_CONNECTION,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
+
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.interval',concat(@JOB_SCHEDULE_INITIALDELAY,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.rules.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_RULES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.shipper.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_SHIPPER,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.role',concat(@PAC_ROLE,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.collector.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.eventbridge.bus.details',concat(@GCP_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.eventbridge.bus.details',concat(@AZURE_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aws.eventbridge.bus.details',concat(@AWS_EVENTBRIDGE_BUS_DETAILS,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.total.batcheses',concat(@ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.enabled',concat(@AZURE_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.enabled',concat(@GCP_ENABLED,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.account',concat(@BASE_ACCOUNT,''),'job-scheduler','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('base.region',concat(@BASE_REGION,''),'job-scheduler','prd','latest',null,null,null,null);
+
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.es.host',concat(@ES_HOST_NAME,''),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.es.port',concat(@ES_PORT,''),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('esLoggingLevel','DEBUG','rule','prd','latest',NULL,NULL,NULL,NULL);
@@ -3092,6 +3127,17 @@ UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'Vulnerability
 UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'Vulnerability application resource details both' WHERE `cfkey` = 'vulnerability.application.resourcedetailsboth';
 UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'Vulnerability severity summary' WHERE `cfkey` = 'vulnerability.summary.severity';
 UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'Vulnerability types' WHERE `cfkey` = 'vulnerability.types';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'Job interval' WHERE `cfkey` = 'scheduler.interval';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'Job inital delay for shipper' WHERE `cfkey` = 'scheduler.rules.initial.delay';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'job inital delay for rules' WHERE `cfkey` = 'scheduler.shipper.initial.delay';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'job scheduler' WHERE `cfkey` = 'scheduler.role';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'job inital delay for collector' WHERE `cfkey` = 'scheduler.collector.initial.delay';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'azure event bus details' WHERE `cfkey` = 'azure.eventbridge.bus.details';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'number rules in one set of batch' WHERE `cfkey` = 'scheduler.total.batches';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = ' azure cloud is enabled ' WHERE `cfkey` = 'azure.enabled';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'gcp cloud is enabled' WHERE `cfkey` = 'aws.eventbridge.bus.details';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'aws event bus details' WHERE `cfkey` = 'gcp.eventbridge.bus.details';
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `description` = 'gcp event bus details' WHERE `cfkey` = 'gcp.enabled';
 UPDATE `cf_Policy` SET policyDesc = 'All cloud assets should be tagged with following mandatory tags. Application,  Environment, Role and Stack. Assets without these mandatory tags will be marked as non-complaint. Below is an example for the tag value pairs.\n\nTag name: Application\nExample value: Rebellion\n\nNotes\nThis value for the application tag should be the approved application name give for the project during the cloud on-boarding process. Unknown applications will be marked for review and possible termination.\n\nTag name: Environment\nExample value: Production or Non Production or Non Production::qat1 or Non Production::dit1 (Refer Naming guide)\n\nNotes\nThe value for environment should distinguish the asset as a Production or Non Production class. You can further qualify Non Production assets using the :: separator. Look at the examples 3 and 4.\n\nTag name: Stack\nExample Value: Apache Httpd\n\nTag name: Role\nExample value: Webserver\n\n \nEach asset should at least have these 4 mandatory tags. You can have additional tags as well' WHERE policyId = 'TaggingRule_version-1';
 
 DELETE FROM `pac_config_properties` WHERE cfkey='features.vulnerability.enabled';

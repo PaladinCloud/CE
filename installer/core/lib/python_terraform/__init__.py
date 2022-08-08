@@ -158,14 +158,14 @@ class Terraform(object):
         option_dict.update(input_options)
         return option_dict
 
-    def destroy(self, dir_or_plan=None, force=IsFlagged, **kwargs):
+    def destroy(self, dir_or_plan=None, **kwargs): #force=IsFlagged,
         """
         refer to https://www.terraform.io/docs/commands/destroy.html
         force/no-color option is flagged by default
         :return: ret_code, stdout, stderr
         """
         default = kwargs
-        default['force'] = force
+        # default['force'] = force
         options = self._generate_default_options(default)
         args = self._generate_default_args(dir_or_plan)
         return self.cmd('destroy', *args, **options)
