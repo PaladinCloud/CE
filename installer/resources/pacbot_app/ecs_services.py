@@ -2,6 +2,7 @@ from core.terraform.resources.aws.ecs import ECSServiceResource
 from core.terraform.resources.aws.ecs import ECSClusterResource
 from core.terraform.resources.misc import NullResource
 from core.config import Settings
+from resources.pacbot_app.ecr import APIDockerImageBuild
 from resources.pacbot_app import ecs_task_defintions as td
 from resources.pacbot_app import alb_target_groups as tg
 from resources.vpc.security_group import InfraSecurityGroupResource
@@ -114,3 +115,15 @@ class VulnerabilityEcsService(BaseEcsService, ECSServiceResource):
     load_balancer_container_name = "vulnerability"
     DEPENDS_ON = [alr.VulnerabilityALBListenerRule, WaitConfigServiceToUp]
     PROCESS = need_to_deploy_vulnerability_service()
+
+class Jobscheduler(ECSServiceResource):
+    name = "jobscheduler"
+    task_definition = td.SchedulerEcsTaskDefinition.get_output_attr('arn')
+    desired_count = 1
+    launch_type = "FARGATE"
+    cluster = ApplicationECSCluster.get_output_attr('id')
+    network_configuration_security_groups = [InfraSecurityGroupResource.get_output_attr('id')]
+    network_configuration_subnets = Settings.get('VPC')['SUBNETS']
+    network_configuration_assign_public_ip = True
+    tags = None
+    DEPENDS_ON = [APIDockerImageBuild, WaitConfigServiceToUp]

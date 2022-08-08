@@ -80,9 +80,6 @@ ENABLE_GCP = False
 GCP_PROJECT_IDS = []
 GCP_CREDENTIALS = {}
 
-#job/rules intervals
-JOB_SCHEDULER_INTERVAL_IN_HOURS = 6 #default is 6hr interval, user can increase or decrease the interval
-
 # Azure AD integration 
 AUTHENTICATION_TYPE = "DB"	# login type value any one of this "AZURE_AD or DB "
 AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 

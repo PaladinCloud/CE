@@ -95,6 +95,7 @@ class ALBListenerRuleResource(TerraformResource):
     resource_instance_name = "aws_lb_listener_rule"
     available_args = {
         'listener_arn': {'required': True},
+        'condition': {'required': True},
         'priority': {'required': False},
         'action': {
             'required': True,
@@ -103,14 +104,15 @@ class ALBListenerRuleResource(TerraformResource):
                 'action_type': {'required': True, 'tf_arg_key': 'type'}
             }
         },
-        'condition': {
-            'required': True,
-            'inline_args': {
-                'condition_field': {'required': True, 'tf_arg_key': 'field'},
-                'condition_values': {'required': True, 'tf_arg_key': 'values'},
-            }
-        }
-    }
+        #  'condition': {
+        #     'required': True,
+        #     'inline_args': {
+        #         'condition_field': {'required': True, 'tf_arg_key': 'field'},
+        #         'condition_values': {'required': True, 'tf_arg_key': 'values'},
+        #     }
+        # }
+    }   
+
 
 
 class ALBTargetGroupResource(TerraformResource):

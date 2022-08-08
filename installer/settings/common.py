@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 import sys
-from datetime import datetime
 
 PROVIDER = 'AWS'
 CURRENT_FILE_PATH = Path(os.path.join(os.path.abspath(os.path.dirname(__file__))))
@@ -65,6 +64,7 @@ PROCESS_RESOURCES = {
     'lambda_rule_engine.s3_upload': {'tags': ["rule-engine-job", "batch"]},
     'lambda_rule_engine.function': {'tags': ["rule-engine-job", "batch", "infra"]},
     'pacbot_app.upload_terraform': {'tags': ["upload_tf"]},
+    'eventbus.custom_event_bus': {'tags': ["eventbus"]}
 }
 
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
@@ -118,6 +118,16 @@ MAIL_SMTP_SSL_TEST_CONNECTION = "false"
 
 ENABLE_VULNERABILITY_FEATURE = False
 
+JOB_SCHEDULE_INITIALDELAY = 5 #scheduling jobs initial delay in minute
+JOB_SCHEDULE_INITIALDELAY_SHIPPER = 15 #delay for shipper in minute 
+JOB_SCHEDULE_INITIALDELAY_RULES = 20  #delay for rules in minute
+JOB_SCHEDULE_INTERVAL = 6   #Job interval  in hrs
+JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules 
+
+
+JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event"
+JOB_SOURCE = "paladincloud.jobs-scheduler"
+
 try:
     from settings.local import *
 except:
@@ -127,9 +137,4 @@ if ALB_PROTOCOL == "HTTPS":
     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
 
 
-current_datetime = datetime.now()
-CURRENT_HOUR = current_datetime.hour 
-CURRENT_MINUTE = current_datetime.minute
 
-
-BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING = 30

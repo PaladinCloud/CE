@@ -13,6 +13,7 @@ import sys
 
 class APIEcrRepository(ECRRepository):
     name = "microservices"
+    force_delete = True
 
     def pre_terraform_apply(self):
         status, msg = create_iam_service_linked_role(
@@ -25,8 +26,9 @@ class APIEcrRepository(ECRRepository):
 
 class UIEcrRepository(ECRRepository):
     name = "webapp"
+    force_delete = True
 
-
+    
 class BaseDockerImageBuild:
     image_creation_script = "create_docker_image_and_push_to_ecr.py"
     dest_dir = get_terraform_scripts_and_files_dir()
