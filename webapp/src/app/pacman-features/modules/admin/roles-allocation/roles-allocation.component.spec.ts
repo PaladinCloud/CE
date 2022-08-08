@@ -13,21 +13,21 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { RolesComponent } from './roles.component';
+import { RolesAllocationComponent } from './roles-allocation.component';
 
-describe('RolesComponent', () => {
-  let component: RolesComponent;
-  let fixture: ComponentFixture<RolesComponent>;
+describe('RolesAllocationComponent', () => {
+  let component: RolesAllocationComponent;
+  let fixture: ComponentFixture<RolesAllocationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RolesComponent ]
+      declarations: [ RolesAllocationComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RolesComponent);
+    fixture = TestBed.createComponent(RolesAllocationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

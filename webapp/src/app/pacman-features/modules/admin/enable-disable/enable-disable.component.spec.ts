@@ -13,21 +13,21 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { EnableDisableRuleComponent } from './enable-disable-rule.component';
+import { EnableDisableRuleJobComponent } from './enable-disable.component';
 
-describe('EnableDisableRuleComponent', () => {
-  let component: EnableDisableRuleComponent;
-  let fixture: ComponentFixture<EnableDisableRuleComponent>;
+describe('EnableDisableRuleJobComponent', () => {
+  let component: EnableDisableRuleJobComponent;
+  let fixture: ComponentFixture<EnableDisableRuleJobComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EnableDisableRuleComponent ]
+      declarations: [ EnableDisableRuleJobComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EnableDisableRuleComponent);
+    fixture = TestBed.createComponent(EnableDisableRuleJobComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
