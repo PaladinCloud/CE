@@ -13,21 +13,21 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DeleteStickyExceptionsComponent } from './delete-sticky-exceptions.component';
+import { DeleteAssetGroupsComponent } from './delete-asset-groups.component';
 
-describe('DeleteStickyExceptionsComponent', () => {
-  let component: DeleteStickyExceptionsComponent;
-  let fixture: ComponentFixture<DeleteStickyExceptionsComponent>;
+describe('DeleteAssetGroupsComponent', () => {
+  let component: DeleteAssetGroupsComponent;
+  let fixture: ComponentFixture<DeleteAssetGroupsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DeleteStickyExceptionsComponent ]
+      declarations: [ DeleteAssetGroupsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DeleteStickyExceptionsComponent);
+    fixture = TestBed.createComponent(DeleteAssetGroupsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

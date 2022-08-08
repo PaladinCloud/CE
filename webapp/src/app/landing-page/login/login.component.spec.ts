@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { NO_ERRORS_SCHEMA, Class } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';

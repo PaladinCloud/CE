@@ -13,21 +13,21 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { CreateAssetGroupsComponent } from './create-asset-groups.component';
+import { AssetGroupsComponent } from './asset-groups.component';
 
-describe('CreateAssetGroupsComponent', () => {
-  let component: CreateAssetGroupsComponent;
-  let fixture: ComponentFixture<CreateAssetGroupsComponent>;
+describe('AssetGroupsComponent', () => {
+  let component: AssetGroupsComponent;
+  let fixture: ComponentFixture<AssetGroupsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateAssetGroupsComponent ]
+      declarations: [ AssetGroupsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateAssetGroupsComponent);
+    fixture = TestBed.createComponent(AssetGroupsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
