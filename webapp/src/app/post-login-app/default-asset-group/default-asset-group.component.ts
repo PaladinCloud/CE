@@ -51,7 +51,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private routingUtilityService: RouterUtilityService,
     private workflowService: WorkflowService
-  ) {}
+  ) { }
 
   clicked = false;
 
@@ -59,6 +59,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
   @Input() defaultAssetGroup: string;
   @Input() provider = [];
   @Input() dataLoaded;
+  @Input() isExpanded;
   private assetGroupSubscription: Subscription;
   private domainSubscription: Subscription;
 

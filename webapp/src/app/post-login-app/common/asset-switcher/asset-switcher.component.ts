@@ -69,6 +69,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
   updateRecentAGSubscription: Subscription;
   subscriptionToAssetGroup: Subscription;
   queryParams;
+  @Input() isExpanded = false;
 
   constructor(
     private dataCacheService: DataCacheService,
@@ -223,7 +224,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
               this.recentTiles
             );
           },
-          (error) => {}
+          (error) => { }
         );
     }
   }

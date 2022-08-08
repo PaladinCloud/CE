@@ -94,7 +94,7 @@
 
 .username {
   font-family: var(--text-font-family);
-  font-size: var(--text-body2-font-size);
+  font-size: var(--text-body-2-font-size);
   color: var(--text-high-emphasis);
   padding: 0 5px 0 0;
 }

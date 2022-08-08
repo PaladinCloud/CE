@@ -142,13 +142,7 @@
   }
 }
 
-/* .contextual-container {
-  position: relative;
-  flex-grow: 1;
-  width: 70%;
-  height: 100%;
-  max-width: 100%;
-} */
+
 
 .expanded-sidenav {
   width: 260px;
@@ -157,9 +151,13 @@
 }
 
 .collapsed-sidenav {
-  width: 63px;
+  width: 80px;
   height: fit-content;
   border-right: 1px solid var(--border-200);
+}
+
+::ng-deep .mat-drawer-inner-container{
+  overflow: hidden !important;
 }
 
 .sidenav-expander {

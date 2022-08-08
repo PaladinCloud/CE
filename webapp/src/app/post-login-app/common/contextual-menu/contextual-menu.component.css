@@ -18,27 +18,21 @@
   border-right: 1px solid var(--border-200);
 }
 
-.tree-component {
-  padding: 16px 0px 16px 16px;
-}
-
 ::ng-deep .tree-children {
   margin-left: 22px;
-  padding-left: 9px !important;
+  padding-left: 25px !important;
   border-left: 2px solid var(--border-200);
 }
 
 ::ng-deep tree-node-content,
 .know-your-app-content {
-  width: 155px !important;
   display: ruby !important;
   font-family: var(--text-medium-font-family);
   font-style: normal;
   font-weight: var(--text-font-weight);
-  font-size: var(--text-body2-font-size);
+  font-size: var(--text-body-2-font-size);
   line-height: var(--text-line-height);
   color: var(--text-medium-emphasis);
-  flex: none;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0px 16px 0px 12px !important;
@@ -53,6 +47,7 @@
 
 .icon {
   float: left;
+  padding-top: 2px;
 }
 
 ::ng-deep .node-content-wrapper {
@@ -60,8 +55,6 @@
   flex-direction: row;
   align-items: center;
   padding: 0px;
-  width: 187px;
-  height: 44px;
   border-radius: 4px;
   flex: none;
   align-self: stretch;
@@ -69,22 +62,22 @@
   background: none !important;
   box-shadow: none !important;
   float: left;
+  width: 100%;
+  padding: 14px 16px 14px 0px;
 }
 
 .node-img {
-  height: 44px;
-  width: 32px;
-  padding: 14px 0px 14px 16px;
+  padding: 14px 16px;
   filter: invert(49%) sepia(6%) saturate(379%) hue-rotate(177deg)
     brightness(92%) contrast(87%);
 }
 
 .asset-switcher-container {
-  padding: 0px 16px;
+  padding: 16px 16px;
 }
 
 ::ng-deep .angular-tree-component {
-  width: 225px !important;
+  padding: 0px 16px;
 }
 
 ::ng-deep .toggle-children-wrapper-expanded .toggle-children {
@@ -101,15 +94,11 @@
   color: var(--primary-500) !important;
 }
 
-::ng-deep .node-wrapper:hover,
-.know-your-app-wrapper:hover {
+::ng-deep .node-wrapper:hover{
   border-radius: 4px;
   background-color: var(--neutral-100);
 }
 
-::ng-deep .tree-children .node-wrapper:hover {
-  width: 187px !important;
-}
 ::ng-deep .node-wrapper-active {
   border-radius: 4px;
   background-color: var(--primary-100) !important;
@@ -122,12 +111,8 @@
     brightness(78%) contrast(111%);
 }
 
-::ng-deep .tree-children .node-wrapper-active {
-  background: none !important;
-}
 
 ::ng-deep .tree-children .node-wrapper-active .node-content-wrapper {
-  width: 187px;
   background-color: var(--primary-100) !important;
 }
 
@@ -145,13 +130,25 @@
 }
 
 ::ng-deep .node-wrapper {
-  width: 218px !important;
-  height: 44px !important;
+  width: 100%;
+}
+
+.wrapper-collapsed{
+  width: fit-content !important;
+}
+
+::ng-deep .isCollapsed{
+   display: none !important;
 }
 
 .wrapper .node-img,
 .wrapper tree-node-expander {
   filter: brightness(0);
+}
+
+tree-node-expander{
+  position: absolute;
+  right: 24px;
 }
 
 .wrapper tree-node-content {
@@ -161,5 +158,11 @@
 .know-your-app-wrapper {
   background-color: var(--background-white);
   cursor: pointer;
-  margin-left: 16px;
+  padding: 0px 16px;
+  display: flex;
+  flex-direction: row;
+}
+
+.app-wrapper{
+  padding: 16px 6px;
 }
