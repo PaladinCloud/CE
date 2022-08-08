@@ -14,7 +14,8 @@ class ECRRepository(TerraformResource):
     resource_instance_name = "aws_ecr_repository"
     available_args = {
         'name': {'required': True, 'prefix': True, 'sep': '-'},
-        'tags': {'required': False}
+        'tags': {'required': False},
+        'force_delete' : {'required': True}
     }
 
     def check_exists_before(self, input, tf_outputs):

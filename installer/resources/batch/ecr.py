@@ -12,6 +12,7 @@ import sys
 
 class RuleEngineEcrRepository(ECRRepository):
     name = "rule-engine"
+    force_delete = True
 
 
 class RuleEngineDockerImageBuild(NullResource):

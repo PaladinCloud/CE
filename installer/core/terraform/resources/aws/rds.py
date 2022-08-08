@@ -22,6 +22,7 @@ class RDSResource(TerraformResource):
         'engine_version': {'required': True, },
         'instance_class': {'required': True, },
         'name': {'required': True},
+        'db_name': {'required': False},
         'username': {'required': True},
         'password': {'required': True},
         'db_subnet_group_name': {'required': False},

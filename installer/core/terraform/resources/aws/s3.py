@@ -29,7 +29,7 @@ class S3BucketObject(TerraformResource):
         resource_instance_name (str): Type of resource instance
         available_args (dict): Instance configurations
     """
-    resource_instance_name = "aws_s3_bucket_object"
+    resource_instance_name = "aws_s3_object"
     skip_source_exists_check = False
     available_args = {
         'bucket': {'required': True},

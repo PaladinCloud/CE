@@ -24,6 +24,7 @@ class DBSubnetGroup(RDSSubnetGroupResource):
 
 class MySQLDatabase(RDSResource):
     name = "pacmandata"
+    # db_name = "pacmandata"
     instance_class = Settings.get('RDS_INSTANCE_TYPE', "db.t2.medium")
     identifier = "data"
     storage_type = "gp2"
