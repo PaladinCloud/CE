@@ -169,6 +169,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                <createDependencyReducedPom>false</createDependencyReducedPom>
                     <finalName>pacbot-gcp-discovery</finalName>
                     <filters>
                         <filter>
