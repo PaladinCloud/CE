@@ -24,45 +24,78 @@ class ApplicationLoadBalancerListener(ALBListenerResource):
 class BaseLR:
     listener_arn = ApplicationLoadBalancerListener.get_output_attr('arn')
     action_type = "forward"
-    condition_field = "path-pattern"
+    # condition_field = "path_pattern"
 
 
 class ConfigALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ConfigALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "config*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/config*"]
+        }
+    }
 
 
 class AdminALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AdminALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "admin*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/admin*"]
+        }
+    }
 
 
 class ComplianceALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ComplianceALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "compliance*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/compliance*"]
+        }
+    }
 
 
 class NotificationsALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.NotificationsALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "notifications*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/notifications*"]
+        }
+    }
 
 
 class StatisticsALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.StatisticsALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "statistics*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/statistics*"]
+        }
+    }
 
 
 class AssetALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AssetALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "asset*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/asset*"]
+        }
+    }
 
 
 class AuthALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AuthALBTargetGroup.get_output_attr('arn')
     condition_values = [PATH_PREFIX + "auth*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/auth*"]
+        }
+    }
 
 
 class VulnerabilityALBListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.VulnerabilityALBTargetGroup.get_output_attr('arn', 0)
-    condition_values = [PATH_PREFIX + "vulnerability*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/vulnerability*"]
+        }
+    }
     PROCESS = need_to_deploy_vulnerability_service()

@@ -4,7 +4,7 @@ from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app import alb_target_groups as tg
 
 
-PATH_PREFIX = '/api/'
+# PATH_PREFIX = '/api/'
 
 
 class PacBotHttpsListener(ALBListenerResource):
@@ -20,44 +20,76 @@ class PacBotHttpsListener(ALBListenerResource):
 class BaseLR:
     listener_arn = PacBotHttpsListener.get_output_attr('arn')
     action_type = "forward"
-    condition_field = "path-pattern"
+    # condition_field = "path_pattern"
 
 
 class ConfigALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ConfigALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "config*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/config*"]
+        }
+    }
 
 
 class AdminALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AdminALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "admin*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/admin*"]
+        }
+    }
 
 
 class ComplianceALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.ComplianceALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "compliance*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/compliance*"]
+        }
+    }
 
 
 class NotificationsALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.NotificationsALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "notifications*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/notifications*"]
+        }
+    }
 
 
 class StatisticsALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.StatisticsALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "statistics*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/statistics*"]
+        }
+    }
 
 
 class AssetALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AssetALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "asset*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/asset*"]
+        }
+    }
 
 
 class AuthALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.AuthALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "auth*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/auth*"]
+        }
+    }
 
 
 class VulnerabilityALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
     action_target_group_arn = tg.VulnerabilityALBTargetGroup.get_output_attr('arn')
-    condition_values = [PATH_PREFIX + "vulnerability*"]
+    condition = {
+        "path_pattern" : {
+            "values" : ["/api/vulnerability*"]
+        }
+    }

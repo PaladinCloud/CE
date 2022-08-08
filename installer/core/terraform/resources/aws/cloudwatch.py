@@ -15,8 +15,9 @@ class CloudWatchEventRuleResource(TerraformResource):
     resource_instance_name = "aws_cloudwatch_event_rule"
     available_args = {
         'name': {'required': True, 'prefix': True, 'sep': '-'},
-        'schedule_expression': {'required': True},
-        'event_pattern': {'required': False},
+        'event_bus_name' : {'required': True},
+        'schedule_expression': {'required': False},
+        'event_pattern': {'required': True, 'type': 'json'},
         'role_arn ': {'required': False},
         'is_enabled ': {'required': False},
         'description': {'required': False},
@@ -52,6 +53,7 @@ class CloudWatchEventTargetResource(TerraformResource):
     available_args = {
         'rule': {'required': True},
         'target_id': {'required': True},
+        'event_bus_name': {'required': True},
         'arn': {'required': False},
         'target_input': {'required': False, 'tf_arg_key': 'input'},
         'run_command_targets': {'required': False}

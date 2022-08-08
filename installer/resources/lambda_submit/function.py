@@ -10,28 +10,10 @@ from resources.batch.job import SubmitAndRuleEngineJobDefinition, BatchJobsQueue
 from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
+from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids
 import json
 from core.config import Settings
-
-class Time:
-    def __init__(self, mins, hrs, modHours=0):
-        self.mins = mins
-        self.hrs = hrs
-        self.modHours = modHours
-
-    def calculate_mins_hrs(self):
-        if self.mins >= 60: 
-            self.hrs += 1 
-            if self.hrs > 23:
-                self.hrs = 0
-            self.mins = self.mins - 60           
-        else:
-            self.hrs = self.hrs
-    
-    def calculate_modHours(self):
-        self.modHours = self.hrs % Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS
-        return self.modHours
 
 
 class SubmitJobLambdaFunction(LambdaFunctionResource):
@@ -56,9 +38,19 @@ class SubmitJobLambdaFunction(LambdaFunctionResource):
 
 class DataCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Data-Collector"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["aws"],
+        "isCollector": [True],
+        "isShipper":[False],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -73,6 +65,7 @@ class DataCollectorEventRuleLambdaPermission(LambdaPermission):
 class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = DataCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     target_id = 'DataCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "AWS-Data-Collector",
@@ -97,9 +90,19 @@ class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class DataShipperEventRule(CloudWatchEventRuleResource):
     name = "aws-redshift-es-data-shipper"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 5, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()   
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["aws"],
+        "isCollector": [False],
+        "isShipper":[True],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
 
 
@@ -114,6 +117,7 @@ class DataShipperEventRuleLambdaPermission(LambdaPermission):
 class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = DataShipperEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     target_id = 'DataShipperTarger'  # Unique identifier
     target_input = json.dumps({
         'jobName': "aws-redshift-es-data-shipper",
@@ -148,9 +152,19 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class RecommendationsCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-Recommendations-Collector"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 6, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["aws"],
+        "isCollector": [False],
+        "isShipper":[True],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -165,6 +179,7 @@ class RecommendationsCollectorEventRuleLambdaPermission(LambdaPermission):
 class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = RecommendationsCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     target_id = 'RecommendationsCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "aws-recommendations-collector",
@@ -196,9 +211,19 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
 
 class CloudNotificationCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-CloudNotification-Collector"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 7, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["aws"],
+        "isCollector": [False],
+        "isShipper":[True],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction]
 
 
@@ -213,6 +238,7 @@ class CloudNotificationCollectorEventRuleLambdaPermission(LambdaPermission):
 class CloudNotificationCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = CloudNotificationCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
     target_id = 'CloudNotificationCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "aws-cloud-notification-collector",
@@ -242,90 +268,100 @@ class CloudNotificationCollectorCloudWatchEventTarget(CloudWatchEventTargetResou
     })
 
 
-class QualysKBCollectorEventRule(CloudWatchEventRuleResource):
-    name = "qualys-kb-collector"
-    schedule_expression = "cron(0 0 * * ? *)"
-    DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_deploy_vulnerability_service()
+# class QualysKBCollectorEventRule(CloudWatchEventRuleResource):
+#     name = "qualys-kb-collector"
+#     schedule_expression = "cron(0 0 * * ? *)"
+#     DEPENDS_ON = [SubmitJobLambdaFunction]
+#     PROCESS = need_to_deploy_vulnerability_service()
 
 
-class QualysKBCollectorEventRuleLambdaPermission(LambdaPermission):
-    statement_id = "AllowExecutionFromQualysKBCollectorEvent"
-    action = "lambda:InvokeFunction"
-    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
-    principal = "events.amazonaws.com"
-    source_arn = QualysKBCollectorEventRule.get_output_attr('arn')
-    PROCESS = need_to_deploy_vulnerability_service()
+# class QualysKBCollectorEventRuleLambdaPermission(LambdaPermission):
+#     statement_id = "AllowExecutionFromQualysKBCollectorEvent"
+#     action = "lambda:InvokeFunction"
+#     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+#     principal = "events.amazonaws.com"
+#     source_arn = QualysKBCollectorEventRule.get_output_attr('arn')
+#     PROCESS = need_to_deploy_vulnerability_service()
 
 
-class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
-    rule = QualysKBCollectorEventRule.get_output_attr('name')
-    arn = SubmitJobLambdaFunction.get_output_attr('arn')
-    target_id = 'QualysKBCollectorTarget'  # Unique identifier
-    target_input = json.dumps({
-        'jobName': "qualys-kb-collector",
-        'jobUuid': "qualys-kb-collector",
-        'jobType': "jar",
-        'jobDesc': "Qualys KB Collector",
-        'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
-            ) + "/config/batch,qualys-enricher/prd/latest"},
-        ],
-        'params': [
-            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
-            {'encrypt': False, 'key': "job_hint", 'value': "qualys-kb"},
-        ]
-    })
+# class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
+#     rule = QualysKBCollectorEventRule.get_output_attr('name')
+#     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+#     target_id = 'QualysKBCollectorTarget'  # Unique identifier
+#     target_input = json.dumps({
+#         'jobName': "qualys-kb-collector",
+#         'jobUuid': "qualys-kb-collector",
+#         'jobType': "jar",
+#         'jobDesc': "Qualys KB Collector",
+#         'environmentVariables': [
+#             {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+#             ) + "/config/batch,qualys-enricher/prd/latest"},
+#         ],
+#         'params': [
+#             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
+#             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+#             {'encrypt': False, 'key': "job_hint", 'value': "qualys-kb"},
+#         ]
+#     })
 
-    PROCESS = need_to_deploy_vulnerability_service()
-
-
-class QualysAssetDataImporterEventRule(CloudWatchEventRuleResource):
-    name = "qualys-asset-data-importer"
-    schedule_expression = "cron(0 1 * * ? *)"
-    DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_deploy_vulnerability_service()
+#     PROCESS = need_to_deploy_vulnerability_service()
 
 
-class QualysAssetDataImporterEventRuleLambdaPermission(LambdaPermission):
-    statement_id = "AllowExecutionFromQualysAssetDataImporterEvent"
-    action = "lambda:InvokeFunction"
-    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
-    principal = "events.amazonaws.com"
-    source_arn = QualysAssetDataImporterEventRule.get_output_attr('arn')
-    PROCESS = need_to_deploy_vulnerability_service()
+# class QualysAssetDataImporterEventRule(CloudWatchEventRuleResource):
+#     name = "qualys-asset-data-importer"
+#     schedule_expression = "cron(0 1 * * ? *)"
+#     DEPENDS_ON = [SubmitJobLambdaFunction]
+#     PROCESS = need_to_deploy_vulnerability_service()
 
 
-class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource):
-    rule = QualysAssetDataImporterEventRule.get_output_attr('name')
-    arn = SubmitJobLambdaFunction.get_output_attr('arn')
-    target_id = 'QualysAssetDataImporterTarget'  # Unique identifier
-    target_input = json.dumps({
-        'jobName': "qualys-asset-data-importer",
-        'jobUuid': "qualys-asset-data-importer",
-        'jobType': "jar",
-        'jobDesc': "Qualys Asset Data Importer",
-        'environmentVariables': [
-            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
-            ) + "/config/batch,qualys-enricher/prd/latest"},
-        ],
-        'params': [
-            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
-            {'encrypt': False, 'key': "job_hint", 'value': "qualys"},
-            {'encrypt': False, 'key': "server_type", 'value': "ec2"},
-            {'encrypt': False, 'key': "datasource", 'value': "aws"}
-        ]
-    })
-    PROCESS = need_to_deploy_vulnerability_service()
+# class QualysAssetDataImporterEventRuleLambdaPermission(LambdaPermission):
+#     statement_id = "AllowExecutionFromQualysAssetDataImporterEvent"
+#     action = "lambda:InvokeFunction"
+#     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+#     principal = "events.amazonaws.com"
+#     source_arn = QualysAssetDataImporterEventRule.get_output_attr('arn')
+#     PROCESS = need_to_deploy_vulnerability_service()
+
+
+# class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource):
+#     rule = QualysAssetDataImporterEventRule.get_output_attr('name')
+#     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+#     target_id = 'QualysAssetDataImporterTarget'  # Unique identifier
+#     target_input = json.dumps({
+#         'jobName': "qualys-asset-data-importer",
+#         'jobUuid': "qualys-asset-data-importer",
+#         'jobType': "jar",
+#         'jobDesc': "Qualys Asset Data Importer",
+#         'environmentVariables': [
+#             {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+#             ) + "/config/batch,qualys-enricher/prd/latest"},
+#         ],
+#         'params': [
+#             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
+#             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+#             {'encrypt': False, 'key': "job_hint", 'value': "qualys"},
+#             {'encrypt': False, 'key': "server_type", 'value': "ec2"},
+#             {'encrypt': False, 'key': "datasource", 'value': "aws"}
+#         ]
+#     })
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "azure-discovery"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 10, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["azure"],
+        "isCollector": [True],
+        "isShipper": [False],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction]
     PROCESS = need_to_enable_azure()
 
@@ -342,6 +378,7 @@ class AzureDataCollectorEventRuleLambdaPermission(LambdaPermission):
 class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = AzureDataCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
     target_id = 'AzureDataCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "pacbot-azure-discovery",
@@ -366,9 +403,19 @@ class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class AzureDataShipperEventRule(CloudWatchEventRuleResource):
     name = "data-shipper-azure"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 11, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["azure"],
+        "isCollector": [False],
+        "isShipper":[True],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
     PROCESS = need_to_enable_azure()
 
@@ -385,6 +432,7 @@ class AzureDataShipperEventRuleLambdaPermission(LambdaPermission):
 class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = AzureDataShipperEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
     target_id = 'AzureDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-azure",
@@ -408,9 +456,19 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "gcp-discovery"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 10, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["gcp"],
+        "isCollector": [True],
+        "isShipper":[False],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction]
     PROCESS = need_to_enable_gcp()
 
@@ -427,6 +485,7 @@ class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
 class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = GCPDataCollectorEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
     target_id = 'GCPDataCollectorTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "pacbot-gcp-discovery",
@@ -452,9 +511,19 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
 
 class GCPDataShipperEventRule(CloudWatchEventRuleResource):
     name = "data-shipper-gcp"
-    time = Time(Settings.CURRENT_MINUTE + Settings.BUFFER_TIME_IN_MINUTES_FOR_JOB_SCHEDULING + 11, Settings.CURRENT_HOUR)
-    time.calculate_mins_hrs()
-    schedule_expression = "cron({} {}/{},{}-{}/{} * * ? *)" .format(str(time.mins),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS),str(time.calculate_modHours()),str(time.hrs),str(Settings.JOB_SCHEDULER_INTERVAL_IN_HOURS)) 
+    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_pattern = {
+    "detail-type": [Settings.JOB_DETAIL_TYPE],
+    "source": [Settings.JOB_SOURCE],
+    "detail": {
+        "batchNo": [1],
+        "cloudName": ["gcp"],
+        "isCollector": [False],
+        "isShipper": [True],
+        "isRule": [False],
+        "submitJob": [True]
+        }
+    }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
     PROCESS = need_to_enable_gcp()
 
@@ -471,6 +540,7 @@ class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
 class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
     rule = GCPDataShipperEventRule.get_output_attr('name')
     arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
     target_id = 'GCPDataShipperTarget'  # Unique identifier
     target_input = json.dumps({
         'jobName': "data-shipper-gcp",
