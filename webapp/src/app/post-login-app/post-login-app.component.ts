@@ -51,39 +51,37 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   private reloadTimeout;
   isOffline = false;
   isExpanded = true;
-  isShowing = false;
   mode: String = 'side';
-  sidenavExpanderLeft= 252;
-  rotationVar='rotate(180deg)';
+  sidenavExpanderLeft = 250;
+  rotationVar = 'rotate(180deg)';
 
   sidenavExpanderClicked() {
     this.isExpanded = !this.isExpanded;
     if (this.isExpanded) {
-      this.sidenavExpanderLeft = 252;
-      this.rotationVar='rotate(180deg)';
+      this.sidenavExpanderLeft = 250;
+      this.rotationVar = 'rotate(180deg)';
     }
     else {
-      this.sidenavExpanderLeft = 54;
-      this.rotationVar='rotate(0)';
+      this.sidenavExpanderLeft = 70;
+      this.rotationVar = 'rotate(0)';
     }
   }
 
   mouseenter() {
-    this.mode = 'side';
-    this.sidenavExpanderLeft = 252;
-    this.rotationVar='rotate(180deg)';
     if (!this.isExpanded) {
-      this.isShowing = true;
-      this.mode = 'over';
+      this.isExpanded = true;
+      this.sidenavExpanderLeft = 250;
+      this.rotationVar = 'rotate(180deg)';
+      this.mode = "over";
     }
   }
 
   mouseleave() {
-    this.mode = 'side'
-    if (!this.isExpanded) {
-      this.isShowing = false;
-      this.sidenavExpanderLeft = 54;
-      this.rotationVar='rotate(0)';
+    if (this.mode == "over") {
+      this.isExpanded = false;
+      this.sidenavExpanderLeft = 70;
+      this.rotationVar = 'rotate(0)';
+      this.mode = "side";
     }
   }
 
@@ -263,7 +261,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
           this.previousRouteSequence = data.sequence;
         }
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 
   ngOnDestroy() {
