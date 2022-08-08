@@ -50,6 +50,7 @@
 		<module>pacman-qualys-enricher</module>
 		<module>azure-discovery</module>
         <module>gcp-discovery</module>
+        <module>job-scheduler</module>
     </modules>
 
 </project>
