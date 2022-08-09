@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.google.container.v1.ListNodePoolsResponse;
+import com.google.container.v1.NodePool;
 import com.tmobile.pacbot.gcp.inventory.vo.GKEClusterVH;
 import com.google.cloud.container.v1.ClusterManagerClient;
 import com.google.container.v1.Cluster;
@@ -57,6 +59,23 @@ public class GKEClusterInventoryCollector {
 
                         gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
                     }
+
+                    String clusterId=cluster.getId();
+                    logger.info("### Gke cluster clusterid",clusterId);
+
+                    ListNodePoolsResponse listNodePools =clusterManagerClient.listNodePools(projectId, region, clusterId);
+                    logger.info("### GKe cluster NodePoolList ########### ");
+                    logger.info("cluster size {}", listNodePools.getNodePoolsCount());
+
+                    for(NodePool nodePool:listNodePools.getNodePoolsList()){
+
+                        if(nodePool.getConfig().getBootDiskKmsKey()!=null){
+                            String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
+
+                            gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
+                        }
+                    }
+
                     gkeClusterVH.setId(String.valueOf(cluster.getId()));
                     gkeClusterVH.setProjectName(projectId);
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
