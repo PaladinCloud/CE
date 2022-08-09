@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
@@ -85,22 +85,24 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
     }) 
   }
 
-  constructor() { }
+  constructor(private readonly changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.mainDataSource = new MatTableDataSource(this.data);
     this.dataSource = new MatTableDataSource(this.data);
-    this.displayedColumns = Object.keys(this.columnWidths);
-
+    if(this.columnWidths){
+      this.displayedColumns = Object.keys(this.columnWidths);
+    }
     this.whiteListColumns = this.displayedColumns;
     this.allSelected=true;
   }
 
   ngAfterViewInit(): void {  
-    if(this.allSelected){
-      this.select.options.forEach((item: MatOption) => {
+    if(this.allSelected && this.select){
+      this.select.options?.forEach((item: MatOption) => {
         item.select();
       })
     }
+    this.changeDetectorRef.detectChanges();
   }
 }
