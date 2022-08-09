@@ -488,5 +488,6 @@ public class PacmanRuleConstants {
     public static final String EGRESS = "egress";
     public static final String HTTP20ENABLED = "http20Enabled";
     public static final String MASTRERAUTHORRIZEDNETWORKCONFIG = "masterAuthorizedNetworksConfig";
+    public static final String BOOTDISKKMSKEY = "bootDiskKmsKey";
 
 }
