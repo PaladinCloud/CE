@@ -5322,7 +5322,7 @@
     "modifiedDate": "2022-05-12",
     "severity": "high",
     "category": "security"
-},
+  },
   {
     "ruleId": "Azure_Enable_Database_Tier_Customer_Managed_Key",
     "ruleUUID": "Azure_Enable_Database_Tier_Customer_Managed_Key",
@@ -5346,7 +5346,6 @@
     "category": "security"
   },
   {
-
     "ruleId": "AWS_ElasticSearch_Domain_At_Rest_Encryption_version-1_ElasticSearchDomainAtRestEncryption",
     "ruleUUID": "aws_elasticsearch_domain_at_rest_encryption",
     "policyId": "AWS_ElasticSearch_Domain_At_Rest_Encryption_version-1",
@@ -5367,8 +5366,8 @@
     "modifiedDate": "2022-05-12",
     "severity": "critical",
     "category": "security"
-   },
-   {
+  },
+  {
     "ruleId": "AWS_ElasticSearch_Domain_Encryption_Using_CMK_KMS_Key_version-1_Enable_CloudTrail_Global_Services_cloudtrail",
     "ruleUUID": "aws_elasticsearch_domain_encryption_using_cmk_kms_keys",
     "policyId": "AWS_ElasticSearch_Domain_Encryption_Using_CMK_KMS_Key_version-1",
@@ -6389,7 +6388,7 @@
     "assetGroup": "Azure",
     "alexaKeyword": "Enable Network Security for SQLSERVER",
     "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"ruleKey\"},{\"key\":\"protocol\",\"value\":\"udp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1434\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny public access to SQL Server port 1434\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"alexaKeyword\":\"Enable Network Security for SQLSERVER\",\"ruleRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Network_Security_for_SQLSERVER\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_enable_network_security_SQLSERVER\",\"ruleType\":\"ManageRule\"}",
-     "ruleFrequency": "0 0/6 * * ? *",
+    "ruleFrequency": "0 0/6 * * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "ManageRule",
@@ -6401,8 +6400,8 @@
     "modifiedDate": "2022-05-02",
     "severity": "critical",
     "category": "security"
-   },
-   {
+  },
+  {
     "ruleId": "GCP_VM_Instance_Migrate",
     "ruleUUID": "GCP_VM_Instance_Migrate",
     "policyId": "GCP_VM_Instance_Migrate",
@@ -6531,6 +6530,28 @@
     "displayName": "Ensure cross DB ownership flag is disabled for SQL DB Server",
     "createdDate": "2022-07-19",
     "modifiedDate": "2022-07-19",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
+    "ruleId": "trusted_ms_services_access_storage_account",
+    "ruleUUID": "trusted_ms_services_access_storage_account",
+    "policyId": "trusted_ms_services_access_storage_account",
+    "ruleName": "trusted_ms_services_access_storage_account",
+    "targetType": "storageaccount",
+    "assetGroup": "Azure",
+    "alexaKeyword": "trustedMicrosoftservicesAccesstoStorageAccount",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Enable-Trusted-Microsoft-Services-for-storage-Account-Access\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"trusted_ms_services_access_storage_account\",\"autofix\":false,\"alexaKeyword\":\"CheckStorageAccountPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"storageaccount\",\"pac_ds\":\"azure\",\"policyId\":\"trusted_ms_services_access_storage_account\",\"assetGroup\":\"azure\",\"ruleUUID\":\"trusted_ms_services_access_storage_account\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/trusted_ms_services_access_storage_account",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure Enable trusted microsoft services to access Storage Account",
+    "createdDate": "2022-06-03",
+    "modifiedDate": "2022-06-03",
     "severity": "medium",
     "category": "security"
   }
