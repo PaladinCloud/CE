@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.auth.repository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,5 +71,13 @@ public class AuthRepositoryImpl implements AuthRepository {
 			return StringUtils.EMPTY;
 		}
 	}
+	
+	@Override
+    public void updateAzurePublicKey(String publicKey) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+        rdsRepository.update("UPDATE pac_config_properties config set value='" + publicKey
+                + "', modifiedDate='" + LocalDateTime.now().format(formatter) + "' where cfkey='azure.public-key'");
+       
+    }
 }
 

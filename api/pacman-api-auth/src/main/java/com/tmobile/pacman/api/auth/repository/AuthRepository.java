@@ -30,4 +30,5 @@ public interface AuthRepository {
 	
 	public Set<String> getUserRoleDetails(final String userId, final String clientId);
 	public String getUserDefaultAssetGroup(final String userId);
+	public void updateAzurePublicKey(String publicKey);
 }
