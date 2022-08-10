@@ -51,6 +51,8 @@ public class PacmanRuleConstants {
     public static final String FIREWALL_RULE_NAME = "firewallRuleName";
     public static final String GCP_ON_HOST_MAINTENANCE ="onHostMaintainence" ;
     public static final String MIGRATE ="MIGRATE" ;
+    public static final String AVAILABILITY = "availabilityType";
+    public static final String SETTINGS ="settings" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
