@@ -65,13 +65,12 @@ public class GKEClusterInventoryCollector {
 
                     ListNodePoolsResponse listNodePools =clusterManagerClient.listNodePools(projectId, region, clusterId);
                     logger.info("### GKe cluster NodePoolList ########### ");
-                    logger.info("cluster size {}", listNodePools.getNodePoolsCount());
+                    logger.info("Nodepool size {}", listNodePools.getNodePoolsCount());
 
                     for(NodePool nodePool:listNodePools.getNodePoolsList()){
 
                         if(nodePool.getConfig().getBootDiskKmsKey()!=null){
                             String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
-
                             gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
                         }
                     }
