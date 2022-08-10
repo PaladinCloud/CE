@@ -57,6 +57,13 @@ public class GKEClusterInventoryCollector {
 
                         gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
                     }
+                    if(cluster.getDatabaseEncryption().getKeyName()!=null) {
+                        String keyName = new Gson().fromJson(
+                                cluster.getDatabaseEncryption().getKeyName(), String.class);
+
+                        gkeClusterVH.setKeyName(keyName);
+                    }
+
                     gkeClusterVH.setId(String.valueOf(cluster.getId()));
                     gkeClusterVH.setProjectName(projectId);
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
