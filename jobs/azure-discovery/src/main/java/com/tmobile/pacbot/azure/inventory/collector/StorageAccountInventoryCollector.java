@@ -60,6 +60,11 @@ public class StorageAccountInventoryCollector {
 					storageAccountVH
 							.setCustomerManagedKey(storageAccount.inner().encryption().keyVaultProperties().keyName());
 				}
+				if(storageAccount.inner().networkRuleSet().bypass()!=null){
+					storageAccountVH.setNetworkRuleBypass(storageAccount.inner().networkRuleSet().bypass().toString());
+					log.info("storage Account Bypass to string{}",storageAccount.inner().networkRuleSet().bypass().toString());
+
+				}
 			}
 			storageAccountVH.setBlobPublicAccessAllowed(storageAccount.isBlobPublicAccessAllowed());
 			storageAccountList.add(storageAccountVH);
