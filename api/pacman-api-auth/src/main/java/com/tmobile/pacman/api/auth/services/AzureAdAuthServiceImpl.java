@@ -15,16 +15,21 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.auth.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -39,9 +44,14 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.auth.domain.UserClientCredentials;
 import com.tmobile.pacman.api.auth.domain.UserLoginCredentials;
 import com.tmobile.pacman.api.auth.model.User;
+import com.tmobile.pacman.api.auth.repository.AuthRepository;
 import com.tmobile.pacman.api.auth.utils.AuthUtils;
 
 /**
@@ -88,6 +98,12 @@ public class AzureAdAuthServiceImpl implements AuthService {
 	
 	@Value("${auth.active}")
 	private String activeAuth;
+	
+	@Autowired
+    private AuthRepository authRepository;
+	
+	@Value("${azure.public-key.url}")
+    private String publicKeyUrl;
 
 	@Override
 	public Map<String, Object> doLogin(UserLoginCredentials credentials) {
@@ -151,47 +167,110 @@ public class AzureAdAuthServiceImpl implements AuthService {
 		return false;
 	}
     
-	public Map<String, Object> validateIdTokenAndGetUserDetails(final String idToken) {	
-		Map<String, Object> userDetails = Maps.newHashMap();
-		try {
-			byte[] decoded = Base64.getDecoder().decode(publicKey);
-			X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
-			KeyFactory kf = KeyFactory.getInstance("RSA");
-			RSAPublicKey generatePublic = (RSAPublicKey) kf.generatePublic(spec);
-		    Algorithm algorithm = Algorithm.RSA256(generatePublic, null);
-		    JWTVerifier verifier = JWT.require(algorithm)
-		        .withIssuer(issuer)
-		        .build();
-		    DecodedJWT jwt = verifier.verify(idToken);	
-		    userDetails.put("userId", jwt.getClaim(userId).asString().toLowerCase());
-		    userDetails.put("userName", jwt.getClaim(userName).asString());
-		    userDetails.put("firstName", jwt.getClaim(firstName).asString());
-		    userDetails.put("lastName", jwt.getClaim(lastName).asString());
-		    userDetails.put("email", jwt.getClaim(email).asString().toLowerCase());
-		    User user = userService.findByUserId(String.valueOf(jwt.getClaim("unique_name").asString().toLowerCase()));
-		    if (user == null) {
-			    userService.registerNewUser(userDetails);
-		    }
-		    userDetails.put("appId", jwt.getClaim("aud").asString().toLowerCase());
-		    userDetails.put("success", true);
-		    return userDetails;
-		} catch (JWTVerificationException exception){
-			exception.printStackTrace();
-			if(exception instanceof TokenExpiredException) {
-				userDetails.put("message", exception.getMessage());
-			} else {
-				userDetails.put("message", "Exception in Id Token verification");
-			}
-			userDetails.put("success", false);
-		} catch (NoSuchAlgorithmException exception) {
-			exception.printStackTrace();
-			userDetails.put("success", false);
-			userDetails.put("message", "Exception in Id Token verification");
-		} catch (InvalidKeySpecException exception) {
-			exception.printStackTrace();
-			userDetails.put("success", false);
-			userDetails.put("message", "Exception in Id Token verification");
-		}
-		return userDetails;
-	}
+	public Map<String, Object> validateIdTokenAndGetUserDetails(final String idToken) {   
+        Map<String, Object> userDetails = Maps.newHashMap();
+        try {
+               DecodedJWT jwt = verifyToken(publicKey, idToken);
+               userDetails= getUserDetails(jwt);
+        } catch (JWTVerificationException exception){
+               String newPublicKey = generateNewPublicKey(idToken);
+               if (StringUtils.isNotBlank(newPublicKey)) {
+                      try {
+                            DecodedJWT jwt = verifyToken(newPublicKey, idToken);
+                            updateNewPublicKey(newPublicKey);
+                            userDetails= getUserDetails(jwt);
+                      } catch (Exception excepion) {
+                            excepion.printStackTrace();
+                            userDetails.put("success", false);
+                            userDetails.put("message", "Exception in Id Token verification");
+                      }
+               } else {
+                      userDetails.put("success", false);
+                      userDetails.put("message", "Exception in Id Token verification");
+               }
+        } catch (NoSuchAlgorithmException exception) {
+               exception.printStackTrace();
+               userDetails.put("success", false);
+               userDetails.put("message", "Exception in Id Token verification");
+        } catch (InvalidKeySpecException exception) {
+               exception.printStackTrace();
+               userDetails.put("success", false);
+               userDetails.put("message", "Exception in Id Token verification");
+        }
+        return userDetails;
+  }
+
+  private DecodedJWT verifyToken(String publicKey, final String idToken)
+               throws NoSuchAlgorithmException, InvalidKeySpecException {
+        
+        byte[] decoded = Base64.getDecoder().decode(publicKey);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        RSAPublicKey generatePublic = (RSAPublicKey) kf.generatePublic(spec);
+        Algorithm algorithm = Algorithm.RSA256(generatePublic, null);
+        JWTVerifier verifier = JWT.require(algorithm)
+            .withIssuer(issuer)
+            .build();
+        DecodedJWT jwt = verifier.verify(idToken);    
+        return jwt;
+  }
+
+  private Map<String, Object> getUserDetails(DecodedJWT jwt) {
+        Map<String, Object> userDetails = Maps.newHashMap();
+        userDetails.put("userId", jwt.getClaim(userId).asString().toLowerCase());
+        userDetails.put("userName", jwt.getClaim(userName).asString());
+        userDetails.put("firstName", jwt.getClaim(firstName).asString());
+        userDetails.put("lastName", jwt.getClaim(lastName).asString());
+        userDetails.put("email", jwt.getClaim(email).asString().toLowerCase());
+        User user = userService.findByUserId(String.valueOf(jwt.getClaim("unique_name").asString().toLowerCase()));
+        if (user == null) {
+            userService.registerNewUser(userDetails);
+        }
+        userDetails.put("appId", jwt.getClaim("aud").asString().toLowerCase());
+        userDetails.put("success", true);
+        return userDetails;
+  }
+  
+  private String generateNewPublicKey(String idToken) {
+        try {
+               DecodedJWT decodedJWT = JWT.decode(idToken);
+               String publicCertificate = StringUtils.EMPTY;
+               String response = AuthUtils.httpGet(publicKeyUrl);
+               if (!StringUtils.isEmpty(response)) {
+                      Gson gson = new Gson();
+                      JsonObject keys = gson.fromJson(response, JsonObject.class);
+                      publicCertificate = getMatchingCertificate(decodedJWT, keys);
+               }
+               if (StringUtils.isNotBlank(publicCertificate)) {
+                      String certificate = "-----BEGIN CERTIFICATE-----\n" + publicCertificate
+                                   + "\n-----END CERTIFICATE-----";
+                      CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                      InputStream inputStream = new ByteArrayInputStream(certificate.getBytes(StandardCharsets.UTF_8));
+                      X509Certificate x509Certificate = (X509Certificate) certificateFactory.generateCertificate(inputStream);
+                      return Base64.getEncoder().encodeToString(x509Certificate.getPublicKey().getEncoded());
+               }
+        } catch (Exception e) {
+               e.printStackTrace();
+        }
+        return StringUtils.EMPTY;
+  }
+
+  private String getMatchingCertificate(DecodedJWT decodedJWT, JsonObject discoveryKeyObject) {
+        JsonArray keys = discoveryKeyObject.getAsJsonArray("keys");
+        for (JsonElement keyEle : keys) {
+               JsonObject key = keyEle.getAsJsonObject();
+               if (!key.get("kid").isJsonNull() && key.get("kid").getAsString().equals(decodedJWT.getKeyId())) {
+                      if(!key.get("x5c").isJsonNull()) {
+                            return key.get("x5c").getAsJsonArray().get(0).getAsString();
+                      }
+               }
+        }
+        return StringUtils.EMPTY;
+  }
+  
+  public void updateNewPublicKey(String newPublicKey) {
+        authRepository.updateAzurePublicKey(newPublicKey);
+        System.setProperty("azure.public-key", newPublicKey);
+  }
+
 }
