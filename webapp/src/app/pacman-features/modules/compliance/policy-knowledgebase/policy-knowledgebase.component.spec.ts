@@ -12,15 +12,17 @@
  * limitations under the License.
  */
 
-import { HttpClient, HttpHandler } from '@angular/common/http';
-import { Renderer2 } from '@angular/core';
+import { HttpClient, HttpHandler, HttpResponse } from '@angular/common/http';
+import { NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Observable, of, ReplaySubject } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
@@ -44,40 +46,89 @@ describe('Policyknowledgebase', () => {
   let component: PolicyKnowledgebaseComponent;
   let fixture: ComponentFixture<PolicyKnowledgebaseComponent>;
 
+  let fakeCommonResponseService: CommonResponseService;
+  let fakeAssetGroupObservableService: AssetGroupObservableService;
+  let fakeLoggerService: LoggerService;
+  let fakeErrorHandlingService: ErrorHandlingService;
+  let fakeWorkflowService: WorkflowService;
+  let fakeDomainTypeObservableService: DomainTypeObservableService;
+  let fakeRouterUtilityService: RouterUtilityService;
+
   beforeEach(async () => {
+
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatSelectModule, MatTableModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
-      declarations: [ PolicyKnowledgebaseComponent, TableWrapperComponent, TableComponent, BackNavigationComponent ],
-      providers: [CommonResponseService, 
-        LoggerService, ErrorHandlingService, AssetGroupObservableService, 
-        DataCacheService, UtilsService, RefactorFieldsService, Renderer2,
-                  WorkflowService,
-                  DomainTypeObservableService,
-                  RouterUtilityService,
-                  HttpService, HttpClient, HttpHandler
-                  ]
+      declarations: [ PolicyKnowledgebaseComponent ],
+      providers: [
+        CommonResponseService,
+        AssetGroupObservableService,
+        LoggerService,
+        ErrorHandlingService,
+        WorkflowService,
+        DomainTypeObservableService,
+        RouterUtilityService,
+        ErrorHandlingService,
+        DataCacheService, 
+        UtilsService, 
+        RefactorFieldsService,
+        HttpService, HttpClient, HttpHandler
+        ],
+        schemas: [NO_ERRORS_SCHEMA],
     })
     .compileComponents();
+  // fakeCommonResponseService = TestBed.inject(CommonResponseService);
+
   });
+
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PolicyKnowledgebaseComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
 
-    component.knowledgebaseData = [
-      {col1:"row1 col1", col2:"row1 col2"},
-      {col1:"row2 col1", col2:"row2 col2"},
-    ];
+    fakeCommonResponseService = fixture.debugElement.injector.get(CommonResponseService);
+    spyOn(fakeCommonResponseService, 'getData').and.returnValue(of({data:{response: [{col1:"row1 col1", col2:"row1 col2"}]}}));
 
-    // component.columnNamesMap = {col1: "col1", col2: "col2"};
+    fakeDomainTypeObservableService = fixture.debugElement.injector.get(DomainTypeObservableService);
+    spyOn(fakeDomainTypeObservableService, 'getDomainType').and.returnValue(of("aws"));
+    
+    // service2.getDomainType().subscribe(val => {
+    // console.log(val);
+    // });
+    
 
-    // component.columnWidths = {col1:2, col2:1};
-
-    fixture.detectChanges();
+    // fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('renders an independent table wrapper', () => {
+    component.getData();
+    fixture.detectChanges();
+    const { debugElement } = fixture;
+    const tableWrapperComponent = debugElement.query(By.css('app-table-wrapper'));
+    expect(tableWrapperComponent).toBeTruthy();
+  });
+
+  it('renders an independent back navigation', () => {
+    const { debugElement } = fixture;
+    const backNavigationComponent = debugElement.query(By.css('app-back-navigation'));
+    expect(backNavigationComponent).toBeTruthy();
+  });
+
+  it("selected domain should be aws", () => {
+    fixture.detectChanges();
+    expect(component.selectedDomain).toBe("aws");
+  })
+
+  it("should call CommonResponseService getData method", ()=> {
+    component.getData();
+    fixture.detectChanges();
+    expect(fakeCommonResponseService.getData).toHaveBeenCalled();
+  })
+
+  it("should call DomainTypeObservableService.getDomainType method", ()=> {
+    expect(fakeDomainTypeObservableService.getDomainType).toHaveBeenCalled();
+  })
 });
