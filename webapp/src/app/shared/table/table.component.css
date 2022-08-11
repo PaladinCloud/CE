@@ -14,6 +14,7 @@ tr {
 tr.mat-row, tr.mat-footer-row {
   height: 62px;
   padding: 12px 0px;
+  align-items: center;
   font: var(--text-body-2);
   color: var(--text-high-emphasis);
 }
@@ -35,4 +36,7 @@ thead {
 
 th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
   padding: 0px 12px 0px 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

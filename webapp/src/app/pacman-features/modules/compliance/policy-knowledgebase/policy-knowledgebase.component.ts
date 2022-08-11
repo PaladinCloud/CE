@@ -65,7 +65,6 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   @ViewChild('pkInp') pkInp: ElementRef;
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
-    private renderer: Renderer2,
     private router: Router,
     private commonResponseService: CommonResponseService,
     private logger: LoggerService,
@@ -73,11 +72,13 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService) {
+      console.log("AM I CALLDED");
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
       this.agAndDomain['ag'] = this.selectedAssetGroup;
     });
-    this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
+    this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
+      console.log("AM I CALLDED2");    
       this.selectedDomain = domain;
       this.agAndDomain['domain'] = this.selectedDomain;
       this.updateComponent();
@@ -132,8 +133,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
           this.typeObj['Auto Fix']++;
         }
       }
-      console.log("TypeObj: ", this.typeObj);
-      
+
       let typeArr = [];
       typeArr = Object.keys(this.typeObj);
       // this.tabName = typeArr;
