@@ -33,43 +33,50 @@ public class CloudSqlInventoryCollector {
             SQLAdmin sqlAdmin = gcpCredentialsProvider.getSqlAdminService();
             InstancesListResponse response = sqlAdmin.instances().list(projectId).execute();
             logger.info("SQL admin list api response: {}", response);
-            List<DatabaseInstance> instanceList = response.getItems();
-            logger.info("Database Instances list: {}", instanceList);
-            if (!instanceList.isEmpty()) {
-                for (DatabaseInstance dbInstance : instanceList) {
-                    logger.info("Database Instance: {}", dbInstance);
-                    CloudSqlVH cloudSqlVH = new CloudSqlVH();
-                    cloudSqlVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
-                    cloudSqlVH.setId(dbInstance.getConnectionName());
-                    cloudSqlVH.setRegion(dbInstance.getRegion());
-                    cloudSqlVH.setProjectName(projectId);
+            if(response!=null && !response.isEmpty()) {
+                List<DatabaseInstance> instanceList = response.getItems();
+                logger.info("Database Instances list: {}", instanceList);
 
-                    cloudSqlVH.setName(dbInstance.getName());
-                    cloudSqlVH.setKind(dbInstance.getKind());
-                    cloudSqlVH.setMasterInstanceName(dbInstance.getMasterInstanceName());
-                    cloudSqlVH.setBackendType(dbInstance.getBackendType());
-                    cloudSqlVH.setCreatedTime(dbInstance.getCreateTime());
-                    cloudSqlVH.setState(dbInstance.getState());
-                    cloudSqlVH.setDatabaseVersion(dbInstance.getDatabaseVersion());
-                    cloudSqlVH.setDatabaseInstalledVersion(dbInstance.getDatabaseInstalledVersion());
-                    cloudSqlVH.setInstanceType(dbInstance.getInstanceType());
-                    cloudSqlVH.seteTag(dbInstance.getEtag());
-                    cloudSqlVH.setSelfLink(dbInstance.getSelfLink());
-                    cloudSqlVH.setServiceAccountEmail(dbInstance.getServiceAccountEmailAddress());
+                if (!instanceList.isEmpty()) {
 
-                    cloudSqlVH.setMaxDiskSize(dbInstance.getMaxDiskSize());
-                    cloudSqlVH.setCurrentDiskSize(dbInstance.getCurrentDiskSize());
-                    if (dbInstance.getDiskEncryptionConfiguration() != null) {
-                        cloudSqlVH.setKmsKeyName(dbInstance.getDiskEncryptionConfiguration().getKmsKeyName());
+                    for (DatabaseInstance dbInstance : instanceList) {
+                        logger.info("Database Instance: {}", dbInstance);
+                        CloudSqlVH cloudSqlVH = new CloudSqlVH();
+                        cloudSqlVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
+                        cloudSqlVH.setId(dbInstance.getConnectionName());
+                        cloudSqlVH.setRegion(dbInstance.getRegion());
+                        cloudSqlVH.setProjectName(projectId);
+
+                        cloudSqlVH.setName(dbInstance.getName());
+                        cloudSqlVH.setKind(dbInstance.getKind());
+                        cloudSqlVH.setMasterInstanceName(dbInstance.getMasterInstanceName());
+                        cloudSqlVH.setBackendType(dbInstance.getBackendType());
+                        cloudSqlVH.setCreatedTime(dbInstance.getCreateTime());
+                        cloudSqlVH.setState(dbInstance.getState());
+                        cloudSqlVH.setDatabaseVersion(dbInstance.getDatabaseVersion());
+                        cloudSqlVH.setDatabaseInstalledVersion(dbInstance.getDatabaseInstalledVersion());
+                        cloudSqlVH.setInstanceType(dbInstance.getInstanceType());
+                        cloudSqlVH.seteTag(dbInstance.getEtag());
+                        cloudSqlVH.setSelfLink(dbInstance.getSelfLink());
+                        cloudSqlVH.setServiceAccountEmail(dbInstance.getServiceAccountEmailAddress());
+
+                        cloudSqlVH.setMaxDiskSize(dbInstance.getMaxDiskSize());
+                        cloudSqlVH.setCurrentDiskSize(dbInstance.getCurrentDiskSize());
+                        if (dbInstance.getDiskEncryptionConfiguration() != null) {
+                            cloudSqlVH.setKmsKeyName(dbInstance.getDiskEncryptionConfiguration().getKmsKeyName());
+                        }
+                        setIpAddresses(cloudSqlVH, dbInstance.getIpAddresses());
+                        setServerCerts(cloudSqlVH, dbInstance.getServerCaCert());
+                        cloudSqlVH.setSettings(dbInstance.getSettings());
+
+                        if (dbInstance.getDiskEncryptionStatus() != null) {
+                            cloudSqlVH.setKmsKeyVersion(dbInstance.getDiskEncryptionStatus().getKmsKeyVersionName());
+                        }
+                        logger.info("databaseflags collecting started");
+                       
+
+                        cloudSqlList.add(cloudSqlVH);
                     }
-                    setIpAddresses(cloudSqlVH, dbInstance.getIpAddresses());
-                    setServerCerts(cloudSqlVH, dbInstance.getServerCaCert());
-                    cloudSqlVH.setSettings(dbInstance.getSettings());
-
-                    if (dbInstance.getDiskEncryptionStatus() != null) {
-                        cloudSqlVH.setKmsKeyVersion(dbInstance.getDiskEncryptionStatus().getKmsKeyVersionName());
-                    }
-                    cloudSqlList.add(cloudSqlVH);
                 }
             }
 
