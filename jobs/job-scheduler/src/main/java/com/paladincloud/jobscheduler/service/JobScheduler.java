@@ -46,6 +46,9 @@ public class JobScheduler {
     @Value("${no_of_rules_per_batch}")
     private String noOfRulesPerBatch;
 
+    @Value("${region:}")
+    private String region;
+
     @Scheduled(initialDelayString = "${job.schedule.initialDelay}", fixedDelayString = "${job.schedule.interval}")
     public void scheduleCollectorJobs() {
         // print the current milliseconds
@@ -132,36 +135,84 @@ public class JobScheduler {
         logger.info("Job Scheduler for rules is running...");
 
         EventBridgeClient eventBrClient = getEventBridgeClient();
-        List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
 
+        //busdetails e.g- aws.eventbridge.bus.details=paladincloud-aws:aws:289
+        //azure.eventbridge.bus.details=paladincloud-azure:azure:102
+        //gcp.eventbridge.bus.details=paladincloud-gcp:gcp:30
         try {
-            addRuleEvent(putEventsRequestEntries, awsBusDetails);
-            if (gcpEnabled) {
-                addRuleEvent(putEventsRequestEntries, gcpBusDetails);
-            }
-            if (azureEnabled) {
-                addRuleEvent(putEventsRequestEntries, azureBusDetails);
-            }
+            int noOfBatchAws = (int) Math.ceil(Double.parseDouble(awsBusDetails.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch));
+            logger.info("No of batches for AWS: {}", noOfBatchAws);
+            int noOfBatchAzure = azureEnabled ? (int) Math.ceil(Double.parseDouble(azureBusDetails.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch)) : 0;
+            logger.info("No of batches for azure: {}", noOfBatchAzure);
+            int noOfBatchGcp = gcpEnabled ? (int) Math.ceil(Double.parseDouble(gcpBusDetails.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch)) : 0;
+            logger.info("No of batches for GCP: {}", noOfBatchGcp);
+            int noOfBatches = getNoOfBatches(noOfBatchAws, noOfBatchAzure, noOfBatchGcp);
 
-            PutEventsRequest eventsRequest = PutEventsRequest.builder()
-                    .entries(putEventsRequestEntries)
-                    .build();
-
-            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
-
-            for (PutEventsResultEntry resultEntry : result.entries()) {
-                if (resultEntry.eventId() != null) {
-                    logger.info("Event Id: {} ", resultEntry.eventId());
-                } else {
-                    logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
+            for (int i = 0; i < noOfBatches; i++) {
+                List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
+                // process aws rules first
+                if (i < noOfBatchAws) {
+                    putEventIntoRequestEntry(i, awsBusDetails, putEventsRequestEntries);
                 }
+                // process azure rules
+                if (azureEnabled && i >= noOfBatchAws && i < noOfBatchAws + noOfBatchAzure) {
+                    putEventIntoRequestEntry(i-noOfBatchAws, azureBusDetails, putEventsRequestEntries);
+                }
+                // process gcp rules
+                if (gcpEnabled && i >= noOfBatchAws + noOfBatchAzure) {
+                    putEventIntoRequestEntry(i-noOfBatchAws-noOfBatchAzure ,gcpBusDetails, putEventsRequestEntries);
+                }
+
+                PutEventsRequest eventsRequest = PutEventsRequest.builder()
+                        .entries(putEventsRequestEntries)
+                        .build();
+
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info("Event Id: {} ", resultEntry.eventId());
+                    } else {
+                        logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
+                    }
+                }
+                //Delay of 1 min between each batch
+                Thread.sleep(1000 * 60);
             }
 
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
         eventBrClient.close();
+    }
+
+    private void putEventIntoRequestEntry(int batchNo, String awsBusDetails, List<PutEventsRequestEntry> reqEntryList) {
+
+        String detailString = null;
+        String cloudName = awsBusDetails.split(":")[0].split("-")[1];
+        Event event = populateEventForRule(cloudName, batchNo);
+        detailString = getMarshalledEvent(detailString, event);
+        PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
+                .source(EVENT_SOURCE)
+                .detailType(EVENT_DETAIL_TYPE)
+                .detail(detailString)
+                .eventBusName(awsBusDetails.split(":")[0])
+                .build();
+        // print the request entry
+        logger.info("Request entry: {} ", reqEntry);
+
+        // Add the PutEventsRequestEntry to a putEventsRequestEntries
+        reqEntryList.add(reqEntry);
+    }
+
+    private int getNoOfBatches(int noOfBatchAws, int noOfBatchAzure, int noOfBatchGcp) {
+        logger.info("Calculating the total no of batches");
+        int sum = noOfBatchAws + noOfBatchAzure + noOfBatchGcp;
+        logger.info("No of batches for rule execution: {}", sum);
+        return sum;
     }
 
     private void addRuleEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
@@ -170,9 +221,9 @@ public class JobScheduler {
         // populate events for each event bus
         String[] busDetailsArray = busDetails.split(",");
         for (String busDetail : busDetailsArray) {
-            int noOfBatches = (int) Math.ceil(Double.parseDouble(busDetail.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch));
+            int noOfBatches = (int) Math.ceil(Double.parseDouble(busDetail.split(":")[2]) / Double.parseDouble(noOfRulesPerBatch));
             for (int i = 0; i < noOfBatches; i++) {
-                Event event = populateEventForRule(busDetail.split(":")[0], i);
+                Event event = populateEventForRule(busDetail.split(":")[1], i);
 
                 detailString = getMarshalledEvent(detailString, event);
                 PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
@@ -197,7 +248,8 @@ public class JobScheduler {
         // populate events for each event bus
         String[] busDetailsArray = busDetails.split(",");
         for (String busDetail : busDetailsArray) {
-            Event event = populateEventForShipper(busDetail.split(":")[0]);
+            String cloudName = busDetail.split(":")[0].split("-")[1];
+            Event event = populateEventForShipper(cloudName);
 
             detailString = getMarshalledEvent(detailString, event);
             PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
@@ -222,7 +274,8 @@ public class JobScheduler {
         // populate events for each event bus
         String[] busDetailsArray = busDetails.split(",");
         for (String busDetail : busDetailsArray) {
-            Event event = populateEventForCollector(busDetail.split(":")[0]);
+            String cloudName = busDetail.split(":")[0].split("-")[1];
+            Event event = populateEventForCollector(cloudName);
             detailString = getMarshalledEvent(detailString, event);
             PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
                     .source(EVENT_SOURCE)
@@ -240,11 +293,12 @@ public class JobScheduler {
     }
 
     private EventBridgeClient getEventBridgeClient() {
-        Region region = Region.US_EAST_1;
-
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create("", "");
+        Region reg = Region.of(region);
+        String accessKey = System.getProperty("ACCESS_KEY");
+        String secretKey = System.getProperty("SECRET_KEY");
+        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
         return EventBridgeClient.builder()
-                .region(region)
+                .region(reg)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
     }
