@@ -6469,6 +6469,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Encrypt_App_Layer_secrets_for_GKE_Cluster",
+    "ruleUUID": "Encrypt_App_Layer_secrets_for_GKE_Cluster",
+    "policyId": "Encrypt_App_Layer_secrets_for_GKE_Cluster",
+    "ruleName": "Encrypt App layer secret in GKE Cluster",
+    "targetType": "gkecluster",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Kubernate_Engine_cluster",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"encrypt-App-layer-secret-in-GKE-Cluster\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Use CMK to encrypt App layer secrets for GKE cluster\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"App-Layer secrets encryption is not enable using cmk.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_gkecluster/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Encrypt App layer secret in GKE Cluster\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Encrypt_App_Layer_secrets_for_GKE_Cluster\",\"autofix\":false,\"alexaKeyword\":\"Kubernate_Engine_cluster\",\"ruleRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"azure\",\"policyId\":\"Encrypt_App_Layer_secrets_for_GKE_Cluster\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Encrypt_App_Layer_secrets_for_GKE_Cluster\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Encrypt_App_Layer_secrets_for_GKE_Cluster",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Encrypt App layer secret in GKE Cluster\n",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
+    "severity": "critical",
+    "category": "security"
+  },
+  {
     "ruleId": "Encrypt_GKE_Cluster_Node_with_CMK",
     "ruleUUID": "Encrypt_GKE_Cluster_Node_with_CMK",
     "policyId": "Encrypt_GKE_Cluster_Node_with_CMK",
@@ -6490,5 +6512,4 @@
     "severity": "high",
     "category": "security"
   }
-
 ]

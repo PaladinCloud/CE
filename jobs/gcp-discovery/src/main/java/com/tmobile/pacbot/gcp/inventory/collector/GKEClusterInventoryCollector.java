@@ -60,6 +60,13 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
                     }
 
+                    if(cluster.getDatabaseEncryption().getKeyName()!=null) {
+                        String keyName = new Gson().fromJson(
+                                cluster.getDatabaseEncryption().getKeyName(), String.class);
+
+                        gkeClusterVH.setKeyName(keyName);
+                    }
+
                     String clusterId=cluster.getId();
                     logger.info("### Gke cluster clusterid",clusterId);
 
@@ -90,7 +97,6 @@ public class GKEClusterInventoryCollector {
             logger.debug(e.getMessage());
         }
         return gkeClusterlist;
-
     }
 
 }
