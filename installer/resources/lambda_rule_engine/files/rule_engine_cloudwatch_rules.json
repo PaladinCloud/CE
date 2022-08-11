@@ -6489,5 +6489,27 @@
     "modifiedDate": "2022-07-19",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
+    "ruleUUID": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
+    "policyId": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
+    "ruleName": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
+    "targetType": "cloudsql",
+    "assetGroup": "gcp",
+    "alexaKeyword": "CrossDBOwnership",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-sql-instance-owner-changing-flag-disabled\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Use CMK to encrypt GKE Cluster Node\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"GKE Cluster node encryption is not enable using cmk.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_gkecluster/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure cross DB ownership flag is disabled for SQL DB Server\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Ensure_cross_DB_ownership_flag_disabled _for_SQL\",\"autofix\":false,\"alexaKeyword\":\"CrossDBOwnership\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"policyId\":\"Ensure_cross_DB_ownership_flag_disabled _for_SQL\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Ensure_cross_DB_ownership_flag_disabled _for_SQL\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Ensure_cross_DB_ownership_flag_disabled _for_SQL",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure cross DB ownership flag is disabled for SQL DB Server",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
+    "severity": "medium",
+    "category": "security"
   }
 ]
