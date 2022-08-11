@@ -490,7 +490,6 @@ public class PacmanRuleConstants {
     public static final String MASTRERAUTHORRIZEDNETWORKCONFIG = "masterAuthorizedNetworksConfig";
     public static final String DISKENCRYPTION = "diskEncryption";
     public static final String KEYNAME = "keyName";
-
-
+    public static final String BOOTDISKKMSKEY = "bootDiskKmsKey";
 
 }

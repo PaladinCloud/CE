@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.google.container.v1.ListNodePoolsResponse;
+import com.google.container.v1.NodePool;
 import com.tmobile.pacbot.gcp.inventory.vo.GKEClusterVH;
 import com.google.cloud.container.v1.ClusterManagerClient;
 import com.google.container.v1.Cluster;
@@ -57,11 +59,27 @@ public class GKEClusterInventoryCollector {
 
                         gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
                     }
+
                     if(cluster.getDatabaseEncryption().getKeyName()!=null) {
                         String keyName = new Gson().fromJson(
                                 cluster.getDatabaseEncryption().getKeyName(), String.class);
 
                         gkeClusterVH.setKeyName(keyName);
+                    }
+
+                    String clusterId=cluster.getId();
+                    logger.info("### Gke cluster clusterid",clusterId);
+
+                    ListNodePoolsResponse listNodePools =clusterManagerClient.listNodePools(projectId, region, clusterId);
+                    logger.info("### GKe cluster NodePoolList ########### ");
+                    logger.info("Nodepool size {}", listNodePools.getNodePoolsCount());
+
+                    for(NodePool nodePool:listNodePools.getNodePoolsList()){
+
+                        if(nodePool.getConfig().getBootDiskKmsKey()!=null){
+                            String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
+                            gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
+                        }
                     }
 
                     gkeClusterVH.setId(String.valueOf(cluster.getId()));
@@ -79,7 +97,6 @@ public class GKEClusterInventoryCollector {
             logger.debug(e.getMessage());
         }
         return gkeClusterlist;
-
     }
 
 }

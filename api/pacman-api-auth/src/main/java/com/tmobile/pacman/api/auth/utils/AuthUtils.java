@@ -29,6 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -90,4 +95,17 @@ public class AuthUtils {
 		String encodedPassword = passwordEncoder.encode(password);
 		return encodedPassword;
 	}
+	public static String httpGet(String uri) throws Exception  {
+        HttpGet httpGet = new HttpGet(uri);
+        httpGet.addHeader("content-type", "application/json");
+        httpGet.addHeader("cache-control", "no-cache");
+       
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        if(httpClient!=null){
+            HttpResponse httpResponse;
+            httpResponse = httpClient.execute(httpGet);
+            return EntityUtils.toString(httpResponse.getEntity());
+        }
+        return "{}";
+    }
 }
