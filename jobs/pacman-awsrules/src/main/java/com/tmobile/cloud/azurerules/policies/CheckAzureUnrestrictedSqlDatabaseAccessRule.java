@@ -70,6 +70,7 @@ public class CheckAzureUnrestrictedSqlDatabaseAccessRule extends BaseRule {
                 annotation.put(PacmanSdkConstants.DESCRIPTION, "Azure Sql Servers allow unrestricted access");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
+                annotation.put(PacmanRuleConstants.NAME, resourceAttributes.get(PacmanRuleConstants.NAME));
                 issue.put(PacmanRuleConstants.VIOLATION_REASON, ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
