@@ -444,6 +444,8 @@ public class PacmanRuleConstants {
     public static final String ES_SSE_STATUS_ATTRIBUTE = "ssestatus";
     public static final String ES_KEY_ARN_ATTRIBUTE = "keyarn";
     public static final String ES_ENCRYPTED_ATTRIBUTE = "encrypted";
+    public static final String ES_IAM_USER_KEY_URL = "esIamUserKeyUrl";
+    public static final String ES_IAM_USER_ACCESS_KEY_ATTRIBUTE = "accesskey";
     public static final String ES_DMS_PUBLIC_ACCESS_ATTRIBUTE = "publiclyAccessible";
     public static final String ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE = "ssetype";
     public static final String ES_KMS_KEY_MANAGER_ATTRIBUTE = "keymanager";
