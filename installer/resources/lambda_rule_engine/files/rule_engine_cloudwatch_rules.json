@@ -6730,5 +6730,27 @@
     "modifiedDate": "2022-08-18",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones",
+    "ruleUUID": "Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones",
+    "policyId": "Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones",
+    "ruleName": "Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones",
+    "targetType": "clouddns",
+    "assetGroup": "gcp",
+    "alexaKeyword": "DNSSEC",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-node-encryption-access-for-gke-cluster\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Use CMK to encrypt GKE Cluster Node\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"GKE Cluster node encryption is not enable using cmk.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_gkecluster/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Use CMK to encrypt GKE Cluster Node\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"autofix\":false,\"alexaKeyword\":\"DNSSEC\",\"ruleRestUrl\":\"\",\"targetType\":\"clouddns\",\"pac_ds\":\"gcp\",\"policyId\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure DNSSEC security feature is enabled for Google Cloud DNS managed zones",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
+    "severity": "medium",
+    "category": "security"
   }
 ]

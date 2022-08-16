@@ -499,6 +499,7 @@ public class PacmanRuleConstants {
     public static final String DISKENCRYPTION = "diskEncryption";
     public static final String KEYNAME = "keyName";
     public static final String BOOTDISKKMSKEY = "bootDiskKmsKey";
+    public static final String DNS_SEC_STATE="dnsSecConfigState";
     public  static final String BACKUP_CONFIG="backupConfiguration";
     public  static  final String DBFLAGS="databaseFlags";
     public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="crossdbownershipchaining";
