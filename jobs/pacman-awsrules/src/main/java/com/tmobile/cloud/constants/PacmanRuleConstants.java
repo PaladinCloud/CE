@@ -53,6 +53,7 @@ public class PacmanRuleConstants {
     public static final String MIGRATE ="MIGRATE" ;
     public static final String AVAILABILITY = "availabilityType";
     public static final String SETTINGS ="settings" ;
+    public static final String AZURE_AUTHENABLED ="authEnabled" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
