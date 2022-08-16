@@ -53,6 +53,8 @@ public class AssetFileGenerator {
 
 	@Autowired
 	GKEClusterInventoryCollector gkeClusterInventoryCollector;
+	@Autowired
+	CloudDNSInventoryCollector cloudDNSInventoryCollector;
 
 	public void generateFiles(List<String> projects, String filePath) {
 
@@ -173,6 +175,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateGKEClusterFiles(gkeClusterInventoryCollector.fetchGKEClusterInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("clouddns"))) {
+					return;
+				}
+				try {
+					FileManager.generateCloudDnsFiles(cloudDNSInventoryCollector.fetchCloudDnsInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
