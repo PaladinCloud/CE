@@ -4,11 +4,8 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.appservice.FtpsState;
 import com.microsoft.azure.management.appservice.WebApp;
-import com.microsoft.azure.management.compute.VirtualMachine;
-import com.microsoft.azure.management.network.NetworkInterface;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
-import com.tmobile.pacbot.azure.inventory.vo.VirtualMachineVH;
 import com.tmobile.pacbot.azure.inventory.vo.WebAppVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class WebAppInventoryCollector {
@@ -48,6 +44,7 @@ public class WebAppInventoryCollector {
                    log.info("ftpsState",webApp.ftpsState());
                 }
 
+                webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
                 log.info("web app list {}",webApp.httpsOnly());

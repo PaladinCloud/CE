@@ -20,6 +20,16 @@ public class WebAppVH extends AzureVH {
         this.httpsOnly = httpsOnly;
     }
 
+    private boolean authEnabled;
+
+    public boolean isAuthEnabled() {
+        return authEnabled;
+    }
+
+    public void setAuthEnabled(boolean authEnabled) {
+        this.authEnabled = authEnabled;
+    }
+
     public Set<String> getHostNames() {
         return hostNames;
     }

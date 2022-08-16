@@ -6664,5 +6664,27 @@
     "modifiedDate": "2022-07-19",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Authentication_For_WebApp",
+    "ruleUUID": "azure_Enable_Authentication_For_WebApp",
+    "policyId": "Enable_Authentication_For_WebApp",
+    "ruleName": "Enable_Authentication_For_WebApp",
+    "targetType": "webapp",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Enable_Authentication_For_WebApp",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-auth-enabled-app-service\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"App Service web app authentication should be enabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Authentication_For_WebApp\",\"autofix\":false,\"alexaKeyword\":\"Enable_Authentication_For_WebApp\",\"ruleRestUrl\":\"\",\"targetType\":\"webapp\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Authentication_For_WebApp\",\"assetGroup\":\"azure\",\"ruleUUID\":\"azure_Enable_Authentication_For_WebApp\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/azure_Enable_Authentication_For_WebApp",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "App Service web app authentication should be enabled",
+    "createdDate": "2022-08-16",
+    "modifiedDate": "2022-08-16",
+    "severity": "medium",
+    "category": "security"
   }
 ]
