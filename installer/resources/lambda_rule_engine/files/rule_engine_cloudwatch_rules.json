@@ -4048,6 +4048,28 @@
     "category": "security"
   },
   {
+    "ruleId": "IamUserWithMultipleAccessKey_version-1_IAMUserShouldUseSingleKey_iamuser",
+    "ruleUUID": "aws_iam_user_should_have_single_access_key",
+    "policyId": "IamUserWithMultipleAccessKey_version-1",
+    "ruleName": "AWS IAM user should have single access key",
+    "targetType": "iamuser",
+    "assetGroup": "aws",
+    "alexaKeyword": "IamUserWithMultipleAccessKey",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-user-with-multiple-accesskeys\",\"encrypt\":false},{\"key\":\"esIamUserKeyUrl\",\"value\":\"/aws\/iamuser_keys\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"IamUserWithMultipleAccessKey_version-1_IAMUserShouldUseSingleKey_iamuser\",\"autofix\":false,\"alexaKeyword\":\"IamUserWithMultipleAccessKey\",\"ruleRestUrl\":\"\",\"targetType\":\"iamuser\",\"pac_ds\":\"aws\",\"policyId\":\"IamUserWithMultipleAccessKey_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_iam_user_should_have_single_access_key\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_iam_user_should_have_single_access_key",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Use single access key for IAM user",
+    "createdDate": "2022-08-16",
+    "modifiedDate": "2022-08-16",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Aws_ecs_task_should_use_log_driver_version-1_aws_enable_task_log_driver_ecs",
     "ruleUUID": "aws_enable_ecs_task_log_driver",
     "policyId": "Aws_ecs_task_should_use_log_driver_version-1",
