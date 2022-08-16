@@ -42,7 +42,12 @@ public class WebAppInventoryCollector {
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
                 webAppVH.setId(webApp.id());
+                webAppVH.setHttpsOnly(webApp.httpsOnly());
+                log.info("web app list {}",webApp.httpsOnly());
+
                 webAppList.add(webAppVH);
+
+
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("Error Collecting info for {} ", e.getMessage());
