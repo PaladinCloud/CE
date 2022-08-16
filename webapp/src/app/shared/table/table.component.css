@@ -1,6 +1,6 @@
 table {
   width: 100%;
-  height: 650px;
+  max-height: 650px;
 }
 
 th.mat-sort-header-sorted {
@@ -9,6 +9,11 @@ th.mat-sort-header-sorted {
 
 tr {
   display: flex;
+}
+
+tr.mat-row:hover{
+  background-color: var(--background-grey);
+  cursor: pointer;
 }
 
 tr.mat-row, tr.mat-footer-row {
@@ -35,7 +40,7 @@ thead {
 }
 
 th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
-  padding: 0px 12px 0px 24px;
+  padding: 0px 24px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

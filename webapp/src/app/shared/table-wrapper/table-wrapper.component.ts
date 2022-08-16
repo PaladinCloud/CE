@@ -33,7 +33,7 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
     this.allSelected = !this.allSelected;
     if (this.allSelected) {
       this.select.options.forEach((item: MatOption) => {
-        if(item.value!="0"){
+        if(item.value!="selectAll" && item.value!="disabled"){
           this.whiteListColumns.push(item.value);
         }
       });
@@ -52,7 +52,7 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
     this.whiteListColumns = [];
     let newStatus = true;
     this.select.options.forEach((item: MatOption) => {
-      if(item.value!="0"){
+      if(item.value!="selectAll" && item.value!="disabled"){
         if (!item.selected) {
           newStatus = false;
         }else{

@@ -8,6 +8,11 @@
     padding: 24px;
 }
 
+.table-wrapper{
+  height: 100%;
+  background: white;
+}
+
 .table-header{
     background-color: var(--background-white);
     border: 1px solid var(--border-100);
@@ -114,4 +119,8 @@
 
 ::ng-deep .mat-option{
     flex-direction: row-reverse !important;
+}
+
+::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
+    display: none;
 }
