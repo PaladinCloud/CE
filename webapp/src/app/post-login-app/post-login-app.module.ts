@@ -56,12 +56,14 @@ import { AssetSwitcherComponent } from "./common/asset-switcher/asset-switcher.c
 import { HeaderComponent } from "./common/header/header.component";
 import { HttpClientModule } from "@angular/common/http";
 import { MatIconModule } from "@angular/material/icon";
- import {MatInputModule} from '@angular/material/input'; 
+import {MatInputModule} from '@angular/material/input';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 @NgModule({
   imports: [
     MatIconModule,
     MatInputModule,
+    MatSidenavModule,
     HttpClientModule,
     CommonModule,
     PostLoginAppRoutingModule,
