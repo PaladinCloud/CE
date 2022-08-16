@@ -6576,5 +6576,27 @@
     "modifiedDate": "2022-08-09",
     "severity": "high",
     "category": "operations"
+  },
+  {
+    "ruleId": "Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS",
+    "ruleUUID": "Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS",
+    "policyId": "Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS",
+    "ruleName": "Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS",
+    "targetType": "webapp",
+    "assetGroup": "azure",
+    "alexaKeyword": "Redirect_all_HTTP_to_HTTPS",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-https-only-rule\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure Web App Redirects All HTTP traffic to HTTPS\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"web apps does not all Http traffic to Https\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_gkecluster/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure Web App Redirects All HTTP traffic to HTTPS\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS\",\"autofix\":false,\"alexaKeyword\":\"Redirect_all_HTTP_to_HTTPS\",\"ruleRestUrl\":\"\",\"targetType\":\"webapp\",\"pac_ds\":\"azure\",\"policyId\":\"Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Ensure_Web_App_Redirects_All _HTTP_traffic_to_HTTPS",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Ensure Web App Redirects All HTTP traffic to HTTPS",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
+    "severity": "medium",
+    "category": "security"
   }
 ]
