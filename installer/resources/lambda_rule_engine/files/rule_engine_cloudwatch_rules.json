@@ -4095,7 +4095,7 @@
     "ruleId": "AwsVaultMissingAccessPolicy_version-1_AwsVaultMissingAccessPolicy_backupvault",
     "ruleUUID": "aws_vault_missing_delete_protection",
     "policyId": "AwsVaultMissingAccessPolicy_version-1",
-    "ruleName": "aws_backup_vault_should_have_access_policy",
+    "ruleName": "AWS backup should have delete access policy",
     "targetType": "backupvault",
     "assetGroup": "aws",
     "alexaKeyword": "AwsVaultMissingPolicy",
