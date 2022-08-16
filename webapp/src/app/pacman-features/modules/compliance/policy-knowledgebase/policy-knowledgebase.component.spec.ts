@@ -14,7 +14,7 @@
 
 import { HttpClient, HttpHandler, HttpResponse } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA, Renderer2 } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
@@ -53,6 +53,7 @@ describe('Policyknowledgebase', () => {
   let fakeWorkflowService: WorkflowService;
   let fakeDomainTypeObservableService: DomainTypeObservableService;
   let fakeRouterUtilityService: RouterUtilityService;
+  let spy;
 
   beforeEach(async () => {
 
@@ -76,7 +77,6 @@ describe('Policyknowledgebase', () => {
         schemas: [NO_ERRORS_SCHEMA],
     })
     .compileComponents();
-  // fakeCommonResponseService = TestBed.inject(CommonResponseService);
 
   });
 
@@ -88,9 +88,13 @@ describe('Policyknowledgebase', () => {
     fakeCommonResponseService = fixture.debugElement.injector.get(CommonResponseService);
     spyOn(fakeCommonResponseService, 'getData').and.returnValue(of({data:{response: [{col1:"row1 col1", col2:"row1 col2"}]}}));
 
-    fakeDomainTypeObservableService = fixture.debugElement.injector.get(DomainTypeObservableService);
-    spyOn(fakeDomainTypeObservableService, 'getDomainType').and.returnValue(of("aws"));
-    
+    component['domainObservableService'].updateDomainType('Infra Platforms', 'key123');
+    component['assetGroupObservableService'].updateAssetGroup('aws');
+
+
+    // fakeDomainTypeObservableService = fixture.debugElement.injector.get(DomainTypeObservableService);
+    // let spy = spyOn(fakeDomainTypeObservableService, 'getDomainType').and.returnValue(of("aws"));
+
     // service2.getDomainType().subscribe(val => {
     // console.log(val);
     // });
@@ -117,18 +121,27 @@ describe('Policyknowledgebase', () => {
     expect(backNavigationComponent).toBeTruthy();
   });
 
-  it("selected domain should be aws", () => {
-    fixture.detectChanges();
-    expect(component.selectedDomain).toBe("aws");
+  it("selected domain should be Infra Platforms", () => {
+    expect(component.selectedDomain).toBe("Infra Platforms");
   })
 
   it("should call CommonResponseService getData method", ()=> {
-    component.getData();
     fixture.detectChanges();
     expect(fakeCommonResponseService.getData).toHaveBeenCalled();
+  });
+
+  it("selected asset group should be aws", () => {
+    expect(component.selectedAssetGroup).toBe("aws");
   })
 
-  it("should call DomainTypeObservableService.getDomainType method", ()=> {
-    expect(fakeDomainTypeObservableService.getDomainType).toHaveBeenCalled();
-  })
+  it('should tell ROUTER to navigate when row clicked', fakeAsync(() => {
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigate').and.stub();
+    let tile = {autofixEnabled:false, ruleId: 'NonStandardRegionRule_version-1_version-1_SubnetWithNonStandardRegion_subnet'};
+    component.gotoNextPage(tile);
+    tick();
+    expect(router.navigate).toHaveBeenCalledWith(['pl', 'compliance', 'policy-knowledgebase-details', tile.ruleId, tile.autofixEnabled],
+        { queryParams: component.agAndDomain,
+          queryParamsHandling: 'merge' });
+    }))
 });
