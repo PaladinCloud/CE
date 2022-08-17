@@ -51,7 +51,8 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private routingUtilityService: RouterUtilityService,
     private workflowService: WorkflowService
-  ) { }
+  ) { 
+  }
 
   clicked = false;
 
@@ -67,26 +68,29 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
   private assetGroupName;
   private assetGroupList;
   private domainName: string;
-  private agAndDomain; //: { ag: string; domain: string };
+
   ngOnInit() {
     try {
       this.subscribeToAssetGroupChange();
       this.subscribeToDomainChange();
-      this.route.queryParams.subscribe((params) => {
-        this.agAndDomain = params;
-        this.fetchResourcesService
-          .getResourceTypesAndCount(this.agAndDomain)
-          .subscribe((results) => {
-            try {
-              this.assetCount = results[1].totalassets;
-            } catch (error) {
-              console.log(error);
-            }
-          });
-      });
     } catch (error) {
       this.logger.log("error", error);
     }
+  }
+
+  getAssetsCount(){
+    const assetDetailUrl = environment.assetTilesdata.url;
+    const assetDetailMethod = environment.assetTilesdata.method;
+
+    const queryParams = {
+      'ag': this.assetGroupName
+    };
+     if (queryParams['ag'] !== undefined) {
+      this.assetTileService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
+        response => {
+          this.assetCount = response[0].assetcount;
+        });
+     }
   }
 
   openOverlay(): void {
@@ -115,6 +119,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
         if (assGroupName) {
           this.assetGroupName = assGroupName;
           this.getAssetGroupDisplayName(this.assetGroupName);
+          this.getAssetsCount();
         }
       });
   }
