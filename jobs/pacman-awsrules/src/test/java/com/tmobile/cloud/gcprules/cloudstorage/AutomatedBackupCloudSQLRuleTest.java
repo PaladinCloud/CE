@@ -44,7 +44,7 @@ public class AutomatedBackupCloudSQLRuleTest {
 
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForCloudStorageCMKEncryptionSuccess());
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForAutomatedBackupSuccess());
 
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
@@ -58,7 +58,7 @@ public class AutomatedBackupCloudSQLRuleTest {
 
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForCloudStorageCMKEncryptionFailure());
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForAutomatedBackupFailure());
 
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
