@@ -18,6 +18,7 @@
   padding: 28px;
   width: 100%;
   min-width: 550px;
+  background-color: var(--background-grey);
 }
 .container-1{
   height: 108px;

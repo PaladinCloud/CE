@@ -17,10 +17,17 @@
   justify-content: flex-start;
   overflow-y: hidden;
   padding-bottom: 2px;
+  background-color: var(--background-grey);
 }
 
-.policy-knowledgebase-content {
+.policy-knowledgebase-content-wrapper {
+  height: 100%;
   padding: 24px;
+}
+
+.policy-knowledgebase-content{
+  height: 100%;
+  background-color: var(--background-white);
 }
 
 .pk-header {
