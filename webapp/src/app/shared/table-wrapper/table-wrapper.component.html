@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="table-content-container">
-        <app-table [dataSource]="dataSource" [columnWidths]="columnWidths" [displayedColumns]="whiteListColumns" [columnNamesMap]="columnNamesMap" (rowSelectEventEmitter)="handleRowSelect($event)"></app-table>
+        <app-table [dataSource]="dataSource" [columnWidths]="columnWidths" [displayedColumns]="whiteListColumns" [columnNamesMap]="columnNamesMap" [columnsSortFunctionMap]="columnsSortFunctionMap" (rowSelectEventEmitter)="handleRowSelect($event)"></app-table>
     </div>
     </div>
 </div>

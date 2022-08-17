@@ -61,6 +61,12 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   currentPageLevel = 0;
   columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
   columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
+  columnsSortFunctionMap = {
+    severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a.severity] < severeness[b.severity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  };
 
   @ViewChild('pkInp') pkInp: ElementRef;
 

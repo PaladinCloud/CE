@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class='policy-knowledgebase-conten'>
-        <app-table-wrapper (rowSelectEventEmitter)="gotoNextPage($event)" *ngIf="knowledgebaseData.length>0" [data]="knowledgebaseData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap"></app-table-wrapper>
+    <div class='policy-knowledgebase-content'>
+        <app-table-wrapper (rowSelectEventEmitter)="gotoNextPage($event)" *ngIf="knowledgebaseData.length>0" [data]="knowledgebaseData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap" [columnsSortFunctionMap]="columnsSortFunctionMap"></app-table-wrapper>
     </div>
 </div>

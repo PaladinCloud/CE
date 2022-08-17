@@ -14,6 +14,7 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
   @Input() data;
   @Input() columnWidths;
   @Input() columnNamesMap;
+  @Input() columnsSortFunctionMap;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
 
   mainDataSource;
