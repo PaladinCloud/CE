@@ -59,6 +59,7 @@ public class CloudSqlInventoryCollector {
 
                     cloudSqlVH.setMaxDiskSize(dbInstance.getMaxDiskSize());
                     cloudSqlVH.setCurrentDiskSize(dbInstance.getCurrentDiskSize());
+                    cloudSqlVH.setBackupEnabled(dbInstance.getSettings().getBackupConfiguration().getEnabled());
                     if (dbInstance.getDiskEncryptionConfiguration() != null) {
                         cloudSqlVH.setKmsKeyName(dbInstance.getDiskEncryptionConfiguration().getKmsKeyName());
                     }
