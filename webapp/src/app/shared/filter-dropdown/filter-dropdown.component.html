@@ -23,6 +23,10 @@
     </div>
     <div class=" filter-content-container">
       <div class="filter-content" *ngIf="!isExpanded">
+        <div *ngIf="filterTypeLabels.length==0 && errorMessage==''" class="loader absolute"></div>
+        <div class="no-content">
+          <app-error-message *ngIf="filterTypeLabels.length==0 && errorMessage != ''" [selectedValue]="errorMessage"></app-error-message>
+        </div>
         <div *ngFor="let filterTypeLabel of filterTypeLabels | search: searchText" class="contextual-menu"
           (click)="expand(filterTypeLabel)">
           <div class="contextual-menu-text-content" title="{{filterTypeLabel}}">
@@ -34,9 +38,9 @@
         </div>
       </div>
       <div class="filter-content" *ngIf="isExpanded">
-        <div *ngIf="!isFilterTagLoaded" class="loader absolute"></div>
-        <div *ngIf="isFilterTagLoaded && filterTagLabels.length==0" class="no-content">
-          <app-empty-state message="No filter tags exist !"></app-empty-state>
+        <div *ngIf="filterTagLabels.length==0 && errorMessage==''" class="loader absolute"></div>
+        <div class="no-content">
+          <app-error-message *ngIf="errorMessage != ''" [selectedValue]="errorMessage"></app-error-message>
         </div>
         <div *ngFor="let filterTagLabel of filterTagLabels | search: searchText" class="contextual-menu"
           (click)="selectFilter(filterTagLabel)">

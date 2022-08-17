@@ -9,7 +9,6 @@ export class FilterDropdownComponent implements OnInit {
 
   @Input() filterTypeLabels = [];
   @Input() filterTagLabels = [];
-  @Input() isFilterTagLoaded;
   @Output() selection = new EventEmitter();
   @Output() selectedFilters = new EventEmitter();
   filterName: String;
@@ -19,7 +18,7 @@ export class FilterDropdownComponent implements OnInit {
 
   isExpanded: boolean = false;
   issueFilterSubscription: any;
-  errorMessage: string;
+  @Input() errorMessage: string = '';
   constructor() {
   }
 

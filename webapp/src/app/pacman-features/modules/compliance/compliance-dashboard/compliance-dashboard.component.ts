@@ -109,7 +109,7 @@ export class ComplianceDashboardComponent implements OnInit {
     link: boolean;
     styling: { cursor: string };
   };
-  isPolicyDataLoaded: boolean = false;
+  policyDataError: string = '';
   pacmanIssues: any;
   pacmanCategories: any[];
   showdata: boolean;
@@ -225,7 +225,10 @@ export class ComplianceDashboardComponent implements OnInit {
         .getData(queryParams, pacmanIssuesUrl, pacmanIssuesMethod)
         .subscribe(
           (response) => {
-            try {
+            try {              
+              if(response.error){
+                throw response;
+              }
               this.pacmanIssues = response;
               this.pacmanCategories = [];
               for (let i = 0; i < this.pacmanIssues.category.length; i++) {
@@ -255,7 +258,7 @@ export class ComplianceDashboardComponent implements OnInit {
                 dataValue.push(this.violationCards[i].num);
               }
               this.fetchedViolations = true;
-              this.isPolicyDataLoaded = false;
+              this.policyDataError = '';
               if(dataValue){
                 this.policyData = {
                   color: ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"],
@@ -268,12 +271,14 @@ export class ComplianceDashboardComponent implements OnInit {
                     cursor: "pointer",
                   },
                 };
+              }else{
+                this.policyDataError = 'noDataAvailable'
               }
-              this.isPolicyDataLoaded = true;
               this.loaded = true;
               this.showdata = true;
               this.error = false;
             } catch (e) {
+              this.policyDataError = 'apiResponseError';
               this.errorMessage = this.errorHandling.handleJavascriptError(e);
               this.getErrorValues();
             }

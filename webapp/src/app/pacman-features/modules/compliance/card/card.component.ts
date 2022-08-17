@@ -1,5 +1,6 @@
 import { Component, HostListener, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { ErrorHandlingService } from "src/app/shared/services/error-handling.service";
 import { environment } from "../../../../../environments/environment";
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
@@ -17,27 +18,28 @@ export class CardComponent implements OnInit {
   @Input() card: any;
   @Input() policyData: any;
 
+  errorType = '';
   widgetWidth = 225;
   widgetHeight = 250;
   strokeColor = 'red';
   MainTextcolor = '#000';
   innerRadius: any = 85;
   outerRadius: any = 60;
-  errorHandling: any;
   errorMessage: any;
   widgetWidth2: number;
   @Input() cardButtonAction;
   complianceData = [];
   assetsCountData = [];
-  isComplianceDataLoaded:boolean = false;
-  isAssetsCountDataLoaded: boolean = false;
-  @Input() isPolicyDataLoaded: boolean = false;
+  complianceDataError:string = '';
+  assetsCountDataError: string = '';
+  @Input() policyDataError: string = '';
 
   private overallComplianceUrl = environment.overallCompliance.url;
   private overallComplianceMethod = environment.overallCompliance.method;
   private agAndDomain = {};
 
   constructor(
+    private errorHandling: ErrorHandlingService,
     private utils: UtilsService,
     private loggerService: LoggerService,
     private workflowService: WorkflowService,
@@ -51,9 +53,7 @@ export class CardComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe((params) => {
       this.agAndDomain["ag"] = params["ag"];
       this.agAndDomain["domain"] = params["domain"];
-      if(this.agAndDomain["ag"] && this.agAndDomain["domain"]){
-        console.log(JSON.stringify(this.agAndDomain));
-        
+      if(this.agAndDomain["ag"] && this.agAndDomain["domain"]){        
         this.getComplianceData();
         this.getAssetsCountData();
       }
@@ -64,8 +64,11 @@ export class CardComponent implements OnInit {
     this.fetchResourcesService
       .getAllResourceCounts(this.agAndDomain)
       .subscribe((results) => {
-        try {
-          this.isAssetsCountDataLoaded = false;
+        try {          
+          if(results.error){
+            throw results;
+          }
+          this.assetsCountDataError = '';
           this.assetsCountData = [];
 
           for (let asset of results["assetcount"]) {
@@ -77,23 +80,29 @@ export class CardComponent implements OnInit {
 
           this.assetsCountData.sort((a, b) => b.count - a.count);
 
-          this.isAssetsCountDataLoaded = true;
-        } catch (error) {
+          if(this.assetsCountData.length==0){
+            this.assetsCountDataError = 'noDataAvailable';
+          }
+        } catch (error) {          
+          this.assetsCountDataError = 'apiResponseError';
           this.loggerService.log("error", error);
         }
       });
   }
 
-  private getComplianceData() {
+  private getComplianceData() {    
     this.overallComplianceService
       .getOverallCompliance(
         this.agAndDomain,
         this.overallComplianceUrl,
         this.overallComplianceMethod
       )
-      .subscribe((response) => {
-        try {
-          this.isComplianceDataLoaded = false;
+      .subscribe((response) => {  
+        try {     
+          if(response[0].error){
+            throw response[0];
+          }
+          this.complianceDataError = ''
           this.complianceData = [];
           response[0].data.forEach((element) => {
             if (element[1]["val"] <= 40) {
@@ -105,9 +114,12 @@ export class CardComponent implements OnInit {
             }
             this.complianceData.push(element[1]);
           });
-          this.isComplianceDataLoaded = true;
-        } catch (e) {
-          console.log(e);
+          if(this.complianceData.length==0){
+            this.complianceDataError = 'noDataAvailable';
+          }          
+        } catch (error) {
+          this.complianceDataError = 'apiResponseError';
+          this.loggerService.log("error", error);
         }
       });
   }

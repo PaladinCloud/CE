@@ -93,7 +93,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public backButtonRequired;
   public agAndDomain = {};
   public doNotDisplaySearch=true;
-  isFilterTagLoaded = false;
+  filterErrorMessage = '';
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -266,6 +266,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    */
 
   getFilters() {
+    this.filterErrorMessage = '';
+    let isApiError = true;
     try {
       this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -276,15 +278,22 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
+
+          if(this.filterTypeLabels.length==0){
+            this.filterErrorMessage = 'noDataAvailable';
+          }
+          isApiError = false;
         });
     } catch (error) {
+      this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+    if(isApiError) this.filterErrorMessage = 'apiResponseError';
   }
 
   changeFilterType(value) {
-    this.isFilterTagLoaded = false;
+    this.filterErrorMessage = '';
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
@@ -304,9 +313,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTagOptions = response[0].response;
           this.filterTagLabels = _.map(response[0].response, "name");
           this.filterTagLabels.sort((a,b)=>a.localeCompare(b));
-          this.isFilterTagLoaded = true;
+          if(this.filterTagLabels.length==0) this.filterErrorMessage = 'noDataAvailable';
         });
     } catch (error) {
+      this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
