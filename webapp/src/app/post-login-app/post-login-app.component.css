@@ -142,10 +142,40 @@
   }
 }
 
-.contextual-container {
-  position: relative;
-  flex-grow: 1;
-  width: 70%;
-  height: 100%;
-  max-width: 100%;
+
+
+.expanded-sidenav {
+  width: 260px;
+  height: fit-content;
+  border-right: 1px solid var(--border-200);
+}
+
+.collapsed-sidenav {
+  width: 80px;
+  height: fit-content;
+  border-right: 1px solid var(--border-200);
+}
+
+::ng-deep .mat-drawer-inner-container{
+  overflow: hidden !important;
+}
+
+.sidenav-expander {
+  position: absolute;
+  top: 150px;
+  z-index:5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--background-white);
+  border-radius: 50%;
+  border: 1px solid var(--border-200);
+  width: 20px;
+  height: 20px;
+  padding: 5px;
+}
+
+.sidenav-expander img{
+  height: 8px;
+  filter: brightness(0);
 }

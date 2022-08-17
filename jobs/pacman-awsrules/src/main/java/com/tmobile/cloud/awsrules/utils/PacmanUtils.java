@@ -1070,6 +1070,41 @@ public class PacmanUtils {
         return list;
     }
     
+    /**
+	 * @param imageSet
+	 * @param esAmiUrl
+	 * @return
+	 * @throws Exception
+	 */
+	public static Set<String> getAccessKeysForIamUser(String userName, String esUserKeyUrl) throws Exception {
+
+		Set<String> keys = new HashSet<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.IAM_USER_NAME), userName);
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.STATUS), PacmanRuleConstants.STATUS_ACTIVE);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUserKeyUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			if (null != hitsArray && !hitsArray.isEmpty()) {
+				for (int i = 0; i < hitsArray.size(); i++) {
+					JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+					String key = source.get(PacmanRuleConstants.ES_IAM_USER_ACCESS_KEY_ATTRIBUTE).getAsString();
+					if(StringUtils.isNotEmpty(key)) {
+						keys.add(key);
+					}
+				}
+			}
+
+		}
+		return keys;
+	}
+    
 	/**
 	 * @param imageSet
 	 * @param esAmiUrl

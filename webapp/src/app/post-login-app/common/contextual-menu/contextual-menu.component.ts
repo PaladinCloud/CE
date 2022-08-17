@@ -42,6 +42,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
   currentParentId: number = 1;
   currentNodeId: number = 1;
   @Input() haveAdminPageAccess;
+  @Input() expanded;
   nodes = [
     {
       id: 1,
@@ -257,14 +258,14 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     return [1, 1];
   }
 
-  selectNode(node: TreeNode) {
+  selectNode(node: TreeNode, event: any) {
     node.toggleExpanded();
     this.currentNodeId = node.id;
     this.currentParentId = node.parent.id;
     if (node.hasChildren) {
-      // this.currentNodeId = node.id + 1;
       this.currentParentId = node.id;
     }
+    node.mouseAction('click', event);
   }
 
   getProvider() {

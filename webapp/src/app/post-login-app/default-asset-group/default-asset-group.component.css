@@ -15,19 +15,16 @@
 /* CSS styles of default asset group starts here */
 
 .defualt-asset-wrapper {
-  height: 55px;
   border: 1px solid var(--neutral-200);
   background: var(--neutral-100);
   border-radius: 4px;
   display: flex;
-  padding: 11px;
+  padding: 8px;
 }
 
 .defualt-asset-image-wrapper {
   background-color: var(--background-white);
-  width: 32px;
-  height: 32px;
-  padding: 8px;
+  padding: 6px;
 }
 
 .defualt-asset-image-wrapper img {
@@ -40,6 +37,10 @@
   flex-direction: column;
   padding-left: 12px;
   padding-right: 20px;
+}
+
+.isCollapsed{
+  display: none!important;
 }
 
 .defualt-asset-title {
@@ -64,5 +65,5 @@
 }
 
 .default-asset-icons-wrapper {
-  margin-top: 9.5px;
+  padding-top: 5.5px;
 }

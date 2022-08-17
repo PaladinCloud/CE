@@ -25,6 +25,16 @@ public class StorageAccountVH extends AzureVH {
 	private Map<String, String> tags;
 	private String kind;
 	private Map<String, String> endpointsMap;
+	private String  networkRuleBypass;
+
+	public String getNetworkRuleBypass() {
+		return networkRuleBypass;
+	}
+
+	public void setNetworkRuleBypass(String networkRuleBypass) {
+		this.networkRuleBypass = networkRuleBypass;
+	}
+
 	private boolean isBlobPublicAccessAllowed;
 
 	public boolean isBlobPublicAccessAllowed() {

@@ -1,10 +1,13 @@
 .header-wrapper {
-  padding: 16px 28px;
+  padding: 12px 20px;
   display: flex;
   width: 100%;
   min-width: 600px;
   background-color: var(--background-white);
   border-bottom: var(--border-100);
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-200);
 }
 
 .header-title-wrapper {
@@ -24,7 +27,7 @@
 .header-search-wrapper {
   background: var(--background-grey);
   width: 308px;
-  height: 36px;
+  height: 44px;
   display: flex;
   flex-direction: row;
   cursor: pointer;
@@ -33,6 +36,8 @@
 
 .header-search-content-container {
   padding: 8px 12px;
+  display: flex;
+  align-items: center;
 }
 
 .header-search-content-container img {
@@ -51,8 +56,12 @@
   cursor: pointer;
 }
 
+::ng-deep .header-search-content-container .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
 ::ng-deep .header-search-content-container .mat-form-field-appearance-fill .mat-form-field-flex {
-  padding: 0 !important;
+  padding-left: 0 !important;
   background-color: inherit;
 }
 
@@ -85,7 +94,7 @@
 
 .username {
   font-family: var(--text-font-family);
-  font-size: var(--text-body2-font-size);
+  font-size: var(--text-body-2-font-size);
   color: var(--text-high-emphasis);
   padding: 0 5px 0 0;
 }
@@ -110,8 +119,6 @@
 }
 
 .header-user-wrapper {
-  margin-left: auto;
-  float: right;
   height: 100%;
   position: relative;
 }

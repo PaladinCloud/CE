@@ -21,7 +21,7 @@ import {throwError as observableThrowError,  Observable, combineLatest } from 'r
 import { Injectable, Inject } from '@angular/core';
 
 import { HttpService } from '../../shared/services/http-response.service';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class IssueFilterService {
@@ -39,9 +39,8 @@ export class IssueFilterService {
         try {
             return combineLatest(
                 this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .pipe(map(response => this.massageData(response) )
-                    // .catch(this.handleError)
-            ));
+                    .pipe(map(response => this.massageData(response) ))
+                    .pipe(catchError(error => this.handleError(error))));
         } catch (error) {
             this.handleError(error);
         }

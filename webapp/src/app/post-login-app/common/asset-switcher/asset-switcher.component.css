@@ -11,6 +11,10 @@
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+.asset-group-selection{
+  width: 100%;
+}
 
 .recently-viewed-wrap {
   border: 1px solid #7a7a7a;

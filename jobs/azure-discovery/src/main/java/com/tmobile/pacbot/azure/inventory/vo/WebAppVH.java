@@ -6,6 +6,15 @@ public class WebAppVH extends AzureVH {
     private boolean remoteDebuggingEnabled;
     private boolean http20Enabled;
     private String resourceGroupName;
+    private boolean httpsOnly;
+
+    public boolean isHttpsOnly() {
+        return httpsOnly;
+    }
+
+    public void setHttpsOnly(boolean httpsOnly) {
+        this.httpsOnly = httpsOnly;
+    }
 
     public Set<String> getHostNames() {
         return hostNames;

@@ -24,6 +24,7 @@ public class CloudSqlVH extends GCPVH{
     private List<IPAddress> ipAddress;
     private ServerCaCert serverCaCert;
     private Settings settings;
+    private Boolean backupEnabled;
 
     public String getName() {
         return name;
@@ -176,4 +177,13 @@ public class CloudSqlVH extends GCPVH{
     public void setSettings(Settings settings) {
         this.settings = settings;
     }
+
+    public Boolean getBackupEnabled() {
+        return backupEnabled;
+    }
+
+    public void setBackupEnabled(Boolean backupEnabled) {
+        this.backupEnabled = backupEnabled;
+    }
+
 }

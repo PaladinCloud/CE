@@ -50,6 +50,40 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   private pageReloadInterval; // Default time is 30 minutes in miliseconds
   private reloadTimeout;
   isOffline = false;
+  isExpanded = true;
+  mode: String = 'side';
+  sidenavExpanderLeft = 250;
+  rotationVar = 'rotate(180deg)';
+
+  sidenavExpanderClicked() {
+    this.isExpanded = !this.isExpanded;
+    if (this.isExpanded) {
+      this.sidenavExpanderLeft = 250;
+      this.rotationVar = 'rotate(180deg)';
+    }
+    else {
+      this.sidenavExpanderLeft = 70;
+      this.rotationVar = 'rotate(0)';
+    }
+  }
+
+  mouseenter() {
+    if (!this.isExpanded) {
+      this.isExpanded = true;
+      this.sidenavExpanderLeft = 250;
+      this.rotationVar = 'rotate(180deg)';
+      this.mode = "over";
+    }
+  }
+
+  mouseleave() {
+    if (this.mode == "over") {
+      this.isExpanded = false;
+      this.sidenavExpanderLeft = 70;
+      this.rotationVar = 'rotate(0)';
+      this.mode = "side";
+    }
+  }
 
   constructor(
     private permissions: PermissionGuardService,
@@ -227,7 +261,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
           this.previousRouteSequence = data.sequence;
         }
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 
   ngOnDestroy() {
