@@ -51,6 +51,8 @@ public class PacmanRuleConstants {
     public static final String FIREWALL_RULE_NAME = "firewallRuleName";
     public static final String GCP_ON_HOST_MAINTENANCE ="onHostMaintainence" ;
     public static final String MIGRATE ="MIGRATE" ;
+    public static final String AVAILABILITY = "availabilityType";
+    public static final String SETTINGS ="settings" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -422,6 +424,8 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
 
     public static final String PORT_5432 = "5432";
+    public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
+    public static final String DENY = "Deny";
     public static final String FALSE = "false";
     public static final String ES_ASG_LC_URL = "esAsgLcURL";
     public static final String ES_AMI_URL = "esAmiUrl";
@@ -440,6 +444,8 @@ public class PacmanRuleConstants {
     public static final String ES_SSE_STATUS_ATTRIBUTE = "ssestatus";
     public static final String ES_KEY_ARN_ATTRIBUTE = "keyarn";
     public static final String ES_ENCRYPTED_ATTRIBUTE = "encrypted";
+    public static final String ES_IAM_USER_KEY_URL = "esIamUserKeyUrl";
+    public static final String ES_IAM_USER_ACCESS_KEY_ATTRIBUTE = "accesskey";
     public static final String ES_DMS_PUBLIC_ACCESS_ATTRIBUTE = "publiclyAccessible";
     public static final String ES_DYNAMO_DB_SSE_TYPE_ATTRIBUTE = "ssetype";
     public static final String ES_KMS_KEY_MANAGER_ATTRIBUTE = "keymanager";
@@ -492,5 +498,9 @@ public class PacmanRuleConstants {
     public static final String KEYNAME = "keyName";
     public static final String BOOTDISKKMSKEY = "bootDiskKmsKey";
     public  static final String BACKUP_CONFIG="backupConfiguration";
-
+    public  static  final String DBFLAGS="databaseFlags";
+    public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="crossdbownershipchaining";
+    public static final String OFF="off";
+    public static final String NETWORKRULEBYPASS="networkruleBypass";
+    public  static  final  String HTTPS_ONLY="httpsOnly";
 }

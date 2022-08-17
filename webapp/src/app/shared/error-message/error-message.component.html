@@ -12,14 +12,12 @@
  * limitations under the License.
  -->
 
- <div *ngIf="selectedValue == 'noDataAvailable'">
-     <app-empty-state [message]="errorMessages.description"></app-empty-state>
- </div>
- <div class="error-handling" *ngIf="errorMessages != undefined && selectedValue != 'noDataAvailable'">
+<div class="error-state-wrapper flex-col" *ngIf="errorMessages != undefined">
+    <img [src]="errorMessages.image" alt="">
     <p class="bold-text">
         {{errorMessages.title}}
     </p>
-    <p class="light-text">
+    <p class="message light-text">
         {{errorMessages.description}}
     </p>
 </div>

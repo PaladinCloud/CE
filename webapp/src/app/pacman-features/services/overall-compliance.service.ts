@@ -15,17 +15,19 @@
 /**
  * Created by adityaagarwal on 12/10/17.
  */
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
 
 import { HttpService } from '../../shared/services/http-response.service';
 import { RefactorFieldsService } from '../../shared/services/refactor-fields.service';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 
 @Injectable()
 export class OverallComplianceService {
 
     constructor(private refactorFieldsService: RefactorFieldsService,
+                private errorHandling: ErrorHandlingService,
                 @Inject(HttpService) private httpService: HttpService) { }
 
     getOverallCompliance(queryParams, overallComplainceUrl, overallComplainceMethod, noMassage?): Observable<any> {
@@ -36,11 +38,10 @@ export class OverallComplianceService {
         try {
           return combineLatest(
             this.httpService.getHttpResponse(url, method, payload, queryParams)
-            .pipe(map(response => this.massageData(response, noMassage))
-            // .catch(this.handleError)
-          ));
+            .pipe(map(response => this.massageData(response, noMassage)))
+            .pipe(catchError(error => of(error))));
         } catch (error) {
-            this.handleError(error);
+            this.errorHandling.handleJavascriptError(error);
         }
     }
 

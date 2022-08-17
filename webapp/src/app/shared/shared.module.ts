@@ -92,7 +92,6 @@ import { TableListComponent } from "./table-list/table-list.component";
 import { FilterDropdownComponent } from "./filter-dropdown/filter-dropdown.component";
 import { MatIconModule } from "@angular/material/icon";
 import { MatMenuModule } from '@angular/material/menu';
-import { EmptyStateComponent } from "./empty-state/empty-state.component";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { DropdownComponent } from "./dropdown/dropdown.component";
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -117,7 +116,6 @@ import { MatInputModule } from "@angular/material/input";
   ],
   declarations: [
     DropdownComponent,
-    EmptyStateComponent,
     FilterDropdownComponent,
     CanvasSidePanelComponent,
     ButtonIconComponent,
@@ -175,7 +173,6 @@ import { MatInputModule } from "@angular/material/input";
   ],
   exports: [
     DropdownComponent,
-    EmptyStateComponent,
     DoughnutChartComponent,
     CommonModule,
     FormsModule,

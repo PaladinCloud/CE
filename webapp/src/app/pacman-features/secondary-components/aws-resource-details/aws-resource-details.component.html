@@ -54,7 +54,9 @@
                     </app-aws-app-tile>
                 </li>
             </ul>
-            <div class="no-content" *ngIf="filteredResources.length == 0"><app-empty-state message="No Items Available In This Category"></app-empty-state></div>
+            <div class="no-content" *ngIf="filteredResources.length == 0">
+                <app-error-message [selectedValue]="errorMessage"></app-error-message>
+            </div>
         </div>
     </div>
     <div class="resource-details-container flex-col" *ngIf="dataLoaded">
