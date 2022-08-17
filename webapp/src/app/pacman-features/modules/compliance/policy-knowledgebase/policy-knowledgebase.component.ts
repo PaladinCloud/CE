@@ -55,7 +55,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   loaded = false;
   datacoming = false;
   seekdata = false;
-  errorMessage: any;
+  errorMessage: any = '';
   urlToRedirect: any = '';
   public agAndDomain = {};
   currentPageLevel = 0;
