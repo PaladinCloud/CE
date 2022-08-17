@@ -1,14 +1,17 @@
 package com.paladincloud.jobscheduler.service;
 
 
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.paladincloud.jobscheduler.auth.CredentialProvider;
 import com.paladincloud.jobscheduler.schema.jobs_and_rule_scheduling.Event;
 import com.paladincloud.jobscheduler.schema.jobs_and_rule_scheduling.marshaller.Marshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
@@ -28,6 +31,9 @@ public class JobScheduler {
     private static final String EVENT_SOURCE = "paladincloud.jobs-scheduler";
     private static final String EVENT_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event";
 
+    @Autowired
+    CredentialProvider credentialProvider;
+
     @Value("${aws.eventbridge.bus.details}")
     private String awsBusDetails;
 
@@ -46,8 +52,14 @@ public class JobScheduler {
     @Value("${no_of_rules_per_batch}")
     private String noOfRulesPerBatch;
 
-    @Value("${region:}")
+    @Value("${base.region:}")
     private String region;
+
+    @Value("${base.account}")
+    private String baseAccount;
+
+    @Value("${s3.role}")
+    private String roleName;
 
     @Scheduled(initialDelayString = "${job.schedule.initialDelay}", fixedDelayString = "${job.schedule.interval}")
     public void scheduleCollectorJobs() {
@@ -68,9 +80,7 @@ public class JobScheduler {
                 addCollectorEvent(putEventsRequestEntries, gcpBusDetails);
             }
 
-            PutEventsRequest eventsRequest = PutEventsRequest.builder()
-                    .entries(putEventsRequestEntries)
-                    .build();
+            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
             PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
@@ -107,9 +117,7 @@ public class JobScheduler {
                 addShipperEvent(putEventsRequestEntries, azureBusDetails);
             }
 
-            PutEventsRequest eventsRequest = PutEventsRequest.builder()
-                    .entries(putEventsRequestEntries)
-                    .build();
+            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
             PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
@@ -156,16 +164,14 @@ public class JobScheduler {
                 }
                 // process azure rules
                 if (azureEnabled && i >= noOfBatchAws && i < noOfBatchAws + noOfBatchAzure) {
-                    putEventIntoRequestEntry(i-noOfBatchAws, azureBusDetails, putEventsRequestEntries);
+                    putEventIntoRequestEntry(i - noOfBatchAws, azureBusDetails, putEventsRequestEntries);
                 }
                 // process gcp rules
                 if (gcpEnabled && i >= noOfBatchAws + noOfBatchAzure) {
-                    putEventIntoRequestEntry(i-noOfBatchAws-noOfBatchAzure ,gcpBusDetails, putEventsRequestEntries);
+                    putEventIntoRequestEntry(i - noOfBatchAws - noOfBatchAzure, gcpBusDetails, putEventsRequestEntries);
                 }
 
-                PutEventsRequest eventsRequest = PutEventsRequest.builder()
-                        .entries(putEventsRequestEntries)
-                        .build();
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
 
                 PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
 
@@ -195,12 +201,7 @@ public class JobScheduler {
         String cloudName = awsBusDetails.split(":")[0].split("-")[1];
         Event event = populateEventForRule(cloudName, batchNo);
         detailString = getMarshalledEvent(detailString, event);
-        PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
-                .source(EVENT_SOURCE)
-                .detailType(EVENT_DETAIL_TYPE)
-                .detail(detailString)
-                .eventBusName(awsBusDetails.split(":")[0])
-                .build();
+        PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(awsBusDetails.split(":")[0]).build();
         // print the request entry
         logger.info("Request entry: {} ", reqEntry);
 
@@ -215,33 +216,6 @@ public class JobScheduler {
         return sum;
     }
 
-    private void addRuleEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
-        String detailString = null;
-
-        // populate events for each event bus
-        String[] busDetailsArray = busDetails.split(",");
-        for (String busDetail : busDetailsArray) {
-            int noOfBatches = (int) Math.ceil(Double.parseDouble(busDetail.split(":")[2]) / Double.parseDouble(noOfRulesPerBatch));
-            for (int i = 0; i < noOfBatches; i++) {
-                Event event = populateEventForRule(busDetail.split(":")[1], i);
-
-                detailString = getMarshalledEvent(detailString, event);
-                PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
-                        .source(EVENT_SOURCE)
-                        .detailType(EVENT_DETAIL_TYPE)
-                        .detail(detailString)
-                        .eventBusName(busDetail.split(":")[0])
-                        .build();
-
-                // Add the PutEventsRequestEntry to a putEventsRequestEntries
-                putEventsRequestEntries.add(reqEntry);
-
-                // print the request entry
-                logger.info("Request entry: {} ", reqEntry);
-            }
-        }
-    }
-
     private void addShipperEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
         String detailString = null;
 
@@ -252,12 +226,7 @@ public class JobScheduler {
             Event event = populateEventForShipper(cloudName);
 
             detailString = getMarshalledEvent(detailString, event);
-            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
-                    .source(EVENT_SOURCE)
-                    .detailType(EVENT_DETAIL_TYPE)
-                    .detail(detailString)
-                    .eventBusName(busDetail.split(":")[0])
-                    .build();
+            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetail.split(":")[0]).build();
 
             // Add the PutEventsRequestEntry to a putEventsRequestEntries
             putEventsRequestEntries.add(reqEntry);
@@ -277,12 +246,7 @@ public class JobScheduler {
             String cloudName = busDetail.split(":")[0].split("-")[1];
             Event event = populateEventForCollector(cloudName);
             detailString = getMarshalledEvent(detailString, event);
-            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder()
-                    .source(EVENT_SOURCE)
-                    .detailType(EVENT_DETAIL_TYPE)
-                    .detail(detailString)
-                    .eventBusName(busDetail.split(":")[0])
-                    .build();
+            PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetail.split(":")[0]).build();
 
             // Add the PutEventsRequestEntry to a putEventsRequestEntries
             putEventsRequestEntries.add(reqEntry);
@@ -294,12 +258,18 @@ public class JobScheduler {
 
     private EventBridgeClient getEventBridgeClient() {
         Region reg = Region.of(region);
-        String accessKey = System.getProperty("ACCESS_KEY");
-        String secretKey = System.getProperty("SECRET_KEY");
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey, secretKey);
+        BasicSessionCredentials tempCredentials = null;
+        try {
+            tempCredentials = credentialProvider.getCredentials(this.baseAccount, roleName);
+        } catch (Exception e) {
+            logger.error("{\"errcode\":\"NO_CRED\" , \"account\":\"" + this.baseAccount + "\", \"Message\":\"Error getting credentials for account " + this.baseAccount + "\" , \"cause\":\"" + e.getMessage() + "\"}");
+//            ErrorManageUtil.uploadError(accountId, "all", "all", e.getMessage());
+        }
         return EventBridgeClient.builder()
                 .region(reg)
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
+                .credentialsProvider(StaticCredentialsProvider
+                        .create(AwsSessionCredentials
+                                .create(tempCredentials.getAWSAccessKeyId(), tempCredentials.getAWSSecretKey(), tempCredentials.getSessionToken())))
                 .build();
     }
 
