@@ -131,7 +131,7 @@ public class AzureAdAuthServiceImpl implements AuthService {
 	        	if(oauth2ClientId.equals(userDetails.get("appId"))) {
 	        		UserClientCredentials credentials = new UserClientCredentials();
 	            	credentials.setClientId(userDetails.get("appId").toString());
-	            	credentials.setUsername(userDetails.get("email").toString());
+	            	credentials.setUsername(userDetails.get("userId").toString());
 	            	credentials.setPassword(StringUtils.EMPTY);
 	            	return apiService.loginProxy(credentials);
 		        }

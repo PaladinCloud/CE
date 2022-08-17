@@ -82,3 +82,13 @@ GCP_CREDENTIALS = {}
 
 #job/rules intervals
 JOB_SCHEDULER_INTERVAL_IN_HOURS = 6 #default is 6hr interval, user can increase or decrease the interval
+
+# Azure AD integration 
+AUTHENTICATION_TYPE = "AZURE_AD"	# login type value any one of this "AZURE_AD or DB "
+AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
+AD_CLIENT_ID = "xxx-xxx-xxxx"  # AD Client ID
+AD_SECRET_KEY = "xxxxyyyyzzz"  # AD secret key
+AD_ENCRY_SECRET_KEY = "xxyssxxxzz" # Encrypted AD secret key using bcrypt
+AD_PUBLIC_KEY_URL = "https://login.microsoftonline.com/common/discovery/v2.0/keys"
+AD_PUBLIC_KEY = "ssyyssdddd" # AD public key
+AD_ADMIN_USER_ID = "adminuser" # Admin user user_id

@@ -30,7 +30,10 @@ class BuildUiAndApis(NullResource):
                     'LOG_DIR': Settings.LOG_DIR,
                     'S3_BUCKET': BucketStorage.get_output_attr('bucket'),
                     'S3_KEY_PREFIX': Settings.RESOURCE_NAME_PREFIX,
-                    'ENABLE_VULNERABILITY_FEATURE': str(Settings.ENABLE_VULNERABILITY_FEATURE).lower()
+                    'ENABLE_VULNERABILITY_FEATURE': str(Settings.ENABLE_VULNERABILITY_FEATURE).lower(),
+                    'AUTHENTICATION_TYPE': Settings.AUTHENTICATION_TYPE,
+                    'AD_TENANT_ID': Settings.AD_TENANT_ID,
+                    'AD_CLIENT_ID': Settings.AD_CLIENT_ID
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }
