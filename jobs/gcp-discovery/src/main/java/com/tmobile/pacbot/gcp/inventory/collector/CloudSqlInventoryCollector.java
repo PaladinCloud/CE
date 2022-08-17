@@ -33,12 +33,10 @@ public class CloudSqlInventoryCollector {
             SQLAdmin sqlAdmin = gcpCredentialsProvider.getSqlAdminService();
             InstancesListResponse response = sqlAdmin.instances().list(projectId).execute();
             logger.info("SQL admin list api response: {}", response);
-            if(response!=null && !response.isEmpty()) {
+            if (response != null && !response.isEmpty()) {
                 List<DatabaseInstance> instanceList = response.getItems();
                 logger.info("Database Instances list: {}", instanceList);
-
                 if (!instanceList.isEmpty()) {
-
                     for (DatabaseInstance dbInstance : instanceList) {
                         logger.info("Database Instance: {}", dbInstance);
                         CloudSqlVH cloudSqlVH = new CloudSqlVH();
@@ -62,6 +60,11 @@ public class CloudSqlInventoryCollector {
 
                         cloudSqlVH.setMaxDiskSize(dbInstance.getMaxDiskSize());
                         cloudSqlVH.setCurrentDiskSize(dbInstance.getCurrentDiskSize());
+
+                        if (dbInstance.getSettings().getBackupConfiguration() != null) {
+                            cloudSqlVH.setBackupEnabled(dbInstance.getSettings().getBackupConfiguration().getEnabled());
+                        }
+
                         if (dbInstance.getDiskEncryptionConfiguration() != null) {
                             cloudSqlVH.setKmsKeyName(dbInstance.getDiskEncryptionConfiguration().getKmsKeyName());
                         }
@@ -73,13 +76,10 @@ public class CloudSqlInventoryCollector {
                             cloudSqlVH.setKmsKeyVersion(dbInstance.getDiskEncryptionStatus().getKmsKeyVersionName());
                         }
                         logger.info("databaseflags collecting started");
-                       
-
                         cloudSqlList.add(cloudSqlVH);
                     }
                 }
             }
-
         } catch (GeneralSecurityException e) {
             logger.error("Exception in connecting to cloud SQL admin service", e);
         }
@@ -106,5 +106,5 @@ public class CloudSqlInventoryCollector {
             cloudSqlVH.setIpAddress(ipList);
         }
     }
-
 }
+

@@ -6534,6 +6534,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Enable_Automated_backups_for_sql_database",
+    "ruleUUID": "Enable_Automated_backups_for_sql_database",
+    "policyId": "Enable_Automated_backups_for_sql_database",
+    "ruleName": "Enable Automated backups for cloud sql database",
+    "targetType": "cloudstorage",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "Enable_Automated_backups_for_sql_database",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-automated-backups-enabled\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"check if the automated backups are enabled for all Cloud SQL database instances\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Automated backups are not enabled for Google cloud sql database.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Automated backups for cloud sql database\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Automated_backups_for_sql_database\",\"autofix\":false,\"alexaKeyword\":\"Enable_Automated_backups_for_sql_database\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_Automated_backups_for_sql_database\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enable_Automated_backups_for_sql_database\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Automated_backups_for_sql_database",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Automated backups for cloud sql database",
+    "createdDate": "2022-06-27",
+    "modifiedDate": "2022-06-27",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
     "ruleUUID": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
     "policyId": "Ensure_cross_DB_ownership_flag_disabled _for_SQL",
