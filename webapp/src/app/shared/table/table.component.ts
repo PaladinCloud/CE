@@ -1,37 +1,43 @@
-import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, AfterViewInit {
 
-  @Input() dataSource;
+  @Input() dataSource: MatTableDataSource<any>;
   @Input() columnWidths;
   @Input() displayedColumns;
   @Input() columnNamesMap;
+  @Input() columnsSortFunctionMap;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
+  sortedData : MatTableDataSource<any>;
 
-  constructor(private _liveAnnouncer: LiveAnnouncer) {}
+  constructor() {}
 
   @ViewChild(MatSort) sort: MatSort;
 
   ngAfterViewInit() {
-    if(this.dataSource){
-        this.dataSource.sort = this.sort;
-    }
   }
   
-  /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort) {
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
+  announceSortChange(sort: Sort) {
+    if (!sort.active || sort.direction === '') {
+      this.sortedData.data = this.dataSource.data.slice();
+      return;
     }
+
+    this.sortedData.data = this.sortedData.data.sort((a, b) => {
+      const colToSort = sort.active;
+      const isAsc = sort.direction=='asc';
+      if(this.columnsSortFunctionMap[colToSort]){
+        return this.columnsSortFunctionMap[colToSort](a, b, isAsc);
+      }
+      return (a[colToSort]<b[colToSort]? -1: 1)*(isAsc ? 1 : -1);
+    });
   }
 
   goToDetails(row){
@@ -39,5 +45,6 @@ export class TableComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.sortedData = new MatTableDataSource(this.dataSource.data.slice());    
   }
 }

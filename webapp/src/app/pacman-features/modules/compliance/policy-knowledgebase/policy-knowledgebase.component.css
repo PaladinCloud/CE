@@ -20,10 +20,7 @@
 }
 
 .policy-knowledgebase-content {
-  margin: 0 1.8em 1.8em;
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  height: 100%;
+  padding: 24px;
 }
 
 .pk-header {

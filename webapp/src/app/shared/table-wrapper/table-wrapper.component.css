@@ -4,10 +4,6 @@
     overflow: scroll;
 }
 
-.table-container{
-    padding: 24px;
-}
-
 .table-wrapper{
   height: 100%;
   background: white;
@@ -59,10 +55,6 @@
 .table-header ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
     /* height: 0px; */
     padding: .6em .75em 0 .75em;
-}
-
-.table-header .search-bar-container ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-wrapper {
-    /* height: 0px; */
 }
 
 .table-header ::ng-deep .mat-form-field-underline {
