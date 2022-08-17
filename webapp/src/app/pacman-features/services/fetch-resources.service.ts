@@ -41,7 +41,7 @@ export class FetchResourcesService {
                         return response;
                     }))
                     .pipe(catchError(error => {
-                        return of(null);
+                        return of(error);
                     }));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);

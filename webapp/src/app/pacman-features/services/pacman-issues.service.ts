@@ -15,13 +15,13 @@
 /**
  * Created by sauravdutta on 11/10/17.
  */
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
 import { HttpHeaders, HttpRequest } from "@angular/common/http";
 
 import { HttpService } from '../../shared/services/http-response.service';
 import { ErrorHandlingService } from '../../shared/services/error-handling.service';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class PacmanIssuesService {
@@ -54,13 +54,10 @@ export class PacmanIssuesService {
         try {
             return this.httpService.getHttpResponse(url, method, payload, queryParams)
                 .pipe(map(response => {
-                    try {
                         this.dataCheck(response);
                         return this.massageData(response);
-                    } catch (error) {
-                        this.errorHandling.handleJavascriptError(error);
-                    }
-                }));
+                }))
+                .pipe(catchError(error => of(error)));
         } catch (error) {
             this.errorHandling.handleJavascriptError(error);
         }
