@@ -26,7 +26,7 @@
 }
 
 .policy-knowledgebase-content{
-  height: 100%;
+  height: calc(100vh - 250px);
   background-color: var(--background-white);
 }
 
