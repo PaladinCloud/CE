@@ -2,6 +2,7 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.appservice.FtpsState;
 import com.microsoft.azure.management.appservice.WebApp;
 import com.microsoft.azure.management.compute.VirtualMachine;
 import com.microsoft.azure.management.network.NetworkInterface;
@@ -41,12 +42,17 @@ public class WebAppInventoryCollector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
+
+                if(webApp.ftpsState()!=null){
+                   webAppVH.setFtpsState(webApp.ftpsState());
+                   log.info("ftpsState",webApp.ftpsState());
+                }
+
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
                 log.info("web app list {}",webApp.httpsOnly());
 
                 webAppList.add(webAppVH);
-
 
             } catch (Exception e) {
                 e.printStackTrace();

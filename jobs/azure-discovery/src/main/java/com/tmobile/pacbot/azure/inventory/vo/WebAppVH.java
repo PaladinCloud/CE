@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import com.microsoft.azure.management.appservice.FtpsState;
+
 import java.util.Set;
 
 public class WebAppVH extends AzureVH {
@@ -7,6 +9,8 @@ public class WebAppVH extends AzureVH {
     private boolean http20Enabled;
     private String resourceGroupName;
     private boolean httpsOnly;
+
+    private FtpsState ftpsState;
 
     public boolean isHttpsOnly() {
         return httpsOnly;
@@ -49,5 +53,12 @@ public class WebAppVH extends AzureVH {
 
     public void setRemoteDebuggingEnabled(boolean remoteDebuggingEnabled) {
         this.remoteDebuggingEnabled = remoteDebuggingEnabled;
+    }
+
+    public FtpsState getFtpsState() {
+        return ftpsState;
+    }
+    public void setFtpsState(FtpsState ftpsState) {
+        this.ftpsState = ftpsState;
     }
 }
