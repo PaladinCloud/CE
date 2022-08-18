@@ -15,7 +15,7 @@ export class TableComponent implements OnInit, AfterViewInit {
   @Input() columnNamesMap;
   @Input() columnsSortFunctionMap;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
-  sortedData : MatTableDataSource<any>;
+  dataSourceCopy : MatTableDataSource<any>;
 
   constructor() {}
 
@@ -26,11 +26,11 @@ export class TableComponent implements OnInit, AfterViewInit {
   
   announceSortChange(sort: Sort) {
     if (!sort.active || sort.direction === '') {
-      this.sortedData.data = this.dataSource.data.slice();
+      this.dataSource.data = this.dataSourceCopy.data.slice();
       return;
     }
 
-    this.sortedData.data = this.sortedData.data.sort((a, b) => {
+    this.dataSource.data = this.dataSource.data.sort((a, b) => {
       const colToSort = sort.active;
       const isAsc = sort.direction=='asc';
       if(this.columnsSortFunctionMap[colToSort]){
@@ -45,6 +45,6 @@ export class TableComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.sortedData = new MatTableDataSource(this.dataSource.data.slice());    
+    this.dataSourceCopy = new MatTableDataSource(this.dataSource.data.slice());    
   }
 }

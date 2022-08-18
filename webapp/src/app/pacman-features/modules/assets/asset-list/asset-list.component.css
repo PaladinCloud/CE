@@ -13,6 +13,7 @@
  */
 
 .floating-widgets-section {
+    background-color: var(--background-grey);
     height: 100%;
     width: 100%;
 }
@@ -29,7 +30,6 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 0em 1.5em 1.5em;
 }
 
 .widget-wrapper {

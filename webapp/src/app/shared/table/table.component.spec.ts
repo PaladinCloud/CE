@@ -20,7 +20,7 @@ describe('Table', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    component.dataSource = [
+    component.dataSource.data = [
       {col1:"row1 col1", col2:"row1 col2"},
       {col1:"row2 col1", col2:"row2 col2"},
     ];

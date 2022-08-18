@@ -773,7 +773,7 @@ input:-webkit-autofill {
 
 .floating-widgets-section {
   width: 70%;
-  padding-right: 28px;
+  /* padding-right: 28px; */
   height: 100%;
 }
 
@@ -834,12 +834,13 @@ input:-webkit-autofill {
 }
 
 .floating-widgets-container {
+  padding: 28px;
   overflow: overlay;
 }
 
 .widget-wrapper {
   width: 100%;
-  padding: 0 1.5em 2em 1.25em;
+  padding: 0 0 1.25em 0;
   box-sizing: border-box;
   opacity: 1;
 }
@@ -1519,6 +1520,7 @@ li .details-left-value {
 /* Post login panel classes */
 
 .contextual-content-container {
+  background-color: var(--background-grey);
   height: calc(100vh - 68px);
   width: 100%;
   min-width: 600px;

@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="sortedData" matSort (matSortChange)="announceSortChange($event)">
+<table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
   <ng-container *ngFor="let column of displayedColumns;" [matColumnDef]="column">
     <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNamesMap[column] }} </th>
     <td [title]="element[column]" [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> {{ element[column] }} </td>

@@ -1,6 +1,6 @@
 .table-content-container{
     width: 100%;
-    height: 420px;
+    height: calc(100vh - 310px);
     overflow: scroll;
 }
 
