@@ -6686,5 +6686,27 @@
     "modifiedDate": "2022-08-16",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Deny_public_ip_for_sql",
+    "ruleUUID": "Deny_public_ip_for_sql",
+    "policyId": "Deny_public_ip_for_sql",
+    "ruleName": "SQL DB instances should not have public IP",
+    "targetType": "cloudsql",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Deny_public_ip_for_sql",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-ip-public-for-db\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"SQL DB instances should not have public IP\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"SQL DB instances should not have public IP\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_cloudsql/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"SQL database instances should not use public IP addresses\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Deny_public_ip_for_sql\",\"autofix\":false,\"alexaKeyword\":\"Deny_public_ip_for_sql\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"policyId\":\"Deny_public_ip_for_sql\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Deny_public_ip_for_sql\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Deny_public_ip_for_sql",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "SQL database instances should not use public IP addresses",
+    "createdDate": "2022-08-18",
+    "modifiedDate": "2022-08-18",
+    "severity": "medium",
+    "category": "security"
   }
 ]
