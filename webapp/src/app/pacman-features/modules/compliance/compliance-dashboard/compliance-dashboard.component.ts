@@ -514,7 +514,7 @@ export class ComplianceDashboardComponent implements OnInit {
     for (let i = 0; i < data.length; i++) {
       data[i][`Policy Title`] = data[i].name;
       data[i][`Last Scanned`] = data[i].lastScan;
-      data[i][`Compliance %`] = data[i].compliance_percent;
+      data[i][`Compliance %`] = data[i].assetsScanned==0?'NA':data[i].compliance_percent;
       data[i][`Policy Severity`] = data[i].severity;
       data[i][`Contribution %`] = data[i].contribution_percent;
       data[i][`Resource Type`] = data[i].resourcetType;
@@ -702,7 +702,7 @@ export class ComplianceDashboardComponent implements OnInit {
               hasPreImg: false,
               imgLink: "",
               valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]] + "%",
+              text: getData[row][getCols[col]]=='NA'?getData[row][getCols[col]]:getData[row][getCols[col]] + "%",
             };
           } else if (
             getCols[col] &&
