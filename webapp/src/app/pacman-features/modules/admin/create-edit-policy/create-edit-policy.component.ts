@@ -39,11 +39,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   @ViewChild('policyForm') policyForm: NgForm;
   policyId: any;
   isPolicyIdValid: any = -1;
-  policyUrl: any;
+  policyUrl: any = '';
   policyVersion: String;
-  policyName: any;
-  policyDesc: any;
-  policyResolution: any;
+  policyName: any = '';
+  policyDesc: any = '';
+  policyResolution: any = '';
   policyDetails: any;
   loadingStatus: any;
   pageTitle: String = 'Policies';
@@ -92,6 +92,21 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  
+  isValidUrl = urlString=> {
+	  var urlPattern = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+	  return urlPattern.test(urlString);
+	}
+
+  areAllFieldsValid = () => {
+    let retVal = true;
+    if(this.policyName.trim().length<5 || this.policyDesc.trim().length<15 || this.policyResolution.trim().length<15 || !this.isValidUrl(this.policyUrl)){
+      retVal = false;
+    }
+    console.log(retVal);
+    
+    return retVal;
+  }
 
   constructor(
     private router: Router,
@@ -142,7 +157,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   allpolicyId: any = [];
   isPolicyIdAvailable(policyIdValidKeyword) {
-    if (policyIdValidKeyword.trim().length == 0) {
+    if (policyIdValidKeyword.trim().length < 5) {
       this.isPolicyIdValid = -1;
     } else {
         policyIdValidKeyword = 'PacMan_'+policyIdValidKeyword+'_'+this.policyVersion;
