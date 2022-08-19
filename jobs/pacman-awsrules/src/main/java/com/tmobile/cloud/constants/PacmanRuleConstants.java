@@ -427,6 +427,7 @@ public class PacmanRuleConstants {
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
     public static final String DENY = "Deny";
+    public static final String ES_IAM_CERT_EXPIRY_ATTRIBUTE = "expirydate";
     public static final String FALSE = "false";
     public static final String ES_ASG_LC_URL = "esAsgLcURL";
     public static final String ES_AMI_URL = "esAmiUrl";
