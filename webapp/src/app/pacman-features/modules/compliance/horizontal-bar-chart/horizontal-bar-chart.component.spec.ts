@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { HorizontalBarComponent } from "./horizontal-bar-chart.component";
+import { HorizontalBarChartComponent } from "./horizontal-bar-chart.component";
 
-describe("HorizontalBarComponent", () => {
-  let component: HorizontalBarComponent;
-  let fixture: ComponentFixture<HorizontalBarComponent>;
+describe("HorizontalBarChartComponent", () => {
+  let component: HorizontalBarChartComponent;
+  let fixture: ComponentFixture<HorizontalBarChartComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [HorizontalBarComponent],
+      declarations: [HorizontalBarChartComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HorizontalBarComponent);
+    fixture = TestBed.createComponent(HorizontalBarChartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

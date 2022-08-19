@@ -17,13 +17,17 @@
   justify-content: flex-start;
   overflow-y: hidden;
   padding-bottom: 2px;
+  background-color: var(--background-grey);
 }
 
-.policy-knowledgebase-content {
-  margin: 0 1.8em 1.8em;
-  border-radius: var(--border-radius);
-  overflow: hidden;
+.policy-knowledgebase-content-wrapper {
   height: 100%;
+  padding: 24px;
+}
+
+.policy-knowledgebase-content{
+  height: calc(100vh - 250px);
+  background-color: var(--background-white);
 }
 
 .pk-header {
@@ -281,4 +285,29 @@
 
 .cloud-img {
   height: 1.5em;
+}
+
+.type-count-container{
+  padding: 0px 24px;
+}
+
+.type-count-content-wrapper{
+    padding: 12px 0px 12px 24px;
+    background: #FFFFFF;
+    border-right: 1px solid var(--border-100);
+}
+
+.type-count-content-wrapper .type-name{
+    color: var(--text-medium-emphasis);
+    padding-bottom: 4px;
+    font: var(--text-body-2);
+}
+
+.type-count-content-wrapper .type-count{
+    font: var(--text-headline-5);
+    color: var(--text-high-emphasis);
+}
+
+.type-count-content-container{
+    flex:1
 }

@@ -13,21 +13,21 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { CreateAssetGroupsComponent } from './create-asset-groups.component';
+import { StickyExceptionsComponent } from './sticky-exceptions.component';
 
-describe('CreateAssetGroupsComponent', () => {
-  let component: CreateAssetGroupsComponent;
-  let fixture: ComponentFixture<CreateAssetGroupsComponent>;
+describe('StickyExceptionsComponent', () => {
+  let component: StickyExceptionsComponent;
+  let fixture: ComponentFixture<StickyExceptionsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateAssetGroupsComponent ]
+      declarations: [ StickyExceptionsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreateAssetGroupsComponent);
+    fixture = TestBed.createComponent(StickyExceptionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

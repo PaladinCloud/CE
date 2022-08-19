@@ -55,15 +55,22 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   loaded = false;
   datacoming = false;
   seekdata = false;
-  errorMessage: any;
+  errorMessage: any = '';
   urlToRedirect: any = '';
   public agAndDomain = {};
   currentPageLevel = 0;
+  columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
+  columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
+  columnsSortFunctionMap = {
+    severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a.severity] < severeness[b.severity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  };
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
-    private renderer: Renderer2,
     private router: Router,
     private commonResponseService: CommonResponseService,
     private logger: LoggerService,
@@ -75,7 +82,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       this.selectedAssetGroup = assetGroupName;
       this.agAndDomain['ag'] = this.selectedAssetGroup;
     });
-    this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
+    this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
       this.selectedDomain = domain;
       this.agAndDomain['domain'] = this.selectedDomain;
       this.updateComponent();
@@ -100,7 +107,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     try {
       const getData = data;
       this.typeObj = {
-        'All': 0
+        'All Policies': 0
       };
       for (let i = 0; i < getData.length; i++) {
         this.typeObj[getData[i].ruleCategory] = 0;
@@ -109,22 +116,32 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       this.typeObj[`high`] = 0;
       this.typeObj[`medium`] = 0;
       this.typeObj[`low`] = 0;
+      this.typeObj["cost"]=0;
+      this.typeObj["operations"]=0;
+      this.typeObj["security"]=0;
+      this.typeObj["tagging"]=0;
       for (let i = 0; i < getData.length; i++) {
         this.typeObj[getData[i].severity] = 0;
       }
       this.typeObj[`Auto Fix`] = 0;
       delete this.typeObj[''];
       for (let i = 0; i < getData.length; i++) {
-        this.typeObj['All']++;
-        this.typeObj[getData[i].ruleCategory]++;
+        this.typeObj['All Policies']++;
+        if(getData[i].ruleCategory=="costOptimization"){
+          this.typeObj["cost"]++;
+        }else{
+          this.typeObj[getData[i].ruleCategory]++;
+        }
         this.typeObj[getData[i].severity]++;
         if (getData[i].autoFixEnabled === true) {
           this.typeObj['Auto Fix']++;
         }
       }
+
       let typeArr = [];
       typeArr = Object.keys(this.typeObj);
-      this.tabName = typeArr;
+      // this.tabName = typeArr;
+      this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
       this.selectedTabName = this.tabName[this.selectedTab];
     } catch (error) {
       this.logger.log('error', error);

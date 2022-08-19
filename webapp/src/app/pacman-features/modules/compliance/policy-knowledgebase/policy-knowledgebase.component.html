@@ -21,65 +21,21 @@
             </div>
         </div>
     </div>
-    <div class='pk-top-header'>Repository of all the policies currently enforced.</div>
-    <div class='policy-knowledgebase-content flex flex-col'>
-        <div class='pk-top-content' [class.hide]='knowledgebaseData.length == 0'>
-            <div class='tabs-container flex flex-align-center'>
-                <div (click)='selectedTabName = tabs;' class='pk-tabs capitalize' *ngFor="let tabs of tabName "
-                    [class.loaded]='loaded' [class.active]='tabs == selectedTabName'>{{tabs}}
-                    <span *ngIf='typeObj'>({{typeObj[tabs]}})</span>
+    <div class="type-count-container">
+        <div class="type-count-wrapper flex flex-row">
+            <div class="type-count-content-container" *ngFor="let tab of tabName">
+                <div class="type-count-content-wrapper flex flex-col">
+                    <div class="type-name capitalize">{{tab}}</div>
+                    <div class="type-count">{{ typeObj[tab] }}</div>
                 </div>
             </div>
         </div>
-        <div class='flex flex-align-center flex-between pk-search-container' [class.hide]='knowledgebaseData.length == 0'>
-            <div class='search-filter-wrap flex flex-align-center'>
-                <div class='input-bar'>
-                    <input #pkInp placeholder="Search" type='text' [(ngModel)]='searchTxt'>
-                    <div class='absolute search-icon flex flex-align-center'><img src='../assets/png/search.png'></div>
-                </div>
-                <div [class.hide]='true' class='select-filters-wrap flex flex-align-center'>
-                    <div class='filter-txt'> By:
-                    </div>
-                    <div title='{{filters | uppercase}}' class='select-filter-btn' [class.critical]="filters == 'critical'"
-                        [class.medium]="filters == 'medium'" [class.low]="filters == 'low'" [class.high]="filters == 'high'"
-                        *ngFor='let filters of selName'></div>
-                </div>
-            </div>
-            <div class='total-count-txt' *ngIf='dataLoaded && typeObj'>
-                Total of <span class='bold-text'>{{typeObj['All']}}</span> Policies
-            </div>
-        </div>
-        <div class='pk-main-content flex flex-wrap'>
-            <ng-container *ngFor="let cards of ( knowledgebaseData | searchFilter: searchTxt ) | orderBy : { property: 'name', direction: 1 }">
-                <div *ngIf="(selectedTabName == 'All' || selectedTabName == cards.severity || selectedTabName == cards.ruleCategory || (selectedTabName == 'Auto Fix' && cards.autoFixEnabled) && dataLoaded)"
-                    class='each-card relative mr-pkb-cards pointer' (click)="gotoNextPage(cards)">
-                    <div class="flex hover-element">
-                        <div title="{{cards.name}}" class='pk-link'>{{cards.name}}</div>
-                        <app-copy-element class="copy-icon" [CopyElement]="cards.name" [iconSize]="'10px'"></app-copy-element>
-                   </div>
-                    <div class='pk-desc flex flex-align-end flex-between'>
-                        <div class="flex flex-align-end">
-                            <img alt='{{cards.provider}}' class="cloud-img" src="../../../../../assets/icons/{{cards.provider}}-color.svg">
-                        </div>
-                        <div class='flex flex-align-end flex-col'>
-                            <div *ngIf="cards.autoFixEnabled" class="pk-date flex">
-                                <div class="flex flex-align-center">Auto Fix Enabled</div>
-                                <div><img class="auto-fix-img" src="../../../../../assets/icons/auto-fix-enabled.svg"></div>
-                            </div>
-                            <div [class.critical-bg]="cards.severity == 'critical'" [class.medium-bg]="cards.severity == 'medium'"
-                                [class.low-bg]="cards.severity == 'low'" [class.high-bg]="cards.severity == 'high'" title="{{cards.severity | uppercase}}"
-                                class='pk-btn'>{{cards.severity}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </ng-container>
-            <div *ngIf='!dataLoaded' class='loader'></div>
-            <article class='center error_handling' *ngIf="!datacoming">
-                <div class="error_msg">
-                    <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
-                </div>
-            </article>
+    </div>
+    <div class='policy-knowledgebase-content-wrapper'>
+        <div class="policy-knowledgebase-content">
+            <div [class.loader]="knowledgebaseData.length==0 && errorMessage==''"></div>
+            <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
+            <app-table-wrapper (rowSelectEventEmitter)="gotoNextPage($event)" *ngIf="knowledgebaseData.length>0" [data]="knowledgebaseData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap" [columnsSortFunctionMap]="columnsSortFunctionMap"></app-table-wrapper>
         </div>
     </div>
 </div>

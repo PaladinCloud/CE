@@ -14,21 +14,21 @@
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Vulnerabilities } from './vulnerabilities.component';
+import { VulnerabilitiesComponent } from './vulnerabilities.component';
 
-describe('Vulnerabilities', () => {
-  let component: Vulnerabilities;
-  let fixture: ComponentFixture<Vulnerabilities>;
+describe('VulnerabilitiesComponent', () => {
+  let component: VulnerabilitiesComponent;
+  let fixture: ComponentFixture<VulnerabilitiesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ Vulnerabilities ]
+      declarations: [ VulnerabilitiesComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Vulnerabilities);
+    fixture = TestBed.createComponent(VulnerabilitiesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

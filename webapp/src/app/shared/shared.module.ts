@@ -97,6 +97,10 @@ import { DropdownComponent } from "./dropdown/dropdown.component";
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from "@angular/material/input";
+import { TableComponent } from "./table/table.component";
+import { TableWrapperComponent } from "./table-wrapper/table-wrapper.component";
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
 
 @NgModule({
   imports: [
@@ -109,12 +113,16 @@ import { MatInputModule } from "@angular/material/input";
     ReactiveFormsModule,
     RouterModule,
     MatInputModule,
+    MatTableModule,
+    MatSortModule,
     MatDatepickerModule,
     MatNativeDateModule,
     SelectDropDownModule,
     AgGridModule
   ],
   declarations: [
+    TableComponent,
+    TableWrapperComponent,
     DropdownComponent,
     FilterDropdownComponent,
     CanvasSidePanelComponent,
@@ -172,6 +180,8 @@ import { MatInputModule } from "@angular/material/input";
     TableListComponent,
   ],
   exports: [
+    TableComponent,
+    TableWrapperComponent,
     DropdownComponent,
     DoughnutChartComponent,
     CommonModule,
