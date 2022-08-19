@@ -168,10 +168,14 @@ class Buildpacbot(object):
             if  self.auth_type == "AZURE_AD":
                 if "AUTH_TYPE: DB" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: AZURE_SSO")
-                if "tenant: ''" in line:
-                    lines[idx] = lines[idx].replace("tenant: ''", "tenant: '"+self.tenant_id+"'")
-                if "clientId: ''" in line:
-                    lines[idx] = lines[idx].replace("clientId: ''", "clientId: '"+self.client_id+"'")
+                if "tenant: '" in line:
+                    lines[idx] = "tenant: '"+self.tenant_id+"' \n,"
+                if "clientId: '" in line:
+                    lines[idx] = "clientId: '"+self.client_id+"'"
+                    
+            if  self.auth_type == "DB":
+                if "AUTH_TYPE: AZURE_SSO" in line:
+                    lines[idx] = lines[idx].replace("AUTH_TYPE: AZURE_SSO", "AUTH_TYPE: DB")
                 
         with open(config_file, 'w') as f:
             f.writelines(lines)
