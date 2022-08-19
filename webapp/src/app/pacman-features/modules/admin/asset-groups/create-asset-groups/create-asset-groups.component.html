@@ -125,6 +125,7 @@
                                                         (input)="isGroupNameAvailable($event.target.value)"
                                                         autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="assetForm.groupName.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                             <div class="input-box">
                                                 <label>Display Name *</label>
@@ -133,6 +134,7 @@
                                                         placeholder="Enter the Display Name"
                                                         [(ngModel)]="assetForm.displayName" autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="assetForm.displayName.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                         </div>
                                         <div class="formctnright">
@@ -143,6 +145,7 @@
                                                         placeholder="Enter Type" [(ngModel)]="assetForm.type"
                                                         autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="assetForm.type.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                             <div class="input-box">
                                                 <label>Created By *</label>
@@ -151,6 +154,7 @@
                                                         placeholder="Enter Created By" [(ngModel)]="assetForm.createdBy"
                                                         autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="assetForm.createdBy.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                         </div>
                                         <div class="formctn">

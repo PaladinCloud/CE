@@ -241,6 +241,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   isGroupNameAvailable(alexaKeyword) {
+    if(alexaKeyword.trim().length<5){
+      this.isGroupNameValid = -1;
+      return;
+    }
     if (alexaKeyword.length === 0) {
       this.isGroupNameValid = -1;
     } else {
@@ -606,8 +610,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   isStepDisabled(stepIndex) {
     if (stepIndex === 0) {
-      if (this.assetForm.groupName !== '' && this.assetForm.displayName !== '' &&
-        this.assetForm.type !== '' && this.assetForm.createdBy !== '' && this.isGroupNameValid === 1) {
+      if (this.assetForm.groupName.length>=5 && this.assetForm.displayName.length>=5 &&
+        this.assetForm.type.length>=5 && this.assetForm.createdBy.length>=5 && this.isGroupNameValid === 1) {
         return false;
       }
     } else if (stepIndex === 1) {

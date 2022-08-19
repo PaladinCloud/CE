@@ -118,6 +118,7 @@
                                                         (input)="isExceptionNameAvailable($event.target.value)"
                                                         autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="exceptionDetailsForm.name.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                         </div>
                                         <div class="formctnright">
@@ -140,6 +141,7 @@
                                                         placeholder="Enter Exception Reason"
                                                         [(ngModel)]="exceptionDetailsForm.reason"></textarea>
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="exceptionDetailsForm.reason.trim().length<15">Please enter min 15 characters</div>
                                             </div>
                                         </div>
                                     </div>
@@ -180,7 +182,7 @@
                                 </a>
                                 <a class="save-container flex flex-row-reverse" *ngIf="stepIndex<1">
                                     <button class="submit-btn uppercase" (click)="nextStep()"
-                                        [disabled]="(exceptionDetailsForm.name===''|| exceptionDetailsForm.reason===''|| exceptionDetailsForm.assetGroup[0].length===0) || assetLoader || isExceptionNameValid==0">NEXT
+                                        [disabled]="(exceptionDetailsForm.name.trim().length<5|| exceptionDetailsForm.reason.trim().length<15|| exceptionDetailsForm.assetGroup[0].length===0) || assetLoader || isExceptionNameValid==0">NEXT
                                         <i class="fa fa-chevron-right"></i></button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse" *ngIf="stepIndex==1 && isCreate">

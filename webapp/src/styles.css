@@ -1918,3 +1918,8 @@ g.arc .bubble-text {
 .padding-top{
   padding-top: 18px;
 }
+
+.validation-error-message{
+  padding: 10px 0px;
+  color: red;
+}
