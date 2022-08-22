@@ -2688,7 +2688,7 @@ INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('api.auth.url',concat(@PACMAN_HOST_NAME,'/api/auth/oauth/token?grant_type=client_credentials'),'api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('api.client.id','client-id','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('api.client.secret','client-secret','api','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('azure.activedirectory.client-id','client-id’,'api','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('azure.activedirectory.client-id','client-id','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('azure.authorizeEndpoint','https://login.microsoftonline.com/tenant-id/oauth2/authorize','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) values ('azure.activedirectory.scope','open-id','api','prd','latest',NULL,NULL,NULL,NULL);
 
