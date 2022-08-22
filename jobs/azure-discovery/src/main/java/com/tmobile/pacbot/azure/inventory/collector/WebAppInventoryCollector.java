@@ -52,7 +52,8 @@ public class WebAppInventoryCollector {
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
-                log.info("web app list {}",webApp.httpsOnly());
+                webAppVH.setClientCertEnabled(webApp.clientCertEnabled());
+                log.info("web app client cert {}", webApp.clientCertEnabled());
 
                 webAppList.add(webAppVH);
 

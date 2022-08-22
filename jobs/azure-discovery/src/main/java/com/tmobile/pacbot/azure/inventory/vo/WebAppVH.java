@@ -11,6 +11,15 @@ public class WebAppVH extends AzureVH {
     private String resourceGroupName;
     private boolean httpsOnly;
     private FtpsState ftpsState;
+    private boolean clientCertEnabled;
+
+    public boolean isClientCertEnabled() {
+        return clientCertEnabled;
+    }
+
+    public void setClientCertEnabled(boolean clientCertEnabled) {
+        this.clientCertEnabled = clientCertEnabled;
+    }
     private SupportedTlsVersions supportedTlsVersions;
 
     public boolean isHttpsOnly() {

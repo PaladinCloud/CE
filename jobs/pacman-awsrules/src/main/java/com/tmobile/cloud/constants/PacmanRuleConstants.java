@@ -513,4 +513,5 @@ public class PacmanRuleConstants {
     public  static  final String FTP_STATE="ftpState";
     public  static  final String TLS_VERSION="minTlsVersion";
 
+    public static final String ClientCertEnabled="clientCertEnabled";
 }
