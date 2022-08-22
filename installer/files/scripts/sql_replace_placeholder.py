@@ -49,5 +49,8 @@ def get_env_variables_and_values(env_dict):
 if __name__ == "__main__":
     env_variables = get_env_variables_and_values(dict(os.environ.items()))
     sql_file = os.getenv('SQL_FILE_PATH')
+    sql_file_ad = os.getenv('SQL_FILE_PATH_AD')
 
     replace_placeholder_with_values(env_variables, sql_file)
+    if os.getenv('AUTHENTICATION_TYPE') == 'AZURE_AD':
+        replace_placeholder_with_values(env_variables, sql_file_ad)
