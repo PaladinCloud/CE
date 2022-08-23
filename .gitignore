@@ -72,3 +72,4 @@ commons/pac-batch-commons/publish.propertie
 
 webapp/package.jsons
 /.idea/
+/jobs/job-scheduler/target/*
