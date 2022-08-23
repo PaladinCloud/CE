@@ -5,7 +5,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.microsoft.azure.management.appservice.SupportedTlsVersions;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -35,6 +34,7 @@ public class CheckForTlsVersionRule extends BaseRule {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
+        String tlsVersion= ruleParam.get(PacmanRuleConstants.TLS_VERSION);
         logger.info("The target type is:{}", targetType);
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -56,7 +56,7 @@ public class CheckForTlsVersionRule extends BaseRule {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = minTlsVersion(esUrl, mustFilter);
+                isValid = minTlsVersion(esUrl, mustFilter,tlsVersion);
             } catch (Exception e) {
                 logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
@@ -83,7 +83,7 @@ public class CheckForTlsVersionRule extends BaseRule {
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean minTlsVersion(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean minTlsVersion(String esUrl, Map<String, Object> mustFilter,String tlsVersion) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = false;
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
@@ -104,7 +104,7 @@ public class CheckForTlsVersionRule extends BaseRule {
                 String minTLSVersion=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.TLS_VERSION).toString();
                 logger.info("minTLSVersion",minTLSVersion);
 
-                if(minTLSVersion.equalsIgnoreCase(String.valueOf(SupportedTlsVersions.ONE_FULL_STOP_TWO))){
+                if(minTLSVersion.equalsIgnoreCase(tlsVersion)){
                     validationResult=true;
                 }
             } else {
