@@ -1115,6 +1115,22 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "backupvault", e.getMessage());
 				}
 			});
+			/**
+			 * This will collect all the customer managed policy details. 
+			 */
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("iampolicies"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "iampolicies");
+					FileManager.generateIamPolicyFiles(InventoryUtil.fetchIAMCustomerManagedPolicies(temporaryCredentials, accountId, accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "iampolicies\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "iampolicies", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

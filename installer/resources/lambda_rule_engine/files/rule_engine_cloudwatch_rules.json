@@ -4048,6 +4048,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1_Admin_Previlege_iampolicies",
+    "ruleUUID": "aws_customer_managed_policy_with_admin_previlege",
+    "policyId": "AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1",
+    "ruleName": "IAM customer managed policies should not have full administrative privileges",
+    "targetType": "iampolicies",
+    "assetGroup": "aws",
+    "alexaKeyword": "CustomPolicyWithAdminAccess",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"iam-cutomer-managed-policy-with-admin-previlege\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1_Admin_Previlege_iampolicies\",\"autofix\":false,\"alexaKeyword\":\"CustomPolicyWithAdminAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"iampolicies\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_customer_managed_policy_with_admin_previlege\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_customer_managed_policy_with_admin_previlege",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny customer managed policy with full administrative privileges",
+    "createdDate": "2022-08-23",
+    "modifiedDate": "2022-08-23",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate",
     "ruleUUID": "aws_expired_iamcertificate",
     "policyId": "Expired_AWS_IAMCertificate_version-1",
