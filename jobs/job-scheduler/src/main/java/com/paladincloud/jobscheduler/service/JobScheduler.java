@@ -2,6 +2,7 @@ package com.paladincloud.jobscheduler.service;
 
 
 import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.services.directory.model.AuthenticationFailedException;
 import com.paladincloud.jobscheduler.auth.CredentialProvider;
 import com.paladincloud.jobscheduler.schema.jobs_and_rule_scheduling.Event;
 import com.paladincloud.jobscheduler.schema.jobs_and_rule_scheduling.marshaller.Marshaller;
@@ -43,25 +44,25 @@ public class JobScheduler {
     @Value("${azure.eventbridge.bus.details}")
     private String azureBusDetails;
 
-    @Value("${azure_enabled}")
+    @Value("${azure.enabled}")
     private boolean azureEnabled;
 
-    @Value("${gcp_enabled}")
+    @Value("${gcp.enabled}")
     private boolean gcpEnabled;
 
-    @Value("${no_of_rules_per_batch}")
+    @Value("${scheduler.batch.size}")
     private String noOfRulesPerBatch;
 
-    @Value("${base.region:}")
+    @Value("${base.region}")
     private String region;
 
     @Value("${base.account}")
     private String baseAccount;
 
-    @Value("${s3.role}")
+    @Value("${scheduler.role}")
     private String roleName;
 
-    @Scheduled(initialDelayString = "${job.schedule.initialDelay}", fixedDelayString = "${job.schedule.interval}")
+    @Scheduled(initialDelayString = "${scheduler.collector.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleCollectorJobs() {
         // print the current milliseconds
         logger.info("Current milliseconds: {} ", System.currentTimeMillis());
@@ -99,7 +100,7 @@ public class JobScheduler {
         eventBrClient.close();
     }
 
-    @Scheduled(initialDelayString = "${job.schedule.initialDelay.shipper}", fixedDelayString = "${job.schedule.interval}")
+    @Scheduled(initialDelayString = "${scheduler.shipper.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleShipperJobs() {
         // print the current milliseconds
         logger.info("Current milliseconds: {}", System.currentTimeMillis());
@@ -136,7 +137,7 @@ public class JobScheduler {
         eventBrClient.close();
     }
 
-    @Scheduled(initialDelayString = "${job.schedule.initialDelay.rules}", fixedDelayString = "${job.schedule.interval}")
+    @Scheduled(initialDelayString = "${scheduler.rules.initial.delay}", fixedDelayString = "${scheduler.interval}")
     public void scheduleRules() {
         // print the current milliseconds
         logger.info("Current milliseconds: {}", System.currentTimeMillis());
@@ -264,6 +265,9 @@ public class JobScheduler {
         } catch (Exception e) {
             logger.error("{\"errcode\":\"NO_CRED\" , \"account\":\"" + this.baseAccount + "\", \"Message\":\"Error getting credentials for account " + this.baseAccount + "\" , \"cause\":\"" + e.getMessage() + "\"}");
 //            ErrorManageUtil.uploadError(accountId, "all", "all", e.getMessage());
+        }
+        if (tempCredentials == null) {
+            throw new AuthenticationFailedException("can not get the temp credentials!!");
         }
         return EventBridgeClient.builder()
                 .region(reg)
