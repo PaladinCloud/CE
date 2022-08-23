@@ -14,9 +14,9 @@ import java.util.Properties;
 
 public class ConfigUtil {
 
-    private static Logger log = LoggerFactory.getLogger(ConfigUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigUtil.class);
 
-    private static String configUrl = System.getenv("CONFIG_URL");
+    private static final String configUrl = System.getenv("CONFIG_URL");
 
     public static void setConfigProperties() throws Exception {
         Properties properties = new Properties();
@@ -24,11 +24,7 @@ public class ConfigUtil {
 
         Map<String, String> configProps = fetchConfigProperties();
         // set the config property values
-        for (Map.Entry<String, String> entry : configProps.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase("s3.role") || entry.getKey().equalsIgnoreCase("base.region") || entry.getKey().equalsIgnoreCase("base.account")) {
-                properties.put(entry.getKey(), entry.getValue());
-            }
-        }
+        properties.putAll(configProps);
         System.setProperties(properties);
     }
 
@@ -40,25 +36,16 @@ public class ConfigUtil {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            Map<String, String> appProps = new HashMap<>();
-            Map<String, String> batchProps = new HashMap<>();
-            Map<String, String> invProps = new HashMap<>();
+            Map<String, String> jobSchedulerProps = new HashMap<>();
             Map<String, Object> response = objectMapper.readValue(Util.httpGetMethodWithHeaders(configUrl, Util.getHeader(base64Creds)), new TypeReference<Map<String, Object>>() {
             });
             List<Map<String, Object>> propertySources = (List<Map<String, Object>>) response.get("propertySources");
             for (Map<String, Object> propertySource : propertySources) {
-                if (propertySource.get(Constants.NAME).toString().contains(Constants.APPLICATION)) {
-                    appProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
+                if (propertySource.get(Constants.NAME).toString().contains(Constants.JOB_SCHEDULER)) {
+                    jobSchedulerProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
                 }
-                if (propertySource.get(Constants.NAME).toString().contains(Constants.BATCH)) {
-                    batchProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
-                }
-                if (propertySource.get(Constants.NAME).toString().contains(Constants.INVENTORY)) {
-                    invProps.putAll((Map<String, String>) propertySource.get(Constants.SOURCE));
-                }
-                properties.putAll(appProps);
-                properties.putAll(batchProps);
-                properties.putAll(invProps);
+
+                properties.putAll(jobSchedulerProps);
             }
         } catch (Exception e) {
             log.error("Error in fetchConfigProperties", e);
@@ -68,7 +55,7 @@ public class ConfigUtil {
             throw new Exception("No config properties fetched from " + configUrl);
         }
 
-        log.info("Config are feteched from {}", configUrl);
+        log.info("Config are fetched from {}", configUrl);
         properties.forEach((k, v) -> log.debug("   {} : {} ", k, v));
         return properties;
     }
