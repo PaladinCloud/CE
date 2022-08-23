@@ -219,12 +219,16 @@ import com.amazonaws.services.identitymanagement.model.ListGroupsForUserRequest;
 import com.amazonaws.services.identitymanagement.model.ListGroupsRequest;
 import com.amazonaws.services.identitymanagement.model.ListGroupsResult;
 import com.amazonaws.services.identitymanagement.model.ListMFADevicesRequest;
+import com.amazonaws.services.identitymanagement.model.ListPoliciesRequest;
+import com.amazonaws.services.identitymanagement.model.ListPoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListRolesRequest;
 import com.amazonaws.services.identitymanagement.model.ListRolesResult;
 import com.amazonaws.services.identitymanagement.model.ListServerCertificatesRequest;
 import com.amazonaws.services.identitymanagement.model.ListUsersRequest;
 import com.amazonaws.services.identitymanagement.model.ListUsersResult;
 import com.amazonaws.services.identitymanagement.model.LoginProfile;
+import com.amazonaws.services.identitymanagement.model.Policy;
+import com.amazonaws.services.identitymanagement.model.PolicyScopeType;
 import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.identitymanagement.model.ServerCertificateMetadata;
 import com.amazonaws.services.identitymanagement.model.User;
@@ -2868,6 +2872,37 @@ public class InventoryUtil {
 			}
 		}
 		return cloudTrails;
+	}
+	
+	/**
+	 * Fetch IAM customer managed policies.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param accountId the accountId
+	 * @param accountName the account name
+	 * @return the map
+	 */
+	public static Map<String, List<Policy>> fetchIAMCustomerManagedPolicies(
+			BasicSessionCredentials temporaryCredentials, String accountId, String accountName) {
+
+		AmazonIdentityManagement iamClient = AmazonIdentityManagementClientBuilder.standard()
+				.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+				.withRegion(InventoryConstants.REGION_US_WEST_2).build();
+
+		ListPoliciesResult result;
+		String marker = null;
+		List<Policy> policies = new ArrayList<>();
+		do {
+			result = iamClient.listPolicies(new ListPoliciesRequest().withScope(PolicyScopeType.Local))
+					.withMarker(marker);
+			policies.addAll(result.getPolicies());
+			marker = result.getMarker();
+		} while (marker != null);
+
+		log.debug(InventoryConstants.ACCOUNT + accountId +" Type : IAM Custom managed policies >> "+policies.size());
+		Map<String,List<Policy>> iamPolicies = new HashMap<>();
+		iamPolicies.put(accountId+delimiter+accountName, policies);
+		return iamPolicies;
 	}
 
 	//****** Changes For Federated Rules End ******

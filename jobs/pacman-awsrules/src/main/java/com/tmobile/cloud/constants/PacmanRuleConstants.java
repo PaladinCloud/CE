@@ -423,6 +423,10 @@ public class PacmanRuleConstants {
     public static final String ANY = "any";
     public static final String PROTOCOL_TCP = "TCP";
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
+    
+    public static final String ES_ATTRIBUTE_POLICYARN = "policyarn";
+    public static final String COLON_STAR = "*";
+    public static final String RESOURCE = "Resource";
 
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";

@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -51,6 +52,11 @@ import com.amazonaws.services.identitymanagement.model.ListRolePoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
 import com.amazonaws.services.identitymanagement.model.PolicyVersion;
+import com.amazonaws.util.CollectionUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
@@ -377,5 +383,71 @@ public class IAMUtils {
 
 		return policy;
 	}
+	
+	/**
+	 * Method to check if the policy statement contains {Effect : *, Action: *, Resource : *}
+	 * 
+	 * @param policyArn
+	 * @param iamClient
+	 * @return
+	 */
+	public static boolean isPolicyWithFullAdminAccess(String policyArn, AmazonIdentityManagementClient iamClient) {
 
+		List<PolicyVersion> policyVersions = iamClient.listPolicyVersions(new ListPolicyVersionsRequest().withPolicyArn(policyArn)).getVersions();
+
+		for (PolicyVersion policyVersion : policyVersions) {
+			if (policyVersion.isDefaultVersion()) {
+
+				String docVersion = null;
+				Policy policy = new Policy();
+				try {
+					GetPolicyVersionRequest versionRequest = new GetPolicyVersionRequest();
+					versionRequest.setPolicyArn(policyArn);
+					versionRequest.setVersionId(policyVersion.getVersionId());
+					GetPolicyVersionResult versionResult = iamClient.getPolicyVersion(versionRequest);
+					try {
+						docVersion = URLDecoder.decode(versionResult.getPolicyVersion().getDocument(), "UTF-8");
+						policy = Policy.fromJson(docVersion);
+					} catch (UnsupportedEncodingException e) {
+						logger.error(e.getMessage());
+						throw new InvalidInputException(e.getMessage());
+					}
+
+				} catch (Exception e) {
+					logger.error("Error in getting policy for base account in verify account", e.getMessage());
+				}
+				
+				if(isStatementContainsFullAdminAccess(policy))
+					return true;
+
+			}
+
+		}
+
+		return false;
+	}
+
+	private static boolean isStatementContainsFullAdminAccess(Policy policy) {
+		if (null != policy && !CollectionUtils.isNullOrEmpty(policy.getStatements())) {
+
+			for (Statement statement : policy.getStatements()) {
+
+				if (statement.getEffect().equals(Effect.Allow)) {
+					if (statement.getActions().stream()
+							.filter(action -> action.getActionName().equalsIgnoreCase(PacmanRuleConstants.COLON_STAR))
+							.count() > 0) {
+						if (statement.getResources().stream()
+								.filter(resource -> resource.getId().equalsIgnoreCase(PacmanRuleConstants.COLON_STAR))
+								.count() > 0) {
+							return true;
+						}
+					}
+				}
+
+			}
+
+		}
+		return false;
+	}
+	
 }
