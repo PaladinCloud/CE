@@ -50,8 +50,8 @@ public class JobScheduler {
     @Value("${gcp.enabled}")
     private boolean gcpEnabled;
 
-    @Value("${scheduler.batch.size}")
-    private String noOfRulesPerBatch;
+    @Value("${scheduler.total.batches}")
+    private String noOfBatches;
 
     @Value("${base.region}")
     private String region;
@@ -145,47 +145,20 @@ public class JobScheduler {
 
         EventBridgeClient eventBrClient = getEventBridgeClient();
 
-        //busdetails e.g- aws.eventbridge.bus.details=paladincloud-aws:aws:289
-        //azure.eventbridge.bus.details=paladincloud-azure:azure:102
-        //gcp.eventbridge.bus.details=paladincloud-gcp:gcp:30
+        // busdetails e.g- aws.eventbridge.bus.details=paladincloud-aws:aws:289
+        // azure.eventbridge.bus.details=paladincloud-azure:azure:102
+        // gcp.eventbridge.bus.details=paladincloud-gcp:gcp:30
         try {
-            int noOfBatchAws = (int) Math.ceil(Double.parseDouble(awsBusDetails.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch));
-            logger.info("No of batches for AWS: {}", noOfBatchAws);
-            int noOfBatchAzure = azureEnabled ? (int) Math.ceil(Double.parseDouble(azureBusDetails.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch)) : 0;
-            logger.info("No of batches for azure: {}", noOfBatchAzure);
-            int noOfBatchGcp = gcpEnabled ? (int) Math.ceil(Double.parseDouble(gcpBusDetails.split(":")[1]) / Double.parseDouble(noOfRulesPerBatch)) : 0;
-            logger.info("No of batches for GCP: {}", noOfBatchGcp);
-            int noOfBatches = getNoOfBatches(noOfBatchAws, noOfBatchAzure, noOfBatchGcp);
 
-            for (int i = 0; i < noOfBatches; i++) {
-                List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
-                // process aws rules first
-                if (i < noOfBatchAws) {
-                    putEventIntoRequestEntry(i, awsBusDetails, putEventsRequestEntries);
-                }
-                // process azure rules
-                if (azureEnabled && i >= noOfBatchAws && i < noOfBatchAws + noOfBatchAzure) {
-                    putEventIntoRequestEntry(i - noOfBatchAws, azureBusDetails, putEventsRequestEntries);
-                }
-                // process gcp rules
-                if (gcpEnabled && i >= noOfBatchAws + noOfBatchAzure) {
-                    putEventIntoRequestEntry(i - noOfBatchAws - noOfBatchAzure, gcpBusDetails, putEventsRequestEntries);
-                }
+            logger.info("No of batches: {}", noOfBatches);
+            // process aws rules
+            processRulesForCloud(eventBrClient, awsBusDetails);
 
-                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+            // process azure rules
+            processRulesForCloud(eventBrClient, azureBusDetails);
 
-                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
-
-                for (PutEventsResultEntry resultEntry : result.entries()) {
-                    if (resultEntry.eventId() != null) {
-                        logger.info("Event Id: {} ", resultEntry.eventId());
-                    } else {
-                        logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
-                    }
-                }
-                //Delay of 1 min between each batch
-                Thread.sleep(1000 * 60);
-            }
+            // process gcp rules
+            processRulesForCloud(eventBrClient, gcpBusDetails);
 
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
@@ -196,25 +169,40 @@ public class JobScheduler {
         eventBrClient.close();
     }
 
-    private void putEventIntoRequestEntry(int batchNo, String awsBusDetails, List<PutEventsRequestEntry> reqEntryList) {
+    private void processRulesForCloud(EventBridgeClient eventBrClient, String busDetails) throws InterruptedException {
+        int totBatches = Integer.parseInt(this.noOfBatches);
+
+        for (int i = 0; i < totBatches; i++) {
+            List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
+            putEventIntoRequestEntry(i, busDetails, putEventsRequestEntries);
+
+            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+
+            for (PutEventsResultEntry resultEntry : result.entries()) {
+                if (resultEntry.eventId() != null) {
+                    logger.info("Event Id: {} ", resultEntry.eventId());
+                } else {
+                    logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
+                }
+            }
+            //Delay of 1 min between each batch
+            Thread.sleep(1000 * 60);
+        }
+    }
+
+    private void putEventIntoRequestEntry(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList) {
 
         String detailString = null;
-        String cloudName = awsBusDetails.split(":")[0].split("-")[1];
+        String cloudName = busDetails.split(":")[0].split("-")[1];
         Event event = populateEventForRule(cloudName, batchNo);
         detailString = getMarshalledEvent(detailString, event);
-        PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(awsBusDetails.split(":")[0]).build();
+        PutEventsRequestEntry reqEntry = PutEventsRequestEntry.builder().source(EVENT_SOURCE).detailType(EVENT_DETAIL_TYPE).detail(detailString).eventBusName(busDetails.split(":")[0]).build();
         // print the request entry
         logger.info("Request entry: {} ", reqEntry);
 
         // Add the PutEventsRequestEntry to a putEventsRequestEntries
         reqEntryList.add(reqEntry);
-    }
-
-    private int getNoOfBatches(int noOfBatchAws, int noOfBatchAzure, int noOfBatchGcp) {
-        logger.info("Calculating the total no of batches");
-        int sum = noOfBatchAws + noOfBatchAzure + noOfBatchGcp;
-        logger.info("No of batches for rule execution: {}", sum);
-        return sum;
     }
 
     private void addShipperEvent(List<PutEventsRequestEntry> putEventsRequestEntries, String busDetails) {
