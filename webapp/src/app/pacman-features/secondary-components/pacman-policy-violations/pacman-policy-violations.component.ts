@@ -66,6 +66,8 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   searchTxt = "";
   showGenericMessage = false;
   firstTimeLoad = true;
+  headerColName;
+  direction;
 
   private urlToRedirect: string;
   @Input() pageLevel: number;
@@ -84,6 +86,10 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private refactorFieldsService: RefactorFieldsService
   ) {
+    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
+    this.direction = this.activatedRoute.snapshot.queryParams.direction;
+    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+
     this.durationParams = this.autorefreshService.getDuration();
     this.durationParams = parseInt(this.durationParams, 10);
     this.autoRefresh = this.autorefreshService.autoRefresh;
@@ -100,17 +106,38 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     this.updateComponent();
   }
 
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    this.getUpdatedUrl();
+  }
+
+  getUpdatedUrl(){
+    let updatedQueryParams = {};
+    updatedQueryParams = {
+      headerColName: this.headerColName,
+      direction : this.direction,
+      bucketNumber : this.bucketNumber
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
   updateComponent() {
     if (this.resourceId) {
       /* All functions variables which are required to be set for component to be reloaded should go here */
       this.outerArr = [];
       this.searchTxt = "";
       this.currentBucket = [];
-      this.bucketNumber = 0;
+      // this.bucketNumber = 0;
       this.dataTableData = [];
       this.tableDataLoaded = false;
       this.firstPaginator = 1;
-      this.currentPointer = 0;
+      // this.currentPointer = 0;
       this.showLoader = true;
       this.dataComing = false;
       this.seekdata = false;
@@ -125,6 +152,10 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
+      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      updatedQueryParams["headerColName"] = undefined;
+      updatedQueryParams["direction"] = undefined;
+      updatedQueryParams["bucketNumber"] = undefined;
       if (row.col.toLowerCase() === "policy name") {
         this.router.navigate(
           [
@@ -132,7 +163,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
             row.row["Rule Id"].text,
             "false",
           ],
-          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
+          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
         );
       } else if (row.col.toLowerCase() === 'status') {
         this.router.navigate(
@@ -143,7 +174,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
             "issue-details",
             row.row["Issue ID"].text,
           ],
-          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
+          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
         );
       }
     } catch (error) {
@@ -407,11 +438,14 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
 
   prevPg() {
     this.currentPointer--;
-    this.processData(this.currentBucket[this.currentPointer]);
+    // this.processData(this.currentBucket[this.currentPointer]);
 
     this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
     this.lastPaginator =
       this.currentPointer * this.paginatorSize + this.paginatorSize;
+    this.bucketNumber--;
+    this.getData();
+    this.getUpdatedUrl();
   }
 
   nextPg() {
@@ -428,6 +462,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       this.bucketNumber++;
       this.getData();
     }
+    this.getUpdatedUrl();
   }
   searchCalled(search) {
     this.searchTxt = search;

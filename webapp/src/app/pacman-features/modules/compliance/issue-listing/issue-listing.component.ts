@@ -94,6 +94,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public agAndDomain = {};
   public doNotDisplaySearch=true;
   filterErrorMessage = '';
+  headerColName;
+  direction;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -111,6 +113,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService
   ) {
+    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
+    this.direction = this.activatedRoute.snapshot.queryParams.direction;
+    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
       .subscribe((assetGroupName) => {
@@ -146,6 +152,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   handleAddFilterClick(e){}
 
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    this.getUpdatedUrl();
+  }
+
   /*
    * This function gets the urlparameter and queryObj
    *based on that different apis are being hit with different queryparams
@@ -176,7 +188,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
   getUpdatedUrl() {
-    this.filterText = this.utils.arrayToObject(
+    let updatedQueryParams = {};    
+      this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
       "value"
@@ -188,20 +201,25 @@ export class IssueListingComponent implements OnInit, OnDestroy {
      * with the deleted filter value along with the other existing paramter(ex-->tv:true)
      */
 
-    const updatedFilters = Object.assign(
-      this.filterText,
-      this.queryParamsWithoutFilter
-    );
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: updatedFilters,
-    });
+    updatedQueryParams = {
+      filter: this.filterText.filter,
+      headerColName: this.headerColName,
+      direction : this.direction,
+      bucketNumber : this.bucketNumber
+    }
+
 
     /**
      * Finally after changing URL Link
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
+    
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+  });
   }
   deleteFilters(event?) {
     try {
@@ -371,11 +389,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.searchTxt = "";
     this.currentBucket = [];
     this.cbModel = [];
-    this.bucketNumber = 0;
     this.dataTableData = [];
     this.firstPaginator = 1;
     this.showLoader = true;
-    this.currentPointer = 0;
     this.dataLoaded = false;
     this.seekdata = false;
     this.errorValue = 0;
@@ -678,6 +694,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
+      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      updatedQueryParams["headerColName"] = undefined;
+      updatedQueryParams["direction"] = undefined;
+      updatedQueryParams["bucketNumber"] = undefined;
       if (row.col.toLowerCase() === "resource id") {
         const resourceType = row.row["Asset Type"].text;
         const resourceId = encodeURIComponent(row.row["Resource ID"].text);
@@ -686,7 +706,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             ["../../", "assets", "asset-list", resourceType, resourceId],
             {
               relativeTo: this.activatedRoute,
-              queryParams: this.agAndDomain,
+              queryParams: updatedQueryParams,
               queryParamsHandling: "merge",
             }
           )
@@ -703,7 +723,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.router
           .navigate(["issue-details", row.row["Issue ID"].text], {
             relativeTo: this.activatedRoute,
-            queryParams: this.agAndDomain,
+            queryParams: updatedQueryParams,
             queryParamsHandling: "merge",
           })
           .then((response) => {
@@ -725,7 +745,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             ],
             {
               relativeTo: this.activatedRoute,
-              queryParams: this.agAndDomain,
+              queryParams: updatedQueryParams,
               queryParamsHandling: "merge",
             }
           )
@@ -819,7 +839,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.lastPaginator =
         this.currentPointer * this.paginatorSize + this.paginatorSize;
       this.bucketNumber--;
-      this.getData()
+      this.getData();
+      this.getUpdatedUrl();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -841,6 +862,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.bucketNumber++;
         this.getData();
       }
+      this.getUpdatedUrl();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);

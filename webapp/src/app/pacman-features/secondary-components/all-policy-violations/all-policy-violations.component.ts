@@ -68,6 +68,8 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
   errorValue = 0;
   showGenericMessage = false;
   pageTitle = "List of Violations";
+  headerColName;
+  direction;
 
   @Input() ruleID: any;
   constructor(
@@ -84,6 +86,10 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
     private refactorFieldsService: RefactorFieldsService,
     private domainObservableService: DomainTypeObservableService
   ) {
+    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
+    this.direction = this.activatedRoute.snapshot.queryParams.direction;
+    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
       .subscribe((assetGroupName) => {
@@ -107,14 +113,35 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
     this.updateComponent();
   }
 
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    this.getUpdatedUrl();
+  }
+
+  getUpdatedUrl(){
+    let updatedQueryParams = {};
+    updatedQueryParams = {
+      headerColName: this.headerColName,
+      direction : this.direction,
+      bucketNumber : this.bucketNumber
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
   updateComponent() {
     /* All functions variables which are required to be set for component to be reloaded should go here */
     this.outerArr = [];
     this.searchTxt = "";
     this.currentBucket = [];
-    this.bucketNumber = 0;
+    // this.bucketNumber = 0;
     this.firstPaginator = 1;
-    this.currentPointer = 0;
+    // this.currentPointer = 0;
     this.dataTableData = [];
     this.tableDataLoaded = false;
     this.showLoader = true;
@@ -447,6 +474,10 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
+      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      updatedQueryParams["headerColName"] = undefined;
+      updatedQueryParams["direction"] = undefined;
+      updatedQueryParams["bucketNumber"] = undefined;
       if (row.col.toLowerCase() === "resource id") {
         this.router.navigate(
           [
@@ -456,7 +487,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
             row.row["Asset Type"].text,
             encodeURIComponent(row.row["Resource ID"].text),
           ],
-          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
+          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
         );
       } else if (
         row.col.toLowerCase() === "issue id" ||
@@ -464,7 +495,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
       ) {
         this.router.navigate(
           ["../../issue-listing/issue-details", row.row["Issue ID"].text],
-          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
+          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
         );
       } else if (row.col.toLowerCase() === "policy name") {
         this.router.navigate(
@@ -473,7 +504,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
             row.row.nonDisplayableAttributes.text.RuleId,
             "false",
           ],
-          { relativeTo: this.activatedRoute, queryParamsHandling: "merge" }
+          { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }
         );
       }
     } catch (error) {
@@ -484,10 +515,13 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
 
   prevPg() {
     this.currentPointer--;
-    this.processData(this.currentBucket[this.currentPointer]);
+    // this.processData(this.currentBucket[this.currentPointer]);
     this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
     this.lastPaginator =
       this.currentPointer * this.paginatorSize + this.paginatorSize;
+    this.bucketNumber--;
+    this.getData();
+    this.getUpdatedUrl();
   }
 
   nextPg() {
@@ -504,6 +538,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
       this.bucketNumber++;
       this.getData();
     }
+    this.getUpdatedUrl();
   }
 
   searchCalled(search) {

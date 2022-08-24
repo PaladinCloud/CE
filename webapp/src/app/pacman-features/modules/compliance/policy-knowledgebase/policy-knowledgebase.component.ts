@@ -17,7 +17,7 @@ import { AssetGroupObservableService } from '../../../../core/services/asset-gro
 import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { environment } from './../../../../../environments/environment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
@@ -59,6 +59,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   urlToRedirect: any = '';
   public agAndDomain = {};
   currentPageLevel = 0;
+  headerColName;
+  direction;
   columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
   columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
   columnsSortFunctionMap = {
@@ -72,12 +74,16 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private commonResponseService: CommonResponseService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService) {
+      this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
+      this.direction = this.activatedRoute.snapshot.queryParams.direction;
+      // this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
       this.agAndDomain['ag'] = this.selectedAssetGroup;
@@ -90,6 +96,27 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
   }
 
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    this.getUpdatedUrl();
+  }
+
+  getUpdatedUrl(){
+    let updatedQueryParams = {};
+    updatedQueryParams = {
+      headerColName: this.headerColName,
+      direction : this.direction,
+      // bucketNumber : this.bucketNumber
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
   ngAfterViewInit() {
 
   }
@@ -99,7 +126,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.datacoming = false;
     this.seekdata = false;
     this.knowledgebaseData = [];
-    this.typeObj = undefined;
+    // this.typeObj = undefined;
     this.getData();
   }
 
@@ -209,9 +236,13 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     const ruleId = tileData.ruleId;
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      updatedQueryParams["headerColName"] = undefined;
+      updatedQueryParams["direction"] = undefined;
+      // updatedQueryParams["bucketNumber"] = undefined;
       this.router.navigate(
         ['pl', 'compliance', 'policy-knowledgebase-details', ruleId, autofixEnabled],
-        { queryParams: this.agAndDomain,
+        { queryParams: updatedQueryParams,
           queryParamsHandling: 'merge' });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);

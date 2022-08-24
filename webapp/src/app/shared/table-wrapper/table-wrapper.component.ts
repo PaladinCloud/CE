@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnCha
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
+import { Sort } from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 
 @Component({
@@ -15,7 +16,10 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
   @Input() columnWidths;
   @Input() columnNamesMap;
   @Input() columnsSortFunctionMap;
+  @Input() headerColName;
+  @Input() direction;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
+  @Output() headerColNameSelected = new EventEmitter<any>();
 
   mainDataSource;
   dataSource;
@@ -45,7 +49,7 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
     }
   }
 
-  handleRowSelect(row){
+  goToDetails(row){
     this.rowSelectEventEmitter.emit(row);
   }
 
@@ -96,6 +100,7 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
     }
     this.whiteListColumns = this.displayedColumns;
     this.allSelected=true;
+    // this.announceSortChange({active:this.headerColName, direction: this.direction})
   }
 
   ngAfterViewInit(): void {  
@@ -105,5 +110,23 @@ export class TableWrapperComponent implements OnInit,AfterViewInit {
       })
     }
     this.changeDetectorRef.detectChanges();
+  }
+
+  announceSortChange(sort) {
+    if (!sort.active || sort.direction === '') {
+      this.dataSource.data = this.mainDataSource.data.slice();
+      return;
+    }
+
+    this.dataSource.data = this.dataSource.data.sort((a, b) => {
+      this.headerColName = sort.active;
+      this.direction = sort.direction;
+      const isAsc = this.direction=='asc';
+      if(this.columnsSortFunctionMap[this.headerColName]){
+        return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
+      }
+      return (a[this.headerColName]<b[this.headerColName]? -1: 1)*(isAsc ? 1 : -1);
+    });
+    this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
   }
 }

@@ -169,6 +169,7 @@ export class DataTableComponent implements OnInit, OnChanges {
   // @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @Output() deleteAllFilters = new EventEmitter<any>();
   @Output() deleteFilter = new EventEmitter<any>();
+  @Output() headerColNameSelected = new EventEmitter<any>();
   @Input() filteredArray = [];
   @Input() doNotDisplaySearch;
 
@@ -233,10 +234,17 @@ export class DataTableComponent implements OnInit, OnChanges {
         column_index < this.allColumns.length;
         column_index++
       ) {
-        this.sortArr[column_index] = {
-          showUp: undefined,
-          direction: 0,
-        };
+        if(this.headerColName==this.allColumns[column_index]){
+          this.sortArr[column_index] = {
+            showUp: this.direction==1,
+            direction: this.direction,
+            };
+        }else{
+          this.sortArr[column_index] = {
+            showUp: undefined,
+            direction: 0,
+          };
+        }
       }
 
       this.loaded = true;
@@ -363,6 +371,7 @@ export class DataTableComponent implements OnInit, OnChanges {
     }
     this.indexSelected = index;
     this.headerColName = header;
+    this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
   }
 
   tableRowClicked(rowDetails, index) {

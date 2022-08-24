@@ -33,7 +33,15 @@
         </div>
     </div>
     <div class="table-content-container">
-        <app-table [dataSource]="dataSource" [columnWidths]="columnWidths" [displayedColumns]="whiteListColumns" [columnNamesMap]="columnNamesMap" [columnsSortFunctionMap]="columnsSortFunctionMap" (rowSelectEventEmitter)="handleRowSelect($event)"></app-table>
+        <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
+            <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
+                <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNamesMap[column] }} </th>
+                <td [title]="element[column]" [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="whiteListColumns"></tr>
+            <tr (click)="goToDetails(row)" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
+        </table>
     </div>
     </div>
 </div>

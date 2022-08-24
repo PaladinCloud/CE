@@ -116,3 +116,53 @@
 ::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
     display: none;
 }
+
+
+
+table {
+  width: 100%;
+  max-height: 650px;
+}
+
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+tr {
+  display: flex;
+}
+
+tr.mat-row:hover{
+  background-color: var(--background-grey);
+  cursor: pointer;
+}
+
+tr.mat-row, tr.mat-footer-row {
+  height: 62px;
+  padding: 12px 0px;
+  align-items: center;
+  font: var(--text-body-2);
+  color: var(--text-high-emphasis);
+}
+
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell{
+  border:none;
+}
+
+tr.mat-header-row{
+  height: 52px;
+  padding: 16px 0px;
+  font: var(--text-body-2);
+  color: var(--text-low-emphasis);
+}
+
+thead {
+  height: 52px;
+}
+
+th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+  padding: 0px 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

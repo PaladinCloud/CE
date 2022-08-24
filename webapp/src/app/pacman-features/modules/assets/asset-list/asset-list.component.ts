@@ -89,6 +89,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   private pageLevel = 0;
   public backButtonRequired;
   mandatory: any;
+  headerColName;
+  direction;
 
   private assetGroupSubscription: Subscription;
   private routeSubscription: Subscription;
@@ -115,6 +117,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService
   ) {
+
+    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
+    this.direction = this.activatedRoute.snapshot.queryParams.direction;
+    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+
     /**************************************************** */
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
@@ -139,6 +146,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
     this.breadcrumbPresent = "Asset List";
+  }
+
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    this.getUpdatedUrl();
   }
 
   /*
@@ -271,10 +284,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.outerArr = [];
     this.searchTxt = "";
     this.currentBucket = [];
-    this.bucketNumber = 0;
+    // this.bucketNumber = 0;
     this.firstPaginator = 1;
     this.showLoader = true;
-    this.currentPointer = 0;
+    // this.currentPointer = 0;
     this.dataTableData = [];
     this.tableDataLoaded = false;
     this.dataLoaded = false;
@@ -662,8 +675,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
         resourceType = this.filterText.resourceType;
       }
       const resourceID = encodeURIComponent(row.row["Resource ID"].text);
+      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      updatedQueryParams["headerColName"] = undefined;
+      updatedQueryParams["direction"] = undefined;
+      updatedQueryParams["bucketNumber"] = undefined;
       this.router.navigate([resourceType, resourceID], {
         relativeTo: this.activatedRoute,
+        queryParams: updatedQueryParams,
         queryParamsHandling: "merge",
       });
     } catch (error) {
@@ -679,10 +697,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
   prevPg() {
     try {
       this.currentPointer--;
-      this.processData(this.currentBucket[this.currentPointer]);
+      // this.processData(this.currentBucket[this.currentPointer]);
       this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
       this.lastPaginator =
         this.currentPointer * this.paginatorSize + this.paginatorSize;
+      this.bucketNumber--;
+      this.getData();
+      this.getUpdatedUrl();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -704,6 +725,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.bucketNumber++;
         this.getData();
       }
+      this.getUpdatedUrl();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -854,32 +876,40 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   getUpdatedUrl() {
-    this.filterText = this.utils.arrayToObject(
+    let updatedQueryParams = {};    
+      this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
       "value"
     ); // <-- TO update the queryparam which is passed in the filter of the api
     this.filterText = this.utils.makeFilterObj(this.filterText);
+
     /**
      * To change the url
      * with the deleted filter value along with the other existing paramter(ex-->tv:true)
      */
 
-    const updatedFilters = Object.assign(
-      this.filterText,
-      this.queryParamsWithoutFilter
-    );
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: updatedFilters,
-    });
+    updatedQueryParams = {
+      filter: this.filterText.filter,
+      headerColName: this.headerColName,
+      direction : this.direction,
+      bucketNumber : this.bucketNumber
+    }
+
 
     /**
      * Finally after changing URL Link
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
+    
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+    });
   }
+
   navigateToCreate() {
     this.router.navigateByUrl("../assets/asset-list/create-account");
   }
