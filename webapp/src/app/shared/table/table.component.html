@@ -1,9 +1,47 @@
-<table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)">
-  <ng-container *ngFor="let column of displayedColumns;" [matColumnDef]="column">
-    <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNamesMap[column] }} </th>
-    <td [title]="element[column]" [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> {{ element[column] }} </td>
-  </ng-container>
+<div class="table-container flex flex-col">
+    <div class="table-wrapper">
+        <div class="table-header flex flex-row">
+        <div class="search-bar-container flex flex-row">
+            <div class="search-bar-wrapper flex flex-row">
+                <img src="/assets/icons/header-search.svg" matPrefix alt="" />
+                <input type="search" matInput (keyup)="customFilter($event)" placeholder="Search" />
+                <div class="search-in-columns" matSuffix>
+                    <mat-form-field>
+                        <mat-select [formControl]="searchInColumns" multiple>
+                            <mat-option class="disabled-option" disabled="true" value="disabled">SEARCH IN</mat-option>
+                            <mat-option *ngFor="let column of whiteListColumns" [value]="column">
+                            {{columnNamesMap[column]}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div class="add-remove-columns-container">
+            <div class="add-remove-columns-wrapper">
+                <mat-form-field>
+                    <mat-select #select multiple>
+                        <mat-option class="disabled-option" disabled="true" value="disabled">Show/hide columns</mat-option>
+                        <mat-option #allColumnsSelected (click)="toggleAllSelection()" value="selectAll">Select All</mat-option>
+                        <mat-option (click)="optionClick()" *ngFor="let column of displayedColumns" [value]="column">
+                        {{columnNamesMap[column]}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <span> Columns </span>
+            </div>
+        </div>
+    </div>
+    <div class="table-content-container">
+        <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
+            <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
+                <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNamesMap[column] }} </th>
+                <td [title]="element[column]" [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+            </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr (click)="goToDetails(row)" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+            <tr mat-header-row *matHeaderRowDef="whiteListColumns"></tr>
+            <tr (click)="goToDetails(row)" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
+        </table>
+    </div>
+    </div>
+</div>
