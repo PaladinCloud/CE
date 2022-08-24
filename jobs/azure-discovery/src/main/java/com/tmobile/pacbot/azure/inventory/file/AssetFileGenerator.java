@@ -141,6 +141,9 @@ public class AssetFileGenerator {
 	@Autowired
 	SubscriptionInventoryCollector subscriptionInventoryCollector;
 
+	@Autowired
+	FunctionAppInventoryCollector functionAppInventoryCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -622,7 +625,20 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("functionapp"))) {
+					log.info("no target type found for functionApp!!");
+					return;
+				}
+				try {
 
+					FileManager
+							.generateFunctionAppFiles(functionAppInventoryCollector.fetchFunctionAppDetails(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
