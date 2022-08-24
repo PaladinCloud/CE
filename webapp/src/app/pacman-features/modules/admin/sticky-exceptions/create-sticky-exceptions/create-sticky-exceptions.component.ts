@@ -283,7 +283,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   exceptionNames: any = [];
   isExceptionNameAvailable(exceptionNameKeyword) {
-    if (exceptionNameKeyword.trim().length == 0) {
+    if (exceptionNameKeyword.trim().length < 5) {
       this.isExceptionNameValid = -1;
     } else {
       let isKeywordExits = this.exceptionNames.findIndex(item => exceptionNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());

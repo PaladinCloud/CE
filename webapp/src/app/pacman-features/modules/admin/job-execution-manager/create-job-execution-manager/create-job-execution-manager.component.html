@@ -68,24 +68,26 @@
                                     <div class="formctnleft">
                                         <div class="createrule" action="#">
                                             <div class="input-box">
-                                                <label>Job Name *
+                                                <label>Job Name 123 *
                                                     <span *ngIf="isJobNameValid==0" class="not-available">(Not
                                                         Available)</span>
                                                     <span *ngIf="isJobNameValid==1" class="available">(Available)</span>
                                                 </label>
                                                 <ul class="input-wrapper">
-                                                    <input type="text" autocomplete="off" name="jobName" ngModel
+                                                    <input type="text" autocomplete="off" name="jobName" [(ngModel)]="jobName"
                                                         class="inputarea-container"
                                                         (input)="isJobNameAvailable($event.target.value)"
                                                         placeholder="Enter Job Name" required>
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="jobName.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                             <div class="input-box">
                                                 <label>Job Description *</label>
                                                 <ul>
-                                                    <textarea name="jobDesc" ngModel class="textarea-container"
+                                                    <textarea name="jobDesc" [(ngModel)]="jobDesc" class="textarea-container"
                                                         placeholder="Enter Job Description" required></textarea>
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="jobDesc.trim().length<15">Please enter min 15 characters</div>
                                             </div>
                                             <div class="freq-col-row input-form">
                                                 <label>Job Frequency *</label>
@@ -443,7 +445,7 @@
                                 *ngIf="!jobDetailsLoader && !jobLoaderFailure">
                                 <a class="save-container flex flex-row-reverse">
                                     <button class="submit-btn uppercase" type="submit"
-                                        [disabled]="(jobForm.form.invalid) || isJobNameValid<1"><i
+                                        [disabled]="(jobForm.form.invalid) || isJobNameValid<1 || jobName.trim().length<5 || jobDesc.trim().length<15"><i
                                             class="fa fa-plus"></i> CREATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse">

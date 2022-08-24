@@ -56,6 +56,7 @@
                                     <ul class="input-wrapper">
                                         <input autocomplete="off" type="text" class="inputarea-container" placeholder="Enter Policy Name" name="policyName" [(ngModel)]="policyName" (input)="isPolicyIdAvailable($event.target.value)" required>
                                     </ul>
+                                    <div class="validation-error-message" *ngIf="policyName.trim().length<5">Please enter min 5 characters</div>
                                 </div>
                                 <div *ngIf="!isCreate">
                                     <div class="text-wrapper-header">Policy Name</div>
@@ -66,24 +67,27 @@
                                     <ul>
                                         <textarea class="textarea-container" placeholder="Enter Policy Description" name="policyDesc" [(ngModel)]="policyDesc"></textarea>
                                     </ul>
+                                    <div class="validation-error-message" *ngIf="policyDesc.trim().length<15">Please enter min 15 characters</div>
                                 </div>
                                 <div>
                                     <div class="text-wrapper-header">Resolution</div>
                                     <ul>
                                         <textarea class="textarea-container" placeholder="Enter Policy Resolution" name="policyResolution" [(ngModel)]="policyResolution"></textarea>
                                     </ul>
+                                    <div class="validation-error-message" *ngIf="policyResolution.trim().length<15">Please enter min 15 characters</div>
                                 </div>
                                 <div class="last-input">
                                     <div class="text-wrapper-header">Policy URL</div>
                                     <ul class="input-wrapper">
                                         <input autocomplete="off" type="text" class="inputarea-container" placeholder="Enter Policy URL" name="policyUrl" [(ngModel)]="policyUrl">
                                     </ul>
+                                    <div class="validation-error-message" *ngIf="!isValidUrl(policyUrl)">Please enter correct url</div>
                                 </div>
                             </div>
 
                             <div class="data-table-paginator-wrap flex flex-center flex-align-center">
                                 <a class="save-container flex flex-row-reverse">
-                                    <button class="submit-btn uppercase" type="submit" [disabled]="policyForm.form.invalid || isPolicyIdValid<1"><span *ngIf="isCreate"><i class="fa fa-plus"></i> CREATE</span> <span *ngIf="!isCreate"><i class="fa fa-check"></i> UPDATE</span></button>
+                                    <button class="submit-btn uppercase" type="submit" [disabled]="policyForm.form.invalid || isPolicyIdValid<1 || !areAllFieldsValid()"><span *ngIf="isCreate"><i class="fa fa-plus"></i> CREATE</span> <span *ngIf="!isCreate"><i class="fa fa-check"></i> UPDATE</span></button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse">
                                     <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i class="fa fa-remove"></i> CANCEL</button>

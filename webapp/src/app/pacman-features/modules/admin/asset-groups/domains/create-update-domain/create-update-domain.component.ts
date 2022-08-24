@@ -247,7 +247,7 @@ export class CreateUpdateDomainComponent implements OnInit, OnDestroy {
 
   domainNames: any = [];
   isDomainNameAvailable(domainNameKeyword) {
-    if (domainNameKeyword.trim().length == 0) {
+    if (domainNameKeyword.trim().length<5) {
       this.isDomainNameValid = -1;
     } else {
         let isKeywordExits = this.domainNames.findIndex(item => domainNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());

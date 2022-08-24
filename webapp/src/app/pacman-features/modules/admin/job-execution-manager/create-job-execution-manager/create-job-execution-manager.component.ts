@@ -85,7 +85,6 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   tableDataLoaded = false;
   filters = [];
   searchCriteria;
-  jobName;
   filterText = {};
   errorValue = 0;
   showGenericMessage = false;
@@ -147,6 +146,8 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
   frequencyMonth: any;
   weekName: any;
   jobFrequencyModeValue: any;
+  jobDesc:string = '';
+  jobName:string = '';
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -388,7 +389,7 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
 
   isJobNameAvailable(jobNameKeyword) {
-    if (jobNameKeyword.trim().length === 0) {
+    if (jobNameKeyword.trim().length < 5) {
       this.isJobNameValid = -1;
     } else {
       const isKeywordExits = this.jobNames.findIndex(item => jobNameKeyword.trim().toLowerCase() === item.trim().toLowerCase());

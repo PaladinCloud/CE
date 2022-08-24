@@ -44,6 +44,7 @@
                                             <ul class="input-wrapper">
                                                 <input type="text" class="inputarea-container" placeholder="Enter Domain Name" name="domainName" [(ngModel)]="domain.name" (input)="isDomainNameAvailable($event.target.value)" required>
                                             </ul>
+                                            <div class="validation-error-message" *ngIf="domain.name.trim().length < 5">Please enter min 5 characters</div>
                                         </div>
                                         <div *ngIf="!isCreate">
                                             <div class="text-wrapper-header"><label>Name</label></div>
@@ -54,12 +55,14 @@
                                             <ul>
                                                 <textarea class="textarea-container" placeholder="Enter Domain Description" name="domainDesc" [(ngModel)]="domain.desc"></textarea>
                                             </ul>
+                                            <div class="validation-error-message" *ngIf="domain.desc.trim().length<15">Please enter min 15 characters</div>
                                         </div>
                                         <div>
                                             <div class="text-wrapper-header"><label>Configuration *</label></div>
                                             <ul>
                                                 <textarea class="textarea-container" placeholder="Enter Domain Configuration" name="domainConfig" [(ngModel)]="domain.config"></textarea>
                                             </ul>
+                                            <div class="validation-error-message" *ngIf="domain.config.trim().length<15">Please enter min 15 characters</div>
                                         </div>
                                     </div>
                                 </div>
@@ -67,10 +70,10 @@
 
                             <div class="data-table-paginator-wrap flex flex-center flex-align-center">
                                 <a class="save-container flex flex-row-reverse" *ngIf="isCreate">
-                                    <button class="submit-btn uppercase" (click)="createDomain(domain)" [disabled]="domain.name.trim()==='' || domain.desc.trim()==='' || domain.config.trim()==='' || isDomainNameValid<1"><i class="fa fa-check"></i> CREATE</button>
+                                    <button class="submit-btn uppercase" (click)="createDomain(domain)" [disabled]="domain.name.trim().length<5 || domain.desc.trim().length<15 || domain.config.trim().length<15 || isDomainNameValid<1"><i class="fa fa-check"></i> CREATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse" *ngIf="!isCreate">
-                                    <button class="submit-btn uppercase" (click)="updateDomain(domain)" [disabled]="domain.name.trim()==='' || domain.desc.trim()==='' || domain.config.trim()===''"><i class="fa fa-check"></i> UPDATE</button>
+                                    <button class="submit-btn uppercase" (click)="updateDomain(domain)" [disabled]="domain.name.trim().length<5 || domain.desc.trim().length<15 || domain.config.trim().length<15"><i class="fa fa-check"></i> UPDATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse">
                                     <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i class="fa fa-remove"></i> CANCEL</button>

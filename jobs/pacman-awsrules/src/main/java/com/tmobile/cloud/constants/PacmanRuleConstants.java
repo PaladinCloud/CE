@@ -427,6 +427,7 @@ public class PacmanRuleConstants {
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
     public static final String DENY = "Deny";
+    public static final String ES_IAM_CERT_EXPIRY_ATTRIBUTE = "expirydate";
     public static final String FALSE = "false";
     public static final String ES_ASG_LC_URL = "esAsgLcURL";
     public static final String ES_AMI_URL = "esAmiUrl";
@@ -498,6 +499,7 @@ public class PacmanRuleConstants {
     public static final String DISKENCRYPTION = "diskEncryption";
     public static final String KEYNAME = "keyName";
     public static final String BOOTDISKKMSKEY = "bootDiskKmsKey";
+    public static final String DNS_SEC_STATE="dnsSecConfigState";
     public  static final String BACKUP_CONFIG="backupConfiguration";
     public  static  final String DBFLAGS="databaseFlags";
     public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="crossdbownershipchaining";

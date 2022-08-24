@@ -7,6 +7,7 @@ import time
 import boto3
 
 
+
 class Buildpacbot(object):
     """
     Build PacBot services
@@ -22,7 +23,7 @@ class Buildpacbot(object):
     archive_type = "zip"  # What type of archive is required
     issue_email_template = ''
 
-    def __init__(self, aws_details, api_domain_url, upload_dir, log_dir, pacbot_code_dir, enable_vulnerability_feautre):
+    def __init__(self, aws_details, api_domain_url, upload_dir, log_dir, pacbot_code_dir, enable_vulnerability_feautre, auth_type, tenant_id, client_id):
         self.api_domain_url = api_domain_url
         self.cwd = pacbot_code_dir
         self.codebase_root_dir = pacbot_code_dir
@@ -31,6 +32,9 @@ class Buildpacbot(object):
         self.upload_dir = upload_dir
         self.s3_client = prepare_aws_client_with_given_aws_details('s3', aws_details)
         self.enable_vulnerability_feautre = enable_vulnerability_feautre
+        self.auth_type = auth_type
+        self.tenant_id = tenant_id
+        self.client_id = client_id
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -160,7 +164,19 @@ class Buildpacbot(object):
 
             if "ISSUE_MAIL_TEMPLATE_URL: ''" in line:
                 lines[idx] = lines[idx].replace("ISSUE_MAIL_TEMPLATE_URL: ''", "ISSUE_MAIL_TEMPLATE_URL: '" + self.issue_email_template + "'")
-
+            
+            if  self.auth_type == "AZURE_AD":
+                if "AUTH_TYPE: DB" in line:
+                    lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: AZURE_SSO")
+                if "tenant: '" in line:
+                    lines[idx] = "tenant: '"+self.tenant_id+"' \n,"
+                if "clientId: '" in line:
+                    lines[idx] = "clientId: '"+self.client_id+"'"
+                    
+            if  self.auth_type == "DB":
+                if "AUTH_TYPE: AZURE_SSO" in line:
+                    lines[idx] = lines[idx].replace("AUTH_TYPE: AZURE_SSO", "AUTH_TYPE: DB")
+                
         with open(config_file, 'w') as f:
             f.writelines(lines)
 
@@ -208,14 +224,17 @@ if __name__ == "__main__":
     s3_key_prefix = os.getenv('S3_KEY_PREFIX')
     enable_vulnerability_feautre = os.getenv('ENABLE_VULNERABILITY_FEATURE')
     aws_details = get_provider_details("aws", provider_json_file)
-
+    auth_type = os.getenv('AUTHENTICATION_TYPE')
+    tenant_id = os.getenv('AD_TENANT_ID')
+    client_id = os.getenv('AD_CLIENT_ID')
+    
     Buildpacbot(
         aws_details,
         api_domain_url,
         dist_files_upload_dir,
         log_dir,
         pacbot_code_dir,
-        enable_vulnerability_feautre).build_api_and_ui_apps(
+        enable_vulnerability_feautre,auth_type,tenant_id,client_id).build_api_and_ui_apps(
             s3_bucket,
             s3_key_prefix
     )

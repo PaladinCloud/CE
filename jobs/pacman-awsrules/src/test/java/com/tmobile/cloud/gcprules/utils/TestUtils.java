@@ -923,7 +923,31 @@ public class TestUtils {
                 "              \"allUsers\" \n" +
                 "          ],\n" +
                 "          \"defaultKmsKeyName\": null,\n" +
-                "          \"backupConfiguration\":\"true\",\n"+
+                "          \"backupConfiguration\":\"true\",\n" +
+                "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
+                "          \"_resourceid\": \"8993151141438601059\",\n" +
+                "          \"_docid\": \"8993151141438601059\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-14 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-16 06:12:00+0000\"\n" +
+                "        }", JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+
+    }
+    public static JsonArray getHitsJsonArrayForCloudDNSSecstateRuleFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west1-a\",\n" +
+                "          \"id\": \"staging.cool-bay-349411.appspot.com\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"name\": \"pacbot-demo-vm\",\n" +
+                "          \"dnsSecConfigState\": \"OFF\",\n" +
                 "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
                 "          \"_resourceid\": \"8993151141438601059\",\n" +
                 "          \"_docid\": \"8993151141438601059\",\n" +
@@ -938,4 +962,31 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonArrayForCloudDNSSecstateRuleSucess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west1-a\",\n" +
+                "          \"id\": \"staging.cool-bay-349411.appspot.com\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"name\": \"pacbot-demo-vm\",\n" +
+                "          \"dnsSecConfigState\": \"ON\",\n" +
+                "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
+                "          \"_resourceid\": \"8993151141438601059\",\n" +
+                "          \"_docid\": \"8993151141438601059\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-14 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-16 06:12:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+
+
 }

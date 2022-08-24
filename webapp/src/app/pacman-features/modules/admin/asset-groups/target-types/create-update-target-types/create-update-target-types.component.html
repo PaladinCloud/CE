@@ -61,12 +61,14 @@
                                                 <ul class="input-wrapper">
                                                     <input type="text" name="displayName" class="inputarea-container" [(ngModel)]="targetTypes.displayName" placeholder="Enter Target Type Display Name" autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="targetTypes.displayName.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                             <div class="bm10 input-box">
                                                 <label>Description *</label>
                                                 <ul>
                                                     <textarea name="description" class="textarea-container " [(ngModel)]="targetTypes.desc" placeholder="Enter Target Type Description"></textarea>
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="targetTypes.desc.trim().length<15">Please enter min 15 characters</div>
                                             </div>
 
                                         </div>
@@ -87,6 +89,7 @@
                                                         [(ngModel)]="targetTypes.name"
                                                         placeholder="Enter Target Type Name" autocomplete="off">
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="targetTypes.name.trim().length<5">Please enter min 5 characters</div>
                                             </div>
 
                                             <div class="input-box" *ngIf="!isCreate">
@@ -101,6 +104,7 @@
                                                         [(ngModel)]="targetTypes.config"
                                                         placeholder="Enter Target Type Config"></textarea>
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="targetTypes.config.trim().length<15">Please enter min 15 characters</div>
                                             </div>
                                         </div>
                                     </div>
@@ -109,10 +113,10 @@
 
                             <div class="data-table-paginator-wrap flex flex-center flex-align-center">
                                 <a class="save-container flex flex-row-reverse" *ngIf="isCreate">
-                                    <button class="submit-btn uppercase" (click)="createTargetType(targetTypes)" [disabled]="targetTypes.name==='' || targetTypes.desc==='' || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config===''"><i class="fa fa-check"></i> CREATE</button>
+                                    <button class="submit-btn uppercase" (click)="createTargetType(targetTypes)" [disabled]="targetTypes.name.trim().length<5 || targetTypes.desc.trim().length<15 || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config.trim().length<15"><i class="fa fa-check"></i> CREATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse" *ngIf="!isCreate">
-                                    <button class="submit-btn uppercase" (click)="updateTargetType(targetTypes)" [disabled]="targetTypes.name==='' || targetTypes.desc==='' || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config===''"><i class="fa fa-check"></i> UPDATE</button>
+                                    <button class="submit-btn uppercase" (click)="updateTargetType(targetTypes)" [disabled]="targetTypes.name.trim().length<5 || targetTypes.desc.trim().length<15 || targetTypes.domain.length==0 || targetTypes.dataSource.length==0 || targetTypes.category.length==0 || targetTypes.config.trim().length<15"><i class="fa fa-check"></i> UPDATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse">
                                     <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i

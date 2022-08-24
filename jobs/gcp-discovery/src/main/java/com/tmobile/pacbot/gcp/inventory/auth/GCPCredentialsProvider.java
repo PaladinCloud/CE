@@ -27,6 +27,9 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.container.v1.DNSConfig;
+import com.google.container.v1.DNSConfigOrBuilder;
+import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -37,7 +40,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import com.google.cloud.container.v1.ClusterManagerSettings;
 import com.google.cloud.container.v1.ClusterManagerClient;
-
+import com.google.cloud.dns.*;
 @Component
 public class GCPCredentialsProvider {
 
@@ -57,6 +60,7 @@ public class GCPCredentialsProvider {
     private KeyManagementServiceClient kmsKeyServiceClient;
     private ClusterManagerClient clusterManagerClient;
     private ZonesClient zonesClient;
+    private Dns dns;
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -179,6 +183,13 @@ public class GCPCredentialsProvider {
 
         }
         return clusterManagerClient;
+    }
+    public Dns createCloudDNSServices() throws IOException {
+        if (dns == null) {
+            dns = DnsOptions.newBuilder().setCredentials(this.getCredentials()).build().getService();
+
+        }
+        return dns;
     }
 
     // close the client in destroy method

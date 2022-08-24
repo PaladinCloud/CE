@@ -42,6 +42,7 @@
                                             <ul class="input-wrapper">
                                                 <input type="text" class="inputarea-container" placeholder="Enter Role Name" name="rolesName" [(ngModel)]="roles.roleName" required>
                                             </ul>
+                                            <div class="validation-error-message" *ngIf="roles.roleName.trim().length < 5">Please enter min 5 characters</div>
                                         </div>
                                         <div *ngIf="!isCreate">
                                             <div class="text-wrapper-header"><label>Name</label></div>
@@ -52,6 +53,7 @@
                                             <ul>
                                                 <textarea class="textarea-container" placeholder="Enter Role Description" name="rolesDesc" [(ngModel)]="roles.description"></textarea>
                                             </ul>
+                                            <div class="validation-error-message" *ngIf="roles.description.trim().length<15">Please enter min 15 characters</div>
                                             <div class="input-box">
                                                 <input type="checkbox" id="test5" name="isDisplayAssetGroupsEnabled" [checked]="roles.writePermission" [(ngModel)]="roles.writePermission">
                                                 <label for="test5" name="isDisplayAssetGroupsEnabled" class="bm30">Write Permission</label>
@@ -63,10 +65,10 @@
 
                             <div class="data-table-paginator-wrap flex flex-center flex-align-center">
                                 <a class="save-container flex flex-row-reverse" *ngIf="isCreate">
-                                    <button class="submit-btn uppercase" (click)="createRole(roles)" [disabled]="roles.roleName===''"><i class="fa fa-check"></i> CREATE</button>
+                                    <button class="submit-btn uppercase" (click)="createRole(roles)" [disabled]="roles.roleName.trim().length<5 || roles.description.trim().length<15"><i class="fa fa-check"></i> CREATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse" *ngIf="!isCreate">
-                                    <button class="submit-btn uppercase" (click)="updateRole(roles)" [disabled]="roles.roleName===''"><i class="fa fa-check"></i> UPDATE</button>
+                                    <button class="submit-btn uppercase" (click)="updateRole(roles)" [disabled]="roles.roleName.trim().length<5"><i class="fa fa-check"></i> UPDATE</button>
                                 </a>
                                 <a class="save-container flex flex-row-reverse">
                                     <button class="submit-btn uppercase" type="button" (click)="navigateBack()"><i class="fa fa-remove"></i> CANCEL</button>
