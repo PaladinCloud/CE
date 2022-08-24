@@ -80,6 +80,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-securitypricings.data", "[", false);
 		FileGenerator.writeToFile("azure-webapp.data", "[", false);
 		FileGenerator.writeToFile("azure-subscription.data", "[", true);
+		FileGenerator.writeToFile("azure-functionapp.data", "[", false);
 
 	}
 
@@ -120,6 +121,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-securitypricings.data", "]", true);
 		FileGenerator.writeToFile("azure-webapp.data", "]", true);
 		FileGenerator.writeToFile("azure-subscription.data", "]", true);
+		FileGenerator.writeToFile("azure-functionapp.data", "]", true);
 
 	}
 
@@ -295,4 +297,8 @@ public class FileManager {
 		FileGenerator.generateJson(webAppVHList, "azure-webapp.data");
 
 	}
+
+    public static void generateFunctionAppFiles(List<FunctionAppVH> functionAppVHList) {
+		FileGenerator.generateJson(functionAppVHList, "azure-functionapp.data");
+    }
 }
