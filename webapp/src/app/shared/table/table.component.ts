@@ -18,8 +18,13 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Input() columnsSortFunctionMap;
   @Input() headerColName;
   @Input() direction;
+  @Input() searchQuery = "";
+  @Input() showSearchBar;
+  @Input() showAddRemoveCol;
+  @Input() showTitle;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
+  @Output() searchCalledEventEmitter = new EventEmitter<string>();
 
   mainDataSource;
   dataSource;
@@ -32,6 +37,29 @@ export class TableComponent implements OnInit,AfterViewInit {
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
 
   allSelected=true;
+
+  constructor(private readonly changeDetectorRef: ChangeDetectorRef) { }
+
+  ngOnInit(): void {
+    this.mainDataSource = new MatTableDataSource(this.data);
+    this.dataSource = new MatTableDataSource(this.data);
+    if(this.columnWidths){
+      this.displayedColumns = Object.keys(this.columnWidths);
+    }
+    this.whiteListColumns = this.displayedColumns;
+    this.allSelected=true;
+    if(this.searchQuery!='') this.customFilter(this.searchQuery);
+    if(this.headerColName) this.customSort(this.headerColName, this.direction);
+  }
+
+  ngAfterViewInit(): void {  
+    if(this.allSelected && this.select){
+      this.select.options?.forEach((item: MatOption) => {
+        item.select();
+      })
+    }
+    this.changeDetectorRef.detectChanges();
+  }
   
   toggleAllSelection() {    
     this.whiteListColumns = [];
@@ -73,8 +101,7 @@ export class TableComponent implements OnInit,AfterViewInit {
     }
   }
 
-  customFilter(event){ 
-    let searchTxt = event.target.value.toLowerCase();
+  customFilter(searchTxt){    
     let columnsToSearchIN = this.searchInColumns.value;
     if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
       columnsToSearchIN = this.whiteListColumns;
@@ -87,46 +114,38 @@ export class TableComponent implements OnInit,AfterViewInit {
         }
       }
       return false;
-    }) 
+    })
   }
 
-  constructor(private readonly changeDetectorRef: ChangeDetectorRef) { }
-
-  ngOnInit(): void {
-    this.mainDataSource = new MatTableDataSource(this.data);
-    this.dataSource = new MatTableDataSource(this.data);
-    if(this.columnWidths){
-      this.displayedColumns = Object.keys(this.columnWidths);
+  handleSearch(event){ 
+    let searchTxt = event.target.value.toLowerCase();
+    
+    if (event.keyCode === 13 || searchTxt=='') {
+      this.customFilter(searchTxt);
+      this.searchCalledEventEmitter.emit(searchTxt);
     }
-    this.whiteListColumns = this.displayedColumns;
-    this.allSelected=true;
-    // this.announceSortChange({active:this.headerColName, direction: this.direction})
-  }
-
-  ngAfterViewInit(): void {  
-    if(this.allSelected && this.select){
-      this.select.options?.forEach((item: MatOption) => {
-        item.select();
-      })
-    }
-    this.changeDetectorRef.detectChanges();
   }
 
   announceSortChange(sort) {
-    if (!sort.active || sort.direction === '') {
+    this.customSort(sort.active, sort.direction);
+    this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
+  }
+
+  customSort(columnName, direction){    
+    if (!columnName || direction === '') {
       this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
 
+    this.headerColName = columnName;
+    this.direction = direction;
+    const isAsc = this.direction=='asc';
+
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
-      this.headerColName = sort.active;
-      this.direction = sort.direction;
-      const isAsc = this.direction=='asc';
       if(this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
       return (a[this.headerColName]<b[this.headerColName]? -1: 1)*(isAsc ? 1 : -1);
     });
-    this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
   }
 }

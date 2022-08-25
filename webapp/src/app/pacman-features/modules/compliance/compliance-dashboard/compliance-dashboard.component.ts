@@ -191,6 +191,7 @@ export class ComplianceDashboardComponent implements OnInit {
     this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
     this.direction = this.activatedRoute.snapshot.queryParams.direction;
     this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+    this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
     this.assetGroupSubscription = this.subscriptionToAssetGroup =
       this.assetGroupObservableService
         .getAssetGroup()
@@ -226,7 +227,8 @@ export class ComplianceDashboardComponent implements OnInit {
     updatedQueryParams = {
       headerColName: this.headerColName,
       direction : this.direction,
-      bucketNumber : this.bucketNumber
+      bucketNumber : this.bucketNumber,
+      searchValue: this.searchPassed
     }
 
     this.router.navigate([], {
@@ -817,11 +819,13 @@ export class ComplianceDashboardComponent implements OnInit {
     this.searchTxt = search;
     if (this.searchTxt === "") {
       this.searchPassed = this.searchTxt;
+      this.getUpdatedUrl();
     }
   }
 
   callNewSearch() {
     this.searchPassed = this.searchTxt;
+    this.getUpdatedUrl();
   }
 
   prevPg() {

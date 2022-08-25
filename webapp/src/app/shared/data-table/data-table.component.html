@@ -18,7 +18,7 @@
   <div class="sub-head">
     <app-title-burger-head [tableIdAppend]="tableIdAppend" (rowText)="emitRowText($event)" [popRows]="popRows"
       [showSearch]="searchableHeader" [subHeadTitle]="dataHead" (searchTxt)="searchCalled($event)"
-      (enterPressed)="triggerSearch()" [doNotDisplaySearch]="doNotDisplaySearch">
+      (enterPressed)="triggerSearch()" [doNotDisplaySearch]="doNotDisplaySearch" [searchQuery]="searchPassed">
     </app-title-burger-head>
   </div>
   <div class="add-filter-container" *ngIf="checkedList.length == 0 && doNotDisplaySearch">

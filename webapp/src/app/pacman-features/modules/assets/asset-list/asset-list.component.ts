@@ -121,6 +121,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
     this.direction = this.activatedRoute.snapshot.queryParams.direction;
     this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
 
     /**************************************************** */
     this.assetGroupSubscription = this.assetGroupObservableService
@@ -282,7 +283,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   updateComponent() {
     this.outerArr = [];
-    this.searchTxt = "";
+    // this.searchTxt = "";
     this.currentBucket = [];
     // this.bucketNumber = 0;
     this.firstPaginator = 1;
@@ -786,6 +787,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.bucketNumber = 0;
     this.currentBucket = [];
     this.getData();
+    this.getUpdatedUrl();
   }
 
   /**
@@ -893,7 +895,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       filter: this.filterText.filter,
       headerColName: this.headerColName,
       direction : this.direction,
-      bucketNumber : this.bucketNumber
+      bucketNumber : this.bucketNumber,
+      searchValue: this.searchTxt
     }
 
 

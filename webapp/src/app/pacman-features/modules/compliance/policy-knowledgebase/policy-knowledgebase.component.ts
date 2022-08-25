@@ -51,7 +51,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedFilter = 0;
   selectedFilterName = '';
   typeObj;
-  searchQuery = '';
+  searchPassed = '';
   loaded = false;
   datacoming = false;
   seekdata = false;
@@ -61,6 +61,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   currentPageLevel = 0;
   headerColName;
   direction;
+  showSearchBar = true;
+  showAddRemoveCol = true;
   columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
   columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
   columnsSortFunctionMap = {
@@ -81,9 +83,12 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService) {
+
       this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
       this.direction = this.activatedRoute.snapshot.queryParams.direction;
       // this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+      this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
       this.agAndDomain['ag'] = this.selectedAssetGroup;
@@ -107,7 +112,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     updatedQueryParams = {
       headerColName: this.headerColName,
       direction : this.direction,
-      // bucketNumber : this.bucketNumber
+      // bucketNumber : this.bucketNumber,
+      searchValue: this.searchPassed
     }
 
     this.router.navigate([], {
@@ -115,6 +121,11 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       queryParams: updatedQueryParams,
       queryParamsHandling: 'merge',
     });
+  }
+
+  callNewSearch(searchVal){
+    this.searchPassed = searchVal;
+    this.getUpdatedUrl();
   }
 
   ngAfterViewInit() {

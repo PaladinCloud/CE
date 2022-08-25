@@ -45,7 +45,7 @@
                             [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' 
                             (previousPageCalled)='prevPg()' (nextPageCalled)='nextPg()' (searchTriggerred)='callNewSearch()' 
                             [popRows]='popRows' (rowClickText)='handlePopClick($event)' (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                            [headerColName]="headerColName" [direction]="direction">
+                            [headerColName]="headerColName" [direction]="direction" [searchPassed]='searchTxt'>
                         </app-data-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

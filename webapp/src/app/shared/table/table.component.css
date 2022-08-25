@@ -2,11 +2,12 @@
     width: 100%;
     height: calc(100vh - 310px);
     overflow: scroll;
+    padding: 0px 2px;
 }
 
 .table-wrapper{
-  height: 100%;
-  background: white;
+  /* height: 100%;
+  background: var(--background-white); */
 }
 
 .table-header{
@@ -14,26 +15,32 @@
     border: 1px solid var(--border-100);
     height: 64px;
     padding: 12px 19px 12px 24px;
+    border-radius: var(--border-radius) var(--border-radius) 0px 0px;
 }
 
 .table-header .search-bar-wrapper {
     width: 100%;
-}
-
-.table-header .search-bar-container{
-    height: 40px;
-    max-width: 543px;
-    flex: 3;
     border: 1px solid var(--border-200);
 }
 
-.table-header .add-remove-columns-container{
+.table-header .header-left{
+    height: 40px;
+    max-width: 543px;
+    flex: 3;
+}
+
+.table-header .header-left .title{
+  display: inherit;
+  align-items: center;
+}
+
+.table-header .header-right{
     flex: 5;
     padding: 5px;
     /* margin-left: auto; */
 }
 
-.table-header .add-remove-columns-container .add-remove-columns-wrapper{
+.table-header .header-right .add-remove-columns-wrapper{
     float: right;
     height: 25px;
     border: 1px solid var(--border-200);
@@ -61,7 +68,7 @@
     display: none;
 }
 
-.table-header .search-bar-container .search-bar-wrapper img{
+.table-header .header-left .search-bar-wrapper img{
     padding: 12px;
 }
 
@@ -69,7 +76,7 @@
     display: none;
 }
 
-.table-header .add-remove-columns-container ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix{
+.table-header .header-right ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix{
     width: 20px;
 }
 
@@ -96,7 +103,7 @@
     height: 100% !important;
 }
 
-.add-remove-columns-container ::ng-deep .mat-select-arrow {
+.header-right ::ng-deep .mat-select-arrow {
     width: 10px !important;
     height: 10px !important;
     border: none !important;
@@ -154,10 +161,8 @@ tr.mat-header-row{
   padding: 16px 0px;
   font: var(--text-body-2);
   color: var(--text-low-emphasis);
-}
-
-thead {
-  height: 52px;
+  border: 1px solid var(--border-100);
+  background-color: #f8f8f8;
 }
 
 th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {

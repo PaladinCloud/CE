@@ -38,7 +38,8 @@
             <app-table (rowSelectEventEmitter)="gotoNextPage($event)" *ngIf="knowledgebaseData.length>0" 
                 [data]="knowledgebaseData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap" 
                 [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                [headerColName]="headerColName" [direction]="direction">
+                [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchPassed"
+                [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol">
             </app-table>
         </div>
     </div>

@@ -1,10 +1,13 @@
 <div class="table-container flex flex-col">
     <div class="table-wrapper">
         <div class="table-header flex flex-row">
-        <div class="search-bar-container flex flex-row">
-            <div class="search-bar-wrapper flex flex-row">
+        <div class="header-left flex flex-row">
+            <div class="title" *ngIf="showTitle">
+                {{ title }}
+            </div>
+            <div class="search-bar-wrapper flex flex-row" *ngIf="showSearchBar">
                 <img src="/assets/icons/header-search.svg" matPrefix alt="" />
-                <input type="search" matInput (keyup)="customFilter($event)" placeholder="Search" />
+                <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)" placeholder="Search" />
                 <div class="search-in-columns" matSuffix>
                     <mat-form-field>
                         <mat-select [formControl]="searchInColumns" multiple>
@@ -17,8 +20,8 @@
                 </div>
             </div>
         </div>
-        <div class="add-remove-columns-container">
-            <div class="add-remove-columns-wrapper">
+        <div class="header-right">
+            <div class="add-remove-columns-wrapper" *ngIf="showAddRemoveCol">
                 <mat-form-field>
                     <mat-select #select multiple>
                         <mat-option class="disabled-option" disabled="true" value="disabled">Show/hide columns</mat-option>
