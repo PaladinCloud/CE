@@ -510,7 +510,7 @@ public class PacmanRuleConstants {
     public static final String DNS_SEC_STATE="dnsSecConfigState";
     public  static final String BACKUP_CONFIG="backupConfiguration";
     public  static  final String DBFLAGS="databaseFlags";
-    public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="crossdbownershipchaining";
+    public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="cross db ownership chaining";
     public static final String OFF="off";
     public static final String NETWORKRULEBYPASS="networkruleBypass";
     public  static  final  String HTTPS_ONLY="httpsOnly";
@@ -518,4 +518,8 @@ public class PacmanRuleConstants {
     public  static  final String TLS_VERSION="minTlsVersion";
 
     public static final String ClientCertEnabled="clientCertEnabled";
+    public static final String DATABASE_TYPE="dataBaseType";
+    public  static  final  String DATABASE_VERSION="databaseVersion";
+    public static final String CONTAINED_DB_AUTHENTICATION="contained database authentication";
+    public static  final String DBFLAGNAME="dbFlagName";
 }

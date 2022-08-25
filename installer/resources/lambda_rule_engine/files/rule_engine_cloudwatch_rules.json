@@ -6862,5 +6862,27 @@
     "modifiedDate": "2022-08-16",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances",
+    "ruleUUID": "Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances",
+    "policyId": "Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances",
+    "ruleName": "Disable Contained Database Authentication Flag for SQL Server Database Instances",
+    "targetType": "cloudsql_sqlserver",
+    "assetGroup": "gcp",
+    "alexaKeyword": "sqlserver",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-contained-database-Auth-flag-for-sql-server\",\"key\":\"ruleKey\"},{\"key\":\"dataBaseType\",\"value\":\"SQLSERVER\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"contained database authentication\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Disable Contained Database Authentication Flag for SQL Server Database Instances\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"users within a contained database that have the ALTER ANY USER permission can grant access to the database without the knowledge or permission of the SQL Server administrator and also prone to DOS Attack\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"contained database authentication flag is enabled for your Google Cloud SQL Server database instances\",\"isValueNew\":true,\"encrypt\":false}{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances\",\"autofix\":false,\"alexaKeyword\":\"sqlserver\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql_sqlserver\",\"pac_ds\":\"gcp\",\"policyId\":\"Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable Contained Database Authentication Flag for SQL Server Database Instances",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
+    "severity": "medium",
+    "category": "security"
   }
 ]

@@ -57,6 +57,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-pubsub.data", "[", false);
         FileGenerator.writeToFile("gcp-gkecluster.data", "[", false);
         FileGenerator.writeToFile("gcp-clouddns.data", "[", false);
+        FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "[", false);
 
 
     }
@@ -74,6 +75,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-dataproc.data", "]", true);
         FileGenerator.writeToFile("gcp-gkecluster.data", "]", true);
         FileGenerator.writeToFile("gcp-clouddns.data", "]", true);
+        FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "]", true);
 
 
     }
@@ -126,4 +128,8 @@ public class FileManager {
     public static void generateCloudDnsFiles(List<CloudDNSVH> dnsList) {
         FileGenerator.generateJson(dnsList, "gcp-clouddns.data");
     }
+    public static void generateCloudSqlServerFiles(List<CloudSqlVH> cloudSqlVHList) {
+        FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_sqlserver.data");
+    }
+
 }
