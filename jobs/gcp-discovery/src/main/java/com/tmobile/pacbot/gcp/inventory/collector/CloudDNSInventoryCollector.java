@@ -37,12 +37,13 @@ public class CloudDNSInventoryCollector {
                 logger.info("dns zone list {}",zonesList);
 
                 for (Zone zone : zonesList.iterateAll()) {
-                    logger.info("inside dns  zone List iterator {}",zone.getDnsSecConfig().getState());
+                    logger.info("inside dns  zone List iterator {}",zone.getGeneratedId());
                     CloudDNSVH cloudDNSVH = new CloudDNSVH();
                     cloudDNSVH.setRegion(zone.getGeneratedId());
                     cloudDNSVH.setProjectName(project);
                     cloudDNSVH.setRegion(zone.getName());
                     cloudDNSVH.setDnsName(zone.getDnsName());
+                    cloudDNSVH.setId(zone.getGeneratedId());
                     cloudDNSVH.setDnsSecConfigState(zone.getDnsSecConfig().getState());
                     cloudDNSVHList.add(cloudDNSVH);
 
