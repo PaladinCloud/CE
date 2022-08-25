@@ -118,10 +118,10 @@ MAIL_SMTP_SSL_TEST_CONNECTION = "false"
 
 ENABLE_VULNERABILITY_FEATURE = False
 
-JOB_SCHEDULE_INITIALDELAY = 300000 #scheduling jobs initial delay in milisecound(5min)
-JOB_SCHEDULE_INITIALDELAY_SHIPPER = 900000 #delay for shippers  in milisecounds(15min) 
-JOB_SCHEDULE_INITIALDELAY_RULES = 1200000  #delay for rules in milisecounds(15min)
-JOB_SCHEDULE_INTERVAL = 21600000   #Job interval  in milisecounds(6hrs)
+JOB_SCHEDULE_INITIALDELAY = 5 #scheduling jobs initial delay in minute
+JOB_SCHEDULE_INITIALDELAY_SHIPPER = 15 #delay for shipper in minute 
+JOB_SCHEDULE_INITIALDELAY_RULES = 20  #delay for rules in minute
+JOB_SCHEDULE_INTERVAL = 6   #Job interval  in hrs
 JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules 
 
 

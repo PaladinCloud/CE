@@ -61,6 +61,10 @@ class ReplaceSQLPlaceHolder(NullResource):
         db_host = MySQLDatabase.get_output_attr('endpoint')
         azure_credentails = self.prepare_azure_tenants_credentias()
         gcp_credentials = self.prepare_gcp_credential_string()
+        job_interval = str(Settings.JOB_SCHEDULE_INTERVAL * 3600000)
+        job_initialdelay = str(Settings.JOB_SCHEDULE_INITIALDELAY * 60000) 
+        job_schedule_initialdelay_shipper = str(Settings.JOB_SCHEDULE_INITIALDELAY_SHIPPER * 60000)
+        job_schedule_initialdelay_rules  = str(Settings.JOB_SCHEDULE_INITIALDELAY_RULES * 60000)
         local_execs = [
             {
                 'local-exec': {
@@ -139,10 +143,10 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_AD_PUBLIC_KEY_URL' : Settings.get('AD_PUBLIC_KEY_URL',""),
                         'ENV_AD_PUBLIC_KEY' : Settings.get('AD_PUBLIC_KEY',""),
                         'ENV_AD_ADMIN_USER_ID' : Settings.get('AD_ADMIN_USER_ID',""),
-                        'ENV_JOB_SCHEDULE_INTERVAL' : str(Settings.JOB_SCHEDULE_INTERVAL),
-                        'ENV_JOB_SCHEDULE_INITIALDELAY' : str(Settings.JOB_SCHEDULE_INITIALDELAY),
-                        'ENV_JOB_SCHEDULE_INITIALDELAY_SHIPPER' : str(Settings.JOB_SCHEDULE_INITIALDELAY_SHIPPER),
-                        'ENV_JOB_SCHEDULE_INITIALDELAY_RULES' : str(Settings.JOB_SCHEDULE_INITIALDELAY_RULES),
+                        'ENV_JOB_SCHEDULE_INTERVAL' : job_interval,
+                        'ENV_JOB_SCHEDULE_INITIALDELAY' : job_initialdelay,
+                        'ENV_JOB_SCHEDULE_INITIALDELAY_SHIPPER' : job_schedule_initialdelay_shipper,
+                        'ENV_JOB_SCHEDULE_INITIALDELAY_RULES' : job_schedule_initialdelay_rules,
                         'ENV_AWS_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "aws" + ":" + str(number_of_aws_rules()),
                         'ENV_AZURE_EVENTBRIDGE_BUS_DETAILS' : Settings.RESOURCE_NAME_PREFIX + "-" + "azure" + ":" + str(number_of_azure_rules()),
                         'ENV_GCP_EVENTBRIDGE_BUS_DETAILS'  : Settings.RESOURCE_NAME_PREFIX + "-" + "gcp" + ":" + str(number_of_gcp_rules()),

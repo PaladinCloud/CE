@@ -14,10 +14,23 @@ class S3Bucket(TerraformResource):
     resource_instance_name = "aws_s3_bucket"
     available_args = {
         'bucket': {'required': True, 'prefix': True, 'sep': '-'},
-        'acl': {'required': True},
         'policy': {'required': False},
         'force_destroy': {'required': False},
         'tags': {'required': False},
+    }
+
+class S3Acl(TerraformResource):
+    """
+    Base resource class for Terraform AWS S3 bucket resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_s3_bucket_acl"
+    available_args = {
+        'bucket' : {'required': True},
+        'acl' : {'required': True},
     }
 
 
