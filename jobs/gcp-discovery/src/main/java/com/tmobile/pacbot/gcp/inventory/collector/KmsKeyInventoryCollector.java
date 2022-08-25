@@ -4,10 +4,10 @@ package com.tmobile.pacbot.gcp.inventory.collector;
 import com.google.cloud.kms.v1.*;
 import com.google.iam.v1.Policy;
 import com.tmobile.pacbot.gcp.inventory.InventoryConstants;
-import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.util.GCPlocationUtil;
 import com.tmobile.pacbot.gcp.inventory.vo.Bindings;
 import com.tmobile.pacbot.gcp.inventory.vo.KMSKeyVH;
+import com.tmobile.pacman.commons.gcp.clients.GCPCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,8 @@ public class KmsKeyInventoryCollector {
 
         try {
             KeyManagementServiceClient kmsKeyClient = gcpCredentialsProvider.getKmsKeyServiceClient();
-            List<String>locations=gcPlocationUtil.getLocations(projectId);
+
+            List<String>locations=new ArrayList<>(gcPlocationUtil.getLocations(projectId));
             logger.info("Fetched GCP locations: {}", locations);
             for(String loc:locations){
                 logger.info("Fetching key rings for location: {}",loc);

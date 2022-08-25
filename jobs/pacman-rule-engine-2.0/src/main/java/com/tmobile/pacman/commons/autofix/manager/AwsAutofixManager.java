@@ -1,14 +1,12 @@
 package com.tmobile.pacman.commons.autofix.manager;
 
 import com.amazonaws.regions.Regions;
-import com.microsoft.azure.management.Azure;
-import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.pacbot.azure.inventory.config.ConfigUtil;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
 import com.tmobile.pacman.commons.aws.clients.AWSClientManager;
 import com.tmobile.pacman.commons.aws.clients.impl.AWSClientManagerImpl;
+import com.tmobile.pacman.commons.config.ConfigUtil;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.service.ExceptionManager;
@@ -51,7 +49,7 @@ public class AwsAutofixManager implements IAutofixManger{
             params.put(keyValue[0], keyValue[1]);
         });
         try {
-            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS));
+            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS),"inventory");
             if( !(params==null || params.isEmpty())){
                 params.forEach((k,v) -> System.setProperty(k, v));
             }
@@ -75,6 +73,11 @@ public class AwsAutofixManager implements IAutofixManger{
 
     @Override
     public void initializeConfigs() {
-
+        try {
+            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS),"inventory");
+        } catch (Exception e) {
+            logger.error("Error fetching config", e);
+        }
+        Properties props = System.getProperties();
     }
 }
