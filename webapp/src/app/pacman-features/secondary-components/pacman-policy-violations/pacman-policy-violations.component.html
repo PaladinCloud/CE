@@ -33,7 +33,9 @@
                         (searchRowTxt)='searchCalled($event)'
                         (searchTriggerred)='callNewSearch()'
                         (selectedRow)=' goToDetails($event)'
-                        [columnWhiteList]="[ 'Policy Name', 'Status', 'frequency']">
+                        [columnWhiteList]="[ 'Policy Name', 'Status', 'frequency']"
+                        (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+                        [headerColName]="headerColName" [direction]="direction">
         </app-data-table>
         <div class="error_msg">
             <app-error-message *ngIf='errorValue === 1 && dataTableData.length === 0' [selectedValue]="errorMessage"></app-error-message>

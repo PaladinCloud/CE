@@ -17,12 +17,13 @@ import { AssetGroupObservableService } from '../../../../core/services/asset-gro
 import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { environment } from './../../../../../environments/environment';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
+import { TableStateService } from 'src/app/core/services/table-state-service.service';
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -51,7 +52,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedFilter = 0;
   selectedFilterName = '';
   typeObj;
-  searchQuery = '';
+  searchPassed = '';
   loaded = false;
   datacoming = false;
   seekdata = false;
@@ -59,6 +60,10 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   urlToRedirect: any = '';
   public agAndDomain = {};
   currentPageLevel = 0;
+  headerColName;
+  direction;
+  showSearchBar = true;
+  showAddRemoveCol = true;
   columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
   columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
   columnsSortFunctionMap = {
@@ -67,17 +72,32 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       return (severeness[a.severity] < severeness[b.severity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
+  state: any = {};
+  whiteListColumns;
+  displayedColumns;
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private commonResponseService: CommonResponseService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
-    private routerUtilityService: RouterUtilityService) {
+    private routerUtilityService: RouterUtilityService,
+    private tableStateService: TableStateService) {
+
+      this.state = this.tableStateService.getState("policy") || {};
+      
+      this.headerColName = this.state?.headerColName || 'name';
+      this.direction = this.state?.direction || 'asc';
+      // this.bucketNumber = this.state.bucketNumber || 0;
+      this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+      this.displayedColumns = Object.keys(this.columnWidths);
+      this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
+
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
       this.agAndDomain['ag'] = this.selectedAssetGroup;
@@ -90,6 +110,47 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
   }
 
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    this.state.headerColName = event.headerColName;
+    this.state.direction = event.direction;
+    this.storeState();
+  }
+
+  handleWhitelistColumnsChange(event){
+    this.state.whiteListColumns = event;
+    this.storeState();
+  }
+
+  handleSearchInColumnsChange(event){
+    // this.state.searchInColumns = event;
+    // this.storeState();
+  }
+
+  storeState(){
+    this.tableStateService.setState(this.state, "policy");
+  }
+
+  getUpdatedUrl(){
+    let updatedQueryParams = {};
+    updatedQueryParams = {
+      searchValue: this.searchPassed
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  callNewSearch(searchVal){
+    this.searchPassed = searchVal;
+    // this.state.searchValue = searchVal;
+    this.getUpdatedUrl();
+  }
+
   ngAfterViewInit() {
 
   }
@@ -99,7 +160,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.datacoming = false;
     this.seekdata = false;
     this.knowledgebaseData = [];
-    this.typeObj = undefined;
+    // this.typeObj = undefined;
     this.getData();
   }
 
@@ -209,9 +270,14 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     const ruleId = tileData.ruleId;
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      updatedQueryParams["headerColName"] = undefined;
+      updatedQueryParams["direction"] = undefined;
+      updatedQueryParams["searchValue"] = undefined;
+      // updatedQueryParams["bucketNumber"] = undefined;
       this.router.navigate(
         ['pl', 'compliance', 'policy-knowledgebase-details', ruleId, autofixEnabled],
-        { queryParams: this.agAndDomain,
+        { queryParams: updatedQueryParams,
           queryParamsHandling: 'merge' });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);

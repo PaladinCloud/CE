@@ -46,7 +46,7 @@ export class TitleBurgerHeadComponent implements OnInit, OnDestroy {
       });
   }
 
-  searchQuery = '';
+  @Input() searchQuery = '';
   private assetGroupSubscription: Subscription;
   selectedAssetGroup;
 
