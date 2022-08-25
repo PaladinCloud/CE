@@ -45,7 +45,8 @@
                     [direction]='-1' [tabFilterProperty]="'Rule Category'"
                     [columnWhiteList]="['Policy Title', 'Compliance %', 'Policy Severity', 'Rule Category','Last Scanned']"
                     [paginatorAbsent]='true' [popRows]='popRows' (rowClickText)='handlePopClick($event)'
-                    [searchPassed]='searchPassed'>
+                    [searchPassed]='searchPassed' (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+                    [headerColName]="headerColName" [direction]="direction">
                 </app-data-table>
             </mat-grid-tile>
         </mat-grid-list>

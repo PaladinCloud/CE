@@ -33,6 +33,8 @@
                         (searchTriggerred)='callNewSearch()'
                         [searchableHeader]='true'
                         [dataHead]="'List of violations'"
-                        (rowClickText)='handlePopClick($event)'></app-data-table>
+                        (rowClickText)='handlePopClick($event)'
+                        (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+                        [headerColName]="headerColName" [direction]="direction"></app-data-table>
     </div>
 </div>

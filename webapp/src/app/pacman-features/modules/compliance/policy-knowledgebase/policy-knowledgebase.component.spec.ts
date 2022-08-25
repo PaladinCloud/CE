@@ -36,8 +36,6 @@ import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
-import { TableWrapperComponent } from 'src/app/shared/table-wrapper/table-wrapper.component';
-import { TableComponent } from 'src/app/shared/table/table.component';
 
 import { PolicyKnowledgebaseComponent } from './policy-knowledgebase.component';
 
@@ -111,8 +109,8 @@ describe('Policyknowledgebase', () => {
     component.getData();
     fixture.detectChanges();
     const { debugElement } = fixture;
-    const tableWrapperComponent = debugElement.query(By.css('app-table-wrapper'));
-    expect(tableWrapperComponent).toBeTruthy();
+    const tableComponent = debugElement.query(By.css('app-table-wrapper'));
+    expect(tableComponent).toBeTruthy();
   });
 
   it('renders an independent back navigation', () => {
