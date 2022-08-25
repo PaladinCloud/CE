@@ -507,4 +507,6 @@ public class PacmanRuleConstants {
     public static final String NETWORKRULEBYPASS="networkruleBypass";
     public  static  final  String HTTPS_ONLY="httpsOnly";
     public  static  final String FTP_STATE="ftpState";
+    public  static  final String TLS_VERSION="minTlsVersion";
+
 }
