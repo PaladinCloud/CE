@@ -6524,7 +6524,7 @@
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "ManageRule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Encrypt App layer secret in GKE Cluster",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Encrypt_App_Layer_secrets_for_GKE_Cluster",
     "status": "ENABLED",
     "userId": "ASGC",
     "displayName": "Encrypt App layer secret in GKE Cluster",
