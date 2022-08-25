@@ -67,6 +67,7 @@ public class StorageAccountPublicAcessRule extends BaseRule {
                         "Azure storage accounts is publicly accessible");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
+                annotation.put(PacmanRuleConstants.NAME,resourceAttributes.get(PacmanRuleConstants.NAME));
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
