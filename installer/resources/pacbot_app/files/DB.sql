@@ -2522,6 +2522,17 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.properties.mail.smtp.starttls.enable',concat(@MAIL_SMTP_SSL_ENABLE,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.mail.test-connection',concat(@MAIL_SMTP_SSL_TEST_CONNECTION,''),'notification-service','prd','latest',NULL,NULL,NULL,NULL);
 
+DELETE IGNORE FROM pac_config_properties where cfKey = 'scheduler.interval';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'scheduler.rules.initial.delay';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'scheduler.shipper.initial.delay';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'scheduler.collector.initial.delay';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'gcp.eventbridge.bus.details';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'azure.eventbridge.bus.details';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'aws.eventbridge.bus.details';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'scheduler.total.batches';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'azure.enabled';
+DELETE IGNORE FROM pac_config_properties where cfKey = 'gcp.enabled';
+
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.interval',concat(@JOB_SCHEDULE_INTERVAL,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.rules.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_RULES,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('scheduler.shipper.initial.delay',concat(@JOB_SCHEDULE_INITIALDELAY_SHIPPER,''),'job-scheduler','prd','latest',NULL,NULL,NULL,NULL);
