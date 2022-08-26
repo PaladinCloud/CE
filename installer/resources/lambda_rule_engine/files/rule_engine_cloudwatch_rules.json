@@ -4048,6 +4048,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_IAM_Role_Full_Admin_Privilege_version-1_Admin_Previlege_iamrole",
+    "ruleUUID": "aws_iam_role_with_full_admin_previlege",
+    "policyId": "AWS_IAM_Role_Full_Admin_Privilege_version-1",
+    "ruleName": "IAM roles should not have customer managed policies with full administrative privileges",
+    "targetType": "iamrole",
+    "assetGroup": "aws",
+    "alexaKeyword": "IAMRoleWithFullAdminAccess",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"iam-role-with-admin-privilege-policy\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"\/aws\/iampolicies\/_search\",\"key\":\"esIamPoliciesUrl\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_IAM_Role_Full_Admin_Privilege_version-1_Admin_Previlege_iamrole\",\"autofix\":false,\"alexaKeyword\":\"IAMRoleWithFullAdminAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"iamrole\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_IAM_Role_Full_Admin_Privilege_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_iam_role_with_full_admin_previlege\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_iam_role_with_full_admin_previlege",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Detach customer managed policy with full access from IAM role",
+    "createdDate": "2022-08-25",
+    "modifiedDate": "2022-08-25",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1_Admin_Previlege_iampolicies",
     "ruleUUID": "aws_customer_managed_policy_with_admin_previlege",
     "policyId": "AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1",

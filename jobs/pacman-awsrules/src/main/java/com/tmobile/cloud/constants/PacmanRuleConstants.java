@@ -427,6 +427,9 @@ public class PacmanRuleConstants {
     public static final String ES_ATTRIBUTE_POLICYARN = "policyarn";
     public static final String COLON_STAR = "*";
     public static final String RESOURCE = "Resource";
+    public static final String ES_POLICIES_ATTRIBUTE = "policies";
+    public static final String ES_ATTRIBUTE_POLICYNAME = "policyname";
+    public static final String ES_CUSTOMER_MGD_POLICY_URL = "esIamPoliciesUrl";
 
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
