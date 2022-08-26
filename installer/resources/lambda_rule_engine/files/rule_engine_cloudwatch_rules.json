@@ -4004,6 +4004,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_IAM_User_Full_Admin_Privilege_version-1_Admin_Privilege_iamuser",
+    "ruleUUID": "iam-user-with-admin-privilege-policy",
+    "policyId": "AWS_IAM_User_Full_Admin_Privilege_version-1",
+    "ruleName": "IAM users should not have customer managed policy with full administrative privileges",
+    "targetType": "iamuser",
+    "assetGroup": "aws",
+    "alexaKeyword": "IAMUserWithFullAdminAccess",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"iam-user-with-admin-privilege-policy\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"\/aws\/iampolicies\/_search\",\"key\":\"esIamPoliciesUrl\"},{\"encrypt\":false,\"value\":\"\/aws\/iamgroup\/_search\",\"key\":\"esIamGroupUrl\"},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_IAM_User_Full_Admin_Privilege_version-1_Admin_Privilege_iamuser\",\"autofix\":false,\"alexaKeyword\":\"IAMUserWithFullAdminAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"iamuser\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_IAM_User_Full_Admin_Privilege_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"iam-user-with-admin-privilege-policy\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/iam-user-with-admin-privilege-policy",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Detach customer managed policy with full access from IAM user",
+    "createdDate": "2022-08-26",
+    "modifiedDate": "2022-08-26",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Aws_comprehend_job_results_should_be_encrypted_version-1_aws_enable_job_results_encryption_awscomprehend",
     "ruleUUID": "aws_enable_comprehend_job_results_encryption",
     "policyId": "Aws_comprehend_job_results_should_be_encrypted_version-1",

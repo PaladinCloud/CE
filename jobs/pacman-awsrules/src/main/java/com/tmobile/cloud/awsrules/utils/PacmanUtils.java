@@ -1037,7 +1037,80 @@ public class PacmanUtils {
             throw exception;
         }
     }
-    
+
+	/**
+	 * @param iamPolicyNameSet
+	 * @param esIamPoliciesUrl
+	 * @return
+	 * @throws Exception
+	 * 
+	 * Return the list of policy arns from the iam customer
+	 * managed policies es index, if the input policy names are
+	 * present
+	 * 
+	 */
+    public static Set<String> getIamCustManagedPolicyByName(Set<String> iamPolicyNameSet, String esIamPoliciesUrl) throws Exception {
+
+		Set<String> filteredArns = new HashSet<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ATTRIBUTE_POLICYNAME), iamPolicyNameSet);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esIamPoliciesUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			for (int i = 0; i < hitsArray.size(); i++) {
+				JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				String arn = source.get(PacmanRuleConstants.ES_ATTRIBUTE_POLICYARN).getAsString();
+				if (!com.amazonaws.util.StringUtils.isNullOrEmpty(arn)) {
+					filteredArns.add(arn);
+				}
+			}
+		}
+		return filteredArns;
+	}
+
+	/**
+	 * @param groupList
+	 * @param esIamGroupUrl
+	 * @return
+	 * @throws Exception
+	 * 
+	 * Return the list of policy names from iam group es index based on the group name
+	 * 
+	 */
+	public static Set<String> getPolicyByGroup(List<String> groupList, String esIamGroupUrl) throws Exception {
+
+		Set<String> filteredArns = new HashSet<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.GROUP_NAME), groupList);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esIamGroupUrl, mustFilter,
+				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			for (int i = 0; i < hitsArray.size(); i++) {
+				JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				String policies = source.get(PacmanRuleConstants.ES_POLICIES_ATTRIBUTE).getAsString();
+				if (!com.amazonaws.util.StringUtils.isNullOrEmpty(policies)) {
+					filteredArns.addAll(Arrays.asList(policies.split(":;")));
+				}
+			}
+		}
+		return filteredArns;
+	}
+
     /**
      * @param esUrl
      * @param securityGroupName
