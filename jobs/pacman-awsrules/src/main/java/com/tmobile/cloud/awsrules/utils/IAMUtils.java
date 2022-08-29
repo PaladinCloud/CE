@@ -20,7 +20,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -34,6 +33,8 @@ import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
 import com.amazonaws.services.identitymanagement.model.AttachedPolicy;
+import com.amazonaws.services.identitymanagement.model.GetGroupPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.GetGroupPolicyResult;
 import com.amazonaws.services.identitymanagement.model.GetPolicyVersionRequest;
 import com.amazonaws.services.identitymanagement.model.GetPolicyVersionResult;
 import com.amazonaws.services.identitymanagement.model.GetRolePolicyRequest;
@@ -46,6 +47,8 @@ import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesR
 import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListAttachedUserPoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListAttachedUserPoliciesResult;
+import com.amazonaws.services.identitymanagement.model.ListGroupPoliciesRequest;
+import com.amazonaws.services.identitymanagement.model.ListGroupPoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListPolicyVersionsRequest;
 import com.amazonaws.services.identitymanagement.model.ListRolePoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListRolePoliciesResult;
@@ -53,9 +56,6 @@ import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
 import com.amazonaws.services.identitymanagement.model.PolicyVersion;
 import com.amazonaws.util.CollectionUtils;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
@@ -373,6 +373,94 @@ public class IAMUtils {
 			policyRequest.setRoleName(roleName);
 			policyRequest.setPolicyName(policyName);
 			GetRolePolicyResult policyResult = amazonIdentityManagement.getRolePolicy(policyRequest);
+			String policyAsString = policyResult.getPolicyDocument();
+
+			policyAsString = java.net.URLDecoder.decode(policyAsString, "UTF-8");
+			policy = Policy.fromJson(policyAsString);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+
+		return policy;
+	}
+	
+	/**
+	 * @param userName
+	 * @param amazonIdentityManagement
+	 * @return
+	 * 
+	 * return true if an inline policy of a user allows full administrative privileges
+	 * 
+	 */
+	public static boolean isInlineUserPolicyWithFullAdminAccess(String userName,
+			AmazonIdentityManagementClient amazonIdentityManagement) {
+
+		List<String> inlineUserPolicyNameList = new ArrayList<>();
+		ListUserPoliciesRequest listUserPoliciesRequest = new ListUserPoliciesRequest();
+		listUserPoliciesRequest.setUserName(userName);
+		ListUserPoliciesResult listUserPoliciesResult = null;
+		do {
+			listUserPoliciesResult = amazonIdentityManagement.listUserPolicies(listUserPoliciesRequest);
+			inlineUserPolicyNameList.addAll(listUserPoliciesResult.getPolicyNames());
+			listUserPoliciesRequest.setMarker(listUserPoliciesResult.getMarker());
+		} while (listUserPoliciesResult.isTruncated());
+
+		for (String policyName : inlineUserPolicyNameList) {
+			Policy policy = getInlineUserPolicy(userName, policyName, amazonIdentityManagement);
+			if(isStatementContainsFullAdminAccess(policy))
+				return true;
+				
+		}
+		return false;
+	}
+    
+    /**
+     * @param groupName
+     * @param amazonIdentityManagement
+     * @return
+     * 
+     * return true if an inline policy of a group allows full administrative privileges
+     * 
+     */
+    public static boolean isInlineGroupPolicyWithFullAdminAccess(String groupName,
+			AmazonIdentityManagementClient amazonIdentityManagement) {
+
+		List<String> inlineGroupPolicyNameList = new ArrayList<>();
+		ListGroupPoliciesRequest listGroupPoliciesRequest = new ListGroupPoliciesRequest();
+		listGroupPoliciesRequest.setGroupName(groupName);
+		ListGroupPoliciesResult listGroupPoliciesResult = null;
+		do {
+			listGroupPoliciesResult = amazonIdentityManagement.listGroupPolicies(listGroupPoliciesRequest);
+			inlineGroupPolicyNameList.addAll(listGroupPoliciesResult.getPolicyNames());
+			listGroupPoliciesRequest.setMarker(listGroupPoliciesResult.getMarker());
+		} while (listGroupPoliciesResult.isTruncated());
+
+		for (String policyName : inlineGroupPolicyNameList) {
+			Policy policy = getInlineGroupPolicy(groupName, policyName, amazonIdentityManagement);
+			if(isStatementContainsFullAdminAccess(policy))
+				return true;
+				
+		}
+		return false;
+	}
+    
+    /**
+     * @param groupName
+     * @param policyName
+     * @param amazonIdentityManagement
+     * @return
+     * 
+     * Fetches inline policy details of a group using the groupname and policyname
+     * 
+     */
+    private static Policy getInlineGroupPolicy(String groupName, String policyName,
+			AmazonIdentityManagement amazonIdentityManagement) {
+		Policy policy = new Policy();
+		try {
+			GetGroupPolicyRequest policyRequest = new GetGroupPolicyRequest();
+			policyRequest.setGroupName(groupName);
+			policyRequest.setPolicyName(policyName);
+			GetGroupPolicyResult policyResult = amazonIdentityManagement.getGroupPolicy(policyRequest);
 			String policyAsString = policyResult.getPolicyDocument();
 
 			policyAsString = java.net.URLDecoder.decode(policyAsString, "UTF-8");
