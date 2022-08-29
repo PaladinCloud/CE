@@ -6842,6 +6842,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Disable_External_scripts_enabled_for_SQL_Server_DB_Instances",
+    "ruleUUID": "Disable_External_scripts_enabled_for_SQL_Server_DB_Instances",
+    "policyId": "Disable_External_scripts_enabled_for_SQL_Server_DB_Instances",
+    "ruleName": "Disable External Scripts Enabled Flag for SQL Server Database Instances",
+    "targetType": "cloudsql_sqlserver",
+    "assetGroup": "gcp",
+    "alexaKeyword": "sqlserver",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-external-script-Enabled-flag-for-sql-server-disabled\",\"key\":\"ruleKey\"},{\"key\":\"dataBaseType\",\"value\":\"SQLSERVER\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"external scripts enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Disable External Scripts Enabled Flag for SQL Server Database Instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_External_scripts_enabled_for_SQL_Server_DB_Instances\",\"autofix\":false,\"alexaKeyword\":\"sqlserver\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql_sqlserver\",\"pac_ds\":\"gcp\",\"policyId\":\"Disable_External_scripts_enabled_for_SQL_Server_DB_Instances\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_External_scripts_enabled_for_SQL_Server_DB_Instances\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_External_scripts_enabled_for_SQL_Server_DB_Instances",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable External Scripts Enabled Flag for SQL Server Database Instances",
+    "createdDate": "2022-08-16",
+    "modifiedDate": "2022-08-16",
+    "severity": "medium",
+    "category": "security",
+  },
+  {
     "ruleId": "Enable_Client_Certificate_for_webApp",
     "ruleUUID": "Enable_Client_Certificate_for_webApp",
     "policyId": "Enable_Client_Certificate_for_webApp",
@@ -6858,8 +6880,8 @@
     "status": "ENABLED",
     "userId": "ASGC",
     "displayName": "Enable  Client Certificate for Web App",
-    "createdDate": "2022-08-16",
-    "modifiedDate": "2022-08-16",
+    "createdDate": "2022-07-19",
+    "modifiedDate": "2022-07-19",
     "severity": "medium",
     "category": "security"
   },
@@ -6907,4 +6929,4 @@
     "severity": "medium",
     "category": "security"
   }
-]
+    ]
