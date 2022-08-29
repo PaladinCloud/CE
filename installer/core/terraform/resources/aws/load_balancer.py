@@ -96,6 +96,7 @@ class ALBListenerRuleResource(TerraformResource):
     available_args = {
         'listener_arn': {'required': True},
         'priority': {'required': False},
+        'condition': {'required': True},
         'action': {
             'required': True,
             'inline_args': {
@@ -103,13 +104,13 @@ class ALBListenerRuleResource(TerraformResource):
                 'action_type': {'required': True, 'tf_arg_key': 'type'}
             }
         },
-        'condition': {
-            'required': True,
-            'inline_args': {
-                'condition_field': {'required': True, 'tf_arg_key': 'field'},
-                'condition_values': {'required': True, 'tf_arg_key': 'values'},
-            }
-        }
+        # 'condition': {
+        #     'required': True,
+        #     'inline_args': {
+        #         'condition_field': {'required': True, 'tf_arg_key': 'field'},
+        #         'condition_values': {'required': True, 'tf_arg_key': 'values'},
+        #     }
+        # }
     }
 
 
