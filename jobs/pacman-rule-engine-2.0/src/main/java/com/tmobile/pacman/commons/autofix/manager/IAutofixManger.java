@@ -10,9 +10,6 @@ import com.google.gson.GsonBuilder;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.resources.Subscription;
-import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.config.ConfigUtil;
-import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacman.common.AutoFixAction;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.AWSService;
@@ -21,7 +18,10 @@ import com.tmobile.pacman.commons.autofix.FixResult;
 import com.tmobile.pacman.commons.autofix.Status;
 import com.tmobile.pacman.commons.aws.clients.AWSClientManager;
 import com.tmobile.pacman.commons.aws.clients.impl.AWSClientManagerImpl;
+import com.tmobile.pacman.commons.azure.clients.AzureCredentialProvider;
+import com.tmobile.pacman.commons.config.ConfigUtil;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
+import com.tmobile.pacman.commons.gcp.clients.GCPCredentialsProvider;
 import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.dto.ResourceOwner;
@@ -124,6 +124,7 @@ public interface IAutofixManger {
 
         // check fix exists for rule
         initializeConfigs();
+        initializeTargetType();
         try {
             fixKey = ruleParam.get("fixKey");
             fixClass = ReflectionUtils.findFixClass(fixKey);
@@ -786,7 +787,7 @@ public interface IAutofixManger {
             params.put(keyValue[0], keyValue[1]);
         });
         try {
-            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS));
+            ConfigUtil.setConfigProperties(System.getenv(PacmanSdkConstants.CONFIG_CREDENTIALS),"azure-discovery");
             if (!(params == null || params.isEmpty())) {
                 params.forEach((k, v) -> System.setProperty(k, v));
             }

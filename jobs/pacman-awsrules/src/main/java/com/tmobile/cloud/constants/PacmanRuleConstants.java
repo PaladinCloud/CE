@@ -423,9 +423,17 @@ public class PacmanRuleConstants {
     public static final String ANY = "any";
     public static final String PROTOCOL_TCP = "TCP";
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
+    
+    public static final String ES_ATTRIBUTE_POLICYARN = "policyarn";
+    public static final String COLON_STAR = "*";
+    public static final String RESOURCE = "Resource";
+    public static final String ES_POLICIES_ATTRIBUTE = "policies";
+    public static final String ES_ATTRIBUTE_POLICYNAME = "policyname";
+    public static final String ES_CUSTOMER_MGD_POLICY_URL = "esIamPoliciesUrl";
 
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
+    public static final String ES_IAM_GROUP_URL = "esIamGroupUrl";
     public static final String DENY = "Deny";
     public static final String ES_IAM_CERT_EXPIRY_ATTRIBUTE = "expirydate";
     public static final String FALSE = "false";
@@ -502,11 +510,15 @@ public class PacmanRuleConstants {
     public static final String DNS_SEC_STATE="dnsSecConfigState";
     public  static final String BACKUP_CONFIG="backupConfiguration";
     public  static  final String DBFLAGS="databaseFlags";
-    public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="crossdbownershipchaining";
+    public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="cross db ownership chaining";
     public static final String OFF="off";
     public static final String NETWORKRULEBYPASS="networkruleBypass";
     public  static  final  String HTTPS_ONLY="httpsOnly";
     public  static  final String FTP_STATE="ftpsState";
     public static  final String DBFLAGNAME="dbFlagName";
-
+    public  static  final String TLS_VERSION="minTlsVersion";
+    public static final String ClientCertEnabled="clientCertEnabled";
+    public static final String DATABASE_TYPE="dataBaseType";
+    public  static  final  String DATABASE_VERSION="databaseVersion";
+    public static final String CONTAINED_DB_AUTHENTICATION="contained database authentication";
 }

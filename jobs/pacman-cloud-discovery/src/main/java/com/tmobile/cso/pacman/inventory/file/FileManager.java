@@ -59,6 +59,7 @@ import com.amazonaws.services.ec2.model.VpnGateway;
 import com.amazonaws.services.ecs.model.TaskDefinition;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticmapreduce.model.Cluster;
+import com.amazonaws.services.identitymanagement.model.Policy;
 import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.rds.model.DBSnapshot;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
@@ -281,6 +282,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-iampolicies.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -441,6 +443,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami-blockdevicemap.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-iampolicies.data",InventoryConstants.CLOSE_ARRAY, true);
 	}
 
 	/**
@@ -1925,4 +1928,19 @@ public class FileManager {
 		FileGenerator.generateJson(dbSnapShots, fieldNames, "aws-cloudtrail.data", keys);
 	}
 	//****** Changes For Federated Rules End ******
+	
+	
+	/**
+	 * Generate IAM customer managed policies.
+	 * 
+	 * @param map
+	 * @throws IOException
+	 */
+	public static void generateIamPolicyFiles(Map<String, List<Policy>> map) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "policyName`policyId`arn`defaultVersionId`createDate";
+		keys = "discoverydate`accountid`accountname`policyname`policyid`policyarn`defaultversionid`createdate";
+		FileGenerator.generateJson(map, fieldNames, "aws-iampolicies.data", keys);
+	}
 }

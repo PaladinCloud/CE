@@ -73,6 +73,8 @@ public class JobExecutor {
 
         if (args.length > 0) {
             programArgs = args[0];
+            logger.debug("job Param String " + programArgs);
+
             jobParams = CommonUtils.createParamMap(programArgs);
             logger.debug("job Param String " + programArgs);
         } else {

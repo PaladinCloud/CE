@@ -44,10 +44,16 @@ public class WebAppInventoryCollector {
                    log.info("ftpsState",webApp.ftpsState());
                 }
 
+                if(webApp.minTlsVersion()!=null){
+                    webAppVH.setSupportedTlsVersions(webApp.minTlsVersion());
+                    log.info("minTlsVersion",webApp.minTlsVersion());
+                }
+
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
                 webAppVH.setId(webApp.id());
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
-                log.info("web app list {}",webApp.httpsOnly());
+                webAppVH.setClientCertEnabled(webApp.clientCertEnabled());
+                log.info("web app client cert {}", webApp.clientCertEnabled());
 
                 webAppList.add(webAppVH);
 

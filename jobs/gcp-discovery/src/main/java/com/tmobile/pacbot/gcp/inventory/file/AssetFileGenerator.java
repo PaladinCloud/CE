@@ -8,6 +8,9 @@ import java.util.concurrent.Executors;
 
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.collector.*;
+import com.tmobile.pacbot.gcp.inventory.util.CloudSqlFilter;
+import com.tmobile.pacbot.gcp.inventory.util.DataBaseTypeEnum;
+import com.tmobile.pacbot.gcp.inventory.vo.CloudSqlVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +58,8 @@ public class AssetFileGenerator {
 	GKEClusterInventoryCollector gkeClusterInventoryCollector;
 	@Autowired
 	CloudDNSInventoryCollector cloudDNSInventoryCollector;
+	@Autowired
+	CloudSqlFilter cloudSqlFilter;
 
 	public void generateFiles(List<String> projects, String filePath) {
 
@@ -143,7 +148,11 @@ public class AssetFileGenerator {
 					return;
 				}
 				try {
-					FileManager.generateCloudSqlFiles(cloudSqlInventoryCollector.fetchCloudSqlInventory(project));
+					List<CloudSqlVH>cloudSqlVHList=cloudSqlInventoryCollector.fetchCloudSqlInventory(project);
+					FileManager.generateCloudSqlFiles(cloudSqlVHList);
+					FileManager.generateCloudSqlServerFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.SQLSERVER));
+
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -175,6 +184,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateGKEClusterFiles(gkeClusterInventoryCollector.fetchGKEClusterInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("clouddns"))) {
+					return;
+				}
+				try {
+					FileManager.generateCloudDnsFiles(cloudDNSInventoryCollector.fetchCloudDnsInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

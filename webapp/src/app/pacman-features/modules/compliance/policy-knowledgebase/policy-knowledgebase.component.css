@@ -28,6 +28,8 @@
 .policy-knowledgebase-content{
   height: calc(100vh - 250px);
   background-color: var(--background-white);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-100);
 }
 
 .pk-header {

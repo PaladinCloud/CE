@@ -96,7 +96,9 @@ public enum AWSService {
 	VPCFIREWALL("vpcfirewall"),
 
 	NSG("nsg"),
-	SQLDATABASE("sqldatabase");
+	SQLDATABASE("sqldatabase"),
+	STORAGEACCOUNT("storageaccount"),
+	KMSKEY("kmskey");
 
 	/** The service name. */
 	String serviceName;
