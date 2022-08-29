@@ -373,7 +373,6 @@ CREATE TABLE IF NOT EXISTS `cf_SystemConfiguration` (
 
 CREATE TABLE IF NOT EXISTS `cf_Target` (
   `targetName` varchar(75) COLLATE utf8_bin NOT NULL,
-  `displayName` varchar(100) COLLATE utf8_bin DEFAULT NULL,
   `targetDesc` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `category` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `dataSourceName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
@@ -386,6 +385,32 @@ CREATE TABLE IF NOT EXISTS `cf_Target` (
   `domain` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`targetName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
+CREATE PROCEDURE alter_cf_target_table_add_display_name_if_not_exists()
+BEGIN
+IF NOT EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_Target'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'displayName')  THEN
+
+
+
+ ALTER TABLE `cf_Target` ADD `displayName` varchar(100) COLLATE utf8_bin DEFAULT NULL;
+
+
+
+END IF;
+END $$
+DELIMITER ;
+CALL alter_cf_target_table_add_display_name_if_not_exists();
+
+
+
+/* deleting old data */
+TRUNCATE TABLE cf_Target;
 
 /*Table structure for table `cf_pac_updatable_fields` */
 
