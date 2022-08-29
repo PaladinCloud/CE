@@ -14,8 +14,8 @@ sudo yum install python3-pip -y
 
 ## Install Terraform
 sudo yum -y install unzip
-wget https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
-sudo unzip terraform_1.0.0_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/1.2.8/terraform_1.2.8_linux_amd64.zip
+sudo unzip terraform_1.2.8_linux_amd64.zip
 sudo mv terraform /usr/bin
 
 ## INSTALL NODEJS and dependencies
