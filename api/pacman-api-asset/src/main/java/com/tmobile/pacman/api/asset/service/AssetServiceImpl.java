@@ -338,7 +338,7 @@ public class AssetServiceImpl implements AssetService {
             Map<String, Object> attribute = new LinkedHashMap<>();
             attribute.put(Constants.NAME, field);
             String strValue = data.get(field).toString();
-            attribute.put(Constants.VALUE, new String[]{strValue});
+            attribute.put(Constants.VALUE, strValue );
             attribute.put(Constants.CATEGORY, category);
             if (StringUtils.isNotEmpty(strValue) && StringUtils.isNotBlank(strValue)) {
                 attributes.add(attribute);
@@ -465,7 +465,6 @@ public class AssetServiceImpl implements AssetService {
             }
         } catch (Exception e) {
             LOGGER.error("Error Fetching created info for resource " + resourceId, e);
-            throw new ServiceException(e);
         }
 
         // Qualys was earlier a separate api. Lets add it to the generic EC2 API

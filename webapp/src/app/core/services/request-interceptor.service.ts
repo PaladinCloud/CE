@@ -1,7 +1,7 @@
 
-import {throwError as observableThrowError ,  Observable ,  BehaviorSubject } from 'rxjs';
+import { throwError as observableThrowError, Observable, BehaviorSubject } from 'rxjs';
 
-import {take, filter, catchError, switchMap, finalize, retry} from 'rxjs/operators';
+import { take, filter, catchError, switchMap, finalize, retry } from 'rxjs/operators';
 import { Injectable, Injector } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpRequest, HttpHandler, HttpSentEvent, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpUserEvent, HttpErrorResponse } from '@angular/common/http';
 
@@ -14,16 +14,16 @@ export class RequestInterceptorService implements HttpInterceptor {
     isRefreshingToken = false;
     tokenSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
-    constructor(private injector: Injector, private loggerService: LoggerService) {}
+    constructor(private injector: Injector, private loggerService: LoggerService) { }
 
-    addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {        
-        return req.clone({ setHeaders: { 'Authorization': 'Bearer ' + token }});
+    addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {
+        return req.clone({ setHeaders: { 'Authorization': 'Bearer ' + token } });
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any> | HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
 
         const authService = this.injector.get(AuthService);
-        if (req.url.includes('user/authorize') || req.url.includes('user/login') || req.url.includes('refreshtoken')) {
+        if (req.url.includes('user/authorize') || req.url.includes('user/login') || req.url.includes('user/refresh')) {
             this.loggerService.log('info', 'Not adding the access token for this api - ' + req.url);
             return next.handle(req);
         } else if (req.url.includes('user/logout-session')) {
@@ -36,12 +36,12 @@ export class RequestInterceptorService implements HttpInterceptor {
                 // We don't want to refresh token for some requests like login or refresh token itself
                 // So we verify url and we throw an error if it's the case
                 if (
-                    req.url.includes('refreshtoken') ||
+                    req.url.includes('user/refresh') ||
                     req.url.includes('user/login') || req.url.includes('user/authorize')
                 ) {
                     // We do another check to see if refresh token failed
                     // In this case we want to logout user and to redirect it to login page
-                    if (req.url.includes('user/authorize') || req.url.includes('refreshtoken')) {
+                    if (req.url.includes('user/authorize') || req.url.includes('user/refresh')) {
                         authService.doLogout();
                     }
 
@@ -107,7 +107,7 @@ export class RequestInterceptorService implements HttpInterceptor {
                 take(1),
                 switchMap((token: string) => {
                     return next.handle(this.addToken(req, token));
-                }), );
+                }));
         }
     }
 
