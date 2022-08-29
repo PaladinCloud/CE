@@ -1027,4 +1027,248 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitjsonArrayForRemoteAccessDBFlag(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": \"us-central1\",\n" +
+                        "          \"id\": \"central-run-349616:us-central1:sql-server-instance1\",\n" +
+                        "          \"projectName\": \"central-run-349616\",\n" +
+                        "          \"name\": \"sql-server-instance1\",\n" +
+                        "          \"kind\": \"sql#instance\",\n" +
+                        "          \"createdTime\": \"2022-08-18T10:03:14.182Z\",\n" +
+                        "          \"masterInstanceName\": null,\n" +
+                        "          \"backendType\": \"SECOND_GEN\",\n" +
+                        "          \"state\": \"RUNNABLE\",\n" +
+                        "          \"databaseVersion\": \"SQLSERVER_2019_STANDARD\",\n" +
+                        "          \"databaseInstalledVersion\": \"SQLSERVER_2019_STANDARD_CU16\",\n" +
+                        "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                        "          \"eTag\": \"9e2191b523db7ba21d3fea8c195ace6b0062f10a5e3ec23b01ed0737d8f46c67\",\n" +
+                        "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/central-run-349616/instances/sql-server-instance1\",\n" +
+                        "          \"serviceAccountEmail\": \"p344106022091-kdzpvj@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                        "          \"kmsKeyVersion\": null,\n" +
+                        "          \"kmsKeyName\": null,\n" +
+                        "          \"maxDiskSize\": null,\n" +
+                        "          \"currentDiskSize\": null,\n" +
+                        "          \"ipAddress\": [\n" +
+                        "            {\n" +
+                        "              \"ip\": \"34.135.103.201\",\n" +
+                        "              \"type\": \"PRIMARY\"\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"serverCaCert\": {\n" +
+                        "            \"certSerialNumber\": \"0\",\n" +
+                        "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=92d054a8-75ed-4929-aa79-fc4aa7e03d41\",\n" +
+                        "            \"createTime\": \"2022-08-18T10:05:17.124Z\",\n" +
+                        "            \"expirationTime\": \"2032-08-15T10:06:17.124Z\",\n" +
+                        "            \"instance\": \"sql-server-instance1\",\n" +
+                        "            \"kind\": \"sql#sslCert\"\n" +
+                        "          },\n" +
+                        "          \"settings\": {\n" +
+                        "            \"activationPolicy\": \"ALWAYS\",\n" +
+                        "            \"activeDirectoryConfig\": {\n" +
+                        "              \"kind\": \"sql#activeDirectoryConfig\"\n" +
+                        "            },\n" +
+                        "            \"authorizedGaeApplications\": [],\n" +
+                        "            \"availabilityType\": \"ZONAL\",\n" +
+                        "            \"backupConfiguration\": {\n" +
+                        "              \"backupRetentionSettings\": {\n" +
+                        "                \"retainedBackups\": 7,\n" +
+                        "                \"retentionUnit\": \"COUNT\"\n" +
+                        "              },\n" +
+                        "              \"enabled\": true,\n" +
+                        "              \"kind\": \"sql#backupConfiguration\",\n" +
+                        "              \"location\": \"us\",\n" +
+                        "              \"startTime\": \"11:00\",\n" +
+                        "              \"transactionLogRetentionDays\": 7\n" +
+                        "            },\n" +
+                        "            \"collation\": \"SQL_Latin1_General_CP1_CI_AS\",\n" +
+                        "            \"dataDiskSizeGb\": 100,\n" +
+                        "            \"dataDiskType\": \"PD_SSD\",\n" +
+                        "            \"databaseFlags\": [\n" +
+                        "              {\n" +
+                        "                \"name\": \"contained database authentication\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              },\n" +
+                        "              {\n" +
+                        "                \"name\": \"external scripts enabled\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              },\n" +
+                        "              {\n" +
+                        "                \"name\": \"remote access\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              },\n" +
+                        "              {\n" +
+                        "                \"name\": \"cross db ownership chaining\",\n" +
+                        "                \"value\": \"on\"\n" +
+                        "              }\n" +
+                        "            ],\n" +
+                        "            \"ipConfiguration\": {\n" +
+                        "              \"authorizedNetworks\": [],\n" +
+                        "              \"ipv4Enabled\": true\n" +
+                        "            },\n" +
+                        "            \"kind\": \"sql#settings\",\n" +
+                        "            \"locationPreference\": {\n" +
+                        "              \"kind\": \"sql#locationPreference\",\n" +
+                        "              \"zone\": \"us-central1-b\"\n" +
+                        "            },\n" +
+                        "            \"maintenanceWindow\": {\n" +
+                        "              \"day\": 0,\n" +
+                        "              \"hour\": 0,\n" +
+                        "              \"kind\": \"sql#maintenanceWindow\",\n" +
+                        "              \"updateTrack\": \"stable\"\n" +
+                        "            },\n" +
+                        "            \"pricingPlan\": \"PER_USE\",\n" +
+                        "            \"replicationType\": \"SYNCHRONOUS\",\n" +
+                        "            \"settingsVersion\": 5,\n" +
+                        "            \"sqlServerAuditConfig\": {\n" +
+                        "              \"kind\": \"sql#sqlServerAuditConfig\",\n" +
+                        "              \"retentionInterval\": \"0s\",\n" +
+                        "              \"uploadInterval\": \"0s\"\n" +
+                        "            },\n" +
+                        "            \"storageAutoResize\": true,\n" +
+                        "            \"storageAutoResizeLimit\": 0,\n" +
+                        "            \"tier\": \"db-custom-2-8192\",\n" +
+                        "            \"connectorEnforcement\": \"NOT_REQUIRED\",\n" +
+                        "            \"deletionProtectionEnabled\": true\n" +
+                        "          },\n" +
+                        "          \"backupEnabled\": true,\n" +
+                        "          \"discoverydate\": \"2022-08-25 07:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"central-run-349616:us-central1:sql-server-instance1\",\n" +
+                        "          \"_docid\": \"central-run-349616:us-central1:sql-server-instance1\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"cloudsql_sqlserver\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-08-25 07:00:00+0000\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-08-25 08:27:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailurejsonArrayForRemoteAccessDBFlag(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": \"us-central1\",\n" +
+                        "          \"id\": \"central-run-349616:us-central1:sql-server-instance1\",\n" +
+                        "          \"projectName\": \"central-run-349616\",\n" +
+                        "          \"name\": \"sql-server-instance1\",\n" +
+                        "          \"kind\": \"sql#instance\",\n" +
+                        "          \"createdTime\": \"2022-08-18T10:03:14.182Z\",\n" +
+                        "          \"masterInstanceName\": null,\n" +
+                        "          \"backendType\": \"SECOND_GEN\",\n" +
+                        "          \"state\": \"RUNNABLE\",\n" +
+                        "          \"databaseVersion\": \"SQLSERVER_2019_STANDARD\",\n" +
+                        "          \"databaseInstalledVersion\": \"SQLSERVER_2019_STANDARD_CU16\",\n" +
+                        "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                        "          \"eTag\": \"9e2191b523db7ba21d3fea8c195ace6b0062f10a5e3ec23b01ed0737d8f46c67\",\n" +
+                        "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/central-run-349616/instances/sql-server-instance1\",\n" +
+                        "          \"serviceAccountEmail\": \"p344106022091-kdzpvj@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                        "          \"kmsKeyVersion\": null,\n" +
+                        "          \"kmsKeyName\": null,\n" +
+                        "          \"maxDiskSize\": null,\n" +
+                        "          \"currentDiskSize\": null,\n" +
+                        "          \"ipAddress\": [\n" +
+                        "            {\n" +
+                        "              \"ip\": \"34.135.103.201\",\n" +
+                        "              \"type\": \"PRIMARY\"\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"serverCaCert\": {\n" +
+                        "            \"certSerialNumber\": \"0\",\n" +
+                        "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=92d054a8-75ed-4929-aa79-fc4aa7e03d41\",\n" +
+                        "            \"createTime\": \"2022-08-18T10:05:17.124Z\",\n" +
+                        "            \"expirationTime\": \"2032-08-15T10:06:17.124Z\",\n" +
+                        "            \"instance\": \"sql-server-instance1\",\n" +
+                        "            \"kind\": \"sql#sslCert\"\n" +
+                        "          },\n" +
+                        "          \"settings\": {\n" +
+                        "            \"activationPolicy\": \"ALWAYS\",\n" +
+                        "            \"activeDirectoryConfig\": {\n" +
+                        "              \"kind\": \"sql#activeDirectoryConfig\"\n" +
+                        "            },\n" +
+                        "            \"authorizedGaeApplications\": [],\n" +
+                        "            \"availabilityType\": \"ZONAL\",\n" +
+                        "            \"backupConfiguration\": {\n" +
+                        "              \"backupRetentionSettings\": {\n" +
+                        "                \"retainedBackups\": 7,\n" +
+                        "                \"retentionUnit\": \"COUNT\"\n" +
+                        "              },\n" +
+                        "              \"enabled\": true,\n" +
+                        "              \"kind\": \"sql#backupConfiguration\",\n" +
+                        "              \"location\": \"us\",\n" +
+                        "              \"startTime\": \"11:00\",\n" +
+                        "              \"transactionLogRetentionDays\": 7\n" +
+                        "            },\n" +
+                        "            \"collation\": \"SQL_Latin1_General_CP1_CI_AS\",\n" +
+                        "            \"dataDiskSizeGb\": 100,\n" +
+                        "            \"dataDiskType\": \"PD_SSD\",\n" +
+                        "            \"databaseFlags\": [\n" +
+                        "              {\n" +
+                        "                \"name\": \"contained database authentication\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              },\n" +
+                        "              {\n" +
+                        "                \"name\": \"external scripts enabled\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              },\n" +
+                        "              {\n" +
+                        "                \"name\": \"remote access\",\n" +
+                        "                \"value\": \"on\"\n" +
+                        "              },\n" +
+                        "              {\n" +
+                        "                \"name\": \"cross db ownership chaining\",\n" +
+                        "                \"value\": \"on\"\n" +
+                        "              }\n" +
+                        "            ],\n" +
+                        "            \"ipConfiguration\": {\n" +
+                        "              \"authorizedNetworks\": [],\n" +
+                        "              \"ipv4Enabled\": true\n" +
+                        "            },\n" +
+                        "            \"kind\": \"sql#settings\",\n" +
+                        "            \"locationPreference\": {\n" +
+                        "              \"kind\": \"sql#locationPreference\",\n" +
+                        "              \"zone\": \"us-central1-b\"\n" +
+                        "            },\n" +
+                        "            \"maintenanceWindow\": {\n" +
+                        "              \"day\": 0,\n" +
+                        "              \"hour\": 0,\n" +
+                        "              \"kind\": \"sql#maintenanceWindow\",\n" +
+                        "              \"updateTrack\": \"stable\"\n" +
+                        "            },\n" +
+                        "            \"pricingPlan\": \"PER_USE\",\n" +
+                        "            \"replicationType\": \"SYNCHRONOUS\",\n" +
+                        "            \"settingsVersion\": 5,\n" +
+                        "            \"sqlServerAuditConfig\": {\n" +
+                        "              \"kind\": \"sql#sqlServerAuditConfig\",\n" +
+                        "              \"retentionInterval\": \"0s\",\n" +
+                        "              \"uploadInterval\": \"0s\"\n" +
+                        "            },\n" +
+                        "            \"storageAutoResize\": true,\n" +
+                        "            \"storageAutoResizeLimit\": 0,\n" +
+                        "            \"tier\": \"db-custom-2-8192\",\n" +
+                        "            \"connectorEnforcement\": \"NOT_REQUIRED\",\n" +
+                        "            \"deletionProtectionEnabled\": true\n" +
+                        "          },\n" +
+                        "          \"backupEnabled\": true,\n" +
+                        "          \"discoverydate\": \"2022-08-25 07:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"central-run-349616:us-central1:sql-server-instance1\",\n" +
+                        "          \"_docid\": \"central-run-349616:us-central1:sql-server-instance1\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"cloudsql_sqlserver\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-08-25 07:00:00+0000\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-08-25 08:27:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
