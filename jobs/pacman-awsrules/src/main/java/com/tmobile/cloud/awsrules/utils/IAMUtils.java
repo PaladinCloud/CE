@@ -515,6 +515,12 @@ public class IAMUtils {
 		return false;
 	}
 
+	/**
+	 * @param policy
+	 * @return
+	 * 
+	 * return true if any of the statement in policy contains full administrative access
+	 */
 	private static boolean isStatementContainsFullAdminAccess(Policy policy) {
 		if (null != policy && !CollectionUtils.isNullOrEmpty(policy.getStatements())) {
 
@@ -537,5 +543,35 @@ public class IAMUtils {
 		}
 		return false;
 	}
+	
+	/**
+	 * @param roleName
+	 * @param amazonIdentityManagement
+	 * @return
+	 * 
+	 * return true if an inline policy of a role allows full administrative previleges
+	 * 
+	 */
+	public static boolean isInlineRolePolicyWithFullAdminAccess(String roleName,
+			AmazonIdentityManagementClient amazonIdentityManagement) {
+
+		List<String> inlineRolePolicyNameList = new ArrayList<>();
+		ListRolePoliciesRequest listRolePoliciesRequest = new ListRolePoliciesRequest();
+		listRolePoliciesRequest.setRoleName(roleName);
+		ListRolePoliciesResult listRolePoliciesResult = null;
+		do {
+			listRolePoliciesResult = amazonIdentityManagement.listRolePolicies(listRolePoliciesRequest);
+			listRolePoliciesRequest.setMarker(listRolePoliciesResult.getMarker());
+		} while (listRolePoliciesResult.isTruncated());
+
+		for (String policyName : inlineRolePolicyNameList) {
+			Policy policy = getInlineRolePolicy(roleName, policyName, amazonIdentityManagement);
+			if(isStatementContainsFullAdminAccess(policy))
+				return true;
+				
+		}
+		return false;
+	}
+
 	
 }

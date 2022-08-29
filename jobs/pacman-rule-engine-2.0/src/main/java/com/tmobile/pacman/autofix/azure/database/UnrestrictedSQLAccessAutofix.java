@@ -1,4 +1,4 @@
-package com.tmobile.pacman.autofix.azure.nsg;
+package com.tmobile.pacman.autofix.azure.database;
 
 import com.amazonaws.util.StringUtils;
 import com.microsoft.azure.PagedList;

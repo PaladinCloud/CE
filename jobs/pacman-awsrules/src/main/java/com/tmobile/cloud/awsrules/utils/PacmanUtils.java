@@ -1037,7 +1037,7 @@ public class PacmanUtils {
             throw exception;
         }
     }
-
+    
 	/**
 	 * @param iamPolicyNameSet
 	 * @param esIamPoliciesUrl
@@ -1050,18 +1050,18 @@ public class PacmanUtils {
 	 * 
 	 */
     public static Set<String> getIamCustManagedPolicyByName(Set<String> iamPolicyNameSet, String esIamPoliciesUrl) throws Exception {
-
+		
 		Set<String> filteredArns = new HashSet<>();
 		Map<String, Object> mustFilter = new HashMap<>();
 		Map<String, Object> mustNotFilter = new HashMap<>();
 		Map<String, Object> mustTermsFilter = new HashMap<>();
 		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-
+		
 		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ATTRIBUTE_POLICYNAME), iamPolicyNameSet);
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esIamPoliciesUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
-
+		
 		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
-
+			
 			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
 			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
 			for (int i = 0; i < hitsArray.size(); i++) {
@@ -1074,7 +1074,7 @@ public class PacmanUtils {
 		}
 		return filteredArns;
 	}
-
+    
 	/**
 	 * @param groupList
 	 * @param esIamGroupUrl
@@ -1110,7 +1110,7 @@ public class PacmanUtils {
 		}
 		return filteredArns;
 	}
-
+    
     /**
      * @param esUrl
      * @param securityGroupName
