@@ -54,6 +54,7 @@ public class PacmanRuleConstants {
     public static final String AVAILABILITY = "availabilityType";
     public static final String SETTINGS ="settings" ;
     public static final String AZURE_AUTHENABLED ="authEnabled" ;
+    public static final String CLIENT_CERT_ENABLED = "clientCertEnabled";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -521,4 +522,5 @@ public class PacmanRuleConstants {
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";
     public static final String CONTAINED_DB_AUTHENTICATION="contained database authentication";
+
 }
