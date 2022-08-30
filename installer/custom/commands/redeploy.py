@@ -175,3 +175,13 @@ class Redeploy(BaseCommand):
             terraform_with_targets,
             self.dry_run
         )
+class delete_default_event_bus_files():
+        event_bus_file_tf_variable = os.path.join(Settings.TERRAFORM_DIR, "lambda_rule_engine_function_RulesListVariable.auto.tfvars")
+        event_bus_file_tf_json = os.path.join(Settings.TERRAFORM_DIR, "lambda_rule_engine_function_RuleEngineEventRules.tf.json")
+        event_bus_target_tf_json = os.path.join(Settings.TERRAFORM_DIR,"lambda_rule_engine_function_RuleEngineCloudWatchEventTargets.tf.json")
+        if os.path.exists(event_bus_file_tf_variable):
+            os.remove(event_bus_file_tf_variable)
+        if os.path.exists(event_bus_file_tf_json):
+            os.remove(event_bus_file_tf_json)
+        if os.path.exists(event_bus_target_tf_json):
+            os.remove(event_bus_target_tf_json)
