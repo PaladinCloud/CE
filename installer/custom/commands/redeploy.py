@@ -35,6 +35,8 @@ class Redeploy(BaseCommand):
 
         args.append((K.CATEGORY_FIELD_NAME, "deploy"))
         args.append((K.CATEGORY_FIELD_NAME, "upload_tf"))
+        args.append((K.CATEGORY_FIELD_NAME, "rule-engine-job"))
+        args.append((K.CATEGORY_FIELD_NAME, "submit-job"))
         self.destroy_resource_tags_list = [v for (k, v) in args if k == self.category_field_name]
 
         args.append((K.CATEGORY_FIELD_NAME, "deploy"))
@@ -42,8 +44,6 @@ class Redeploy(BaseCommand):
         args.append((K.CATEGORY_FIELD_NAME, "all_read_role"))
         args.append((K.CATEGORY_FIELD_NAME, "batch-ecr"))
         args.append((K.CATEGORY_FIELD_NAME, "batch-job"))
-        args.append((K.CATEGORY_FIELD_NAME, "submit-job"))
-        args.append((K.CATEGORY_FIELD_NAME, "rule-engine-job"))
         args.append((K.CATEGORY_FIELD_NAME, "upload_tf"))
         self.reinstall_resource_tags_list = [v for (k, v) in args if k == self.category_field_name]
 
