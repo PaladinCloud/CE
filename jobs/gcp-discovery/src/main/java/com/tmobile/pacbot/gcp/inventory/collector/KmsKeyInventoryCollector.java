@@ -7,7 +7,7 @@ import com.tmobile.pacbot.gcp.inventory.InventoryConstants;
 import com.tmobile.pacbot.gcp.inventory.util.GCPlocationUtil;
 import com.tmobile.pacbot.gcp.inventory.vo.Bindings;
 import com.tmobile.pacbot.gcp.inventory.vo.KMSKeyVH;
-import com.tmobile.pacman.commons.gcp.clients.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
