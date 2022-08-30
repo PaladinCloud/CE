@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
+import com.google.api.services.sqladmin.model.AclEntry;
 import com.google.api.services.sqladmin.model.Settings;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public class CloudSqlVH extends GCPVH{
     private ServerCaCert serverCaCert;
     private Settings settings;
     private Boolean backupEnabled;
+
+    private AclEntry authorizedNetwork;
 
     public String getName() {
         return name;
@@ -184,6 +187,13 @@ public class CloudSqlVH extends GCPVH{
 
     public void setBackupEnabled(Boolean backupEnabled) {
         this.backupEnabled = backupEnabled;
+    }
+    public AclEntry getAuthorizedNetwork() {
+        return authorizedNetwork;
+    }
+
+    public void setAuthorizedNetwork(AclEntry authorizedNetwork) {
+        this.authorizedNetwork = authorizedNetwork;
     }
 
 }
