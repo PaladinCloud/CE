@@ -149,16 +149,37 @@ public class JobScheduler {
         // azure.eventbridge.bus.details=paladincloud-azure:azure:102
         // gcp.eventbridge.bus.details=paladincloud-gcp:gcp:30
         try {
-
+            int totBatches = Integer.parseInt(this.noOfBatches);
             logger.info("No of batches: {}", noOfBatches);
-            // process aws rules
-            processRulesForCloud(eventBrClient, awsBusDetails);
 
-            // process azure rules
-            processRulesForCloud(eventBrClient, azureBusDetails);
+            for (int i = 0; i < totBatches; i++) {
+                List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
+                // add event for aws rules
+                putRuleEventIntoRequestEntry(i, awsBusDetails, putEventsRequestEntries);
 
-            // process gcp rules
-            processRulesForCloud(eventBrClient, gcpBusDetails);
+                // add event for azure rules
+                if (azureEnabled) {
+                    putRuleEventIntoRequestEntry(i, azureBusDetails, putEventsRequestEntries);
+                }
+
+                // add event for gcp rules
+                if (gcpEnabled) {
+                    putRuleEventIntoRequestEntry(i, gcpBusDetails, putEventsRequestEntries);
+                }
+
+                PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
+                PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
+
+                for (PutEventsResultEntry resultEntry : result.entries()) {
+                    if (resultEntry.eventId() != null) {
+                        logger.info("Event Id: {} ", resultEntry.eventId());
+                    } else {
+                        logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
+                    }
+                }
+                //Delay of 1 min between each batch
+                Thread.sleep(1000 * 60);
+            }
 
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
@@ -169,29 +190,7 @@ public class JobScheduler {
         eventBrClient.close();
     }
 
-    private void processRulesForCloud(EventBridgeClient eventBrClient, String busDetails) throws InterruptedException {
-        int totBatches = Integer.parseInt(this.noOfBatches);
-
-        for (int i = 0; i < totBatches; i++) {
-            List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
-            putEventIntoRequestEntry(i, busDetails, putEventsRequestEntries);
-
-            PutEventsRequest eventsRequest = PutEventsRequest.builder().entries(putEventsRequestEntries).build();
-            PutEventsResponse result = eventBrClient.putEvents(eventsRequest);
-
-            for (PutEventsResultEntry resultEntry : result.entries()) {
-                if (resultEntry.eventId() != null) {
-                    logger.info("Event Id: {} ", resultEntry.eventId());
-                } else {
-                    logger.info("Injection failed with Error Code: {}", resultEntry.errorCode());
-                }
-            }
-            //Delay of 1 min between each batch
-            Thread.sleep(1000 * 60);
-        }
-    }
-
-    private void putEventIntoRequestEntry(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList) {
+    private void putRuleEventIntoRequestEntry(int batchNo, String busDetails, List<PutEventsRequestEntry> reqEntryList) {
 
         String detailString = null;
         String cloudName = busDetails.split(":")[0].split("-")[1];
