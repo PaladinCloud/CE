@@ -1038,6 +1038,33 @@ public class PacmanUtils {
         }
     }
     
+	public static Set<String> getAssumedRolePolicies(Set<String> roleIds, String esIamRoleUrl)
+			throws Exception {
+
+		Set<String> assumedPolicies = new HashSet<>();
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustTermsFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_ATTRIBUTE_ROLE_ID), roleIds);
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esIamRoleUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			for (int i = 0; i < hitsArray.size(); i++) {
+				JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				String assumedPolicy = source.get(PacmanRuleConstants.ES_ATTRIBUTE_ASSMD_PLCY_DOC).getAsString();
+				if (!com.amazonaws.util.StringUtils.isNullOrEmpty(assumedPolicy)) {
+					assumedPolicies.add(assumedPolicy);
+				}
+			}
+		}
+		return assumedPolicies;
+	}
+    
 	/**
 	 * @param iamPolicyNameSet
 	 * @param esIamPoliciesUrl
