@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,13 +49,18 @@ import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesR
 import com.amazonaws.services.identitymanagement.model.ListAttachedRolePoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListAttachedUserPoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListAttachedUserPoliciesResult;
+import com.amazonaws.services.identitymanagement.model.ListEntitiesForPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.ListEntitiesForPolicyResult;
 import com.amazonaws.services.identitymanagement.model.ListGroupPoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListGroupPoliciesResult;
+import com.amazonaws.services.identitymanagement.model.ListPoliciesRequest;
+import com.amazonaws.services.identitymanagement.model.ListPoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListPolicyVersionsRequest;
 import com.amazonaws.services.identitymanagement.model.ListRolePoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListRolePoliciesResult;
 import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
 import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
+import com.amazonaws.services.identitymanagement.model.PolicyScopeType;
 import com.amazonaws.services.identitymanagement.model.PolicyVersion;
 import com.amazonaws.util.CollectionUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -549,7 +556,7 @@ public class IAMUtils {
 	 * @param amazonIdentityManagement
 	 * @return
 	 * 
-	 * return true if an inline policy of a role allows full administrative previleges
+	 * return true if an inline policy of a role allows full administrative privileges
 	 * 
 	 */
 	public static boolean isInlineRolePolicyWithFullAdminAccess(String roleName,
@@ -570,6 +577,103 @@ public class IAMUtils {
 				return true;
 				
 		}
+		return false;
+	}
+	
+	/**
+	 * @param arn
+	 * @param iamClient
+	 * @return
+	 * @throws RuleExecutionFailedExeption
+	 * 
+	 * Returns the role ids of all the IAM roles having 'arn' policy attached
+	 * 
+	 */
+	public static Set<String> getSupportRoleByPolicyArn(String arn,
+			AmazonIdentityManagementClient iamClient) throws RuleExecutionFailedExeption {
+
+		ListEntitiesForPolicyRequest request = new ListEntitiesForPolicyRequest();
+		ListEntitiesForPolicyResult respone = null;
+		Set<String> roleIds = null;
+		do {
+			respone = iamClient.listEntitiesForPolicy(request.withPolicyArn(arn));
+			if(respone != null && !CollectionUtils.isNullOrEmpty(respone.getPolicyRoles())) {
+				roleIds = respone.getPolicyRoles().stream().map(role -> role.getRoleId()).collect(Collectors.toSet());
+			}
+			request.setMarker(respone.getMarker());
+		} while (respone.isTruncated());
+		return roleIds;
+	}
+	
+	/**
+	 * @param policyName
+	 * @param iamClient
+	 * @return
+	 * @throws RuleExecutionFailedExeption
+	 * 
+	 * Returns the policy arn of the AWS managed policy with policyName
+	 * 
+	 */
+	public static String getAwsManagedPolicyArnByName(String policyName,
+			AmazonIdentityManagementClient iamClient) throws RuleExecutionFailedExeption {
+
+		List<String> arn = null;
+		ListPoliciesRequest request = new ListPoliciesRequest();
+		ListPoliciesResult respone = null;
+		do {
+			respone = iamClient.listPolicies(request.withScope(PolicyScopeType.AWS));
+			if (null != respone && !CollectionUtils.isNullOrEmpty(respone.getPolicies())) {
+				arn = new ArrayList<>();
+				arn.addAll(respone.getPolicies().stream()
+						.filter(policy -> policy.getPolicyName().equalsIgnoreCase(policyName))
+						.map(policy -> policy.getArn()).collect(Collectors.toList()));
+
+			}
+			request.setMarker(respone.getMarker());
+		} while (respone.isTruncated() && CollectionUtils.isNullOrEmpty(arn));
+		return !CollectionUtils.isNullOrEmpty(arn) ? arn.get(0) : null;
+	}
+	
+	/**
+	 * @param policies
+	 * @param iamClient
+	 * @return
+	 * @throws RuleExecutionFailedExeption
+	 * 
+	 * Check the assumed policies of a role having any user or group as principal
+	 * 
+	 */
+	public static boolean isSupportRoleAssumedByUserOrGroup(Set<String> policies,
+			AmazonIdentityManagementClient iamClient) throws RuleExecutionFailedExeption {
+
+		String docVersion = null;
+		for (String policyDoc : policies) {
+			try {
+				docVersion = URLDecoder.decode(policyDoc, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				logger.error(e.getMessage());
+				throw new InvalidInputException(e.getMessage());
+			}
+			Policy policy = Policy.fromJson(docVersion);
+
+			if (null != policy && !CollectionUtils.isNullOrEmpty(policy.getStatements())) {
+
+				for (Statement statement : policy.getStatements()) {
+					if (statement.getEffect().equals(Effect.Allow)) {
+
+						if (statement.getPrincipals().stream().filter(
+								principal -> principal.getId().contains("user") || principal.getId().contains("group"))
+								.count() > 0) {
+							return true;
+						}
+					}
+
+				}
+
+			}
+
+		}
+
 		return false;
 	}
 

@@ -3344,6 +3344,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_Support_Access_Role_version-1_Support_Access_account",
+    "ruleUUID": "aws_account_without_aws_support_access_role",
+    "policyId": "AWS_Support_Access_Role_version-1",
+    "ruleName": "Support role should be created for the AWS support incidents",
+    "targetType": "account",
+    "assetGroup": "aws",
+    "alexaKeyword": "AWSAccountWithoutSupportRole",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"iam-role-for-aws-support-access\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"AWSSupportAccess\",\"key\":\"policyName\"},{\"encrypt\":false,\"value\":\"\/aws\/iamrole\/_search\",\"key\":\"esIamRoleUrl\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_Support_Access_Role_version-1_Support_Access_account\",\"autofix\":false,\"alexaKeyword\":\"AWSAccountWithoutSupportRole\",\"ruleRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_Support_Access_Role_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_account_without_aws_support_access_role\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_without_aws_support_access_role",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Configure dedicated IAM role for AWS support access",
+    "createdDate": "2022-08-31",
+    "modifiedDate": "2022-08-31",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "AWS_IAM_User_Full_Admin_Privilege_version-1_Admin_Privilege_iamuser",
     "ruleUUID": "iam-user-with-admin-privilege-policy",
     "policyId": "AWS_IAM_User_Full_Admin_Privilege_version-1",
