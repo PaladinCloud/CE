@@ -1091,7 +1091,7 @@ public class TestUtils {
                 "            \"ipConfiguration\": {\n" +
                 "              \"authorizedNetworks\": [+\n" +
                 "               {\n" +
-                "                \"value\": \"192.232.223.331/0\",\n"  +
+                "                \"value\": \"10.50.51.5/32\",\n"  +
                 "                \"kind\": \"sql#aclEntry\"\n" +
                 "                 \"name\": \"private-ip\"\n"   +
                 "                }\n" +
