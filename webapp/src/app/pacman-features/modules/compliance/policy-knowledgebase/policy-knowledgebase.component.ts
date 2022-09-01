@@ -262,7 +262,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     * this function is used to fetch the rule id and to navigate to the next page
     */
 
-  gotoNextPage(tileData){
+  goToDetails(tileData){
    let autofixEnabled = false;
     if ( tileData.autoFixEnabled) {
       autofixEnabled = true;

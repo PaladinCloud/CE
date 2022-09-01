@@ -1,9 +1,11 @@
 <div class="table-container flex flex-col">
-    <div class="table-wrapper">
+    <div [class.loader]="data.length==0 && tableErrorMessage==''"></div>
+    <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
+    <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
         <div class="table-header flex flex-row">
         <div class="header-left flex flex-row">
-            <div class="title" *ngIf="showTitle">
-                {{ title }}
+            <div class="title" *ngIf="tableTitle">
+                {{ tableTitle }}
             </div>
             <div class="search-bar-wrapper flex flex-row" *ngIf="showSearchBar">
                 <img src="/assets/icons/header-search.svg" matPrefix alt="" />
@@ -39,7 +41,11 @@
         <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
                 <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header> {{ columnNamesMap[column] }} </th>
-                <td [title]="element[column]" [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> {{ element[column] }} </td>
+                <td [title]="element[column]" [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> 
+                    <img *ngIf="dataMap[element[column]] && dataMap[element[column]]['image']" src="/assets/icons/{{dataMap[element[column]].image}}.svg"> 
+                    <span *ngIf="!dataMap[element[column]] || !dataMap[element[column]].imageOnly">{{ element[column] }} </span>
+                    <span *ngIf="dataMap[element[column]] && dataMap[element[column]].data"> {{ dataMap[element[column]].data }} </span>
+                </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="whiteListColumns"></tr>

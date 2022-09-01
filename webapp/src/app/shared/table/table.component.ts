@@ -21,7 +21,9 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Input() searchQuery = "";
   @Input() showSearchBar;
   @Input() showAddRemoveCol;
-  @Input() showTitle;
+  @Input() tableTitle;
+  @Input() dataMap = {};
+  tableErrorMessage = '';
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -43,6 +45,7 @@ export class TableComponent implements OnInit,AfterViewInit {
   constructor(private readonly changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    
     this.mainDataSource = new MatTableDataSource(this.data);
     this.dataSource = new MatTableDataSource(this.data);
     if(this.columnWidths){
@@ -53,17 +56,19 @@ export class TableComponent implements OnInit,AfterViewInit {
     }else{
       this.allSelected=false;
     }
-    if(this.searchQuery!='') this.customFilter(this.searchQuery);
+    if(this.searchQuery && this.showSearchBar) this.customFilter(this.searchQuery);
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
   }
 
   ngAfterViewInit(): void {  
-    this.select.options.forEach((item: MatOption) => {
-      if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
-        item.select();
-      }
-    });
-    this.changeDetectorRef.detectChanges();
+    if(this.select){
+      this.select.options.forEach((item: MatOption) => {
+        if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
+          item.select();
+        }
+      });
+      this.changeDetectorRef.detectChanges();
+    }
   }
 
   handleSearchInColumnsChange(){
@@ -126,6 +131,10 @@ export class TableComponent implements OnInit,AfterViewInit {
       }
       return false;
     })
+
+    if(this.dataSource.data.length==0){
+      this.tableErrorMessage = 'noSearchFound';
+    }
   }
 
   handleSearch(event){ 

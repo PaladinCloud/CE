@@ -66,6 +66,7 @@
   --background-white: #ffffff;
   --background-grey: #f2f3f5;
   --table-header-background: #fafafa;
+  --gamma-grey-600: #84818A;
 
   --text-headline-1: 700 41px/100% var(--text-medium-font-family);
   --text-headline-2: 700 35px/100% var(--text-medium-font-family);
