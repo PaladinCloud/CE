@@ -54,6 +54,7 @@ public class VaultInventoryCollector {
 					JsonObject properties = vaultObject.getAsJsonObject("properties");
 					JsonObject tags = vaultObject.getAsJsonObject("tags");
 					if (properties != null) {
+						log.info("********* valutInventory *****>{}",properties);
 						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
 								HashMap.class);
 						vaultVH.setEnabledForDeployment((boolean) propertiesMap.get("enabledForDeployment"));
@@ -64,13 +65,24 @@ public class VaultInventoryCollector {
 						vaultVH.setProvisioningState(propertiesMap.get("provisioningState").toString());
 						vaultVH.setSku((Map<String, Object>) propertiesMap.get("sku"));
 						vaultVH.setVaultUri(propertiesMap.get("vaultUri").toString());
-						JsonArray accessPolicies = properties.getAsJsonArray("accessPolicies");
-						JsonObject permissions = (JsonObject) ((JsonObject) accessPolicies.get(0)).get("permissions");
-						HashMap<String, List<String>> permissionsMap = new Gson().fromJson(permissions.toString(),
+						if(propertiesMap.get("enablePurgeProtection")!=null){
+							vaultVH.setEnablePurgeProtection((boolean)propertiesMap.get("enablePurgeProtection"));
+						}
+						if(propertiesMap.get("enableSoftDelete")!=null){
+							vaultVH.setEnableSoftDelete((boolean)propertiesMap.get("enableSoftDelete"));
+						}
+						if(properties.get("accessPolicies")!=null) {
+							JsonArray accessPolicies = properties.getAsJsonArray("accessPolicies");
+							if(accessPolicies.size()>0) {
+							JsonObject permissions = (JsonObject) ((JsonObject) accessPolicies.get(0)).get("permissions");
+							HashMap<String, List<String>> permissionsMap = new Gson().fromJson(permissions.toString(),
 								HashMap.class);
-						vaultVH.setPermissionForKeys(permissionsMap.get("keys"));
-						vaultVH.setPermissionForSecrets(permissionsMap.get("secrets"));
-						vaultVH.setPermissionForCertificates(permissionsMap.get("certificates"));
+							vaultVH.setPermissionForKeys(permissionsMap.get("keys"));
+							vaultVH.setPermissionForSecrets(permissionsMap.get("secrets"));
+							vaultVH.setPermissionForCertificates(permissionsMap.get("certificates"));
+						}
+						}
+
 					}
 					if (tags != null) {
 						HashMap<String, Object> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
