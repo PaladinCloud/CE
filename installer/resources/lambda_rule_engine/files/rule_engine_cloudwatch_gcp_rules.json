@@ -1032,5 +1032,27 @@
     "modifiedDate": "2022-08-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enforce_cloud_SQL_incoming_Connections_To_Use_SSL",
+    "ruleUUID": "Enforce_cloud_SQL_incoming_Connections_To_Use_SSL",
+    "policyId": "Enforce_cloud_SQL_incoming_Connections_To_Use_SSL",
+    "ruleName": "Enforce cloud SQL incoming Connections To Use SSL",
+    "targetType": "cloudsql",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Enforce_cloud_SQL_incoming_Connections_To_Use_SSL",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-ssl-to-cloud-sql\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enforce cloud SQL incoming Connections To Use SSL\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"autofix\":false,\"alexaKeyword\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"policyId\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enforce_cloud_SQL_incoming_Connections_To_Use_SSL",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enforce cloud SQL incoming Connections To Use SSL",
+    "createdDate": "2022-08-16",
+    "modifiedDate": "2022-08-16",
+    "severity": "medium",
+    "category": "security"
   }
 ]
