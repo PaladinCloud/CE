@@ -11,7 +11,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
-from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids
+from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids, get_aws_account_details
 import json
 from core.config import Settings
 
@@ -83,8 +83,10 @@ class DataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "package_hint",
                 'value': "com.tmobile.cso.pacman"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+#             {'encrypt': False, 'key': "accountinfo",
+#                 'value': AwsAccount.get_output_attr('account_id')},
             {'encrypt': False, 'key': "accountinfo",
-                'value': AwsAccount.get_output_attr('account_id')},
+                                'value': get_aws_account_details()}
         ]
     })
 

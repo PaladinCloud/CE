@@ -16,11 +16,7 @@
 package com.tmobile.cso.pacman.inventory;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -89,23 +85,37 @@ public class InventoryFetchOrchestrator {
 	
 	private void fetchAccountInfo() {
 		String accountQuery = "SELECT accountId,accountName,STATUS FROM cf_Aws_Accounts where status = 'onboarded'";
-		
+		String accountInsertQuery="INSERT INTO cf_Aws_Accounts(id,accountId, accountName) values ( ? , ? , ? ) ";
+		String findAccountDetails="SELECT accountId,accountName,status FROM cf_Aws_Accounts where id = ? ";
 		// Check DB if account information is available in DB.
 		
 		if( accountInfo == null || "".equals(accountInfo)){
 			accounts = rdsDBManager.executeQuery(accountQuery);
 		}else{
-			String accountlist = Arrays.asList(accountInfo.split(",")).stream().collect(Collectors.joining("','"));
+			String accountlist = Arrays.asList(accountInfo.split(",")).stream()
+					.map(acc->acc.substring(0,acc.indexOf(':'))).collect(Collectors.joining(","));
 			accounts = rdsDBManager.executeQuery(accountQuery +" AND accountid IN ('"+ accountlist+ "')");	
 		}
 		// No info from DB. Okay lets use what parameter we get.
 		if(accounts.isEmpty()){
 			String[] accountArray = accountInfo.split(",");
-			for(String account : accountArray){
+			for(String accountDetails : accountArray){
+				String[] data = accountDetails.split(":");
+				String account=data[0];
+				String accountName=data[1];
 				Map<String,String> accountMap = new HashMap<>();
 				accountMap.put(InventoryConstants.ACCOUNT_ID,account);
-				accountMap.put(InventoryConstants.ACCOUNT_NAME,"");
+				accountMap.put(InventoryConstants.ACCOUNT_NAME,accountName);
 				accounts.add(accountMap);
+				//update the accountName in the RDS DB for auditing
+				String id=account+"-"+accountName;
+				List<Map<String,String>> result= rdsDBManager.executeQueryWithParam(findAccountDetails,
+						Arrays.asList(new String[]{id}));
+				if(result==null || result.isEmpty()) {
+					List<Object> paramList = Arrays.asList(new String[]{id, account, accountName});
+					int row = rdsDBManager.executeUpdate(accountInsertQuery, paramList);
+					log.debug("Inserted :{} row in cf_Aws_Accounts table", row);
+				}
 			}
 		}
 	}

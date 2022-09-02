@@ -1,11 +1,6 @@
 package com.tmobile.cso.pacman.inventory.dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,6 +79,46 @@ public class RDSDBManager {
         } catch (Exception ex) {
             log.error("Error Executing Query",ex);
         } 
+        return results;
+    }
+
+    public int executeUpdate(String query, List<Object> paramList){
+        try(
+            Connection conn = getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query);){
+            for(int i=0;i<paramList.size();i++){
+                preparedStatement.setObject(i+1,paramList.get(i));
+            }
+            return preparedStatement.executeUpdate();
+        } catch (Exception ex) {
+        log.error("Error Executing Query",ex);
+    }
+        return 0;
+    }
+
+    public List<Map<String, String>> executeQueryWithParam(String query, List<Object> paramList) {
+        List<Map<String, String>> results = new ArrayList<>();
+        try(
+                Connection conn = getConnection();
+                PreparedStatement preparedStatement = conn.prepareStatement(query);
+                ){
+            for(int i=0;i<paramList.size();i++){
+                preparedStatement.setObject(i+1,paramList.get(i));
+            }
+            ResultSet rs = preparedStatement.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            Map<String, String> data;
+            while (rs.next()) {
+                data = new LinkedHashMap<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    data.put(rsmd.getColumnName(i), rs.getString(i));
+                }
+                results.add(data);
+            }
+        } catch (Exception ex) {
+            log.error("Error Executing Query",ex);
+        }
         return results;
     }
 
