@@ -305,7 +305,9 @@ export class OpenPortsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     try {
       this.subscriptionToAssetGroup.unsubscribe();
-      this.dataSubscription.unsubscribe();
+      if (this.dataSubscription) {
+        this.dataSubscription.unsubscribe();
+      }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.getErrorValues();
