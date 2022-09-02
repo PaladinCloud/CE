@@ -336,7 +336,9 @@ export class InstalledSoftwaresComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     try {
-      this.dataSubscription.unsubscribe();
+      if (this.dataSubscription) {
+        this.dataSubscription.unsubscribe();
+      }
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.getErrorValues();
