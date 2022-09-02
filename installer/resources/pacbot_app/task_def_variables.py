@@ -1,3 +1,5 @@
+
+from .utils import need_to_enable_azure, need_to_enable_gcp
 from resources.pacbot_app.cloudwatch_log_groups import UiCloudWatchLogGroup, ApiCloudWatchLogGroup
 from resources.pacbot_app.ecr import APIEcrRepository, UIEcrRepository
 from resources.data.aws_info import AwsRegion
@@ -7,6 +9,7 @@ from core.config import Settings
 import json
 
 
+
 class ContainerDefinitions:
     """Friend class for getting the container definitions of each service"""
     ui_image = UIEcrRepository.get_output_attr('repository_url') + ":" + "latest"
@@ -14,12 +17,14 @@ class ContainerDefinitions:
     ui_cw_log_group = UiCloudWatchLogGroup.get_output_attr('name')
     api_cw_log_group = ApiCloudWatchLogGroup.get_output_attr('name')
     CONFIG_PASSWORD = "pacman"
+    CONFIG_CREDS = "dXNlcjpwYWNtYW4="
     CONFIG_SERVER_URL = ApplicationLoadBalancer.get_api_server_url('config')
+    CONFIG_URL = ApplicationLoadBalancer.get_api_base_url() + "/config/batch,inventory,job-scheduler/prd/latest"
     PACMAN_HOST_NAME = ApplicationLoadBalancer.get_http_url()
     RDS_USERNAME = MySQLDatabase.get_input_attr('username')
     RDS_PASSWORD = MySQLDatabase.get_input_attr('password')
     RDS_URL = MySQLDatabase.get_rds_db_url()
-
+    
     def get_container_definitions_without_env_vars(self, container_name):
         """
         This method returns the basic common container definitioons for all task definitions
@@ -27,7 +32,7 @@ class ContainerDefinitions:
         Returns:
             container_definitions (dict): Container definitions
         """
-        memory = 1024 if container_name == "nginx" else 3072
+        memory = 1024 if container_name == "nginx"  else 3072
         return {
             'name': container_name,
             "image": self.ui_image if container_name == 'nginx' else self.api_image,
@@ -45,7 +50,7 @@ class ContainerDefinitions:
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": self.ui_cw_log_group if container_name == 'nginx' else self.api_cw_log_group,
+                    "awslogs-group": self.ui_cw_log_group if container_name == 'nginx'  else self.api_cw_log_group,
                     "awslogs-region": AwsRegion.get_output_attr('name'),
                     "awslogs-stream-prefix": Settings.RESOURCE_NAME_PREFIX + "-" + container_name
                 }
@@ -143,7 +148,14 @@ class ContainerDefinitions:
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
             {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('auth')}
         ]
-
+        
+    def get_scheduler_container_env_vars(self):
+        return [
+            {'name': "JAR_FILE", 'value': "paladin-job-scheduler.jar"},
+            {'name': "CONFIG_CREDS", 'value': self.CONFIG_CREDS},
+            {'name': "CONFIG_URL", 'value': self.CONFIG_URL},
+        ]
+ 
     def get_vulnerability_container_env_vars(self):
         return [
             {'name': "JAR_FILE", 'value': "pacman-api-vulnerability.jar"},

@@ -7,13 +7,14 @@ from resources.s3.bucket import BucketStorage
 from resources.batch.job import SubmitAndRuleEngineJobDefinition, RuleEngineJobQueue
 from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_rule_engine.s3_upload import UploadLambdaRuleEngineZipFile, RULE_ENGINE_JOB_FILE_NAME
-from resources.lambda_rule_engine.utils import get_rule_engine_cloudwatch_rules_var
+from resources.lambda_rule_engine.utils import get_rule_engine_cloudwatch_rules_aws_var, get_rule_engine_cloudwatch_rules_azure_var, get_rule_engine_cloudwatch_rules_gcp_var
 from core.config import Settings
 from core.providers.aws.boto3 import cloudwatch_event
 from core.mixins import MsgMixin
 from resources.pacbot_app.alb import ApplicationLoadBalancer
+from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 import sys
-
+from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure, CloudWatchEventBusgcp
 
 class RuleEngineLambdaFunction(LambdaFunctionResource):
     function_name = "ruleengine"
@@ -34,29 +35,83 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
     DEPENDS_ON = [SubmitAndRuleEngineJobDefinition, RuleEngineJobQueue]
 
 
-class RulesListVariable(TerraformVariable):
-    variable_name = "rules"
+class RulesListVariableAws(TerraformVariable):
+    variable_name = "awsrules"
     variable_type = "list"
     default_value = []
-    variable_dict_input = get_rule_engine_cloudwatch_rules_var()
+    variable_dict_input = get_rule_engine_cloudwatch_rules_aws_var()
 
+class RulesListVariableAzure(TerraformVariable):
+    variable_name = "azurerules"
+    variable_type = "list"
+    default_value = []
+    variable_dict_input = get_rule_engine_cloudwatch_rules_azure_var()
+    PROCESS = need_to_enable_azure()
 
-class RuleEngineEventRules(CloudWatchEventRuleResource):
-    count = RulesListVariable.length()
-    name = RulesListVariable.lookup('ruleId')
-    schedule_expression = RulesListVariable.lookup('schedule')
+class RulesListVariableGcp(TerraformVariable):
+    variable_name = "gcprules"
+    variable_type = "list"
+    default_value = []
+    variable_dict_input = get_rule_engine_cloudwatch_rules_gcp_var()
+    PROCESS = need_to_enable_gcp()
 
-    VARIABLES = [RulesListVariable]
+class RuleEngineEventRulesAws(CloudWatchEventRuleResource):
+    count = RulesListVariableAws.length()
+    name = RulesListVariableAws.lookup('ruleId')
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
+    event_pattern = RulesListVariableAws.lookup('event')
+    
+    VARIABLES = [RulesListVariableAws]
     DEPENDS_ON = [RuleEngineLambdaFunction, ESDomainPolicy]
     available_args = {
         'name': {'required': True},
-        'schedule_expression': {'required': True},
-        'event_pattern': {'required': False},
+        'schedule_expression': {'required': False},
+        'event_bus_name' :  {'required':True},
+        'event_pattern': {'required':True},
         'role_arn ': {'required': False},
         'is_enabled ': {'required': False},
         'description': {'required': False},
         'tags' : {'required':False}
     }
+
+class RuleEngineEventRulesAzure(CloudWatchEventRuleResource):
+    count = RulesListVariableAzure.length()
+    name = RulesListVariableAzure.lookup('ruleId')
+    event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
+    event_pattern = RulesListVariableAzure.lookup('event')
+    
+    VARIABLES = [RulesListVariableAzure]
+    DEPENDS_ON = [RuleEngineLambdaFunction, ESDomainPolicy]
+    available_args = {
+        'name': {'required': True},
+        'schedule_expression': {'required': False},
+        'event_bus_name' :  {'required':True},
+        'event_pattern': {'required':True},
+        'role_arn ': {'required': False},
+        'is_enabled ': {'required': False},
+        'description': {'required': False},
+        'tags' : {'required':False}
+    }
+    PROCESS = need_to_enable_azure()
+class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
+    count = RulesListVariableGcp.length()
+    name = RulesListVariableGcp.lookup('ruleId')
+    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    event_pattern = RulesListVariableGcp.lookup('event')
+    
+    VARIABLES = [RulesListVariableGcp]
+    DEPENDS_ON = [RuleEngineLambdaFunction, ESDomainPolicy]
+    available_args = {
+        'name': {'required': True},
+        'schedule_expression': {'required': False},
+        'event_bus_name' :  {'required':True},
+        'event_pattern': {'required':True,},
+        'role_arn ': {'required': False},
+        'is_enabled ': {'required': False},
+        'description': {'required': False},
+        'tags' : {'required':False}
+    }
+    PROCESS = need_to_enable_gcp()
 
     def check_exists_before(self, input, tf_outputs):
         """
@@ -66,17 +121,44 @@ class RuleEngineEventRules(CloudWatchEventRuleResource):
         checked_details = {}
 
         if not self.resource_in_tf_output(tf_outputs):
-            for rule in get_rule_engine_cloudwatch_rules_var():
+            for rule in get_rule_engine_cloudwatch_rules_aws_var():
                 rule_name = rule['ruleId']
                 exists = cloudwatch_event.check_rule_exists(
                     rule_name,
                     input.AWS_AUTH_CRED)
-
+            
                 if exists:
                     checked_details = {'attr': "name", 'value': rule_name}
                     break
 
+            for rule in get_rule_engine_cloudwatch_rules_azure_var():
+                if  not need_to_enable_azure():
+                    continue
+                rule_name = rule['ruleId']
+                exists = cloudwatch_event.check_rule_exists(
+                    rule_name,
+                    input.AWS_AUTH_CRED)
+            
+                if exists:
+                    checked_details = {'attr': "name", 'value': rule_name}
+                    break
+
+            for rule in get_rule_engine_cloudwatch_rules_gcp_var():
+                if  not need_to_enable_gcp():
+                    continue
+                rule_name = rule['ruleId']
+                exists = cloudwatch_event.check_rule_exists(
+                    rule_name,
+                    input.AWS_AUTH_CRED)
+            
+                if exists:
+                    checked_details = {'attr': "name", 'value': rule_name}
+                    break
+
+
         return exists, checked_details
+        
+            
 
     def pre_terraform_destroy(self):
         """
@@ -84,7 +166,33 @@ class RuleEngineEventRules(CloudWatchEventRuleResource):
         and re create cloudwatch rules and then attach targets in the PacBot application. So terraform cannot track them and fail to
         execute destroy.
         """
-        for rule in get_rule_engine_cloudwatch_rules_var():
+        for rule in get_rule_engine_cloudwatch_rules_aws_var():
+            rule_name = rule['ruleId']
+            try:
+                cloudwatch_event.remove_all_targets_of_a_rule(
+                    rule_name,
+                    Settings.AWS_AUTH_CRED)
+            except Exception as e:
+                message = "\n\t ** Not able to remove targets from the rule: %s: Reason: %s **\n" % (rule_name, str(e))
+                print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
+                sys.exit()
+
+        for rule in get_rule_engine_cloudwatch_rules_azure_var():
+            if  not need_to_enable_azure():
+                continue
+            rule_name = rule['ruleId']
+            try:
+                cloudwatch_event.remove_all_targets_of_a_rule(
+                    rule_name,
+                    Settings.AWS_AUTH_CRED)
+            except Exception as e:
+                message = "\n\t ** Not able to remove targets from the rule: %s: Reason: %s **\n" % (rule_name, str(e))
+                print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
+                sys.exit()
+
+        for rule in get_rule_engine_cloudwatch_rules_gcp_var():
+            if  not need_to_enable_gcp():
+                continue
             rule_name = rule['ruleId']
             try:
                 cloudwatch_event.remove_all_targets_of_a_rule(
@@ -96,21 +204,39 @@ class RuleEngineEventRules(CloudWatchEventRuleResource):
                 sys.exit()
 
 
-class RuleEngineCloudWatchEventTargets(CloudWatchEventTargetResource):
-    count = RulesListVariable.length()
-    rule = RulesListVariable.lookup('ruleId')
+class RuleEngineCloudWatchEventTargetsAws(CloudWatchEventTargetResource):
+    count = RulesListVariableAws.length()
+    rule = RulesListVariableAws.lookup('ruleId')
     arn = RuleEngineLambdaFunction.get_output_attr('arn')
     target_id = RuleEngineLambdaFunction.get_input_attr('function_name') + '-target'
-    target_input = RulesListVariable.lookup('ruleParams')
+    target_input = RulesListVariableAws.lookup('ruleParams')
+    event_bus_name = CloudWatchEventBusaws.get_output_attr('arn')
+    DEPENDS_ON = [RuleEngineEventRulesAws]
 
-    DEPENDS_ON = [RuleEngineEventRules]
-
+class RuleEngineCloudWatchEventTargetsAzure(CloudWatchEventTargetResource):
+    count = RulesListVariableAzure.length()
+    rule = RulesListVariableAzure.lookup('ruleId')
+    arn = RuleEngineLambdaFunction.get_output_attr('arn')
+    target_id = RuleEngineLambdaFunction.get_input_attr('function_name') + '-target'
+    target_input = RulesListVariableAzure.lookup('ruleParams')
+    event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
+    DEPENDS_ON = [RuleEngineEventRulesAzure]
+    PROCESS = need_to_enable_azure()
+class RuleEngineCloudWatchEventTargetsGcp(CloudWatchEventTargetResource):
+    count = RulesListVariableGcp.length()
+    rule = RulesListVariableGcp.lookup('ruleId')
+    arn = RuleEngineLambdaFunction.get_output_attr('arn')
+    target_id = RuleEngineLambdaFunction.get_input_attr('function_name') + '-target'
+    target_input = RulesListVariableGcp.lookup('ruleParams')
+    event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
+    DEPENDS_ON = [RuleEngineEventRulesGcp]
+    PROCESS = need_to_enable_gcp()
 
 class EventRulesLambdaPermissions(LambdaPermission):
     statement_id = "sid-" + Settings.AWS_ACCOUNT_ID
     action = "lambda:InvokeFunction"
     function_name = RuleEngineLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
-    # source_arn = RuleEngineEventRules.get_output_attr(key='arn', index=True) #Not required since there are huge list of rules
+    # source_arn = RuleEngineEventRulesAWS.get_output_attr(key='arn', index=True) #Not required since there are huge list of rules
 
-    DEPENDS_ON = [RuleEngineCloudWatchEventTargets]
+    DEPENDS_ON = [RuleEngineCloudWatchEventTargetsAws]

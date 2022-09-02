@@ -1,4 +1,4 @@
-from core.terraform.resources.aws.s3 import S3Bucket
+from core.terraform.resources.aws.s3 import S3Bucket, S3Acl
 from core.terraform.resources.aws import iam
 from core.config import Settings
 from resources.iam.base_role import BaseRole
@@ -7,9 +7,11 @@ from resources.iam.ecs_role import ECSRole
 
 class BucketStorage(S3Bucket):
     bucket = "data-" + Settings.AWS_REGION + "-" + Settings.AWS_ACCOUNT_ID
-    acl = "private"
     force_destroy = True
 
+class BucketAcl(S3Acl):
+    bucket = BucketStorage.get_output_attr('id')
+    acl = "private"
 
 class S3ResourcePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [

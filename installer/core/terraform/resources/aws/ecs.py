@@ -111,11 +111,11 @@ class ECSServiceResource(TerraformResource):
             }
         },
         'load_balancer': {
-            'required': True,
+            'required': False,
             'inline_args': {
-                'load_balancer_target_group_arn': {'required': True, 'tf_arg_key': "target_group_arn"},
-                'load_balancer_container_name': {'required': True, 'tf_arg_key': "container_name"},
-                'load_balancer_container_port': {'required': True, 'tf_arg_key': "container_port"},
+                'load_balancer_target_group_arn': {'required': False, 'tf_arg_key': "target_group_arn"},
+                'load_balancer_container_name': {'required': False, 'tf_arg_key': "container_name"},
+                'load_balancer_container_port': {'required': False, 'tf_arg_key': "container_port"},
             }
         },
         'tags': {'required': False},
