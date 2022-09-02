@@ -20,7 +20,7 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-if-allowlist-all-public-ip-for-db", desc = "Check if Whitelisting of all Public IP Addresses Cloud SQL Database Instances ", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanRule(key = "check-if-allowlist-all-public-ip-for-db", desc = "Check if Allowlist of all Public IP Addresses Cloud SQL Database Instances ", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class DenyWhitelistAllPublicIpRule extends BaseRule {
     private static final Logger logger = LoggerFactory.getLogger(DenyWhitelistAllPublicIpRule.class);
     private static final String VALUE = "value";
@@ -65,7 +65,7 @@ public class DenyWhitelistAllPublicIpRule extends BaseRule {
                     issue.put(PacmanRuleConstants.VIOLATION_REASON, violationReason);
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                    logger.debug("Cloud sql whitelist all public ip ended with failure. Annotation {} :", annotation);
+                    logger.debug("Cloud sql allowlist all public ip ended with failure. Annotation {} :", annotation);
                     return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
@@ -73,7 +73,7 @@ public class DenyWhitelistAllPublicIpRule extends BaseRule {
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
-        logger.debug("Cloud sql whitelist all public ip rule ended with success.");
+        logger.debug("Cloud sql allowlist all public ip rule ended with success.");
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
