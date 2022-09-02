@@ -946,6 +946,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Deny_allowlist_all_public_ip_for_sql",
+    "ruleUUID": "Deny_allowlist_all_public_ip_for_sql",
+    "policyId": "Deny_allowlist_all_public_ip_for_sql",
+    "ruleName": "Deny Allowlist of all Public IP Addresses Cloud SQL Database Instances",
+    "targetType": "cloudsql",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Deny_allowlist_all_public_ip_for_sql",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-allowlist-all-public-ip-for-db\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that your Google Cloud SQL database instances are configured to accept connections from trusted networks and IP addresses only.\n\n \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"SQL DB instances have allowed all public IP\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_cloudsql/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny Allowlist of all Public IP Addresses Cloud SQL Database Instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Deny_allowlist_all_public_ip_for_sql\",\"autofix\":false,\"alexaKeyword\":\"Deny_allowlist_all_public_ip_for_sql\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"policyId\":\"Deny_allowlist_all_public_ip_for_sql\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Deny_allowlist_all_public_ip_for_sql\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Deny_allowlist_all_public_ip_for_sql",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny Allowlist of all Public IP Addresses Cloud SQL Database Instances",
+    "createdDate": "2022-08-18",
+    "modifiedDate": "2022-08-18",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Disable_Remote_Access_Flag_for_SQL_Server_DB_Instances",
     "ruleUUID": "Disable_Remote_Access_Flag_for_SQL_Server_DB_Instances",
     "policyId": "Disable_Remote_Access_Flag_for_SQL_Server_DB_Instances",
