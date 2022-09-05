@@ -13,10 +13,9 @@ sudo amazon-linux-extras install epel -y
 sudo yum install python3-pip -y
 
 ## Install Terraform
-sudo yum -y install unzip
-wget https://releases.hashicorp.com/terraform/1.2.8/terraform_1.2.8_linux_amd64.zip
-sudo unzip terraform_1.2.8_linux_amd64.zip
-sudo mv terraform /usr/bin
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+sudo yum -y install terraform
 
 ## INSTALL NODEJS and dependencies
 sudo yum install curl -y
@@ -82,10 +81,9 @@ sudo pip3 install -r requirements.txt
 # sudo apt install -y mysql-client
 
 # ## Install Terraform
-# sudo apt -y install unzip
-# wget wget https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
-# sudo unzip terraform_0.11.15_linux_amd64.zip
-# sudo mv terraform /usr/bin
+#wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+#echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+#sudo apt update && sudo apt install terraform
 
 # # INSTALL NODEJS and dependencies
 # sudo apt install -y curl
