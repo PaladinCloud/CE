@@ -53,7 +53,7 @@ dependencies installed correctly.
   - boto3 (1.9)
   - gitpython
 
-  3. Install the Terraform from https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_linux_amd64.zip
+  3. Install the latest version of Terraform from https://learn.hashicorp.com/terraform/getting-started/install.html
   4. Install `node` version >=8.15.0 and <= 14.x.x
   5. Install `npm` version 6.4.1 or higher
   6. Install the following npm packages
