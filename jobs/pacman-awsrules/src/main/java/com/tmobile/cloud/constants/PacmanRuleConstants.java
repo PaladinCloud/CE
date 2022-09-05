@@ -57,6 +57,7 @@ public class PacmanRuleConstants {
     public static final String CLIENT_CERT_ENABLED = "clientCertEnabled";
     public static final String autoCreateSubnetworks="autoCreateSubnetworks";
     public static final String GCP_SHIELDED_CONFIG ="shieldedInstanceConfig" ;
+    public static final String AZURE_TLSVersion_MySQLFlex="tlsVersion";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");

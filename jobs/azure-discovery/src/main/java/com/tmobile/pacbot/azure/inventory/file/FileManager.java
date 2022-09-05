@@ -81,7 +81,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-webapp.data", "[", false);
 		FileGenerator.writeToFile("azure-subscription.data", "[", true);
 		FileGenerator.writeToFile("azure-functionapp.data", "[", false);
-
+		FileGenerator.writeToFile("azure-mysqlflexible.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
@@ -122,7 +122,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-webapp.data", "]", true);
 		FileGenerator.writeToFile("azure-subscription.data", "]", true);
 		FileGenerator.writeToFile("azure-functionapp.data", "]", true);
-
+		FileGenerator.writeToFile("azure-mysqlflexible.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -301,4 +301,8 @@ public class FileManager {
     public static void generateFunctionAppFiles(List<FunctionAppVH> functionAppVHList) {
 		FileGenerator.generateJson(functionAppVHList, "azure-functionapp.data");
     }
+
+	public static void generateMySQLFlexibleFiles(List<MySQLFlexibleVH> mySQLFlexibleVHListVHList) {
+		FileGenerator.generateJson(mySQLFlexibleVHListVHList, "azure-mysqlflexible.data");
+	}
 }

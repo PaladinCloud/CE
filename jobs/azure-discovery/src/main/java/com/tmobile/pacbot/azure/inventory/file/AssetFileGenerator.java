@@ -144,6 +144,9 @@ public class AssetFileGenerator {
 	@Autowired
 	FunctionAppInventoryCollector functionAppInventoryCollector;
 
+	@Autowired
+	MySQLFlexibleInventoryCollector mySQLFlexibleInventoryCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -639,6 +642,21 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("mysqlflexible"))) {
+					log.info("no target type found for mysqlflexible!!");
+					return;
+				}
+				try {
+
+					FileManager
+							.generateMySQLFlexibleFiles(mySQLFlexibleInventoryCollector.fetchMySQLFlexibleServerDetails(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
