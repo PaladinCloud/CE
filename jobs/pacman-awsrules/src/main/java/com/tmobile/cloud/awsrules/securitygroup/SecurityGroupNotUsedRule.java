@@ -97,36 +97,32 @@ public class SecurityGroupNotUsedRule extends BaseRule {
 			throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 		}
 
-		if ("ap-northeast-1".equalsIgnoreCase(resourceAttributes.get("region"))) {
-			if (!resourceAttributes.isEmpty() && !PacmanRuleConstants.DEFAUTL_SG_GROUP
-					.equals(resourceAttributes.get(PacmanRuleConstants.GROUP_NAME))) {
-				groupId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.GROUP_ID));
-				String resource;
-				try {
-					resource = PacmanUtils.getQueryFromElasticSearch(groupId, ES_NETWORK_INTERFACE_INDEX, esUrl,
-							ruleParam);
-					if (StringUtils.isNullOrEmpty(resource)) {
-						annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-						annotation.put(PacmanSdkConstants.DESCRIPTION, "Unused security group found!!");
-						annotation.put(PacmanRuleConstants.SEVERITY, severity);
-						annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
-						annotation.put(PacmanRuleConstants.CATEGORY, category);
-						annotation.put(PacmanRuleConstants.GROUP_NAME, groupName);
+		if (!resourceAttributes.isEmpty() && !PacmanRuleConstants.DEFAUTL_SG_GROUP
+				.equals(resourceAttributes.get(PacmanRuleConstants.GROUP_NAME))) {
+			groupId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.GROUP_ID));
+			String resource;
+			try {
+				resource = PacmanUtils.getQueryFromElasticSearch(groupId, ES_NETWORK_INTERFACE_INDEX, esUrl, ruleParam);
+				if (StringUtils.isNullOrEmpty(resource)) {
+					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+					annotation.put(PacmanSdkConstants.DESCRIPTION, "Unused security group found!!");
+					annotation.put(PacmanRuleConstants.SEVERITY, severity);
+					annotation.put(PacmanRuleConstants.SUBTYPE, Annotation.Type.RECOMMENDATION.toString());
+					annotation.put(PacmanRuleConstants.CATEGORY, category);
+					annotation.put(PacmanRuleConstants.GROUP_NAME, groupName);
 
-						issue.put(PacmanRuleConstants.VIOLATION_REASON,
-								"Security group not associated to any of EC2/ApplicationElb/ClassicElb/RDSDB/RDSCluster/RedShift/Lambda/Elasticsearch");
-						issueList.add(issue);
-						annotation.put("issueDetails", issueList.toString());
+					issue.put(PacmanRuleConstants.VIOLATION_REASON,
+							"Security group not associated to any of EC2/ApplicationElb/ClassicElb/RDSDB/RDSCluster/RedShift/Lambda/Elasticsearch");
+					issueList.add(issue);
+					annotation.put("issueDetails", issueList.toString());
 
-						logger.debug("========SecurityGroupNotUsedRule ended with an annotation : {}=========",
-								annotation);
-						return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
-								annotation);
-					}
-				} catch (Exception e) {
-					logger.error("unable to determine", e);
-					throw new RuleExecutionFailedExeption("unable to determine" + e);
+					logger.debug("========SecurityGroupNotUsedRule ended with an annotation : {}=========", annotation);
+					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+							annotation);
 				}
+			} catch (Exception e) {
+				logger.error("unable to determine", e);
+				throw new RuleExecutionFailedExeption("unable to determine" + e);
 			}
 		}
 
