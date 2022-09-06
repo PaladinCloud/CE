@@ -2638,5 +2638,27 @@
     "modifiedDate": "2022-08-23",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Deny_Default_Network_Access_Rule_for_Storage_Accounts",
+    "ruleUUID": "Deny_Default_Network_Access_Rule_for_Storage_Accounts",
+    "policyId": "Deny_Default_Network_Access_Rule_for_Storage_Accounts",
+    "ruleName": "Deny Default Network Access Rule for Storage Accounts",
+    "targetType": "storageaccount",
+    "assetGroup": "azure",
+    "alexaKeyword": "Deny_Default_Network_Access_Rule_for_Storage_Accounts",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"restrict-default-network-access\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\" Default Network Access Rule for Storage Accounts\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Deny_Default_Network_Access_Rule_for_Storage_Accounts\",\"autofix\":false,\"alexaKeyword\":\"Deny_Default_Network_Access_Rule_for_Storage_Accounts\",\"ruleRestUrl\":\"\",\"targetType\":\"storageaccount\",\"pac_ds\":\"azure\",\"policyId\":\"Deny_Default_Network_Access_Rule_for_Storage_Accounts\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Deny_Default_Network_Access_Rule_for_Storage_Accounts\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Deny_Default_Network_Access_Rule_for_Storage_Accounts",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny Network Access Rule for Storage Accounts",
+    "createdDate": "2022-08-23",
+    "modifiedDate": "2022-08-23",
+    "severity": "medium",
+    "category": "security"
   }
 ]

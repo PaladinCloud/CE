@@ -66,6 +66,11 @@ public class StorageAccountInventoryCollector {
 					log.info("storage Account Bypass to string{}",storageAccount.inner().networkRuleSet().bypass().toString());
 
 				}
+				if(storageAccount.inner().networkRuleSet().defaultAction()!=null){
+					storageAccountVH.setDefaultAction(storageAccount.inner().networkRuleSet().defaultAction().name());
+				}
+
+
 			}
 			storageAccountVH.setBlobPublicAccessAllowed(storageAccount.isBlobPublicAccessAllowed());
 			storageAccountList.add(storageAccountVH);
