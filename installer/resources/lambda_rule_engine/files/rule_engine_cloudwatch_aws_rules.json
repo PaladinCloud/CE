@@ -2611,7 +2611,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_document_db_kms_cmks_cluster_encryption",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Use CMK to Encrypt DocumentDB",
+    "displayName": "Encrypt DocumentDB",
     "createdDate": "2022-06-06",
     "modifiedDate": "2022-06-06",
     "severity": "high",
@@ -3021,7 +3021,7 @@
     "targetType": "dms",
     "assetGroup": "aws",
     "alexaKeyword": "AwsDmsPublicAccess",
-    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-dms-public-access\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_dms_should_not_be_publicly_accessible_version-1_aws_public_access_dms\",\"autofix\":false,\"alexaKeyword\":\"AwsDmsPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"dms\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_dms_should_not_be_publicly_accessible_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_dms_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-dms-public-access\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_dms_should_not_be_publicly_accessible_version-1_aws_public_access_dms\",\"autofix\":false,\"alexaKeyword\":\"AwsDmsPublicAccess\",\"ruleRestUrl\":\"\",\"targetType\":\"dms\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_dms_should_not_be_publicly_accessible_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_dms_should_not_be_publicly_accessible\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0 1/1 * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -3032,7 +3032,7 @@
     "displayName": "Deny public access to DMS",
     "createdDate": "2022-06-08",
     "modifiedDate": "2022-06-08",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
