@@ -9,14 +9,8 @@ import com.google.api.services.cloudtasks.v2.CloudTasks;
 import com.google.api.services.sqladmin.SQLAdmin;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.cloud.bigquery.BigQueryOptions;
-import com.google.cloud.compute.v1.FirewallsClient;
-import com.google.cloud.compute.v1.FirewallsSettings;
-import com.google.cloud.compute.v1.InstancesClient;
-import com.google.cloud.compute.v1.InstancesSettings;
+import com.google.cloud.compute.v1.*;
 import com.google.cloud.compute.v1.Zone;
-import com.google.cloud.compute.v1.ZoneList;
-import com.google.cloud.compute.v1.ZonesClient;
-import com.google.cloud.compute.v1.ZonesSettings;
 import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.google.cloud.dataproc.v1.ClusterControllerSettings;
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
@@ -61,6 +55,7 @@ public class GCPCredentialsProvider {
     private ClusterManagerClient clusterManagerClient;
     private ZonesClient zonesClient;
     private Dns dns;
+    private NetworksClient networksClient;
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -81,7 +76,15 @@ public class GCPCredentialsProvider {
         return GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
                 .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
     }
+    public NetworksClient getNetworksClient() throws Exception{
+        if(networksClient==null){
+            NetworksSettings networksSettings=NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            networksClient=NetworksClient.create(networksSettings);
+        }
 
+        return networksClient;
+
+    }
     public InstancesClient getInstancesClient() throws IOException {
         if (instancesClient == null) {
             // pass authentication credentials to the client
@@ -191,6 +194,7 @@ public class GCPCredentialsProvider {
         }
         return dns;
     }
+
 
     // close the client in destroy method
     @PreDestroy

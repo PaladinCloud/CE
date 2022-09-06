@@ -1010,5 +1010,27 @@
     "modifiedDate": "2022-08-20",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Default_Network_should_Not_Exist_in_a_Project",
+    "ruleUUID": "Default_Network_should_Not_Exist_in_a_Project",
+    "policyId": "Default_Network_should_Not_Exist_in_a_Project",
+    "ruleName": "Default Network should Not Exist in a Project",
+    "targetType": "networks",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Cloud Vpc Networks",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-default-vpc-used-in-project\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Default Network should Not Exist in a Project\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Default_Network_should_Not_Exist_in_a_Project\",\"autofix\":false,\"alexaKeyword\":\"Cloud Vpc Networks\",\"ruleRestUrl\":\"\",\"targetType\":\"networks\",\"pac_ds\":\"gcp\",\"policyId\":\"Default_Network_should_Not_Exist_in_a_Project\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Default_Network_should_Not_Exist_in_a_Project\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Default_Network_should_Not_Exist_in_a_Project",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Default Network should Not Exist in a Project",
+    "createdDate": "2022-08-29",
+    "modifiedDate": "2022-08-29",
+    "severity": "medium",
+    "category": "security"
   }
 ]
