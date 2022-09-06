@@ -89,3 +89,7 @@ AD_ENCRY_SECRET_KEY = "xxyssxxxzz" # Encrypted AD secret key using bcrypt
 AD_PUBLIC_KEY_URL = "https://login.microsoftonline.com/common/discovery/v2.0/keys"
 AD_PUBLIC_KEY = "ssyyssdddd" # AD public key
 AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
+
+
+#job/rules intervals
+JOB_SCHEDULE_INTERVAL = 6 #by default it is 6hrs

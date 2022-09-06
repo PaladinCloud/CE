@@ -28,7 +28,7 @@
                 <ul class='adjust-padding'>
                     <li class="widget-wrapper">
                         <div class="widget">
-                            <app-pacman-policy-violations [resourceId]='resourceId' [resourceType]='resourceType'
+                            <app-pacman-policy-violations *ngIf="resourceId" [resourceId]='resourceId' [resourceType]='resourceType'
                                 [pageLevel]="pageLevel"></app-pacman-policy-violations>
                         </div>
                     </li>

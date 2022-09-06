@@ -119,13 +119,23 @@ MAIL_SMTP_SSL_TEST_CONNECTION = "false"
 ENABLE_VULNERABILITY_FEATURE = False
 
 JOB_SCHEDULE_INITIALDELAY = 5 #scheduling jobs initial delay in minute
-JOB_SCHEDULE_INITIALDELAY_SHIPPER = 15 #delay for shipper in minute 
-JOB_SCHEDULE_INITIALDELAY_RULES = 20  #delay for rules in minute
+JOB_SCHEDULE_INITIALDELAY_SHIPPER = 15 #delay for shipper in minute (JOB_SCHEDULE_INITIALDELAY + 10 min)
+JOB_SCHEDULE_INITIALDELAY_RULES = 20  #delay for rules in minute (JOB_SCHEDULE_INITIALDELAY + JOB_SCHEDULE_INITIALDELAY_SHIPPER + 5min )
 JOB_SCHEDULE_INTERVAL = 6   #Job interval  in hrs
 JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules 
 
+# Azure AD integration 
+AUTHENTICATION_TYPE = "DB"	# login type value any one of this "AZURE_AD or DB "
+AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
+AD_CLIENT_ID = "xxx-xxx-xxxx"  # AD Client ID
+AD_SECRET_KEY = "xxxxyyyyzzz"  # AD secret key
+AD_ENCRY_SECRET_KEY = "xxyssxxxzz" # Encrypted AD secret key using bcrypt
+AD_PUBLIC_KEY_URL = "https://login.microsoftonline.com/common/discovery/v2.0/keys"
+AD_PUBLIC_KEY = "ssyyssdddd" # AD public key
+AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
 
-JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event"
+#event pattern job details
+JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"
 
 try:

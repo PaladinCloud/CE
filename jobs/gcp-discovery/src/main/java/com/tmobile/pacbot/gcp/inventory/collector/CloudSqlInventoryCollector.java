@@ -68,6 +68,14 @@ public class CloudSqlInventoryCollector {
                         if (dbInstance.getDiskEncryptionConfiguration() != null) {
                             cloudSqlVH.setKmsKeyName(dbInstance.getDiskEncryptionConfiguration().getKmsKeyName());
                         }
+
+                        List<AclEntry>authorizedNetworks=dbInstance.getSettings().getIpConfiguration().getAuthorizedNetworks();
+                        if(!authorizedNetworks.isEmpty()){
+                            for(AclEntry authorizedNetwork:authorizedNetworks){
+                                cloudSqlVH.setAuthorizedNetwork((authorizedNetwork));
+                            }
+                        }
+
                         setIpAddresses(cloudSqlVH, dbInstance.getIpAddresses());
                         setServerCerts(cloudSqlVH, dbInstance.getServerCaCert());
                         cloudSqlVH.setSettings(dbInstance.getSettings());
