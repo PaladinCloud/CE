@@ -530,5 +530,7 @@ public class PacmanRuleConstants {
 
     public static final String IP_CONFIG="ipConfiguration";
     public static final String AUTHORIZED_NETWORK="authorizedNetworks";
+    public static final String DEFAULT="default";
+
 
 }

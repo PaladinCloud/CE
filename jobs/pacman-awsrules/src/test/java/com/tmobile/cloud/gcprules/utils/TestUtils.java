@@ -1482,4 +1482,24 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitJsonArrayDefaultVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_cloudType\":\"gcp\",\"region\":\"us-central1\",\"id\":\"cool-bay-349411:us-central1:gcp-mysql-sever1\",\"projectName\":\"cool-bay-349411\",\"name\":\"networking\",\"_loaddate\":\"2022-08-1112:41:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayDefaultVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_cloudType\":\"gcp\",\"region\":\"us-central1\",\"id\":\"cool-bay-349411:us-central1:gcp-mysql-sever1\",\"projectName\":\"cool-bay-349411\",\"name\":\"default\",\"_loaddate\":\"2022-08-1112:41:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

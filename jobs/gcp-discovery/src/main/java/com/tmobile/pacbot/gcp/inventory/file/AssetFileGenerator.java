@@ -60,6 +60,8 @@ public class AssetFileGenerator {
 	CloudDNSInventoryCollector cloudDNSInventoryCollector;
 	@Autowired
 	CloudSqlFilter cloudSqlFilter;
+	@Autowired
+	NetworkInventoryCollector networkInventoryCollector;
 
 	public void generateFiles(List<String> projects, String filePath) {
 
@@ -204,6 +206,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateCloudDnsFiles(cloudDNSInventoryCollector.fetchCloudDnsInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("networks"))) {
+					return;
+				}
+				try {
+					FileManager.generateNetworksFiles(networkInventoryCollector.fetchNetworkInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
