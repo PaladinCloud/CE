@@ -522,5 +522,6 @@ public class PacmanRuleConstants {
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";
     public static final String CONTAINED_DB_AUTHENTICATION="contained database authentication";
+    public static final String DEFAUTL_SG_GROUP="default";
 
 }

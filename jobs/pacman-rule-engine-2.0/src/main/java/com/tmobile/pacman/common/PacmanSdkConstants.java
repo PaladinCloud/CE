@@ -334,8 +334,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The autofix exempted types key. */
     String AUTOFIX_EXEMPTED_TYPES_KEY = "pacman.autofix.exempted.types.for.cutoff.data";
 
-    /** The autofix whitelist accounts prefix. */
-    String AUTOFIX_WHITELIST_ACCOUNTS_PREFIX = "autofix.whitelist.accounts.";
+    /** The autofix allowlist accounts prefix. */
+    String AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX = "autofix.allowlist.accounts.";
 
     /** The mm dd yyyy. */
     String MM_DD_YYYY = "MM/dd/yyyy";
