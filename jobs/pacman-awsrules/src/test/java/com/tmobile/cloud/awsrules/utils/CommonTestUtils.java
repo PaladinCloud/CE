@@ -186,6 +186,7 @@ public class CommonTestUtils {
         commonMap.put("discoveredDaysRange", "7");
         commonMap.put("vpc", "vpc");
         commonMap.put("securitygroups", "securitygroups");
+        commonMap.put("minimumTlsVersion", "TLS1_2");
         return commonMap;
     }
 
