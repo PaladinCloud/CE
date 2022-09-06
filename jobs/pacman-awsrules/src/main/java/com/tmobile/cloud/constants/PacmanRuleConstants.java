@@ -534,5 +534,6 @@ public class PacmanRuleConstants {
     public static final String DEFAULT="default";
 
     public static final String REQUIRE_SSL="requireSsl";
+    public static final String DEFAULT_ACTION="defaultAction";
 
 }
