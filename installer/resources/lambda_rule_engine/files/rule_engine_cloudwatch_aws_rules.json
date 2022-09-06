@@ -2684,6 +2684,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_user_permissions_without_group_version-1_user_policy_via_group_iamuser",
+    "ruleUUID": "aws_user_permission_without_group",
+    "policyId": "AWS_user_permissions_without_group_version-1",
+    "ruleName": "Permissions should be assigned through groups",
+    "targetType": "iamuser",
+    "assetGroup": "aws",
+    "alexaKeyword": "AWSUserPermissionWithoutGroup",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"iam-permissions-through-group\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_user_permissions_without_group_version-1_user_policy_via_group_iamuser\",\"autofix\":false,\"alexaKeyword\":\"AWSUserPermissionWithoutGroup\",\"ruleRestUrl\":\"\",\"targetType\":\"iamuser\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_user_permissions_without_group_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_user_permission_without_group\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_user_permission_without_group",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Assign user permissions only through IAM groups",
+    "createdDate": "2022-09-06",
+    "modifiedDate": "2022-09-06",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "AWS_rootaccount_hardware_MFA_version-1_enable_harware_mfa_account",
     "ruleUUID": "aws_root_account_without_hardware_mfa",
     "policyId": "AWS_rootaccount_hardware_MFA_version-1",
