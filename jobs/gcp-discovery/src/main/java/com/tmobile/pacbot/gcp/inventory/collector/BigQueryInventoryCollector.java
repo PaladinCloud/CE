@@ -24,25 +24,25 @@ public class BigQueryInventoryCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(BigQueryInventoryCollector.class);
 
-    public List<BigQueryVH> fetchBigqueryInventory(String projectId) throws IOException {
+    public List<BigQueryVH> fetchBigqueryInventory(ProjectVH project) throws IOException {
         logger.info("Running collector for bigquery inventory.");
         List<BigQueryVH> bigQueryList = new ArrayList<>();
 
         BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions()
-                .setProjectId(projectId).build();
+                .setProjectId(project.getProjectId()).build();
 
         BigQuery bigQuery = bigQueryOption.getService();
 
-        Page<Dataset> dataSetList = bigQuery.listDatasets(projectId, BigQuery.DatasetListOption.all());
+        Page<Dataset> dataSetList = bigQuery.listDatasets(project.getProjectId(), BigQuery.DatasetListOption.all());
 
         try {
             for (Dataset dataSet : dataSetList.iterateAll()) {
 
                 BigQueryVH bigQueryVH = new BigQueryVH();
                 bigQueryVH.setId(dataSet.getDatasetId().getDataset());
-                bigQueryVH.setProjectName(projectId);
+                bigQueryVH.setProjectName(project.getProjectName());
                 bigQueryVH.setDatasetId(dataSet.getDatasetId().getDataset());
-                bigQueryVH.setProjectId(dataSet.getDatasetId().getProject());
+                bigQueryVH.setProjectId(project.getProjectId());
                 bigQueryVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
                 logger.info("Populating dataset data for DataSetId: {}, ProjectId: {}",dataSet.getDatasetId().getDataset(),dataSet.getDatasetId().getProject());
 
@@ -116,14 +116,14 @@ public class BigQueryInventoryCollector {
         return aclMap;
     }
 
-    public List<BigQueryTableVH> fetchBigqueryTableInventory(String projectId) throws IOException {
-        logger.info("Running collector for bigquery table inventory. Project Name:{}", projectId);
+    public List<BigQueryTableVH> fetchBigqueryTableInventory(ProjectVH project) throws IOException {
+        logger.info("Running collector for bigquery table inventory. Project Name:{}", project.getProjectName());
         BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions()
-                .setProjectId(projectId).build();
+                .setProjectId(project.getProjectId()).build();
 
         BigQuery bigQuery = bigQueryOption.getService();
 
-        Page<Dataset> dataSetList = bigQuery.listDatasets(projectId, BigQuery.DatasetListOption.all());
+        Page<Dataset> dataSetList = bigQuery.listDatasets(project.getProjectId(), BigQuery.DatasetListOption.all());
         List<BigQueryTableVH> tableVHList = new ArrayList<>();
         for (Dataset dataSet : dataSetList.iterateAll()) {
             String datasetId = dataSet.getDatasetId().getDataset();
@@ -138,7 +138,8 @@ public class BigQueryInventoryCollector {
                     BigQueryTableVH tableVH = new BigQueryTableVH();
                     tableVH.setId(tableId);
                     tableVH.setDataSetId(tableData.getTableId().getDataset());
-                    tableVH.setProjectName(tableData.getTableId().getProject());
+                    tableVH.setProjectName(project.getProjectName());
+                    tableVH.setProjectId(project.getProjectId());
                     tableVH.setTableId(tableId);
                     tableVH.setIamResourceName(tableData.getTableId().getIAMResourceName());
                     tableVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
@@ -163,7 +164,7 @@ public class BigQueryInventoryCollector {
                 logger.error("Error while fetching inventory data for BigQuery :", e);
             }
         }
-        logger.info("BigQuery Collected for project:{}, number of tables found:{}", projectId, tableVHList.size());
+        logger.info("BigQuery Collected for project:{}, number of tables found:{}", project.getProjectId(), tableVHList.size());
         return tableVHList;
     }
 

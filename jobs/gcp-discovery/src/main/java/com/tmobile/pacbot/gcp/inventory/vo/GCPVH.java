@@ -9,6 +9,8 @@ public class GCPVH {
     private String region;
     private String id;
     private String projectName;
+
+    private String projectId;
     public String getRegion() {
         return region;
     }
@@ -48,4 +50,19 @@ public class GCPVH {
         this.projectName = projectName;
     }
 
+    public String getDiscoveryDate() {
+        return discoveryDate;
+    }
+
+    public void setDiscoveryDate(String discoveryDate) {
+        this.discoveryDate = discoveryDate;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
 }

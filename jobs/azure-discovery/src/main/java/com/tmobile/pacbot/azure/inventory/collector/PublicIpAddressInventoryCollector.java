@@ -46,6 +46,7 @@ public class PublicIpAddressInventoryCollector {
 			publicIpAddressVH.setIpAddress(publicIPAddress.ipAddress());
 			publicIpAddressVH.setKey(publicIPAddress.key());
 			publicIpAddressVH.setRegionName(publicIPAddress.regionName());
+			publicIpAddressVH.setRegion(publicIPAddress.regionName());
 			publicIpAddressVH.setReverseFqdn(publicIPAddress.reverseFqdn());
 			publicIpAddressVH.setVersion(publicIPAddress.version().toString());
 			publicIpAddressList.add(publicIpAddressVH);

@@ -38,7 +38,7 @@ public class WebAppInventoryCollector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
-
+                webAppVH.setRegion(webApp.regionName());
                 if(webApp.ftpsState()!=null){
                    webAppVH.setFtpsState(webApp.ftpsState());
                    log.info("ftpsState",webApp.ftpsState());
