@@ -10,6 +10,7 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.vo.CloudDNSVH;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import com.tmobile.pacbot.gcp.inventory.vo.StorageVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class CloudDNSInventoryCollector {
     GCPCredentialsProvider gcpCredentialsProvider;
 
     private static final Logger logger = LoggerFactory.getLogger(CloudDNSInventoryCollector.class);
-    public List<CloudDNSVH> fetchCloudDnsInventory(String project) throws IOException {
+    public List<CloudDNSVH> fetchCloudDnsInventory(ProjectVH project) throws IOException {
         List<CloudDNSVH>cloudDNSVHList=new ArrayList<>();
             Page<Zone> zonesList= gcpCredentialsProvider.createCloudDNSServices().listZones();
         logger.info("executing dns zone List collector");
@@ -40,7 +41,8 @@ public class CloudDNSInventoryCollector {
                     logger.info("inside dns  zone List iterator {}",zone.getGeneratedId());
                     CloudDNSVH cloudDNSVH = new CloudDNSVH();
                     cloudDNSVH.setRegion(zone.getGeneratedId());
-                    cloudDNSVH.setProjectName(project);
+                    cloudDNSVH.setProjectName(project.getProjectName());
+                    cloudDNSVH.setProjectId(project.getProjectId());
                     cloudDNSVH.setRegion(zone.getName());
                     cloudDNSVH.setDnsName(zone.getDnsName());
                     cloudDNSVH.setId(zone.getGeneratedId());

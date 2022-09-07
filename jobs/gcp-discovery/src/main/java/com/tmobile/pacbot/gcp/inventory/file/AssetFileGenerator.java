@@ -11,6 +11,7 @@ import com.tmobile.pacbot.gcp.inventory.collector.*;
 import com.tmobile.pacbot.gcp.inventory.util.CloudSqlFilter;
 import com.tmobile.pacbot.gcp.inventory.util.DataBaseTypeEnum;
 import com.tmobile.pacbot.gcp.inventory.vo.CloudSqlVH;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class AssetFileGenerator {
 	@Autowired
 	NetworkInventoryCollector networkInventoryCollector;
 
-	public void generateFiles(List<String> projects, String filePath) {
+	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
 			FileManager.initialise(filePath);
@@ -72,7 +73,7 @@ public class AssetFileGenerator {
 		}
 		// generateAzureAplicationList();
 
-		for (String project : projects) {
+		for (ProjectVH project : projects) {
 			log.info("Started Discovery for project {}", project);
 
 			ExecutorService executor = Executors.newCachedThreadPool();
@@ -186,16 +187,6 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateGKEClusterFiles(gkeClusterInventoryCollector.fetchGKEClusterInventory(project));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-			executor.execute(() -> {
-				if (!(isTypeInScope("clouddns"))) {
-					return;
-				}
-				try {
-					FileManager.generateCloudDnsFiles(cloudDNSInventoryCollector.fetchCloudDnsInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

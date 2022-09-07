@@ -1,15 +1,5 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.storage.PublicEndpoints;
@@ -17,6 +7,15 @@ import com.microsoft.azure.management.storage.StorageAccount;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.StorageAccountVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class StorageAccountInventoryCollector {
@@ -32,6 +31,7 @@ public class StorageAccountInventoryCollector {
 
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(), subscription.getSubscriptionId());
 		PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
+
 		for (StorageAccount storageAccount : storageAccounts) {
 			StorageAccountVH storageAccountVH = new StorageAccountVH();
 			storageAccountVH.setResourceGroupName(storageAccount.resourceGroupName());
@@ -45,6 +45,7 @@ public class StorageAccountInventoryCollector {
 			storageAccountVH.setHnsEnabled(storageAccount.isHnsEnabled());
 			storageAccountVH.setName(storageAccount.name());
 			storageAccountVH.setRegionName(storageAccount.regionName());
+			storageAccountVH.setRegion(storageAccount.regionName());
 			storageAccountVH.setNetworkSubnetsWithAccess(storageAccount.networkSubnetsWithAccess());
 			storageAccountVH.setSystemAssignedManagedServiceIdentityPrincipalId(
 					storageAccount.systemAssignedManagedServiceIdentityPrincipalId());

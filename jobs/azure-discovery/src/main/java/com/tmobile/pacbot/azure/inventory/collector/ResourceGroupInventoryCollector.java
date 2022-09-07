@@ -37,6 +37,7 @@ public class ResourceGroupInventoryCollector {
 			resourceGroupVH.setType(resourceGroup.type());
 			resourceGroupVH.setProvisioningState(resourceGroup.provisioningState());
 			resourceGroupVH.setRegionName(resourceGroup.regionName());
+			resourceGroupVH.setRegion(resourceGroup.regionName());
 			resourceGroupVH.setTags(resourceGroup.tags());
 			resourceGroupList.add(resourceGroupVH);
 		}

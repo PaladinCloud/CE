@@ -3,6 +3,7 @@ package com.tmobile.pacbot.gcp.inventory.collector;
 import com.tmobile.pacbot.gcp.inventory.vo.AllowedPortsVH;
 import com.tmobile.pacbot.gcp.inventory.vo.FireWallVH;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,11 +29,11 @@ public class FirewallInventoryCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(FirewallInventoryCollector.class);
 
-    public List<FireWallVH> fetchFirewallInventory(String projectId) throws IOException {
+    public List<FireWallVH> fetchFirewallInventory(ProjectVH project) throws IOException {
         List<FireWallVH> fireWallList = new ArrayList<>();
         FirewallsClient fireWallsClient = gcpCredentialsProvider.getFirewallsClient();
 
-        ListPagedResponse firewallResponse = fireWallsClient.list(projectId);
+        ListPagedResponse firewallResponse = fireWallsClient.list(project.getProjectId());
         logger.info("Firewall  entry {}", firewallResponse);
         for (Firewall firewall : firewallResponse.iterateAll()) {
             logger.info("Firewall  iterator {}", firewall);
@@ -54,8 +55,10 @@ public class FirewallInventoryCollector {
             fireWallVH.setDestinationRanges(firewall.getDestinationRangesList());
             fireWallVH.setAllow(allowedList);
             fireWallVH.setId(String.valueOf(firewall.getId()));
-            fireWallVH.setProjectName(projectId);
+            fireWallVH.setProjectName(project.getProjectName());
+            fireWallVH.setProjectId(project.getProjectId());
             fireWallList.add(fireWallVH);
+
             logger.info("Firewall  exit {}", fireWallVH);
 
         }

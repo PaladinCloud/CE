@@ -38,6 +38,7 @@ public class LoadBalancerInventoryCollector {
 			loadBalancerVH.setPublicIPAddressIds(loadBalancer.publicIPAddressIds());
 			loadBalancerVH.setName(loadBalancer.name());
 			loadBalancerVH.setRegionName(loadBalancer.regionName());
+			loadBalancerVH.setRegion(loadBalancer.regionName());
 			loadBalancerVH.setResourceGroupName(loadBalancer.resourceGroupName());
 			loadBalancerVH.setTags(Util.tagsList(tagMap, loadBalancer.resourceGroupName(), loadBalancer.tags()));
 			loadBalancerVH.setType(loadBalancer.type());
