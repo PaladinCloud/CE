@@ -21,6 +21,24 @@ public class VaultVH extends AzureVH {
 	public Map<String, Object> getSku() {
 		return sku;
 	}
+	private boolean enablePurgeProtection;
+	private boolean  enableSoftDelete;
+
+	public boolean isEnablePurgeProtection() {
+		return enablePurgeProtection;
+	}
+
+	public void setEnablePurgeProtection(boolean enablePurgeProtection) {
+		this.enablePurgeProtection = enablePurgeProtection;
+	}
+
+	public boolean isEnableSoftDelete() {
+		return enableSoftDelete;
+	}
+
+	public void setEnableSoftDelete(boolean enableSoftDelete) {
+		this.enableSoftDelete = enableSoftDelete;
+	}
 
 	public List<String> getPermissionForKeys() {
 		return permissionForKeys;

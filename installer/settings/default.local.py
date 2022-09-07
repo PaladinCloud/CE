@@ -93,3 +93,19 @@ AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
 
 #job/rules intervals
 JOB_SCHEDULE_INTERVAL = 6 #by default it is 6hrs
+
+# AWS accountId,name for multiple accounts
+AWS_ACCOUNT_DETAILS = [
+    {
+        'accountId': "176332",
+        'accountName': "baseAccount"
+    },
+    {
+        'accountId': "2345",
+        'accountName': "clientAccount1"
+    },
+    {
+        'accountId': "234565",
+        'accountName': "clientAccount2"
+    }
+]
