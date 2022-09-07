@@ -118,6 +118,11 @@ export const MESSAGES = {
             'title': '',
             'description': 'There are no active Policies for this Asset Type.',
             'image': '/assets/images/empty-state.svg'
+        },
+        'noSearchFound': {
+            'title': 'No Search Found!!',
+            'description': 'Retry searching something else.',
+            'image': '/assets/images/empty-search.svg'
         }
     }
 };

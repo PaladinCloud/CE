@@ -136,7 +136,7 @@ describe('Policyknowledgebase', () => {
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate').and.stub();
     let tile = {autofixEnabled:false, ruleId: 'NonStandardRegionRule_version-1_version-1_SubnetWithNonStandardRegion_subnet'};
-    component.gotoNextPage(tile);
+    component.goToDetails(tile);
     tick();
     expect(router.navigate).toHaveBeenCalledWith(['pl', 'compliance', 'policy-knowledgebase-details', tile.ruleId, tile.autofixEnabled],
         { queryParams: component.agAndDomain,
