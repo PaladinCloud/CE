@@ -14,7 +14,6 @@ export class TableComponent implements OnInit,AfterViewInit {
 
   @Input() data;
   @Input() columnWidths;
-  @Input() columnNamesMap;
   @Input() columnsSortFunctionMap;
   @Input() headerColName;
   @Input() direction;
@@ -22,16 +21,20 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Input() showSearchBar;
   @Input() showAddRemoveCol;
   @Input() showTitle;
+  @Input() tableTitle;
+  @Input() imageDataMap = {};
+  tableErrorMessage = '';
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
   @Output() whitelistColumnsChanged = new EventEmitter<any>();
   @Output() searchInColumnsChanged = new EventEmitter<any>();
+  @Output() nextPageCalled = new EventEmitter<any>();
 
   mainDataSource;
   dataSource;
   
-  displayedColumns;
+  @Input() displayedColumns;
   @Input() whiteListColumns = [];
   searchInColumns = new FormControl();
 
@@ -53,17 +56,19 @@ export class TableComponent implements OnInit,AfterViewInit {
     }else{
       this.allSelected=false;
     }
-    if(this.searchQuery!='') this.customFilter(this.searchQuery);
+    if(this.searchQuery && this.showSearchBar) this.customFilter(this.searchQuery);
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
   }
 
   ngAfterViewInit(): void {  
-    this.select.options.forEach((item: MatOption) => {
-      if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
-        item.select();
-      }
-    });
-    this.changeDetectorRef.detectChanges();
+    if(this.select){
+      this.select.options.forEach((item: MatOption) => {
+        if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
+          item.select();
+        }
+      });
+      this.changeDetectorRef.detectChanges();
+    }
   }
 
   handleSearchInColumnsChange(){
@@ -120,18 +125,23 @@ export class TableComponent implements OnInit,AfterViewInit {
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
       for(const i in columnsToSearchIN) {
         const col = columnsToSearchIN[i];
-        if(String(item[col]).toLowerCase().match(searchTxt)){                    
+        if(String(item[col]).toLowerCase().match(searchTxt)){
           return true;
         }
       }
       return false;
     })
+
+    if(this.dataSource.data.length==0){
+      this.tableErrorMessage = 'noSearchFound';
+    }
   }
 
   handleSearch(event){ 
     let searchTxt = event.target.value.toLowerCase();
     
     if (event.keyCode === 13 || searchTxt=='') {
+      this.tableErrorMessage = ''
       this.customFilter(searchTxt);
       this.searchCalledEventEmitter.emit(searchTxt);
     }
@@ -159,4 +169,15 @@ export class TableComponent implements OnInit,AfterViewInit {
       return (a[this.headerColName]<b[this.headerColName]? -1: 1)*(isAsc ? 1 : -1);
     });
   }
+
+  onScroll(event: any) {
+    // visible height + pixel scrolled >= total height 
+    if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
+      this.nextPageCalled.emit();
+      this.mainDataSource = new MatTableDataSource(this.data);
+      this.dataSource = new MatTableDataSource(this.data);
+      if(this.searchQuery && this.showSearchBar) this.customFilter(this.searchQuery);
+      if(this.headerColName) this.customSort(this.headerColName, this.direction);
+    }
+}
 }
