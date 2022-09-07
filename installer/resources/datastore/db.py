@@ -58,7 +58,9 @@ class MySQLDatabase(RDSResource):
         if self.resource_in_tf_output(outputs):
             return {
                 'MySQL Host': outputs[self.get_resource_id()]['endpoint'],
-                'MySQL DB': self.get_input_attr('db_name')
+                'MySQL DB': self.get_input_attr('db_name'),
+                'DB Username': self.get_input_attr('username'),
+                'DB Password': self.get_input_attr('password')
             }
 
     def pre_terraform_apply(self):
