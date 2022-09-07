@@ -1,4 +1,4 @@
-# CRAETE local.py file by renaming/copying default.local.py
+# CREATE local.py file by renaming/copying default.local.py
 # User should update the VPC details below in local.py
 VPC = {
     "ID": "vpc-1",
