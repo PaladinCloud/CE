@@ -18,7 +18,7 @@
         <h1 class="title-text nowrap-ellipsis">{{pageTitle}}</h1>
     </div>
     <div class="wrapper">
-        <app-data-table [(cbModel)]="cbModel" (cbClicked)="checkBoxClicked($event)" [checkBox]="adminAccess"
+        <!-- <app-data-table [(cbModel)]="cbModel" (cbClicked)="checkBoxClicked($event)" [checkBox]="adminAccess"
             [searchTextValues]="searchTxt" [showGenericMessage]="showGenericMessage" [errorValue]="errorValue"
             [parentName]="'policyDetailsTableMessage'" [showingArr]="showingArr" [outerArr]="outerArr"
             [searchableHeader]="true" [allColumns]="allColumns" [dataHead]="'Policy Violations'"
@@ -40,7 +40,17 @@
             (removeAllCheckedEventEmitter)="handleRemoveAllChecked($event)" (selectedFilterType)='changeFilterType($event)'
             (selectedFilter)="changeFilterTags($event)" (deleteAllFilters)="deleteFilters($event)"
             (deleteFilter)="deleteFilters($event)" [filteredArray]="filters" [doNotDisplaySearch]="doNotDisplaySearch" [filterErrorMessage]="filterErrorMessage" (headerColNameSelected)="handleHeaderColNameSelection($event)" [headerColName]="headerColName" [direction]="direction">
-        </app-data-table>
+        </app-data-table> -->
+        <div [class.loader]="tableData.length==0 && tableErrorMessage==''"></div>
+        <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
+        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" *ngIf="tableData.length>0" 
+            [data]="tableData" [columnWidths]="columnWidths"
+            [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+            [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
+            [imageDataMap]="tableImageDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt" (nextPageCalled)="nextPg()"
+            >
+        </app-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"
             (refreshDataTable)="refreshDataTable($event)">

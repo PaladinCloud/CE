@@ -29,6 +29,8 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { PermissionGuardService } from "../../../../core/services/permission-guard.service";
+import { TableStateService } from "src/app/core/services/table-state-service.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 
 @Component({
   selector: "app-issue-listing",
@@ -94,8 +96,60 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public agAndDomain = {};
   public doNotDisplaySearch=true;
   filterErrorMessage = '';
+  tableTitle = "Policy Violations";
+  tableErrorMessage = '';
   headerColName;
   direction;
+  columnWidths = {'Policy Name': 3, 'Issue ID': 1, 'Resource ID': 2, 'Severity': 1, 'Category':1};
+  columnNamesMap = {};
+  columnsSortFunctionMap = {
+    severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a.severity] < severeness[b.severity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  };
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+  state: any = {};
+  whiteListColumns;
+  displayedColumns;
+  tableData = [];
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -111,11 +165,19 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private downloadService: DownloadService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private permissions: PermissionGuardService
+    private permissions: PermissionGuardService,
+    private tableStateService: TableStateService
   ) {
-    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
-    this.direction = this.activatedRoute.snapshot.queryParams.direction;
-    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+    this.state = this.tableStateService.getState("issueListing") || {};
+      
+    this.headerColName = this.state.headerColName || 'Policy Name';
+    this.direction = this.state.direction || 'asc';
+    this.bucketNumber = this.state.bucketNumber || 0;
+
+    this.displayedColumns = Object.keys(this.columnWidths);
+    this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
+
+    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
 
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
@@ -155,7 +217,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.getUpdatedUrl();
+    this.state.headerColName = this.headerColName;
+    this.state.direction = this.direction;
+    this.storeState();
+  }
+
+  storeState(){
+    this.tableStateService.setState(this.state, "issueListing");
   }
 
   /*
@@ -203,9 +271,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     updatedQueryParams = {
       filter: this.filterText.filter,
-      headerColName: this.headerColName,
-      direction : this.direction,
-      bucketNumber : this.bucketNumber
+      searchValue: this.searchTxt
     }
 
 
@@ -440,10 +506,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               this.searchCriteria = undefined;
               this.tableDataLoaded = true;
               const data = response.data;
-              this.dataTableData = data.response;
+              this.dataTableData = data.response;              
               this.showLoader = false;
               this.dataLoaded = true;
               if (response.data.response.length === 0) {
+                this.tableErrorMessage = 'noDataAvailable';
                 this.errorValue = -1;
                 this.outerArr = [];
                 this.allColumns = [];
@@ -463,9 +530,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 }
                 const updatedResponse = this.massageData(this.issueListingdata);
                 this.currentBucket[this.bucketNumber] = updatedResponse;
-                this.processData(updatedResponse);
+                this.tableData.push(...updatedResponse);
+                // console.log(this.tableData.length);
+                // console.log(JSON.stringify(this.tableData));
+                
+                
+                // this.processData(updatedResponse);
               }
             } catch (e) {
+              this.tableErrorMessage = 'apiResponseError';
               this.errorValue = 0;
               this.errorValue = -1;
               this.outerArr = [];
@@ -502,28 +575,28 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.updateComponent();
   }
 
-  massageData(data) {
-    /*
-     * added by Trinanjan 14/02/2017
-     * the funciton replaces keys of the table header data to a readable format
-     */
+  massageData(data){
     const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
     const newData = [];
-    data.map(function (responseData) {
-      const KeysTobeChanged = Object.keys(responseData);
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
-        if(element=="PolicyName") {
-          const elementnew = "Rule Name";
-          newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         else {
-        const elementnew =
+        elementnew =
           refactoredService.getDisplayNameForAKey(
             element.toLocaleLowerCase()
           ) || element;
-          newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
       newData.push(newObj);
     });
@@ -690,41 +763,17 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(row) {
+    console.log(JSON.stringify(row["IssueId"]));
+    
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
-      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
-      updatedQueryParams["headerColName"] = undefined;
-      updatedQueryParams["direction"] = undefined;
-      updatedQueryParams["bucketNumber"] = undefined;
-      updatedQueryParams["searchValue"] = undefined;
-      if (row.col.toLowerCase() === "resource id") {
-        const resourceType = row.row["Asset Type"].text;
-        const resourceId = encodeURIComponent(row.row["Resource ID"].text);
-        this.router
-          .navigate(
-            ["../../", "assets", "asset-list", resourceType, resourceId],
-            {
-              relativeTo: this.activatedRoute,
-              queryParams: updatedQueryParams,
-              queryParamsHandling: "merge",
-            }
-          )
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to asset details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
-      } else if (row.col.toLowerCase() === "issue id") {
-        this.router
-          .navigate(["issue-details", row.row["Issue ID"].text], {
+      // let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      // updatedQueryParams["searchValue"] = undefined;
+      this.router
+          .navigate(["issue-details", row["IssueId"]], {
             relativeTo: this.activatedRoute,
-            queryParams: updatedQueryParams,
             queryParamsHandling: "merge",
           })
           .then((response) => {
@@ -736,30 +785,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           .catch((error) => {
             this.logger.log("error", "Error in navigation - " + error);
           });
-      } else if (row.col.toLowerCase() === "rule name") {
-        this.router
-          .navigate(
-            [
-              "../policy-knowledgebase-details",
-              row.row.nonDisplayableAttributes.text.RuleId,
-              "false"
-            ],
-            {
-              relativeTo: this.activatedRoute,
-              queryParams: updatedQueryParams,
-              queryParamsHandling: "merge",
-            }
-          )
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to policy details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
-      }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -791,6 +816,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   searchCalled(search) {
     this.searchTxt = search;
+    this.getUpdatedUrl();
   }
 
   handlePopClick(rowText) {
@@ -841,7 +867,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.currentPointer * this.paginatorSize + this.paginatorSize;
       this.bucketNumber--;
       this.getData();
-      this.getUpdatedUrl();
+      this.storeState();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -850,43 +876,30 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   nextPg() {
     try {
-      if (this.currentPointer < this.bucketNumber) {
-        this.currentPointer++;
-        this.processData(this.currentBucket[this.currentPointer]);
-        this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-        this.lastPaginator =
-          this.currentPointer * this.paginatorSize + this.paginatorSize;
-        if (this.lastPaginator > this.totalRows) {
-          this.lastPaginator = this.totalRows;
-        }
-      } else {
+      // if (this.currentPointer < this.bucketNumber) {
+      //   this.currentPointer++;
+      //   this.processData(this.currentBucket[this.currentPointer]);
+      //   this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
+      //   this.lastPaginator =
+      //     this.currentPointer * this.paginatorSize + this.paginatorSize;
+      //   if (this.lastPaginator > this.totalRows) {
+      //     this.lastPaginator = this.totalRows;
+      //   }
+      // } else {
         this.bucketNumber++;
-        this.getData();
-      }
-      this.getUpdatedUrl();
+        this.getData();        
+      // }
+      // this.storeState();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  callNewSearch() {
-    this.cbArr = [];
-    this.cbObj = {};
-    this.outerArr = [];
-    this.tableDataLoaded = false;
-    this.currentBucket = [];
-    this.cbModel = [];
-    this.bucketNumber = 0;
-    this.dataTableData = [];
-    this.firstPaginator = 1;
-    this.showLoader = true;
-    this.currentPointer = 0;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
-    this.getData();
+  callNewSearch(searchVal){
+    this.searchTxt = searchVal;
+    // this.state.searchValue = searchVal;
+    this.getUpdatedUrl();
   }
 
   handleRemoveAllChecked(event: any) {
