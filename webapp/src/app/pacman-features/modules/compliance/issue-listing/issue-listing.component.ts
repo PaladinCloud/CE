@@ -162,7 +162,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private commonResponseService: CommonResponseService,
     private errorHandling: ErrorHandlingService,
     private refactorFieldsService: RefactorFieldsService,
-    private downloadService: DownloadService,
+    // private downloadService: DownloadService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService,
@@ -762,9 +762,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDetails(row) {
-    console.log(JSON.stringify(row["IssueId"]));
-    
+  goToDetails(row) {    
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
@@ -772,7 +770,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       // let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       // updatedQueryParams["searchValue"] = undefined;
       this.router
-          .navigate(["issue-details", row["IssueId"]], {
+          .navigate(["issue-details", row["Issue ID"]], {
             relativeTo: this.activatedRoute,
             queryParamsHandling: "merge",
           })
@@ -819,96 +817,96 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.getUpdatedUrl();
   }
 
-  handlePopClick(rowText) {
-    const fileType = "csv";
+  // handlePopClick(rowText) {
+  //   const fileType = "csv";
 
-    try {
-      let queryParams;
+  //   try {
+  //     let queryParams;
 
-      queryParams = {
-        fileFormat: "csv",
-        serviceId: 1,
-        fileType: fileType,
-      };
+  //     queryParams = {
+  //       fileFormat: "csv",
+  //       serviceId: 1,
+  //       fileType: fileType,
+  //     };
 
-      const filterToBePassed = this.filterText;
-      filterToBePassed.domain = this.selectedDomain;
+  //     const filterToBePassed = this.filterText;
+  //     filterToBePassed.domain = this.selectedDomain;
 
-      const downloadRequest = {
-        ag: this.selectedAssetGroup,
-        filter: filterToBePassed,
-        from: 0,
-        searchtext: this.searchTxt,
-        size: this.totalRows,
-      };
+  //     const downloadRequest = {
+  //       ag: this.selectedAssetGroup,
+  //       filter: filterToBePassed,
+  //       from: 0,
+  //       searchtext: this.searchTxt,
+  //       size: this.totalRows,
+  //     };
 
-      const downloadUrl = environment.download.url;
-      const downloadMethod = environment.download.method;
+  //     const downloadUrl = environment.download.url;
+  //     const downloadMethod = environment.download.method;
 
-      this.downloadService.requestForDownload(
-        queryParams,
-        downloadUrl,
-        downloadMethod,
-        downloadRequest,
-        "Policy Violations",
-        this.totalRows
-      );
-    } catch (error) {
-      this.logger.log("error", error);
-    }
-  }
+  //     this.downloadService.requestForDownload(
+  //       queryParams,
+  //       downloadUrl,
+  //       downloadMethod,
+  //       downloadRequest,
+  //       "Policy Violations",
+  //       this.totalRows
+  //     );
+  //   } catch (error) {
+  //     this.logger.log("error", error);
+  //   }
+  // }
 
-  prevPg() {
-    try {
-      this.currentPointer--;
-      // this.processData(this.currentBucket[this.currentPointer]);
-      this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-      this.lastPaginator =
-        this.currentPointer * this.paginatorSize + this.paginatorSize;
-      this.bucketNumber--;
-      this.getData();
-      this.storeState();
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
+  // prevPg() {
+  //   try {
+  //     this.currentPointer--;
+  //     // this.processData(this.currentBucket[this.currentPointer]);
+  //     this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
+  //     this.lastPaginator =
+  //       this.currentPointer * this.paginatorSize + this.paginatorSize;
+  //     this.bucketNumber--;
+  //     this.getData();
+  //     this.storeState();
+  //   } catch (error) {
+  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
+  //     this.logger.log("error", error);
+  //   }
+  // }
 
-  nextPg() {
-    try {
-      // if (this.currentPointer < this.bucketNumber) {
-      //   this.currentPointer++;
-      //   this.processData(this.currentBucket[this.currentPointer]);
-      //   this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-      //   this.lastPaginator =
-      //     this.currentPointer * this.paginatorSize + this.paginatorSize;
-      //   if (this.lastPaginator > this.totalRows) {
-      //     this.lastPaginator = this.totalRows;
-      //   }
-      // } else {
-        this.bucketNumber++;
-        this.getData();        
-      // }
-      // this.storeState();
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
+  // nextPg() {
+  //   try {
+  //     // if (this.currentPointer < this.bucketNumber) {
+  //     //   this.currentPointer++;
+  //     //   this.processData(this.currentBucket[this.currentPointer]);
+  //     //   this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
+  //     //   this.lastPaginator =
+  //     //     this.currentPointer * this.paginatorSize + this.paginatorSize;
+  //     //   if (this.lastPaginator > this.totalRows) {
+  //     //     this.lastPaginator = this.totalRows;
+  //     //   }
+  //     // } else {
+  //       this.bucketNumber++;
+  //       this.getData();        
+  //     // }
+  //     // this.storeState();
+  //   } catch (error) {
+  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
+  //     this.logger.log("error", error);
+  //   }
+  // }
 
-  callNewSearch(searchVal){
-    this.searchTxt = searchVal;
-    // this.state.searchValue = searchVal;
-    this.getUpdatedUrl();
-  }
+  // callNewSearch(searchVal){
+  //   this.searchTxt = searchVal;
+  //   // this.state.searchValue = searchVal;
+  //   this.getUpdatedUrl();
+  // }
 
-  handleRemoveAllChecked(event: any) {
-    if (event == true) {
-      this.cbModel = [];
-      this.cbArr = [];
-      this.cbObj = {};
-    }
-  }
+  // handleRemoveAllChecked(event: any) {
+  //   if (event == true) {
+  //     this.cbModel = [];
+  //     this.cbArr = [];
+  //     this.cbObj = {};
+  //   }
+  // }
 
   ngOnDestroy() {
     try {
