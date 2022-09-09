@@ -872,27 +872,27 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   //   }
   // }
 
-  // nextPg() {
-  //   try {
-  //     // if (this.currentPointer < this.bucketNumber) {
-  //     //   this.currentPointer++;
-  //     //   this.processData(this.currentBucket[this.currentPointer]);
-  //     //   this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-  //     //   this.lastPaginator =
-  //     //     this.currentPointer * this.paginatorSize + this.paginatorSize;
-  //     //   if (this.lastPaginator > this.totalRows) {
-  //     //     this.lastPaginator = this.totalRows;
-  //     //   }
-  //     // } else {
-  //       this.bucketNumber++;
-  //       this.getData();        
-  //     // }
-  //     // this.storeState();
-  //   } catch (error) {
-  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
-  //     this.logger.log("error", error);
-  //   }
-  // }
+  nextPg() {
+    try {
+      // if (this.currentPointer < this.bucketNumber) {
+      //   this.currentPointer++;
+      //   this.processData(this.currentBucket[this.currentPointer]);
+      //   this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
+      //   this.lastPaginator =
+      //     this.currentPointer * this.paginatorSize + this.paginatorSize;
+      //   if (this.lastPaginator > this.totalRows) {
+      //     this.lastPaginator = this.totalRows;
+      //   }
+      // } else {
+        this.bucketNumber++;
+        this.getData();        
+      // }
+      // this.storeState();
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
 
   // callNewSearch(searchVal){
   //   this.searchTxt = searchVal;
