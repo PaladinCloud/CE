@@ -2699,7 +2699,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_user_permission_without_group",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Assign user permissions only through IAM groups",
+    "displayName": "Only use IAM groups to assign User Permissions",
     "createdDate": "2022-09-06",
     "modifiedDate": "2022-09-06",
     "severity": "medium",
