@@ -1098,5 +1098,27 @@
     "modifiedDate": "2022-08-01",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Legacy_Subnet_should_Not_Exist_in_a_Project",
+    "ruleUUID": "Legacy_Subnet_should_Not_Exist_in_a_Project",
+    "policyId": "Legacy_Subnet_should_Not_Exist_in_a_Project",
+    "ruleName": "subnet mode should be custom",
+    "targetType": "networks",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Cloud Vpc Networks",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-subnet-mode-is-legacy-vpc\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Subnet mode for VPC should not be legacy\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Legacy_Subnet_should_Not_Exist_in_a_Project\",\"autofix\":false,\"alexaKeyword\":\"Cloud Vpc Networks\",\"ruleRestUrl\":\"\",\"targetType\":\"networks\",\"pac_ds\":\"gcp\",\"policyId\":\"Legacy_Subnet_should_Not_Exist_in_a_Project\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Legacy_Subnet_should_Not_Exist_in_a_Project\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Legacy_Subnet_should_Not_Exist_in_a_Project",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Subnet mode for VPC should not be legacy",
+    "createdDate": "2022-09-12",
+    "modifiedDate": "2022-09-12",
+    "severity": "medium",
+    "category": "security"
   }
 ]
