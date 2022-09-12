@@ -41,6 +41,9 @@ public class StorageCollector {
                 users.add(acl.getEntity().toString());
             }
             logger.debug("Collection done");
+            storageVH.setUniformBucketLevelAccess(bucket.getIamConfiguration().isUniformBucketLevelAccessEnabled());
+
+            logger.info("UniformBucketLevelAccess flag",bucket.getIamConfiguration().isUniformBucketLevelAccessEnabled());
             storageVH.setUsers(users);
             storageVH.setId(bucket.getGeneratedId());
             storageVH.setProjectName(project.getProjectName());
