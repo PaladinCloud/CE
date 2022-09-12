@@ -55,6 +55,7 @@ public class PacmanRuleConstants {
     public static final String SETTINGS ="settings" ;
     public static final String AZURE_AUTHENABLED ="authEnabled" ;
     public static final String CLIENT_CERT_ENABLED = "clientCertEnabled";
+    public static final String autoCreateSubnetworks="autoCreateSubnetworks";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");

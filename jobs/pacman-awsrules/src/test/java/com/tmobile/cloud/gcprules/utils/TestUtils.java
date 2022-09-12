@@ -1601,4 +1601,58 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitJsonArrayCustomVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"discoveryDate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": null,\n" +
+                        "          \"id\": \"5106042431032024781\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"demo-vpc1\",\n" +
+                        "          \"autoCreateSubnetworks\": false,\n" +
+                        "          \"discoverydate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"5106042431032024781\",\n" +
+                        "          \"_docid\": \"5106042431032024781\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"networks\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-09-05 15:00:00+0530\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-09-12 10:07:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayLegacyVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                " {\n" +
+                        "          \"discoveryDate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": null,\n" +
+                        "          \"id\": \"8930186336753281130\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"default\",\n" +
+                        "          \"autoCreateSubnetworks\": true,\n" +
+                        "          \"discoverydate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"8930186336753281130\",\n" +
+                        "          \"_docid\": \"8930186336753281130\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"networks\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-09-05 15:00:00+0530\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-09-12 10:07:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
