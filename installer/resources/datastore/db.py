@@ -24,7 +24,7 @@ class DBSubnetGroup(RDSSubnetGroupResource):
 
 class MySQLDatabase(RDSResource):
     db_name = "pacmandata"
-    instance_class = Settings.get('RDS_INSTANCE_TYPE', "db.t2.medium")
+    instance_class = Settings.get('RDS_INSTANCE_TYPE', "db.t3.medium")
     identifier = "data"
     storage_type = "gp2"
     engine = "mysql"
@@ -58,7 +58,9 @@ class MySQLDatabase(RDSResource):
         if self.resource_in_tf_output(outputs):
             return {
                 'MySQL Host': outputs[self.get_resource_id()]['endpoint'],
-                'MySQL DB': self.get_input_attr('db_name')
+                'MySQL DB': self.get_input_attr('db_name'),
+                'DB Username': self.get_input_attr('username'),
+                'DB Password': self.get_input_attr('password')
             }
 
     def pre_terraform_apply(self):

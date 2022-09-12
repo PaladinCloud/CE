@@ -6,6 +6,7 @@ import com.tmobile.pacbot.gcp.inventory.InventoryConstants;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.vo.CloudSqlVH;
 import com.tmobile.pacbot.gcp.inventory.vo.IPAddress;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ServerCaCert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,12 @@ public class CloudSqlInventoryCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudSqlInventoryCollector.class);
 
-    public List<CloudSqlVH> fetchCloudSqlInventory(String projectId) throws IOException {
+    public List<CloudSqlVH> fetchCloudSqlInventory(ProjectVH project) throws IOException {
         logger.info("Running collector for cloud SQL inventory.");
         List<CloudSqlVH> cloudSqlList = new ArrayList<>();
         try {
             SQLAdmin sqlAdmin = gcpCredentialsProvider.getSqlAdminService();
-            InstancesListResponse response = sqlAdmin.instances().list(projectId).execute();
+            InstancesListResponse response = sqlAdmin.instances().list(project.getProjectId()).execute();
             logger.info("SQL admin list api response: {}", response);
             if (response != null && !response.isEmpty()) {
                 List<DatabaseInstance> instanceList = response.getItems();
@@ -43,7 +44,8 @@ public class CloudSqlInventoryCollector {
                         cloudSqlVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
                         cloudSqlVH.setId(dbInstance.getConnectionName());
                         cloudSqlVH.setRegion(dbInstance.getRegion());
-                        cloudSqlVH.setProjectName(projectId);
+                        cloudSqlVH.setProjectName(project.getProjectName());
+                        cloudSqlVH.setProjectId(project.getProjectId());
 
                         cloudSqlVH.setName(dbInstance.getName());
                         cloudSqlVH.setKind(dbInstance.getKind());

@@ -21,13 +21,13 @@ public class VMInventoryCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(VMInventoryCollector.class);
 
-    public List<VirtualMachineVH> fetchInstanceInventory(String projectId) throws IOException {
+    public List<VirtualMachineVH> fetchInstanceInventory(ProjectVH project) throws IOException {
         List<VirtualMachineVH> instanceList = new ArrayList<>();
         InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient();
 
         AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
                 .newBuilder()
-                .setProject(projectId)
+                .setProject(project.getProjectId())
                 .build();
 
         InstancesClient.AggregatedListPagedResponse response = instancesClient
@@ -48,7 +48,8 @@ public class VMInventoryCollector {
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
                         virtualMachineVH.setMachineType(instance.getMachineType());
                         virtualMachineVH.setTags(instance.getLabelsMap());
-                        virtualMachineVH.setProjectName(projectId);
+                        virtualMachineVH.setProjectName(project.getProjectName());
+                        virtualMachineVH.setProjectId(project.getProjectId());
                         virtualMachineVH.setName(instance.getName());
                         virtualMachineVH.setDescription(instance.getDescription());
                         virtualMachineVH.setRegion(zoneName);

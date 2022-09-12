@@ -267,24 +267,24 @@ may need scaled to support the increased data volume. If you are experiencing pe
 
 ### Upgrade RDS instance
 
-Paladin's default instance type for RDS-MySQL is **db.t2.medium**, consider a larger instance to improve performance. To
+Paladin's default instance type for RDS-MySQL is **db.t3.medium**, consider a larger instance to improve performance. To
 upgrade RDS follow the below steps:
 
 Go to local.py file
 1. Set RDS_INSTANCE_TYPE to a type you require.
-2. RDS_INSTANCE_TYPE = **db.t2.large**
+2. RDS_INSTANCE_TYPE = **db.t3.large**
    ```
    Run the command, sudo python3 manager.py upgrade to upgrade the server instance type
    ```
 
 ### Upgrade Elasticsearch instance
 
-Paladin's default instance type for Elasticsearch cluster is **m4.large.elasticsearch**, consider a larger instance to
+Paladin's default instance type for Elasticsearch cluster is **m5.large.elasticsearch**, consider a larger instance to
 improve performance. To upgrade Elasticsearch follow the below steps:
 
 Go to local.py file
 1. Set ES_INSTANCE_TYPE to an instance type you require.
-2. ES_INSTANCE_TYPE = **m4.xlarge.elasticsearch**
+2. ES_INSTANCE_TYPE = **m5.xlarge.elasticsearch**
    ```
    Run the command, sudo python3 manager.py upgrade to upgrade the server instance type
    ```

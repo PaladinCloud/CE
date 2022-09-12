@@ -1,17 +1,19 @@
 package com.tmobile.pacbot.gcp.inventory;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
+import com.google.api.services.cloudresourcemanager.CloudResourceManager;
+import com.google.api.services.cloudresourcemanager.model.Project;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.file.AssetFileGenerator;
+import com.tmobile.pacbot.gcp.inventory.file.S3Uploader;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.tmobile.pacbot.gcp.inventory.file.AssetFileGenerator;
-import com.tmobile.pacbot.gcp.inventory.file.S3Uploader;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Component
 public class GCPFetchOrchestrator {
@@ -54,7 +56,7 @@ public class GCPFetchOrchestrator {
     public Map<String, Object> orchestrate() {
 
         try {
-            List<String> allProjects = fetchProjects();
+            List<ProjectVH> allProjects = fetchProjects();
             if (allProjects.isEmpty()) {
                 ErrorManageUtil.uploadError("all", "all", "all", "Error fetching projects Info ");
                 return ErrorManageUtil.formErrorCode();
@@ -78,15 +80,33 @@ public class GCPFetchOrchestrator {
         return null;
     }
 
-    private List<String> fetchProjects() {
+    private List<ProjectVH> fetchProjects() {
 
         List<String> projectList = new ArrayList<>();
-
-        if (projects != null && !"".equals(projects)) {
+        List<ProjectVH> projectDetails=new ArrayList<>();
+            if (projects != null && !"".equals(projects)) {
             projectList = Arrays.asList(projects.split(","));
         }
-        log.info("Total projects in Scope : {}", projectList.size());
-        log.info("Subscriptions : {}", projectList);
-        return projectList;
+        try {
+            CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager();
+            for(String projectId:projectList){
+
+                CloudResourceManager.Projects.Get project = resource.projects().get(projectId);
+                Project p = project.execute();
+                log.info("Project Id: {}, Project Name: {}, Project number: {}"
+                        ,p.getProjectId(),p.getName(),p.getProjectNumber());
+                ProjectVH projectVH=new ProjectVH();
+                projectVH.setProjectId(p.getProjectId());
+                projectVH.setProjectName(p.getName());
+                projectVH.setProjectNumber(p.getProjectNumber());
+                projectDetails.add(projectVH);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        log.info("Total projects in Scope : {}", projectDetails.size());
+        log.info("Projects : {}", projectDetails);
+        return projectDetails;
     }
 }

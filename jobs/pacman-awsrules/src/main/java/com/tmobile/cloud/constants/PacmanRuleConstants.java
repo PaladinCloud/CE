@@ -525,9 +525,14 @@ public class PacmanRuleConstants {
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";
     public static final String CONTAINED_DB_AUTHENTICATION="contained database authentication";
-
+    public static final String ENABLE_PURGE_PROTECTION="enablePurgeProtection";
+    public static final String ENABLE_SOFT_DELETE="enableSoftDelete";
+    public static final String IPCONFIGUATION="ipConfiguration";
     public static final String IP_CONFIG="ipConfiguration";
     public static final String AUTHORIZED_NETWORK="authorizedNetworks";
     public static final String UNIFORM_BUCKET_LEVEL_ACCESS="uniformBucketLevelAccess";
+    public static final String DEFAULT="default";
+    public static final String REQUIRE_SSL="requireSsl";
+    public static final String DEFAULT_ACTION="defaultAction";
 
 }

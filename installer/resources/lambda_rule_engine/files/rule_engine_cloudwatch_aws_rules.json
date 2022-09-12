@@ -2669,7 +2669,7 @@
     "targetType": "awscomprehend",
     "assetGroup": "aws",
     "alexaKeyword": "EnableAwsComprehendJobResultsEncryption",
-    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-comprehend-job-results-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_comprehend_job_results_should_be_encrypted_version-1_aws_enable_job_results_encryption_awscomprehend\",\"autofix\":false,\"alexaKeyword\":\"EnableAwsComprehendJobResultsEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"awscomprehend\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_comprehend_job_results_should_be_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_comprehend_job_results_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-comprehend-job-results-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_comprehend_job_results_should_be_encrypted_version-1_aws_enable_job_results_encryption_awscomprehend\",\"autofix\":false,\"alexaKeyword\":\"EnableAwsComprehendJobResultsEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"awscomprehend\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_comprehend_job_results_should_be_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_comprehend_job_results_encryption\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0 1/1 * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -2680,7 +2680,7 @@
     "displayName": "Encrypt Comprehend Analysis Results",
     "createdDate": "2022-06-13",
     "modifiedDate": "2022-06-13",
-    "severity": "high",
+    "severity": "medium",
     "category": "security"
   },
   {
@@ -2699,7 +2699,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_user_permission_without_group",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Assign user permissions only through IAM groups",
+    "displayName": "Only use IAM groups to assign User Permissions",
     "createdDate": "2022-09-06",
     "modifiedDate": "2022-09-06",
     "severity": "medium",
@@ -2999,7 +2999,7 @@
     "targetType": "efs",
     "assetGroup": "aws",
     "alexaKeyword": "EnableAwsEFSEncryption",
-    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-efs-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_EFS_should_be_encrypted_version-1_aws_enable_encryption_efs\",\"autofix\":false,\"alexaKeyword\":\"EnableAwsEFSEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"efs\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_EFS_should_be_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_efs_encryption\",\"ruleType\":\"ManageRule\"}",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-efs-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"Aws_EFS_should_be_encrypted_version-1_aws_enable_encryption_efs\",\"autofix\":false,\"alexaKeyword\":\"EnableAwsEFSEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"efs\",\"pac_ds\":\"aws\",\"policyId\":\"Aws_EFS_should_be_encrypted_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_enable_efs_encryption\",\"ruleType\":\"ManageRule\"}",
     "ruleFrequency": "0 0 1/1 * ? *",
     "ruleExecutable": "",
     "ruleRestUrl": "",
@@ -3010,7 +3010,7 @@
     "displayName": "Encrypt EFS",
     "createdDate": "2022-06-08",
     "modifiedDate": "2022-06-08",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3029,7 +3029,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_efs_should_be_encrypted_with_cmks",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Use CMK to Encrypt EFS",
+    "displayName": "Use Customer Managed Key to encrypt EFS",
     "createdDate": "2022-06-08",
     "modifiedDate": "2022-06-08",
     "severity": "high",

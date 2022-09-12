@@ -1,4 +1,4 @@
-# CRAETE local.py file by renaming/copying default.local.py
+# CREATE local.py file by renaming/copying default.local.py
 # User should update the VPC details below in local.py
 VPC = {
     "ID": "vpc-1",
@@ -16,13 +16,13 @@ CUSTOM_RESOURCE_TAGS = {
 
 
 # RDS Related Configurations
-# Possibble values db.m4.large, db.t2.large etc
-RDS_INSTANCE_TYPE = "db.t2.medium"
+# Possibble values db.m5.large, db.t3.large etc
+RDS_INSTANCE_TYPE = "db.t3.medium"
 
 
 # ElasticSearch Related Configurations
-# Possibble values m4.xlarge.elasticsearch, t2.xlarge.elasticsearch etc
-ES_INSTANCE_TYPE = "m4.large.elasticsearch"
+# Possibble values m5.xlarge.elasticsearch  etc
+ES_INSTANCE_TYPE = "m5.large.elasticsearch"
 ES_VOLUME_SIZE = 20
 
 # ALB related configurations

@@ -38,6 +38,7 @@ public class NetworkInterfaceInventoryCollector {
 			networkInterfaceVH.setAppliedDnsServers(networkInterface.appliedDnsServers());
 			networkInterfaceVH.setDnsServers(networkInterface.dnsServers());
 			networkInterfaceVH.setId(networkInterface.id());
+			networkInterfaceVH.setRegion(networkInterface.regionName());
 			networkInterfaceVH.setInternalDnsNameLabel(networkInterface.internalDnsNameLabel());
 			networkInterfaceVH.setInternalDomainNameSuffix(networkInterface.internalDomainNameSuffix());
 			networkInterfaceVH.setInternalFqdn(networkInterface.internalFqdn());
