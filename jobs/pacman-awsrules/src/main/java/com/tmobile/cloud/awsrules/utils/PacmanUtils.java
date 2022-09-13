@@ -3679,43 +3679,33 @@ public class PacmanUtils {
      * @return the query from elastic search
      * @throws Exception the exception
      */
-    public static String getQueryFromElasticSearch(String securityGroupId,
-            List<String> serviceWithSgEsUrl, String esUrlParam,Map<String,String> ruleParams) throws Exception {
-        String securityGroupAttribute = null;
-        String servicesWithSgurl = null;
-        String returnedValue = null;
-        String latest = "";
-        for (String esUrl : serviceWithSgEsUrl) {
-            servicesWithSgurl = esUrlParam + esUrl;
-            if (esUrl.contains("ec2") || esUrl.contains("lambda") || esUrl.contains("appelb")
-                    || esUrl.contains("classicelb") || esUrl.contains("elasticsearch")) {
-                securityGroupAttribute = PacmanRuleConstants.EC2_WITH_SECURITYGROUP_ID;
-                if(esUrl.contains("elasticsearch")){
-                	latest = "true";
-                }
-            } else {
-                securityGroupAttribute = PacmanRuleConstants.SECURITYGROUP_ID_ATTRIBUTE;
-            }
-            Map<String, List<String>> matchPhrase = new HashMap<>();
-            
-            List<String> ids = new ArrayList<>();
-            ids.add(securityGroupId);
-            matchPhrase.put(securityGroupAttribute, ids);
-            	 returnedValue =  getValueFromElasticSearch(ruleParams.get("accountid"),"", servicesWithSgurl, securityGroupAttribute, ruleParams.get("region"), securityGroupAttribute, latest,matchPhrase);
-			if (!StringUtils.isEmpty(returnedValue)) {
-				List<GroupIdentifier> listSecurityGroupID = new ArrayList<>();
-				getSecurityGrouplist(returnedValue, ":;", listSecurityGroupID);
-				for(GroupIdentifier sgId:listSecurityGroupID){
-					if(sgId.getGroupId().equals(securityGroupId)){
-						return securityGroupId;
-					}
+	public static String getQueryFromElasticSearch(String securityGroupId, String eniESURL, String esUrlParam,
+			Map<String, String> ruleParams) throws Exception {
+		String securityGroupAttribute = null;
+		String servicesWithSgurl = null;
+		String returnedValue = null;
+		String latest = "";
+		servicesWithSgurl = esUrlParam + eniESURL;
+		securityGroupAttribute = PacmanRuleConstants.GROUP_ID;
+		Map<String, List<String>> matchPhrase = new HashMap<>();
+		List<String> ids = new ArrayList<>();
+		ids.add(securityGroupId);
+		matchPhrase.put(securityGroupAttribute, ids);
+		returnedValue = getValueFromElasticSearch(ruleParams.get("accountid"), "", servicesWithSgurl,
+				securityGroupAttribute, ruleParams.get("region"), securityGroupAttribute, latest, matchPhrase);
+		if (!StringUtils.isEmpty(returnedValue)) {
+			List<GroupIdentifier> listSecurityGroupID = new ArrayList<>();
+			getSecurityGrouplist(returnedValue, ":;", listSecurityGroupID);
+			for (GroupIdentifier sgId : listSecurityGroupID) {
+				if (sgId.getGroupId().equals(securityGroupId)) {
+					return securityGroupId;
 				}
-				
 			}
-           
-        }
+
+		}
+
 		return returnedValue;
-    }
+	}
     
     /**
      * get value from elastic search.
