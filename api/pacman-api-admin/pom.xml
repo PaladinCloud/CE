@@ -214,9 +214,20 @@
 
 		<dependency>
 			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-events</artifactId>
-			<version>1.11.264</version><!--$NO-MVN-MAN-VER$ -->
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.12.290</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-core</artifactId>
+			<version>1.12.239</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-events</artifactId>
+			<version>1.12.296</version><!--$NO-MVN-MAN-VER$ -->
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
