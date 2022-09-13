@@ -1482,4 +1482,99 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonArrayForUniformBucketAccessSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west1-a\",\n" +
+                "          \"id\": \"staging.cool-bay-349411.appspot.com\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"name\": \"pacbot-demo-vm\",\n" +
+                "          \"users\": [\n" +
+                "              \"project-owners-47822473470\",\n" +
+                "              \"project-viewers-47822473470\" \n" +
+                "          ],\n" +
+                "          \"uniformBucketLevelAccess\":\"true\",\n"+
+                "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
+                "          \"_resourceid\": \"8993151141438601059\",\n" +
+                "          \"_docid\": \"8993151141438601059\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-14 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-16 06:12:00+0000\"\n" +
+                "        }", JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitsJsonArrayForUniformBucketAccessFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-west1-a\",\n" +
+                "          \"id\": \"staging.cool-bay-349411.appspot.com\",\n" +
+                "          \"projectName\": \"cool-bay-349411\",\n" +
+                "          \"name\": \"pacbot-demo-vm\",\n" +
+                "          \"users\": [\n" +
+                "              \"allAuthenticatedUsers\",\n" +
+                "              \"allUsers\" \n" +
+                "          ],\n" +
+                "          \"uniformBucketLevelAccess\":\"false\",\n"+
+                "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
+                "          \"_resourceid\": \"8993151141438601059\",\n" +
+                "          \"_docid\": \"8993151141438601059\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-06-14 10:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-06-16 06:12:00+0000\"\n" +
+                "        }", JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitJsonArrayDefaultVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_cloudType\":\"gcp\",\"region\":\"us-central1\",\"id\":\"cool-bay-349411:us-central1:gcp-mysql-sever1\",\"projectName\":\"cool-bay-349411\",\"name\":\"networking\",\"_loaddate\":\"2022-08-1112:41:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayDefaultVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_cloudType\":\"gcp\",\"region\":\"us-central1\",\"id\":\"cool-bay-349411:us-central1:gcp-mysql-sever1\",\"projectName\":\"cool-bay-349411\",\"name\":\"default\",\"_loaddate\":\"2022-08-1112:41:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitjsonArrayForEnforceSSlFoorCloudSQL(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoverydate\":\"2022-08-1611:00:00+0000\",\"_docid\":\"cool-bay-349411:us-central1:gcp-mysql-instance1\",\"backendType\":\"SECOND_GEN\",\"_cloudType\":\"gcp\",\"maxDiskSize\":null,\"databaseVersion\":\"MYSQL_8_0\",\"_entity\":\"true\",\"serviceAccountEmail\":\"p47822473470-0s7wz4@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\"masterInstanceName\":null,\"databaseInstalledVersion\":\"MYSQL_8_0_26\",\"createdTime\":\"2022-06-28T03:07:43.761Z\",\"eTag\":\"44c8f7e7d3b041fb1e4f8089c1558b6dcdf4de2e127d574a98b86452990c08c6\",\"id\":\"cool-bay-349411:us-central1:gcp-mysql-instance1\",\"state\":\"SUSPENDED\",\"_loaddate\":\"2022-08-1612:22:00+0000\",\"latest\":false,\"settings\":{\"dataDiskSizeGb\":100,\"locationPreference\":{\"zone\":\"us-central1-b\",\"kind\":\"sql#locationPreference\"},\"storageAutoResizeLimit\":0,\"kind\":\"sql#settings\",\"dataDiskType\":\"PD_SSD\",\"activationPolicy\":\"ALWAYS\",\"authorizedGaeApplications\":[],\"userLabels\":{\"environment\":\"demo\",\"application\":\"paladincloud\",\"created_by\":\"paladin\"},\"maintenanceWindow\":{\"hour\":0,\"kind\":\"sql#maintenanceWindow\",\"updateTrack\":\"stable\",\"day\":0},\"availabilityType\":\"ZONAL\",\"pricingPlan\":\"PER_USE\",\"tier\":\"db-custom-2-8192\",\"replicationType\":\"SYNCHRONOUS\",\"ipConfiguration\":{\"requireSsl\":true,\"ipv4Enabled\":true,\"authorizedNetworks\":[]},\"storageAutoResize\":true,\"settingsVersion\":17,\"backupConfiguration\":{\"backupRetentionSettings\":{\"retainedBackups\":7,\"retentionUnit\":\"COUNT\"},\"kind\":\"sql#backupConfiguration\",\"transactionLogRetentionDays\":7,\"binaryLogEnabled\":true,\"location\":\"us\",\"startTime\":\"03:00\",\"enabled\":true}},\"_resourceid\":\"cool-bay-349411:us-central1:gcp-mysql-instance1\",\"kind\":\"sql#instance\",\"instanceType\":\"CLOUD_SQL_INSTANCE\",\"firstdiscoveredon\":\"2022-07-2015:00:00+0000\",\"ipAddress\":[{\"ip\":\"34.68.114.195\",\"type\":\"PRIMARY\"}],\"kmsKeyVersion\":null,\"currentDiskSize\":null,\"kmsKeyName\":null,\"selfLink\":\"https://sqladmin.googleapis.com/v1/projects/cool-bay-349411/instances/gcp-mysql-instance1\",\"_entitytype\":\"cloudsql\",\"serverCaCert\":{\"commonName\":\"C=US,O=Google\\\\,Inc,CN=GoogleCloudSQLServerCA,dnQualifier=39b1af3a-6bd5-4bcf-bd3c-b76ea723538b\",\"instance\":\"gcp-mysql-instance1\",\"createTime\":\"2022-06-28T03:09:24.129Z\",\"expirationTime\":\"2032-06-25T03:10:24.129Z\",\"kind\":\"sql#sslCert\",\"certSerialNumber\":\"0\"},\"name\":\"gcp-mysql-instance1\",\"region\":\"us-central1\",\"projectName\":\"cool-bay-349411\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailurejsonArrayForEnforceSSlFoorCloudSQL(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoverydate\":\"2022-08-1611:00:00+0000\",\"_docid\":\"cool-bay-349411:us-central1:gcp-mysql-instance1\",\"backendType\":\"SECOND_GEN\",\"_cloudType\":\"gcp\",\"maxDiskSize\":null,\"databaseVersion\":\"MYSQL_8_0\",\"_entity\":\"true\",\"serviceAccountEmail\":\"p47822473470-0s7wz4@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\"masterInstanceName\":null,\"databaseInstalledVersion\":\"MYSQL_8_0_26\",\"createdTime\":\"2022-06-28T03:07:43.761Z\",\"eTag\":\"44c8f7e7d3b041fb1e4f8089c1558b6dcdf4de2e127d574a98b86452990c08c6\",\"id\":\"cool-bay-349411:us-central1:gcp-mysql-instance1\",\"state\":\"SUSPENDED\",\"_loaddate\":\"2022-08-1612:22:00+0000\",\"latest\":false,\"settings\":{\"dataDiskSizeGb\":100,\"locationPreference\":{\"zone\":\"us-central1-b\",\"kind\":\"sql#locationPreference\"},\"storageAutoResizeLimit\":0,\"kind\":\"sql#settings\",\"dataDiskType\":\"PD_SSD\",\"activationPolicy\":\"ALWAYS\",\"authorizedGaeApplications\":[],\"userLabels\":{\"environment\":\"demo\",\"application\":\"paladincloud\",\"created_by\":\"paladin\"},\"maintenanceWindow\":{\"hour\":0,\"kind\":\"sql#maintenanceWindow\",\"updateTrack\":\"stable\",\"day\":0},\"availabilityType\":\"ZONAL\",\"pricingPlan\":\"PER_USE\",\"tier\":\"db-custom-2-8192\",\"replicationType\":\"SYNCHRONOUS\",\"ipConfiguration\":{\"ipv4Enabled\":true,\"authorizedNetworks\":[]},\"storageAutoResize\":true,\"settingsVersion\":17,\"backupConfiguration\":{\"backupRetentionSettings\":{\"retainedBackups\":7,\"retentionUnit\":\"COUNT\"},\"kind\":\"sql#backupConfiguration\",\"transactionLogRetentionDays\":7,\"binaryLogEnabled\":true,\"location\":\"us\",\"startTime\":\"03:00\",\"enabled\":true}},\"_resourceid\":\"cool-bay-349411:us-central1:gcp-mysql-instance1\",\"kind\":\"sql#instance\",\"instanceType\":\"CLOUD_SQL_INSTANCE\",\"firstdiscoveredon\":\"2022-07-2015:00:00+0000\",\"ipAddress\":[{\"ip\":\"34.68.114.195\",\"type\":\"PRIMARY\"}],\"kmsKeyVersion\":null,\"currentDiskSize\":null,\"kmsKeyName\":null,\"selfLink\":\"https://sqladmin.googleapis.com/v1/projects/cool-bay-349411/instances/gcp-mysql-instance1\",\"_entitytype\":\"cloudsql\",\"serverCaCert\":{\"commonName\":\"C=US,O=Google\\\\,Inc,CN=GoogleCloudSQLServerCA,dnQualifier=39b1af3a-6bd5-4bcf-bd3c-b76ea723538b\",\"instance\":\"gcp-mysql-instance1\",\"createTime\":\"2022-06-28T03:09:24.129Z\",\"expirationTime\":\"2032-06-25T03:10:24.129Z\",\"kind\":\"sql#sslCert\",\"certSerialNumber\":\"0\"},\"name\":\"gcp-mysql-instance1\",\"region\":\"us-central1\",\"projectName\":\"cool-bay-349411\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

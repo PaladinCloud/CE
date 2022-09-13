@@ -23,6 +23,12 @@ def get_azure_tenants():
     else:
         return ""
 
+def get_aws_account_details():
+    aws_accounts = Settings.get('AWS_ACCOUNT_DETAILS', [])
+    account_info = [account['accountId'] +  ':' +account['accountName'] for account in aws_accounts]
+
+    return ",".join(account_info)
+
 
 def need_to_enable_gcp():
     feature_status = Settings.get('ENABLE_GCP', False)

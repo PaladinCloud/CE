@@ -49,6 +49,7 @@ public class PostgreSQLInventoryCollector {
 				JsonObject sku = postgreSQLServerObject.getAsJsonObject("sku");
 				postgreSQLServerVH.setId(postgreSQLServerObject.get("id").getAsString());
 				postgreSQLServerVH.setLocation(postgreSQLServerObject.get("location").getAsString());
+				postgreSQLServerVH.setRegion(postgreSQLServerObject.get("location").getAsString());
 				postgreSQLServerVH.setName(postgreSQLServerObject.get("name").getAsString());
 				postgreSQLServerVH.setType(postgreSQLServerObject.get("type").getAsString());
 				if (sku!=null) {

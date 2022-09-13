@@ -24,6 +24,8 @@ import { WorkflowService } from '../../../../core/services/workflow.service';
 import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
 import { TableStateService } from 'src/app/core/services/table-state-service.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -64,8 +66,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   direction;
   showSearchBar = true;
   showAddRemoveCol = true;
-  columnWidths = {name: 3, provider: 1, severity: 1, ruleCategory: 1, resourcetType: 1};
-  columnNamesMap = {name: "Policy Name", provider: "Cloud Type", severity:"Severity", ruleCategory: "Category", resourcetType: "Asset Type"}
+  columnWidths = {'Policy Name': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
+  columnNamesMap = {name: "Policy Name"};
   columnsSortFunctionMap = {
     severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
@@ -87,13 +89,13 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
+    private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService) {
 
       this.state = this.tableStateService.getState("policy") || {};
       
-      this.headerColName = this.state?.headerColName || 'name';
+      this.headerColName = this.state?.headerColName || 'Policy Name';
       this.direction = this.state?.direction || 'asc';
-      // this.bucketNumber = this.state.bucketNumber || 0;
       this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
@@ -171,7 +173,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
         'All Policies': 0
       };
       for (let i = 0; i < getData.length; i++) {
-        this.typeObj[getData[i].ruleCategory] = 0;
+        this.typeObj[getData[i].Category] = 0;
       }
       this.typeObj[`critical`] = 0;
       this.typeObj[`high`] = 0;
@@ -182,18 +184,14 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       this.typeObj["security"]=0;
       this.typeObj["tagging"]=0;
       for (let i = 0; i < getData.length; i++) {
-        this.typeObj[getData[i].severity] = 0;
+        this.typeObj[getData[i].Severity] = 0;
       }
       this.typeObj[`Auto Fix`] = 0;
       delete this.typeObj[''];
       for (let i = 0; i < getData.length; i++) {
         this.typeObj['All Policies']++;
-        if(getData[i].ruleCategory=="costOptimization"){
-          this.typeObj["cost"]++;
-        }else{
-          this.typeObj[getData[i].ruleCategory]++;
-        }
-        this.typeObj[getData[i].severity]++;
+        this.typeObj[getData[i].Category]++;
+        this.typeObj[getData[i].Severity]++;
         if (getData[i].autoFixEnabled === true) {
           this.typeObj['Auto Fix']++;
         }
@@ -203,10 +201,39 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       typeArr = Object.keys(this.typeObj);
       // this.tabName = typeArr;
       this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
+      
       this.selectedTabName = this.tabName[this.selectedTab];
     } catch (error) {
       this.logger.log('error', error);
     }
+  }
+
+  massageData(data){
+    const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
+    const newData = [];
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
+      let newObj = {};
+      KeysTobeChanged.forEach((element) => {
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        else {
+        elementnew =
+          refactoredService.getDisplayNameForAKey(
+            element.toLocaleLowerCase()
+          ) || element;
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
+      });
+      newData.push(newObj);
+    });
+    return newData;
   }
 
   getData() {
@@ -233,7 +260,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
         response => {
           if (response.data.response.length !== 0) {
             this.datacoming = true;
-            this.knowledgebaseData = response.data.response;
+            this.knowledgebaseData = this.massageData(response.data.response);
+            
             this.dataLoaded = true;
             const x = this;
             setTimeout(function () {
@@ -262,19 +290,18 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     * this function is used to fetch the rule id and to navigate to the next page
     */
 
-  gotoNextPage(tileData){
+  goToDetails(tileData){
    let autofixEnabled = false;
     if ( tileData.autoFixEnabled) {
       autofixEnabled = true;
     }
-    const ruleId = tileData.ruleId;
+    const ruleId = tileData["Rule ID"];
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["headerColName"] = undefined;
       updatedQueryParams["direction"] = undefined;
       updatedQueryParams["searchValue"] = undefined;
-      // updatedQueryParams["bucketNumber"] = undefined;
       this.router.navigate(
         ['pl', 'compliance', 'policy-knowledgebase-details', ruleId, autofixEnabled],
         { queryParams: updatedQueryParams,

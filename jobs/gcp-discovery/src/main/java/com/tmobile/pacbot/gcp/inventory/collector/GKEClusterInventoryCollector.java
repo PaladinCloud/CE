@@ -11,6 +11,7 @@ import com.tmobile.pacbot.gcp.inventory.InventoryConstants;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.util.GCPlocationUtil;
 
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,11 +32,11 @@ public class GKEClusterInventoryCollector {
     GCPlocationUtil gcPlocationUtil;
     private static final Logger logger = LoggerFactory.getLogger(GKEClusterInventoryCollector.class);
 
-    public List<GKEClusterVH> fetchGKEClusterInventory(String projectId) throws IOException, GeneralSecurityException {
+    public List<GKEClusterVH> fetchGKEClusterInventory(ProjectVH project) throws IOException, GeneralSecurityException {
         List<GKEClusterVH> gkeClusterlist = new ArrayList<>();
         logger.info("### GKe cluster  collector ###########");
         try {
-            List<String> regions = gcPlocationUtil.getZoneList(projectId);
+            List<String> regions = gcPlocationUtil.getZoneList(project.getProjectId());
             regions.remove("us");
             regions.remove("global");
             logger.debug("Number of regions {}", regions.size());
@@ -45,7 +46,7 @@ public class GKEClusterInventoryCollector {
                 logger.info("### GKe cluster  clusterList  inside region {}", region);
                 ClusterManagerClient clusterManagerClient = gcpCredentialsProvider.getClusterManagerClient();
 
-                ListClustersResponse clusterList = clusterManagerClient.listClusters(projectId, region);
+                ListClustersResponse clusterList = clusterManagerClient.listClusters(project.getProjectId(), region);
                 logger.info("### GKe cluster clusterList ########### ");
                 logger.info("cluster size {}", clusterList.getClustersCount());
 
@@ -70,7 +71,7 @@ public class GKEClusterInventoryCollector {
                     String clusterId=cluster.getId();
                     logger.info("### Gke cluster clusterid",clusterId);
 
-                    ListNodePoolsResponse listNodePools =clusterManagerClient.listNodePools(projectId, region, clusterId);
+                    ListNodePoolsResponse listNodePools =clusterManagerClient.listNodePools(project.getProjectId(), region, clusterId);
                     logger.info("### GKe cluster NodePoolList ########### ");
                     logger.info("Nodepool size {}", listNodePools.getNodePoolsCount());
 
@@ -83,7 +84,8 @@ public class GKEClusterInventoryCollector {
                     }
 
                     gkeClusterVH.setId(String.valueOf(cluster.getId()));
-                    gkeClusterVH.setProjectName(projectId);
+                    gkeClusterVH.setProjectName(project.getProjectName());
+                    gkeClusterVH.setProjectId(project.getProjectId());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
 
                     gkeClusterVH.setRegion(cluster.getLocation());

@@ -33,6 +33,7 @@ public class RedisCacheInventoryCollector {
             redisCacheVH.setName(redisCache.name());
             redisCacheVH.setPort(redisCache.port());
             redisCacheVH.setId(redisCache.id());
+            redisCacheVH.setRegion(redisCache.regionName());
             redisCacheList.add(redisCacheVH);
         }
         log.info("Target Type : {}  Total: {} ","redis cache",redisCacheList.size());

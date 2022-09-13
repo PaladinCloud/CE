@@ -677,5 +677,21 @@ public class IAMUtils {
 		return false;
 	}
 
+	public static boolean isUserHasInvalidPermission(String userName, AmazonIdentityManagementClient iamClient) {
+		ListUserPoliciesResult listUserPoliciesResult = new ListUserPoliciesResult();
+		ListUserPoliciesRequest listUserPoliciesRequest = new ListUserPoliciesRequest();
+
+		List<AttachedPolicy> attachedPolicies = getAttachedPolicyOfIAMUser(userName, iamClient);
+
+		listUserPoliciesRequest.setUserName(userName);
+		listUserPoliciesResult = iamClient.listUserPolicies(listUserPoliciesRequest);
+
+		if (!CollectionUtils.isNullOrEmpty(attachedPolicies)
+				|| !CollectionUtils.isNullOrEmpty(listUserPoliciesResult.getPolicyNames())) {
+			return true;
+		}
+		return false;
+	}
+
 	
 }
