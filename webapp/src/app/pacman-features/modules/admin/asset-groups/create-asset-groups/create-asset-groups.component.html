@@ -125,7 +125,7 @@
                                                         (input)="isGroupNameAvailable($event.target.value)"
                                                         autocomplete="off">
                                                 </ul>
-                                                <div class="validation-error-message" *ngIf="assetForm.groupName.trim().length<5">Please enter min 5 characters</div>
+                                                <div class="validation-error-message" *ngIf="assetForm.groupName.trim().length<3">Please enter min 3 characters</div>
                                             </div>
                                             <div class="input-box">
                                                 <label>Display Name *</label>
@@ -134,7 +134,7 @@
                                                         placeholder="Enter the Display Name"
                                                         [(ngModel)]="assetForm.displayName" autocomplete="off">
                                                 </ul>
-                                                <div class="validation-error-message" *ngIf="assetForm.displayName.trim().length<5">Please enter min 5 characters</div>
+                                                <div class="validation-error-message" *ngIf="assetForm.displayName.trim().length<3">Please enter min 3 characters</div>
                                             </div>
                                         </div>
                                         <div class="formctnright">
@@ -155,6 +155,7 @@
                                                         autocomplete="off">
                                                 </ul>
                                                 <div class="validation-error-message" *ngIf="assetForm.createdBy.trim().length<5">Please enter min 5 characters</div>
+                                                <div class="validation-error-message" *ngIf="isNumber(assetForm.createdBy.trim())">Please enter atleast 1 alphabetical characters</div>
                                             </div>
                                         </div>
                                         <div class="formctn">
@@ -165,6 +166,7 @@
                                                         placeholder="Enter Group Description"
                                                         [(ngModel)]="assetForm.description"></textarea>
                                                 </ul>
+                                                <div class="validation-error-message" *ngIf="assetForm.description.trim().length<15">Please enter min 15 characters</div>
                                             </div>
                                             <div class="input-box">
                                                 <input type="checkbox" id="test5" name="isDisplayAssetGroupsEnabled"

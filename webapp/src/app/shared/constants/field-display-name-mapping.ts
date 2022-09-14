@@ -13,6 +13,7 @@
  */
 
 export const MAPPING = {
+    'provider': 'Cloud Type',
     '_cloudtype': 'Cloud Type',
     '_resourceId': 'Resource ID',
     'volumetype': 'Volume Type',
