@@ -1120,5 +1120,27 @@
     "modifiedDate": "2022-09-12",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "GCP_VM_Instance_Shielded_Config",
+    "ruleUUID": "GCP_VM_Instance_Shielded_Config",
+    "policyId": "GCP_VM_Instance_Shielded_Config",
+    "ruleName": "Compute instances should be shielded",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "VMInstanceShieldedConfig",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-vminstance-has-shielded-config\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"checks if virtual machine instance has shielded config\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VM instance does not have shielded config\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_vminstance/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Shielded VM for compute instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"GCP_VM_Instance_Shielded_Config\",\"autofix\":false,\"alexaKeyword\":\"VMInstanceShieldedConfig\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"GCP_VM_Instance_Shielded_Config\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"GCP_VM_Instance_Shielded_Config\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/GCP_VM_Instance_Shielded_Config",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Shielded VM for compute instances",
+    "createdDate": "2022-09-13",
+    "modifiedDate": "2022-09-13",
+    "severity": "medium",
+    "category": "security"
   }
 ]
