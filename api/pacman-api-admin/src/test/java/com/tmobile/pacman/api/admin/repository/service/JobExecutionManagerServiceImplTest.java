@@ -66,7 +66,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
-import com.tmobile.pacman.api.admin.domain.AWSCredentials;
+import com.tmobile.pacman.api.admin.domain.AWSProperty;
 import com.tmobile.pacman.api.admin.domain.JobDetails;
 import com.tmobile.pacman.api.admin.domain.JobExecutionManagerListProjections;
 import com.tmobile.pacman.api.admin.domain.JobProperty;
@@ -134,7 +134,7 @@ public class JobExecutionManagerServiceImplTest {
         putRuleResult = Mockito.spy(new PutRuleResult());
         putTargetsResult = Mockito.spy(new PutTargetsResult());
         putTargetsRequest = Mockito.spy(new PutTargetsRequest());
-        AWSCredentials awsCredentialsProperty = buildAWSCredentials();
+        AWSProperty awsCredentialsProperty = buildAWSCredentials();
 		when(config.getAws()).thenReturn(awsCredentialsProperty);
         PowerMockito.whenNew(AWSLambdaClient.class).withAnyArguments().thenReturn(awsLambdaClient);  
         when(amazonClient.getAWSLambdaClient(anyString())).thenReturn(awsLambdaClient);
@@ -325,8 +325,8 @@ public class JobExecutionManagerServiceImplTest {
 		};
 	}
 	
-	private AWSCredentials buildAWSCredentials() {
-		AWSCredentials awsCredentials = new AWSCredentials();
+	private AWSProperty buildAWSCredentials() {
+		AWSProperty awsCredentials = new AWSProperty();
 		awsCredentials.setAccessKey("accessKey");
 		awsCredentials.setSecretKey("secretKey");
 		return awsCredentials;

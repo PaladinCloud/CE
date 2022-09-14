@@ -95,15 +95,6 @@ public class RuleServiceImpl implements RuleService {
 	
 	@Autowired
 	private RuleCategoryRepository ruleCategoryRepository;
-
-	@Value("${aws.eventbridge.bus.details}")
-	private String awsBusDetails;
-
-	@Value("${gcp.eventbridge.bus.details}")
-	private String gcpBusDetails;
-
-	@Value("${azure.eventbridge.bus.details}")
-	private String azureBusDetails;
 	
 	@Override
 	public List<Rule> getAllRulesByTargetType(String targetType) {
@@ -188,12 +179,15 @@ public class RuleServiceImpl implements RuleService {
 		String eventBus="default";
 		switch (assetGroup.toLowerCase()){
 			case "azure":
+				String azureBusDetails= config.getAzure().getEventbridge().getBus().getDetails();
 				eventBus=azureBusDetails.split(":")[0];
 				break;
 			case "gcp":
+				String gcpBusDetails= config.getGcp().getEventbridge().getBus().getDetails();
 				eventBus=gcpBusDetails.split(":")[0];
 				break;
 			case "aws":
+				String awsBusDetails= config.getAws().getEventbridge().getBus().getDetails();
 				eventBus=awsBusDetails.split(":")[0];
 				break;
 			default:
