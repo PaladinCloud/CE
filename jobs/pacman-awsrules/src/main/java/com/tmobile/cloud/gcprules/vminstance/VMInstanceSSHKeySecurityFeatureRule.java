@@ -105,7 +105,10 @@ public class VMInstanceSSHKeySecurityFeatureRule extends BaseRule {
                     String key = item.getAsJsonObject()
                             .get(PacmanRuleConstants.KEY).getAsString();
 
-                    if(key.equalsIgnoreCase(keyValue)) {
+                    Boolean value=item.getAsJsonObject()
+                            .get(PacmanRuleConstants.VALUE).getAsBoolean();
+
+                    if(key.equalsIgnoreCase(keyValue) && value) {
                         validationResult = true;
                         break;
                     }
