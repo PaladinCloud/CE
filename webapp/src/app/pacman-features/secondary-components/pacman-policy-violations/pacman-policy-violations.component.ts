@@ -319,7 +319,6 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
     }
 
     const getCols = Object.keys(getData[0]);
-    console.log("get cols", getCols);
 
     for (let row = 0; row < getData.length; row++) {
       innerArr = {};

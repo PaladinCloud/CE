@@ -215,6 +215,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.urlToRedirect = this.router.routerState.snapshot.url;
   }
 
+  isNumber(val){
+    return !isNaN(val);
+  }
+
 
   closeAttributeConfigure() {
     this.state = 'closed';
@@ -610,8 +614,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   isStepDisabled(stepIndex) {
     if (stepIndex === 0) {
-      if (this.assetForm.groupName.length>=5 && this.assetForm.displayName.length>=5 &&
-        this.assetForm.type.length>=5 && this.assetForm.createdBy.length>=5 && this.isGroupNameValid === 1) {
+      if (this.assetForm.groupName.trim().length>=3 && this.assetForm.displayName.trim().length>=3 &&
+        this.assetForm.type.trim().length>=5 && this.assetForm.description.trim().length>=15 && this.assetForm.createdBy.trim().length>=5 && this.isGroupNameValid === 1 && !(/^\d+$/.test(this.assetForm.createdBy.trim()))) {
         return false;
       }
     } else if (stepIndex === 1) {
