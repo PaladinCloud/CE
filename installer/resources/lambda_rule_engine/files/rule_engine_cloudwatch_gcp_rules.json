@@ -1115,7 +1115,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Legacy_Subnet_should_Not_Exist_in_a_Project",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Subnet mode for VPC should not be legacy",
+    "displayName": "Deny legacy subnet mode for VPC",
     "createdDate": "2022-09-12",
     "modifiedDate": "2022-09-12",
     "severity": "medium",
