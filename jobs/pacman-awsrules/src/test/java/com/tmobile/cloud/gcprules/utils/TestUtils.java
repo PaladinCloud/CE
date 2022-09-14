@@ -1577,6 +1577,166 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonForVMShieldedConfigSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"discoveryDate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-central1-a\",\n" +
+                "          \"id\": \"1443986351879888987\",\n" +
+                "          \"projectName\": \"Paladin Cloud\",\n" +
+                "          \"projectId\": \"central-run-349616\",\n" +
+                "          \"name\": \"dev-pc-test\",\n" +
+                "          \"description\": \"\",\n" +
+                "          \"disks\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"0\",\n" +
+                "              \"projectName\": \"Paladin Cloud\",\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"dev-pc-test\",\n" +
+                "              \"sizeInGB\": 10,\n" +
+                "              \"type\": \"PERSISTENT\",\n" +
+                "              \"hasSha256\": false,\n" +
+                "              \"hasKmsKeyName\": false,\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"tags\": {\n" +
+                "            \"application\": \"paladincloud-gcp\",\n" +
+                "            \"enviornment\": \"demo\"\n" +
+                "          },\n" +
+                "          \"machineType\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/zones/us-central1-a/machineTypes/e2-medium\",\n" +
+                "          \"status\": \"RUNNING\",\n" +
+                "          \"networkInterfaces\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"nic0\",\n" +
+                "              \"projectName\": null,\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"nic0\",\n" +
+                "              \"accessConfigs\": [\n" +
+                "                {\n" +
+                "                  \"discoveryDate\": null,\n" +
+                "                  \"_cloudType\": \"GCP\",\n" +
+                "                  \"region\": null,\n" +
+                "                  \"id\": \"External NAT\",\n" +
+                "                  \"projectName\": \"Paladin Cloud\",\n" +
+                "                  \"projectId\": null,\n" +
+                "                  \"name\": \"External NAT\",\n" +
+                "                  \"natIP\": \"35.239.207.67\",\n" +
+                "                  \"discoverydate\": null\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"network\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/global/networks/default\",\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"items\": [],\n" +
+                "          \"onHostMaintainence\": \"MIGRATE\",\n" +
+                "          \"shieldedInstanceConfig\": {\n" +
+                "            \"enableVtpm\": true,\n" +
+                "            \"enableIntegrityMonitoring\": true\n" +
+                "          },\n" +
+                "          \"discoverydate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_resourceid\": \"1443986351879888987\",\n" +
+                "          \"_docid\": \"1443986351879888987\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-08-18 15:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-09-14 05:53:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitsJsonForVMShieldedConfigFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"discoveryDate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-central1-a\",\n" +
+                "          \"id\": \"1443986351879888987\",\n" +
+                "          \"projectName\": \"Paladin Cloud\",\n" +
+                "          \"projectId\": \"central-run-349616\",\n" +
+                "          \"name\": \"dev-pc-test\",\n" +
+                "          \"description\": \"\",\n" +
+                "          \"disks\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"0\",\n" +
+                "              \"projectName\": \"Paladin Cloud\",\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"dev-pc-test\",\n" +
+                "              \"sizeInGB\": 10,\n" +
+                "              \"type\": \"PERSISTENT\",\n" +
+                "              \"hasSha256\": false,\n" +
+                "              \"hasKmsKeyName\": false,\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"tags\": {\n" +
+                "            \"application\": \"paladincloud-gcp\",\n" +
+                "            \"enviornment\": \"demo\"\n" +
+                "          },\n" +
+                "          \"machineType\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/zones/us-central1-a/machineTypes/e2-medium\",\n" +
+                "          \"status\": \"RUNNING\",\n" +
+                "          \"networkInterfaces\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"nic0\",\n" +
+                "              \"projectName\": null,\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"nic0\",\n" +
+                "              \"accessConfigs\": [\n" +
+                "                {\n" +
+                "                  \"discoveryDate\": null,\n" +
+                "                  \"_cloudType\": \"GCP\",\n" +
+                "                  \"region\": null,\n" +
+                "                  \"id\": \"External NAT\",\n" +
+                "                  \"projectName\": \"Paladin Cloud\",\n" +
+                "                  \"projectId\": null,\n" +
+                "                  \"name\": \"External NAT\",\n" +
+                "                  \"natIP\": \"35.239.207.67\",\n" +
+                "                  \"discoverydate\": null\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"network\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/global/networks/default\",\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"items\": [],\n" +
+                "          \"onHostMaintainence\": \"MIGRATE\",\n" +
+                "          \"shieldedInstanceConfig\": {\n" +
+                "            \"enableVtpm\": false,\n" +
+                "            \"enableIntegrityMonitoring\": false\n" +
+                "          },\n" +
+                "          \"discoverydate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_resourceid\": \"1443986351879888987\",\n" +
+                "          \"_docid\": \"1443986351879888987\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-08-18 15:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-09-14 05:53:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 
     public static JsonArray getHitsJsonArrayForSSHKeys() {
         Gson gson = new Gson();
