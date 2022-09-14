@@ -55,6 +55,12 @@ app-issue-exception{
     right: 0;
     height: inherit;
 }
+
+/* .violations-table ::ng-deep .mat-column-Policy-Name {
+  max-width: 350px !important;
+} 
+*/
+
 /* 
 .violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 58px;

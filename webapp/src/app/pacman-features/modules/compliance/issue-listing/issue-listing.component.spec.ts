@@ -65,7 +65,12 @@ describe('IssueListingComponent', () => {
         CommonResponseService,
         ErrorHandlingService,
         RefactorFieldsService,
-        DownloadService,
+        {provide: DownloadService, useValue: {
+          requestForDownload: (queryParam, downloadUrl, downloadMethod, downloadRequest, pageTitle, dataLength) => null,
+          downloadData : ( queryParam, downloadUrl, downloadMethod, downloadRequest, pageTitle ) => of(null),
+          animateDownload : (msg: boolean) => of(null),
+          getDownloadStatus: () => of(null),
+        }},
         WorkflowService,
         RouterUtilityService,
         TableStateService,

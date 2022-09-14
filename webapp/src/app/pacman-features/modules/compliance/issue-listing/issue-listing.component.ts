@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -100,7 +100,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   tableErrorMessage = '';
   headerColName;
   direction;
-  columnWidths = {'Policy Name': 3, 'Issue ID': 1, 'Resource ID': 2, 'Severity': 1, 'Category':1};
+  screenWidth;
+  columnWidths = {'Policy Name': 1, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {};
   columnsSortFunctionMap = {
     severity: (a, b, isAsc) => {
@@ -162,7 +163,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private commonResponseService: CommonResponseService,
     private errorHandling: ErrorHandlingService,
     private refactorFieldsService: RefactorFieldsService,
-    // private downloadService: DownloadService,
+    private downloadService: DownloadService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService,
@@ -181,7 +182,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
-      .subscribe((assetGroupName) => {
+      .subscribe((assetGroupName) => {        
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
@@ -199,6 +200,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.getFilterArray();
         this.updateComponent();
       });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.screenWidth = window.innerWidth;
+    console.log(this.screenWidth);
+    
   }
 
   ngOnInit() {
@@ -450,13 +458,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   updateComponent() {
     this.cbArr = [];
     this.cbObj = {};
-    this.outerArr = [];
+    // this.outerArr = [];
     this.tableDataLoaded = false;
-    this.searchTxt = "";
+    // this.searchTxt = "";
     this.currentBucket = [];
     this.cbModel = [];
     this.dataTableData = [];
-    this.firstPaginator = 1;
+    this.issueListingdata = [];
+    this.tableData = [];
+    // this.firstPaginator = 1;
     this.showLoader = true;
     this.dataLoaded = false;
     this.seekdata = false;
@@ -517,6 +527,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 this.totalRows = 0;
               }
               if (data.response.length > 0) {
+                this.tableErrorMessage = '';
                 this.issueListingdata = data.response;
                 this.seekdata = false;
                 this.totalRows = data.total;
@@ -817,44 +828,44 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.getUpdatedUrl();
   }
 
-  // handlePopClick(rowText) {
-  //   const fileType = "csv";
+  handlePopClick() {
+    const fileType = "csv";
 
-  //   try {
-  //     let queryParams;
+    try {
+      let queryParams;
 
-  //     queryParams = {
-  //       fileFormat: "csv",
-  //       serviceId: 1,
-  //       fileType: fileType,
-  //     };
+      queryParams = {
+        fileFormat: "csv",
+        serviceId: 1,
+        fileType: fileType,
+      };
 
-  //     const filterToBePassed = this.filterText;
-  //     filterToBePassed.domain = this.selectedDomain;
+      const filterToBePassed = this.filterText;
+      filterToBePassed.domain = this.selectedDomain;
 
-  //     const downloadRequest = {
-  //       ag: this.selectedAssetGroup,
-  //       filter: filterToBePassed,
-  //       from: 0,
-  //       searchtext: this.searchTxt,
-  //       size: this.totalRows,
-  //     };
+      const downloadRequest = {
+        ag: this.selectedAssetGroup,
+        filter: filterToBePassed,
+        from: 0,
+        searchtext: this.searchTxt,
+        size: this.totalRows,
+      };
 
-  //     const downloadUrl = environment.download.url;
-  //     const downloadMethod = environment.download.method;
+      const downloadUrl = environment.download.url;
+      const downloadMethod = environment.download.method;
 
-  //     this.downloadService.requestForDownload(
-  //       queryParams,
-  //       downloadUrl,
-  //       downloadMethod,
-  //       downloadRequest,
-  //       "Policy Violations",
-  //       this.totalRows
-  //     );
-  //   } catch (error) {
-  //     this.logger.log("error", error);
-  //   }
-  // }
+      this.downloadService.requestForDownload(
+        queryParams,
+        downloadUrl,
+        downloadMethod,
+        downloadRequest,
+        "Policy Violations",
+        this.totalRows
+      );
+    } catch (error) {
+      this.logger.log("error", error);
+    }
+  }
 
   // prevPg() {
   //   try {
