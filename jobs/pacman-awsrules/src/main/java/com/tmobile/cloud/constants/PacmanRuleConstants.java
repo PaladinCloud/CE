@@ -436,6 +436,9 @@ public class PacmanRuleConstants {
     public static final String ES_IAM_ROLE_URL = "esIamRoleUrl";
     public static final String ES_ATTRIBUTE_ROLE_ID = "roleid";
     public static final String ES_ATTRIBUTE_ASSMD_PLCY_DOC = "assumedpolicydoc";
+    public static final String ES_NACL_ENTRY_URL = "esNaclEntryUrl";
+    public static final String ES_NACL_ID_ATTRIBUTE = "networkaclid";
+    public static final String ES_RULE_ACTION_ATTRIBUTE = "ruleaction";
 
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";

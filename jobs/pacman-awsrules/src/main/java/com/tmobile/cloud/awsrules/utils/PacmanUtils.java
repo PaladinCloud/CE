@@ -1038,6 +1038,57 @@ public class PacmanUtils {
         }
     }
     
+    /**
+     * @param networkAclId
+     * @param esNaclEntryUrl
+     * @param portToCheck
+     * @return
+     * @throws Exception
+     * 
+     * Validate the nacl has rule with 
+	 * cidr bloc 0.0.0.0/0 or ipv6cidr block ::/0 and
+	 * action allow and 
+	 * from port and to port equals portToCheck or 
+	 *  portToCheck falls within the port range or 
+	 *   port range is empty (indicates All) and 
+	 * Egress is false (indicates inbound traffic)
+     * 
+     */
+    public static boolean checkNaclWithInvalidRules(String networkAclId, String esNaclEntryUrl, String portToCheck) throws Exception {
+
+		Map<String, Object> mustFilter = new HashMap<>();
+		Map<String, Object> mustNotFilter = new HashMap<>();
+		Map<String, Object> mustTermsFilter = new HashMap<>();
+		HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_NACL_ID_ATTRIBUTE), networkAclId);
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.EGRESS), PacmanRuleConstants.FALSE);
+		mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.ES_RULE_ACTION_ATTRIBUTE), "allow");
+
+		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esNaclEntryUrl, mustFilter, mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+
+		if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+			JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+			JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
+			for (int i = 0; i < hitsArray.size(); i++) {
+				JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE).getAsJsonObject();
+				String cidrBlock = source.get("cidrblock").getAsString();
+				String portRangeTo = source.get("portrangeto").getAsString();
+				String portRangeFrom = source.get("portrangefrom").getAsString();
+				String ipv6cidrblock = source.get("ipv6cidrblock").getAsString();
+
+				if ((cidrBlock.equalsIgnoreCase(PacmanRuleConstants.SOURCERANGE)
+						|| ipv6cidrblock.equalsIgnoreCase("::/0"))
+						&& ((portRangeTo.equalsIgnoreCase(portToCheck) && portRangeFrom.equalsIgnoreCase(portToCheck))
+								|| (StringUtils.isEmpty(portRangeTo) && StringUtils.isEmpty(portRangeFrom))
+								|| (Integer.valueOf(portToCheck)>=Integer.valueOf(portRangeFrom) && Integer.valueOf(portToCheck)<=Integer.valueOf(portRangeTo))))
+					return true;
+			}
+		}
+
+		return false;
+	}
+    
 	public static Set<String> getAssumedRolePolicies(Set<String> roleIds, String esIamRoleUrl)
 			throws Exception {
 
