@@ -96,14 +96,7 @@ class AllReadRoleAutoFixPolicyDocument(iam.IAMPolicyDocumentData):
                 "ec2:DeleteSecurityGroup",
             ],
             'resources': ["*"],
-            'effect': "Allow",
-            'condition': [
-                {
-                    'test': "StringEquals",
-                    'variable': "ec2:ResourceTag/pacbot-delete-sg",
-                    'values': ["true"]
-                }
-            ]
+            'effect': "Allow"
         },
         {
             'actions': [

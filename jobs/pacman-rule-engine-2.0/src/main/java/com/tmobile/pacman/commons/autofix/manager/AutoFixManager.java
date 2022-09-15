@@ -216,7 +216,7 @@ public class AutoFixManager {
             serviceType = AWSService.valueOf(getTargetTypeAlias(targetType).toUpperCase());
             
             // create client
-            if(isAccountWhiteListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),ruleParam.get(PacmanSdkConstants.RULE_ID))){
+            if(isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),ruleParam.get(PacmanSdkConstants.RULE_ID))){
             	clientMap = getAWSClient(getTargetTypeAlias(targetType), annotation,CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
             }else{
             	 logger.info("Account id is blacklisted {}" , annotation.get(PacmanSdkConstants.ACCOUNT_ID));
@@ -350,7 +350,7 @@ public class AutoFixManager {
                 }
 
                 if (AutoFixAction.AUTOFIX_ACTION_EMAIL == autoFixAction
-                        && isAccountWhiteListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID), ruleId)) {
+                        && isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID), ruleId)) {
                     long autofixExpiring=nextStepManager.getAutoFixExpirationTimeInHours(ruleParam.get(PacmanSdkConstants.RULE_ID),resourceId);
                 	/*ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(Integer.parseInt(CommonUtils.getPropValue(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY
                             +"."+ ruleParam.get(PacmanSdkConstants.RULE_ID))));*/
@@ -711,41 +711,41 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
     }
 
 //    /**
-//     * Checks if is account white listed for auto fix.
+//     * Checks if is account allow listed for auto fix.
 //     *
 //     * @param account the account
 //     * @param ruleId the rule id
-//     * @return true, if is account white listed for auto fix
+//     * @return true, if is account allow listed for auto fix
 //     */
-//    private boolean isAccountWhiteListedForAutoFix(String account, String ruleId) {
+//    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
 //        try {
-//            String whitelistStr = CommonUtils
-//                    .getPropValue(PacmanSdkConstants.AUTOFIX_WHITELIST_ACCOUNTS_PREFIX + ruleId);
-//            List<String> whitelist = Arrays.asList(whitelistStr.split("\\s*,\\s*"));
-//            return whitelist.contains(account);
+//            String allowlistStr = CommonUtils
+//                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
+//            List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
+//            return allowlist.contains(account);
 //        } catch (Exception e) {
-//            logger.error(String.format("%s account assumed not whitelisted for autofix for ruleId %s" ,account, ruleId));
+//            logger.error(String.format("%s account assumed not allowlisted for autofix for ruleId %s" ,account, ruleId));
 //            return Boolean.FALSE;
 //        }
 //    }
     
     
     /**
-     * Checks if is account white listed for auto fix.
+     * Checks if is account allow listed for auto fix.
      *
      * @param account the account
      * @param ruleId the rule id
-     * @return true, if is account white listed for auto fix
+     * @return true, if is account allow listed for auto fix
      */
-    private boolean isAccountWhiteListedForAutoFix(String account, String ruleId) {
+    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
         try {
-            String whitelistStr = CommonUtils
-                    .getPropValue(PacmanSdkConstants.AUTOFIX_WHITELIST_ACCOUNTS_PREFIX + ruleId);
-            List<String> whitelist = Arrays.asList(whitelistStr.split("\\s*,\\s*"));
-            return whitelist.contains(account);
+            String allowlistStr = CommonUtils
+                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
+            List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
+            return allowlist.contains(account);
         } catch (Exception e) {
-            logger.error("account is assumed whitelisted for autofix for ruleId {} and {} and {}" ,account, ruleId,e);
-            return Boolean.TRUE; // be defensive , if not able to figure out , assume blacklist 
+            logger.error("account is assumed allowlisted for autofix for ruleId {} and {} and {}" ,account, ruleId,e);
+            return Boolean.TRUE; // be defensive , if not able to figure out , assume deny list 
         }
     }
     
