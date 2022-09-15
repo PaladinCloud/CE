@@ -543,4 +543,6 @@ public class PacmanRuleConstants {
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";
+   public static final String DELETE_RETENTION_POLICY ="deleteRetentionPolicy";
+   public static final String ENABLED="enabled";
 }
