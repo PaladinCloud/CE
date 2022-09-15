@@ -59,7 +59,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-clouddns.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "[", false);
         FileGenerator.writeToFile("gcp-networks.data", "[", false);
-
+        FileGenerator.writeToFile("gcp-project.data", "[", false);
 
 
     }
@@ -79,6 +79,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-clouddns.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "]", true);
         FileGenerator.writeToFile("gcp-networks.data", "]", true);
+        FileGenerator.writeToFile("gcp-project.data", "]", true);
 
 
 
@@ -138,5 +139,10 @@ public class FileManager {
     public static void generateNetworksFiles(List<NetworkVH> networkVHS) {
         FileGenerator.generateJson(networkVHS, "gcp-networks.data");
     }
+    public static void generateProjectFiles(List<ProjectVH> projectMetadataVHList){
+        FileGenerator.generateJson(projectMetadataVHList, "gcp-project.data");
+
+    }
+
 
 }

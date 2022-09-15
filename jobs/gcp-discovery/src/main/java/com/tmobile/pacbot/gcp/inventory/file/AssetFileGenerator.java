@@ -64,6 +64,9 @@ public class AssetFileGenerator {
 	@Autowired
 	NetworkInventoryCollector networkInventoryCollector;
 
+	@Autowired
+	ProjectInventoryCollector projectInventoryCollector;
+
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -207,6 +210,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateNetworksFiles(networkInventoryCollector.fetchNetworkInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("project"))) {
+					return;
+				}
+				try {
+					FileManager.generateProjectFiles(projectInventoryCollector.fetchProjectMetadataMetadata(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

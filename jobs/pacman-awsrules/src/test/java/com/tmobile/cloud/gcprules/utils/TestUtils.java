@@ -1815,4 +1815,24 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitjsonArrayForEnableOSLoginRule(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1415:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616\",\"projectName\":\"\",\"projectId\":\"central-run-349616\",\"projectNumber\":1,\"computeInstanceMetadata\":{\"gke-autopilot-cluster-1-db8bc0cf-secondary-ranges\":\"services:default:default:gke-autopilot-cluster-1-services-db8bc0cf,pods:default:default:gke-autopilot-cluster-1-pods-db8bc0cf\",\"enable-guest-attributes\":\"TRUE\",\"enable-oslogin\":\"TRUE\",\"gke-cluster-1-d3b517c6-secondary-ranges\":\"services:default:default:gke-cluster-1-services-d3b517c6,pods:default:default:gke-cluster-1-pods-d3b517c6\",\"enable-osconfig\":\"TRUE\"},\"discoverydate\":\"2022-09-1415:00:00+0530\",\"_resourceid\":\"central-run-349616\",\"_docid\":\"central-run-349616\",\"_entity\":\"true\",\"_entitytype\":\"project\",\"firstdiscoveredon\":\"2022-09-1415:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1410:30:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailurejsonArrayForEnableOSLoginRule(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1415:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616\",\"projectName\":\"\",\"projectId\":\"central-run-349616\",\"projectNumber\":1,\"computeInstanceMetadata\":{\"gke-autopilot-cluster-1-db8bc0cf-secondary-ranges\":\"services:default:default:gke-autopilot-cluster-1-services-db8bc0cf,pods:default:default:gke-autopilot-cluster-1-pods-db8bc0cf\",\"enable-guest-attributes\":\"TRUE\",\"enable-oslogin\":\"FALSE\",\"gke-cluster-1-d3b517c6-secondary-ranges\":\"services:default:default:gke-cluster-1-services-d3b517c6,pods:default:default:gke-cluster-1-pods-d3b517c6\",\"enable-osconfig\":\"TRUE\"},\"discoverydate\":\"2022-09-1415:00:00+0530\",\"_resourceid\":\"central-run-349616\",\"_docid\":\"central-run-349616\",\"_entity\":\"true\",\"_entitytype\":\"project\",\"firstdiscoveredon\":\"2022-09-1415:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1410:30:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

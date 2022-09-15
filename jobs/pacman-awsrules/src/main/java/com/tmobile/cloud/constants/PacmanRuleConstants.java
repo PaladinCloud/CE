@@ -539,5 +539,7 @@ public class PacmanRuleConstants {
     public static final String DEFAULT="default";
     public static final String REQUIRE_SSL="requireSsl";
     public static final String DEFAULT_ACTION="defaultAction";
+   public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
+   public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";
 }
