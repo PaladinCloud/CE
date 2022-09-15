@@ -46,7 +46,9 @@ public class CloudDNSInventoryCollector {
                     cloudDNSVH.setRegion(zone.getName());
                     cloudDNSVH.setDnsName(zone.getDnsName());
                     cloudDNSVH.setId(zone.getGeneratedId());
-                    cloudDNSVH.setDnsSecConfigState(zone.getDnsSecConfig().getState());
+                    if(zone.getDnsSecConfig()!=null) {
+                        cloudDNSVH.setDnsSecConfigState(zone.getDnsSecConfig().getState());
+                    }
                     cloudDNSVHList.add(cloudDNSVH);
 
                 }

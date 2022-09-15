@@ -1142,5 +1142,27 @@
     "modifiedDate": "2022-09-13",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_osLogin_for_a_project",
+    "ruleUUID": "Enable_osLogin_for_a_project",
+    "policyId": "Enable_osLogin_for_a_project",
+    "ruleName": "Enable OS Login for a project",
+    "targetType": "vminstance",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Enable_osLogin_for_a_project",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-os-login-project-level\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enable OS Login for a project\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"tagging\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_osLogin_for_a_project\",\"autofix\":false,\"alexaKeyword\":\"Enable_osLogin_for_a_project\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_osLogin_for_a_project\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enable_osLogin_for_a_project\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_osLogin_for_a_project",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable OS Login for a project",
+    "createdDate": "2022-08-23",
+    "modifiedDate": "2022-08-23",
+    "severity": "medium",
+    "category": "tagging"
   }
 ]
