@@ -44,67 +44,25 @@
   </head>
 
   <body>
+<!-- Matomo -->
+<script>
+  var _paq = window._paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="https://paladincloud.matomo.cloud/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '1']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='//cdn.matomo.cloud/paladincloud.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
     <app-root>
       <div class="app-loading">
         <div class="logo"></div>
       </div>
     </app-root>
-
-    <!-- Global Site Tag (gtag.js) - Google Analytics -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=UA-112530781-1"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "UA-112530781-1");
-      // When  the url updates, we can add this line
-      /*gtag('config', 'UA-112530781-1', {'page_title': title, 'active_page': url}); */
-
-      window.onstorage = (e) => {
-        this.sessionStorage_transfer(e);
-      };
-
-      // Ask other tabs for session storage (this is ONLY to trigger event)
-      if (!sessionStorage.length) {
-        localStorage.setItem("getSessionStorage", ".");
-        localStorage.removeItem("getSessionStorage");
-      }
-
-      // transfers sessionStorage from one tab to another
-      sessionStorage_transfer = (event) => {
-        if (!event) {
-          event = window.event;
-        } // ie suq
-        if (!event.newValue) return; // do nothing if no value to work with
-        if (event.key == "getSessionStorage") {
-          // another tab asked for the sessionStorage -> send it
-          localStorage.setItem(
-            "sessionStorage",
-            JSON.stringify(sessionStorage)
-          );
-          // the other tab should now have it, so we're done with it.
-          localStorage.removeItem("sessionStorage"); // <- could do short timeout as well.
-        } else if (event.key == "sessionStorage") {
-          // another tab sent data <- get it
-          var data = JSON.parse(event.newValue);
-          for (var key in data) {
-            sessionStorage.setItem(key, data[key]);
-          }
-        } else if (event.key === "logout") {
-          // another tab sent data <- get it
-          sessionStorage.clear();
-          window.location.replace("/home");
-        } else if (event.key === "loginsuccess") {
-          localStorage.setItem("getSessionStorage", ".");
-          localStorage.removeItem("getSessionStorage");
-        }
-      };
-    </script>
   </body>
 </html>
