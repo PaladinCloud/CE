@@ -1,12 +1,12 @@
-name: Build
+name: Sonarcloud-Build
 on:
   push:
     branches: [master, v*]
   pull_request:
     branches: [master, v*]
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  sonarcloudBuild:
+    name: SonarCloud-Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
