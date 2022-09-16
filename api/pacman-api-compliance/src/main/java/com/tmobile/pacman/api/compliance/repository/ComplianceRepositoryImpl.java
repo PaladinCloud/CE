@@ -1060,6 +1060,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
             }
         }
+        logger.info("Compliance API >> Fetched target types: "+ttypes);
         return ttypes;
     }
 
