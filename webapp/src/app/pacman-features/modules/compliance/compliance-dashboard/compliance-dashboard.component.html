@@ -40,8 +40,8 @@
                     (selectedRow)='goToDetails($event)' [dataHead]="'Policy Compliance Overview'"
                     [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [popRows]='popRows'
                     [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
-                    (searchTriggerred)='callNewSearch()' (previousPageCalled)='prevPg()'
-                    (tabSelected)='tabValChange($event)' [headerColName]="'Policy Severity'" (nextPageCalled)='nextPg()'
+                    (searchTriggerred)='callNewSearch()'
+                    [headerColName]="'Policy Severity'"
                     [direction]='-1' [tabFilterProperty]="'Rule Category'"
                     [columnWhiteList]="['Policy Title', 'Compliance %', 'Policy Severity', 'Rule Category','Last Scanned']"
                     [paginatorAbsent]='true' [popRows]='popRows' (rowClickText)='handlePopClick($event)'
