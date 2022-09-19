@@ -1,7 +1,7 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
 import com.microsoft.azure.management.appservice.FtpsState;
-import com.microsoft.azure.management.appservice.SupportedTlsVersions;
+
 
 import java.util.Set;
 
@@ -11,6 +11,9 @@ public class WebAppVH extends AzureVH {
     private String resourceGroupName;
     private boolean httpsOnly;
     private FtpsState ftpsState;
+
+    private String minTlsVersion;
+
     private boolean clientCertEnabled;
 
     public boolean isClientCertEnabled() {
@@ -20,7 +23,7 @@ public class WebAppVH extends AzureVH {
     public void setClientCertEnabled(boolean clientCertEnabled) {
         this.clientCertEnabled = clientCertEnabled;
     }
-    private SupportedTlsVersions supportedTlsVersions;
+
 
     public boolean isHttpsOnly() {
         return httpsOnly;
@@ -31,7 +34,6 @@ public class WebAppVH extends AzureVH {
     }
 
     private boolean authEnabled;
-
     public boolean isAuthEnabled() {
         return authEnabled;
     }
@@ -82,12 +84,11 @@ public class WebAppVH extends AzureVH {
         this.ftpsState = ftpsState;
     }
 
-    public SupportedTlsVersions getSupportedTlsVersions() {
-        return supportedTlsVersions;
+    public String getMinTlsVersion() {
+        return minTlsVersion;
     }
 
-    public void setSupportedTlsVersions(SupportedTlsVersions supportedTlsVersions) {
-        this.supportedTlsVersions = supportedTlsVersions;
+    public void setMinTlsVersion(String minTlsVersion) {
+        this.minTlsVersion = minTlsVersion;
     }
-
 }

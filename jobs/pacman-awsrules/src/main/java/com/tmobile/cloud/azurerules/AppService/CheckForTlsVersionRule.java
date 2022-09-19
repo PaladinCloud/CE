@@ -58,7 +58,6 @@ public class CheckForTlsVersionRule extends BaseRule {
             try {
                 isValid = minTlsVersion(esUrl, mustFilter,tlsVersion);
             } catch (Exception e) {
-                logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
@@ -89,7 +88,7 @@ public class CheckForTlsVersionRule extends BaseRule {
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
                 HashMultimap.create(), null, 0, new HashMap<>(), null, null);
-        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson.toString());
+        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson);
 
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
@@ -99,10 +98,10 @@ public class CheckForTlsVersionRule extends BaseRule {
             if (hitsJsonArray.size() > 0) {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                logger.debug("Validating the data item: {}", jsonDataItem.toString());
+                logger.debug("Validating the data item: {}", jsonDataItem);
 
                 String minTLSVersion=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.TLS_VERSION).toString();
-                logger.info("minTLSVersion",minTLSVersion);
+                logger.info("minTLSVersion, {}",minTLSVersion);
 
                 if(minTLSVersion.equalsIgnoreCase(tlsVersion)){
                     validationResult=true;
