@@ -2,7 +2,6 @@ package com.tmobile.pacbot.azure.inventory.collector;
 
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.appservice.FtpsState;
 import com.microsoft.azure.management.appservice.WebApp;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
@@ -41,12 +40,12 @@ public class WebAppInventoryCollector {
                 webAppVH.setRegion(webApp.regionName());
                 if(webApp.ftpsState()!=null){
                    webAppVH.setFtpsState(webApp.ftpsState());
-                   log.info("ftpsState",webApp.ftpsState());
+                   log.info("ftpsState {}",webApp.ftpsState());
                 }
 
                 if(webApp.minTlsVersion()!=null){
-                    webAppVH.setSupportedTlsVersions(webApp.minTlsVersion());
-                    log.info("minTlsVersion",webApp.minTlsVersion());
+                    webAppVH.setMinTlsVersion(webApp.minTlsVersion().toString());
+                    log.info("minTlsVersion {}",webApp.minTlsVersion());
                 }
 
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());
