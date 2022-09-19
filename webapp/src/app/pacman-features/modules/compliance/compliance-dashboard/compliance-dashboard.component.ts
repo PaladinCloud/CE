@@ -53,7 +53,6 @@ export class ComplianceDashboardComponent implements OnInit {
   filterArr: any = [];
   subscriptionToAssetGroup: Subscription;
   selectedAssetGroup: string;
-  selectedComplianceDropdown: any;
   outerArr: any = [];
   dataLoaded = false;
   errorMessage: any;
@@ -79,7 +78,6 @@ export class ComplianceDashboardComponent implements OnInit {
   filterTypeOptions: any = [];
   filters: any = [];
   filterTagOptions: any = [];
-  showSelected: any;
   returnType = false;
   selectedDomain: any = "";
   errorValue = 0;
@@ -131,7 +129,7 @@ export class ComplianceDashboardComponent implements OnInit {
     );
   };
 
-  openOverPolicyViolationsTrendModal = () => {
+  openOverAllPolicyViolationsTrendModal = () => {
     this.router.navigate(
       ["/pl", { outlets: { modal: ["policy-violations-trend"] } }],
       { queryParamsHandling: "merge" }
@@ -162,7 +160,7 @@ export class ComplianceDashboardComponent implements OnInit {
       id: 2,
       header: "Violations by Severity",
       footer: "View Trends",
-      cardButtonAction: this.openOverPolicyViolationsTrendModal,
+      cardButtonAction: this.openOverAllPolicyViolationsTrendModal,
     },
     {
       id: 3,
@@ -206,28 +204,22 @@ export class ComplianceDashboardComponent implements OnInit {
         this.updateComponent();
       });
 
-    this.onFilterChange = this.selectComplianceDropdown
-      .getCompliance()
-      .subscribe((complianceName) => {
-        this.selectedComplianceDropdown = complianceName;
-      });
-
     this.getRouteQueryParameters();
     this.getPacmanIssues();
   }
 
-  handleHeaderColNameSelection(event){
+  handleHeaderColNameSelection(event) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
     this.getUpdatedUrl();
   }
 
-  getUpdatedUrl(){
+  getUpdatedUrl() {
     let updatedQueryParams = {};
     updatedQueryParams = {
       headerColName: this.headerColName,
-      direction : this.direction,
-      bucketNumber : this.bucketNumber,
+      direction: this.direction,
+      bucketNumber: this.bucketNumber,
       searchValue: this.searchPassed
     }
 
@@ -253,8 +245,8 @@ export class ComplianceDashboardComponent implements OnInit {
         .getData(queryParams, pacmanIssuesUrl, pacmanIssuesMethod)
         .subscribe(
           (response) => {
-            try {              
-              if(response.error){
+            try {
+              if (response.err) {
                 throw response;
               }
               this.pacmanIssues = response;
@@ -270,7 +262,7 @@ export class ComplianceDashboardComponent implements OnInit {
                   key: Object.keys(this.pacmanIssues.category[i])[0],
                   value:
                     this.pacmanIssues.category[i][
-                      Object.keys(this.pacmanIssues.category[i])[0]
+                    Object.keys(this.pacmanIssues.category[i])[0]
                     ],
                 };
                 this.pacmanCategories.push(obj);
@@ -280,14 +272,14 @@ export class ComplianceDashboardComponent implements OnInit {
               for (let i = 0; i < this.pacmanIssues.severity.length; i++) {
                 this.violationCards[i].num =
                   this.pacmanIssues.severity[i][
-                    Object.keys(this.pacmanIssues.severity[i])[0]
+                  Object.keys(this.pacmanIssues.severity[i])[0]
                   ];
                 totalCount += this.violationCards[i].num;
                 dataValue.push(this.violationCards[i].num);
               }
               this.fetchedViolations = true;
               this.policyDataError = '';
-              if(dataValue){
+              if (dataValue.length > 0) {
                 this.policyData = {
                   color: ["#D95140", "#FF8888", "#FFCFCF", "#F1D668"],
                   data: dataValue,
@@ -299,7 +291,7 @@ export class ComplianceDashboardComponent implements OnInit {
                     cursor: "pointer",
                   },
                 };
-              }else{
+              } else {
                 this.policyDataError = 'noDataAvailable'
               }
               this.loaded = true;
@@ -333,25 +325,6 @@ export class ComplianceDashboardComponent implements OnInit {
     this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
     this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
     this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
-
-    try {
-      this.showSelected = this.tabArr[0];
-      // this.widgetWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
-      setTimeout(() => {
-        this.carouselState = "fadeIn";
-      }, 2000);
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
-
-  tabValChange(tab) {
-    if (tab == null) {
-      this.ruleCatFilter = undefined;
-    } else {
-      this.ruleCatFilter = tab.text;
-    }
   }
 
   getFilters() {
@@ -404,8 +377,8 @@ export class ComplianceDashboardComponent implements OnInit {
             ag: this.selectedAssetGroup,
           },
           environment.base +
-            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-              .url,
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
           "GET"
         )
         .subscribe((response) => {
@@ -542,7 +515,7 @@ export class ComplianceDashboardComponent implements OnInit {
     for (let i = 0; i < data.length; i++) {
       data[i][`Policy Title`] = data[i].name;
       data[i][`Last Scanned`] = data[i].lastScan;
-      data[i][`Compliance %`] = data[i].assetsScanned==0?'NA':data[i].compliance_percent;
+      data[i][`Compliance %`] = data[i].assetsScanned == 0 ? 'NA' : data[i].compliance_percent;
       data[i][`Policy Severity`] = data[i].severity;
       data[i][`Contribution %`] = data[i].contribution_percent;
       data[i][`Resource Type`] = data[i].resourcetType;
@@ -730,7 +703,7 @@ export class ComplianceDashboardComponent implements OnInit {
               hasPreImg: false,
               imgLink: "",
               valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]]=='NA'?getData[row][getCols[col]]:getData[row][getCols[col]] + "%",
+              text: getData[row][getCols[col]] == 'NA' ? getData[row][getCols[col]] : getData[row][getCols[col]] + "%",
             };
           } else if (
             getCols[col] &&
@@ -795,17 +768,14 @@ export class ComplianceDashboardComponent implements OnInit {
     return data;
   }
 
-  goToDetails(row) {
+  goToDetails(selectedRow) {
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
-      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
-      updatedQueryParams["headerColName"] = undefined;
-      updatedQueryParams["direction"] = undefined;
-      updatedQueryParams["bucketNumber"] = undefined;
+      let updatedQueryParams = { ...this.activatedRoute.snapshot.queryParams };
       updatedQueryParams["searchValue"] = undefined;
-      this.router.navigate(["../policy-details", row.row["Rule ID"].text], {
+      this.router.navigate(["../policy-details", selectedRow.row["Rule ID"].text], {
         relativeTo: this.activatedRoute,
         queryParams: updatedQueryParams,
         queryParamsHandling: "merge",
@@ -818,7 +788,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
   searchCalled(search) {
     this.searchTxt = search;
-    if (this.searchTxt === "") {
+    if (this.searchTxt !== "") {
       this.searchPassed = this.searchTxt;
       this.getUpdatedUrl();
     }
@@ -827,36 +797,6 @@ export class ComplianceDashboardComponent implements OnInit {
   callNewSearch() {
     this.searchPassed = this.searchTxt;
     this.getUpdatedUrl();
-  }
-
-  prevPg() {
-    this.currentPointer--;
-    // this.processData(this.currentBucket[this.currentPointer]);
-    this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-    this.lastPaginator =
-      this.currentPointer * this.paginatorSize + this.paginatorSize;
-    this.bucketNumber--;
-    this.getData();
-    this.getUpdatedUrl();
-  }
-
-  nextPg() {
-    if (this.currentPointer < this.bucketNumber) {
-      this.currentPointer++;
-      this.processData(this.currentBucket[this.currentPointer]);
-      this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-      this.lastPaginator =
-        this.currentPointer * this.paginatorSize + this.paginatorSize;
-      if (this.lastPaginator > this.totalRows) {
-        this.lastPaginator = this.totalRows;
-      }
-      this.getUpdatedUrl();
-    } else {
-      if (this.UI_pagination_mode === false) {
-        this.bucketNumber++;
-        this.getData();
-      }
-    }
   }
 
   calculateDate(_JSDate) {
