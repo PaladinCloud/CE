@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
-import com.tmobile.cloud.azurerules.MicrosoftSqlServer.UnrestrictedSqlServerAccessRule;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -33,6 +32,7 @@ public class MinTLSVersionRule extends BaseRule {
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
+        String tlsVersion=ruleParam.get(PacmanRuleConstants.TLS_VERSION);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -54,7 +54,7 @@ public class MinTLSVersionRule extends BaseRule {
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
             try {
-                isValid = validateTLSVersion(esUrl, mustFilter);
+                isValid = validateTLSVersion(esUrl, mustFilter,tlsVersion);
             } catch (Exception e) {
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
@@ -84,7 +84,7 @@ public class MinTLSVersionRule extends BaseRule {
 
     }
 
-    private boolean validateTLSVersion(String esUrl, Map<String, Object> mustFilter) throws Exception {
+    private boolean validateTLSVersion(String esUrl, Map<String, Object> mustFilter, String expectedTlsVersion) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
         boolean validationResult = true;
         JsonParser parser = new JsonParser();
@@ -104,7 +104,7 @@ public class MinTLSVersionRule extends BaseRule {
                 logger.debug("Validating the data item: {}", jsonDataItem);
                 String tlsVersion = jsonDataItem.getAsJsonObject()
                         .get(PacmanRuleConstants.AZURE_TLSVersion_MySQLFlex).getAsString();
-                if (tlsVersion.equals("TLSv1.2")) {
+                if (tlsVersion.equals(expectedTlsVersion)) {
                     validationResult=true;
                 } else {
                     logger.info("TLS version is NOT 1.2");
