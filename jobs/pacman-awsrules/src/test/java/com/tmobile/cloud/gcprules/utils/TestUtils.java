@@ -1835,4 +1835,24 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitJsonArrayForManagedServiceKeys(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1915:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"115653853863124476885\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com\",\"displayName\":\"ComputeEnginedefaultserviceaccount\",\"email\":\"344106022091-compute@developer.gserviceaccount.com\",\"description\":null,\"serviceAccountKey\":[{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/47e8c5c79a7bd99debb4b99dc566d750f1e72d4b\",\"keyType\":\"SYSTEM_MANAGED\"},{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/7432b40154c34c0b28b6a78cce6898b0ca31a03c\",\"keyType\":\"SYSTEM_MANAGED\"}],\"disabled\":false,\"discoverydate\":\"2022-09-1915:00:00+0530\",\"_resourceid\":\"115653853863124476885\",\"_docid\":\"115653853863124476885\",\"_entity\":\"true\",\"_entitytype\":\"serviceaccounts\",\"firstdiscoveredon\":\"2022-09-1915:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1910:11:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayForManagedServiceKeys(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1915:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"115653853863124476885\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com\",\"displayName\":\"ComputeEnginedefaultserviceaccount\",\"email\":\"344106022091-compute@developer.gserviceaccount.com\",\"description\":null,\"serviceAccountKey\":[{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/47e8c5c79a7bd99debb4b99dc566d750f1e72d4b\",\"keyType\":\"SYSTEM_MANAGED\"},{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/7432b40154c34c0b28b6a78cce6898b0ca31a03c\",\"keyType\":\"USER_MANAGED\"}],\"disabled\":false,\"discoverydate\":\"2022-09-1915:00:00+0530\",\"_resourceid\":\"115653853863124476885\",\"_docid\":\"115653853863124476885\",\"_entity\":\"true\",\"_entitytype\":\"serviceaccounts\",\"firstdiscoveredon\":\"2022-09-1915:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1910:11:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
