@@ -552,4 +552,7 @@ public class PacmanRuleConstants {
     public static final String SERVICE_ACCOUNT_MANAGED_KEY="serviceAccountKey";
    public static final String KEY_TYPE ="keyType";
    public static final  String USER_MANAGED="USER_MANAGED";
+    public static final String NETWORK_WATCHER ="networkWatcher";
+    public static final String RETENTION_IN_DAYS="retentionInDays";
+
 }
