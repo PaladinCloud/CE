@@ -2698,4 +2698,74 @@ public class AssetRepositoryImpl implements AssetRepository {
 		return providerList;
 	}
 
+
+    @Override
+    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to) {
+
+        List<Map<String, Object>> assetCountList = new ArrayList<>();
+        try {
+
+            StringBuilder request = new StringBuilder(
+                   // "{\"size\": 10000, \"_source\": [\"count\",\"ag\",\"date\"],  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+                    "{\"size\": 10000,  \"query\": { \"bool\": { \"must\": [ { \"match\": {\"ag.keyword\": ");
+            request.append("\"" + assetGroup + "\"}}");
+            if(type!=null){
+                //request.append(",{ \"match\": {\"type.keyword\": " + "\"" + type + "\"}}");
+            }
+            String gte = null;
+            String lte = null;
+
+            if (from != null) {
+                gte = "\"gte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(from) + "\"";
+            }
+            if (to != null) {
+                lte = "\"lte\": \"" + new SimpleDateFormat("yyyy-MM-dd").format(to) + "\"";
+            }
+
+            if (gte == null && lte == null) {
+                request.append("]}}}");
+            } else if (gte != null && lte != null) {
+                request.append(AssetConstants.ESQUERY_RANGE + gte + "," + lte + AssetConstants.ESQUERY_RANGE_CLOSE);
+            } else if (gte != null) {
+                request.append(AssetConstants.ESQUERY_RANGE + gte + AssetConstants.ESQUERY_RANGE_CLOSE);
+            } else {
+                request.append(AssetConstants.ESQUERY_RANGE + lte + AssetConstants.ESQUERY_RANGE_CLOSE);
+            }
+            assetCountList = getAssetCountStat(request.toString());
+
+        } catch (Exception e) {
+            LOGGER.error("Exception in getAssetMinMax " , e);
+        }
+        return assetCountList;
+    }
+
+    List<Map<String, Object>> getAssetCountStat(String rqstBody) {
+
+        List<Map<String, Object>> docs = new ArrayList<>();
+        String responseJson = "";
+        try {
+            responseJson = PacHttpUtils.doHttpPost("http://" + esHost + ":" + esPort
+                    + "/assetgroup_stats/count_asset/_search", rqstBody);
+        } catch (Exception e) {
+            LOGGER.error("Exception in getAssetCountStat " , e);
+        }
+        JsonParser jsonParser = new JsonParser();
+        JsonObject resultJson = (JsonObject) jsonParser.parse(responseJson);
+        JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get("hits").toString());
+        JsonArray jsonArray = hitsJson.getAsJsonObject().get("hits").getAsJsonArray();
+        if (jsonArray.size() > 0) {
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject obj = (JsonObject) jsonArray.get(i);
+                JsonObject sourceJson = (JsonObject) obj.get(AssetConstants.UNDERSCORE_SOURCE);
+                if (sourceJson != null) {
+                    Map<String, Object> doc = new Gson().fromJson(sourceJson, new TypeToken<Map<String, Object>>() {
+                    }.getType());
+                    docs.add(doc);
+                }
+            }
+        }
+        return docs;
+
+    }
+
 }
