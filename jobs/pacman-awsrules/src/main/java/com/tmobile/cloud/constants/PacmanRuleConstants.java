@@ -440,6 +440,7 @@ public class PacmanRuleConstants {
     public static final String ES_NACL_ENTRY_URL = "esNaclEntryUrl";
     public static final String ES_NACL_ID_ATTRIBUTE = "networkaclid";
     public static final String ES_RULE_ACTION_ATTRIBUTE = "ruleaction";
+    public static final String ES_BKT_ENCRPTN_ATTRIBUTE = "bucketencryp";
 
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
