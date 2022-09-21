@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.microsoft.azure.management.appservice.SupportedTlsVersions;
+import com.microsoft.azure.management.storage.MinimumTlsVersion;
 
 @JsonSerialize
 public class StorageAccountVH extends AzureVH {
@@ -26,6 +28,7 @@ public class StorageAccountVH extends AzureVH {
 	private String kind;
 	private Map<String, String> endpointsMap;
 	private String  networkRuleBypass;
+	private MinimumTlsVersion minimumTlsVersion;
 
 	public String getNetworkRuleBypass() {
 		return networkRuleBypass;
@@ -299,5 +302,13 @@ public class StorageAccountVH extends AzureVH {
 	public void setEndpointsMap(Map<String, String> endpointsMap) {
 		this.endpointsMap = endpointsMap;
 	}
+	public MinimumTlsVersion getMinimumTlsVersion() {
+		return minimumTlsVersion;
+	}
+	public void setMinimumTlsVersion(MinimumTlsVersion minimumTlsVersion) {
+		this.minimumTlsVersion = minimumTlsVersion;
+	}
+
+
 
 }

@@ -64,7 +64,6 @@ public class StorageAccountInventoryCollector {
 				if(storageAccount.inner().networkRuleSet().bypass()!=null){
 					storageAccountVH.setNetworkRuleBypass(storageAccount.inner().networkRuleSet().bypass().toString());
 					log.info("storage Account Bypass to string{}",storageAccount.inner().networkRuleSet().bypass().toString());
-
 				}
 				if(storageAccount.inner().networkRuleSet().defaultAction()!=null){
 					storageAccountVH.setDefaultAction(storageAccount.inner().networkRuleSet().defaultAction().name());
@@ -72,6 +71,11 @@ public class StorageAccountInventoryCollector {
 
 
 			}
+			if(storageAccount.minimumTlsVersion()!=null){
+				storageAccountVH.setMinimumTlsVersion(storageAccount.minimumTlsVersion());
+				log.info("minTlsVersion",storageAccount.minimumTlsVersion());
+			}
+
 			storageAccountVH.setBlobPublicAccessAllowed(storageAccount.isBlobPublicAccessAllowed());
 			storageAccountList.add(storageAccountVH);
 		}

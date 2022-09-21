@@ -526,7 +526,7 @@ public class PacmanRuleConstants {
     public  static  final  String HTTPS_ONLY="httpsOnly";
     public  static  final String FTP_STATE="ftpsState";
     public static  final String DBFLAGNAME="dbFlagName";
-    public  static  final String TLS_VERSION="minTlsVersion";
+    public  static  final String TLS_VERSION="supportedTlsVersions";
     public static final String ClientCertEnabled="clientCertEnabled";
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";
@@ -536,6 +536,7 @@ public class PacmanRuleConstants {
     public static final String IPCONFIGUATION="ipConfiguration";
     public static final String IP_CONFIG="ipConfiguration";
     public static final String AUTHORIZED_NETWORK="authorizedNetworks";
+    public  static  final String MIN_TLS_VERSION="minimumTlsVersion";
     public static final String UNIFORM_BUCKET_LEVEL_ACCESS="uniformBucketLevelAccess";
     public static final String DEFAULT="default";
     public static final String REQUIRE_SSL="requireSsl";
