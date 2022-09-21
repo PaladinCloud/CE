@@ -23,7 +23,7 @@
     <div class="container-2">
         <mat-grid-list [cols]="breakpoint2" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="cards[0]"></app-card>
+                <app-card [card]="cards[0]" [complianceData]="complianceData" [complianceDataError]="complianceDataError"></app-card>
             </mat-grid-tile>
             <mat-grid-tile>
                 <app-card [card]="cards[1]" [policyDataError]="policyDataError" [policyData]="policyData"></app-card>
@@ -54,7 +54,7 @@
     <div class="container-4">
         <mat-grid-list [cols]="breakpoint3" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="cards[2]"></app-card>
+                <app-card [card]="cards[2]" [assetsCountData]="assetsCountData" [assetsCountDataError]="assetsCountDataError"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>

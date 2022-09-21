@@ -29,6 +29,8 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
 import { PacmanIssuesService } from "../../../services/pacman-issues.service";
 import { RefactorFieldsService } from "../../../../shared/services/refactor-fields.service";
+import { OverallComplianceService } from "src/app/pacman-features/services/overall-compliance.service";
+import { FetchResourcesService } from "src/app/pacman-features/services/fetch-resources.service";
 
 @Component({
   selector: "app-compliance-dashboard",
@@ -40,6 +42,8 @@ import { RefactorFieldsService } from "../../../../shared/services/refactor-fiel
     IssueFilterService,
     LoggerService,
     ErrorHandlingService,
+    OverallComplianceService, 
+    FetchResourcesService
   ],
 })
 export class ComplianceDashboardComponent implements OnInit {
@@ -121,6 +125,10 @@ export class ComplianceDashboardComponent implements OnInit {
   breakpoint4: number;
   headerColName;
   direction;
+  complianceData = [];
+  complianceDataError = '';
+  assetsCountData = [];
+  assetsCountDataError = '';
 
   openOverAllComplianceTrendModal = () => {
     this.router.navigate(
@@ -184,7 +192,9 @@ export class ComplianceDashboardComponent implements OnInit {
     private workflowService: WorkflowService,
     private pacmanIssuesService: PacmanIssuesService,
     private refactorFieldsService: RefactorFieldsService,
-    private domainObservableService: DomainTypeObservableService
+    private domainObservableService: DomainTypeObservableService,
+    private overallComplianceService: OverallComplianceService, 
+    private fetchResourcesService: FetchResourcesService
   ) {
     this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
     this.direction = this.activatedRoute.snapshot.queryParams.direction;
@@ -205,7 +215,6 @@ export class ComplianceDashboardComponent implements OnInit {
       });
 
     this.getRouteQueryParameters();
-    this.getPacmanIssues();
   }
 
   handleHeaderColNameSelection(event) {
@@ -231,6 +240,9 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   getPacmanIssues() {
+    if(!this.queryParameters.ag){
+      return;
+    }
     if (this.dataSubscriber) {
       this.dataSubscriber.unsubscribe();
     }
@@ -363,7 +375,15 @@ export class ComplianceDashboardComponent implements OnInit {
     this.dataLoaded = false;
     this.seekdata = false;
     this.showGenericMessage = false;
+    this.assetsCountData = [];
+    this.assetsCountDataError = '';
+    this.complianceData = [];
+    this.complianceDataError = '';
+    this.policyDataError = ''
     this.getData();
+    this.getPacmanIssues();
+    this.getAssetsCountData();
+    this.getComplianceData();
   }
 
   changeFilterType(value) {
@@ -435,7 +455,91 @@ export class ComplianceDashboardComponent implements OnInit {
     } catch (error) {}
   }
 
+  private getAssetsCountData() {
+    if(!this.queryParameters.ag){
+      return;
+    }
+    const queryParams = {
+      ag: this.queryParameters.ag,
+      domain: this.queryParameters.domain,
+    };
+    this.fetchResourcesService
+      .getAllResourceCounts(queryParams)
+      .subscribe((results) => {
+        try {          
+          if(results.error){
+            throw results;
+          }
+          this.assetsCountDataError = '';
+          this.assetsCountData = [];
+
+          for (let asset of results["assetcount"]) {
+            this.assetsCountData.push({
+              asset: asset["type"],
+              count: asset["count"],
+            });
+          }
+
+          this.assetsCountData.sort((a, b) => b.count - a.count);
+
+          if(this.assetsCountData.length==0){
+            this.assetsCountDataError = 'noDataAvailable';
+          }
+        } catch (error) {          
+          this.assetsCountDataError = 'apiResponseError';
+          this.logger.log("error", error);
+        }
+      });
+  }
+
+  private getComplianceData() {    
+    if(!this.queryParameters.ag || !this.queryParameters.domain){
+      return;
+    }
+    const queryParams = {
+      ag: this.queryParameters.ag,
+      domain: this.queryParameters.domain,
+    };
+
+    const overallComplianceUrl = environment.overallCompliance.url;
+    const overallComplianceMethod = environment.overallCompliance.method;
+    this.overallComplianceService
+      .getOverallCompliance(
+        queryParams,
+        overallComplianceUrl,
+        overallComplianceMethod
+      )
+      .subscribe((response) => {  
+        try {     
+          if(response[0].error){
+            throw response[0];
+          }
+          this.complianceDataError = ''
+          this.complianceData = [];
+          response[0].data.forEach((element) => {
+            if (element[1]["val"] <= 40) {
+              element[1]["class"] = "red";
+            } else if (element[1]["val"] <= 75) {
+              element[1]["class"] = "or";
+            } else {
+              element[1]["class"] = "gr";
+            }
+            this.complianceData.push(element[1]);
+          });
+          if(this.complianceData.length==0){
+            this.complianceDataError = 'noDataAvailable';
+          }          
+        } catch (error) {
+          this.complianceDataError = 'apiResponseError';
+          this.logger.log("error", error);
+        }
+      });
+  }
+
   getData() {
+    if(!this.queryParameters.ag){
+      return;
+    }
     const filters = this.utils.arrayToObject(
       this.filters,
       "typeValue",
@@ -826,7 +930,7 @@ export class ComplianceDashboardComponent implements OnInit {
     this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe(
       (params) => {
         this.queryParameters = params;
-        this.getPacmanIssues();
+        this.updateComponent();
       }
     );
   }
