@@ -2684,6 +2684,28 @@
     "category": "security"
   },
   {
+    "ruleId": "S3BucketEncryption_version-1_S3BucketWithoutEncryption_s3",
+    "ruleUUID": "aws_s3_bucket_should_be_encrypted",
+    "policyId": "S3BucketEncryption_version-1",
+    "ruleName": "All S3 buckets should employ encryption-at-rest",
+    "targetType": "s3",
+    "assetGroup": "aws",
+    "alexaKeyword": "S3BucketWithoutEncryption",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-s3-bucket-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"S3BucketEncryption_version-1_S3BucketWithoutEncryption_s3\",\"autofix\":false,\"alexaKeyword\":\"S3BucketWithoutEncryption\",\"ruleRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"policyId\":\"S3BucketEncryption_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_s3_bucket_should_be_encrypted\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_s3_bucket_should_be_encrypted",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Encrypt S3 buckets at rest",
+    "createdDate": "2022-09-21",
+    "modifiedDate": "2022-09-21",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "NaclPublicAccessPort_version-1_NACLWithPublicAccessForPort22_networkacl",
     "ruleUUID": "aws_nacl_should_not_have_rule_with_public_access_on_port22",
     "policyId": "NaclPublicAccessPort_version-1",
