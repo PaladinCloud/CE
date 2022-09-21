@@ -194,6 +194,7 @@ import com.amazonaws.services.elasticmapreduce.model.DescribeClusterRequest;
 import com.amazonaws.services.elasticmapreduce.model.DescribeClusterResult;
 import com.amazonaws.services.elasticmapreduce.model.ListClustersRequest;
 import com.amazonaws.services.elasticmapreduce.model.ListClustersResult;
+import com.amazonaws.services.guardduty.model.BucketPolicy;
 import com.amazonaws.services.health.AWSHealth;
 import com.amazonaws.services.health.AWSHealthClientBuilder;
 import com.amazonaws.services.health.model.AffectedEntity;
@@ -273,6 +274,7 @@ import com.amazonaws.services.s3.model.BucketTaggingConfiguration;
 import com.amazonaws.services.s3.model.BucketVersioningConfiguration;
 import com.amazonaws.services.s3.model.BucketWebsiteConfiguration;
 import com.amazonaws.services.s3.model.GetBucketEncryptionResult;
+import com.amazonaws.services.s3.model.GetBucketPolicyRequest;
 import com.amazonaws.services.s3.model.ServerSideEncryptionConfiguration;
 import com.amazonaws.services.s3.model.Tag;
 import com.amazonaws.services.s3.model.TagSet;
@@ -1755,15 +1757,20 @@ public class InventoryUtil {
 				if(bucketWebsiteConfiguration!=null) {
 	                  hasWebSiteConfiguration=true;
 				}
-	              
+				
+				String bucketPolicy = null;
+				com.amazonaws.services.s3.model.BucketPolicy policy = s3Client.getBucketPolicy(bucket.getName());
+				if (null != policy && !StringUtils.isEmpty(policy.getPolicyText()))
+					bucketPolicy = policy.getPolicyText().toString();
+
 				synchronized(buckets){
-					buckets.add(new BucketVH(bucket,bucketRegion,versionconfig, tags, bucketEncryp,hasWebSiteConfiguration,bucketLoggingConfiguration));
+					buckets.add(new BucketVH(bucket,bucketRegion,versionconfig, tags, bucketEncryp,hasWebSiteConfiguration,bucketLoggingConfiguration,bucketPolicy));
 				}
 			}
 			catch(AmazonS3Exception e){
 				if("AccessDenied".equals(e.getErrorCode())){
 					log.info("Access Denied for bucket " + bucket.getName());
-					buckets.add(new BucketVH(bucket,"",versionconfig, tags, null,hasWebSiteConfiguration,bucketLoggingConfiguration));
+					buckets.add(new BucketVH(bucket,"",versionconfig, tags, null,hasWebSiteConfiguration,bucketLoggingConfiguration,null));
 				}else{
 					log.info("Exception fetching S3 Bucket",e);
 				}
