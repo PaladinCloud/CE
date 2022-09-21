@@ -1164,5 +1164,27 @@
     "modifiedDate": "2022-08-23",
     "severity": "medium",
     "category": "tagging"
+  },
+  {
+    "ruleId": "kms_keys_rotation_period_within_90_days",
+    "ruleUUID": "kms_keys_rotation_period_within_90_days",
+    "policyId": "kms_keys_rotation_period_within_90_days-1",
+    "ruleName": "Enforce 90 days rotation period of KMS encryption keys",
+    "targetType": "kmskey",
+    "assetGroup": "gcp",
+    "alexaKeyword": "kms_keys_rotation_period_within_90_days",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-kms-key-rotation-period\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that all your Cloud Key Management Service (KMS) keys are rotated within a period of 90 days in order to meet security and compliance requirements.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Kms key rotation period is greater than 90 days.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_kmskey\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enforce 90 days rotation period of KMS encryption keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"kms_keys_rotation_period_within_90_days\",\"autofix\":false,\"alexaKeyword\":\"kms_keys_rotation_period_within_90_days\",\"ruleRestUrl\":\"\",\"targetType\":\"kmskey\",\"pac_ds\":\"gcp\",\"policyId\":\"kms_keys_rotation_period_within_90_days\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"kms_keys_rotation_period_within_90_days\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/kms_keys_rotation_period_within_90_days",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enforce 90 days rotation period of KMS encryption keys",
+    "createdDate": "2022-07-14",
+    "modifiedDate": "2022-07-14",
+    "severity": "medium",
+    "category": "security"
   }
 ]
