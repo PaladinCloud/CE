@@ -79,6 +79,7 @@ public class AssetGroupStatsCollector implements Constants{
 
         ESManager.createIndex(AG_STATS, errorList);
         ESManager.createType(AG_STATS, "count_type", errorList);
+        ESManager.createType(AG_STATS, "count_asset", errorList);
         ESManager.createType(AG_STATS, "issuecompliance", errorList);
         ESManager.createType(AG_STATS, "compliance", errorList);
         ESManager.createType(AG_STATS, "tagcompliance", errorList);
@@ -187,7 +188,21 @@ public class AssetGroupStatsCollector implements Constants{
 	            }
 	        });
         }
-        
+
+        executor.execute(() -> {
+            try {
+                uploadAssetListCountStats(assetGroups);
+            } catch (Exception e) {
+                log.error("Exception in uploadAssetListCountStats " , e);
+                Map<String,String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in uploadAssetListCountStats");
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                synchronized(errorList){
+                    errorList.add(errorMap);
+                }
+            }
+        });
 
 
 
@@ -448,6 +463,54 @@ public class AssetGroupStatsCollector implements Constants{
         ESManager.uploadData(AG_STATS, "vulncompliance", docs, "@id", false);
         log.info("    End Collecing vuln compliance");
     }
-    
-  
+
+
+    public void uploadAssetListCountStats(List<String> assetGroups) throws Exception {
+
+        log.info("Collecting total asset list count data");
+        List<Map<String, Object>> docs = new ArrayList<>();
+        for (String ag : assetGroups) {
+            log.info("Collecting asset list count for asset group: {}",ag);
+            try {
+                Map<String, Object> assetCountResponse = AssetGroupUtil.fetchAssetCounts(ASSET_API_URL, ag,getToken());
+                log.info("Response from asset count API: {}", assetCountResponse);
+                long totalCount = Long.valueOf(assetCountResponse.get("totalassets").toString());
+                long typeCount = Long.valueOf(assetCountResponse.get("assettype").toString());
+                List<Map<String,Object>> assetCount=getCountByType((List<Map<String, Object>>) assetCountResponse.get("assetcount"));
+                    Map<String, Object> doc = new HashMap<>();
+                    doc.put("ag", ag);
+                    doc.put("typeCount", typeCount);
+                    doc.put("totalassets", totalCount);
+                    doc.put("assetCount", assetCount);
+                    doc.put("date", CURR_DATE);
+                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE));
+                    docs.add(doc);
+            } catch (Exception e) {
+                log.error("Exception in uploadAssetGroupCountStats" , e);
+                Map<String,String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Exception in uploadAssetGroupCountStats for Asset Group"+ag);
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                synchronized(errorList){
+                    errorList.add(errorMap);
+                }
+            }
+        }
+        ESManager.uploadData(AG_STATS, "count_asset", docs, "@id", false);
+
+        log.info("End of collecting total asset list count");
+    }
+
+    private List<Map<String, Object>> getCountByType(List<Map<String, Object>> assetcount) {
+        //transform map to get only relevant info
+        assetcount.forEach(ac->{
+                    ac.remove("environments");
+                    //removing this as for count based on type there is minmax API
+                    ac.remove("assetCount");
+        });
+        return assetcount;
+    }
+
+
+
 }

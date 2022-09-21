@@ -362,4 +362,18 @@ public class AssetGroupUtil {
         }
         return issueInfoList;
     }
+
+    public static Map<String, Object> fetchAssetCounts(String asstApiUri, String ag, String token) throws Exception {
+
+        String assetCountJson = HttpUtil.get(asstApiUri + "/count?ag=" + ag,token);
+        Map<String, Object> assetCountMap = Util.parseJson(assetCountJson);
+        Map<String, Object> assetCounts = new HashMap<>();
+        try {
+            assetCounts=(Map<String, Object>) assetCountMap.get("data");
+        } catch (Exception e) {
+            LOGGER.error("Error in fetchTypeCounts",e);
+            throw e;
+        }
+        return assetCounts;
+    }
 }
