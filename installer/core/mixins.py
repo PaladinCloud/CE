@@ -257,7 +257,7 @@ class MsgMixin(metaclass=ABCMeta):
         Display how much time required to execute the process
 
         Args:
-            Start ttime (int): Starting timestamp of the process
+            Start_time (int): Starting timestamp of the process
             end_time (int): Ending timestamp of the process
         """
         time_delta = end_time - start_time
@@ -267,7 +267,7 @@ class MsgMixin(metaclass=ABCMeta):
         print(message)
 
     def warn_another_process_running(self):
-        """Warn the userr if already another process is running and user tries to execute anothe command"""
+        """Warn the user if already another process is running and user tries to execute anothe command"""
         message = self.BERROR_ANSI + K.ANOTHER_PROCESS_RUNNING + self.RESET_ANSI
 
         print("\t%s\n" % message)

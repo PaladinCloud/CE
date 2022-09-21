@@ -55,6 +55,9 @@ public class PacmanRuleConstants {
     public static final String SETTINGS ="settings" ;
     public static final String AZURE_AUTHENABLED ="authEnabled" ;
     public static final String CLIENT_CERT_ENABLED = "clientCertEnabled";
+    public static final String autoCreateSubnetworks="autoCreateSubnetworks";
+    public static final String GCP_SHIELDED_CONFIG ="shieldedInstanceConfig" ;
+    public static final String AZURE_TLSVersion_MySQLFlex="tlsVersion";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -434,6 +437,9 @@ public class PacmanRuleConstants {
     public static final String ES_IAM_ROLE_URL = "esIamRoleUrl";
     public static final String ES_ATTRIBUTE_ROLE_ID = "roleid";
     public static final String ES_ATTRIBUTE_ASSMD_PLCY_DOC = "assumedpolicydoc";
+    public static final String ES_NACL_ENTRY_URL = "esNaclEntryUrl";
+    public static final String ES_NACL_ID_ATTRIBUTE = "networkaclid";
+    public static final String ES_RULE_ACTION_ATTRIBUTE = "ruleaction";
 
     public static final String PORT_5432 = "5432";
     public static final String ES_VAULT_POLICY_ATTRIBUTE = "accessPolicy";
@@ -525,9 +531,22 @@ public class PacmanRuleConstants {
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";
     public static final String CONTAINED_DB_AUTHENTICATION="contained database authentication";
-
+    public static final String ENABLE_PURGE_PROTECTION="enablePurgeProtection";
+    public static final String ENABLE_SOFT_DELETE="enableSoftDelete";
+    public static final String IPCONFIGUATION="ipConfiguration";
     public static final String IP_CONFIG="ipConfiguration";
     public static final String AUTHORIZED_NETWORK="authorizedNetworks";
     public  static  final String MIN_TLS_VERSION="minimumTlsVersion";
-
+    public static final String UNIFORM_BUCKET_LEVEL_ACCESS="uniformBucketLevelAccess";
+    public static final String DEFAULT="default";
+    public static final String REQUIRE_SSL="requireSsl";
+    public static final String DEFAULT_ACTION="defaultAction";
+   public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
+   public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
+    public static final String DEFAUTL_SG_GROUP="default";
+   public static final String DELETE_RETENTION_POLICY ="deleteRetentionPolicy";
+   public static final String ENABLED="enabled";
+    public static final String SERVICE_ACCOUNT_MANAGED_KEY="serviceAccountKey";
+   public static final String KEY_TYPE ="keyType";
+   public static final  String USER_MANAGED="USER_MANAGED";
 }

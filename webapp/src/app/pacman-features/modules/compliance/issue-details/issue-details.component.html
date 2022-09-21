@@ -148,8 +148,8 @@
                                             <div class="text-wrapper-header">Reason</div>
                                             <textarea id="textarea-id" class="textarea-container" formControlName="name"></textarea>
                                         </label>
-                                        <div class="error-reason" *ngIf="user.get('name').hasError('required') && user.get('name').touched">
-                                            Reason is required
+                                        <div class="error-reason" *ngIf="user.get('name').hasError('minlength') || user.get('name').hasError('required')">
+                                            Please enter min 5 characters
                                         </div>
                                         <div class="text-wrapper-header">End Date</div>
                                         <app-date-dropdown [dataForm]="'user'" (dataSent)='getDateData($event)'></app-date-dropdown>

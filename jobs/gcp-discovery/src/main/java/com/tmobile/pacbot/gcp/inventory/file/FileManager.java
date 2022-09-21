@@ -58,6 +58,9 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-gkecluster.data", "[", false);
         FileGenerator.writeToFile("gcp-clouddns.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "[", false);
+        FileGenerator.writeToFile("gcp-networks.data", "[", false);
+        FileGenerator.writeToFile("gcp-project.data", "[", false);
+        FileGenerator.writeToFile("gcp-serviceaccounts.data", "[", false);
 
 
     }
@@ -76,6 +79,10 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-gkecluster.data", "]", true);
         FileGenerator.writeToFile("gcp-clouddns.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_sqlserver.data", "]", true);
+        FileGenerator.writeToFile("gcp-networks.data", "]", true);
+        FileGenerator.writeToFile("gcp-project.data", "]", true);
+        FileGenerator.writeToFile("gcp-serviceaccounts.data", "]", true);
+
 
 
     }
@@ -130,6 +137,17 @@ public class FileManager {
     }
     public static void generateCloudSqlServerFiles(List<CloudSqlVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_sqlserver.data");
+    }
+    public static void generateNetworksFiles(List<NetworkVH> networkVHS) {
+        FileGenerator.generateJson(networkVHS, "gcp-networks.data");
+    }
+    public static void generateProjectFiles(List<ProjectVH> projectMetadataVHList){
+        FileGenerator.generateJson(projectMetadataVHList, "gcp-project.data");
+
+    }
+    public static void generateServiceAccountFiles(List<ServiceAccountVH> serviceAccountVHList){
+        FileGenerator.generateJson(serviceAccountVHList, "gcp-serviceaccounts.data");
+
     }
 
 }

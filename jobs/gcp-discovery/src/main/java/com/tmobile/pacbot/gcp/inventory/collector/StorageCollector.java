@@ -5,6 +5,7 @@ import com.google.cloud.storage.Acl;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import com.tmobile.pacbot.gcp.inventory.vo.StorageVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class StorageCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(StorageCollector.class);
 
-    public List<StorageVH> fetchStorageInventory(String project) throws IOException {
+    public List<StorageVH> fetchStorageInventory(ProjectVH project) throws IOException {
         logger.debug("StorageCollector started");
         List<StorageVH> storageList = new ArrayList<>();
         Storage storageClient = gcpCredentialsProvider.getStorageClient();
@@ -40,9 +41,13 @@ public class StorageCollector {
                 users.add(acl.getEntity().toString());
             }
             logger.debug("Collection done");
+            storageVH.setUniformBucketLevelAccess(bucket.getIamConfiguration().isUniformBucketLevelAccessEnabled());
+
+            logger.info("UniformBucketLevelAccess flag",bucket.getIamConfiguration().isUniformBucketLevelAccessEnabled());
             storageVH.setUsers(users);
             storageVH.setId(bucket.getGeneratedId());
-            storageVH.setProjectName(project);
+            storageVH.setProjectName(project.getProjectName());
+            storageVH.setProjectId(project.getProjectId());
             storageList.add(storageVH);
 
         }

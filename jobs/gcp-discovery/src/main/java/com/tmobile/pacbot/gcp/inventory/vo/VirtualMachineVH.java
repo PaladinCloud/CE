@@ -17,8 +17,17 @@ public class VirtualMachineVH extends GCPVH {
 
     private String onHostMaintainence;
 
+    private ShieldedInstanceConfigVH shieldedInstanceConfig;
     public String getOnHostMaintainence() {
         return onHostMaintainence;
+    }
+
+    public ShieldedInstanceConfigVH getShieldedInstanceConfig() {
+        return shieldedInstanceConfig;
+    }
+
+    public void setShieldedInstanceConfig(ShieldedInstanceConfigVH shieldedInstanceConfig) {
+        this.shieldedInstanceConfig = shieldedInstanceConfig;
     }
 
     public void setOnHostMaintainence(String onHostMaintainence) {

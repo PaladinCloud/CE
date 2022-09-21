@@ -1,21 +1,32 @@
+.table-container{
+  height: 100%;
+  width: 100%;
+}
+
 .table-content-container{
     width: 100%;
-    height: calc(100vh - 310px);
+    height: calc(100% - 68px);
     overflow: scroll;
-    padding: 0px 2px;
 }
 
 .table-wrapper{
-  /* height: 100%;
-  background: var(--background-white); */
+  height: 100%;
+  width: 100%;
+  background: var(--background-white);
 }
 
-.table-header{
-    background-color: var(--background-white);
+.table-header .table-title{
+  border: 1px solid var(--border-100);
+  height: 56px;
+  padding: 16px 24px;
+}
+
+.table-header .table-column-modifier{
+    /* background-color: var(--background-white); */
     border: 1px solid var(--border-100);
     height: 64px;
     padding: 12px 19px 12px 24px;
-    border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+    /* border-radius: var(--border-radius) var(--border-radius) 0px 0px; */
 }
 
 .table-header .search-bar-wrapper {
@@ -29,9 +40,11 @@
     flex: 3;
 }
 
-.table-header .header-left .title{
+.table-header .table-title{
   display: inherit;
   align-items: center;
+  font: var(--text-body-2);
+  color: var(--text-high-emphasis);
 }
 
 .table-header .header-right{
@@ -88,6 +101,7 @@
 }
 
 .search-in-columns ::ng-deep .mat-select-arrow {
+    margin-top: 4px;
     width: 10px !important;
     height: 10px !important;
     border: none !important;
@@ -165,7 +179,7 @@ tr.mat-header-row{
   background-color: #f8f8f8;
 }
 
-th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   padding: 0px 24px;
   white-space: nowrap;
   overflow: hidden;

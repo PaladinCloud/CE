@@ -15,16 +15,9 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.config;
 
+import com.tmobile.pacman.api.admin.domain.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import com.tmobile.pacman.api.admin.domain.AWSCredentials;
-import com.tmobile.pacman.api.admin.domain.AdminProperty;
-import com.tmobile.pacman.api.admin.domain.ElasticSearchProperty;
-import com.tmobile.pacman.api.admin.domain.JobProperty;
-import com.tmobile.pacman.api.admin.domain.RuleProperty;
-import com.tmobile.pacman.api.admin.domain.SecurityProperty;
-import com.tmobile.pacman.api.admin.domain.TargetTypesProperty;
 
 @Component
 @ConfigurationProperties
@@ -34,7 +27,11 @@ public class PacmanConfiguration {
 
 	private JobProperty job;
 	
-	private AWSCredentials aws;
+	private AWSProperty aws;
+
+	private AzureProperty azure;
+
+	private GcpProperty gcp;
 
 	private AdminProperty admin;
 
@@ -92,11 +89,27 @@ public class PacmanConfiguration {
 		this.targetTypes = targetTypes;
 	}
 
-	public AWSCredentials getAws() {
+	public AWSProperty getAws() {
 		return aws;
 	}
 
-	public void setAws(AWSCredentials aws) {
+	public void setAws(AWSProperty aws) {
 		this.aws = aws;
+	}
+
+	public AzureProperty getAzure() {
+		return azure;
+	}
+
+	public void setAzure(AzureProperty azure) {
+		this.azure = azure;
+	}
+
+	public GcpProperty getGcp() {
+		return gcp;
+	}
+
+	public void setGcp(GcpProperty gcp) {
+		this.gcp = gcp;
 	}
 }

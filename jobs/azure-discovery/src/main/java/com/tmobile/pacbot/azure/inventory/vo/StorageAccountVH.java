@@ -39,6 +39,15 @@ public class StorageAccountVH extends AzureVH {
 	}
 
 	private boolean isBlobPublicAccessAllowed;
+	private String defaultAction;
+
+	public String getDefaultAction() {
+		return defaultAction;
+	}
+
+	public void setDefaultAction(String defaultAction) {
+		this.defaultAction = defaultAction;
+	}
 
 	public boolean isBlobPublicAccessAllowed() {
 		return isBlobPublicAccessAllowed;

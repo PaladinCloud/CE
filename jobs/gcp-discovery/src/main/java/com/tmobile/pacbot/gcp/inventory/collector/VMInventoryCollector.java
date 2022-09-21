@@ -21,13 +21,13 @@ public class VMInventoryCollector {
 
     private static final Logger logger = LoggerFactory.getLogger(VMInventoryCollector.class);
 
-    public List<VirtualMachineVH> fetchInstanceInventory(String projectId) throws IOException {
+    public List<VirtualMachineVH> fetchInstanceInventory(ProjectVH project) throws IOException {
         List<VirtualMachineVH> instanceList = new ArrayList<>();
         InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient();
 
         AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
                 .newBuilder()
-                .setProject(projectId)
+                .setProject(project.getProjectId())
                 .build();
 
         InstancesClient.AggregatedListPagedResponse response = instancesClient
@@ -48,13 +48,15 @@ public class VMInventoryCollector {
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
                         virtualMachineVH.setMachineType(instance.getMachineType());
                         virtualMachineVH.setTags(instance.getLabelsMap());
-                        virtualMachineVH.setProjectName(projectId);
+                        virtualMachineVH.setProjectName(project.getProjectName());
+                        virtualMachineVH.setProjectId(project.getProjectId());
                         virtualMachineVH.setName(instance.getName());
                         virtualMachineVH.setDescription(instance.getDescription());
                         virtualMachineVH.setRegion(zoneName);
                         virtualMachineVH.setStatus(instance.getStatus());
                         logger.info("On hoost maintainenece attribute");
                         virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
+                        this.setShieldedConfig(instance,virtualMachineVH);
                         this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);
                         this.setNetworkInterfaces(instance, virtualMachineVH);
@@ -68,6 +70,15 @@ public class VMInventoryCollector {
         }
 
         return instanceList;
+    }
+
+    private void setShieldedConfig(Instance instance, VirtualMachineVH virtualMachineVH) {
+        ShieldedInstanceConfigVH shieldedInstanceConfigVH=new ShieldedInstanceConfigVH();
+        if(instance.hasShieldedInstanceConfig()) {
+            shieldedInstanceConfigVH.setEnableVtpm(instance.getShieldedInstanceConfig().getEnableVtpm());
+            shieldedInstanceConfigVH.setEnableIntegrityMonitoring(instance.getShieldedInstanceConfig().getEnableIntegrityMonitoring());
+        }
+        virtualMachineVH.setShieldedInstanceConfig(shieldedInstanceConfigVH);
     }
 
     private void setItemList(Instance instance, VirtualMachineVH virtualMachineVH) {

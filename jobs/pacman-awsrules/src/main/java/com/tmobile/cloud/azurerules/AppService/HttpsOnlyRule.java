@@ -28,7 +28,7 @@ public class HttpsOnlyRule extends BaseRule {
             .getLogger(HttpsOnlyRule.class);
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.info("Executing rule to ensure Http protocol version 2.0 was Enabled.");
+        logger.info("Executing rule to ensure Httponly rule  was Enabled.");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);

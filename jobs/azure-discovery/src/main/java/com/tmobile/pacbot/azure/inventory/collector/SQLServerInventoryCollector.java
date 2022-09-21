@@ -45,6 +45,7 @@ public class SQLServerInventoryCollector {
 			sqlServerVH.setKind(sqlServer.kind());
 			sqlServerVH.setName(sqlServer.name());
 			sqlServerVH.setRegionName(sqlServer.regionName());
+			sqlServerVH.setRegion(sqlServer.regionName());
 			sqlServerVH.setState(sqlServer.state());
 			sqlServerVH.setSystemAssignedManagedServiceIdentityPrincipalId(
 					sqlServer.systemAssignedManagedServiceIdentityPrincipalId());

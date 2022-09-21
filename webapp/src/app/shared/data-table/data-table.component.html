@@ -173,7 +173,7 @@
                    currentRowData = row;
                    goToDetails(currentRowData, $event.target.value)
                  ">
-                  <option value="-1"></option>
+                  <option value="none" selected disabled hidden>-Select-</option>
                   <option *ngFor="let item of row[column].dropDownItems" [value]="item">
                     <div class="flex flex-align-center each-cell-list-row">
                       <div>{{ item }}</div>

@@ -11,6 +11,7 @@ import com.tmobile.pacbot.gcp.inventory.collector.*;
 import com.tmobile.pacbot.gcp.inventory.util.CloudSqlFilter;
 import com.tmobile.pacbot.gcp.inventory.util.DataBaseTypeEnum;
 import com.tmobile.pacbot.gcp.inventory.vo.CloudSqlVH;
+import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,16 @@ public class AssetFileGenerator {
 	CloudDNSInventoryCollector cloudDNSInventoryCollector;
 	@Autowired
 	CloudSqlFilter cloudSqlFilter;
+	@Autowired
+	NetworkInventoryCollector networkInventoryCollector;
 
-	public void generateFiles(List<String> projects, String filePath) {
+	@Autowired
+	ProjectInventoryCollector projectInventoryCollector;
+
+	@Autowired
+	ServiceAccountInventoryCollector serviceAccountInventoryCollector;
+
+	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
 			FileManager.initialise(filePath);
@@ -70,7 +79,7 @@ public class AssetFileGenerator {
 		}
 		// generateAzureAplicationList();
 
-		for (String project : projects) {
+		for (ProjectVH project : projects) {
 			log.info("Started Discovery for project {}", project);
 
 			ExecutorService executor = Executors.newCachedThreadPool();
@@ -199,11 +208,31 @@ public class AssetFileGenerator {
 				}
 			});
 			executor.execute(() -> {
-				if (!(isTypeInScope("clouddns"))) {
+				if (!(isTypeInScope("networks"))) {
 					return;
 				}
 				try {
-					FileManager.generateCloudDnsFiles(cloudDNSInventoryCollector.fetchCloudDnsInventory(project));
+					FileManager.generateNetworksFiles(networkInventoryCollector.fetchNetworkInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("project"))) {
+					return;
+				}
+				try {
+					FileManager.generateProjectFiles(projectInventoryCollector.fetchProjectMetadataMetadata(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("serviceaccounts"))) {
+					return;
+				}
+				try {
+					FileManager.generateServiceAccountFiles(serviceAccountInventoryCollector.fetchServiceAccountDetails(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
