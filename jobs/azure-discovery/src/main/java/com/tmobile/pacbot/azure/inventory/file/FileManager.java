@@ -84,6 +84,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-blobservice.data", "[", false);
 
 		FileGenerator.writeToFile("azure-mysqlflexible.data", "[", false);
+		FileGenerator.writeToFile("azure-diagnosticsetting.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
@@ -127,6 +128,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-blobservice.data", "]", true);
 
 		FileGenerator.writeToFile("azure-mysqlflexible.data", "]", true);
+		FileGenerator.writeToFile("azure-diagnosticsetting.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -313,4 +315,8 @@ public class FileManager {
 		FileGenerator.generateJson(blobServiceVHList, "azure-blobservice.data");
 	}
 
+
+    public static void generateDiagnosticSettingFiles(List<DiagnosticSettingVH> fetchDiagnosticSettingsList) {
+		FileGenerator.generateJson(fetchDiagnosticSettingsList, "azure-diagnosticsetting.data");
+    }
 }

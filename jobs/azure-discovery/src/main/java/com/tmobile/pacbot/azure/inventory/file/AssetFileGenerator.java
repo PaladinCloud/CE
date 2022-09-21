@@ -150,6 +150,9 @@ public class AssetFileGenerator {
 	@Autowired
 	BlobServiceInventoryCollector blobServiceInventoryCollector;
 
+	@Autowired
+	DiagnosticSettingsCollector diagnosticSettingsCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -655,6 +658,20 @@ public class AssetFileGenerator {
 					FileManager
 							.generateMySQLFlexibleFiles(mySQLFlexibleInventoryCollector.fetchMySQLFlexibleServerDetails(subscription));
 					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("diagnosticsetting"))) {
+					log.info("no target type found for diagnosticsetting!!");
+					return;
+				}
+				try {
+
+					FileManager
+							.generateDiagnosticSettingFiles(diagnosticSettingsCollector.fetchDiagnosticSettings(subscription));
+					log.info("diagnostic setting data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
