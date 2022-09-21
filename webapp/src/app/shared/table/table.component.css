@@ -1,12 +1,15 @@
 .table-container{
   height: 100%;
   width: 100%;
+  background-color: var(--background-white);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-100);
 }
 
 .table-content-container{
     width: 100%;
-    height: calc(100% - 68px);
-    overflow: scroll;
+    height: calc(100% - 70px);
+    overflow-y: scroll;
 }
 
 .table-wrapper{
@@ -21,12 +24,15 @@
   padding: 16px 24px;
 }
 
+.table-header {
+  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+}
+
 .table-header .table-column-modifier{
     /* background-color: var(--background-white); */
     border: 1px solid var(--border-100);
     height: 64px;
     padding: 12px 19px 12px 24px;
-    /* border-radius: var(--border-radius) var(--border-radius) 0px 0px; */
 }
 
 .table-header .search-bar-wrapper {
@@ -54,10 +60,38 @@
 }
 
 .table-header .header-right .add-remove-columns-wrapper{
-    float: right;
+    margin-left: auto;
     height: 25px;
     border: 1px solid var(--border-200);
     padding: 0px 16px;
+}
+
+.filter-wrapper{
+  height: 25px;
+  border: 1px solid var(--border-200);
+  padding: 0px 16px;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.filter-wrapper img{
+
+}
+
+.filter-modal-container{
+  z-index: 101;
+  height: 300px;
+  width: 400px;
+  position: absolute;
+  background-color: var(--background-white);
+  border: 1px solid var(--border-200);
+  padding: 20px;
+}
+
+.filter-modal-container img{
+  height: 24px;
+  width: 24px;
+  padding: 4px;
 }
 
 .table-header .search-in-columns{
@@ -85,11 +119,12 @@
     padding: 12px;
 }
 
-.table-header ::ng-deep .mat-select-value{
+.table-header .add-remove-columns-wrapper ::ng-deep .mat-select-value,
+.table-header .search-in-columns ::ng-deep .mat-select-value{
     display: none;
 }
 
-.table-header .header-right ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix{
+.table-header .header-right .add-remove-columns-wrapper ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix{
     width: 20px;
 }
 
@@ -117,7 +152,7 @@
     height: 100% !important;
 }
 
-.header-right ::ng-deep .mat-select-arrow {
+.header-right .add-remove-columns-wrapper ::ng-deep .mat-select-arrow {
     width: 10px !important;
     height: 10px !important;
     border: none !important;
@@ -184,4 +219,15 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 100px;
+}
+
+.more-wrapper{
+  padding: 5px;
+  height: 26px;
+  width: 26px;
+  text-align: center;
+  border: 1px solid var(--border-200);
+  cursor: pointer;
+  margin-left: 12px;
 }

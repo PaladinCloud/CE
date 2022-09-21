@@ -1,9 +1,10 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 
 @Component({
   selector: 'app-table',
@@ -22,6 +23,8 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Input() showAddRemoveCol;
   @Input() tableTitle;
   @Input() imageDataMap = {};
+  @Input() filterTypeLabels = [];
+  @Input() filterTagLabels= [];
   tableErrorMessage = '';
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
@@ -30,6 +33,9 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Output() searchInColumnsChanged = new EventEmitter<any>();
   @Output() nextPageCalled = new EventEmitter<any>();
   @Output() downloadClicked = new EventEmitter<any>();
+  @Output() selectedFilterType = new EventEmitter<any>();
+  @Output() selectedFilter = new EventEmitter<any>();
+  @Output() deleteAllFilters = new EventEmitter<any>();
 
   mainDataSource;
   dataSource;
@@ -42,10 +48,29 @@ export class TableComponent implements OnInit,AfterViewInit {
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
 
   allSelected=true;
+  screenWidth;
+  denominator;
+  screenWidthFactor;
+  removeFromScreenWidth = 320;
+  isWindowExpanded = true;
 
-  constructor(private readonly changeDetectorRef: ChangeDetectorRef) { }
+  showFilterModal = false;
+  filter;
+  filterBtnClicked=0;
+  @Input() filterArr;
+  
+
+  constructor(private readonly changeDetectorRef: ChangeDetectorRef,
+    private windowExpansionService: WindowExpansionService) { 
+      this.windowExpansionService.getExpansionStatus().subscribe((res) => {
+        this.isWindowExpanded = res;
+        this.getScreenWidthFactor();
+      });
+    }
 
   ngOnInit(): void {
+    console.log("FilterArr: ",this.filterArr);
+    
     this.mainDataSource = new MatTableDataSource(this.data);
     this.dataSource = new MatTableDataSource(this.data);
     if(this.columnWidths){
@@ -56,8 +81,13 @@ export class TableComponent implements OnInit,AfterViewInit {
     }else{
       this.allSelected=false;
     }
-    if(this.searchQuery && this.showSearchBar) this.customFilter(this.searchQuery);
+    // if(this.searchQuery && this.showSearchBar) this.customSearch(this.searchQuery);
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
+
+    this.screenWidth = window.innerWidth;
+    this.getWidthFactor();
+    // this.addFilter();
+    // this.nextPageCalled.emit();
   }
 
   ngAfterViewInit(): void {  
@@ -69,6 +99,29 @@ export class TableComponent implements OnInit,AfterViewInit {
       });
       this.changeDetectorRef.detectChanges();
     }
+  }
+
+  getWidthFactor(){
+    this.denominator = 0;
+    for(let i in this.whiteListColumns){
+      let col = this.whiteListColumns[i];
+      this.denominator += this.columnWidths[col];
+    }
+    this.getScreenWidthFactor();
+  }
+
+  getScreenWidthFactor(){
+    if(this.isWindowExpanded){
+      this.screenWidthFactor = (this.screenWidth - this.removeFromScreenWidth) / this.denominator;
+    }else{
+      this.screenWidthFactor = (this.screenWidth - 140) / this.denominator;
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.screenWidth = window.innerWidth;
+    this.getScreenWidthFactor();
   }
 
   handleSearchInColumnsChange(){
@@ -90,6 +143,7 @@ export class TableComponent implements OnInit,AfterViewInit {
       this.select.options.forEach((item: MatOption) => item.deselect());
     }
     this.whitelistColumnsChanged.emit(this.whiteListColumns);
+    this.getWidthFactor();
   }
 
   goToDetails(row){
@@ -114,10 +168,59 @@ export class TableComponent implements OnInit,AfterViewInit {
     }else{
       this.allColumnsSelected.deselect();
     }
+    this.getWidthFactor();
     this.whitelistColumnsChanged.emit(this.whiteListColumns);
   }
 
-  customFilter(searchTxt){    
+  onSelectFilter(e, i){    
+    // console.log(e);
+    this.filterArr[i].filter = e;
+    this.selectedFilterType.emit(e);
+  }
+
+  changeFilterText(e, i){
+    if (e.keyCode === 13) {      
+      this.selectedFilter.emit(this.filterArr[i].filterText);
+    }
+  }
+
+  addFilter(){
+    let obj = {
+      filter: "",
+      filterText: ""
+    };
+    this.filterArr.push(obj);
+  }
+
+  removeFilter(i){
+    // console.log("Filter removed: "+i);
+    this.filterArr.splice(i, 1);
+  }
+
+  customFilter(){
+
+    this.tableErrorMessage = '';
+    this.dataSource.data = this.mainDataSource.data.filter((item) => {
+      for(const i in this.filterArr){
+        const filterObj = this.filterArr[i];
+        
+        const col = filterObj.filter;
+        const searchTxt = filterObj.filterText;
+        console.log(String(item[col]).toLowerCase().match(searchTxt.toLowerCase()));
+        
+        if(!String(item[col]).toLowerCase().match(searchTxt.toLowerCase())){
+          return false;
+        }
+      }
+      return true;
+    })
+
+    if(this.dataSource.data.length==0){
+      this.tableErrorMessage = 'noSearchFound';
+    }
+  }
+
+  customSearch(searchTxt){    
     let columnsToSearchIN = this.searchInColumns.value;
     if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
       columnsToSearchIN = this.whiteListColumns;
@@ -142,8 +245,8 @@ export class TableComponent implements OnInit,AfterViewInit {
     
     if (event.keyCode === 13 || searchTxt=='') {
       this.tableErrorMessage = ''
-      this.customFilter(searchTxt);
-      this.customSort(this.headerColName, this.direction);
+      // this.customSearch(searchTxt);
+      // this.customSort(this.headerColName, this.direction);
       this.searchCalledEventEmitter.emit(searchTxt);
     }
   }
@@ -177,12 +280,27 @@ export class TableComponent implements OnInit,AfterViewInit {
       this.nextPageCalled.emit();
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
-      if(this.searchQuery && this.showSearchBar) this.customFilter(this.searchQuery);
+      // if(this.searchQuery && this.showSearchBar) this.customSearch(this.searchQuery);
       if(this.headerColName) this.customSort(this.headerColName, this.direction);
+
+      setTimeout(() => {}, 1000);
     }
   }
 
   download(){
     this.downloadClicked.emit();
+  }
+
+  changeFilterType(filterType) {
+    this.selectedFilterType.emit(filterType);
+  }
+
+  changeFilterTags(filterName) {
+    this.selectedFilter.emit(filterName);
+    // this.trigger.closeMenu();
+  }
+
+  deleteFilters(event) {
+    this.deleteAllFilters.emit(event);
   }
 }

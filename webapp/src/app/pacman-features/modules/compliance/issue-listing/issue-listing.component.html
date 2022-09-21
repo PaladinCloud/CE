@@ -48,7 +48,8 @@
             [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
             [imageDataMap]="tableImageDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
-            [searchQuery]="searchTxt" (nextPageCalled)="nextPg()" (downloadClicked)="handlePopClick($event)"
+            [searchQuery]="searchTxt" (nextPageCalled)="nextPg()" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
+            (selectedFilter)="changeFilterTags($event)" [filterArr]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
             >
         </app-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"

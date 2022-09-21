@@ -100,7 +100,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   tableErrorMessage = '';
   headerColName;
   direction;
-  screenWidth;
   columnWidths = {'Policy Name': 1, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {};
   columnsSortFunctionMap = {
@@ -200,13 +199,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.getFilterArray();
         this.updateComponent();
       });
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onWindowResize() {
-    this.screenWidth = window.innerWidth;
-    console.log(this.screenWidth);
-    
   }
 
   ngOnInit() {
@@ -371,6 +363,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
 
+          console.log(this.filterTypeOptions, "filterTypeOptions");
+          
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
@@ -385,11 +379,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
+    console.log("VALUE: ", value);
+    
     this.filterErrorMessage = '';
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
+      console.log("CURRENT FILTER TYE: ", this.currentFilterType);
+      
       this.issueFilterSubscription = this.issueFilterService
         .getFilters(
           {
@@ -415,9 +413,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterTags(value: String) {
+    console.log(value);
+    
     try {
       if (this.currentFilterType) {
         const filterTag = _.find(this.filterTagOptions, { name: value });
+        console.log(filterTag);
         this.utils.addOrReplaceElement(
           this.filters,
           {
@@ -466,6 +467,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.dataTableData = [];
     this.issueListingdata = [];
     this.tableData = [];
+    this.bucketNumber = 0;
     // this.firstPaginator = 1;
     this.showLoader = true;
     this.dataLoaded = false;
@@ -502,7 +504,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         searchtext: this.searchTxt,
         size: this.paginatorSize,
       };
-
+      console.log(payload);
       const issueListingUrl = environment.issueListing.url;
       const issueListingMethod = environment.issueListing.method;
       this.errorValue = 0;
@@ -542,6 +544,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 const updatedResponse = this.massageData(this.issueListingdata);
                 this.currentBucket[this.bucketNumber] = updatedResponse;
                 this.tableData.push(...updatedResponse);
+                console.log(this.tableData.length, " ", updatedResponse.length, " ", this.totalRows);
+                
                 // console.log(this.tableData.length);
                 // console.log(JSON.stringify(this.tableData));
                 
@@ -896,7 +900,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       //   }
       // } else {
         this.bucketNumber++;
-        this.getData();        
+        // console.log(this.tableData.length);
+        // console.log(this.totalRows);
+        
+        if(this.tableData.length < this.totalRows) this.getData();
       // }
       // this.storeState();
     } catch (error) {
@@ -905,11 +912,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  // callNewSearch(searchVal){
-  //   this.searchTxt = searchVal;
-  //   // this.state.searchValue = searchVal;
-  //   this.getUpdatedUrl();
-  // }
+  callNewSearch(searchVal){    
+    this.searchTxt = searchVal;
+    // this.state.searchValue = searchVal;
+    this.updateComponent();  
+    this.getUpdatedUrl();
+  }
 
   // handleRemoveAllChecked(event: any) {
   //   if (event == true) {
