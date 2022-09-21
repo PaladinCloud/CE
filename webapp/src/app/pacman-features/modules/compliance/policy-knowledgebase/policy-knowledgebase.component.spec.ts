@@ -28,7 +28,6 @@ import { AssetGroupObservableService } from 'src/app/core/services/asset-group-o
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
-import { TableStateService } from 'src/app/core/services/table-state-service.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { BackNavigationComponent } from 'src/app/shared/back-navigation/back-navigation.component';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
@@ -62,7 +61,7 @@ describe('Policyknowledgebase', () => {
       imports: [RouterTestingModule, MatSelectModule, MatTableModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule, HttpClientTestingModule],
       declarations: [ PolicyKnowledgebaseComponent ],
       providers: [
-        TableStateService,
+        DataCacheService,
         CommonResponseService,
         AssetGroupObservableService,
         LoggerService,
