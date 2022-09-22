@@ -58,6 +58,7 @@ public class PacmanRuleConstants {
     public static final String autoCreateSubnetworks="autoCreateSubnetworks";
     public static final String GCP_SHIELDED_CONFIG ="shieldedInstanceConfig" ;
     public static final String AZURE_TLSVersion_MySQLFlex="tlsVersion";
+    public static final String ROLES ="roles" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
