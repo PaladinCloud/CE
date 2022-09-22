@@ -87,6 +87,8 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
     private int numberOfPoliciesEnforced;
 
     private int numberOfAwsAccounts;
+    private int numberOfAzureSubscription;
+    private int numberOfGCPProjects;
 
     private String numberOfPolicyEvaluations;
 
@@ -206,6 +208,12 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
              numberOfAwsAccounts = getNumberOfAwsAccounts();
             });
             executor.execute(() -> {
+                numberOfAzureSubscription = getNumberOfAzureSubscription();
+            });
+            executor.execute(() -> {
+                numberOfGCPProjects = getNumberOfGCPProjects();
+            });
+            executor.execute(() -> {
              numberOfPolicyEvaluations = getNumberOfPolicyEvaluations();
             });
             executor.execute(() -> {
@@ -218,7 +226,10 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             // 1. Total number of policies active in AWS Datasources
             data.put("numberOfPoliciesEnforced", numberOfPoliciesEnforced);
             // 2.Total Accounts
-            data.put("numberOfAwsAccounts", numberOfAwsAccounts);
+            int totalAccounts = numberOfAwsAccounts + numberOfAzureSubscription + numberOfGCPProjects;
+            LOGGER.info("Total number of AWS accounts:{}, Total number of Azure subscription:{}," +
+                    " Total number of GCP projects:{}",numberOfAwsAccounts,numberOfAzureSubscription,numberOfGCPProjects);
+            data.put("numberOfAwsAccounts", totalAccounts);
             // 3.Total Assets Scanned
             data.put("totalNumberOfAssets", totalAssets);
             // 4.Total Events Processed
@@ -460,6 +471,29 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
             Thread.currentThread().interrupt();
         }
         return numberOfPolicyWithAutoFixes;
+    }
+
+    private int getNumberOfAzureSubscription() {
+        int totalSubscription = 0;
+        try {
+            totalSubscription = repository.getNumberOfAccounts().size();
+        } catch (DataException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        return totalSubscription;
+    }
+
+
+    private int getNumberOfGCPProjects() {
+        int totalProjects = 0;
+        try {
+            totalProjects = repository.getNumberOfAccounts().size();
+        } catch (DataException e) {
+            LOGGER.error(e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+        return totalProjects;
     }
 
 }
