@@ -547,6 +547,7 @@ public class PacmanRuleConstants {
     public static final String DEFAUTL_SG_GROUP="default";
    public static final String DELETE_RETENTION_POLICY ="deleteRetentionPolicy";
    public static final String ENABLED="enabled";
+   public static  final String ROTATION_PERIOD="rotationPeriod";
     public static final String SERVICE_ACCOUNT_MANAGED_KEY="serviceAccountKey";
    public static final String KEY_TYPE ="keyType";
    public static final  String USER_MANAGED="USER_MANAGED";
