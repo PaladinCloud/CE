@@ -1186,5 +1186,27 @@
     "modifiedDate": "2022-07-14",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Disable_User_Managed_Service_Account_Key_Creation",
+    "ruleUUID": "Disable_User_Managed_Service_Account_Key_Creation",
+    "policyId": "Disable_User_Managed_Service_Account_Key_Creation",
+    "ruleName": "Disable User-Managed Service Account Key Creation",
+    "targetType": "serviceaccounts",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Disable_User_Managed_Service_Account_Key_Creation",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"delete-user-manged-keys\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Disable User-Managed Service Account Key Creation\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_User_Managed_Service_Account_Key_Creation\",\"autofix\":false,\"alexaKeyword\":\"Disable_User_Managed_Service_Account_Key_Creation\",\"ruleRestUrl\":\"\",\"targetType\":\"serviceaccounts\",\"pac_ds\":\"gcp\",\"policyId\":\"Disable_User_Managed_Service_Account_Key_Creation\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_User_Managed_Service_Account_Key_Creation\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_User_Managed_Service_Account_Key_Creation",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable User-Managed Service Account Key Creation",
+    "createdDate": "2022-09-19",
+    "modifiedDate": "2022-09-19",
+    "severity": "medium",
+    "category": "security"
   }
 ]

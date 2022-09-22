@@ -7,6 +7,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudtasks.v2.CloudTasks;
+import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.sqladmin.SQLAdmin;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -62,6 +63,7 @@ public class GCPCredentialsProvider {
     private NetworksClient networksClient;
 
     private CloudResourceManager cloudResourceManager;
+    private Iam iamService;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -220,6 +222,15 @@ public class GCPCredentialsProvider {
                     jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
         }
         return cloudResourceManager;
+    }
+
+    public  Iam getIamService() throws  IOException, GeneralSecurityException{
+        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+        if(iamService==null){
+         iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+        }
+       return  iamService;
     }
 
 
