@@ -156,7 +156,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
-                    "{\"query\":{\"bool\":{}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountname.keyword\",\"size\":10000}}}}");
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"account\"}}]}},\"aggs\":{\"accounts\":{\"terms\":{\"field\":\"accountname.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
@@ -264,6 +264,43 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
         	LOGGER.error("Error while processing the fre auto fix",e.getMessage());
         	return new ArrayList<>();
         }
+    }
+
+    @Override
+    public JsonArray getNumberOfAzureSubscription() throws DataException {
+        try {
+            JsonParser parser = new JsonParser();
+            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
+                    .append(SEARCH);
+            StringBuilder requestBody = new StringBuilder(
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"subscription\"}}]}},\"aggs\":{\"subscriptions\":{\"terms\":{\"field\":\"subscriptionId.keyword\",\"size\":10000}}}}");
+            String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+            JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
+            JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
+            return aggsJson.getAsJsonObject("accounts").getAsJsonArray(BUCKETS);
+        } catch (Exception e) {
+            LOGGER.error("Error while processing the aws accounts",e.getMessage());
+            return new JsonArray();
+        }
+
+    }
+    @Override
+    public JsonArray getNumberOfGcpProjects() throws DataException {
+        try {
+            JsonParser parser = new JsonParser();
+            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
+                    .append(SEARCH);
+            StringBuilder requestBody = new StringBuilder(
+                    "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"project\"}}]}},\"aggs\":{\"projects\":{\"terms\":{\"field\":\"projectId.keyword\",\"size\":10000}}}}");
+            String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+            JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
+            JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
+            return aggsJson.getAsJsonObject("accounts").getAsJsonArray(BUCKETS);
+        } catch (Exception e) {
+            LOGGER.error("Error while processing the aws accounts",e.getMessage());
+            return new JsonArray();
+        }
+
     }
 
 }

@@ -91,4 +91,8 @@ public interface StatisticsRepository {
      * @throws DataException the data exception
      */
     public List<Map<String, Object>> getAutofixActionCountByRule() throws DataException;
+
+    public JsonArray getNumberOfAzureSubscription() throws DataException;
+
+    public JsonArray getNumberOfGcpProjects() throws DataException;
 }
