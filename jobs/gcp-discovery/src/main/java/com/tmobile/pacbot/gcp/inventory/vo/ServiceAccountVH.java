@@ -14,6 +14,16 @@ public class ServiceAccountVH extends GCPVH{
         return serviceAccountKey;
     }
 
+    private List<String> roles;
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
     public void setServiceAccountKey(List<ServiceAccountKeyVH> serviceAccountKey) {
         this.serviceAccountKey = serviceAccountKey;
     }
