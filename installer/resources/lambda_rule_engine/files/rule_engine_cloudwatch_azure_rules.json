@@ -1,6 +1,5 @@
 [
   {
-<<<<<<< HEAD
       "ruleId": "TaggingRule_version-1_VirtualmachineTaggingRule_virtualmachine",
       "ruleUUID": "azure_virtualmachine_should_be_tagged_with_mandatory_tags",
       "policyId": "TaggingRule_version-1",

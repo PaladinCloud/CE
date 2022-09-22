@@ -1,6 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.List;
+import java.util.Map;
 
 public class ServiceAccountVH extends GCPVH{
     private String name;
@@ -12,6 +13,16 @@ public class ServiceAccountVH extends GCPVH{
 
     public List<ServiceAccountKeyVH> getServiceAccountKey() {
         return serviceAccountKey;
+    }
+
+    private Map rolesMembers;
+
+    public Map getRolesMembers() {
+        return rolesMembers;
+    }
+
+    public void setRolesMembers(Map rolesMembers) {
+        this.rolesMembers = rolesMembers;
     }
 
     public void setServiceAccountKey(List<ServiceAccountKeyVH> serviceAccountKey) {

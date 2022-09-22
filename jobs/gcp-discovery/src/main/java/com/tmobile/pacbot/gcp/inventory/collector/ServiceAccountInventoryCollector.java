@@ -1,6 +1,8 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.api.services.iam.v1.Iam;
+import com.google.api.services.iam.v1.model.Binding;
+import com.google.api.services.iam.v1.model.Policy;
 import com.google.api.services.iam.v1.model.ServiceAccount;
 import com.google.api.services.iam.v1.model.ServiceAccountKey;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
@@ -13,16 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ServiceAccountInventoryCollector {
     @Autowired
     GCPCredentialsProvider gcpCredentialsProvider;
-    private static final Logger logger = LoggerFactory.getLogger(StorageCollector.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceAccountInventoryCollector.class);
 
     public  List<ServiceAccountVH> fetchServiceAccountDetails(ProjectVH project) throws GeneralSecurityException, IOException {
 
@@ -40,11 +43,33 @@ public class ServiceAccountInventoryCollector {
            serviceAccountVH.setDescription(serviceAccount.getDescription());
            logger.info("Serice account inventory collector-> {}",serviceAccount.getName());
            getServiceAccountKeys(serviceAccount.getUniqueId(),serviceAccountVH,project);
+           getServiceAccountMemberRoles(serviceAccount,serviceAccountVH);
 
            serviceAccountVHList.add(serviceAccountVH);
        }
     return serviceAccountVHList;
     }
+
+    private void getServiceAccountMemberRoles(ServiceAccount serviceAccount, ServiceAccountVH serviceAccountVH)  {
+        Iam.Projects.ServiceAccounts.GetIamPolicy requestPolicy =
+                null;
+        try {
+            requestPolicy = gcpCredentialsProvider.getIamService().projects().serviceAccounts().getIamPolicy(serviceAccount.getName());
+            Policy responsePolicy = requestPolicy.execute();
+            Map<String,List<String>> roleMembers=new HashMap() ;
+            List<Binding> bindings=responsePolicy.getBindings();
+            if(bindings!=null) {
+                for (Binding binding : bindings) {
+                    roleMembers.put(binding.getRole(), binding.getMembers());
+                }
+            }
+            serviceAccountVH.setRolesMembers(roleMembers);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
     public void  getServiceAccountKeys(String serviceAccountName,ServiceAccountVH serviceAccountVH,ProjectVH projectVH) throws GeneralSecurityException, IOException {
 
         String apiUrlTemplate = "projects/"+projectVH.getProjectId()+"/serviceAccounts/"+serviceAccountName;
