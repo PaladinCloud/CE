@@ -41,14 +41,7 @@ export class CardComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) { }
 
-  ngOnInit() {
-    this.activatedRoute.queryParams.subscribe((params) => {
-      this.agAndDomain["ag"] = params["ag"];
-      this.agAndDomain["domain"] = params["domain"];
-      if(this.agAndDomain["ag"] && this.agAndDomain["domain"]){        
-      }
-    });
-  }
+  ngOnInit() {}
 
 
   navigateDataTable(event) {
