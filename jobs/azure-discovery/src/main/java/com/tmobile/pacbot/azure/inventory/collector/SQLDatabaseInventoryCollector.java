@@ -74,6 +74,8 @@ public class SQLDatabaseInventoryCollector {
 
 					}
 
+					 sqlDatabaseVH.setTransparentDataEncryptionStatus(String.valueOf(sqlDatabase.getTransparentDataEncryption().status()));
+
 					for (Map.Entry<String, Map<String, String>> resourceGroupTag : tagMap.entrySet()) {
 
 						if (resourceGroupTag.getKey().equalsIgnoreCase(sqlDatabase.resourceGroupName())) {
