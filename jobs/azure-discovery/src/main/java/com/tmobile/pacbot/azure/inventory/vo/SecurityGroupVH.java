@@ -16,6 +16,15 @@ public class SecurityGroupVH extends AzureVH {
 	private List<NSGSubnet> subnetList;
 	private List<NSGSecurityRule> inBoundSecurityRules;
 	private List<NSGSecurityRule> outBoundSecurityRules;
+	private List<NetworkWatcherLogFlowVH>networkWatcher;
+
+	public List<NetworkWatcherLogFlowVH> getNetworkWatcher() {
+		return networkWatcher;
+	}
+
+	public void setNetworkWatcher(List<NetworkWatcherLogFlowVH> networkWatcher) {
+		this.networkWatcher = networkWatcher;
+	}
 
 	public String getKey() {
 		return key;
