@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.rds.model.ResourceNotFoundException;
+import com.microsoft.azure.CloudException;
+import com.microsoft.azure.management.network.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,21 +14,23 @@ import org.springframework.stereotype.Component;
 
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
-import com.microsoft.azure.management.network.NetworkSecurityGroup;
-import com.microsoft.azure.management.network.NetworkSecurityRule;
-import com.microsoft.azure.management.network.Subnet;
+
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.NSGSecurityRule;
 import com.tmobile.pacbot.azure.inventory.vo.NSGSubnet;
 import com.tmobile.pacbot.azure.inventory.vo.SecurityGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
+
+
 @Component
 public class NSGInventoryCollector {
 	
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
-	
+
+	@Autowired
+	NetworkWatcherInventoryCollector networkWatcherInventoryCollector;
 	private static Logger log = LoggerFactory.getLogger(NSGInventoryCollector.class);
 	
 	public List<SecurityGroupVH> fetchNetworkSecurityGroupDetails(SubscriptionVH subscription,
@@ -34,6 +39,8 @@ public class NSGInventoryCollector {
 
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 		PagedList<NetworkSecurityGroup> securityGroups = azure.networkSecurityGroups().list();
+//		PagedList<NetworkWatcher> networkWatcherPagedList=	azure.networkWatchers().list();
+
 		for (NetworkSecurityGroup securityGroup : securityGroups) {
 			SecurityGroupVH securityGroupVH = new SecurityGroupVH();
 			securityGroupVH.setId(securityGroup.id());
@@ -46,7 +53,9 @@ public class NSGInventoryCollector {
 			securityGroupVH.setNetworkInterfaceIds(securityGroup.networkInterfaceIds());
 			securityGroupVH.setSubscription(subscription.getSubscriptionId());
 			securityGroupVH.setSubscriptionName(subscription.getSubscriptionName());
+			securityGroupVH.setNetworkWatcher(networkWatcherInventoryCollector.fetchNetworkWatcherLogsBySecurityGroupId(subscription,securityGroup.id()));
 			setSecurityRules(securityGroup, securityGroupVH);
+
 			securityGroupsList.add(securityGroupVH);
 
 		}

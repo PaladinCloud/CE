@@ -23,9 +23,10 @@ import { ErrorHandlingService } from '../../../../shared/services/error-handling
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
-import { TableStateService } from 'src/app/core/services/table-state-service.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { DownloadService } from 'src/app/shared/services/download.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -69,9 +70,9 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   columnWidths = {'Policy Name': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
   columnNamesMap = {name: "Policy Name"};
   columnsSortFunctionMap = {
-    severity: (a, b, isAsc) => {
+    Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
-      return (severeness[a.severity] < severeness[b.severity] ? -1 : 1) * (isAsc ? 1 : -1);
+      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
   state: any = {};
@@ -90,9 +91,12 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
-    private tableStateService: TableStateService) {
+    private dataCacheService: DataCacheService,
+    private downloadService: DownloadService) {
 
-      this.state = this.tableStateService.getState("policy") || {};
+      if(this.dataCacheService.get("policy-knowledgebase-table")) {
+        this.state = JSON.parse(this.dataCacheService.get("policy-knowledgebase-table")) || {};
+      }
       
       this.headerColName = this.state?.headerColName || 'Policy Name';
       this.direction = this.state?.direction || 'asc';
@@ -130,8 +134,45 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     // this.storeState();
   }
 
+  handlePopClick() {
+    console.log("AM I CALLED???");
+    
+    const fileType = "csv";
+
+    try {
+      let queryParams;
+
+      queryParams = {
+        fileFormat: "csv",
+        serviceId: 1,
+        fileType: fileType,
+      };
+
+      const downloadRequest = {
+        ag: this.selectedAssetGroup,
+        from: 0,
+        searchtext: this.searchTxt,
+        size: this.typeObj['All Policies'],
+      };
+
+      const downloadUrl = environment.download.url;
+      const downloadMethod = environment.download.method;
+
+      this.downloadService.requestForDownload(
+        queryParams,
+        downloadUrl,
+        downloadMethod,
+        downloadRequest,
+        "Policy Knowledgebase",
+        this.typeObj['All Policies']
+      );
+    } catch (error) {
+      this.logger.log("error", error);
+    }
+  }
+
   storeState(){
-    this.tableStateService.setState(this.state, "policy");
+    this.dataCacheService.set("policy-knowledgebase-table", JSON.stringify(this.state));
   }
 
   getUpdatedUrl(){
@@ -259,6 +300,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       complianceTableUrl, complianceTableMethod, payload, queryParams).subscribe(
         response => {
           if (response.data.response.length !== 0) {
+            this.errorMessage = '';
             this.datacoming = true;
             this.knowledgebaseData = this.massageData(response.data.response);
             
@@ -299,8 +341,6 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
-      updatedQueryParams["headerColName"] = undefined;
-      updatedQueryParams["direction"] = undefined;
       updatedQueryParams["searchValue"] = undefined;
       this.router.navigate(
         ['pl', 'compliance', 'policy-knowledgebase-details', ruleId, autofixEnabled],

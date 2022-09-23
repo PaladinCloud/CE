@@ -7,6 +7,7 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudtasks.v2.CloudTasks;
+import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.sqladmin.SQLAdmin;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -62,6 +63,8 @@ public class GCPCredentialsProvider {
     private NetworksClient networksClient;
 
     private CloudResourceManager cloudResourceManager;
+    private Iam iamService;
+
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -73,8 +76,8 @@ public class GCPCredentialsProvider {
         // environment variable.
 
         // print the path to the credential file
-        String cred = System.getProperty("gcp.credentials");
 
+        String cred = System.getProperty("gcp.credentials");
         if (cred.isEmpty()) {
             logger.error("GCP cred string is null!!!!!!!");
         }
@@ -82,6 +85,15 @@ public class GCPCredentialsProvider {
         return GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
                 .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
     }
+
+    public String getAccessToken() throws IOException {
+        String cred = System.getProperty("gcp.credentials");
+        String token=GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
+                .createScoped("https://www.googleapis.com/auth/cloud-platform")
+                .refreshAccessToken().getTokenValue();
+        return token.trim().replaceAll("\\.+$", "").toString();
+    }
+
     public NetworksClient getNetworksClient() throws Exception{
         if(networksClient==null){
             NetworksSettings networksSettings=NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
@@ -92,6 +104,7 @@ public class GCPCredentialsProvider {
 
     }
     public InstancesClient getInstancesClient() throws IOException {
+
         if (instancesClient == null) {
             // pass authentication credentials to the client
             InstancesSettings instancesSettings = InstancesSettings.newBuilder()
@@ -209,6 +222,15 @@ public class GCPCredentialsProvider {
                     jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
         }
         return cloudResourceManager;
+    }
+
+    public  Iam getIamService() throws  IOException, GeneralSecurityException{
+        HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+        if(iamService==null){
+         iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+        }
+       return  iamService;
     }
 
 

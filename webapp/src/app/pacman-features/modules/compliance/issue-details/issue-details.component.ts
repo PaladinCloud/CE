@@ -284,7 +284,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       this.user = new FormGroup({
         name: new FormControl('', [
           Validators.required,
-          Validators.minLength(1)
+          Validators.minLength(5)
         ])
       });
 

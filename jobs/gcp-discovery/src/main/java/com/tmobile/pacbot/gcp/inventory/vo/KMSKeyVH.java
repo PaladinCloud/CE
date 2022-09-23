@@ -12,12 +12,13 @@ public class KMSKeyVH extends GCPVH{
     private String keyRingName;
     private String name;
     private String cryptoBackend;
-
     private String purpose;
     private boolean importOnly;
     private int labelsCount;
     private Map<String,String> labels;
     private List<Bindings> bindings;
+
+    private long rotationPeriod;
 
     public String getKeyRingName() {
         return keyRingName;
@@ -81,6 +82,14 @@ public class KMSKeyVH extends GCPVH{
 
     public void setPurpose(String purpose) {
         this.purpose = purpose;
+    }
+
+    public long getRotationPeriod() {
+        return rotationPeriod;
+    }
+
+    public void setRotationPeriod(long rotationPeriod) {
+        this.rotationPeriod = rotationPeriod;
     }
 
     @Override

@@ -56,6 +56,7 @@ public class VMInventoryCollector {
                         virtualMachineVH.setStatus(instance.getStatus());
                         logger.info("On hoost maintainenece attribute");
                         virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
+                        this.setShieldedConfig(instance,virtualMachineVH);
                         this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);
                         this.setNetworkInterfaces(instance, virtualMachineVH);
@@ -69,6 +70,15 @@ public class VMInventoryCollector {
         }
 
         return instanceList;
+    }
+
+    private void setShieldedConfig(Instance instance, VirtualMachineVH virtualMachineVH) {
+        ShieldedInstanceConfigVH shieldedInstanceConfigVH=new ShieldedInstanceConfigVH();
+        if(instance.hasShieldedInstanceConfig()) {
+            shieldedInstanceConfigVH.setEnableVtpm(instance.getShieldedInstanceConfig().getEnableVtpm());
+            shieldedInstanceConfigVH.setEnableIntegrityMonitoring(instance.getShieldedInstanceConfig().getEnableIntegrityMonitoring());
+        }
+        virtualMachineVH.setShieldedInstanceConfig(shieldedInstanceConfigVH);
     }
 
     private void setItemList(Instance instance, VirtualMachineVH virtualMachineVH) {

@@ -50,7 +50,7 @@ public class SubscriptionInventoryCollector {
 
     private List<StorageAccountActivityLogVH>fetchStorageAccountActivityLog(SubscriptionVH subscription) throws UnsupportedEncodingException {
 
-        String apiUrlTemplate="https://management.azure.com/%s/providers/Microsoft.Insights/diagnosticSettings?api-version=2021-05-01-preview";
+        String apiUrlTemplate="https://management.azure.com/subscriptions/%s/providers/Microsoft.Insights/diagnosticSettings?api-version=2021-05-01-preview";
 
         List<StorageAccountActivityLogVH>storageAccountActivityLogVHList=new ArrayList<>();
         String accessToken = azureCredentialProvider.getToken(subscription.getTenant());

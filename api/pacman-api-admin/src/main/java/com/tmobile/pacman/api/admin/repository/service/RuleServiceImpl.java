@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -173,9 +174,33 @@ public class RuleServiceImpl implements RuleService {
 			throw new PacManException(String.format(AdminConstants.RULE_ID_NOT_EXITS, ruleId));
 		}
 	}
+
+	private String getEventBus(String assetGroup) {
+		String eventBus="default";
+		switch (assetGroup.toLowerCase()){
+			case "azure":
+				String azureBusDetails= config.getAzure().getEventbridge().getBus().getDetails();
+				eventBus=azureBusDetails.split(":")[0];
+				break;
+			case "gcp":
+				String gcpBusDetails= config.getGcp().getEventbridge().getBus().getDetails();
+				eventBus=gcpBusDetails.split(":")[0];
+				break;
+			case "aws":
+				String awsBusDetails= config.getAws().getEventbridge().getBus().getDetails();
+				eventBus=awsBusDetails.split(":")[0];
+				break;
+			default:
+				eventBus="default";
+		}
+		log.info("Event bridge bus : {} ",eventBus);
+		return eventBus;
+	}
 	
 	private String disableCloudWatchRule(Rule existingRule, String userId, RuleState ruleState) throws PacManException {
+		String eventBusName=getEventBus(existingRule.getAssetGroup());
 		DisableRuleRequest disableRuleRequest = new DisableRuleRequest().withName(existingRule.getRuleUUID());
+		disableRuleRequest.setEventBusName(eventBusName);
 		DisableRuleResult disableRuleResult = amazonClient.getAmazonCloudWatchEvents(config.getRule().getLambda().getRegion()).disableRule(disableRuleRequest);
 		if (disableRuleResult.getSdkHttpMetadata() != null) {
 			if(disableRuleResult.getSdkHttpMetadata().getHttpStatusCode() == 200) {
@@ -197,8 +222,10 @@ public class RuleServiceImpl implements RuleService {
 		if (!checkIfPolicyAvailableForLambda(config.getRule().getLambda().getFunctionName(), awsLambdaClient)) {
 			createPolicyForLambda(config.getRule().getLambda().getFunctionName(), awsLambdaClient);
 		}
+		String eventBusName=getEventBus(existingRule.getAssetGroup());
 		
 		EnableRuleRequest enableRuleRequest = new EnableRuleRequest().withName(existingRule.getRuleUUID());
+		enableRuleRequest.setEventBusName(eventBusName);
 		EnableRuleResult enableRuleResult = amazonClient.getAmazonCloudWatchEvents(config.getRule().getLambda().getRegion()).enableRule(enableRuleRequest);
 		if (enableRuleResult.getSdkHttpMetadata() != null) {
 			if(enableRuleResult.getSdkHttpMetadata().getHttpStatusCode() == 200) {

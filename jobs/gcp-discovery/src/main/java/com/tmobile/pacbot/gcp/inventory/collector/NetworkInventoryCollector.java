@@ -29,6 +29,7 @@ public class NetworkInventoryCollector {
             networkVH.setProjectId(project.getProjectId());
             networkVH.setName(network.getName());
             logger.info("**** NetworkInventoryCollector --> {}",network.getName());
+            networkVH.setAutoCreateSubnetworks(network.getAutoCreateSubnetworks());
             networkVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
             networkVHList.add(networkVH);
 

@@ -144,6 +144,12 @@ public class AssetFileGenerator {
 	@Autowired
 	FunctionAppInventoryCollector functionAppInventoryCollector;
 
+	@Autowired
+	MySQLFlexibleInventoryCollector mySQLFlexibleInventoryCollector;
+
+	@Autowired
+	BlobServiceInventoryCollector blobServiceInventoryCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -634,6 +640,35 @@ public class AssetFileGenerator {
 
 					FileManager
 							.generateFunctionAppFiles(functionAppInventoryCollector.fetchFunctionAppDetails(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("mysqlflexible"))) {
+					log.info("no target type found for mysqlflexible!!");
+					return;
+				}
+				try {
+
+					FileManager
+							.generateMySQLFlexibleFiles(mySQLFlexibleInventoryCollector.fetchMySQLFlexibleServerDetails(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("blobservice"))) {
+					log.info("no target type found for functionApp!!");
+					return;
+				}
+				try {
+
+					FileManager
+							.generateBlobServiceFiles(blobServiceInventoryCollector.fetchBlobServiceDetails(subscription));
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();

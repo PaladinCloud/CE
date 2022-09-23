@@ -1577,4 +1577,282 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonForVMShieldedConfigSuccess() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"discoveryDate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-central1-a\",\n" +
+                "          \"id\": \"1443986351879888987\",\n" +
+                "          \"projectName\": \"Paladin Cloud\",\n" +
+                "          \"projectId\": \"central-run-349616\",\n" +
+                "          \"name\": \"dev-pc-test\",\n" +
+                "          \"description\": \"\",\n" +
+                "          \"disks\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"0\",\n" +
+                "              \"projectName\": \"Paladin Cloud\",\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"dev-pc-test\",\n" +
+                "              \"sizeInGB\": 10,\n" +
+                "              \"type\": \"PERSISTENT\",\n" +
+                "              \"hasSha256\": false,\n" +
+                "              \"hasKmsKeyName\": false,\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"tags\": {\n" +
+                "            \"application\": \"paladincloud-gcp\",\n" +
+                "            \"enviornment\": \"demo\"\n" +
+                "          },\n" +
+                "          \"machineType\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/zones/us-central1-a/machineTypes/e2-medium\",\n" +
+                "          \"status\": \"RUNNING\",\n" +
+                "          \"networkInterfaces\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"nic0\",\n" +
+                "              \"projectName\": null,\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"nic0\",\n" +
+                "              \"accessConfigs\": [\n" +
+                "                {\n" +
+                "                  \"discoveryDate\": null,\n" +
+                "                  \"_cloudType\": \"GCP\",\n" +
+                "                  \"region\": null,\n" +
+                "                  \"id\": \"External NAT\",\n" +
+                "                  \"projectName\": \"Paladin Cloud\",\n" +
+                "                  \"projectId\": null,\n" +
+                "                  \"name\": \"External NAT\",\n" +
+                "                  \"natIP\": \"35.239.207.67\",\n" +
+                "                  \"discoverydate\": null\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"network\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/global/networks/default\",\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"items\": [],\n" +
+                "          \"onHostMaintainence\": \"MIGRATE\",\n" +
+                "          \"shieldedInstanceConfig\": {\n" +
+                "            \"enableVtpm\": true,\n" +
+                "            \"enableIntegrityMonitoring\": true\n" +
+                "          },\n" +
+                "          \"discoverydate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_resourceid\": \"1443986351879888987\",\n" +
+                "          \"_docid\": \"1443986351879888987\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-08-18 15:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-09-14 05:53:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitsJsonForVMShieldedConfigFailure() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson("{\n" +
+                "          \"discoveryDate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_cloudType\": \"GCP\",\n" +
+                "          \"region\": \"us-central1-a\",\n" +
+                "          \"id\": \"1443986351879888987\",\n" +
+                "          \"projectName\": \"Paladin Cloud\",\n" +
+                "          \"projectId\": \"central-run-349616\",\n" +
+                "          \"name\": \"dev-pc-test\",\n" +
+                "          \"description\": \"\",\n" +
+                "          \"disks\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"0\",\n" +
+                "              \"projectName\": \"Paladin Cloud\",\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"dev-pc-test\",\n" +
+                "              \"sizeInGB\": 10,\n" +
+                "              \"type\": \"PERSISTENT\",\n" +
+                "              \"hasSha256\": false,\n" +
+                "              \"hasKmsKeyName\": false,\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"tags\": {\n" +
+                "            \"application\": \"paladincloud-gcp\",\n" +
+                "            \"enviornment\": \"demo\"\n" +
+                "          },\n" +
+                "          \"machineType\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/zones/us-central1-a/machineTypes/e2-medium\",\n" +
+                "          \"status\": \"RUNNING\",\n" +
+                "          \"networkInterfaces\": [\n" +
+                "            {\n" +
+                "              \"discoveryDate\": null,\n" +
+                "              \"_cloudType\": \"GCP\",\n" +
+                "              \"region\": null,\n" +
+                "              \"id\": \"nic0\",\n" +
+                "              \"projectName\": null,\n" +
+                "              \"projectId\": null,\n" +
+                "              \"name\": \"nic0\",\n" +
+                "              \"accessConfigs\": [\n" +
+                "                {\n" +
+                "                  \"discoveryDate\": null,\n" +
+                "                  \"_cloudType\": \"GCP\",\n" +
+                "                  \"region\": null,\n" +
+                "                  \"id\": \"External NAT\",\n" +
+                "                  \"projectName\": \"Paladin Cloud\",\n" +
+                "                  \"projectId\": null,\n" +
+                "                  \"name\": \"External NAT\",\n" +
+                "                  \"natIP\": \"35.239.207.67\",\n" +
+                "                  \"discoverydate\": null\n" +
+                "                }\n" +
+                "              ],\n" +
+                "              \"network\": \"https://www.googleapis.com/compute/v1/projects/central-run-349616/global/networks/default\",\n" +
+                "              \"discoverydate\": null\n" +
+                "            }\n" +
+                "          ],\n" +
+                "          \"items\": [],\n" +
+                "          \"onHostMaintainence\": \"MIGRATE\",\n" +
+                "          \"shieldedInstanceConfig\": {\n" +
+                "            \"enableVtpm\": false,\n" +
+                "            \"enableIntegrityMonitoring\": false\n" +
+                "          },\n" +
+                "          \"discoverydate\": \"2022-09-14 05:00:00+0000\",\n" +
+                "          \"_resourceid\": \"1443986351879888987\",\n" +
+                "          \"_docid\": \"1443986351879888987\",\n" +
+                "          \"_entity\": \"true\",\n" +
+                "          \"_entitytype\": \"vminstance\",\n" +
+                "          \"firstdiscoveredon\": \"2022-08-18 15:00:00+0000\",\n" +
+                "          \"latest\": true,\n" +
+                "          \"_loaddate\": \"2022-09-14 05:53:00+0000\"\n" +
+                "        }", JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitsJsonArrayForSSHKeys() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_cloudType\":\"GCP\",\"region\":\"us-west1-a\",\"id\":\"8993151141438601059\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"description\":\"\",\"disks\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"0\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"sizeInGB\":10,\"type\":\"PERSISTENT\",\"hasSha256\":false,\"hasKmsKeyName\":false,\"discoverydate\":null}],\"tags\":{\"for\":\"pacbot-demo\",\"by\":\"skchalla\"},\"machineType\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/zones/us-west1-a/machineTypes/e2-medium\",\"status\":\"TERMINATED\",\"networkInterfaces\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"nic0\",\"projectName\":null,\"name\":\"nic0\",\"accessConfigs\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"External NAT\",\"projectName\":\"cool-bay-349411\",\"name\":\"External NAT\",\"natIP\":\"\",\"discoverydate\":null}],\"network\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/global/networks/default\",\"discoverydate\":null}],\"items\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"block-project-ssh-keys\",\"value\":\"TRUE\",\"discoverydate\":null},{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"enable-oslogin-2fa\",\"value\":\"TRUE\",\"discoverydate\":null}],\"discoverydate\":\"2022-06-27 08:00:00+0000\",\"_resourceid\":\"8993151141438601059\",\"_docid\":\"8993151141438601059\",\"_entity\":\"true\",\"_entitytype\":\"vminstance\",\"firstdiscoveredon\":\"2022-06-14 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-06-27 08:42:00+0000\"}",
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getFailureJsonArrayForSSHKeys() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_cloudType\":\"GCP\",\"region\":\"us-west1-a\",\"id\":\"8993151141438601059\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"description\":\"\",\"disks\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"0\",\"projectName\":\"cool-bay-349411\",\"name\":\"pacbot-demo-vm\",\"sizeInGB\":10,\"type\":\"PERSISTENT\",\"hasSha256\":false,\"hasKmsKeyName\":false,\"discoverydate\":null}],\"tags\":{\"for\":\"pacbot-demo\",\"by\":\"skchalla\"},\"machineType\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/zones/us-west1-a/machineTypes/e2-medium\",\"status\":\"TERMINATED\",\"networkInterfaces\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"nic0\",\"projectName\":null,\"name\":\"nic0\",\"accessConfigs\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"External NAT\",\"projectName\":\"cool-bay-349411\",\"name\":\"External NAT\",\"natIP\":\"\",\"discoverydate\":null}],\"network\":\"https://www.googleapis.com/compute/v1/projects/cool-bay-349411/global/networks/default\",\"discoverydate\":null}],\"items\":[{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"enable-oslogin\",\"value\":\"TRUE\",\"discoverydate\":null},{\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"key\":\"enable-oslogin-2fa\",\"value\":\"TRUE\",\"discoverydate\":null}],\"discoverydate\":\"2022-06-27 08:00:00+0000\",\"_resourceid\":\"8993151141438601059\",\"_docid\":\"8993151141438601059\",\"_entity\":\"true\",\"_entitytype\":\"vminstance\",\"firstdiscoveredon\":\"2022-06-14 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-06-27 08:42:00+0000\"}",
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitJsonArrayCustomVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"discoveryDate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": null,\n" +
+                        "          \"id\": \"5106042431032024781\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"demo-vpc1\",\n" +
+                        "          \"autoCreateSubnetworks\": false,\n" +
+                        "          \"discoverydate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"5106042431032024781\",\n" +
+                        "          \"_docid\": \"5106042431032024781\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"networks\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-09-05 15:00:00+0530\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-09-12 10:07:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayLegacyVPC(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                " {\n" +
+                        "          \"discoveryDate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": null,\n" +
+                        "          \"id\": \"8930186336753281130\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"default\",\n" +
+                        "          \"autoCreateSubnetworks\": true,\n" +
+                        "          \"discoverydate\": \"2022-09-12 10:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"8930186336753281130\",\n" +
+                        "          \"_docid\": \"8930186336753281130\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"networks\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-09-05 15:00:00+0530\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-09-12 10:07:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitjsonArrayForEnableOSLoginRule(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1415:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616\",\"projectName\":\"\",\"projectId\":\"central-run-349616\",\"projectNumber\":1,\"computeInstanceMetadata\":{\"gke-autopilot-cluster-1-db8bc0cf-secondary-ranges\":\"services:default:default:gke-autopilot-cluster-1-services-db8bc0cf,pods:default:default:gke-autopilot-cluster-1-pods-db8bc0cf\",\"enable-guest-attributes\":\"TRUE\",\"enable-oslogin\":\"TRUE\",\"gke-cluster-1-d3b517c6-secondary-ranges\":\"services:default:default:gke-cluster-1-services-d3b517c6,pods:default:default:gke-cluster-1-pods-d3b517c6\",\"enable-osconfig\":\"TRUE\"},\"discoverydate\":\"2022-09-1415:00:00+0530\",\"_resourceid\":\"central-run-349616\",\"_docid\":\"central-run-349616\",\"_entity\":\"true\",\"_entitytype\":\"project\",\"firstdiscoveredon\":\"2022-09-1415:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1410:30:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailurejsonArrayForEnableOSLoginRule(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1415:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616\",\"projectName\":\"\",\"projectId\":\"central-run-349616\",\"projectNumber\":1,\"computeInstanceMetadata\":{\"gke-autopilot-cluster-1-db8bc0cf-secondary-ranges\":\"services:default:default:gke-autopilot-cluster-1-services-db8bc0cf,pods:default:default:gke-autopilot-cluster-1-pods-db8bc0cf\",\"enable-guest-attributes\":\"TRUE\",\"enable-oslogin\":\"FALSE\",\"gke-cluster-1-d3b517c6-secondary-ranges\":\"services:default:default:gke-cluster-1-services-d3b517c6,pods:default:default:gke-cluster-1-pods-d3b517c6\",\"enable-osconfig\":\"TRUE\"},\"discoverydate\":\"2022-09-1415:00:00+0530\",\"_resourceid\":\"central-run-349616\",\"_docid\":\"central-run-349616\",\"_entity\":\"true\",\"_entitytype\":\"project\",\"firstdiscoveredon\":\"2022-09-1415:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1410:30:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitJsonArrayForManagedServiceKeys(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1915:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"115653853863124476885\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com\",\"displayName\":\"ComputeEnginedefaultserviceaccount\",\"email\":\"344106022091-compute@developer.gserviceaccount.com\",\"description\":null,\"serviceAccountKey\":[{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/47e8c5c79a7bd99debb4b99dc566d750f1e72d4b\",\"keyType\":\"SYSTEM_MANAGED\"},{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/7432b40154c34c0b28b6a78cce6898b0ca31a03c\",\"keyType\":\"SYSTEM_MANAGED\"}],\"disabled\":false,\"discoverydate\":\"2022-09-1915:00:00+0530\",\"_resourceid\":\"115653853863124476885\",\"_docid\":\"115653853863124476885\",\"_entity\":\"true\",\"_entitytype\":\"serviceaccounts\",\"firstdiscoveredon\":\"2022-09-1915:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1910:11:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayForManagedServiceKeys(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-09-1915:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"115653853863124476885\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com\",\"displayName\":\"ComputeEnginedefaultserviceaccount\",\"email\":\"344106022091-compute@developer.gserviceaccount.com\",\"description\":null,\"serviceAccountKey\":[{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/47e8c5c79a7bd99debb4b99dc566d750f1e72d4b\",\"keyType\":\"SYSTEM_MANAGED\"},{\"name\":\"projects/central-run-349616/serviceAccounts/344106022091-compute@developer.gserviceaccount.com/keys/7432b40154c34c0b28b6a78cce6898b0ca31a03c\",\"keyType\":\"USER_MANAGED\"}],\"disabled\":false,\"discoverydate\":\"2022-09-1915:00:00+0530\",\"_resourceid\":\"115653853863124476885\",\"_docid\":\"115653853863124476885\",\"_entity\":\"true\",\"_entitytype\":\"serviceaccounts\",\"firstdiscoveredon\":\"2022-09-1915:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-09-1910:11:00+0000\"}",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

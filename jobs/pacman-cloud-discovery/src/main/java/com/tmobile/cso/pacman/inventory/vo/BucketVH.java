@@ -56,6 +56,8 @@ public class BucketVH {
     /** The log file prefix. */
     String logFilePrefix;
 
+    /** The bucket policy. */
+    String bucketPolicy;
 
 	/**
 	 * Instantiates a new bucket VH.
@@ -65,7 +67,7 @@ public class BucketVH {
 	 * @param versionConfig the version config
 	 * @param tags the tags
 	 */
-	public BucketVH(Bucket bucket,String location,BucketVersioningConfiguration versionConfig, List<Tag> tags, String bucketEncryp, boolean websiteConfiguration,BucketLoggingConfiguration bucketLoggingConfiguration){
+	public BucketVH(Bucket bucket,String location,BucketVersioningConfiguration versionConfig, List<Tag> tags, String bucketEncryp, boolean websiteConfiguration,BucketLoggingConfiguration bucketLoggingConfiguration,String bucketPolicy){
 		this.bucket = bucket;
 		this.location = location;
 		this.versionStatus = versionConfig==null?"":versionConfig.getStatus();
@@ -76,6 +78,6 @@ public class BucketVH {
         this.isLoggingEnabled = bucketLoggingConfiguration==null?null:bucketLoggingConfiguration.isLoggingEnabled();
         this.destinationBucketName = bucketLoggingConfiguration==null?"":bucketLoggingConfiguration.getDestinationBucketName();
         this.logFilePrefix = bucketLoggingConfiguration==null?"":bucketLoggingConfiguration.getLogFilePrefix();
-
+        this.bucketPolicy = bucketPolicy;
 	}
 }

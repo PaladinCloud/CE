@@ -20,7 +20,6 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Input() searchQuery = "";
   @Input() showSearchBar;
   @Input() showAddRemoveCol;
-  @Input() showTitle;
   @Input() tableTitle;
   @Input() imageDataMap = {};
   tableErrorMessage = '';
@@ -30,6 +29,7 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Output() whitelistColumnsChanged = new EventEmitter<any>();
   @Output() searchInColumnsChanged = new EventEmitter<any>();
   @Output() nextPageCalled = new EventEmitter<any>();
+  @Output() downloadClicked = new EventEmitter<any>();
 
   mainDataSource;
   dataSource;
@@ -143,6 +143,7 @@ export class TableComponent implements OnInit,AfterViewInit {
     if (event.keyCode === 13 || searchTxt=='') {
       this.tableErrorMessage = ''
       this.customFilter(searchTxt);
+      this.customSort(this.headerColName, this.direction);
       this.searchCalledEventEmitter.emit(searchTxt);
     }
   }
@@ -179,5 +180,9 @@ export class TableComponent implements OnInit,AfterViewInit {
       if(this.searchQuery && this.showSearchBar) this.customFilter(this.searchQuery);
       if(this.headerColName) this.customSort(this.headerColName, this.direction);
     }
-}
+  }
+
+  download(){
+    this.downloadClicked.emit();
+  }
 }

@@ -179,24 +179,32 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             Map<String, Object> distribution = new HashMap<>();
             // get Rules mapped to targetType
             String targetTypes = repository.getTargetTypeForAG(assetGroup, domain);
+            logger.info("Compliance API >> Fetched target types from repository: {}", targetTypes);
             List<Object> rules = repository.getRuleIds(targetTypes);
+            logger.info("Compliance API >> Fetched rules from repository: {}", rules);
             // get issue count
             Long totalIssues = getIssuesCount(assetGroup, null, domain);
+            logger.info("Compliance API >> Fetched total issues count from repository: {}", totalIssues);
             // get severity distribution
             Map<String, Long> ruleSeverityDistribution = repository.getRulesDistribution(assetGroup, domain, rules,
                     SEVERITY);
+            logger.info("Compliance API >> Fetched ruleSeverityDistribution from repository: {}", ruleSeverityDistribution);
             // get category distribution
             Map<String, Long> ruleCategoryDistribution = repository.getRulesDistribution(assetGroup, domain, rules,
                     RULE_CATEGORY);
+            logger.info("Compliance API >> Fetched ruleCategoryDistribution from repository: {}", ruleCategoryDistribution);
             // get rule category distribution
             Map<String, Object> ruleCategoryPercentage = repository.getRuleCategoryPercentage(ruleCategoryDistribution,
                     totalIssues);
+            logger.info("Compliance API >> Fetched ruleCategoryPercentage from repository: {}", ruleCategoryPercentage);
             distribution.put("distribution_by_severity", ruleSeverityDistribution);
             distribution.put("distribution_ruleCategory", ruleCategoryDistribution);
             distribution.put("ruleCategory_percentage", ruleCategoryPercentage);
             distribution.put("total_issues", totalIssues);
             return distribution;
         } catch (DataException e) {
+            logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
+            logger.error("Compliance API >> DataException in getting distribution",e);
             throw new ServiceException(e);
         }
     }
@@ -888,12 +896,12 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             throws ServiceException {
         List<Map<String, Object>> ruleSevCatDetails = new ArrayList<>();
         for (Map<String, Object> ruleDetail : ruleDetails) {
-            logger.info("Fetching details for rule: {}", ruleDetail);
+            logger.debug("Fetching details for rule: {}", ruleDetail);
             JsonParser parser = new JsonParser();
             List<Map<String, String>> paramsList;
             JsonObject ruleParamsJson;
             Map<String, Object> ruleSevCatDetail = new HashMap<>();
-            logger.info("Rule params for the rule: {}", (String) ruleDetail.get(RULE_PARAMS));
+            logger.debug("Rule params for the rule: {}", (String) ruleDetail.get(RULE_PARAMS));
             ruleParamsJson = (JsonObject) parser.parse(ruleDetail.get(RULE_PARAMS).toString());
             paramsList = new Gson().fromJson(ruleParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
             }.getType());

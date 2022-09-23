@@ -85,6 +85,7 @@ public class KmsKeyInventoryCollector {
             kmsKeyVH.setImportOnly(cryptoKey.getImportOnly());
             kmsKeyVH.setLabelsCount(cryptoKey.getLabelsCount());
             kmsKeyVH.setLabels(cryptoKey.getLabelsMap());
+            kmsKeyVH.setRotationPeriod(cryptoKey.getRotationPeriod().getSeconds());
             setIamPolicies(kmsKeyVH, kmsKeyClient.getIamPolicy(cryptoKey.getName()));
             kmsKeyList.add(kmsKeyVH);
         }

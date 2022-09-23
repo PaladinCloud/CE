@@ -85,7 +85,7 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
     const queryParams = {
       'ag': this.assetGroupName
     };
-     if (queryParams['ag'] !== undefined) {
+     if (this.assetGroupName) {
       this.assetTileService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
         response => {
           this.assetCount = response[0].assetcount;

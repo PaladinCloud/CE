@@ -35,12 +35,12 @@
         <div class="policy-knowledgebase-content">
             <div [class.loader]="knowledgebaseData.length==0 && errorMessage==''"></div>
             <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
-            <app-table (rowSelectEventEmitter)="goToDetails($event)" *ngIf="knowledgebaseData.length>0" 
+            <app-table (rowSelectEventEmitter)="goToDetails($event)" *ngIf="knowledgebaseData.length>0 && errorMessage==''" 
                 [data]="knowledgebaseData" [columnWidths]="columnWidths"
                 [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                 [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchPassed"
                 [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns">
+                (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick()">
             </app-table>
         </div>
     </div>

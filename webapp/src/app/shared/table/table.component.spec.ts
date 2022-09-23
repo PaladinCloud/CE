@@ -25,7 +25,6 @@ describe('TableComponent', () => {
   beforeEach(async() => {
     fixture = TestBed.createComponent(TableComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
 
     component.data = [
       {col1:"row1 col1", col2:"row1 col2"},
@@ -34,15 +33,15 @@ describe('TableComponent', () => {
 
     component.displayedColumns = ["col1", "col2"];
 
-    component.columnNamesMap = {col1: "col1", col2: "col2"};
-
     component.columnWidths = {col1:2, col2:1};
 
     component.whiteListColumns = ["col1", "col2"];
 
-    component.ngOnInit();
+    component.showAddRemoveCol = true;
+    component.showSearchBar = true;
+    component.tableTitle = "Title";
 
-    fixture.detectChanges();
+    component.ngOnInit();
 
     component.ngAfterViewInit();
 
@@ -65,65 +64,76 @@ describe('TableComponent', () => {
   });
 
   it('check the length of drop down', async () => {
-    const trigger = fixture.debugElement.queryAll(By.css('.mat-select-trigger'))[1].nativeElement;
+    const trigger = fixture.debugElement.queryAll(By.css('.mat-select-trigger'))[1].nativeElement;    
     trigger.click();
     fixture.detectChanges();
       await fixture.whenStable().then(() => {
-          const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-text'));
-          expect(inquiryOptions.length).toEqual(3);
+          const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-text'));          
+          expect(inquiryOptions.length).toEqual(4);
       });
   });
 
   it("should call optionClick() when an option is clicked from add-remove columns list", fakeAsync(() => {
     spyOn(component, 'optionClick');
 
-    let colButton = fixture.debugElement.nativeElement.querySelectorAll(".mat-select-arrow")[1];
+    let colButton = fixture.debugElement.queryAll(By.css('.mat-select-trigger'))[1].nativeElement;
     colButton.click();
-    fixture.detectChanges();
-    const trigger = fixture.debugElement.queryAll(By.css('.mat-select-trigger'))[1].nativeElement;
-    trigger.click();
     fixture.detectChanges();
     tick();
     const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-text'));
-    let optionSelected = inquiryOptions[1];
+    let optionSelected = inquiryOptions[2];
     optionSelected.nativeElement.click();
     fixture.detectChanges();
     tick();
     expect(component.optionClick).toHaveBeenCalled();
   }));
+  
 
-  it("testing optionClick", fakeAsync(() => {
-    let colButton = fixture.debugElement.nativeElement.querySelectorAll(".mat-select-arrow")[1];
+  it("tests optionClick", fakeAsync(() => {
+    let colButton = fixture.debugElement.queryAll(By.css('.mat-select-trigger'))[1].nativeElement;   
     colButton.click();
     fixture.detectChanges();
     tick();
     const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-text'));
-    let optionSelected = inquiryOptions[1];
+    let optionSelected = inquiryOptions[2];
     optionSelected.nativeElement.click();
     fixture.detectChanges();
     expect(component.whiteListColumns).not.toContain("col1");
   }))
 
-  it("testing selectAll", fakeAsync(() => {
+  it("tests selectAll", fakeAsync(() => {
     const prevAllSelectedVal = component.allSelected;
     let colButton = fixture.debugElement.nativeElement.querySelectorAll(".mat-select-arrow")[1];
     colButton.click();
     fixture.detectChanges();
     tick();
     const inquiryOptions = fixture.debugElement.queryAll(By.css('.mat-option-text'));
-    let selectAllOption = inquiryOptions[0];
+    let selectAllOption = inquiryOptions[1];
     selectAllOption.nativeElement.click();
     fixture.detectChanges();
     expect(component.whiteListColumns).toEqual([]);
     expect(component.allSelected).toEqual(!prevAllSelectedVal);
   }));
 
-  it("testing search", () => {
+  it("tests search", () => {
     const inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
     inputElement.value = "row1";
-    inputElement.dispatchEvent(new Event('keyup'));
+    inputElement.dispatchEvent(new KeyboardEvent('keyup', {'keyCode': 13}));
     fixture.detectChanges();
     expect(component.dataSource.data.length).toBe(1);
+  })
+
+  it("tests sort", () => {
+    component.headerColName = "col1";
+    component.direction = "asc";
+
+    fixture.detectChanges();
+
+    let colButton = fixture.debugElement.query(By.css('.mat-sort-header-arrow')).nativeElement;   
+    colButton.click();
+    fixture.detectChanges();
+
+    expect(component.direction).toBe("desc");
   })
 
 });
