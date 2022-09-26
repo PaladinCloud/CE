@@ -109,3 +109,7 @@ AWS_ACCOUNT_DETAILS = [
         'accountName': "clientAccount2"
     }
 ]
+
+#RDS username and password
+DB_USERNAME = "paladin" 
+DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
