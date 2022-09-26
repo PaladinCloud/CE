@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.google.api.services.cloudresourcemanager.CloudResourceManager;
+import com.google.api.services.cloudresourcemanager.model.GetIamPolicyRequest;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.model.Binding;
 import com.google.api.services.iam.v1.model.Policy;
@@ -16,10 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ServiceAccountInventoryCollector {
@@ -31,6 +30,8 @@ public class ServiceAccountInventoryCollector {
 
        Iam.Projects.ServiceAccounts.List serviceAccountList= gcpCredentialsProvider.getIamService().projects().serviceAccounts().list("projects/"+project.getProjectId());
         List<ServiceAccountVH> serviceAccountVHList = new ArrayList<>();
+
+        Map<String,ServiceAccountVH> serviceAccountMap = new HashMap<>();
        for (ServiceAccount serviceAccount:serviceAccountList.execute().getAccounts()){
 
            ServiceAccountVH serviceAccountVH=new ServiceAccountVH();
@@ -44,12 +45,34 @@ public class ServiceAccountInventoryCollector {
            logger.info("Serice account inventory collector-> {}",serviceAccount.getName());
            getServiceAccountKeys(serviceAccount.getUniqueId(),serviceAccountVH,project);
            getServiceAccountMemberRoles(serviceAccount,serviceAccountVH);
+           serviceAccountMap.put(serviceAccount.getName(), serviceAccountVH);
+
+           //Method to fetch the role and membership of accounts of project
+           fetchMembership(serviceAccountMap,project.getProjectId());
 
            serviceAccountVHList.add(serviceAccountVH);
-       }
-    return serviceAccountVHList;
-    }
 
+       }
+       return serviceAccountVHList;
+    }
+    private void fetchMembership(Map<String, ServiceAccountVH> serviceAccount, String projectId){
+        CloudResourceManager.Projects.GetIamPolicy iamPolicy = null;
+        try {
+            iamPolicy = gcpCredentialsProvider.getCloudResourceManager().projects().getIamPolicy(projectId, new GetIamPolicyRequest());
+            List<com.google.api.services.cloudresourcemanager.model.Binding> binds = iamPolicy.execute().getBindings();
+            if(binds!=null) {
+                for (com.google.api.services.cloudresourcemanager.model.Binding binding : binds) {
+                    //TODO: process these bindings
+                    logger.info("Binding role: {}",binding.getRole());
+                    logger.info("Binding members: {}",binding.getMembers());
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private void getServiceAccountMemberRoles(ServiceAccount serviceAccount, ServiceAccountVH serviceAccountVH)  {
         Iam.Projects.ServiceAccounts.GetIamPolicy requestPolicy =
                 null;
