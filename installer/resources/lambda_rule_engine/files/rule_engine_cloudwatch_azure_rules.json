@@ -2726,5 +2726,27 @@
     "modifiedDate": "2022-09-15",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_transparent_data_encryption_for_sql_db",
+    "ruleUUID": "Enable_transparent_data_encryption_for_sql_db",
+    "policyId": "Enable_transparent_data_encryption_for_sql_db",
+    "ruleName": "Enable transparent data encryption for sql database ",
+    "targetType": "sqldatabase",
+    "assetGroup": "azure",
+    "alexaKeyword": "Enable_transparent_data_encryption_for_sql_db",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-transparent-data-encryption\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enable transparent data encryption for sql database\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_transparent_data_encryption_for_sql_db\",\"autofix\":false,\"alexaKeyword\":\"Enable_transparent_data_encryption_for_sql_db\",\"ruleRestUrl\":\"\",\"targetType\":\"sqldatabase\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_transparent_data_encryption_for_sql_db\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Enable_transparent_data_encryption_for_sql_db\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_transparent_data_encryption_for_sql_db",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable transparent data encryption for sql database ",
+    "createdDate": "2022-05-10",
+    "modifiedDate": "2022-05-10",
+    "severity": "medium",
+    "category": "security"
   }
 ]
