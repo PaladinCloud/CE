@@ -43,20 +43,25 @@
                     </mat-form-field>
                     <span> Columns </span>
                 </div>
-                <div class="filter-wrapper" (click)="showFilterModal = !showFilterModal">
+                <div class="filter-wrapper" (click)="showFilterModal = !showFilterModal; testFilterArr()">
                     <img src="/assets/icons/filter-icon.svg" alt="">
                     <span>Filter</span>
                 </div>
                 <div class="filter-modal-container" *ngIf="showFilterModal">
                     <div class="filter-modal-wrapper">
-                        <div class="filters-wrapper" *ngFor="let filter of filterArr; let i=index">
+                        <div class="filters-wrapper" *ngFor="let filter of filteredArray; let i=index">
                             <div class="filter flex flex-row">
-                                <app-dropdown [items]="whiteListColumns"
+                                <app-dropdown [items]="filterTypeLabels"
+                                    (selected)='onSelectFilterType($event, i)'
+                                    [selectedItem]="filter.keyDisplayValue"
+                                    [placeholder]="'Select Filter Type'">
+                                </app-dropdown>
+                                <app-dropdown [items]="filterTagLabels[filter.keyDisplayValue]?filterTagLabels[filter.keyDisplayValue]:[]"
                                     (selected)='onSelectFilter($event, i)'
-                                    [selectedItem]="filter.filter"
+                                    [selectedItem]="filter.filterValue"
                                     [placeholder]="'Select Filter'">
                                 </app-dropdown>
-                                <input style="width:100%; border:1px solid var(--border-100)" matInput [(ngModel)]="filterArr[i].filterText" (keyup)="changeFilterText($event, i)" type="text">
+                                <!-- <input style="width:100%; border:1px solid var(--border-100)" matInput [(ngModel)]="filterArr[i].filterText" (keyup)="changeFilterText($event, i)" type="text"> -->
                                 <img (click)="removeFilter(i)" style="cursor: pointer;" src="/assets/icons/x-icon.svg" alt="">
                             </div>
                         </div>

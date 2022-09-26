@@ -1,7 +1,7 @@
 <div class="dropdown-wrapper">
     <mat-form-field>
         <mat-label>{{placeholder}}</mat-label>
-        <mat-select disableOptionCentering (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption">
+        <mat-select disableOptionCentering (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedItem">
             <mat-option *ngFor="let item of itemList" [value]="item">
                 {{item}}
             </mat-option>

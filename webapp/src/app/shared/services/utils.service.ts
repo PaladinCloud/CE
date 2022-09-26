@@ -143,7 +143,9 @@ export class UtilsService {
   arrayToObject(array, keyLabel = 'key', valueLabel = 'value') {
     const object = {};
     _.each(array, (element, index, list) => {
-      object[element[keyLabel]] = element[valueLabel];
+      if(element[keyLabel]){
+        object[element[keyLabel]] = element[valueLabel];
+      }
     });
     return object;
   }

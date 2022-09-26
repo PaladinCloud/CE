@@ -1,9 +1,10 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterContentChecked, AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, DoCheck, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import * as _ from 'lodash';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 
 @Component({
@@ -24,7 +25,7 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
-  @Input() filterTagLabels= [];
+  @Input() filterTagLabels= {};
   tableErrorMessage = '';
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
@@ -35,8 +36,9 @@ export class TableComponent implements OnInit,AfterViewInit {
   @Output() downloadClicked = new EventEmitter<any>();
   @Output() selectedFilterType = new EventEmitter<any>();
   @Output() selectedFilter = new EventEmitter<any>();
-  @Output() deleteAllFilters = new EventEmitter<any>();
-
+  @Output() deleteFilters = new EventEmitter<any>();
+  @Output() testFilteredArray = new EventEmitter<any>();
+  
   mainDataSource;
   dataSource;
   
@@ -55,9 +57,8 @@ export class TableComponent implements OnInit,AfterViewInit {
   isWindowExpanded = true;
 
   showFilterModal = false;
-  filter;
-  filterBtnClicked=0;
-  @Input() filterArr;
+  @Input() filteredArray;
+  @Input() filterTypeOptions;
   
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
@@ -69,7 +70,7 @@ export class TableComponent implements OnInit,AfterViewInit {
     }
 
   ngOnInit(): void {
-    console.log("FilterArr: ",this.filterArr);
+    console.log("OnInit: ", this.filteredArray);
     
     this.mainDataSource = new MatTableDataSource(this.data);
     this.dataSource = new MatTableDataSource(this.data);
@@ -127,6 +128,12 @@ export class TableComponent implements OnInit,AfterViewInit {
   handleSearchInColumnsChange(){
     this.searchInColumnsChanged.emit(this.searchInColumns.value);
   }
+
+  testFilterArr(){
+    console.log("table testFilteredArray", this.filteredArray);
+    
+    this.testFilteredArray.emit();
+  }
   
   toggleAllSelection() {    
     this.whiteListColumns = [];
@@ -150,7 +157,7 @@ export class TableComponent implements OnInit,AfterViewInit {
     this.rowSelectEventEmitter.emit(row);
   }
 
-   optionClick() {
+  optionClick() {
     this.whiteListColumns = [];
     let newStatus = true;
     this.select.options.forEach((item: MatOption) => {
@@ -172,41 +179,89 @@ export class TableComponent implements OnInit,AfterViewInit {
     this.whitelistColumnsChanged.emit(this.whiteListColumns);
   }
 
-  onSelectFilter(e, i){    
-    // console.log(e);
-    this.filterArr[i].filter = e;
+  onSelectFilterType(e, i){  
+    let key = _.find(this.filterTypeOptions, {
+        optionName: e,
+      })["optionValue"];
+    this.filteredArray[i].compareKey = key;
+    this.filteredArray[i].filterkey = key;
+    this.filteredArray[i].key = e;
+    this.filteredArray[i].keyDisplayValue = e;  
     this.selectedFilterType.emit(e);
   }
 
-  changeFilterText(e, i){
-    if (e.keyCode === 13) {      
-      this.selectedFilter.emit(this.filterArr[i].filterText);
+  onSelectFilter(e, i){
+    let filterIndex = _.findIndex(this.filteredArray, (el) => {
+      return (
+        el["keyDisplayValue"] ===
+        this.filteredArray[i].keyDisplayValue
+      );
+    });
+    let currIdx = i;
+    
+    if(filterIndex>=0 && filterIndex!=i){
+      if(filterIndex>i){
+        //remove filterIndex
+        this.filteredArray.splice(filterIndex, 1);
+        currIdx = i;
+      }else{
+        //remove i
+        this.filteredArray.splice(i, 1);
+        currIdx = filterIndex;
+      }
     }
+    
+    this.filteredArray[currIdx].filterValue = e;  
+    this.filteredArray[currIdx].value = e;  
+
+    let event = {
+      index: currIdx,
+      filterKeyDisplayValue: this.filteredArray[currIdx].keyDisplayValue,
+      filterValue: this.filteredArray[currIdx].filterValue
+    }
+
+    // this.filteredArray.splice(i, 1);
+    // if (e.keyCode === 13) { 
+      this.selectedFilter.emit(event);
+    // }    
   }
 
   addFilter(){
     let obj = {
-      filter: "",
-      filterText: ""
+      key: "",
+      value: "",
+      filterkey: "",
+      compareKey: "",
+      keyDisplayValue: "",
+      filterValue: ""
     };
-    this.filterArr.push(obj);
+    this.filteredArray.push(obj);
   }
 
   removeFilter(i){
-    // console.log("Filter removed: "+i);
-    this.filterArr.splice(i, 1);
+    // this.filterArr.splice(i, 1);
+    let event = {
+      index: i,
+    }
+    this.deleteFilters.emit(event);
+  }
+
+  removeAllFilters(){
+    let event = {
+      clearAll: true,
+    }
+    this.deleteFilters.emit(event);
   }
 
   customFilter(){
 
     this.tableErrorMessage = '';
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
-      for(const i in this.filterArr){
-        const filterObj = this.filterArr[i];
+      for(const i in this.filteredArray){
+        const filterObj = this.filteredArray[i];
         
         const col = filterObj.filter;
         const searchTxt = filterObj.filterText;
-        console.log(String(item[col]).toLowerCase().match(searchTxt.toLowerCase()));
         
         if(!String(item[col]).toLowerCase().match(searchTxt.toLowerCase())){
           return false;
@@ -298,9 +353,5 @@ export class TableComponent implements OnInit,AfterViewInit {
   changeFilterTags(filterName) {
     this.selectedFilter.emit(filterName);
     // this.trigger.closeMenu();
-  }
-
-  deleteFilters(event) {
-    this.deleteAllFilters.emit(event);
   }
 }

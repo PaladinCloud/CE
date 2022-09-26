@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { IssueFilterService } from "../../../services/issue-filter.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
 import * as _ from "lodash";
@@ -29,8 +29,8 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { PermissionGuardService } from "../../../../core/services/permission-guard.service";
-import { TableStateService } from "src/app/core/services/table-state-service.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { DataCacheService } from "src/app/core/services/data-cache.service";
 
 @Component({
   selector: "app-issue-listing",
@@ -63,13 +63,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   searchTxt = "";
   popRows: any = ["Download Data"];
   filterTypeOptions: any = [];
-  filterTagOptions: any = [];
+  filterTagOptions: any = {};
   currentFilterType;
   filterTypeLabels = [];
   cbArr = [];
   cbModel = [];
   cbObj = {};
-  filterTagLabels = [];
+  filterTagLabels = {};
   filters: any = [];
   searchCriteria: any;
   filterText: any;
@@ -150,6 +150,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   whiteListColumns;
   displayedColumns;
   tableData = [];
+  selectedFiltersMap = {};
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -166,9 +167,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService,
-    private tableStateService: TableStateService
+    private dataCacheService: DataCacheService
   ) {
-    this.state = this.tableStateService.getState("issueListing") || {};
+    this.state = this.dataCacheService.get("issueListing") || {};
       
     this.headerColName = this.state.headerColName || 'Policy Name';
     this.direction = this.state.direction || 'asc';
@@ -207,6 +208,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.adminAccess = this.permissions.checkAdminPermission();
   }
 
+  testFilteredArray(){
+    console.log("issue listing testFilteredArray: ", this.filters);
+    
+  }
+
   handlePaginatorSizeSelection(event) {
     this.paginatorSize = event;
     this.getData();
@@ -223,7 +229,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   storeState(){
-    this.tableStateService.setState(this.state, "issueListing");
+    this.dataCacheService.set(this.state, "issueListing");
   }
 
   /*
@@ -256,7 +262,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
   getUpdatedUrl() {
-    let updatedQueryParams = {};    
+    let updatedQueryParams = {};   
+    console.log("FILTERS from guu", this.filters);
+     
       this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
@@ -307,6 +315,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    * this functin passes query params to filter component to show filter
    */
   getFilterArray() {
+    console.log("AM I CALLED?");
+    
     try {
       const localFilters = []; // <<-- this filter is used to store data for filter
       // let labelsKey = Object.keys(this.labels);
@@ -322,22 +332,43 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const filterValues = dataArray;
       const refactoredService = this.refactorFieldsService;
-      const formattedFilters = dataArray.map(function (data) {
-        data.name =
-          refactoredService.getDisplayNameForAKey(data.name) || data.name;
-        return data;
-      });
+      const formattedFilters = dataArray
+      // .map(function (data) {
+      //   data.name =
+      //     refactoredService.getDisplayNameForAKey(data.name) || data.name;
+      //   return data;
+      // });
 
-      for (let i = 0; i < formattedFilters.length; i++) {
-        const eachObj = {
-          key: formattedFilters[i].name, // <-- displayKey-- Resource Type
-          value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-          filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-          compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-        };
-        localFilters.push(eachObj);
-      }
-      this.filters = localFilters;
+      this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          { filterId: 1, domain: this.selectedDomain },
+          environment.issueFilter.url,
+          environment.issueFilter.method
+        )
+        .subscribe((response) => {
+          this.filterTypeOptions = response[0].response;
+          let filterNamesMap = Object.assign({}, ...this.filterTypeOptions.map((x) => ({[x.optionValue]: x.optionName})));          
+          for (let i = 0; i < formattedFilters.length; i++) {
+          this.changeFilterType(filterNamesMap[formattedFilters[i].name]).subscribe(data => {
+            let filterTagOptions = data;
+            let filterValue = _.find(filterTagOptions, {
+              id: this.filterText[filterObjKeys[i]],
+            })["name"];
+            const eachObj = {
+              key: formattedFilters[i].name, // <-- displayKey-- Resource Type
+              value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
+              filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
+              compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+              keyDisplayValue: filterNamesMap[formattedFilters[i].name],
+              filterValue: filterValue?filterValue:this.filterText[filterObjKeys[i]],
+            };
+            localFilters.push(eachObj);
+            
+            this.filters = localFilters; 
+            // console.log("Filters: ", this.filters);
+          })  
+        }
+      })   
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -363,7 +394,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
 
-          console.log(this.filterTypeOptions, "filterTypeOptions");
           
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
@@ -379,16 +409,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
-    console.log("VALUE: ", value);
-    
+    var subject = new Subject<any>();
     this.filterErrorMessage = '';
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
-      console.log("CURRENT FILTER TYE: ", this.currentFilterType);
-      
-      this.issueFilterSubscription = this.issueFilterService
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        this.issueFilterSubscription = this.issueFilterService
         .getFilters(
           {
             ag: this.selectedAssetGroup,
@@ -400,41 +428,62 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           "GET"
         )
         .subscribe((response) => {
-          this.filterTagOptions = response[0].response;
-          this.filterTagLabels = _.map(response[0].response, "name");
-          this.filterTagLabels.sort((a,b)=>a.localeCompare(b));
-          if(this.filterTagLabels.length==0) this.filterErrorMessage = 'noDataAvailable';
+          this.filterTagOptions[value] = response[0].response;
+          this.filterTagLabels[value] = _.map(response[0].response, "name");
+          this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
+          if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
+          subject.next(this.filterTagOptions[value]);
         });
+      }
     } catch (error) {
       this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+    return subject.asObservable();
   }
 
-  changeFilterTags(value: String) {
-    console.log(value);
+  changeFilterTags(event) {
+    // console.log(event);
+    
+    // let filterType:any = _.find(this.filterTypeOptions, {
+    //   optionName: event.filterKeyDisplayValue,
+    // });
+    // event.filterKeyDisplayValue;
+    let filterValue = event.filterValue;
+
+    // this.selectedFiltersMap[event.filterKeyDisplayValue] = filterValue;    
     
     try {
-      if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions, { name: value });
-        console.log(filterTag);
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            key: this.currentFilterType.optionName,
-            value: filterTag["id"],
-            filterkey: this.currentFilterType.optionValue.trim(),
-            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
-          },
-          (el) => {
-            return (
-              el.compareKey ===
-              this.currentFilterType.optionValue.toLowerCase().trim()
-            );
-          }
-        );
-      }
+      // if (filterType) {
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: filterValue });
+        this.filters[event.index].value = filterTag["id"];
+        // console.log(this.filterTagOptions[event.filterKeyDisplayValue]);
+        
+        // console.log(filterTag);
+        // console.log("Before: ", this.filters);
+        
+        
+        // this.utils.addOrReplaceElement(
+        //   this.filters,
+        //   {
+        //     key: filterType.optionName,
+        //     value: filterTag["id"],
+        //     filterkey: filterType.optionValue.trim(),
+        //     compareKey: filterType.optionValue.toLowerCase().trim(),
+        //     keyDisplayValue: event.filterKeyDisplayValue,
+        //     filterValue: filterValue,
+        //   },
+        //   (el) => {
+        //     return (
+        //       el.compareKey ===
+        //       filterType.optionValue.toLowerCase().trim()
+        //     );
+        //   }
+        // );
+        // console.log("After: ", this.filters);
+      // }
+      
       this.getUpdatedUrl();
       this.utils.clickClearDropdown();
       this.updateComponent();
@@ -504,7 +553,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         searchtext: this.searchTxt,
         size: this.paginatorSize,
       };
-      console.log(payload);
       const issueListingUrl = environment.issueListing.url;
       const issueListingMethod = environment.issueListing.method;
       this.errorValue = 0;
@@ -900,8 +948,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       //   }
       // } else {
         this.bucketNumber++;
-        // console.log(this.tableData.length);
-        // console.log(this.totalRows);
         
         if(this.tableData.length < this.totalRows) this.getData();
       // }
@@ -915,7 +961,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   callNewSearch(searchVal){    
     this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
-    this.updateComponent();  
+    // this.getData();  
+    this.updateComponent();
     this.getUpdatedUrl();
   }
 
