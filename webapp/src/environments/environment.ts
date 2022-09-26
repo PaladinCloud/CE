@@ -205,6 +205,10 @@ export const environment = {
         url: '{{baseUrl}}/asset/v1/assetgroup',
         method: 'GET'
     },
+    assetTrend: {
+        url: '{{baseUrl}}/asset/v1/trend/assetcount',
+        method: 'GET'
+    },
     resourceCount: {
         url: '{{baseUrl}}/asset/v1/count',
         method: 'GET'

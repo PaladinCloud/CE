@@ -119,6 +119,7 @@ import { PolicyViolationSummaryService } from "../../services/policy-violation-s
 import { PacmanIssuesService } from "../../services/pacman-issues.service";
 import { ProgressBarChartComponent } from "./progress-bar-chart/progress-bar-chart.component";
 import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-bar-chart.component";
+import { MultilineZoomGraphComponent } from "../../secondary-components/multiline-zoom-graph/multiline-zoom-graph.component";
 
 @NgModule({
   imports: [
@@ -140,6 +141,7 @@ import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-b
   declarations: [
     ProgressBarChartComponent,
     HorizontalBarChartComponent,
+    MultilineZoomGraphComponent,
     ComplianceIssuesComponent,
     PacmanIssuesComponent,
     MultilineBrushZoomComponent,

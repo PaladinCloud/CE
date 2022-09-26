@@ -13,6 +13,7 @@ import { UtilsService } from "../../../../shared/services/utils.service";
 export class CardComponent implements OnInit {
   @Input() card: any;
   @Input() policyData: any;
+  @Input() totalAssetsCountData = [];
 
   errorType = '';
   widgetWidth = 225;
@@ -29,6 +30,7 @@ export class CardComponent implements OnInit {
   @Input() complianceDataError:string = '';
   @Input() assetsCountDataError: string = '';
   @Input() policyDataError: string = '';
+  @Input() totalAssetsCountDataError: string = '';
 
   private agAndDomain = {};
 

@@ -46,12 +46,13 @@ mat-card-content {
   align-items: flex-start;
   padding: 20px 24px 0px 24px;
   width: 100%;
-  height: 286px;
+  height: 100%;
   margin: 0;
   background: var(--background-white);
 }
 
 mat-card-actions {
+  margin-bottom: 0 !important;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -88,4 +89,21 @@ mat-card-actions img {
   margin-left: 9px;
   height: 17px;
   width: 10px;
+}
+
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .horizontal .tick line{
+    stroke-dasharray: 3;
+    stroke: var(--gamma-grey-600);
+}
+
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .vertical .tick line{
+    display: none;
+}
+
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .focus .axis .domain{
+  display: none;
+}
+
+.graph-dropdown{
+  margin-left: auto;
 }

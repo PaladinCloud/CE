@@ -10,7 +10,11 @@
   flex: none;
   order: 0;
   flex-grow: 1;
+  /* align-items: start; */
+  gap: 8px;
+  padding-bottom: 4px;
 }
+
 .label-percent {
   color: var(--text-low-emphasis);
   flex: none;

@@ -3,17 +3,55 @@
   height: 100%;
   min-width: 160px;
   border-radius: 8px;
+  background: var(--background-white);
 }
 
 .violations-card {
-  box-sizing: border-box;
+  /* box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start; */
   justify-content: center;
   padding: 20px 16px;
-  background: var(--background-white);
   border-radius: 8px;
+}
+
+.violations-card-wrapper{
+  gap: 16px;
+}
+
+.violations-content-container{
+  gap: 16px;
+}
+
+.violations-content .violations-title{
+  color: var(--text-high-emphasis);
+  font: var(--text-body-2);
+}
+
+.violations-content .violations-count{
+  color: var(--primary-400);
+  font: var(--text-headline-3);
+  cursor: pointer;
+}
+
+.violations-content .violations-count img{
+  filter: invert(46%) sepia(3%) saturate(1769%) hue-rotate(159deg) brightness(96%) contrast(85%);
+}
+
+.violations-details-wrapper .name{
+  font: var(--text-caption);
+  font-family: var(--text-light-font-family);
+  color: var(--text-medium-emphasis);
+}
+
+.violations-details-wrapper .count{
+  font: var(--text-headline-6);
+  color: var(--text-medium-emphasis);
+}
+
+.violations-details-wrapper{
+  justify-content: space-between;
 }
 
 .violations-card mat-card-title-group {
