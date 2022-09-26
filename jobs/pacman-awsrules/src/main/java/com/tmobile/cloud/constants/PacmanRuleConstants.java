@@ -554,5 +554,5 @@ public class PacmanRuleConstants {
    public static final  String USER_MANAGED="USER_MANAGED";
     public static final String NETWORK_WATCHER ="networkWatcher";
     public static final String RETENTION_IN_DAYS="retentionInDays";
-
+    public static final String AUTO_MINOR_VERSION_UPGRADE = "autominorversionupgrade";
 }
