@@ -111,6 +111,28 @@ public interface FilterService {
      * @throws ServiceException the service exception
      */
     public List<Map<String, Object>> getTargetTypesForAssetGroup(
-            String assetGroup, String domain) throws ServiceException;
+                    String assetGroup, String domain) throws ServiceException;
+            
+        /**
+         * Gets the severities for asset group.
+         *
+         * @param assetGroup the asset group
+         * @param domain the domain
+         * @return List<Map<String, Object>>
+         * @throws ServiceException the service exception
+         */
+        public List<Map<String, Object>> getSeveritiesForAssetGroup(
+                        String assetGroup, String domain) throws ServiceException;
+                
+         /**
+         * Gets the categories for asset group.
+         *
+         * @param assetGroup the asset group
+         * @param domain the domain
+         * @return List<Map<String, Object>>
+         * @throws ServiceException the service exception
+         */
+        public List<Map<String, Object>> getCategoriesForAssetGroup(
+                        String assetGroup, String domain) throws ServiceException;
 
 }
