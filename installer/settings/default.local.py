@@ -24,6 +24,10 @@ RDS_INSTANCE_TYPE = "db.t3.medium"
 # Possibble values m5.xlarge.elasticsearch  etc
 ES_INSTANCE_TYPE = "m5.large.elasticsearch"
 ES_VOLUME_SIZE = 20
+ES_NODE_COUNT = 3
+ES_MASTER_INSTANCE_TYPE = "m5.large.elasticsearch"
+ES_DEDICATED_MASTER_ENABLED = True
+ES_MASTER_NODE_COUNT = 3
 
 # ALB related configurations
 # False if ALB need to be public(internet facing) else True

@@ -26,6 +26,8 @@ class ElasticsearchDomainResource(TerraformResource):
                 'instance_count': {'required': True},
                 'dedicated_master_enabled': {'required': True},
                 'zone_awareness_enabled': {'required': True},
+                'dedicated_master_count': {'required': True},
+                'dedicated_master_type': {'required': True},
             }
         },
         'ebs_options': {
