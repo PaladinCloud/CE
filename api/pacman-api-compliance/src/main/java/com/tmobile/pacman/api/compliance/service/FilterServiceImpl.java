@@ -317,4 +317,78 @@ public class FilterServiceImpl implements FilterService, Constants {
 
     }
 
+    /**
+         * Gets the severities for asset group.
+         *
+         * @param assetGroup the asset group
+         * @param domain the domain
+         * @return List<Map<String, Object>>
+         * @throws ServiceException the service exception
+         */
+        public List<Map<String, Object>> getSeveritiesForAssetGroup(
+                String assetGroup, String domain) throws ServiceException {
+
+            Map<String, Long> severityMap;
+
+            List<Map<String, Object>> severities = new ArrayList<>();
+            try {
+                severityMap = repository.getSeveritiesFromES(assetGroup);
+            } catch (DataException e) {
+                throw new ServiceException(e);
+            }
+            if (severityMap.isEmpty()) {
+                throw new ServiceException(NO_DATA_FOUND);
+            }
+            severityMap.entrySet().parallelStream().forEach(severity -> {
+                Map<String, Object> severity_Map = new HashMap<>();
+                if (StringUtils.isNotBlank(severity.getKey())) {
+                    severity_Map.put(NAME, severity.getKey());
+                    severity_Map.put(ID, severity.getKey());
+                    synchronized (severities) {
+                        severities.add(severity_Map);
+                    }
+                }
+            });
+            if (severities.isEmpty()) {
+                throw new ServiceException(NO_DATA_FOUND);
+            }
+            return severities;
+        }
+
+        /**
+         * Gets the categories for asset group.
+         *
+         * @param assetGroup the asset group
+         * @param domain the domain
+         * @return List<Map<String, Object>>
+         * @throws ServiceException the service exception
+         */
+        public List<Map<String, Object>> getCategoriesForAssetGroup(
+                String assetGroup, String domain) throws ServiceException {
+                    Map<String, Long> categoryMap;
+                    List<Map<String, Object>> categories = new ArrayList<>();
+                    try {
+                        categoryMap = repository.getCategoriesFromES(assetGroup);
+                    } catch (DataException e) {
+                        throw new ServiceException(e);
+                    }
+                    if (categoryMap.isEmpty()) {
+                        throw new ServiceException(NO_DATA_FOUND);
+                    }
+                    categoryMap.entrySet().parallelStream().forEach(severity -> {
+                        Map<String, Object> category_Map = new HashMap<>();
+                        if (StringUtils.isNotBlank(severity.getKey())) {
+                            category_Map.put(NAME, severity.getKey());
+                            category_Map.put(ID, severity.getKey());
+                            synchronized (categories) {
+                                categories.add(category_Map);
+                            }
+                        }
+                    });
+                    if (categories.isEmpty()) {
+                        throw new ServiceException(NO_DATA_FOUND);
+                    }
+                    return categories;      
+                        }
+   
 }

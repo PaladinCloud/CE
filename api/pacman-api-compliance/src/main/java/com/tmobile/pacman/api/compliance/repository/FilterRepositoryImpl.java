@@ -52,11 +52,12 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
     /** The asset service client. */
     @Autowired
     private AssetServiceClient assetServiceClient;
-    
+
     protected final Log logger = LogFactory.getLog(getClass());
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getFiltersFromDb(int)
+    /*
+     * (non-Javadoc)
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository# getFiltersFromDb(int)
      */
     @Override
     public List<Map<String, Object>> getFiltersFromDb(int filterId)
@@ -66,8 +67,11 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         return rdsepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getPoliciesFromDB(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getPoliciesFromDB(java.lang.String)
      */
     public List<Map<String, Object>> getPoliciesFromDB(String targetTypes)
             throws DataException {
@@ -76,26 +80,32 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         return rdsepository.getDataFromPacman(ruleIdQuery);
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getPoliciesFromES(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getPoliciesFromES(java.lang.String)
      */
     public Map<String, Long> getPoliciesFromES(String assetGroup)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         String aggsFilter = CommonUtils.convertAttributetoKeyword("policyId");
-        try{
-        return elasticSearchRepository.getTotalDistributionForIndexAndType(
-                assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
-                1000, null);
-        }catch(Exception e){
-        	logger.error("error in getPoliciesFromES",e);
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                    1000, null);
+        } catch (Exception e) {
+            logger.error("error in getPoliciesFromES", e);
             throw new DataException(e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getAccountsFromES(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getAccountsFromES(java.lang.String)
      */
     public List<Map<String, Object>> getAccountsFromES(String assetGroup)
             throws DataException {
@@ -104,49 +114,101 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         ArrayList<String> fields = new ArrayList<>();
         fields.add("accountname");
         fields.add("accountid");
-        try{
-        return elasticSearchRepository.getSortedDataFromES(assetGroup,
-                "account", mustFilter, null, null, fields, null, null);
-        }catch(Exception e){
+        try {
+            return elasticSearchRepository.getSortedDataFromES(assetGroup,
+                    "account", mustFilter, null, null, fields, null, null);
+        } catch (Exception e) {
             throw new DataException(e);
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getRegionsFromES(java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getRegionsFromES(java.lang.String)
      */
     public Map<String, Long> getRegionsFromES(String assetGroup)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         String aggsFilter = CommonUtils.convertAttributetoKeyword("region");
-       try{
-        return elasticSearchRepository.getTotalDistributionForIndexAndType(
-                assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
-                THOUSAND, null);
-       }catch(Exception e){
-           throw new DataException(e);
-       }
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getRulesFromES(java.lang.String)
+    /**
+     * Gets the map of all the severities and its count from the ES.
+     *
+     * @param assetGroup the asset group
+     * @return Map<String, Long>.
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getSeveritiesFromES(String assetGroup)
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        String aggsFilter = CommonUtils.convertAttributetoKeyword("severity");
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+
+    /**
+     * Gets the map of all the ruleCategories and its count from the ES.
+     *
+     * @param assetGroup the asset group
+     * @return Map<String, Long>.
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getCategoriesFromES(String assetGroup)
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        String aggsFilter = CommonUtils.convertAttributetoKeyword("ruleCategory");
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.tmobile.pacman.api.compliance.repository.FilterRepository#getRulesFromES(
+     * java.lang.String)
      */
     public Map<String, Long> getRulesFromES(String assetGroup) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         String aggsFilter = CommonUtils.convertAttributetoKeyword(RULEID);
-       try{
-        return elasticSearchRepository.getTotalDistributionForIndexAndType(
-                assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
-                THOUSAND, null);
-       }catch(Exception e){
-           throw new DataException(e);
-       }
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getListOfApplications(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getListOfApplications(java.lang.String, java.lang.String)
      */
     public AssetCountDTO[] getListOfApplications(String assetGroup,
             String domain) throws DataException {
@@ -156,8 +218,11 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         return data.getApplications();
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getListOfEnvironments(java.lang.String, java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getListOfEnvironments(java.lang.String, java.lang.String, java.lang.String)
      */
     public AssetCountDTO[] getListOfEnvironments(String assetGroup,
             String application, String domain) throws DataException {
@@ -167,8 +232,11 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         return data.getEnvironments();
     }
 
-    /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#getListOfTargetTypes(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getListOfTargetTypes(java.lang.String, java.lang.String)
      */
     public AssetCountDTO[] getListOfTargetTypes(String assetGroup, String domain)
             throws DataException {

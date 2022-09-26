@@ -240,4 +240,37 @@ public class FilterController implements Constants {
         return ResponseUtils.buildSucessResponse(response);
     }
 
+    @GetMapping(value = "/v1/filters/severities")
+    public ResponseEntity<Object> getListOfSeverities(@RequestParam(name = "ag", required = true) String assetGroup,
+            @RequestParam(name = "domain", required = false) String domain) {
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
+        }
+        ResponseData response = null;
+        try {
+            response = new ResponseData(filterService.getSeveritiesForAssetGroup(assetGroup, domain));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+
+    @GetMapping(value = "/v1/filters/categories")
+    public ResponseEntity<Object> getListOfCategories(@RequestParam(name = "ag", required = true) String assetGroup,
+            @RequestParam(name = "domain", required = false) String domain) {
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
+        }
+        ResponseData response = null;
+        try {
+            response = new ResponseData(filterService.getCategoriesForAssetGroup(assetGroup, domain));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+    
+
+
+
 }
