@@ -89,4 +89,30 @@ public class AssetTrendController {
             return ResponseUtils.buildFailureResponse(e);
         }
     }
+
+    @ApiOperation(value = "Trends of daily total assets count over the period of last 1 month", response = Iterable.class)
+    @GetMapping(path = "/v1/trend/assetcount")
+    public ResponseEntity<Object> getAssetCount(@RequestParam(name = "ag", required = true) String assetGroup,
+                                                      @RequestParam(name = "type", required = false) String type,
+                                                      @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
+                                                      @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate) {
+        try {
+            Date from = fromDate;
+            Date to = toDate;
+            if (from == null && to == null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                to = cal.getTime();
+                cal.add(Calendar.DATE, Constants.NEG_THIRTY);
+                from = cal.getTime();
+            }
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("ag", assetGroup);
+            List<Map<String, Object>> trendList = assetService.getAssetCountTrend(assetGroup, type, from, to);
+            response.put("trend", trendList);
+            return ResponseUtils.buildSucessResponse(response);
+        } catch (Exception e) {
+            return ResponseUtils.buildFailureResponse(e);
+        }
+    }
 }

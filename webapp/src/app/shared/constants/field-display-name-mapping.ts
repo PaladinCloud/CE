@@ -77,6 +77,7 @@ export const MAPPING = {
     'costoptimization': 'Cost',
     'costoptimisation': 'Cost',
     'governance': 'Operations',
+    'operations': 'Operations',
     'Severity': 'Severity',
     'RuleCategory': 'Category',
     'AccounId': 'Account ID',

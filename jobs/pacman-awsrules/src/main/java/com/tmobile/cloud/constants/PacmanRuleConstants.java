@@ -429,6 +429,7 @@ public class PacmanRuleConstants {
     public static final String RESOURCE_DATA_NOT_FOUND = "Resource data not found!! Skipping this validation";
     
     public static final String ES_ATTRIBUTE_POLICYARN = "policyarn";
+    public static final String ES_BKT_POLICY_ATTRIBUTE = "bucketpolicy";
     public static final String COLON_STAR = "*";
     public static final String RESOURCE = "Resource";
     public static final String ES_POLICIES_ATTRIBUTE = "policies";
@@ -552,4 +553,7 @@ public class PacmanRuleConstants {
    public static final String KEY_TYPE ="keyType";
    public static final  String USER_MANAGED="USER_MANAGED";
    public  static  final String TDE="transparentDataEncryptionStatus";
+    public static final String NETWORK_WATCHER ="networkWatcher";
+    public static final String RETENTION_IN_DAYS="retentionInDays";
+    public static final String AUTO_MINOR_VERSION_UPGRADE = "autominorversionupgrade";
 }

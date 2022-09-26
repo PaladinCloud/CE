@@ -709,4 +709,20 @@ public class ESManager implements Constants {
         }
         return 0l;
     }
+
+    public static void createNestedType(String indexName, String typename, List<Map<String, String>> errorList) {
+        if (!typeExists(indexName, typename)) {
+            String endPoint = indexName + "/_mapping/" + typename;
+            try {
+                invokeAPI("PUT", endPoint, "{ \"properties\":{\"assetCount\":{\"type\":\"nested\",\"properties\":{}}}}");
+            } catch (IOException e) {
+                LOGGER.error("Error in createType",e);
+                Map<String,String> errorMap = new HashMap<>();
+                errorMap.put(ERROR, "Error in createType "+typename);
+                errorMap.put(ERROR_TYPE, WARN);
+                errorMap.put(EXCEPTION, e.getMessage());
+                errorList.add(errorMap);
+            }
+        }
+    }
 }

@@ -1123,4 +1123,9 @@ public class AssetServiceImpl implements AssetService {
             throw new DataException(e);
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to) {
+        return repository.getAssetCountTrend(assetGroup, type, from, to);
+    }
 }

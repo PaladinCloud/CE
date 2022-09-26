@@ -23,10 +23,10 @@ import { ErrorHandlingService } from '../../../../shared/services/error-handling
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
-import { TableStateService } from 'src/app/core/services/table-state-service.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { DownloadService } from 'src/app/shared/services/download.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -91,10 +91,12 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
-    private tableStateService: TableStateService,
+    private dataCacheService: DataCacheService,
     private downloadService: DownloadService) {
 
-      this.state = this.tableStateService.getState("policy") || {};
+      if(this.dataCacheService.get("policy-knowledgebase-table")) {
+        this.state = JSON.parse(this.dataCacheService.get("policy-knowledgebase-table")) || {};
+      }
       
       this.headerColName = this.state?.headerColName || 'Policy Name';
       this.direction = this.state?.direction || 'asc';
@@ -170,7 +172,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   }
 
   storeState(){
-    this.tableStateService.setState(this.state, "policy");
+    this.dataCacheService.set("policy-knowledgebase-table", JSON.stringify(this.state));
   }
 
   getUpdatedUrl(){

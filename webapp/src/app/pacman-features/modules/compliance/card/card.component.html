@@ -6,13 +6,13 @@
     <div class="chart" *ngIf="card.id == 1">
       <div [class.loader]="complianceData.length==0 && complianceDataError==''"></div>
       <app-error-message *ngIf="complianceDataError" [selectedValue]="complianceDataError"></app-error-message>
-      <app-progress-bar-chart *ngIf="complianceDataError==''" [bars]="complianceData"></app-progress-bar-chart>
+      <app-progress-bar-chart *ngIf="complianceDataError=='' && complianceData.length>0" [bars]="complianceData"></app-progress-bar-chart>
     </div>
     <div class="chart" *ngIf="card.id == 2">
       <div [class.loader]="!policyData && policyDataError==''"></div>
       <app-error-message *ngIf="policyDataError" [selectedValue]="policyDataError"></app-error-message>
       <div class="graph-chart-cont relative" id="dashboardDoughnut">
-        <app-doughnut-chart *ngIf="policyDataError==''" [chartContId]="'dashboardDoughnut'" [graphData]="policyData"
+        <app-doughnut-chart *ngIf="policyDataError=='' && policyData" [chartContId]="'dashboardDoughnut'" [graphData]="policyData"
           [graphWidth]="widgetWidth" [flexTrue]="true" [graphHeight]="widgetHeight" [MainTextcolor]="MainTextcolor"
           [innerRadius]="innerRadius" [outerRadius]="outerRadius" [strokeColor]="strokeColor"
           (navigatePage)="navigateDataTable($event)">
@@ -22,7 +22,7 @@
     <div class="chart" *ngIf="card.id == 3" style="overflow-y: scroll">
       <div [class.loader]="assetsCountData.length==0 && assetsCountDataError==''"></div>
       <app-error-message *ngIf="assetsCountDataError" [selectedValue]="assetsCountDataError"></app-error-message>
-      <app-horizontal-bar-chart *ngIf="assetsCountDataError==''" [data]="assetsCountData"></app-horizontal-bar-chart>
+      <app-horizontal-bar-chart *ngIf="assetsCountDataError=='' && assetsCountData.length>0" [data]="assetsCountData"></app-horizontal-bar-chart>
     </div>
   </mat-card-content>
   <mat-card-actions>

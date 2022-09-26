@@ -97,7 +97,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
         if (assetGroupName) {
           this.currentAg = assetGroupName;
           this.cloudIconDataLoaded = false;
-          this.updateRecentAssetGroup(this.currentAg);
+          // this.updateRecentAssetGroup(this.currentAg);
         }
       });
 

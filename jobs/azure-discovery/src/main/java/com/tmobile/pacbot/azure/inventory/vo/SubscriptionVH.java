@@ -1,5 +1,9 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import com.microsoft.azure.management.storage.StorageAccount;
+
+import java.util.List;
+
 public class SubscriptionVH extends AzureVH {
 
 	@Override
@@ -9,7 +13,12 @@ public class SubscriptionVH extends AzureVH {
 
 	private String subscriptionId;
 	private String subscriptionName;
+
 	private String tenant;
+
+	private List<StorageAccount> storageAccount;
+
+	private List<StorageAccountActivityLogVH>storageAccountLogList;
 
 	public String getTenant() {
 		return tenant;
@@ -33,4 +42,22 @@ public class SubscriptionVH extends AzureVH {
 	public void setSubscriptionName(String subscriptionName) {
 		this.subscriptionName = subscriptionName;
 	}
+
+	public List<StorageAccount> getStorageAccount() {
+		return storageAccount;
+	}
+
+	public void setStorageAccount(List<StorageAccount> storageAccount) {
+		this.storageAccount = storageAccount;
+	}
+
+	public List<StorageAccountActivityLogVH> getStorageAccountLogList() {
+		return storageAccountLogList;
+	}
+
+	public void setStorageAccountLogList(List<StorageAccountActivityLogVH> storageAccountLogList) {
+		this.storageAccountLogList = storageAccountLogList;
+	}
+
+
 }

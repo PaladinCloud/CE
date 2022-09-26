@@ -79,7 +79,28 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public Map<String, Long> getRegionsFromES(String assetGroup)
-            throws DataException;
+                    throws DataException;
+            
+    /**
+     * Gets the map of all the severities and its count from the ES.
+     *
+     * @param assetGroup the asset group
+     * @return Map<String, Long>.
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getSeveritiesFromES(String assetGroup)
+                    throws DataException;
+            
+
+     /**
+     * Gets the map of all the categories and its count from the ES.
+     *
+     * @param assetGroup the asset group
+     * @return Map<String, Long>.
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getCategoriesFromES(String assetGroup)
+    throws DataException;
 
     /**
      * Gets the rules from ES.

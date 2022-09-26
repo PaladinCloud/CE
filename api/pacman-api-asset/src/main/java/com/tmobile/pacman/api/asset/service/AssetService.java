@@ -510,4 +510,6 @@ public interface AssetService {
      */
 	public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException;
 
+    public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to);
+
 }
