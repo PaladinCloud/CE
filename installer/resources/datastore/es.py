@@ -37,8 +37,10 @@ class ESDomain(ElasticsearchDomainResource):
     domain_name = "data"
     elasticsearch_version = "5.5"
     instance_type = Settings.get('ES_INSTANCE_TYPE', "m5.large.elasticsearch")
-    instance_count = 1
-    dedicated_master_enabled = False
+    instance_count =  Settings.get('ES_NODE_COUNT',3)
+    dedicated_master_enabled = Settings.get('ES_DEDICATED_MASTER_ENABLED',False)
+    dedicated_master_count = Settings.get('ES_MASTER_NODE_COUNT', 3)
+    dedicated_master_type = Settings.get('ES_MASTER_INSTANCE_TYPE', "m5.large.elasticsearch")
     zone_awareness_enabled = False
     ebs_enabled = True
     volume_type = "gp2"

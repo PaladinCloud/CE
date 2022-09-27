@@ -48,7 +48,7 @@ public class VMInstanceSerialPortDisableRule extends BaseRule {
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
 
-        boolean isBlockProjectWideSSHEnable = false;
+        boolean isSerialPortDisable = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
@@ -60,8 +60,8 @@ public class VMInstanceSerialPortDisableRule extends BaseRule {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                isBlockProjectWideSSHEnable = verifyIsBlockProjectWideSSHEnable(vmEsURL, mustFilter);
-                if (!isBlockProjectWideSSHEnable) {
+                isSerialPortDisable = verifyIsSerialPortDisable(vmEsURL, mustFilter);
+                if (!isSerialPortDisable) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
@@ -87,7 +87,7 @@ public class VMInstanceSerialPortDisableRule extends BaseRule {
 
     }
 
-    private boolean verifyIsBlockProjectWideSSHEnable(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
+    private boolean verifyIsSerialPortDisable(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("========verifyIsBlockProjectWideSSHEnable started=========");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = true;

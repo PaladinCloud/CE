@@ -20,10 +20,13 @@ public class SQLDatabaseVH extends AzureVH {
 	private String name;
 	private String status;
 	private String serverName;
+
 	private String notificationRecipientsEmails;
 	private List<Map<String, String>> firewallRuleDetails;
 	private Map<String, String> tags;
 	private List<String> excludedDetectionTypes;
+
+	private String transparentDataEncryptionStatus;
 
 	public List<String> getExcludedDetectionTypes() {
 		return excludedDetectionTypes;
@@ -151,6 +154,14 @@ public class SQLDatabaseVH extends AzureVH {
 
 	public void setTags(Map<String, String> tags) {
 		this.tags = tags;
+	}
+
+	public String getTransparentDataEncryptionStatus() {
+		return transparentDataEncryptionStatus;
+	}
+
+	public void setTransparentDataEncryptionStatus(String transparentDataEncryptionStatus) {
+		this.transparentDataEncryptionStatus = transparentDataEncryptionStatus;
 	}
 
 }
