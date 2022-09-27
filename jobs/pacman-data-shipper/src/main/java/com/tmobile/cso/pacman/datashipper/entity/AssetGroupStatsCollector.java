@@ -476,12 +476,10 @@ public class AssetGroupStatsCollector implements Constants{
                 log.info("Response from asset count API: {}", assetCountResponse);
                 long totalCount = Long.valueOf(assetCountResponse.get("totalassets").toString());
                 long typeCount = Long.valueOf(assetCountResponse.get("assettype").toString());
-                List<Map<String,Object>> assetCount=getCountByType((List<Map<String, Object>>) assetCountResponse.get("assetcount"));
                     Map<String, Object> doc = new HashMap<>();
                     doc.put("ag", ag);
                     doc.put("typeCount", typeCount);
                     doc.put("totalassets", totalCount);
-                    doc.put("assetCount", assetCount);
                     doc.put("date", CURR_DATE);
                     doc.put("@id", Util.getUniqueID(ag + CURR_DATE));
                     docs.add(doc);

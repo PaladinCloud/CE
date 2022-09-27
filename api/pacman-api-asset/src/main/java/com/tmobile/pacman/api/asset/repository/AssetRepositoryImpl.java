@@ -2760,6 +2760,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                 if (sourceJson != null) {
                     Map<String, Object> doc = new Gson().fromJson(sourceJson, new TypeToken<Map<String, Object>>() {
                     }.getType());
+                    doc.remove("assetCount");
                     docs.add(doc);
                 }
             }
