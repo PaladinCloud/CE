@@ -161,7 +161,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      */
     @PostConstruct
     void init() {
-        esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
+    esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
     }
 
     /*
@@ -192,6 +192,46 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             throw new DataException("" + e);
         }
         return totalIssueCount;
+
+    }
+
+
+
+
+
+    public HashMap<String,Object> getAverageAge(String assetGroup) throws DataException{
+        HashMap<String,Object>result=new HashMap<>();
+        Gson gson = new GsonBuilder().create();
+        String responseDetails = null;
+        StringBuilder requestBody = null;
+        StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/_search");
+        String body="{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\"avg_age\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
+        requestBody = new StringBuilder(body);
+        try {
+     responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+        Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
+        Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
+        Map<String, Object> severity=(Map<String, Object>) aggregations.get("by_severity");
+
+                JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
+        JsonObject aggsJson = (JsonObject) JsonParser.parseString(resultJson.get(AGGREGATIONS).toString());
+        JsonArray buckets = aggsJson.getAsJsonObject("by_severity").getAsJsonArray(BUCKETS).getAsJsonArray();
+
+        System.out.println("average age -->"+buckets);
+
+        for (JsonElement bucket:buckets) {
+            HashMap<String,String>policyDetails=new HashMap<>();
+            policyDetails.put("averageAge",bucket.getAsJsonObject().get("avg_age").getAsJsonObject().get("value").getAsString());
+            policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
+            result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
+
+        }
+
+        return result;
 
     }
 

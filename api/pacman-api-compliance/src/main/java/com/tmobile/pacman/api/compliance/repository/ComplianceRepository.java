@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.repository;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,8 @@ public interface ComplianceRepository {
     public long getIssuesCount(String assetGroup, String ruleId, String domain)
             throws DataException;
 
+
+    public HashMap<String,Object> getAverageAge(String assetGroup) throws DataException;
     /**
      * This request expects asssetGroup and domain as mandatory, ruleId as
      * optional. If method receives assetGroup and domain as request parameter,

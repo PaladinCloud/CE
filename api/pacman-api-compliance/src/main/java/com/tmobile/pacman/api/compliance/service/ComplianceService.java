@@ -65,6 +65,17 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     public Map<String, Object> getDistribution(String assetGroup, String domain) throws ServiceException;
+   
+   
+    /**
+     * Gets Compliance Average age distribution by  severity.
+     *
+     * @param assetGroup the asset group
+     * @return Map<String, Object>
+     * @throws ServiceException the service exception
+     */
+   
+    public Map<String, Object> getAverageAgeDistribution(String assetGroup) throws ServiceException;
 
     /**
      * Gets Tagging compliance details based on name of name of the asset group/tagettype passed.
