@@ -335,6 +335,18 @@ public class ComplianceControllerTest {
         ResponseEntity<Object> responseObj = complianceController.revokeIssuesException(revokeIssuesException);
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
+
+    @Test
+    public void averageAgeDistribution() throws Exception{
+        when(complianceService.getAverageAgeDistribution(anyString())).thenReturn(new HashMap<>());
+        assertThat(complianceController.getAverageAgeDistribution("ag"), is(notNullValue()));
+        assertThat(complianceController.getAverageAgeDistribution(""), is(notNullValue()));
+
+        when(complianceService.getAverageAgeDistribution(anyString())).thenThrow(new ServiceException());
+        when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
+        ResponseEntity<Object> responseObj = complianceController.getAverageAgeDistribution("ag");
+        assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
+    }
     
    /* @Test
     public void getExemptedIssuesTest() throws Exception {
