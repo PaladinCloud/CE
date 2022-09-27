@@ -16,7 +16,25 @@
     <div class="asset-dashboard-wrapper flex flex-col">
         <div class="asset-dashboard-header">Asset Overview</div>
         <div class="asset-dashboard-container">
-            <app-aws-resource-details [pageLevel]="pageLevel"></app-aws-resource-details>
+            <!-- <app-aws-resource-details [pageLevel]="pageLevel"></app-aws-resource-details> -->
+            <!-- <app-card [card]="card" [totalAssetsCountDataError]="totalAssetsCountDataError" [totalAssetsCountData]="totalAssetsCountData"></app-card> -->
+            <!-- <mat-card class="panel">
+                <mat-card-header>
+                    {{ card.header }}
+                    <div class="graph-dropdown" *ngIf="card.id == 3">
+                        <app-dropdown [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="'All time'" (selected)="card.onSelectGraphInterval($event)"></app-dropdown>
+                    </div>
+                </mat-card-header>
+                <mat-card-content> -->
+                    <!-- <div class="chart" *ngIf="card.id == 3" style="overflow-y: scroll;">
+                        <div [class.loader]="totalAssetsCountData.length==0 && totalAssetsCountDataError==''"></div>
+                        <app-error-message *ngIf="totalAssetsCountDataError" [selectedValue]="totalAssetsCountDataError"></app-error-message>
+                        <div class="chart-wrapper" id="TotalAssetsCountTrend" style="height: 100%; width: 100%; background-color: white;"> -->
+                            <app-multiline-zoom-graph *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''" [id]="'TotalAssetsCountTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'" [graphHeight]="320" [graphLinesData]="totalAssetsCountData"></app-multiline-zoom-graph>
+                        <!-- </div>
+                    </div> -->
+                <!-- </mat-card-content>
+            </mat-card> -->
         </div>
     </div>
  </div>
