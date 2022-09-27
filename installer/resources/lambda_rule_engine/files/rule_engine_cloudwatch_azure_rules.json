@@ -2748,5 +2748,27 @@
     "modifiedDate": "2022-05-10",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
+    "ruleUUID": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
+    "policyId": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
+    "ruleName": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
+    "targetType": "subscription",
+    "assetGroup": "Azure",
+    "alexaKeyword": "MandatoryTagsDiagnosticSettings",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-diagnostic-setting-has-mandatory-tags\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"Mandatory categories is NOT enabled for diagnostic settings\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"Mandatory categories is enabled for Diagnostic settings\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Include mandatory categories in the diagnostics setting\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Azure_DiagnosticSettings_Mandatory_Tags\",\"autofix\":false,\"alexaKeyword\":\"MandatoryTagsDiagnosticSettings\",\"ruleRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Azure_DiagnosticSettings_Mandatory_Tags\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Enable_Azure_DiagnosticSettings_Mandatory_Tags\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Azure_DiagnosticSettings_Mandatory_Tags",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Include mandatory categories in the diagnostics setting",
+    "createdDate": "2022-09-26",
+    "modifiedDate": "2022-09-26",
+    "severity": "medium",
+    "category": "security"
   }
 ]

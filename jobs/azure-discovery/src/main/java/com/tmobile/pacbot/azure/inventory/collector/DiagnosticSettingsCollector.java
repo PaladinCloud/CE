@@ -6,15 +6,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.DiagnosticSettingVH;
-import com.tmobile.pacbot.azure.inventory.vo.DiagnosticSettingsLogVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.net.URLEncoder;
+import java.util.Set;
+
 import com.tmobile.pacman.commons.utils.CommonUtils;
 @Component
 public class DiagnosticSettingsCollector {
@@ -32,6 +34,7 @@ public class DiagnosticSettingsCollector {
             log.info("Response is :{}",response);
             JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
             JsonArray diagnosticSettings = responseObj.getAsJsonArray("value");
+
             for(JsonElement diagnosticSetting:diagnosticSettings){
                 DiagnosticSettingVH diagnosticSettingVH=new DiagnosticSettingVH();
                 diagnosticSettingVH.setId(diagnosticSetting.getAsJsonObject().getAsJsonPrimitive("id").getAsString());
@@ -39,17 +42,17 @@ public class DiagnosticSettingsCollector {
                 diagnosticSettingVH.setSubscriptionName(subscription.getSubscriptionName());
                 diagnosticSettingVH.setSubscription(subscription.getSubscription());
                 diagnosticSettingVH.setResourceGroupName(subscription.getResourceGroupName());
+                diagnosticSettingVH.setSubscriptionId(subscription.getSubscriptionId());
                 diagnosticSettingVH.setRegion(subscription.getRegion());
                 JsonObject properties =diagnosticSetting.getAsJsonObject().getAsJsonObject("properties");
                 JsonArray logs=properties.getAsJsonArray("logs");
-                List<DiagnosticSettingsLogVH> logVHList=new ArrayList<>();
+                Set<String> enabledCategories=new HashSet();
                 for(JsonElement diagnosticLog:logs) {
-                    DiagnosticSettingsLogVH diagnosticSettingsLogVH = new DiagnosticSettingsLogVH();
-                    diagnosticSettingsLogVH.setCategory(diagnosticLog.getAsJsonObject().getAsJsonPrimitive("category").getAsString());
-                    diagnosticSettingsLogVH.setEnabled(diagnosticLog.getAsJsonObject().getAsJsonPrimitive("enabled").getAsBoolean());
-                    logVHList.add(diagnosticSettingsLogVH);
+                    if(diagnosticLog.getAsJsonObject().getAsJsonPrimitive("enabled").getAsBoolean()) {
+                        enabledCategories.add(diagnosticLog.getAsJsonObject().getAsJsonPrimitive("category").getAsString());
+                    }
                 }
-                diagnosticSettingVH.setDiagnosticSettingsLogVHList(logVHList);
+                diagnosticSettingVH.setEnabledCategories(enabledCategories);
                 diagnosticSettingVHList.add(diagnosticSettingVH);
             }
 
