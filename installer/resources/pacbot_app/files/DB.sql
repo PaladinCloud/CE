@@ -43,6 +43,7 @@ SET @PACMAN_HOST_NAME='$PACMAN_HOST_NAME';
 SET @RDS_URL='$RDS_URL';
 SET @RDS_USERNAME='$RDS_USERNAME';
 SET @RDS_PASSWORD='$RDS_PASSWORD';
+SET @CURRENT_RELEASE='$CURRENT_RELEASE';
 SET @JOB_BUCKET_REGION='$JOB_BUCKET_REGION';
 SET @RULE_JOB_BUCKET_NAME='$RULE_JOB_BUCKET_NAME';
 SET @JOB_LAMBDA_REGION='$JOB_LAMBDA_REGION';
@@ -2551,7 +2552,6 @@ INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.cache.caffeine.spec','maximumSize=500, expireAfterWrite=6h','api','prd','latest',NULL,NULL,NULL,NULL);
 DELETE IGNORE FROM pac_config_properties where cfKey in ('spring.datasource.url','spring.datasource.username','spring.datasource.password');
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.datasource.url',concat(@RDS_URL,''),'api','prd','latest',NULL,NULL,NULL,NULL);
-DELETE IGNORE FROM pac_config_properties where cfKey in ('spring.datasource.url','spring.datasource.username','spring.datasource.password');
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.datasource.username',concat(@RDS_USERNAME,''),'api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.datasource.password',concat(@RDS_PASSWORD,''),'api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.datasource.driver-class-name','com.mysql.jdbc.Driver','api','prd','latest',NULL,NULL,NULL,NULL);
@@ -2877,6 +2877,9 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.data','gcp-inventory','gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.processed','backup-gcp','gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.credentials',concat(@GCP_CREDENTIALS,''),'gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
+
+DELETE IGNORE FROM pac_config_properties where cfKey='current-release';
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('current-release',concat(@CURRENT_RELEASE,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.occurance','severity,_resourceid,pciflag,_vulnage,vulntype,title,classification,_firstFound,_lastFound,qid,patchable,category','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
