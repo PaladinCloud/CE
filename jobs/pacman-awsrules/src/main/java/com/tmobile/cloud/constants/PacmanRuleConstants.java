@@ -399,6 +399,8 @@ public class PacmanRuleConstants {
     public static final String DETAILS = "details";
     public static final String AZURE_SUBSCRIPTION = "subscription";
     public static final String AZURE_SUBSCRIPTION_NAME = "subscriptionName";
+
+    public static final String AZURE_SUBSCRIPTION_ID="subscriptionId";
     public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED = "passwordBasedAuthenticationDisabled";
     public static final String IS_ENCRYPTION_ENABLED = "isEncryptionEnabled";
     public static final String DISKS = "disks";

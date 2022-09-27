@@ -1,11 +1,14 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
-import java.util.List;
+
+import java.util.Set;
 
 public class DiagnosticSettingVH extends AzureVH{
     private String name;
 
-    private List<DiagnosticSettingsLogVH> diagnosticSettingsLogVHList;
+    private Set<String> enabledCategories;
+
+    private String subscriptionId;
 
     public String getName() {
         return name;
@@ -15,11 +18,19 @@ public class DiagnosticSettingVH extends AzureVH{
         this.name = name;
     }
 
-    public List<DiagnosticSettingsLogVH> getDiagnosticSettingsLogVHList() {
-        return diagnosticSettingsLogVHList;
+    public Set<String> getEnabledCategories() {
+        return enabledCategories;
     }
 
-    public void setDiagnosticSettingsLogVHList(List<DiagnosticSettingsLogVH> diagnosticSettingsLogVHList) {
-        this.diagnosticSettingsLogVHList = diagnosticSettingsLogVHList;
+    public void setEnabledCategories(Set<String> enabledCategories) {
+        this.enabledCategories = enabledCategories;
+    }
+
+    public String getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public void setSubscriptionId(String subscriptionId) {
+        this.subscriptionId = subscriptionId;
     }
 }
