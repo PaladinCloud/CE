@@ -2,7 +2,7 @@ from core.terraform.resources.aws.load_balancer import ALBListenerResource, ALBL
 from core.config import Settings
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app import alb_target_groups as tg
-
+from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
 
 # PATH_PREFIX = '/api/'
 
@@ -93,3 +93,4 @@ class VulnerabilityALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/vulnerability*"]
         }
     }
+    PROCESS = need_to_deploy_vulnerability_service()
