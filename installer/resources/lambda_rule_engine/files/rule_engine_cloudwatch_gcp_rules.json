@@ -1186,5 +1186,27 @@
     "modifiedDate": "2022-09-19",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Deny_Admin_Privilege_Service_Account",
+    "ruleUUID": "Deny_Admin_Privilege_Service_Account",
+    "policyId": "Deny_Admin_Privilege_Service_Account",
+    "ruleName": "Deny Admin privilege for service account",
+    "targetType": "serviceaccounts",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Deny_Admin_Privilege_Service_Account",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"least-privilege-service-accounts\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Deny admin Privileges to service accounts\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Deny_Admin_Privilege_Service_Account\",\"autofix\":false,\"alexaKeyword\":\"Deny_Admin_Privilege_Service_Account\",\"ruleRestUrl\":\"\",\"targetType\":\"serviceaccounts\",\"pac_ds\":\"gcp\",\"policyId\":\"Deny_Admin_Privilege_Service_Account\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Deny_Admin_Privilege_Service_Account\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Deny_Admin_Privilege_Service_Account",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny admin Privileges to service accounts",
+    "createdDate": "2022-09-28",
+    "modifiedDate": "2022-09-28",
+    "severity": "medium",
+    "category": "security"
   }
 ]
