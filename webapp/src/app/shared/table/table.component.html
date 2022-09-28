@@ -1,7 +1,17 @@
 <div class="table-container flex flex-col">
         <div class="table-header">
-        <div class="table-title" *ngIf="tableTitle">
-            {{ tableTitle }} {{ dataSource.length }}
+        <div class="table-title flex flex-row" *ngIf="tableTitle">
+            <div class="left">
+                {{ tableTitle }}
+            </div>
+            <div class="right">
+                <div class="more-wrapper">
+                    <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
+                    <mat-menu #menu="matMenu">
+                    <button (click)="download()" mat-menu-item>Download</button>
+                    </mat-menu>
+                </div>
+            </div>
         </div>
         <div class="table-column-modifier flex flex-row" *ngIf="showSearchBar || showAddRemoveCol">
             <div class="header-left flex flex-row">
@@ -20,7 +30,7 @@
                     </div>
                 </div>
             </div>
-            <div class="header-right">
+            <div class="header-right flex flex-row">
                 <div class="add-remove-columns-wrapper" *ngIf="showAddRemoveCol">
                     <mat-form-field>
                         <mat-select #select multiple>
@@ -33,6 +43,47 @@
                     </mat-form-field>
                     <span> Columns </span>
                 </div>
+                <div class="filter-wrapper flex flex-row" (click)="showFilterModal = !showFilterModal;">
+                    <img src="/assets/icons/filter-icon.svg" alt="">
+                    <span>Filter</span>
+                </div>
+                <div class="filter-modal-container" *ngIf="showFilterModal">
+                    <div class="filter-modal-wrapper flex flex-col">
+                        <div class="header flex flex-row">
+                            <div class="title">Fitlers</div>
+                            <div class="clear-all-btn" (click)="removeAllFilters()">Clear all</div>
+                        </div>
+                        <div class="filters-container">
+                            <div class="filters-wrapper flex flex-col">
+                            <div class="filter flex flex-row" *ngFor="let filter of filteredArray; let i=index">
+                                <app-dropdown [items]="filterTypeLabels"
+                                    (selected)='onSelectFilterType($event, i)'
+                                    [selectedItem]="filter.keyDisplayValue"
+                                    [placeholder]="'Select Filter Type'">
+                                </app-dropdown>
+                                <app-dropdown [items]="filterTagLabels[filter.keyDisplayValue]?filterTagLabels[filter.keyDisplayValue]:[]"
+                                    (selected)='onSelectFilter($event, i)'
+                                    [selectedItem]="filter.filterValue"
+                                    [placeholder]="'Select Filter'">
+                                </app-dropdown>
+                                <!-- <input style="width:100%; border:1px solid var(--border-100)" matInput [(ngModel)]="filterArr[i].filterText" (keyup)="changeFilterText($event, i)" type="text"> -->
+                                <img (click)="removeFilter(i)" style="cursor: pointer;" src="/assets/icons/x-icon.svg" alt="">
+                            </div>
+                        </div>
+                        </div>
+                        <div class="footer">
+                            <div class="add-filter-btn" (click)="addFilter()">
+                                Add Condition
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="more-wrapper" *ngIf="!tableTitle">
+                    <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
+                    <mat-menu #menu="matMenu">
+                    <button (click)="download()" mat-menu-item>Download</button>
+                    </mat-menu>
+                </div>
             </div>
         </div>
     </div>
@@ -42,13 +93,12 @@
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
         <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
-                <th [style.flex]="columnWidths[column]" mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }} </th>
-                <td [style.flex]="columnWidths[column]" class="capitalize" mat-cell *matCellDef="let element"> 
-                    <img *ngIf="imageDataMap[element[column]] && imageDataMap[element[column]]['image']" style="margin-right: 10px; vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column]].image}}.svg" [title]="element[column]"> 
-                    <span *ngIf="!imageDataMap[element[column]] || !imageDataMap[element[column]].imageOnly" [title]="element[column]">{{ element[column] }} </span>
+                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }} </th>
+                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell *matCellDef="let element"> 
+                    <img *ngIf="imageDataMap[element[column].toLowerCase()] && imageDataMap[element[column].toLowerCase()]['image']" style="margin-right: 10px; vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column].toLowerCase()].image}}.svg" [title]="element[column]"> 
+                    <span *ngIf="!imageDataMap[element[column].toLowerCase()] || !imageDataMap[element[column].toLowerCase()].imageOnly" [title]="element[column]">{{ element[column] }} </span>
                 </td>
             </ng-container>
-
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
             <tr (click)="goToDetails(row)" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
         </table>

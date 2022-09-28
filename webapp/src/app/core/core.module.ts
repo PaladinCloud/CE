@@ -31,6 +31,8 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RequestInterceptorService } from './services/request-interceptor.service';
 import { AuthSessionStorageService } from './services/auth-session-storage.service';
 import {RecentlyViewedObservableService} from './services/recently-viewed-observable.service';
+import { WindowExpansionService } from './services/window-expansion.service';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -53,6 +55,7 @@ import {RecentlyViewedObservableService} from './services/recently-viewed-observ
     AdalService,
     AuthSessionStorageService,
     RecentlyViewedObservableService,
+    WindowExpansionService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RequestInterceptorService,

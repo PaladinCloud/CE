@@ -27,7 +27,7 @@ export class DropdownComponent implements OnInit, OnChanges {
     }
     else this.itemList = list;
 
-    if (typeof selectedOption == 'object') {
+    if (typeof selectedOption == 'object' && selectedOption[0]) {
       this.selectedOption = selectedOption[0].text;
     }
     else {
