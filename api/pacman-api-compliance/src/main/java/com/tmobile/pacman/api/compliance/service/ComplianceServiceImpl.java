@@ -208,7 +208,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             logger.info("Compliance API >> Fetched avgAgeDistribution from repository: {}", avgAgeDistribution);
 
             Map<String, Object> avgAge = repository.getAverageAge(assetGroup);
-            distribution.put("average_age_by_severity", avgAgeDistribution);
+            distribution.put("averageAgeBySeverity", avgAgeDistribution);
             return distribution;
         } catch (DataException e) {
             logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
