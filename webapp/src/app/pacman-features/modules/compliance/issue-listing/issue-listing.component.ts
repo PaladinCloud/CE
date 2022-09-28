@@ -12,11 +12,11 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, HostListener } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { IssueFilterService } from "../../../services/issue-filter.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
 import * as _ from "lodash";
@@ -29,6 +29,9 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { PermissionGuardService } from "../../../../core/services/permission-guard.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { DataCacheService } from "src/app/core/services/data-cache.service";
+
 
 @Component({
   selector: "app-issue-listing",
@@ -61,13 +64,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   searchTxt = "";
   popRows: any = ["Download Data"];
   filterTypeOptions: any = [];
-  filterTagOptions: any = [];
+  filterTagOptions: any = {};
   currentFilterType;
   filterTypeLabels = [];
   cbArr = [];
   cbModel = [];
   cbObj = {};
-  filterTagLabels = [];
+  filterTagLabels = {};
   filters: any = [];
   searchCriteria: any;
   filterText: any;
@@ -94,8 +97,60 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public agAndDomain = {};
   public doNotDisplaySearch=true;
   filterErrorMessage = '';
+  tableTitle = "Policy Violations";
+  tableErrorMessage = '';
   headerColName;
   direction;
+  columnWidths = {'Policy Name': 1, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
+  columnNamesMap = {};
+  columnsSortFunctionMap = {
+    severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a.severity] < severeness[b.severity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  };
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+  state: any = {};
+  whiteListColumns;
+  displayedColumns;
+  tableData = [];
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -111,15 +166,23 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private downloadService: DownloadService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private permissions: PermissionGuardService
+    private permissions: PermissionGuardService,
+    private dataCacheService: DataCacheService
   ) {
-    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
-    this.direction = this.activatedRoute.snapshot.queryParams.direction;
-    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+    this.state = this.dataCacheService.get("issueListing") || {};
+      
+    this.headerColName = this.state.headerColName || 'Policy Name';
+    this.direction = this.state.direction || 'asc';
+    this.bucketNumber = this.state.bucketNumber || 0;
+
+    this.displayedColumns = Object.keys(this.columnWidths);
+    this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
+
+    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
 
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
-      .subscribe((assetGroupName) => {
+      .subscribe((assetGroupName) => {        
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
@@ -131,12 +194,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .subscribe((domain) => {
         this.selectedDomain = domain;
         this.agAndDomain["domain"] = this.selectedDomain;
-        this.getFilters();
-        this.routerParam();
-        this.deleteFilters();
-        this.getFilterArray();
-        this.updateComponent();
       });
+      this.getFilters();
   }
 
   ngOnInit() {
@@ -155,7 +214,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.getUpdatedUrl();
+    this.state.headerColName = this.headerColName;
+    this.state.direction = this.direction;
+    this.storeState();
+  }
+
+  storeState(){
+    this.dataCacheService.set(this.state, "issueListing");
   }
 
   /*
@@ -203,9 +268,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     updatedQueryParams = {
       filter: this.filterText.filter,
-      headerColName: this.headerColName,
-      direction : this.direction,
-      bucketNumber : this.bucketNumber
+      searchValue: this.searchTxt
     }
 
 
@@ -256,20 +319,31 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       const filterValues = dataArray;
       const refactoredService = this.refactorFieldsService;
-      const formattedFilters = dataArray.map(function (data) {
-        data.name =
-          refactoredService.getDisplayNameForAKey(data.name) || data.name;
-        return data;
-      });
-
+      const formattedFilters = dataArray
+      // .map(function (data) {
+      //   data.name =
+      //     refactoredService.getDisplayNameForAKey(data.name) || data.name;
+      //   return data;
+      // });
       for (let i = 0; i < formattedFilters.length; i++) {
-        const eachObj = {
-          key: formattedFilters[i].name, // <-- displayKey-- Resource Type
-          value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-          filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-          compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-        };
-        localFilters.push(eachObj);
+        let keyValue = _.find(this.filterTypeOptions, {
+          optionValue: formattedFilters[i].name,
+        })["optionName"];
+        // this.changeFilterType(keyValue);
+        this.changeFilterType(keyValue).subscribe(filterTagOptions => {
+            let filterValue = _.find(filterTagOptions, {
+              id: this.filterText[filterObjKeys[i]],
+            })["name"];
+          const eachObj = {
+            keyDisplayValue: keyValue,
+            filterValue: filterValue,
+            key: keyValue, // <-- displayKey-- Resource Type
+            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
+            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
+            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+          };
+          localFilters.push(eachObj);
+        })
       }
       this.filters = localFilters;
     } catch (error) {
@@ -296,11 +370,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
-
+          
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
           isApiError = false;
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.updateComponent();
         });
     } catch (error) {
       this.filterErrorMessage = 'apiResponseError';
@@ -311,12 +389,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
+    var subject = new Subject<any>();
     this.filterErrorMessage = '';
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
-      this.issueFilterSubscription = this.issueFilterService
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        this.issueFilterSubscription = this.issueFilterService
         .getFilters(
           {
             ag: this.selectedAssetGroup,
@@ -328,25 +408,35 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           "GET"
         )
         .subscribe((response) => {
-          this.filterTagOptions = response[0].response;
-          this.filterTagLabels = _.map(response[0].response, "name");
-          this.filterTagLabels.sort((a,b)=>a.localeCompare(b));
-          if(this.filterTagLabels.length==0) this.filterErrorMessage = 'noDataAvailable';
+          this.filterTagOptions[value] = response[0].response;
+          this.filterTagLabels[value] = _.map(response[0].response, "name");
+          this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
+          if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
+          subject.next(this.filterTagOptions[value]);
         });
+      }
     } catch (error) {
       this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+    return subject.asObservable();
   }
 
-  changeFilterTags(value: String) {
+  changeFilterTags(event) {    
+    let value = event.filterValue;
+    this.currentFilterType =  _.find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });      
+    
     try {
       if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions, { name: value });
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
         this.utils.addOrReplaceElement(
           this.filters,
           {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: value,
             key: this.currentFilterType.optionName,
             value: filterTag["id"],
             filterkey: this.currentFilterType.optionValue.trim(),
@@ -384,13 +474,16 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   updateComponent() {
     this.cbArr = [];
     this.cbObj = {};
-    this.outerArr = [];
+    // this.outerArr = [];
     this.tableDataLoaded = false;
-    this.searchTxt = "";
+    // this.searchTxt = "";
     this.currentBucket = [];
     this.cbModel = [];
     this.dataTableData = [];
-    this.firstPaginator = 1;
+    this.issueListingdata = [];
+    this.tableData = [];
+    this.bucketNumber = 0;
+    // this.firstPaginator = 1;
     this.showLoader = true;
     this.dataLoaded = false;
     this.seekdata = false;
@@ -426,7 +519,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         searchtext: this.searchTxt,
         size: this.paginatorSize,
       };
-
       const issueListingUrl = environment.issueListing.url;
       const issueListingMethod = environment.issueListing.method;
       this.errorValue = 0;
@@ -440,16 +532,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               this.searchCriteria = undefined;
               this.tableDataLoaded = true;
               const data = response.data;
-              this.dataTableData = data.response;
+              this.dataTableData = data.response;              
               this.showLoader = false;
               this.dataLoaded = true;
               if (response.data.response.length === 0) {
+                this.tableErrorMessage = 'noDataAvailable';
                 this.errorValue = -1;
                 this.outerArr = [];
                 this.allColumns = [];
                 this.totalRows = 0;
               }
               if (data.response.length > 0) {
+                this.tableErrorMessage = '';
                 this.issueListingdata = data.response;
                 this.seekdata = false;
                 this.totalRows = data.total;
@@ -463,9 +557,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 }
                 const updatedResponse = this.massageData(this.issueListingdata);
                 this.currentBucket[this.bucketNumber] = updatedResponse;
-                this.processData(updatedResponse);
+                this.tableData.push(...updatedResponse);
               }
             } catch (e) {
+              this.tableErrorMessage = 'apiResponseError';
               this.errorValue = 0;
               this.errorValue = -1;
               this.outerArr = [];
@@ -502,28 +597,28 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.updateComponent();
   }
 
-  massageData(data) {
-    /*
-     * added by Trinanjan 14/02/2017
-     * the funciton replaces keys of the table header data to a readable format
-     */
+  massageData(data){
     const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
     const newData = [];
-    data.map(function (responseData) {
-      const KeysTobeChanged = Object.keys(responseData);
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
-        if(element=="PolicyName") {
-          const elementnew = "Rule Name";
-          newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         else {
-        const elementnew =
+        elementnew =
           refactoredService.getDisplayNameForAKey(
             element.toLocaleLowerCase()
           ) || element;
-          newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
       newData.push(newObj);
     });
@@ -694,37 +789,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
       );
-      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
-      updatedQueryParams["headerColName"] = undefined;
-      updatedQueryParams["direction"] = undefined;
-      updatedQueryParams["bucketNumber"] = undefined;
-      updatedQueryParams["searchValue"] = undefined;
-      if (row.col.toLowerCase() === "resource id") {
-        const resourceType = row.row["Asset Type"].text;
-        const resourceId = encodeURIComponent(row.row["Resource ID"].text);
-        this.router
-          .navigate(
-            ["../../", "assets", "asset-list", resourceType, resourceId],
-            {
-              relativeTo: this.activatedRoute,
-              queryParams: updatedQueryParams,
-              queryParamsHandling: "merge",
-            }
-          )
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to asset details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
-      } else if (row.col.toLowerCase() === "issue id") {
-        this.router
-          .navigate(["issue-details", row.row["Issue ID"].text], {
+      this.router
+          .navigate(["issue-details", row["Issue ID"]], {
             relativeTo: this.activatedRoute,
-            queryParams: updatedQueryParams,
             queryParamsHandling: "merge",
           })
           .then((response) => {
@@ -736,30 +803,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           .catch((error) => {
             this.logger.log("error", "Error in navigation - " + error);
           });
-      } else if (row.col.toLowerCase() === "rule name") {
-        this.router
-          .navigate(
-            [
-              "../policy-knowledgebase-details",
-              row.row.nonDisplayableAttributes.text.RuleId,
-              "false"
-            ],
-            {
-              relativeTo: this.activatedRoute,
-              queryParams: updatedQueryParams,
-              queryParamsHandling: "merge",
-            }
-          )
-          .then((response) => {
-            this.logger.log(
-              "info",
-              "Successfully navigated to policy details page: " + response
-            );
-          })
-          .catch((error) => {
-            this.logger.log("error", "Error in navigation - " + error);
-          });
-      }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -791,9 +834,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   searchCalled(search) {
     this.searchTxt = search;
+    this.getUpdatedUrl();
   }
 
-  handlePopClick(rowText) {
+  handlePopClick() {
     const fileType = "csv";
 
     try {
@@ -832,70 +876,24 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  prevPg() {
-    try {
-      this.currentPointer--;
-      // this.processData(this.currentBucket[this.currentPointer]);
-      this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-      this.lastPaginator =
-        this.currentPointer * this.paginatorSize + this.paginatorSize;
-      this.bucketNumber--;
-      this.getData();
-      this.getUpdatedUrl();
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
 
   nextPg() {
     try {
-      if (this.currentPointer < this.bucketNumber) {
-        this.currentPointer++;
-        this.processData(this.currentBucket[this.currentPointer]);
-        this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-        this.lastPaginator =
-          this.currentPointer * this.paginatorSize + this.paginatorSize;
-        if (this.lastPaginator > this.totalRows) {
-          this.lastPaginator = this.totalRows;
-        }
-      } else {
         this.bucketNumber++;
-        this.getData();
-      }
-      this.getUpdatedUrl();
+        if(this.tableData.length < this.totalRows) this.getData();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  callNewSearch() {
-    this.cbArr = [];
-    this.cbObj = {};
-    this.outerArr = [];
-    this.tableDataLoaded = false;
-    this.currentBucket = [];
-    this.cbModel = [];
-    this.bucketNumber = 0;
-    this.dataTableData = [];
-    this.firstPaginator = 1;
-    this.showLoader = true;
-    this.currentPointer = 0;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
-    this.getData();
+  callNewSearch(searchVal){    
+    this.searchTxt = searchVal;
+    // this.state.searchValue = searchVal;
+    this.updateComponent();  
+    this.getUpdatedUrl();
   }
 
-  handleRemoveAllChecked(event: any) {
-    if (event == true) {
-      this.cbModel = [];
-      this.cbArr = [];
-      this.cbObj = {};
-    }
-  }
 
   ngOnDestroy() {
     try {

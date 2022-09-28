@@ -18,29 +18,17 @@
         <h1 class="title-text nowrap-ellipsis">{{pageTitle}}</h1>
     </div>
     <div class="wrapper">
-        <app-data-table [(cbModel)]="cbModel" (cbClicked)="checkBoxClicked($event)" [checkBox]="adminAccess"
-            [searchTextValues]="searchTxt" [showGenericMessage]="showGenericMessage" [errorValue]="errorValue"
-            [parentName]="'policyDetailsTableMessage'" [showingArr]="showingArr" [outerArr]="outerArr"
-            [searchableHeader]="true" [allColumns]="allColumns" [dataHead]="'Policy Violations'"
-            (selectedRow)="goToDetails($event)" [columnWhiteList]="[
-                      'Rule Name',
-                      'Issue ID',
-                      'Resource ID',
-                      'Status',
-                      'Severity',
-                      'Rule Category'
-                    ]" [firstPaginator]="firstPaginator" [lastPaginator]="lastPaginator" [totalRows]="totalRows"
-            [currentPointer]="currentPointer" (searchRowTxt)="searchCalled($event)" (previousPageCalled)="prevPg()"
-            (nextPageCalled)="nextPg()" (searchTriggerred)="callNewSearch()"
-            (showExceptionModalEventEmitter)="showExceptionModal($event)" [popRows]="popRows" [checkedList]="cbArr"
-            (rowClickText)="handlePopClick($event)" (paginatorSizeSelectedEventEmitter)="
-                      handlePaginatorSizeSelection($event)
-                    " [paginatorSize]="paginatorSize" (addFilterClicked)="handleAddFilterClick($event)"
-            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
-            (removeAllCheckedEventEmitter)="handleRemoveAllChecked($event)" (selectedFilterType)='changeFilterType($event)'
-            (selectedFilter)="changeFilterTags($event)" (deleteAllFilters)="deleteFilters($event)"
-            (deleteFilter)="deleteFilters($event)" [filteredArray]="filters" [doNotDisplaySearch]="doNotDisplaySearch" [filterErrorMessage]="filterErrorMessage" (headerColNameSelected)="handleHeaderColNameSelection($event)" [headerColName]="headerColName" [direction]="direction">
-        </app-data-table>
+        <!-- <div [class.loader]="tableData.length==0 && tableErrorMessage==''"></div>
+        <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message> -->
+        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" *ngIf="tableData.length>0 || tableErrorMessage!=''" 
+            [data]="tableData" [columnWidths]="columnWidths"
+            [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+            [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
+            [imageDataMap]="tableImageDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt" (nextPageCalled)="nextPg()" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
+            (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
+            (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'>
+        </app-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"
             (refreshDataTable)="refreshDataTable($event)">
