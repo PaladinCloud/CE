@@ -18,6 +18,10 @@ public class VirtualMachineVH extends GCPVH {
     private String onHostMaintainence;
 
     private ShieldedInstanceConfigVH shieldedInstanceConfig;
+
+    private String projectNumber;
+    private List scopesList;
+    private List emailList;
     public String getOnHostMaintainence() {
         return onHostMaintainence;
     }
@@ -97,4 +101,27 @@ public class VirtualMachineVH extends GCPVH {
         return items;
     }
 
+    public List getScopesList() {
+        return scopesList;
+    }
+
+    public List getEmailList() {
+        return emailList;
+    }
+
+    public void setEmailList(List emailList) {
+        this.emailList = emailList;
+    }
+
+    public void setScopesList(List scopesList) {
+        this.scopesList = scopesList;
+    }
+
+    public String getProjectNumber() {
+        return projectNumber;
+    }
+
+    public void setProjectNumber(String projectNumber) {
+        this.projectNumber = projectNumber;
+    }
 }

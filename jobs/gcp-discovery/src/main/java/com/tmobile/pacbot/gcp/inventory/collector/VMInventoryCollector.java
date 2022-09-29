@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ public class VMInventoryCollector {
 
     public List<VirtualMachineVH> fetchInstanceInventory(ProjectVH project) throws IOException {
         List<VirtualMachineVH> instanceList = new ArrayList<>();
+        logger.debug("Project id:{}",project.getProjectNumber());
         InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient();
 
         AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
@@ -56,10 +58,12 @@ public class VMInventoryCollector {
                         virtualMachineVH.setStatus(instance.getStatus());
                         logger.info("On hoost maintainenece attribute");
                         virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
+                        virtualMachineVH.setProjectNumber(project.getProjectNumber().toString());
                         this.setShieldedConfig(instance,virtualMachineVH);
                         this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);
                         this.setNetworkInterfaces(instance, virtualMachineVH);
+                        this.setScopeList(instance,virtualMachineVH);
                         instanceList.add(virtualMachineVH);
                     } catch (Exception e) {
                         logger.error("Error while fetching instance inventory for {} {}", instance.getName(), e.getMessage());
@@ -70,6 +74,21 @@ public class VMInventoryCollector {
         }
 
         return instanceList;
+    }
+
+    private void setScopeList(Instance instance, VirtualMachineVH virtualMachineVH) {
+        List collectScopeList =new ArrayList();
+        List emailList=new ArrayList();
+        for(ServiceAccount serviceAccount:instance.getServiceAccountsList())
+        {
+            logger.debug("Scope list{}",serviceAccount.getScopesList());
+            logger.debug("Email:{}",serviceAccount.getEmail());
+            List scopeList= Arrays.asList(serviceAccount.getScopesList().toArray());
+            collectScopeList.addAll(scopeList);
+            emailList.add(serviceAccount.getEmail());
+        }
+        virtualMachineVH.setScopesList(collectScopeList);
+        virtualMachineVH.setEmailList(emailList);
     }
 
     private void setShieldedConfig(Instance instance, VirtualMachineVH virtualMachineVH) {
