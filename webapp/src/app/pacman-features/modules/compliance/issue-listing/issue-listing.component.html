@@ -20,14 +20,15 @@
     <div class="wrapper">
         <!-- <div [class.loader]="tableData.length==0 && tableErrorMessage==''"></div>
         <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message> -->
-        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" *ngIf="tableData.length>0 || tableErrorMessage!=''" 
+        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
             [data]="tableData" [columnWidths]="columnWidths"
             [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
             [imageDataMap]="tableImageDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
             [searchQuery]="searchTxt" (nextPageCalled)="nextPg()" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
-            (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'>
+            (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'
+            [showDownloadBtn]="showDownloadBtn" [showFilterBtn]="showFilterBtn" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows">
         </app-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"

@@ -40,7 +40,7 @@ import { DataCacheService } from "src/app/core/services/data-cache.service";
   providers: [IssueFilterService, LoggerService, ErrorHandlingService],
 })
 export class IssueListingComponent implements OnInit, OnDestroy {
-  pageTitle = "Policy Violations";
+  pageTitle = "Violations";
   issueListingdata: any = [];
   selectedAssetGroup: string;
   selectedDomain: string;
@@ -86,6 +86,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   exceptionAction: any;
   showExceptionalModal = false;
   adminAccess = false; // check for admin access
+  showDownloadBtn = true;
+  showFilterBtn = true;
   private assetGroupSubscription: Subscription;
   private domainSubscription: Subscription;
   private routeSubscription: Subscription;
@@ -97,10 +99,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   public agAndDomain = {};
   public doNotDisplaySearch=true;
   filterErrorMessage = '';
-  tableTitle = "Policy Violations";
+  tableTitle = "Violations";
   tableErrorMessage = '';
   headerColName;
   direction;
+  onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Policy Name': 1, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {};
   columnsSortFunctionMap = {
@@ -187,6 +190,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
         this.agAndDomain["ag"] = this.selectedAssetGroup;
+        this.updateComponent();
       });
 
     this.domainSubscription = this.domainObservableService
@@ -502,7 +506,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  getData() {
+  getData(isNextPageCalled=false) {
     try {
       if (this.issueListingSubscription) {
         this.issueListingSubscription.unsubscribe();
@@ -557,7 +561,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 }
                 const updatedResponse = this.massageData(this.issueListingdata);
                 this.currentBucket[this.bucketNumber] = updatedResponse;
-                this.tableData.push(...updatedResponse);
+                if(isNextPageCalled){
+                  this.onScrollDataLoader.next(updatedResponse)
+                }else{
+                  this.tableData = updatedResponse;
+                }
+
               }
             } catch (e) {
               this.tableErrorMessage = 'apiResponseError';
@@ -837,7 +846,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.getUpdatedUrl();
   }
 
-  handlePopClick() {
+  handlePopClick(e) {
     const fileType = "csv";
 
     try {
@@ -880,7 +889,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   nextPg() {
     try {
         this.bucketNumber++;
-        if(this.tableData.length < this.totalRows) this.getData();
+        this.getData(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);

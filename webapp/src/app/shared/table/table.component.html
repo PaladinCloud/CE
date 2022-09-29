@@ -4,8 +4,12 @@
             <div class="left">
                 {{ tableTitle }}
             </div>
+            <div class="table-count-info" style="margin-left: 20px;">
+                <span *ngIf="isDataLoading">Loading...</span>
+                <span *ngIf="!isDataLoading">Loaded {{this.dataSource.data.length}} of {{ totalRows }} rows</span>
+            </div>
             <div class="right">
-                <div class="more-wrapper">
+                <div class="more-wrapper" *ngIf="showDownloadBtn">
                     <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
                     <button (click)="download()" mat-menu-item>Download</button>
@@ -18,7 +22,7 @@
                 <div class="search-bar-wrapper flex flex-row" *ngIf="showSearchBar">
                     <img src="/assets/icons/header-search.svg" matPrefix alt="" />
                     <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)" placeholder="Search" />
-                    <div class="search-in-columns" matSuffix>
+                    <!-- <div class="search-in-columns" matSuffix>
                         <mat-form-field>
                             <mat-select [formControl]="searchInColumns" multiple>
                                 <mat-option class="disabled-option" disabled="true" value="disabled">SEARCH IN</mat-option>
@@ -27,7 +31,7 @@
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <div class="header-right flex flex-row">
@@ -43,14 +47,14 @@
                     </mat-form-field>
                     <span> Columns </span>
                 </div>
-                <div class="filter-wrapper flex flex-row" (click)="showFilterModal = !showFilterModal;">
+                <div class="filter-wrapper flex flex-row" (click)="showFilterModal = !showFilterModal;" *ngIf="showFilterBtn">
                     <img src="/assets/icons/filter-icon.svg" alt="">
                     <span>Filter</span>
                 </div>
                 <div class="filter-modal-container" *ngIf="showFilterModal">
                     <div class="filter-modal-wrapper flex flex-col">
                         <div class="header flex flex-row">
-                            <div class="title">Fitlers</div>
+                            <div class="title">Filters</div>
                             <div class="clear-all-btn" (click)="removeAllFilters()">Clear all</div>
                         </div>
                         <div class="filters-container">
@@ -78,7 +82,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="more-wrapper" *ngIf="!tableTitle">
+                <div class="more-wrapper" *ngIf="!tableTitle && showDownloadBtn">
                     <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
                     <button (click)="download()" mat-menu-item>Download</button>
