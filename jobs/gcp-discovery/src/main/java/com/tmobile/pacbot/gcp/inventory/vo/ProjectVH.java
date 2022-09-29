@@ -6,6 +6,17 @@ public class ProjectVH extends GCPVH{
     private Long projectNumber;
     private HashMap<String,Object>computeInstanceMetadata;
 
+    public CloudAssetVH getCloudAsset() {
+        return cloudAsset;
+    }
+
+    public void setCloudAsset(CloudAssetVH cloudAsset) {
+        this.cloudAsset = cloudAsset;
+    }
+
+    private CloudAssetVH cloudAsset;
+
+
     public HashMap<String, Object> getComputeInstanceMetadata() {
         return computeInstanceMetadata;
     }
