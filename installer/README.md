@@ -238,7 +238,7 @@ If you don't have any domain for Paladin and want to use AWS internal URL with h
 1. Create a self signed certificate for the internal URL
 2. Upload it in AWS ACM (Certificate Manager) and copy ARN of that certificate
 3. Update local.py to have the ALB_PROTOCOL=HTTPS and SSL_CERTIFICATE_ARN=< copied-arn-value >
-4. Run sudo python manager.py install if you are installing for first time or sudo python manager.py redeploy if you
+4. Run sudo python manager.py install if you are installing for first time or sudo python3 manager.py redeploy if you
    already installed Paladin
 5. Refer Example 1
 
@@ -251,7 +251,7 @@ If you don't have any domain for Paladin and want to use AWS internal URL with h
 * **SSL_CERTIFICATE_ARN**=< copied-arn-value >
 * **PALADINCLOUD_DOMAIN**=< created-domain-name >
 
-5. Run sudo python manager.py install if you are installing for first time or sudo python manager.py redeploy if you
+5. Run sudo python manager.py install if you are installing for first time or sudo python3 manager.py redeploy if you
    already installed Paladin
 6. Refer Example 2
 
