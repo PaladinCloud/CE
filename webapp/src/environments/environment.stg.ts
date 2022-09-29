@@ -842,6 +842,10 @@ export const environment = {
         url: '{{baseUrl}}/admin/config-properties',
         method: 'GET'
     },
+    getCurrentVersion : {
+        url: '{{baseUrl}}/admin/version',
+        method: 'GET'
+    },
     updateConfigProperties: {
         url: '{{baseUrl}}/admin/config-properties',
         method: 'PUT'

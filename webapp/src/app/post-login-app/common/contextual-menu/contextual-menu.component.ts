@@ -31,6 +31,8 @@ import { DownloadService } from "../../../shared/services/download.service";
 import { DataCacheService } from "../../../core/services/data-cache.service";
 import { TreeNode } from "@circlon/angular-tree-component";
 import { NavigationEnd, Router } from "@angular/router";
+import { CommonResponseService } from "src/app/shared/services/common-response.service";
+import { environment } from "src/environments/environment";
 
 @Component({
   selector: "app-contextual-menu",
@@ -41,6 +43,7 @@ import { NavigationEnd, Router } from "@angular/router";
 export class ContextualMenuComponent implements OnInit, OnDestroy {
   currentParentId: number = 1;
   currentNodeId: number = 1;
+  current_version: string = "";
   @Input() haveAdminPageAccess;
   @Input() expanded;
   nodes = [
@@ -192,7 +195,8 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private downloadService: DownloadService,
     private dataCacheService: DataCacheService,
-    private router: Router
+    private router: Router,
+    private commonResponseService: CommonResponseService
   ) {
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
@@ -205,6 +209,17 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
         this.currentParentId = currNodes[1];
       }
     });
+
+    const url = environment.getCurrentVersion.url;
+    const urlMethod = environment.getCurrentVersion.method;
+    const queryParam = {
+      "cfkey": "current-release"
+    }
+    this.commonResponseService.getData(url, urlMethod,"",queryParam).subscribe(
+      response => {
+        this.current_version = response[0].value.substring(1);
+      }
+    )
   }
 
   private assetGroupSubscription: Subscription;
