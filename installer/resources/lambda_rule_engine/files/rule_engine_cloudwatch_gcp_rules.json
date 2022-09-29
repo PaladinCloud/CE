@@ -1230,5 +1230,27 @@
     "modifiedDate": "2022-08-01",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Cloud_Asset_Inventory",
+    "ruleUUID": "Enable_Cloud_Asset_Inventory",
+    "policyId": "Enable_Cloud_Asset_Inventory",
+    "ruleName": "Enable Cloud Asset Inventory",
+    "targetType": "project",
+    "assetGroup": "gcp",
+    "alexaKeyword": "CloudAsset",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-cloud-asset-api\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enable Cloud Asset Inventory\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"tagging\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Cloud_Asset_Inventory\",\"autofix\":false,\"alexaKeyword\":\"CloudAsset\",\"ruleRestUrl\":\"\",\"targetType\":\"project\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_Cloud_Asset_Inventory\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enable_Cloud_Asset_Inventory\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Cloud_Asset_Inventory",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Cloud Asset Inventory",
+    "createdDate": "2022-09-29",
+    "modifiedDate": "2022-09-29",
+    "severity": "medium",
+    "category": "tagging"
   }
 ]
