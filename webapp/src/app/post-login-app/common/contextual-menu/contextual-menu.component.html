@@ -55,10 +55,14 @@
   <div class="know-your-app-wrapper" [queryParams]="agAndDomain"
     [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]">
     <div class="icon icon-wrapper">
-      <img class="node-img" src="/assets/icons/stroke.svg" alt="" />
+      <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
     </div>
     <div class="app-wrapper" [class.isCollapsed]="!expanded">
-      <div class="know-your-app-content">Know your app</div>
+      <div class="know-your-app-content">Getting Started</div>
     </div>
+  </div>
+  <div class="version-wrapper" [class.collapsed]="!expanded">
+    <span class="version-text"  [class.collapsed]="!expanded">Version</span>
+    <span class="version-number">{{current_version}}</span>
   </div>
 </div>
