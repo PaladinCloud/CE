@@ -3498,6 +3498,28 @@
     "category": "security"
   },
   {
+    "ruleId": "RemoveRootUserAccessKey_version-1_RemoveRootUserAccessKey_account",
+    "ruleUUID": "aws_remove_root_user_account_access_key",
+    "policyId": "RemoveRootUserAccessKey_version-1",
+    "ruleName": "Remove access keys associated with the root user",
+    "targetType": "account",
+    "assetGroup": "aws",
+    "alexaKeyword": "RemoveRootUserAccessKey",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"remove-root-user-account-access-key\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"RemoveRootUserAccessKey_version-1_RemoveRootUserAccessKey_account\",\"autofix\":false,\"alexaKeyword\":\"RemoveRootUserAccessKey\",\"ruleRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"policyId\":\"RemoveRootUserAccessKey_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_remove_root_user_account_access_key\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_remove_root_user_account_access_key",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Remove Root User Account Access Key",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "S3BucketAllowHTTPRequest_version-1_S3BucketAllowHTTPRequest_s3",
     "ruleUUID": "aws_s3_bucket_should_not_allow_http_requests",
     "policyId": "S3BucketAllowHTTPRequest_version-1",
