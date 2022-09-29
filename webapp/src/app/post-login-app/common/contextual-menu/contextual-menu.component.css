@@ -117,7 +117,7 @@
 }
 
 ::ng-deep tree-viewport {
-  height: calc(100vh - 205px) !important;
+  height: calc(100vh - 245px) !important;
   overflow-x: hidden;
 }
 
@@ -164,5 +164,38 @@ tree-node-expander{
 }
 
 .app-wrapper{
-  padding: 16px 6px;
+  padding: 16px 0px;
+}
+
+
+
+.version-wrapper {
+  padding: 8px 0px;
+  display: flex;
+  flex-direction: row;
+  margin: 0px 16px;
+  gap: 6px;
+  border-top: 1px solid var(--border-200);
+}
+
+.version-wrapper.collapsed {
+  gap: 2px;
+}
+
+.version-text{
+  display: flex !important;
+  font: var(--text-body-2);
+  color: var(--text-low-emphasis);
+  overflow: hidden;
+  padding-left: 16px;
+}
+
+.version-text.collapsed{
+  padding-left: 2px;
+}
+
+.version-number{
+display: flex !important;
+font: var(--text-body-2);
+color: var(--text-low-emphasis);
 }
