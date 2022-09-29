@@ -5,6 +5,7 @@ import { MatSelect } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import * as _ from 'lodash';
+import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 
 @Component({
@@ -14,7 +15,7 @@ import { WindowExpansionService } from 'src/app/core/services/window-expansion.s
 })
 export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
-  @Input() data;
+  @Input() data = [];
   @Input() columnWidths;
   @Input() columnsSortFunctionMap;
   @Input() headerColName;
@@ -22,11 +23,16 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() searchQuery = "";
   @Input() showSearchBar;
   @Input() showAddRemoveCol;
+  @Input() showDownloadBtn;
+  @Input() showFilterBtn;
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
   @Input() filterTagLabels= {};
   @Input() tableErrorMessage = '';
+  @Input() onScrollDataLoader: Subject<any>;
+  @Input() totalRows = 0;
+  @Input() doLocalSearch = false;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -52,8 +58,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   screenWidth;
   denominator;
   screenWidthFactor;
-  removeFromScreenWidth = 320;
+  removeFromScreenWidth = 330;
   isWindowExpanded = true;
+  isDataLoading = false;
 
   showFilterModal = false;
   @Input() filteredArray = [];
@@ -79,16 +86,21 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allSelected=false;
     }
-    // if(this.searchQuery && this.showSearchBar) this.customSearch(this.searchQuery);
+    if(this.searchQuery && this.showSearchBar && this.doLocalSearch) this.customSearch(this.searchQuery);
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
 
     this.screenWidth = window.innerWidth;
     this.getWidthFactor();
-    // this.addFilter();
-    // this.nextPageCalled.emit();
 
-    for(let i=0; this.filteredArray.length<2; i++){
-      this.addFilter();
+    if(this.onScrollDataLoader){
+      this.onScrollDataLoader.subscribe(data => {      
+      this.isDataLoading = false;
+        if(data && data.length>0){
+          this.data.push(...data);
+          this.mainDataSource = new MatTableDataSource(this.data);
+          this.dataSource = new MatTableDataSource(this.data);
+        }
+    })
     }
   }
 
@@ -298,9 +310,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     
     if (event.keyCode === 13 || searchTxt=='') {
       this.tableErrorMessage = ''
-      // this.customSearch(searchTxt);
-      // this.customSort(this.headerColName, this.direction);
-      this.searchCalledEventEmitter.emit(searchTxt);
+      if(this.doLocalSearch){
+        this.customSearch(searchTxt);
+        this.customSort(this.headerColName, this.direction);
+      }else{
+        this.searchCalledEventEmitter.emit(searchTxt);
+      }
     }
   }
 
@@ -330,13 +345,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   onScroll(event: any) {
     // visible height + pixel scrolled >= total height 
     if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
-      this.nextPageCalled.emit();
-      this.mainDataSource = new MatTableDataSource(this.data);
-      this.dataSource = new MatTableDataSource(this.data);
-      // if(this.searchQuery && this.showSearchBar) this.customSearch(this.searchQuery);
-      if(this.headerColName) this.customSort(this.headerColName, this.direction);
-
-      setTimeout(() => {}, 1000);
+      if(this.data.length<this.totalRows && !this.isDataLoading) {
+        this.nextPageCalled.emit();
+        this.isDataLoading = true;
+      }
     }
   }
 

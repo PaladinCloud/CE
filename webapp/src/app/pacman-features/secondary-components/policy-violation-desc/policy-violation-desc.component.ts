@@ -37,7 +37,7 @@ export class PolicyViolationDescComponent implements OnInit {
   selectedDomain: string;
   accordionData: any;
   labelData: any;
-  showAccordion = false;
+  showAccordion = true;
   testData;
   public agAndDomain = {};
   constructor(
