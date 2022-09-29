@@ -59,6 +59,7 @@ public class PacmanRuleConstants {
     public static final String GCP_SHIELDED_CONFIG ="shieldedInstanceConfig" ;
     public static final String AZURE_TLSVersion_MySQLFlex="tlsVersion";
     public static final String ROLES ="roles" ;
+    public static final String SYSTEM_ASSIGNED_PRINCIPAL_ID ="systemAssignedManagedServiceIdentityPrincipalId" ;
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");

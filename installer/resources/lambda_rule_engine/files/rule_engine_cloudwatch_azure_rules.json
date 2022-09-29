@@ -2770,5 +2770,27 @@
     "modifiedDate": "2022-09-26",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Ensure_Active_Directory_Web_App",
+    "ruleUUID": "Ensure_Active_Directory_Web_App",
+    "policyId": "Ensure_Active_Directory_Web_App",
+    "ruleName": "Active directory for App services",
+    "targetType": "webapp",
+    "assetGroup": "azure",
+    "alexaKeyword": "Ensure_Active_Directory_Web_App",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-active-directory-enabled\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Active directory needs to be enabled for app services so that user's application can connect to other azure cloud services without need of credentials like user names and password\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Active directory is not enabled on app service\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/azure_webapp/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Active Directory on AppServices\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Ensure_Active_Directory_Web_App\",\"autofix\":false,\"alexaKeyword\":\"Ensure_Active_Directory_Web_App\",\"ruleRestUrl\":\"\",\"targetType\":\"webapp\",\"pac_ds\":\"azure\",\"policyId\":\"Ensure_Active_Directory_Web_App\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Ensure_Active_Directory_Web_App\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Ensure_Active_Directory_Web_App",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Active Directory on AppServices",
+    "createdDate": "2022-09-29",
+    "modifiedDate": "2022-09-29",
+    "severity": "medium",
+    "category": "security"
   }
 ]

@@ -16,6 +16,16 @@ public class WebAppVH extends AzureVH {
 
     private boolean clientCertEnabled;
 
+    private String systemAssignedManagedServiceIdentityPrincipalId;
+
+    public String getSystemAssignedManagedServiceIdentityPrincipalId() {
+        return systemAssignedManagedServiceIdentityPrincipalId;
+    }
+
+    public void setSystemAssignedManagedServiceIdentityPrincipalId(String systemAssignedManagedServiceIdentityPrincipalId) {
+        this.systemAssignedManagedServiceIdentityPrincipalId = systemAssignedManagedServiceIdentityPrincipalId;
+    }
+
     public boolean isClientCertEnabled() {
         return clientCertEnabled;
     }
