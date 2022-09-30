@@ -63,6 +63,7 @@ public class PacmanRuleConstants {
     public static final String GCP_EMAIL_LIST ="emailList" ;
     public static final String GCP_SCOPES_LIST ="scopesList" ;
     public static final String GCP_PROJECT_NUMBER ="projectNumber" ;
+    public static final String GCP_NAME = "name";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
