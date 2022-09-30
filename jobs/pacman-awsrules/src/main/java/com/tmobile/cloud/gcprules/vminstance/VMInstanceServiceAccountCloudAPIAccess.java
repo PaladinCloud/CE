@@ -93,7 +93,12 @@ public class VMInstanceServiceAccountCloudAPIAccess extends BaseRule {
         if (hitsJsonArray.size() > 0) {
             JsonObject vmInstanceObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
-
+            String name = vmInstanceObject.getAsJsonObject()
+                    .get(PacmanRuleConstants.GCP_NAME).getAsString();
+            if(name.startsWith("gke"))
+            {
+                return false;
+            }
             logger.debug("Validating the data item: {}", vmInstanceObject);
             String projectNumber = vmInstanceObject.getAsJsonObject()
                     .get(PacmanRuleConstants.GCP_PROJECT_NUMBER).getAsString();
