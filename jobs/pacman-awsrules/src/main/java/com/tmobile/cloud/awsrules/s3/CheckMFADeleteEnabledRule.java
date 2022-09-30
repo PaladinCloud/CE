@@ -54,7 +54,7 @@ public class CheckMFADeleteEnabledRule extends BaseRule {
 	 * 
 	 * ruleCategory : Enter the value of category <br><br>
 	 * 
-	 * roleIdentifyingString : Configure it as role/pac_ro <br><br>
+	 * roleIdentifyingString : Configure it as role/paladincloud_ro <br><br>
 	 * 
 	 * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
 	 *
