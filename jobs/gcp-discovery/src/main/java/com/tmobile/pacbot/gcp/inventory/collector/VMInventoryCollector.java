@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +57,7 @@ public class VMInventoryCollector {
                         virtualMachineVH.setDescription(instance.getDescription());
                         virtualMachineVH.setRegion(zoneName);
                         virtualMachineVH.setStatus(instance.getStatus());
+                        virtualMachineVH.setServiceAccounts(getServiceAccountList(instance.getServiceAccountsList()));
                         logger.info("On hoost maintainenece attribute");
                         virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
                         virtualMachineVH.setProjectNumber(project.getProjectNumber().toString());
@@ -89,6 +91,18 @@ public class VMInventoryCollector {
         }
         virtualMachineVH.setScopesList(collectScopeList);
         virtualMachineVH.setEmailList(emailList);
+    }
+
+    public List<HashMap<String,Object>> getServiceAccountList(List<ServiceAccount> serviceAccountList){
+        List<HashMap<String,Object>>resList=new ArrayList<>();
+        for (ServiceAccount serviceAccount:serviceAccountList) {
+            HashMap<String,Object>serviceAccountMap=new HashMap<>();
+            serviceAccountMap.put("email",serviceAccount.getEmail());
+            serviceAccountMap.put("emailBytes",serviceAccount.getEmailBytes());
+            serviceAccountMap.put("scopeList",serviceAccount.getScopesList());
+            resList.add(serviceAccountMap);
+        }
+        return  resList;
     }
 
     private void setShieldedConfig(Instance instance, VirtualMachineVH virtualMachineVH) {
