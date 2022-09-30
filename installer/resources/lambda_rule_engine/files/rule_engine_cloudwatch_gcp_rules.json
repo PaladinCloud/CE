@@ -1296,5 +1296,27 @@
     "modifiedDate": "2022-09-30",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Deny_usage_of_default_service_accounts_for_instances",
+    "ruleUUID": "Deny_usage_of_default_service_accounts_for_instances",
+    "policyId": "Deny_usage_of_default_service_accounts_for_instances",
+    "ruleName": "Deny_usage_of_default_service_accounts_for_instances",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "ServiceAccount",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"deny-usage-of-default-service-account\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Deny usage of default service accounts for instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Deny_usage_of_default_service_accounts_for_instances\",\"autofix\":false,\"alexaKeyword\":\"ServiceAccount\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"Deny_usage_of_default_service_accounts_for_instances\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Deny_usage_of_default_service_accounts_for_instances\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Deny_usage_of_default_service_accounts_for_instances",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Deny usage of default service accounts for instances",
+    "createdDate": "2022-09-29",
+    "modifiedDate": "2022-09-29",
+    "severity": "medium",
+    "category": "security"
   }
 ]

@@ -11,6 +11,17 @@ public class GCPVH {
     private String projectName;
 
     private String projectId;
+
+    // private Long projectNumber;
+
+    // public Long getProjectNumber() {
+    //     return projectNumber;
+    // }
+
+    // public void setProjectNumber(Long projectNumber) {
+    //     this.projectNumber = projectNumber;
+    // }
+
     public String getRegion() {
         return region;
     }

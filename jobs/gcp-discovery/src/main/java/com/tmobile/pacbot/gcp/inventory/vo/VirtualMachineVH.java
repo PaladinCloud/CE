@@ -1,6 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,16 @@ public class VirtualMachineVH extends GCPVH {
     private List<NetworkInterfaceVH> networkInterfaces;
 
     private List<ItemInterfaceVH> items;
+
+    private List<HashMap<String,Object>> serviceAccounts;
+
+    public List<HashMap<String, Object>> getServiceAccounts() {
+        return serviceAccounts;
+    }
+
+    public void setServiceAccounts(List<HashMap<String, Object>> serviceAccounts) {
+        this.serviceAccounts = serviceAccounts;
+    }
 
     private String onHostMaintainence;
 

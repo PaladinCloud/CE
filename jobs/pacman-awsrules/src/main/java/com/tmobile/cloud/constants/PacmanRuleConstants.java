@@ -568,4 +568,8 @@ public class PacmanRuleConstants {
     public static final String RETENTION_IN_DAYS="retentionInDays";
     public static final String AUTO_MINOR_VERSION_UPGRADE = "autominorversionupgrade";
     public static final String CLOUD_ASSET="cloudAsset";
+    public static final String SERVICE_ACCOUNTS_LIST="serviceAccounts";
+    public static final String PROJECT_NUMBER= "projectNumber";
+    public static final String EMAIL="email";
+    public static final String EMAIL_PATTERN="-compute@developer.gserviceaccount.com";
 }
