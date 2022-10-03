@@ -24,7 +24,7 @@ def get_rule_engine_cloudwatch_rules_aws_var():
         #     continue
         # elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
         #     continue
-        if variable_dict_input[index]['ruleUUID'] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service()
+        if variable_dict_input[index]['ruleUUID'] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
             continue
         batch = int(index % 20)
         item = {
