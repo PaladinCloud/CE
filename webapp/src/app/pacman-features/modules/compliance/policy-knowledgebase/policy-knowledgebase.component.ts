@@ -78,6 +78,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   state: any = {};
   whiteListColumns;
   displayedColumns;
+  doLocalSearch = true;
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
@@ -135,8 +136,6 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   }
 
   handlePopClick() {
-    console.log("AM I CALLED???");
-    
     const fileType = "csv";
 
     try {
@@ -151,7 +150,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       const downloadRequest = {
         ag: this.selectedAssetGroup,
         from: 0,
-        searchtext: this.searchTxt,
+        searchtext: this.searchPassed,
         size: this.typeObj['All Policies'],
       };
 
@@ -191,6 +190,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   callNewSearch(searchVal){
     this.searchPassed = searchVal;
     // this.state.searchValue = searchVal;
+    this.updateComponent();
     this.getUpdatedUrl();
   }
 
@@ -285,7 +285,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     }
     const payload = {
       'ag': this.selectedAssetGroup,
-      'searchtext': this.searchTxt,
+      'searchtext': this.searchPassed,
       'filter': {
         'domain': this.selectedDomain
       },

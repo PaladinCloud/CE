@@ -20,6 +20,8 @@ public class ProjectInventoryCollector {
     @Autowired
     GCPCredentialsProvider gcpCredentialsProvider;
 
+    @Autowired
+    CloudAssetInventoryCollector cloudAssetInventoryCollector;
     private static final Logger logger = LoggerFactory.getLogger(ProjectInventoryCollector.class);
     public List<ProjectVH>  fetchProjectMetadataMetadata(ProjectVH project) throws Exception {
 
@@ -31,9 +33,10 @@ public class ProjectInventoryCollector {
         projectMetadataVH.setId(project.getProjectId());
         projectMetadataVH.setProjectNumber(project.getProjectNumber());
         this.fetchComputeEngineMetadata(project.getProjectId().toString(),projectMetadataVH);
+        projectMetadataVH.setCloudAsset(cloudAssetInventoryCollector.fetchCloudAssetDetails(project));
         projectMetadataVHList.add(projectMetadataVH);
 
-logger.info("project data {}",projectMetadataVH);
+        logger.info("project data {}",projectMetadataVH);
         return  projectMetadataVHList;
     }
 
@@ -47,8 +50,6 @@ logger.info("project data {}",projectMetadataVH);
             String response = CommonUtils.doHttpGet(url, "Bearer",accessToken);
             JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
         if(responseObj!=null) {
-
-
             if (responseObj.get("commonInstanceMetadata") != null) {
                 JsonArray metadataList = responseObj.get("commonInstanceMetadata").getAsJsonObject().get("items").getAsJsonArray();
 

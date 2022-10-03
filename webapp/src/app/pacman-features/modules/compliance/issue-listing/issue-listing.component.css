@@ -56,6 +56,12 @@ app-issue-exception{
     height: inherit;
 }
 
+/* .violations-table ::ng-deep .mat-column-Policy-Name {
+  max-width: 350px !important;
+} 
+*/
+
+/* 
 .violations-table.admin-rights ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
     width: 58px;
     margin-left: 24px;
@@ -121,7 +127,7 @@ width: 100% !important;
 .violations-table ::ng-deep .data-table-wrap {
     border: 1px solid #dce1e8;
     border-top: none;
-}
+} */
 
 .data-table-desc{
     margin: 1em 0 0;

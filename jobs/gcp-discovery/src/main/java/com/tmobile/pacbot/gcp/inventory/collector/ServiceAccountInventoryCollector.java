@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.google.api.services.cloudresourcemanager.CloudResourceManager;
+import com.google.api.services.cloudresourcemanager.model.GetIamPolicyRequest;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.iam.v1.model.ServiceAccount;
 import com.google.api.services.iam.v1.model.ServiceAccountKey;
@@ -13,21 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Component
 public class ServiceAccountInventoryCollector {
     @Autowired
     GCPCredentialsProvider gcpCredentialsProvider;
-    private static final Logger logger = LoggerFactory.getLogger(StorageCollector.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceAccountInventoryCollector.class);
 
     public  List<ServiceAccountVH> fetchServiceAccountDetails(ProjectVH project) throws GeneralSecurityException, IOException {
 
        Iam.Projects.ServiceAccounts.List serviceAccountList= gcpCredentialsProvider.getIamService().projects().serviceAccounts().list("projects/"+project.getProjectId());
         List<ServiceAccountVH> serviceAccountVHList = new ArrayList<>();
+
+        Map<String,ServiceAccountVH> serviceAccountMap = new HashMap<>();
        for (ServiceAccount serviceAccount:serviceAccountList.execute().getAccounts()){
 
            ServiceAccountVH serviceAccountVH=new ServiceAccountVH();
@@ -40,10 +42,49 @@ public class ServiceAccountInventoryCollector {
            serviceAccountVH.setDescription(serviceAccount.getDescription());
            logger.info("Serice account inventory collector-> {}",serviceAccount.getName());
            getServiceAccountKeys(serviceAccount.getUniqueId(),serviceAccountVH,project);
+           serviceAccountMap.put(serviceAccount.getName(), serviceAccountVH);
+
+           //Method to fetch the role and membership of accounts of project
+           fetchMembership(serviceAccountVH,project.getProjectId());
 
            serviceAccountVHList.add(serviceAccountVH);
+
        }
-    return serviceAccountVHList;
+       return serviceAccountVHList;
+    }
+    private void fetchMembership(ServiceAccountVH serviceAccountVH, String projectId){
+        CloudResourceManager.Projects.GetIamPolicy iamPolicy = null;
+        String serviceAccounts="serviceAccounts/";
+        String serviceAccount="serviceAccount:";
+        try {
+           List<String> roles=new ArrayList<>();
+            String name=serviceAccountVH.getName();
+            String modifiedName=name.substring(name.indexOf(serviceAccounts)+serviceAccounts.length());
+            iamPolicy = gcpCredentialsProvider.getCloudResourceManager().projects().getIamPolicy(projectId, new GetIamPolicyRequest());
+            List<com.google.api.services.cloudresourcemanager.model.Binding> binds = iamPolicy.execute().getBindings();
+            if(binds!=null) {
+                for (com.google.api.services.cloudresourcemanager.model.Binding binding : binds) {
+                    for(String member:binding.getMembers())
+                    {
+                        if(member.startsWith(serviceAccount))
+                        {
+                            String expectedName=serviceAccount.concat(modifiedName);
+                            if(expectedName.equals(member))
+                            {
+                                roles.add(binding.getRole());
+                            }
+
+                        }
+                    }
+                }
+            }
+            serviceAccountVH.setRoles(roles);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void  getServiceAccountKeys(String serviceAccountName,ServiceAccountVH serviceAccountVH,ProjectVH projectVH) throws GeneralSecurityException, IOException {
 

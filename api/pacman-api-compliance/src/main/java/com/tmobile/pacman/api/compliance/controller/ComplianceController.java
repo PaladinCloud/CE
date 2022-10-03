@@ -158,6 +158,31 @@ public class ComplianceController implements Constants {
         return ResponseUtils.buildSucessResponse(distribution);
     }
 
+
+
+    /**
+     * Gets the issue distribution by ruleCategory and severity.asssetGroup
+     * is mandatory, domain is optional. API return issue distribution rule
+     * severity & rule Category for given asset group
+     *
+     * @param assetGroup name of the asset group
+     * @return ResponseEntity
+     */
+
+    @RequestMapping(path = "/v1/issues/distribution/averageage", method = RequestMethod.GET)
+    public ResponseEntity<Object> getAverageAgeDistribution(@RequestParam(name="ag",required = true) String assetGroup) {
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
+        }
+        DitributionDTO distribution = null;
+        try {
+            distribution = new DitributionDTO(complianceService.getAverageAgeDistribution(assetGroup));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(distribution);
+    }
+
     /**
      * Gets the tagging compliance summary.asssetGroup is mandatory and
      * targetType is optional If API receives assetGroup as request parameter,

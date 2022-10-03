@@ -25,6 +25,7 @@ import { DomainTypeObservableService } from "../core/services/domain-type-observ
 import { ThemeObservableService } from "../core/services/theme-observable.service";
 import { WorkflowService } from "../core/services/workflow.service";
 import { PermissionGuardService } from "../core/services/permission-guard.service";
+import { WindowExpansionService } from "../core/services/window-expansion.service";
 
 declare var Offline: any;
 
@@ -65,6 +66,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.sidenavExpanderLeft = 70;
       this.rotationVar = 'rotate(0)';
     }
+    this.windowExpansionService.setExpansionStatus(this.isExpanded);
   }
 
   mouseenter() {
@@ -96,7 +98,8 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private mainRoutingAnimationEventService: MainRoutingAnimationEventService,
     private downloadService: DownloadService,
     private domainTypeObservableService: DomainTypeObservableService,
-    private themeObservableService: ThemeObservableService
+    private themeObservableService: ThemeObservableService,
+    private windowExpansionService: WindowExpansionService
   ) {
     if (this.pageReloadInterval) {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);

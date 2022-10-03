@@ -15,18 +15,8 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -201,6 +191,24 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             distribution.put("distribution_ruleCategory", ruleCategoryDistribution);
             distribution.put("ruleCategory_percentage", ruleCategoryPercentage);
             distribution.put("total_issues", totalIssues);
+            return distribution;
+        } catch (DataException e) {
+            logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());
+            logger.error("Compliance API >> DataException in getting distribution",e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> getAverageAgeDistribution(String assetGroup) throws ServiceException {
+        try {
+            Map<String, Object> distribution = new HashMap<>();
+            // get Rules mapped to targetType
+                    Map<String, Object> avgAgeDistribution = repository.getAverageAge(assetGroup);
+            logger.info("Compliance API >> Fetched avgAgeDistribution from repository: {}", avgAgeDistribution);
+
+            Map<String, Object> avgAge = repository.getAverageAge(assetGroup);
+            distribution.put("averageAgeBySeverity", avgAgeDistribution);
             return distribution;
         } catch (DataException e) {
             logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());

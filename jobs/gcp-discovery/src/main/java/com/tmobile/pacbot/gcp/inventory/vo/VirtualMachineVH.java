@@ -1,6 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,23 @@ public class VirtualMachineVH extends GCPVH {
 
     private List<ItemInterfaceVH> items;
 
+    private List<HashMap<String,Object>> serviceAccounts;
+
+    public List<HashMap<String, Object>> getServiceAccounts() {
+        return serviceAccounts;
+    }
+
+    public void setServiceAccounts(List<HashMap<String, Object>> serviceAccounts) {
+        this.serviceAccounts = serviceAccounts;
+    }
+
     private String onHostMaintainence;
 
     private ShieldedInstanceConfigVH shieldedInstanceConfig;
+
+    private String projectNumber;
+    private List scopesList;
+    private List emailList;
     public String getOnHostMaintainence() {
         return onHostMaintainence;
     }
@@ -97,4 +112,27 @@ public class VirtualMachineVH extends GCPVH {
         return items;
     }
 
+    public List getScopesList() {
+        return scopesList;
+    }
+
+    public List getEmailList() {
+        return emailList;
+    }
+
+    public void setEmailList(List emailList) {
+        this.emailList = emailList;
+    }
+
+    public void setScopesList(List scopesList) {
+        this.scopesList = scopesList;
+    }
+
+    public String getProjectNumber() {
+        return projectNumber;
+    }
+
+    public void setProjectNumber(String projectNumber) {
+        this.projectNumber = projectNumber;
+    }
 }

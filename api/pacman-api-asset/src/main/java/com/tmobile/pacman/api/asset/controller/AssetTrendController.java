@@ -99,13 +99,6 @@ public class AssetTrendController {
         try {
             Date from = fromDate;
             Date to = toDate;
-            if (from == null && to == null) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-                to = cal.getTime();
-                cal.add(Calendar.DATE, Constants.NEG_THIRTY);
-                from = cal.getTime();
-            }
             Map<String, Object> response = new LinkedHashMap<>();
             response.put("ag", assetGroup);
             List<Map<String, Object>> trendList = assetService.getAssetCountTrend(assetGroup, type, from, to);

@@ -58,6 +58,12 @@ public class PacmanRuleConstants {
     public static final String autoCreateSubnetworks="autoCreateSubnetworks";
     public static final String GCP_SHIELDED_CONFIG ="shieldedInstanceConfig" ;
     public static final String AZURE_TLSVersion_MySQLFlex="tlsVersion";
+    public static final String ROLES ="roles" ;
+    public static final String SYSTEM_ASSIGNED_PRINCIPAL_ID ="systemAssignedManagedServiceIdentityPrincipalId" ;
+    public static final String GCP_EMAIL_LIST ="emailList" ;
+    public static final String GCP_SCOPES_LIST ="scopesList" ;
+    public static final String GCP_PROJECT_NUMBER ="projectNumber" ;
+    public static final String GCP_NAME = "name";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -399,6 +405,8 @@ public class PacmanRuleConstants {
     public static final String DETAILS = "details";
     public static final String AZURE_SUBSCRIPTION = "subscription";
     public static final String AZURE_SUBSCRIPTION_NAME = "subscriptionName";
+
+    public static final String AZURE_SUBSCRIPTION_ID="subscriptionId";
     public static final String IS_PASSWORD_BASED_AUTHENTICATION_DISABLED = "passwordBasedAuthenticationDisabled";
     public static final String IS_ENCRYPTION_ENABLED = "isEncryptionEnabled";
     public static final String DISKS = "disks";
@@ -543,6 +551,9 @@ public class PacmanRuleConstants {
     public static final String DEFAULT="default";
     public static final String REQUIRE_SSL="requireSsl";
     public static final String DEFAULT_ACTION="defaultAction";
+    public static final String INVALID_ACCOUNT_SUMMARY_RESPONSE = "Invalid account summary response";
+    public static final String UNABLE_TO_GET_CLIENT_FOR_FOLLOWING_INPUT= "unable to get client for following input";
+    public static final String ACCOUNT_ACCESS_KEYS_PRESENT = "AccountAccessKeysPresent";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";
@@ -556,5 +567,12 @@ public class PacmanRuleConstants {
     public static final String NETWORK_WATCHER ="networkWatcher";
     public static final String RETENTION_IN_DAYS="retentionInDays";
     public static final String AUTO_MINOR_VERSION_UPGRADE = "autominorversionupgrade";
+
     public static final String TYPE= "type";
+
+    public static final String CLOUD_ASSET="cloudAsset";
+    public static final String SERVICE_ACCOUNTS_LIST="serviceAccounts";
+    public static final String PROJECT_NUMBER= "projectNumber";
+    public static final String EMAIL="email";
+    public static final String EMAIL_PATTERN="-compute@developer.gserviceaccount.com";
 }
