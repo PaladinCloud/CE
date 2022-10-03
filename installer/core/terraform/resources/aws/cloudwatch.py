@@ -53,7 +53,7 @@ class CloudWatchEventTargetResource(TerraformResource):
     available_args = {
         'rule': {'required': True},
         'target_id': {'required': True},
-        'event_bus_name': {'required': True},
+        'event_bus_name': {'required': False},
         'arn': {'required': False},
         'target_input': {'required': False, 'tf_arg_key': 'input'},
         'run_command_targets': {'required': False}
