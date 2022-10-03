@@ -149,6 +149,3 @@ except:
 
 if ALB_PROTOCOL == "HTTPS":
     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
-
-
-
