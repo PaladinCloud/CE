@@ -313,12 +313,12 @@ public class ComplianceControllerTest {
     @Test
     public void addIssuesExceptionExceptionTest() throws Exception {
         
-        when(complianceService.addMultipleIssueException(anyObject())).thenReturn(new IssueExceptionResponse());
-        assertThat(complianceController.addIssuesException(new IssuesException()), is(notNullValue()));
+        when(complianceService.addMultipleIssueException("aws",anyObject())).thenReturn(new IssueExceptionResponse());
+        assertThat(complianceController.addIssuesException("aws",new IssuesException()), is(notNullValue()));
         
-        when(complianceService.addMultipleIssueException(anyObject())).thenThrow(new ServiceException());
+        when(complianceService.addMultipleIssueException("aws",anyObject())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.addIssuesException(new IssuesException());
+        ResponseEntity<Object> responseObj = complianceController.addIssuesException("",new IssuesException());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
@@ -327,12 +327,12 @@ public class ComplianceControllerTest {
         
         RevokeIssuesException revokeIssuesException = new RevokeIssuesException();
         revokeIssuesException.setIssueIds(Arrays.asList("123"));
-        when(complianceService.revokeMultipleIssueException(anyObject())).thenReturn(new IssueExceptionResponse());
-        assertThat(complianceController.revokeIssuesException(revokeIssuesException), is(notNullValue()));
+        when(complianceService.revokeMultipleIssueException("aws",anyObject())).thenReturn(new IssueExceptionResponse());
+        assertThat(complianceController.revokeIssuesException("aws",revokeIssuesException), is(notNullValue()));
         
-        when(complianceService.revokeMultipleIssueException(anyObject())).thenThrow(new ServiceException());
+        when(complianceService.revokeMultipleIssueException("aws",anyObject())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.revokeIssuesException(revokeIssuesException);
+        ResponseEntity<Object> responseObj = complianceController.revokeIssuesException("aws",revokeIssuesException);
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
 
