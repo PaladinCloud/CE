@@ -105,7 +105,7 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
         'name': {'required': True},
         'schedule_expression': {'required': False},
         'event_bus_name' :  {'required':True},
-        'event_pattern': {'required':True,},
+        'event_pattern': {'required':False,},
         'role_arn ': {'required': False},
         'is_enabled ': {'required': False},
         'description': {'required': False},
