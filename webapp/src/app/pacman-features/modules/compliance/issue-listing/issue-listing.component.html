@@ -28,7 +28,7 @@
             [searchQuery]="searchTxt" (nextPageCalled)="nextPg()" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
             (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'
-            [showDownloadBtn]="showDownloadBtn" [showFilterBtn]="showFilterBtn" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows">
+            [showDownloadBtn]="showDownloadBtn" [showFilterBtn]="showFilterBtn" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)">
         </app-table>
         <app-issue-exception *ngIf="adminAccess && showExceptionalModal" [issueList]="cbArr"
             [exceptionAction]="exceptionAction" (closeExceptionalModal)="closeExceptionalModal($event)"

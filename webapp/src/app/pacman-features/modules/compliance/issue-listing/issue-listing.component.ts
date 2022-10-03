@@ -172,7 +172,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private permissions: PermissionGuardService,
     private dataCacheService: DataCacheService
   ) {
-    this.state = this.dataCacheService.get("issueListing") || {};
+    if(this.dataCacheService.get("issueListing")) {
+        this.state = JSON.parse(this.dataCacheService.get("issueListing")) || {};
+      }
       
     this.headerColName = this.state.headerColName || 'Policy Name';
     this.direction = this.state.direction || 'asc';
@@ -223,8 +225,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.storeState();
   }
 
+  handleWhitelistColumnsChange(event){
+    this.state.whiteListColumns = event;
+    this.storeState();
+  }
+
   storeState(){
-    this.dataCacheService.set(this.state, "issueListing");
+    this.dataCacheService.set("issueListing", JSON.stringify(this.state));    
   }
 
   /*
