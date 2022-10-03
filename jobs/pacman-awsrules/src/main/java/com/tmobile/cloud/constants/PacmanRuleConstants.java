@@ -567,6 +567,9 @@ public class PacmanRuleConstants {
     public static final String NETWORK_WATCHER ="networkWatcher";
     public static final String RETENTION_IN_DAYS="retentionInDays";
     public static final String AUTO_MINOR_VERSION_UPGRADE = "autominorversionupgrade";
+
+    public static final String TYPE= "type";
+
     public static final String CLOUD_ASSET="cloudAsset";
     public static final String SERVICE_ACCOUNTS_LIST="serviceAccounts";
     public static final String PROJECT_NUMBER= "projectNumber";

@@ -2750,6 +2750,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Use_CMK_to_encrypt_OS_and_Data_disk",
+    "ruleUUID": "Use_CMK_to_encrypt_OS_and_Data_disk",
+    "policyId": "Use_CMK_to_encrypt_OS_and_Data_disk",
+    "ruleName": "Use CMK to  Encrypt OS and Data disk",
+    "targetType": "disk",
+    "assetGroup": "Azure",
+    "alexaKeyword": "Use_CMK_to_encrypt_OS_and_Data_disk",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-os-data-disks\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Use CMK to  Encrypt OS and Data disk\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Use_CMK_to_encrypt_OS_and_Data_disk\",\"autofix\":false,\"alexaKeyword\":\"Use_CMK_to_encrypt_OS_and_Data_disk\",\"ruleRestUrl\":\"\",\"targetType\":\"disk\",\"pac_ds\":\"azure\",\"policyId\":\"Use_CMK_to_encrypt_OS_and_Data_disk\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Use_CMK_to_encrypt_OS_and_Data_disk\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Use_CMK_to_encrypt_OS_and_Data_disk",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Use CMK to  Encrypt OS and Data disk",
+    "createdDate": "2022-09-30",
+    "modifiedDate": "2022-09-30",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
     "ruleUUID": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
     "policyId": "Enable_Azure_DiagnosticSettings_Mandatory_Tags",
