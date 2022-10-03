@@ -99,7 +99,7 @@ public class CMKEncryptionForStorageAccountActivityLogRule extends BaseRule {
 
                         JsonObject storageObj = ((JsonObject) storageAccountLogList.get(i));
 
-                        String encryptionKeySource=storageObj.get("storageAccountEncryptionKeySource").toString();
+                        String encryptionKeySource=storageObj.get("storageAccountEncryptionKeySource").getAsString();
 
                         if(encryptionKeySource.equalsIgnoreCase("Microsoft.Storage")){
                              validationResult = false;

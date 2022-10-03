@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,7 @@ public class SubscriptionInventoryCollector {
 
     private static final Logger log = LoggerFactory.getLogger(SubscriptionInventoryCollector.class);
 
-    public List<SubscriptionVH> fetchSubscriptions(SubscriptionVH subscription) throws UnsupportedEncodingException {
+    public List<SubscriptionVH> fetchSubscriptions(SubscriptionVH subscription){
 
         List<SubscriptionVH> subscriptionList = new ArrayList<>();
 
@@ -48,42 +47,40 @@ public class SubscriptionInventoryCollector {
         return subscriptionList;
     }
 
-    private List<StorageAccountActivityLogVH>fetchStorageAccountActivityLog(SubscriptionVH subscription) throws UnsupportedEncodingException {
-
-        String apiUrlTemplate="https://management.azure.com/subscriptions/%s/providers/Microsoft.Insights/diagnosticSettings?api-version=2021-05-01-preview";
+    private List<StorageAccountActivityLogVH>fetchStorageAccountActivityLog(SubscriptionVH subscription){
 
         List<StorageAccountActivityLogVH>storageAccountActivityLogVHList=new ArrayList<>();
-        String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
-        Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
-                subscription.getSubscriptionId());
 
-        PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
+        try{
+            String apiUrlTemplate="https://management.azure.com/%s/providers/Microsoft.Insights/diagnosticSettings?api-version=2021-05-01-preview";
+            String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+            Azure azure = azureCredentialProvider.authenticate(subscription.getTenant(),
+                    subscription.getSubscriptionId());
+            PagedList<StorageAccount> storageAccounts = azure.storageAccounts().list();
+            String url = String.format(apiUrlTemplate, URLEncoder.encode("/subscriptions/"+subscription.getSubscriptionId(),java.nio.charset.StandardCharsets.UTF_8.toString()));
+            log.info("The url is {}",url);
 
+            String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+            log.info("Response is :{}",response);
+            JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+            JsonArray storageObjects = responseObj.getAsJsonArray("value");
 
-            String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId(),java.nio.charset.StandardCharsets.UTF_8.toString()));
-
-                try{
-                    String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
-                    JsonObject  responseObj = new JsonParser().parse(response).getAsJsonObject();
-                    JsonArray storageObjects = responseObj.getAsJsonArray("value");
-
-                    for(JsonElement storageObjElement:storageObjects){
-                        StorageAccountActivityLogVH storageAccountActivityLogVH=new StorageAccountActivityLogVH();
-                        JsonObject  storageObject = storageObjElement.getAsJsonObject();
-                        JsonObject properties = storageObject.getAsJsonObject("properties");
-                        log.debug("Properties data{}",properties);
-                        if(properties!=null) {
-                            String storageAccountId=properties.get("storageAccountId").getAsString();
-                            storageAccountActivityLogVH.setStorageAccountActivityLogContainerId(storageAccountId);
-                            storageAccountActivityLogVH.setStorageAccountEncryptionKeySource(checkStorageAccountEncryptionKeySource(storageAccountId,storageAccounts));
-                        }
-
-                        storageAccountActivityLogVHList.add(storageAccountActivityLogVH);
-                    }
+            for(JsonElement storageObjElement:storageObjects){
+                StorageAccountActivityLogVH storageAccountActivityLogVH=new StorageAccountActivityLogVH();
+                JsonObject  storageObject = storageObjElement.getAsJsonObject();
+                JsonObject properties = storageObject.getAsJsonObject("properties");
+                log.debug("Properties data{}",properties);
+                if(properties!=null) {
+                    String storageAccountId=properties.get("storageAccountId").getAsString();
+                    storageAccountActivityLogVH.setStorageAccountActivityLogContainerId(storageAccountId);
+                    storageAccountActivityLogVH.setStorageAccountEncryptionKeySource(checkStorageAccountEncryptionKeySource(storageAccountId,storageAccounts));
                 }
-            catch (Exception e){
-                log.error("Error while fetching storage account for alert: {}", e);
+                storageAccountActivityLogVHList.add(storageAccountActivityLogVH);
             }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return storageAccountActivityLogVHList;
     }
