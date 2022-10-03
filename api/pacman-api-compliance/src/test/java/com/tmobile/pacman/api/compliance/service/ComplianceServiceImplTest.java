@@ -594,7 +594,7 @@ public class ComplianceServiceImplTest {
         assertThat(complianceService.addMultipleIssueException("",issuesException).getStatus().equals("Success"),
                 is(true));
 
-        when(complianceRepository.exemptAndUpdateMultipleIssueDetails("".anyObject()))
+        when(complianceRepository.exemptAndUpdateMultipleIssueDetails("aws",anyObject()))
                 .thenThrow(new DataException());
 
         assertThatThrownBy(
@@ -617,7 +617,7 @@ public class ComplianceServiceImplTest {
                 .thenThrow(new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.revokeMultipleIssueException(new ArrayList<>()))
+                () -> complianceService.revokeMultipleIssueException("aws",new ArrayList<>()))
                 .isInstanceOf(ServiceException.class);
     }
     
