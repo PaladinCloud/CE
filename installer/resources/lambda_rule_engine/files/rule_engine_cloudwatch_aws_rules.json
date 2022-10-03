@@ -3520,6 +3520,28 @@
     "category": "security"
   },
   {
+    "ruleId": "S3MFADeleteEnabled_version-1_MFADeleteEnabled_s3",
+    "ruleUUID": "s3_mfa_delete_enabled",
+    "policyId": "S3MFADeleteEnabled_version-1",
+    "ruleName": "MFA delete should be enabled on S3 bucket",
+    "targetType": "s3",
+    "assetGroup": "aws",
+    "alexaKeyword": "S3MFADeleteEnabled",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-for-s3-MFA-delete-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"S3MFADeleteEnabled_version-1_MFADeleteEnabled_s3\",\"autofix\":false,\"alexaKeyword\":\"S3MFADeleteEnabled\",\"ruleRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"policyId\":\"S3MFADeleteEnabled_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"s3_mfa_delete_enabled\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/s3_mfa_delete_enabled",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable MFA Delete on S3 Bucket",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "low",
+    "category": "security"
+  },
+  {
     "ruleId": "S3BucketAllowHTTPRequest_version-1_S3BucketAllowHTTPRequest_s3",
     "ruleUUID": "aws_s3_bucket_should_not_allow_http_requests",
     "policyId": "S3BucketAllowHTTPRequest_version-1",
