@@ -20,7 +20,7 @@ class PacBotHttpsListener(ALBListenerResource):
 
 
     def pre_generate_terraform(self):
-        warn_msg = "HTTPS should be true for external alb"
+        warn_msg = "MAKE_ALB_INTERNAL can be false"
         if ((Settings.MAKE_ALB_INTERNAL == False) and (Settings.ALB_PROTOCOL == "HTTP")):
             message = "\n\t ** %s **\n" % warn_msg
             print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
