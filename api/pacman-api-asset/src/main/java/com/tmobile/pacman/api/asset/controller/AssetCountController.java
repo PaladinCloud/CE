@@ -144,4 +144,24 @@ public class AssetCountController {
             return ResponseUtils.buildFailureResponse(new Exception("Invalid Target type for the assetgroup "));
         }
     }
+
+     /**
+     * Fetches Exempted Assets Count by AssetGroup
+     *
+     * @param assetGroup name of the asset group
+     * @return exemptedCount
+     */
+    @GetMapping(path = "v1/count/exempted")
+    public ResponseEntity<Object> getExemptedAssetsCount(@RequestParam("ag") String assetGroup) {
+        Map<String, Long> response = new HashMap<>();
+        if (!Util.isValidAssetGroup(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/ruleId is mandatory"));
+        }
+        try {
+            response.put("exemptedAssetsCount", assetService.getExemptedAssetsCount(assetGroup));
+        } catch (Exception e) {
+            return ResponseUtils.buildFailureResponse(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
 }

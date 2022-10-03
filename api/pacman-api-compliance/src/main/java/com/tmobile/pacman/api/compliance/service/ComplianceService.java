@@ -300,20 +300,21 @@ public interface ComplianceService {
 
     /**
      * Adds the multiple issue exception.
-     *
+     * @param assetGroup the asset group
      * @param issuesException the issues exception
      * @return the issue exception response
      * @throws ServiceException the service exception
      */
-    public IssueExceptionResponse addMultipleIssueException(IssuesException issuesException) throws ServiceException;
+    public IssueExceptionResponse addMultipleIssueException(String assetGroup,IssuesException issuesException) throws ServiceException;
 
     /**
      * Revoke multiple issue exception.
      *
+     * @param assetGroup the asset group
      * @param issueIds the issue ids
      * @return the issue exception response
      * @throws ServiceException the service exception
      */
-    public IssueExceptionResponse revokeMultipleIssueException(List<String> issueIds) throws ServiceException;
+    public IssueExceptionResponse revokeMultipleIssueException(String assetGroup,List<String> issueIds) throws ServiceException;
     
 }

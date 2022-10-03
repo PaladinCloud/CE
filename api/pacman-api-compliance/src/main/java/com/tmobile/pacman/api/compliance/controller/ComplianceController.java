@@ -684,7 +684,7 @@ public class ComplianceController implements Constants {
             @ApiResponse(code = 403, message = "Add Issue Exception is forbidden") })
     @ResponseBody
     
-    public ResponseEntity<Object> addIssuesException(
+    public ResponseEntity<Object> addIssuesException(@RequestParam("ag") String assetGroup,
             @ApiParam(value = "Provide Issue Exception Details", required = true) @RequestBody(required = true) IssuesException issuesException) {
         try {
             
@@ -707,7 +707,7 @@ public class ComplianceController implements Constants {
             if(issuesException.getIssueIds().isEmpty()) {
                 return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
-            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(issuesException));
+            return ResponseUtils.buildSucessResponse(complianceService.addMultipleIssueException(assetGroup,issuesException));
         } catch (ServiceException | ParseException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }
@@ -726,13 +726,13 @@ public class ComplianceController implements Constants {
             @ApiResponse(code = 403, message = "Revoke IssueException is forbidden") })
     @ResponseBody
     
-    public ResponseEntity<Object> revokeIssuesException(
+    public ResponseEntity<Object> revokeIssuesException(@RequestParam("ag") String assetGroup,
             @ApiParam(value = "Provide Issue Id", required = true) @RequestBody(required = true) RevokeIssuesException revokeIssuesException) {
         try {
             if(revokeIssuesException.getIssueIds().isEmpty()) {
                 return ResponseUtils.buildFailureResponse(new Exception("Atleast one issue id is required"));
             }
-            return ResponseUtils.buildSucessResponse(complianceService.revokeMultipleIssueException(revokeIssuesException.getIssueIds()));
+            return ResponseUtils.buildSucessResponse(complianceService.revokeMultipleIssueException(assetGroup,revokeIssuesException.getIssueIds()));
         } catch (ServiceException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }

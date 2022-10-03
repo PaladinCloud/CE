@@ -622,7 +622,7 @@ public interface ComplianceRepository {
      * @return the issue exception response
      * @throws DataException the data exception
      */
-    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(IssuesException issuesException) throws DataException;
+    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup,IssuesException issuesException) throws DataException;
 
     /**
      * Revoke and update multiple issue details.
@@ -631,7 +631,7 @@ public interface ComplianceRepository {
      * @return the issue exception response
      * @throws DataException the data exception
      */
-    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(List<String> issueIds) throws DataException;
+    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup,List<String> issueIds) throws DataException;
     
     /**
  	 * Gets the total asset count by environment.

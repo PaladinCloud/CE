@@ -1797,6 +1797,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueDetails.put(POLICYID, source.get(POLICYID).getAsString());
                 issueDetails.put(CREATED_DATE, source.get(CREATED_DATE).getAsString());
                 issueDetails.put(MODIFIED_DATE, source.get(MODIFIED_DATE).getAsString());
+                issueDetails.put(PAC_DS, source.get(PAC_DS).getAsString());
                 if (source.has("desc")) {
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
                 } else {
@@ -2079,7 +2080,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     @Override
-    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(IssuesException issuesException)
+    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup,IssuesException issuesException)
             throws DataException {
 
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
@@ -2093,7 +2094,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<String> errors = new ArrayList<>();
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
-            issueDetails = getMultipleIssueDetails(issueIds, OPEN);
+            issueDetails = getMultipleIssueDetails(assetGroup,issueIds, OPEN);
         } catch (DataException e) {
             logger.error("Error while fetching open issue details ", e);
             issueExceptionResponse.setStatus("Failed");
@@ -2163,7 +2164,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
-            failedIssueIds.addAll(revokeException(issueIds));
+            failedIssueIds.addAll(revokeException(assetGroup,issueIds));
 
             if (failedIssueIds.isEmpty()) {
                 i = 0;
@@ -2224,7 +2225,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     @Override
-    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(List<String> issueIds) throws DataException {
+    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup,List<String> issueIds) throws DataException {
 
         String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
@@ -2235,7 +2236,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
-            issueDetails = getMultipleIssueDetails(issueIds, EXEMPTED);
+            issueDetails = getMultipleIssueDetails(assetGroup,issueIds, EXEMPTED);
         } catch (DataException e) {
             logger.error("Error while fetching exempted issue details ", e);
             issueExceptionResponse.setStatus("Failed");
@@ -2288,7 +2289,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueIds.removeAll(failedIssueIds);
             }
 
-            failedIssueIds.addAll(revokeException(issueIds));
+            failedIssueIds.addAll(revokeException(assetGroup,issueIds));
         } else {
             failedIssueIds.addAll(issueIds);
         }
@@ -2304,7 +2305,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return issueExceptionResponse;
     }
 
-    private List<Map<String, Object>> getMultipleIssueDetails(final List<String> issueIds, final String status)
+    private List<Map<String, Object>> getMultipleIssueDetails(String assetGroup,final List<String> issueIds, final String status)
             throws DataException {
         Map<String, Object> mustFilter = Maps.newHashMap();
         Map<String, Object> mustFilterTerms = Maps.newHashMap();
@@ -2318,7 +2319,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         try {
             if (mustFilter.isEmpty()) {
-                StringBuilder urlToQuery = new StringBuilder(esUrl).append("/aws/_search");
+                StringBuilder urlToQuery = new StringBuilder(esUrl).append("/"+assetGroup+"/_search");
                 String responseJson = "";
                 try {
                     StringBuilder requestBody = new StringBuilder(
@@ -2333,7 +2334,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     throw new DataException(e);
                 }
             } else {
-                resourceDetList = elasticSearchRepository.getSortedDataFromES(AWS, null, mustFilter, null, null, null,
+                resourceDetList = elasticSearchRepository.getSortedDataFromES(assetGroup, null, mustFilter, null, null, null,
                         mustFilterTerms, null);
             }
         } catch (Exception e) {
@@ -2342,7 +2343,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return resourceDetList;
     }
 
-    private List<String> revokeException(List<String> issueIds) throws DataException {
+    private List<String> revokeException(String assetGroup,List<String> issueIds) throws DataException {
 
         String actionTemplateException = "{ \"index\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\"} }%n";
         StringBuilder bulkRequest = new StringBuilder();
@@ -2352,7 +2353,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Map<String, Object>> exceptionDetails = new ArrayList<>();
 
         try {
-            exceptionDetails = getMultipleIssueDetails(issueIds, null);
+            exceptionDetails = getMultipleIssueDetails(assetGroup,issueIds, null);
         } catch (DataException e) {
             logger.error("Error while fetching exemption details ", e);
             failedIssueIds.addAll(issueIds);

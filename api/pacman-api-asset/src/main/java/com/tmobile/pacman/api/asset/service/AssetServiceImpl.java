@@ -282,6 +282,11 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
+    public long getExemptedAssetsCount(String ag){
+        return repository.getExemptedAssetsCount(ag);
+    }
+
+    @Override
     public List<Map<String, Object>> saveAndAppendToRecentlyViewedAG(String userId, String assetGroup) throws DataException {
         return repository.saveAndAppendAssetGroup(userId, assetGroup);
     }

@@ -1256,18 +1256,18 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     @Override
-    public IssueExceptionResponse addMultipleIssueException(IssuesException issuesException) throws ServiceException {
+    public IssueExceptionResponse addMultipleIssueException(String assetGroup,IssuesException issuesException) throws ServiceException {
         try {
-            return repository.exemptAndUpdateMultipleIssueDetails(issuesException);
+            return repository.exemptAndUpdateMultipleIssueDetails(assetGroup,issuesException);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public IssueExceptionResponse revokeMultipleIssueException(List<String> issueIds) throws ServiceException {
+    public IssueExceptionResponse revokeMultipleIssueException(String assetGroup,List<String> issueIds) throws ServiceException {
         try {
-            return repository.revokeAndUpdateMultipleIssueDetails(issueIds);
+            return repository.revokeAndUpdateMultipleIssueDetails(assetGroup,issueIds);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
