@@ -476,7 +476,7 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
     private int getNumberOfAzureSubscription() {
         int totalSubscription = 0;
         try {
-            totalSubscription = repository.getNumberOfAccounts().size();
+            totalSubscription = repository.getNumberOfAzureSubscription().size();
         } catch (DataException e) {
             LOGGER.error(e.getMessage());
             Thread.currentThread().interrupt();
@@ -488,7 +488,7 @@ public class StatisticsServiceImpl implements StatisticsService, Constants {
     private int getNumberOfGCPProjects() {
         int totalProjects = 0;
         try {
-            totalProjects = repository.getNumberOfAccounts().size();
+            totalProjects = repository.getNumberOfGcpProjects().size();
         } catch (DataException e) {
             LOGGER.error(e.getMessage());
             Thread.currentThread().interrupt();
