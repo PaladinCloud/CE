@@ -171,6 +171,17 @@ public interface AssetRepository {
      */
     public List<Map<String, Object>> getAssetCountByEnvironment(String assetGroup, String application, String type);
 
+
+    /*
+    * Fetches exempted assets count.
+    *
+    * @requestParam assetGroup - String
+    *
+    *  @return exempted assets count
+    */
+   public long getExemptedAssetsCount(String ag);
+
+
     /**
      * Saves the recently viewed asset group for the user id.
      *

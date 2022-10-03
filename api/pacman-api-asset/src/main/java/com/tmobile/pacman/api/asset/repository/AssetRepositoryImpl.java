@@ -861,6 +861,24 @@ public class AssetRepositoryImpl implements AssetRepository {
         return 0;
     }
 
+    public long getExemptedAssetsCount(String assetGroup){
+       long exemptedAssetsCount;
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(AssetConstants.TYPE, "issue");
+        mustFilter.put(AssetConstants.ISSUE_STATUS, "exempted");
+        try {
+            exemptedAssetsCount = esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null,
+                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
+            return exemptedAssetsCount;
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+        }
+        return 0;
+    }
+
     public List<Map<String, Object>> getCpuUtilizationByAssetGroupAndInstanceId(String instanceId) throws DataException {
 
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AssetConstants.AWS_EC2)

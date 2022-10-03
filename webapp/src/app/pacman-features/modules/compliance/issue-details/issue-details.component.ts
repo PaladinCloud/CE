@@ -212,6 +212,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   };
   public pageLevel = 0;
   public backButtonRequired;
+  issueAssetGroup: any;
 
   @HostListener('document:click', ['$event']) handleClick(event) {
     try {
@@ -394,6 +395,11 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                       this.issueBlocks['violationModifiedDate']
                     );
                   }
+                  if (this.issueBlocks['pac_ds'] !== undefined) {
+                    this.issueAssetGroup = this.issueBlocks['pac_ds'];
+                  }
+                  console.log(this.issueBlocks," and ",this.issueBlocks['pac_ds']," ",this.issueAssetGroup);
+                  
 
                   this.issueIdValue = this.issueBlocks.resouceViolatedPolicy;
 
@@ -810,9 +816,12 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       const payload = {
         issueIds: [this.policyViolationId]
       };
+      const queryParams = {
+        ag: this.issueAssetGroup
+      }
 
       this.getRevokeSubscription = this.commonResponseService
-        .getData(Url, Method, payload, {})
+        .getData(Url, Method, payload, queryParams)
         .subscribe(
           response => {
             this.upateStatusOnAddOrRevokeException('Open');
@@ -924,12 +933,15 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         exceptionEndDate: endDateValue,
         exceptionGrantedDate: grantedDateValue,
         exceptionReason: value.name,
-        issueIds: [ this.policyViolationId ]
+        issueIds: [this.policyViolationId],
       };
+      const queryParams = {
+        ag: this.issueAssetGroup
+      }
       const exceptionUrl = environment.addIssueException.url;
       const exceptionMethod = environment.addIssueException.method;
       this.getExceptionSubscription = this.commonResponseService
-        .getData(exceptionUrl, exceptionMethod, payload, {})
+        .getData(exceptionUrl, exceptionMethod, payload, queryParams)
         .subscribe(
           response => {
             this.check = true;

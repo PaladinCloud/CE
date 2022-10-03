@@ -584,21 +584,21 @@ public class ComplianceServiceImplTest {
         
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         issueExceptionResponse.setStatus("Success");
-        when(complianceRepository.exemptAndUpdateMultipleIssueDetails(anyObject()))
+        when(complianceRepository.exemptAndUpdateMultipleIssueDetails("",anyObject()))
                 .thenReturn(issueExceptionResponse);
         
         IssuesException issuesException = new IssuesException();
         List<String> issueIds = new ArrayList<>();
         issueIds.add("1234");
         issuesException.setIssueIds(issueIds);
-        assertThat(complianceService.addMultipleIssueException(issuesException).getStatus().equals("Success"),
+        assertThat(complianceService.addMultipleIssueException("",issuesException).getStatus().equals("Success"),
                 is(true));
 
-        when(complianceRepository.exemptAndUpdateMultipleIssueDetails(anyObject()))
+        when(complianceRepository.exemptAndUpdateMultipleIssueDetails("".anyObject()))
                 .thenThrow(new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.addMultipleIssueException(issuesException))
+                () -> complianceService.addMultipleIssueException("",issuesException))
                 .isInstanceOf(ServiceException.class);
     }
     
@@ -607,13 +607,13 @@ public class ComplianceServiceImplTest {
 
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         issueExceptionResponse.setStatus("Success");
-        when(complianceRepository.revokeAndUpdateMultipleIssueDetails(anyObject()))
+        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject()))
                 .thenReturn(issueExceptionResponse);
         
-        assertThat(complianceService.revokeMultipleIssueException(new ArrayList<>()).getStatus().equals("Success"),
+        assertThat(complianceService.revokeMultipleIssueException("aws",new ArrayList<>()).getStatus().equals("Success"),
                 is(true));
 
-        when(complianceRepository.revokeAndUpdateMultipleIssueDetails(anyObject()))
+        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject()))
                 .thenThrow(new DataException());
 
         assertThatThrownBy(

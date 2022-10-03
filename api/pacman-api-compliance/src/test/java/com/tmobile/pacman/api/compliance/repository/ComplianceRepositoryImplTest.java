@@ -152,7 +152,6 @@ public class ComplianceRepositoryImplTest implements Constants {
         issueDetailMap.put("status", "open");
         issueDetailMap.put("severity", "high");
         issueDetailMap.put(PAC_DS, AWS);
-        issueDetailMap.put(PAC_DS, AWS);
         issueDetailMap.put(TYPE, "issue");
         issueDetailMap.put(ES_DOC_ROUTING_KEY, "12345");
         issueDetailMap.put(ES_DOC_PARENT_KEY, "ec2");
@@ -284,7 +283,7 @@ public class ComplianceRepositoryImplTest implements Constants {
         when(elasticSearchRepository.updatePartialDataToES(anyString(), anyString(), anyString(), anyString(),
                 anyString(), anyObject())).thenReturn(true);
         when(elasticSearchRepository.saveExceptionDataToES(anyString(), anyString(), anyMap())).thenReturn(true);
-        assertTrue(complianceRepositoryImpl.exemptAndUpdateMultipleIssueDetails(issueException).getStatus().equals("Success"));
+        assertTrue(complianceRepositoryImpl.exemptAndUpdateMultipleIssueDetails("aws",issueException).getStatus().equals("Success"));
 
     }
 
@@ -310,7 +309,7 @@ public class ComplianceRepositoryImplTest implements Constants {
 
         List<String> issueIds = new ArrayList<>();
         issueIds.add("1234");
-        assertTrue(complianceRepositoryImpl.revokeAndUpdateMultipleIssueDetails(issueIds).getStatus().equals("Success"));
+        assertTrue(complianceRepositoryImpl.revokeAndUpdateMultipleIssueDetails("aws",issueIds).getStatus().equals("Success"));
     }
 
    /* @Test
