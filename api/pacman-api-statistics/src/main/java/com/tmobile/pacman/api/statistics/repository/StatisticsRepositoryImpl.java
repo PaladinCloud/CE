@@ -270,16 +270,16 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
     public JsonArray getNumberOfAzureSubscription() throws DataException {
         try {
             JsonParser parser = new JsonParser();
-            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
+            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AZURE).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
                     "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"subscription\"}}]}},\"aggs\":{\"subscriptions\":{\"terms\":{\"field\":\"subscriptionId.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
-            return aggsJson.getAsJsonObject("accounts").getAsJsonArray(BUCKETS);
+            return aggsJson.getAsJsonObject("subscriptions").getAsJsonArray(BUCKETS);
         } catch (Exception e) {
-            LOGGER.error("Error while processing the aws accounts",e.getMessage());
+            LOGGER.error("Error while processing the azure subscription",e.getMessage());
             return new JsonArray();
         }
 
@@ -288,16 +288,16 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
     public JsonArray getNumberOfGcpProjects() throws DataException {
         try {
             JsonParser parser = new JsonParser();
-            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(AWS).append("/")
+            StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(GCP).append("/")
                     .append(SEARCH);
             StringBuilder requestBody = new StringBuilder(
                     "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"project\"}}]}},\"aggs\":{\"projects\":{\"terms\":{\"field\":\"projectId.keyword\",\"size\":10000}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
-            return aggsJson.getAsJsonObject("accounts").getAsJsonArray(BUCKETS);
+            return aggsJson.getAsJsonObject("projects").getAsJsonArray(BUCKETS);
         } catch (Exception e) {
-            LOGGER.error("Error while processing the aws accounts",e.getMessage());
+            LOGGER.error("Error while processing the gcp accounts",e.getMessage());
             return new JsonArray();
         }
 
