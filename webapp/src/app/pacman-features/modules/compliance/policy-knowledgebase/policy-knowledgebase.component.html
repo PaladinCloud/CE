@@ -34,12 +34,12 @@
     <div class='policy-knowledgebase-content-wrapper'>
         <div class="policy-knowledgebase-content">
             <app-table (rowSelectEventEmitter)="goToDetails($event)" 
-                [data]="knowledgebaseData" [columnWidths]="columnWidths"
+                [data]="tableData" [columnWidths]="columnWidths"
                 [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                 [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchPassed"
                 [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick()" [doLocalSearch]="doLocalSearch"
-                [tableErrorMessage]="errorMessage">
+                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop">
             </app-table>
         </div>
     </div>
