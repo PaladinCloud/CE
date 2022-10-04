@@ -30,8 +30,7 @@ import { DomainTypeObservableService } from "../../../../core/services/domain-ty
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { PermissionGuardService } from "../../../../core/services/permission-guard.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
-import { DataCacheService } from "src/app/core/services/data-cache.service";
-
+import { TableStateService } from "src/app/core/services/table-state.service";
 
 @Component({
   selector: "app-issue-listing",
@@ -103,6 +102,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   tableErrorMessage = '';
   headerColName;
   direction;
+  tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Policy Name': 1, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {};
@@ -150,10 +150,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           imageOnly: true
       },
   }
-  state: any = {};
   whiteListColumns;
   displayedColumns;
   tableData = [];
+  isStatePreserved = false;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -170,18 +170,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private permissions: PermissionGuardService,
-    private dataCacheService: DataCacheService
+    private tableStateService: TableStateService
   ) {
-    this.state = this.dataCacheService.get("issueListing") || {};
-      
-    this.headerColName = this.state.headerColName || 'Policy Name';
-    this.direction = this.state.direction || 'asc';
-    this.bucketNumber = this.state.bucketNumber || 0;
 
-    this.displayedColumns = Object.keys(this.columnWidths);
-    this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
-
-    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
 
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
@@ -203,6 +194,27 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const state = this.tableStateService.getState("issueListing") || {};
+    if(state){      
+      this.headerColName = state.headerColName || '';
+      this.direction = state.direction || '';
+      this.bucketNumber = state.bucketNumber || 0;
+      this.totalRows = state.totalRows || 0;
+      this.searchTxt = state?.searchTxt || '';
+      
+      this.tableData = state?.data || [];
+      this.displayedColumns = Object.keys(this.columnWidths);
+      this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+      this.tableScrollTop = state?.tableScrollTop;
+      
+      if(this.tableData && this.tableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
+    }
+    
+
     this.breadcrumbPresent = "Policy Violations";
     // check for admin access
     this.adminAccess = this.permissions.checkAdminPermission();
@@ -218,13 +230,23 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.state.headerColName = this.headerColName;
-    this.state.direction = this.direction;
-    this.storeState();
+    // this.state.headerColName = this.headerColName;
+    // this.state.direction = this.direction;
+    // this.storeState();
   }
 
-  storeState(){
-    this.dataCacheService.set(this.state, "issueListing");
+  handleWhitelistColumnsChange(event){
+    this.whiteListColumns = event;
+    // this.storeState();
+  }
+
+  storeState(state){
+    this.tableStateService.setState("issueListing", state);    
+  }
+
+  clearState(){
+    this.tableStateService.clearState("issueListing");
+    this.isStatePreserved = false;
   }
 
   /*
@@ -272,7 +294,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     updatedQueryParams = {
       filter: this.filterText.filter,
-      searchValue: this.searchTxt
     }
 
 
@@ -485,15 +506,20 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.cbModel = [];
     this.dataTableData = [];
     this.issueListingdata = [];
-    this.tableData = [];
-    this.bucketNumber = 0;
     // this.firstPaginator = 1;
     this.showLoader = true;
     this.dataLoaded = false;
     this.seekdata = false;
     this.errorValue = 0;
     this.showGenericMessage = false;
-    this.getData();
+    // this.clearState();
+    if(this.isStatePreserved){      
+      this.clearState();
+    }else{
+      this.bucketNumber = 0;
+      this.tableData = [];
+      this.getData();
+    }
   }
 
   navigateBack() {
@@ -793,7 +819,22 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDetails(row) {
+  goToDetails(event) {
+    // store in this function    
+    const row = event.rowSelected;
+    const data = event.data;
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      bucketNumber: this.bucketNumber,
+      searchTxt: this.searchTxt,
+      tableScrollTop: event.tableScrollTop
+      // filterText: this.filterText
+    }
+    this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
@@ -843,7 +884,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   searchCalled(search) {
     this.searchTxt = search;
-    this.getUpdatedUrl();
+    // this.getUpdatedUrl();
   }
 
   handlePopClick(e) {
@@ -899,8 +940,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   callNewSearch(searchVal){    
     this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
+    this.isStatePreserved = false;
     this.updateComponent();  
-    this.getUpdatedUrl();
+    // this.getUpdatedUrl();
   }
 
 

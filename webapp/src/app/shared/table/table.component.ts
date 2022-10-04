@@ -1,9 +1,9 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatTable, MatTableDataSource} from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
@@ -32,7 +32,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() tableErrorMessage = '';
   @Input() onScrollDataLoader: Subject<any>;
   @Input() totalRows = 0;
-  @Input() doLocalSearch = false;
+  @Input() tableScrollTop;
+  @Input() doLocalSearch = false; // should remove this once we get tiles data from backend.
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -53,6 +54,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   @ViewChild('select') select: MatSelect;
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
+  @ViewChildren('customTable') customTable: any;
 
   allSelected=true;
   screenWidth;
@@ -86,7 +88,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allSelected=false;
     }
-    if(this.searchQuery && this.showSearchBar && this.doLocalSearch) this.customSearch(this.searchQuery);
+    if(this.searchQuery && this.doLocalSearch){
+      this.customSearch(this.searchQuery);
+    }
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
 
     this.screenWidth = window.innerWidth;
@@ -104,12 +108,15 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.mainDataSource = new MatTableDataSource(this.data);
-    this.dataSource = new MatTableDataSource(this.data);
+  ngOnChanges(changes: SimpleChanges): void {    
+    if(!this.doLocalSearch || (changes.data && changes.data.previousValue.length==0)){
+      this.mainDataSource = new MatTableDataSource(this.data);
+      this.dataSource = new MatTableDataSource(this.data);
+    }
   }
 
-  ngAfterViewInit(): void {  
+  ngAfterViewInit(): void { 
+    this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
     if(this.select){
       this.select.options.forEach((item: MatOption) => {
         if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
@@ -166,7 +173,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   goToDetails(row){
-    this.rowSelectEventEmitter.emit(row);
+    let event = {
+      tableScrollTop : this.customTable.first.nativeElement.scrollTop,
+      rowSelected: row,
+      data: this.data
+    }
+    this.rowSelectEventEmitter.emit(event);
   }
 
    optionClick() {
@@ -313,9 +325,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(this.doLocalSearch){
         this.customSearch(searchTxt);
         this.customSort(this.headerColName, this.direction);
-      }else{
-        this.searchCalledEventEmitter.emit(searchTxt);
       }
+      this.searchCalledEventEmitter.emit(searchTxt);
     }
   }
 
@@ -326,7 +337,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   customSort(columnName, direction){    
     if (!columnName || direction === '') {
-      this.dataSource.data = this.mainDataSource.data.slice();
+      // this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
 
