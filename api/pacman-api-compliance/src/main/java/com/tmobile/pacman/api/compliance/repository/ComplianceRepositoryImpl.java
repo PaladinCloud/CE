@@ -199,17 +199,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
 
 
-    public HashMap<String,Object> getAverageAge(String assetGroup) throws DataException{
+    private HashMap<String,Object> getDistributionBySeverity(String query, String assetGroup, String keyName) throws DataException{
         HashMap<String,Object>result=new HashMap<>();
         Gson gson = new GsonBuilder().create();
         String responseDetails = null;
         StringBuilder requestBody = null;
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/_search");
-        String body="{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\"avg_age\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
-        requestBody = new StringBuilder(body);
+        requestBody = new StringBuilder(query);
         try {
-     responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
-
+            responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
         } catch (Exception e) {
             throw new DataException(e);
         }
@@ -217,22 +215,50 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
         Map<String, Object> severity=(Map<String, Object>) aggregations.get("by_severity");
 
-                JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
+        JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
         JsonObject aggsJson = (JsonObject) JsonParser.parseString(resultJson.get(AGGREGATIONS).toString());
         JsonArray buckets = aggsJson.getAsJsonObject("by_severity").getAsJsonArray(BUCKETS).getAsJsonArray();
 
-        System.out.println("average age -->"+buckets);
-
         for (JsonElement bucket:buckets) {
             HashMap<String,String>policyDetails=new HashMap<>();
-            policyDetails.put("averageAge",bucket.getAsJsonObject().get("avg_age").getAsJsonObject().get("value").getAsString());
+            policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
             policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
             result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
-
         }
-
         return result;
+    }
 
+    private String getOuery(String keyName, List<Object> rules, String queryAttribute){
+        String query;
+        String ruleIds = rules.stream().map(rule -> "\"" + rule.toString().trim() + "\"")
+                .collect(Collectors.joining(","));
+        switch (keyName){
+            case "averageAge":
+                query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"terms\":{\"ruleId.keyword\":["+ruleIds+"]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\""+keyName+"\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
+                break;
+            default:
+                query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"ruleId.keyword\":["+ruleIds+"]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\""+keyName+"\":{\"cardinality\":{\"field\":\""+queryAttribute+"\"}}}}}}";
+                break;
+        }
+        return query;
+    }
+
+    public HashMap<String,Object> getPolicyCountBySeverity(String assetGroup, List<Object> rules) throws DataException{
+        String keyName = "policyCount";
+        String query = this.getOuery(keyName, rules, "policyId.keyword");
+        return getDistributionBySeverity(query, assetGroup, keyName);
+    }
+
+    public HashMap<String,Object> getAssetCountBySeverity(String assetGroup, List<Object> rules) throws DataException{
+        String keyName = "assetCount";
+        String query = this.getOuery(keyName, rules, "_resourceid.keyword");
+        return getDistributionBySeverity(query, assetGroup, keyName);
+    }
+
+    public HashMap<String,Object> getAverageAge(String assetGroup, List<Object> rules) throws DataException{
+        String keyName = "averageAge";
+        String query = this.getOuery(keyName, rules, null);
+        return getDistributionBySeverity(query, assetGroup, keyName);
     }
 
     /*

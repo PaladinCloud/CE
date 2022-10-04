@@ -60,7 +60,11 @@ public interface ComplianceRepository {
             throws DataException;
 
 
-    public HashMap<String,Object> getAverageAge(String assetGroup) throws DataException;
+    public HashMap<String,Object> getPolicyCountBySeverity(String assetGroup, List<Object> rules) throws DataException;
+
+    public HashMap<String,Object> getAssetCountBySeverity(String assetGroup, List<Object> rules) throws DataException;
+
+    public HashMap<String,Object> getAverageAge(String assetGroup, List<Object> rules) throws DataException;
     /**
      * This request expects asssetGroup and domain as mandatory, ruleId as
      * optional. If method receives assetGroup and domain as request parameter,
