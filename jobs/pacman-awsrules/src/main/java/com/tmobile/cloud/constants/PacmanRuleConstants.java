@@ -579,4 +579,5 @@ public class PacmanRuleConstants {
     public static final String PROJECT_NUMBER= "projectNumber";
     public static final String EMAIL="email";
     public static final String EMAIL_PATTERN="-compute@developer.gserviceaccount.com";
+    public static final String CONFIDENTIAL_COMPUTING="confidentialComputing";
 }

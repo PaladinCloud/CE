@@ -47,6 +47,7 @@ public class VMInventoryCollector {
                 for (Instance instance : zoneInstances.getValue().getInstancesList()) {
                     try {
                         logger.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+
                         VirtualMachineVH virtualMachineVH = new VirtualMachineVH();
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
                         virtualMachineVH.setMachineType(instance.getMachineType());
@@ -61,6 +62,7 @@ public class VMInventoryCollector {
                         logger.info("On hoost maintainenece attribute");
                         virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
                         virtualMachineVH.setProjectNumber(project.getProjectNumber().toString());
+                        virtualMachineVH.setConfidentialComputing(instance.getConfidentialInstanceConfigOrBuilder().getEnableConfidentialCompute());
                         this.setShieldedConfig(instance,virtualMachineVH);
                         this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);

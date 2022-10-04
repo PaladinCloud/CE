@@ -1450,5 +1450,27 @@
     "modifiedDate": "2022-10-06",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Confidential_Computing_for_Compute_Instance",
+    "ruleUUID": "Enable_Confidential_Computing_for_Compute_Instance",
+    "policyId": "Enable_Confidential_Computing_for_Compute_Instance",
+    "ruleName": "Enable Confidential Computing for Compute Instance",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "confidential_computing",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-confidential-computing-instance\",\"key\":\"ruleKey\"},{\"key\":\"policyName\",\"value\":\"Enable Confidential Computing for Compute Instance\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"autofix\":false,\"alexaKeyword\":\"confidential_computing\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Confidential_Computing_for_Compute_Instance",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Confidential Computing for Compute Instance",
+    "createdDate": "2022-10-04",
+    "modifiedDate": "2022-10-04",
+    "severity": "medium",
+    "category": "security"
   }
 ]
