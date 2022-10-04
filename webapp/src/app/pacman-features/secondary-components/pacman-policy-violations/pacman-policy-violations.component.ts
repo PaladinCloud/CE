@@ -161,7 +161,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
         this.router.navigate(
           [
             "/pl/compliance/policy-knowledgebase-details",
-            row.row["Rule Id"].text,
+            row.row["Rule ID"].text,
             "false",
           ],
           { relativeTo: this.activatedRoute, queryParams:updatedQueryParams, queryParamsHandling: "merge" }

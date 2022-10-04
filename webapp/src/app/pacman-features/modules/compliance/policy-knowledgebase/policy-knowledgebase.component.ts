@@ -26,7 +26,7 @@ import { RouterUtilityService } from '../../../../shared/services/router-utility
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { DownloadService } from 'src/app/shared/services/download.service';
-import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { TableStateService } from 'src/app/core/services/table-state.service';
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -46,7 +46,6 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedTabName = 'All';
   dataLoaded = false;
   searchTxt = '';
-  knowledgebaseData: any = [];
   tabName: any = [];
   count = [];
   num = 0;
@@ -55,7 +54,6 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedFilter = 0;
   selectedFilterName = '';
   typeObj;
-  searchPassed = '';
   loaded = false;
   datacoming = false;
   seekdata = false;
@@ -78,7 +76,9 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   state: any = {};
   whiteListColumns;
   displayedColumns;
-  doLocalSearch = true;
+  tableScrollTop = 0;
+  tableData = [];
+  isStatePreserved = false;
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
@@ -92,18 +92,28 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
-    private dataCacheService: DataCacheService,
+    private tableStateService: TableStateService,
     private downloadService: DownloadService) {
 
-      if(this.dataCacheService.get("policy-knowledgebase-table")) {
-        this.state = JSON.parse(this.dataCacheService.get("policy-knowledgebase-table")) || {};
-      }
+      const state = this.tableStateService.getState("policyKnowledgebase") || {};
       
-      this.headerColName = this.state?.headerColName || 'Policy Name';
-      this.direction = this.state?.direction || 'asc';
-      this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+      this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
-      this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
+
+      this.headerColName = state?.headerColName || '';
+      this.direction = state?.direction || '';
+      this.displayedColumns = Object.keys(this.columnWidths);
+      this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+      this.searchTxt = state?.searchTxt || '';
+      this.tableData = state?.data || [];
+      
+      this.tableScrollTop = state?.tableScrollTop;
+
+      if(this.tableData && this.tableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
 
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
@@ -120,14 +130,10 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.state.headerColName = event.headerColName;
-    this.state.direction = event.direction;
-    this.storeState();
   }
 
   handleWhitelistColumnsChange(event){
-    this.state.whiteListColumns = event;
-    this.storeState();
+    this.whiteListColumns = event;
   }
 
   handleSearchInColumnsChange(event){
@@ -150,7 +156,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       const downloadRequest = {
         ag: this.selectedAssetGroup,
         from: 0,
-        searchtext: this.searchPassed,
+        searchtext: this.searchTxt,
         size: this.typeObj['All Policies'],
       };
 
@@ -170,14 +176,19 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  storeState(){
-    this.dataCacheService.set("policy-knowledgebase-table", JSON.stringify(this.state));
+  clearState(){
+    this.tableStateService.clearState("policyKnowledgebase");
+    this.isStatePreserved = false;
+  }
+
+  storeState(state){
+    this.tableStateService.setState("policyKnowledgebase", state);
   }
 
   getUpdatedUrl(){
     let updatedQueryParams = {};
     updatedQueryParams = {
-      searchValue: this.searchPassed
+      // searchValue: this.searchPassed
     }
 
     this.router.navigate([], {
@@ -188,10 +199,10 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   }
 
   callNewSearch(searchVal){
-    this.searchPassed = searchVal;
+    this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
     this.updateComponent();
-    this.getUpdatedUrl();
+    // this.getUpdatedUrl();
   }
 
   ngAfterViewInit() {
@@ -202,9 +213,18 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.loaded = false;
     this.datacoming = false;
     this.seekdata = false;
-    this.knowledgebaseData = [];
+    if(this.isStatePreserved){
+      this.processData(this.tableData);
+      console.log("Clearing the state");
+      
+      this.clearState();
+    }else{
+      this.tableData = [];
+      this.getData();
+      console.log("Called getDate");
+      
+    }
     // this.typeObj = undefined;
-    this.getData();
   }
 
   processData(data) {
@@ -285,7 +305,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     }
     const payload = {
       'ag': this.selectedAssetGroup,
-      'searchtext': this.searchPassed,
+      'searchtext': this.searchTxt,
       'filter': {
         'domain': this.selectedDomain
       },
@@ -302,7 +322,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
           if (response.data.response.length !== 0) {
             this.errorMessage = '';
             this.datacoming = true;
-            this.knowledgebaseData = this.massageData(response.data.response);
+            this.tableData = this.massageData(response.data.response);
             
             this.dataLoaded = true;
             const x = this;
@@ -312,7 +332,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
                 x.pkInp.nativeElement.focus();
               }
             }, 200);
-            this.processData(this.knowledgebaseData);
+            this.processData(this.tableData);
           } else {
             this.datacoming = false;
             this.dataLoaded = true;
@@ -332,7 +352,20 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     * this function is used to fetch the rule id and to navigate to the next page
     */
 
-  goToDetails(tileData){
+  goToDetails(event) {
+    // store in this function    
+    const tileData = event.rowSelected;
+    const data = event.data;
+    const state = {
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      searchTxt: this.searchTxt,
+      tableScrollTop: event.tableScrollTop
+      // filterText: this.filterText
+    }
+    this.storeState(state);
    let autofixEnabled = false;
     if ( tileData.autoFixEnabled) {
       autofixEnabled = true;

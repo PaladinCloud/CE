@@ -1,9 +1,9 @@
-import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild, ViewChildren } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { Sort } from '@angular/material/sort';
-import {MatTableDataSource} from '@angular/material/table';
+import {MatTable, MatTableDataSource} from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
@@ -32,7 +32,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() tableErrorMessage = '';
   @Input() onScrollDataLoader: Subject<any>;
   @Input() totalRows = 0;
-  @Input() doLocalSearch = false;
+  @Input() tableScrollTop;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -53,6 +53,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   @ViewChild('select') select: MatSelect;
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
+  @ViewChildren('customTable') customTable: any;
 
   allSelected=true;
   screenWidth;
@@ -86,7 +87,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allSelected=false;
     }
-    if(this.searchQuery && this.showSearchBar && this.doLocalSearch) this.customSearch(this.searchQuery);
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
 
     this.screenWidth = window.innerWidth;
@@ -109,7 +109,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.dataSource = new MatTableDataSource(this.data);
   }
 
-  ngAfterViewInit(): void {  
+  ngAfterViewInit(): void { 
+    console.log("Mat Table: ", this.customTable.first.nativeElement);
+    console.log(this.customTable);
+    this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
+    
+    
     if(this.select){
       this.select.options.forEach((item: MatOption) => {
         if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
@@ -165,8 +170,15 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.getWidthFactor();
   }
 
-  goToDetails(row){
-    this.rowSelectEventEmitter.emit(row);
+  goToDetails(row){    
+    console.log(this.customTable.first.nativeElement.scrollTop);
+    
+    let event = {
+      tableScrollTop : this.customTable.first.nativeElement.scrollTop,
+      rowSelected: row,
+      data: this.data
+    }
+    this.rowSelectEventEmitter.emit(event);
   }
 
    optionClick() {
@@ -310,12 +322,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     
     if (event.keyCode === 13 || searchTxt=='') {
       this.tableErrorMessage = ''
-      if(this.doLocalSearch){
-        this.customSearch(searchTxt);
-        this.customSort(this.headerColName, this.direction);
-      }else{
+      // if(this.doLocalSearch){
+      //   this.customSearch(searchTxt);
+      //   this.customSort(this.headerColName, this.direction);
+      // }else{
         this.searchCalledEventEmitter.emit(searchTxt);
-      }
+      // }
     }
   }
 
