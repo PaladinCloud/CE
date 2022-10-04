@@ -86,8 +86,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   assetLoaderTitle = '';
   assetLoader = false;
   assetLoaderFailure = false;
-  attributeName = [];
-  attributeValue;
+  attributeName = '';
+  attributeValue = '';
   targetTypeSelectedValue = '';
   selectedAttributes = [];
 
@@ -229,7 +229,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   openAttributeConfigure(attributeDetail, index) {
     if (!attributeDetail.includeAll) {
       this.attributeValue = '';
-      this.attributeName = [];
+      this.attributeName = '';
       this.state = 'open';
       this.menuState = 'in';
       this.selectedIndex = index;
@@ -284,17 +284,12 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   public selectAttributes(value: any): void {
-    this.checkAttributeAlreadyTaken(value);
-  }
-
-
-  public typedAttributes(value: any): void {
-    this.attributeValue = [{ text: value, id: value }];
+    this.attributeValue = value;
     this.checkAttributeAlreadyTaken(value);
   }
 
   checkAttributeAlreadyTaken(attributeValue) {
-    const attributeSearchedResult = _.find(this.allAttributeDetails[this.selectedIndex].attributes, { name: this.attributeName[0].text, value: attributeValue });
+    const attributeSearchedResult = _.find(this.allAttributeDetails[this.selectedIndex].attributes, { name: this.attributeName, value: attributeValue });
     if (attributeSearchedResult === undefined) {
       this.isAttributeAlreadyAdded = -1;
     } else {
@@ -302,12 +297,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getAttributeValues(value: any): void {
-    this.attributeValue = [{ text: value, id: value }];
-  }
-
-
-  getTargetTypeAttributeValues(attributeName) {
+  getTargetTypeAttributeValues(attributeName:any) {
     const attrNameObj: any = {};
     attrNameObj.size = 0;
     attrNameObj.aggs = {};
@@ -316,7 +306,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     attrNameObj.aggs.alldata.terms.field = attributeName + '.keyword';
     attrNameObj.aggs.alldata.terms.size = 10000;
     this.isAttributeAlreadyAdded = -1;
-    this.attributeValue = [];
+    this.attributeName = attributeName;
     this.targetTypeAttributeValues = [];
     const url = environment.listTargetTypeAttributeValues.url;
     const method = environment.listTargetTypeAttributeValues.method;
@@ -335,6 +325,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
                 allCurrentAttributeValues['id'] = attrValue.key;
                 this.targetTypeAttributeValues.push(allCurrentAttributeValues);
               });
+              this.targetTypeAttributeValues = [...this.targetTypeAttributeValues];
             }
           }
         }
@@ -361,9 +352,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   addAttributes(attributeName, attributeValue) {
-    this.allAttributeDetails[this.selectedIndex].attributes.push({ name: attributeName[0].text, value: attributeValue[0].text });
-    this.attributeValue = [];
-    this.attributeName = [];
+    this.allAttributeDetails[this.selectedIndex].attributes.push({ name: attributeName, value: attributeValue });
+    this.attributeValue = '';
+    this.attributeName = '';
   }
 
   deleteAttributes(attributeName, itemIndex) {

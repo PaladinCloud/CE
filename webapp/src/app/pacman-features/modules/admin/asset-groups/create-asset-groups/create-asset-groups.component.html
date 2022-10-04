@@ -461,7 +461,7 @@
                                                     <ul class="parameters">
                                                         <label>Select Name :</label>
                                                         <app-dropdown [items]="selectedAttributeDetails"
-                                                            placeholder="Select Name"
+                                                            placeholder="Select Name" [selectedItem]="attributeName"
                                                             (selected)="getTargetTypeAttributeValues($event)">
                                                         </app-dropdown>
                                                     </ul>
@@ -473,7 +473,7 @@
                                                                 class="available"></span>
                                                         </label>
                                                         <app-dropdown [items]="targetTypeAttributeValues"
-                                                            placeholder="Select Value" [(ngModel)]="attributeValue"
+                                                            placeholder="Select Value" [selectedItem]="attributeValue"
                                                             (selected)="selectAttributes($event)">
                                                         </app-dropdown>
                                                     </ul>
