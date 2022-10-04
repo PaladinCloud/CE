@@ -32,6 +32,7 @@ import { RequestInterceptorService } from './services/request-interceptor.servic
 import { AuthSessionStorageService } from './services/auth-session-storage.service';
 import {RecentlyViewedObservableService} from './services/recently-viewed-observable.service';
 import { WindowExpansionService } from './services/window-expansion.service';
+import { TableStateService } from './services/table-state.service';
 
 @NgModule({
   imports: [
@@ -56,6 +57,7 @@ import { WindowExpansionService } from './services/window-expansion.service';
     AuthSessionStorageService,
     RecentlyViewedObservableService,
     WindowExpansionService,
+    TableStateService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RequestInterceptorService,
