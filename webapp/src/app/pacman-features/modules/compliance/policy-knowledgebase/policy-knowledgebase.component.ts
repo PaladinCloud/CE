@@ -46,6 +46,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedTabName = 'All';
   dataLoaded = false;
   searchTxt = '';
+  searchPassed = "";
   tabName: any = [];
   count = [];
   num = 0;
@@ -79,6 +80,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   tableScrollTop = 0;
   tableData = [];
   isStatePreserved = false;
+  doLocalSearch = true; // should be removed once tiles data is available from backend
 
   @ViewChild('pkInp') pkInp: ElementRef;
 
@@ -104,7 +106,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       this.direction = state?.direction || '';
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-      this.searchTxt = state?.searchTxt || '';
+      this.searchPassed = state?.searchTxt || '';
       this.tableData = state?.data || [];
       
       this.tableScrollTop = state?.tableScrollTop;
@@ -188,7 +190,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   getUpdatedUrl(){
     let updatedQueryParams = {};
     updatedQueryParams = {
-      // searchValue: this.searchPassed
+      searchValue: this.searchPassed,
     }
 
     this.router.navigate([], {
@@ -199,10 +201,15 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   }
 
   callNewSearch(searchVal){
-    this.searchTxt = searchVal;
-    // this.state.searchValue = searchVal;
-    this.updateComponent();
-    // this.getUpdatedUrl();
+    if(!this.doLocalSearch){
+      this.searchPassed = searchVal;
+      // this.state.searchValue = searchVal;
+      this.updateComponent();
+      this.getUpdatedUrl();
+    }else{
+      this.searchPassed = searchVal;
+      this.getUpdatedUrl();
+    }
   }
 
   ngAfterViewInit() {
@@ -305,7 +312,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     }
     const payload = {
       'ag': this.selectedAssetGroup,
-      'searchtext': this.searchTxt,
+      'searchtext': this.searchPassed,
       'filter': {
         'domain': this.selectedDomain
       },

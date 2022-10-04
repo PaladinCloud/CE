@@ -33,6 +33,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() onScrollDataLoader: Subject<any>;
   @Input() totalRows = 0;
   @Input() tableScrollTop;
+  @Input() doLocalSearch = false; // should remove this once we get tiles data from backend.
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -86,6 +87,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.allSelected=true;
     }else{
       this.allSelected=false;
+    }
+    if(this.searchQuery && this.doLocalSearch){
+      this.handleSearch(this.searchQuery);
     }
     if(this.headerColName) this.customSort(this.headerColName, this.direction);
 
@@ -322,12 +326,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     
     if (event.keyCode === 13 || searchTxt=='') {
       this.tableErrorMessage = ''
-      // if(this.doLocalSearch){
-      //   this.customSearch(searchTxt);
-      //   this.customSort(this.headerColName, this.direction);
-      // }else{
+      if(this.doLocalSearch){
+        this.customSearch(searchTxt);
+        this.customSort(this.headerColName, this.direction);
+      }else{
         this.searchCalledEventEmitter.emit(searchTxt);
-      // }
+      }
     }
   }
 
@@ -338,7 +342,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   customSort(columnName, direction){    
     if (!columnName || direction === '') {
-      this.dataSource.data = this.mainDataSource.data.slice();
+      // this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
 
