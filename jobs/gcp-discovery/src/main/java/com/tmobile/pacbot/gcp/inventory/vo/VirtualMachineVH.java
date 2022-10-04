@@ -17,10 +17,20 @@ public class VirtualMachineVH extends GCPVH {
     private List<ItemInterfaceVH> items;
 
     private List<HashMap<String,Object>> serviceAccounts;
+    private boolean confidentialComputing;
+
+    public boolean isConfidentialComputing() {
+        return confidentialComputing;
+    }
+
+    public void setConfidentialComputing(boolean confidentialComputing) {
+        this.confidentialComputing = confidentialComputing;
+    }
 
     public List<HashMap<String, Object>> getServiceAccounts() {
         return serviceAccounts;
     }
+
 
     public void setServiceAccounts(List<HashMap<String, Object>> serviceAccounts) {
         this.serviceAccounts = serviceAccounts;
