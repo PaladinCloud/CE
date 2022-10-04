@@ -91,7 +91,7 @@
             </div>
         </div>
     </div>
-    <div class="table-content-container" (scroll)="onScroll($event)">
+    <div #customTable class="table-content-container" (scroll)="onScroll($event)">
     <div [class.loader]="data.length==0 && tableErrorMessage==''"></div>
     <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
