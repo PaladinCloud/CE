@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -199,16 +200,46 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         }
     }
 
+    private  Map mergeMaps(List<Map<String, Object>> listOfMaps) {
+        Optional<Map<String, Object>> mergedMap = listOfMaps.stream().reduce((map1, map2) -> {
+            return Stream.concat(map1.entrySet().stream(), map2.entrySet().stream())
+                .collect(Collectors.toMap(
+                        Entry::getKey,
+                        Entry::getValue,
+                        (value1, value2) -> {
+                            Map<String, Object> resultMap = new HashMap<>((Map<String, Object>) value1);
+                            resultMap.putAll((Map<String, Object>) value2);
+                            return resultMap;
+                        }));
+        });
+        if(mergedMap.isPresent()){
+            return mergedMap.get();
+        }
+        return null;
+    }
+
     @Override
-    public Map<String, Object> getAverageAgeDistribution(String assetGroup) throws ServiceException {
+    public Map<String, Object> getDistributionBySeverity(String assetGroup, String domain) throws ServiceException {
         try {
             Map<String, Object> distribution = new HashMap<>();
             // get Rules mapped to targetType
-                    Map<String, Object> avgAgeDistribution = repository.getAverageAge(assetGroup);
+            String targetTypes = repository.getTargetTypeForAG(assetGroup, domain);
+            logger.info("Compliance API >> Fetched target types from repository: {}", targetTypes);
+            List<Object> rules = repository.getRuleIds(targetTypes);
+            logger.info("Compliance API >> Fetched rules from repository: {}", rules);
+
+            // get Rules mapped to targetType
+            Map<String, Object> avgAgeDistribution = repository.getAverageAge(assetGroup, rules);
             logger.info("Compliance API >> Fetched avgAgeDistribution from repository: {}", avgAgeDistribution);
 
-            Map<String, Object> avgAge = repository.getAverageAge(assetGroup);
-            distribution.put("averageAgeBySeverity", avgAgeDistribution);
+            Map<String, Object> assetDistributionBySeverity = repository.getAssetCountBySeverity(assetGroup, rules);
+            logger.info("Compliance API >> Fetched assetDistributionBySeverity from repository: {}", assetDistributionBySeverity);
+
+            Map<String, Object> policyDistributionBySeverity = repository.getPolicyCountBySeverity(assetGroup, rules);
+            logger.info("Compliance API >> Fetched policyDistributionBySeverity from repository: {}", policyDistributionBySeverity);
+
+            Map distributionBySeverity = this.mergeMaps(Arrays.asList(new Map[]{avgAgeDistribution, policyDistributionBySeverity, assetDistributionBySeverity}));
+            distribution.put("distributionBySeverity", distributionBySeverity);
             return distribution;
         } catch (DataException e) {
             logger.error("Compliance API >> DataException in getting distribution:{}",e.getStackTrace());

@@ -169,14 +169,14 @@ public class ComplianceController implements Constants {
      * @return ResponseEntity
      */
 
-    @RequestMapping(path = "/v1/issues/distribution/averageage", method = RequestMethod.GET)
-    public ResponseEntity<Object> getAverageAgeDistribution(@RequestParam(name="ag",required = true) String assetGroup) {
+    @RequestMapping(path = "/v1/issues/distribution/aggregate", method = RequestMethod.GET)
+    public ResponseEntity<Object> getDistributionBySeverity(@RequestParam(name="ag",required = true) String assetGroup, @RequestParam(name="domain",required = false) String domainName) {
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
         }
         DitributionDTO distribution = null;
         try {
-            distribution = new DitributionDTO(complianceService.getAverageAgeDistribution(assetGroup));
+            distribution = new DitributionDTO(complianceService.getDistributionBySeverity(assetGroup, domainName));
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
