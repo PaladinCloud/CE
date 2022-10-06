@@ -89,9 +89,16 @@ public class KmsKeysRotationPeriodRule extends BaseRule {
             JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
             logger.debug("Data retrieved from ES: {}", sourceData);
-            JsonObject rotationPeriod=sourceData.getAsJsonObject().get(PacmanRuleConstants.ROTATION_PERIOD).getAsJsonObject();
-            long rotationPeriodDays= rotationPeriod.getAsLong()/convertIntoDays;
+            Long rotationPeriod=sourceData.getAsJsonObject().get(PacmanRuleConstants.ROTATION_PERIOD).getAsLong();
+            logger.info("rotation period data "+ rotationPeriod);
+
+            long rotationPeriodDays= rotationPeriod/convertIntoDays;
+
+            logger.info("rotationPeriodDays "+ rotationPeriodDays);
+
            validationResult= (rotationPeriodDays>90)?false:true;
+
+           logger.info("validation Result "+ validationResult);
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
         }
