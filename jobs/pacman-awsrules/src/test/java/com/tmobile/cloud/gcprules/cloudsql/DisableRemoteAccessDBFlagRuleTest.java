@@ -31,7 +31,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
 public class DisableRemoteAccessDBFlagRuleTest {
     @InjectMocks
-    DisableContainedDBAuthenticationRule disableContainedDBAuthenticationRule;
+    DisableOrEnableDBFlagsRule disableOrEnableDBFlagsRule;
     @Before
     public void setUp() {
         mockStatic(PacmanUtils.class);
@@ -48,7 +48,7 @@ public class DisableRemoteAccessDBFlagRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(disableContainedDBAuthenticationRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
+        assertThat(disableOrEnableDBFlagsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
 
@@ -62,7 +62,7 @@ public class DisableRemoteAccessDBFlagRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(disableContainedDBAuthenticationRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+        assertThat(disableOrEnableDBFlagsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class DisableRemoteAccessDBFlagRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> disableContainedDBAuthenticationRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        assertThatThrownBy(() -> disableOrEnableDBFlagsRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
 
     public static Map<String, String> getMapString(String passRuleResourceId) {
@@ -97,7 +97,7 @@ public class DisableRemoteAccessDBFlagRuleTest {
 
     @Test
     public void getHelpTextTest() {
-        assertThat(disableContainedDBAuthenticationRule.getHelpText(), is(notNullValue()));
+        assertThat(disableOrEnableDBFlagsRule.getHelpText(), is(notNullValue()));
     }
 
 

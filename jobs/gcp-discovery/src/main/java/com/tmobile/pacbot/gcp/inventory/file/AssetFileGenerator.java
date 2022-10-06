@@ -77,7 +77,6 @@ public class AssetFileGenerator {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		// generateAzureAplicationList();
 
 		for (ProjectVH project : projects) {
 			log.info("Started Discovery for project {}", project);
@@ -160,7 +159,7 @@ public class AssetFileGenerator {
 					List<CloudSqlVH>cloudSqlVHList=cloudSqlInventoryCollector.fetchCloudSqlInventory(project);
 					FileManager.generateCloudSqlFiles(cloudSqlVHList);
 					FileManager.generateCloudSqlServerFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.SQLSERVER));
-
+					FileManager.generateCloudMySqlServerFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.MYSQL));
 
 				} catch (Exception e) {
 					e.printStackTrace();

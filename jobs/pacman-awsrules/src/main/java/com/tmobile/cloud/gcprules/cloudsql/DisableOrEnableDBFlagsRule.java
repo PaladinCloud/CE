@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.cloud.gcprules.cloudstorage.DisableDBOwnerRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -22,12 +21,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-@PacmanRule(key = "disable-contained-database-Auth-flag-for-sql-server", desc = "checks if Google sql server instance contained database flag is disabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class DisableContainedDBAuthenticationRule extends BaseRule {
-    private static final Logger logger = LoggerFactory.getLogger(DisableContainedDBAuthenticationRule.class);
+@PacmanRule(key = "disable-enable-database-flags-for-cloudsql-server", desc = "checks if Google cloud sql server instance database flag is disabled or enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class DisableOrEnableDBFlagsRule extends BaseRule {
+    private static final Logger logger = LoggerFactory.getLogger(DisableOrEnableDBFlagsRule.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -40,7 +37,9 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String vmEsURL = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String dbFlagName=ruleParam.get(PacmanRuleConstants.DBFLAGNAME);
+        String dbFlagValue=ruleParam.get(PacmanRuleConstants.DBFLAGVALUE);
         String description=ruleParam.get(PacmanRuleConstants.DESCRIPTION);
+        String dataBaseType=ruleParam.get(PacmanRuleConstants.DB_TYPE);
         String violation=ruleParam.get(PacmanRuleConstants.VIOLATION_REASON);
         logger.info("db flag Name,{}, {}",violation,description);
         if (Boolean.FALSE.equals(PacmanUtils.doesAllHaveValue(severity, category, vmEsURL))) {
@@ -49,12 +48,12 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_cloudsql_sqlserver/_search";
+            vmEsURL = vmEsURL + "/"+dataBaseType+"/_search";
 
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
 
-        boolean isContainedDBAuthflagEnabled= false;
+        boolean isDBFlagValueAsExpected= false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
@@ -66,8 +65,8 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                isContainedDBAuthflagEnabled = verifyDbContainedAuthflagEnabled(vmEsURL, mustFilter,dbFlagName);
-                if (isContainedDBAuthflagEnabled) {
+                isDBFlagValueAsExpected = verifyDBflagEnabledOrDisabled(vmEsURL, mustFilter,dbFlagName,dbFlagValue);
+                if (!isDBFlagValueAsExpected) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
@@ -78,7 +77,7 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
                     issue.put(PacmanRuleConstants.VIOLATION_REASON, violation);
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
-                    logger.debug("========cloud sql with contained Database authentication flag Rule  ended with an annotation {} : =========", annotation);
+                    logger.debug("========cloud sql with contained Database  flag Rule  ended with an annotation {} : =========", annotation);
                     return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 
@@ -86,14 +85,14 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
-        logger.debug("========cloud sql with contained Database authentication  flag Rule Ended ended=========");
+        logger.debug("========cloud sql with Database flag Rule Ended ended=========");
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 
     }
-    private boolean verifyDbContainedAuthflagEnabled(String vmEsURL, Map<String, Object> mustFilter,String dbFlagName) throws Exception {
+    private boolean verifyDBflagEnabledOrDisabled(String vmEsURL, Map<String, Object> mustFilter,String dbFlagName,String dbFlagValue) throws Exception {
 
-        logger.debug("========verifyIfverifyDbOwnerChangingflagEnabled started=========");
+        logger.debug("========verifyDBflagEnabledOrDisabled started=========");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = false;
         if (hitsJsonArray.size() > 0) {
@@ -111,7 +110,7 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
                 if(databaseFlagsList.size()>0){
                     for (JsonElement flag: databaseFlagsList) {
                         boolean flagName=flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equals(dbFlagName);
-                        boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equals("on");
+                        boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equals(dbFlagValue);
 
                         if( flagName && value ) {
                             validationResult = true;
@@ -134,6 +133,6 @@ public class DisableContainedDBAuthenticationRule extends BaseRule {
 
     @Override
     public String getHelpText() {
-        return "check  Contained DB Authentication flag disabled for SQL SERVER Instance";
+        return "check  DB  flag disabled or enabled for cloud sql SERVER Instance";
     }
 }
