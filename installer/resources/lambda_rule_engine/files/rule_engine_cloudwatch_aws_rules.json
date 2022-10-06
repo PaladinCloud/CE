@@ -3498,6 +3498,28 @@
     "category": "security"
   },
   {
+    "ruleId": "CloudTrailLogFileValidation_version-1_EnableLogFileValidation_cloudtrail",
+    "ruleUUID": "aws_cloud_trail_enable_log_file_validation",
+    "policyId": "CloudTrailLogFileValidation_version-1",
+    "ruleName": "Validation should be enabled for CloudTrail log file",
+    "targetType": "cloudtrail",
+    "assetGroup": "aws",
+    "alexaKeyword": "CloudTrailLogFileValidation",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-cloudtrail-log-file-validation-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"CloudTrailLogFileValidation_version-1_EnableLogFileValidation_cloudtrail\",\"autofix\":false,\"alexaKeyword\":\"CloudTrailLogFileValidation\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"policyId\":\"CloudTrailLogFileValidation_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_cloud_trail_enable_log_file_validation\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_cloud_trail_enable_log_file_validation",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Validation for CloudTrail log file",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "RemoveRootUserAccessKey_version-1_RemoveRootUserAccessKey_account",
     "ruleUUID": "aws_remove_root_user_account_access_key",
     "policyId": "RemoveRootUserAccessKey_version-1",
