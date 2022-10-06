@@ -150,4 +150,7 @@ public class FileManager {
 
     }
 
+    public static void generateCloudMySqlServerFiles(List<CloudSqlVH> cloudSqlVHList) {
+        FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_mysqlserver.data");
+    }
 }

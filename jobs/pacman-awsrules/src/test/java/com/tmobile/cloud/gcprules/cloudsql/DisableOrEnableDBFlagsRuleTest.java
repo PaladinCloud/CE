@@ -3,7 +3,6 @@ package com.tmobile.cloud.gcprules.cloudsql;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.gcprules.cloudstorage.DisableDBOwnerRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -31,9 +30,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({PacmanUtils.class, GCPUtils.class})
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
-public class DisableContainedDBAuthenticationRuleTest {
+public class DisableOrEnableDBFlagsRuleTest {
     @InjectMocks
-    DisableContainedDBAuthenticationRule disableContainedDBAuthenticationRule;
+    DisableOrEnableDBFlagsRule disableOrEnableDBFlagsRule;
     @Before
     public void setUp() {
         mockStatic(PacmanUtils.class);
@@ -50,7 +49,7 @@ public class DisableContainedDBAuthenticationRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(disableContainedDBAuthenticationRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
+        assertThat(disableOrEnableDBFlagsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
 
@@ -64,7 +63,7 @@ public class DisableContainedDBAuthenticationRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(disableContainedDBAuthenticationRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+        assertThat(disableOrEnableDBFlagsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
     @Test
@@ -76,7 +75,7 @@ public class DisableContainedDBAuthenticationRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> disableContainedDBAuthenticationRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        assertThatThrownBy(() -> disableOrEnableDBFlagsRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
 
     public static Map<String, String> getMapString(String passRuleResourceId) {
@@ -99,7 +98,7 @@ public class DisableContainedDBAuthenticationRuleTest {
 
     @Test
     public void getHelpTextTest() {
-        assertThat(disableContainedDBAuthenticationRule.getHelpText(), is(notNullValue()));
+        assertThat(disableOrEnableDBFlagsRule.getHelpText(), is(notNullValue()));
     }
 
 

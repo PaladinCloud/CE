@@ -1318,5 +1318,27 @@
     "modifiedDate": "2022-09-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Disable_Local_infile_for_MySQL_Server_DB_Instances",
+    "ruleUUID": "Disable_Local_infile_for_MySQL_Server_DB_Instances",
+    "policyId": "Disable_Local_infile_for_MySQL_Server_DB_Instances",
+    "ruleName": "Disable Local_infile DB Flag for Cloud SQL",
+    "targetType": "cloudsql_mysqlserver",
+    "assetGroup": "gcp",
+    "alexaKeyword": "mysqlserver",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"ruleKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_mysqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"local_infile\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"off\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Disable Local_infile DB Flag for Cloud SQL\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that the local_infile database flag is disabled for your Google Cloud MySQL database instances, in order to follow data security best practices\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Local_infile flag is enabled for your Google Cloud MySQL Server database instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_Local_infile_for_MySQL_Server_DB_Instances\",\"autofix\":false,\"alexaKeyword\":\"mysqlserver\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql_mysqlserver\",\"pac_ds\":\"gcp\",\"policyId\":\"Disable_Local_infile_for_MySQL_Server_DB_Instances\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_Local_infile_for_MySQL_Server_DB_Instances\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_Local_infile_for_MySQL_Server_DB_Instances",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable Local_infile DB Flag for Cloud SQL",
+    "createdDate": "2022-10-06",
+    "modifiedDate": "2022-10-06",
+    "severity": "low",
+    "category": "security"
   }
 ]

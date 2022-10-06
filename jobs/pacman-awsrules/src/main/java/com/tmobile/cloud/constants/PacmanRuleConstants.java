@@ -64,6 +64,8 @@ public class PacmanRuleConstants {
     public static final String GCP_SCOPES_LIST ="scopesList" ;
     public static final String GCP_PROJECT_NUMBER ="projectNumber" ;
     public static final String GCP_NAME = "name";
+    public static final String DBFLAGVALUE ="dbFlagValue" ;
+    public static final String DB_TYPE = "dataBaseType";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
