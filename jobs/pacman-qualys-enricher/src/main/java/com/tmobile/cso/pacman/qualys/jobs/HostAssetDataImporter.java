@@ -221,188 +221,192 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 
         Map<String, Map<String, Object>> hostAssets = new HashMap<>();
 
-        currentInfo.entrySet().stream().forEach(entry -> {
-	        try {
-	            String docid = entry.getKey();
-	            String resouceId = entry.getValue().get(RESOURCE_ID);
-	            String name = "";
-	            String ip = "";
-	            String vmMac="";
-	            if ("onpremserver".equals(type)) {
-	                name = entry.getValue().get("name");
-	                ip = entry.getValue().get("ip_address");
-	            } else if("ec2".equals("type")) {
-	                name = entry.getValue().get("tags.Name");
-	                ip = entry.getValue().get("privateipaddress");
-	            }else if("virtualmachine".equals(type)){
-	                name = entry.getValue().get("computerName");
-	                ip = entry.getValue().get("privateIpAddress");
-	                vmMac = entry.getValue().get("primaryNCIMacAddress");
-	            }
-	
-	            Map<String, Object> processinfo = new LinkedHashMap<>();
-	            processinfo.put("_resouceId", resouceId);
-	            processinfo.put("name", name == null ? "" : name);
-	            processinfo.put("ip", ip);
-	            
-	            Map<String, Object> hostAsset = null;
-	            if ("ec2".equals(type)) {
-	                /*
-	                 * EC2 Instance ID based lookup is currently supported and is the preferred approach
-	                 * If it fails, we need to search based on IP and other fallback approaches.
-	                 * Onprem still continues with ip and name
-	                 */
-	                hostAsset = fetchBasedOnInstanceID(resouceId,processinfo);
-	            }
-	            
-	            if(hostAsset==null){ // For ec2, instancedid based lookup fails
-	                String inputXml = "<ServiceRequest> " + "<preferences><limitResults>100</limitResults></preferences>"
-	                        + "<filters>" + "<Criteria field=\"address\" operator=\"EQUALS\">%s</Criteria>"
-	                        + "<Criteria field=\"lastVulnScan\" operator=\"GREATER\">%s</Criteria>" + "</filters>"
-	                        + "</ServiceRequest>";
-	                
-	                List<Map<String, Object>> respData = null;
-	                if (!Strings.isNullOrEmpty(ip)) {
-	                    String _inputXml = String.format(inputXml, ip, lastVulnDate);
-	     
-	                    respData = getHostData(uriPost, _inputXml);
-	       
-	                }
-	
-	                if (respData == null)
-	                    respData = new ArrayList<>();
-	
-	                processinfo.put("totalProfilesFound", respData.size());
-	                processinfo.put("profiles", Util.fetchTrackinMethodAndQids(respData));
-	
-	                List<Map<String, Object>> _respData = Util.sortOnLastVulnScan(respData);
-	
-	                if ("ec2".equals(type)) {
-	                    for (int i = 0; i < _respData.size(); i++) {
-	                        Map<String, Object> host = _respData.get(i);
-	                        Long id = Double.valueOf(host.get("id").toString()).longValue();
-	                        String trackingMethod = host.get(TRACKING_METHOD).toString();
-	
-	                        if (matchBasedonInstanceId(host, resouceId)) {
-	                            processinfo.put(TRACKING_METHOD, trackingMethod);
-	                            processinfo.put(MATCH_FOUND_BY, "InstanceId > Id:" + id);
-	                            hostAsset = host;
-	                        } else if (matchBasedonMacAddress(host, resouceId, ip, processinfo)) {
-	                            processinfo.put(TRACKING_METHOD, trackingMethod);
-	                            hostAsset = host;
-	                            processinfo.put(MATCH_FOUND_BY, "Mac/Eni > Id:" + id);
-	                        }
-	                        if (hostAsset != null) {
-	                            if (i > 0) {
-	                                processinfo.put("matchFoundAt", i);
-	                            }
-	                            break;
-	                        }
-	                    }
-	
-	                    if (hostAsset == null) {
-	                        hostAsset = fallbackNameBasedMatch(name, ip);
-	                        if (hostAsset != null) {
-	                            processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
-	                            processinfo.put(MATCH_FOUND_BY, "FallBack Name Match > Id:"
-	                                    + Double.valueOf(hostAsset.get("id").toString()).longValue());
-	                        }
-	                    }
-	                    if (hostAsset == null) {
-	                        hostAsset = fallbackNatIpBasedMatch(docid, ip);
-	                        if (hostAsset != null) {
-	                            processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
-	                            processinfo.put(MATCH_FOUND_BY, "FallBack NAT-IP Match > Id:"
-	                                    + Double.valueOf(hostAsset.get("id").toString()).longValue());
-	                        }
-	                    }
-	                } else {
-	                    
-	                    // Azure VM : MacID based lookup
-	                    if("virtualmachine".equals(type)){
-	                        for (int i = 0; i < _respData.size(); i++) {
-	                            Map<String, Object> host = _respData.get(i);
-	                            if (matchBasedonMacAddressVM(ip, vmMac, host)) {
-	                                hostAsset = host;
-	                                processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
-	                                processinfo.put(MATCH_FOUND_BY,
-	                                        "MacAddress > Id:" + Double.valueOf(hostAsset.get("id").toString()).longValue());
-	                            }
-	                            if (hostAsset != null) {
-	                                if (i > 0) {
-	                                    processinfo.put("matchFoundAt", i);
-	                                }
-	                                break;
-	                            }
-	                        }
-	                    }
-	                        
-	                    if(hostAsset==null){
-	                        for (int i = 0; i < _respData.size(); i++) {
-	                            Map<String, Object> host = _respData.get(i);
-	                            if (matchBasedonName(host, name)) {
-	                                hostAsset = host;
-	                                processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
-	                                processinfo.put(MATCH_FOUND_BY,
-	                                        "Name > Id:" + Double.valueOf(hostAsset.get("id").toString()).longValue());
-	                            }
-	                            if (hostAsset != null) {
-	                                if (i > 0) {
-	                                    processinfo.put("matchFoundAt", i);
-	                                }
-	                                break;
-	                            }
-	                        }
-	                    }
-	
-	                }
-	
-	                if (hostAsset == null) {
-	                    hostAsset = fallbackIdBasedMatch(resouceId, processinfo);
-	                }
-	                
-	                if (hostAsset == null) {
-	                    hostAsset = fallbackToCurrentInfo(resouceId, processinfo);
-	                }
-	            }
-	            
-	            // This is needed to ensure the vulnifo is available in the hostasset if not we need to fetch it by retry or from current data
-	            hostAsset = checkAndFetchVulnInfo(type, resouceId, processinfo, hostAsset);
-	
-	            synchronized (processList) {
-	                processList.add(processinfo);
-	            }
-	
-	            Map<String, Map<String, Object>> _hostAssets = null;
-	            if (hostAsset != null) {
-	                hostAsset.put(RESOURCE_ID, resouceId);
-	                processinfo.put(LAST_VULN_SCAN, hostAsset.get(LAST_VULN_SCAN));
-	                synchronized (hostAssets) {
-	                    uploadList.add(resouceId);
-	                    hostAssets.put(docid, hostAsset);
-	                    if (hostAssets.size() >= 50) {
-	                        _hostAssets = new HashMap<>(hostAssets);
-	                        hostAssets.clear();
-	                    }
-	                }
-	            } else {
-	                synchronized (noPrfileList) {
-	                    noPrfileList.add(entry.getValue());
-	                }
-	            }
-	            if (_hostAssets != null) {
-	                Util.processAndTransform(_hostAssets, vulnInfoMap, CURR_DATE);
-	                new HostAssetsEsIndexer().postHostAssetToES(_hostAssets, ds,type,errorList);
-	            }
-	        } catch (Exception e) {
-	            LOGGER.error("Error Fetching data for " + entry.getKey(), e);
-	            Map<String,String> errorMap = new HashMap<>();
-	            errorMap.put(ERROR, "Error Fetching data for " + entry.getKey());
-	            errorMap.put(ERROR_TYPE, WARN);
-	            errorMap.put(EXCEPTION, e.getMessage());
-	            errorList.add(errorMap);
-	        }
-        });
+//        currentInfo.entrySet().stream().forEach(entry -> {
+            for(Entry<String, Map<String, String>> entry:currentInfo.entrySet()) {
+                try {
+                    String docid = entry.getKey();
+                    String resouceId = entry.getValue().get(RESOURCE_ID);
+                    String name = "";
+                    String ip = "";
+                    String vmMac = "";
+                    if ("onpremserver".equals(type)) {
+                        name = entry.getValue().get("name");
+                        ip = entry.getValue().get("ip_address");
+                    } else if ("ec2".equals(type)) {
+                        name = entry.getValue().get("tags.Name");
+                        ip = entry.getValue().get("privateipaddress");
+                    } else if ("virtualmachine".equals(type)) {
+                        name = entry.getValue().get("computerName");
+                        ip = entry.getValue().get("privateIpAddress");
+                        vmMac = entry.getValue().get("primaryNCIMacAddress");
+                    }
+
+                    Map<String, Object> processinfo = new LinkedHashMap<>();
+                    processinfo.put("_resouceId", resouceId);
+                    processinfo.put("name", name == null ? "" : name);
+                    processinfo.put("ip", ip);
+
+                    Map<String, Object> hostAsset = null;
+                    if ("ec2".equals(type)) {
+                        /*
+                         * EC2 Instance ID based lookup is currently supported and is the preferred approach
+                         * If it fails, we need to search based on IP and other fallback approaches.
+                         * Onprem still continues with ip and name
+                         */
+                        hostAsset = fetchBasedOnInstanceID(resouceId, processinfo);
+                    }
+
+                    if (hostAsset == null || hostAsset.get(Constants.ERROR_CODE)!=null) { // For ec2, instancedid based lookup fails
+                        String inputXml = "<ServiceRequest> " + "<preferences><limitResults>100</limitResults></preferences>"
+                                + "<filters>" + "<Criteria field=\"address\" operator=\"EQUALS\">%s</Criteria>"
+                                + "<Criteria field=\"lastVulnScan\" operator=\"GREATER\">%s</Criteria>" + "</filters>"
+                                + "</ServiceRequest>";
+
+                        List<Map<String, Object>> respData = null;
+                        if (!Strings.isNullOrEmpty(ip)) {
+                            String _inputXml = String.format(inputXml, ip, lastVulnDate);
+
+                            respData = getHostData(uriPost, _inputXml);
+
+                        }
+
+                        if (respData == null)
+                            respData = new ArrayList<>();
+
+                        processinfo.put("totalProfilesFound", respData.size());
+                        processinfo.put("profiles", Util.fetchTrackinMethodAndQids(respData));
+
+                        List<Map<String, Object>> _respData = Util.sortOnLastVulnScan(respData);
+
+                        if ("ec2".equals(type) && Util.checkValidResponse(_respData)) {
+                            for (int i = 0; i < _respData.size(); i++) {
+                                Map<String, Object> host = _respData.get(i);
+                                Long id = Double.valueOf(host.get("id").toString()).longValue();
+                                String trackingMethod = host.get(TRACKING_METHOD).toString();
+
+                                if (matchBasedonInstanceId(host, resouceId)) {
+                                    processinfo.put(TRACKING_METHOD, trackingMethod);
+                                    processinfo.put(MATCH_FOUND_BY, "InstanceId > Id:" + id);
+                                    hostAsset = host;
+                                } else if (matchBasedonMacAddress(host, resouceId, ip, processinfo)) {
+                                    processinfo.put(TRACKING_METHOD, trackingMethod);
+                                    hostAsset = host;
+                                    processinfo.put(MATCH_FOUND_BY, "Mac/Eni > Id:" + id);
+                                }
+                                if (hostAsset != null) {
+                                    if (i > 0) {
+                                        processinfo.put("matchFoundAt", i);
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (hostAsset == null || hostAsset.get(Constants.ERROR_CODE)!=null) {
+                                hostAsset = fallbackNameBasedMatch(name, ip);
+                                if (hostAsset != null && hostAsset.get(Constants.ERROR_CODE)==null) {
+                                    processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
+                                    processinfo.put(MATCH_FOUND_BY, "FallBack Name Match > Id:"
+                                            + Double.valueOf(hostAsset.get("id").toString()).longValue());
+                                }
+                            }
+                            if (hostAsset == null || hostAsset.get(Constants.ERROR_CODE)!=null) {
+                                hostAsset = fallbackNatIpBasedMatch(docid, ip);
+                                if (hostAsset != null && hostAsset.get(Constants.ERROR_CODE)==null) {
+                                    processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
+                                    processinfo.put(MATCH_FOUND_BY, "FallBack NAT-IP Match > Id:"
+                                            + Double.valueOf(hostAsset.get("id").toString()).longValue());
+                                }
+                            }
+                        } else {
+
+                            // Azure VM : MacID based lookup
+                            if ("virtualmachine".equals(type) && Util.checkValidResponse(_respData)) {
+                                for (int i = 0; i < _respData.size(); i++) {
+                                    Map<String, Object> host = _respData.get(i);
+                                    if (matchBasedonMacAddressVM(ip, vmMac, host)) {
+                                        hostAsset = host;
+                                        processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
+                                        processinfo.put(MATCH_FOUND_BY,
+                                                "MacAddress > Id:" + Double.valueOf(hostAsset.get("id").toString()).longValue());
+                                    }
+                                    if (hostAsset != null) {
+                                        if (i > 0) {
+                                            processinfo.put("matchFoundAt", i);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (hostAsset == null && hostAsset.get(Constants.ERROR_CODE)==null) {
+                                for (int i = 0; i < _respData.size(); i++) {
+                                    Map<String, Object> host = _respData.get(i);
+                                    if (matchBasedonName(host, name)) {
+                                        hostAsset = host;
+                                        processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
+                                        processinfo.put(MATCH_FOUND_BY,
+                                                "Name > Id:" + Double.valueOf(hostAsset.get("id").toString()).longValue());
+                                    }
+                                    if (hostAsset != null) {
+                                        if (i > 0) {
+                                            processinfo.put("matchFoundAt", i);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+
+                        if (hostAsset == null || hostAsset.get(Constants.ERROR_CODE)!=null
+                                && Util.checkQualysId(currentQualysInfo,resouceId)) {
+                            hostAsset = fallbackIdBasedMatch(resouceId, processinfo);
+                        }
+
+                        if (hostAsset == null) {
+                            //fallback to currentInf only of no data is fetched from qualys API
+                            hostAsset = fallbackToCurrentInfo(resouceId, processinfo);
+                        }
+                    }
+
+                    // This is needed to ensure the vulnifo is available in the hostasset if not we need to fetch it by retry or from current data
+                    hostAsset = checkAndFetchVulnInfo(type, resouceId, processinfo, hostAsset);
+
+                    synchronized (processList) {
+                        processList.add(processinfo);
+                    }
+
+                    Map<String, Map<String, Object>> _hostAssets = null;
+                    if (hostAsset != null) {
+                        hostAsset.put(RESOURCE_ID, resouceId);
+                        processinfo.put(LAST_VULN_SCAN, hostAsset.get(LAST_VULN_SCAN));
+                        synchronized (hostAssets) {
+                            uploadList.add(resouceId);
+                            hostAssets.put(docid, hostAsset);
+                            if (hostAssets.size() >= 50) {
+                                _hostAssets = new HashMap<>(hostAssets);
+                                hostAssets.clear();
+                            }
+                        }
+                    } else {
+                        synchronized (noPrfileList) {
+                            noPrfileList.add(entry.getValue());
+                        }
+                    }
+                    if (_hostAssets != null) {
+                        Util.processAndTransform(_hostAssets, vulnInfoMap, CURR_DATE);
+                        new HostAssetsEsIndexer().postHostAssetToES(_hostAssets, ds, type, errorList);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Error Fetching data for " + entry.getKey(), e);
+                    Map<String, String> errorMap = new HashMap<>();
+                    errorMap.put(ERROR, "Error Fetching data for " + entry.getKey());
+                    errorMap.put(ERROR_TYPE, WARN);
+                    errorMap.put(EXCEPTION, e.getMessage());
+                    errorList.add(errorMap);
+                }
+                //});
+            }
 
         Util.processAndTransform(hostAssets, vulnInfoMap, CURR_DATE);
         new HostAssetsEsIndexer().postHostAssetToES(hostAssets,ds, type,errorList);
@@ -418,11 +422,17 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         String _inputXml = String.format(inputXmlWithInstanceId, resouceId, lastVulnDate);
         List<Map<String, Object>> respData = getHostData(uriPost, _inputXml);
         if(respData!=null && !respData.isEmpty()){
-            hostAsset = respData.get(0);
-            Long id = Double.valueOf(hostAsset.get("id").toString()).longValue();
-            String trackingMethod = hostAsset.get(TRACKING_METHOD).toString();
-            processinfo.put(TRACKING_METHOD, trackingMethod);
-            processinfo.put(MATCH_FOUND_BY,  "InstanceId Lookup > Id:" + id);
+            if(respData.get(0).get(Constants.ERROR_CODE)!=null){
+                hostAsset=new HashMap<>();
+                hostAsset.put("errorCode", respData.get(0).get("errorCode"));
+                hostAsset.put("errorDetails", respData.get(0).get("errorDetails"));
+            }else {
+                hostAsset = respData.get(0);
+                Long id = Double.valueOf(hostAsset.get("id").toString()).longValue();
+                String trackingMethod = hostAsset.get(TRACKING_METHOD).toString();
+                processinfo.put(TRACKING_METHOD, trackingMethod);
+                processinfo.put(MATCH_FOUND_BY, "InstanceId Lookup > Id:" + id);
+            }
         }
         return hostAsset;
     }
@@ -463,7 +473,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             Map<String, Object> hostAsset) {
 
         Map<String, Object> host = hostAsset;
-        if (host != null && host.get("vuln") == null) {
+        if (host != null && host.get("errorCode")==null && host.get("vuln") == null) {
 
             processinfo.put(VULN_MISSING, "true");
             // Retry with the current matched ID
@@ -586,7 +596,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                 + "</ServiceRequest>";
         String _inputXml = String.format(inputXml, name, lastVulnDate);
         List<Map<String, Object>> hosts = getHostData(uriPost, _inputXml);
-        if (hosts != null && !hosts.isEmpty()) {
+        if (Util.checkValidResponse(hosts)) {
             String _ip = ip;
             hosts = hosts.stream().filter(host -> {
                 boolean isIpMatches = false;
@@ -605,11 +615,10 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                             LocalDateTime.parse(obj1.get("lastVulnScan").toString(), DateTimeFormatter.ISO_DATE_TIME)))
                     .collect(Collectors.toList());
 
-            if (hosts != null && !hosts.isEmpty()) {
-                hostAsset = hosts.get(0);
-            }
         }
-
+        if (hosts != null && !hosts.isEmpty()) {
+            hostAsset = hosts.get(0);
+        }
         return hostAsset;
 
     }

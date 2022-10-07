@@ -2,15 +2,14 @@ package com.tmobile.cso.pacman.qualys.jobs;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.tmobile.cso.pacman.qualys.Constants;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -41,10 +40,10 @@ public abstract class QualysDataImporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(QualysDataImporter.class);
     
     /** The Constant DEFAULT_USER. */
-    private static final String DEFAULT_USER = Util.base64Decode(System.getProperty("qualys_info")).split(":")[0];
+    private static final String DEFAULT_USER = Util.base64Decode(System.getenv("qualys_info")).split(":")[0];
     
     /** The Constant DEFAULT_PASS. */
-    private static final String DEFAULT_PASS = Util.base64Decode(System.getProperty("qualys_info")).split(":")[1];
+    private static final String DEFAULT_PASS = Util.base64Decode(System.getenv("qualys_info")).split(":")[1];
     
     /** The Constant UTF8. */
     private static final String UTF8 = "UTF-8";
@@ -71,7 +70,7 @@ public abstract class QualysDataImporter {
     }
 
     /** The Constant BASE_API_URL. */
-    protected static final String BASE_API_URL = System.getProperty("qualys_api_url");
+    protected static final String BASE_API_URL = System.getenv("qualys_api_url");
 
     /**
      * Instantiates a new qualys data importer.
@@ -184,7 +183,7 @@ public abstract class QualysDataImporter {
             }
             if (resultJson != null) {
                 Map<String, Object> resp = getServiceResponse(resultJson);
-                if (resp != null && "SUCCESS".equals(resp.get("responseCode"))) {
+                if (resp != null && "SUCCESS".equals(resp.get(Constants.RESPONSE_CODE))) {
                     List<Map<String, Object>> data = (List<Map<String, Object>>) resp.get("data");
                     if (data != null) {
                         return data.stream().map(obj -> (Map<String, Object>) obj.get("HostAsset"))
@@ -195,6 +194,12 @@ public abstract class QualysDataImporter {
                     if (i == retryCnt) {
                         LOGGER.error("Error in fetching host info: Request :{}", inputXml);
                         LOGGER.error("Response : {}", new Gson().toJson(resultJson));
+                        List<Map<String, Object>> errorResp=new ArrayList<>();
+                        Map<String, Object> errorMap=new HashMap<>();
+                        errorMap.put(Constants.ERROR_CODE,resp.get(Constants.RESPONSE_CODE));
+                        errorMap.put(Constants.ERROR_DETAILS,resp.get(Constants.RESPONSE_ERROR_DETAILS));
+                        errorResp.add(errorMap);
+                        return errorResp;
                     }
                 }
             }

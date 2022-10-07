@@ -2488,21 +2488,34 @@ public class PacmanUtils {
                     if ((null != sourceJson) && (null != sourceJson.get(PacmanRuleConstants.RESOURCE_ID))
                             && (!sourceJson.get(PacmanRuleConstants.RESOURCE_ID).isJsonNull())) {
                         String instanceId = sourceJson.get(PacmanRuleConstants.RESOURCE_ID).getAsString();
-                        if (!sourceJson.has(PacmanRuleConstants.LAST_VULN_SCAN)
-                                || sourceJson.get(PacmanRuleConstants.LAST_VULN_SCAN).isJsonNull()) {
-                            resourceVerified.put(PacmanRuleConstants.FAILED_REASON,
-                                    "unable to determine as last scanned date is not available!!");
-                            return resourceVerified;
+                        if (sourceJson != null && sourceJson.get(PacmanRuleConstants.ERROR_CODE) != null && sourceJson.get(PacmanRuleConstants.ERROR_CODE).getAsString() != null) {
+                                logger.info("Qualys data was not collected successfully");
+                            String errorCode = stripCommas(sourceJson.get(PacmanRuleConstants.ERROR_CODE).getAsString());
+                            resourceVerified.put(PacmanRuleConstants.ERROR_CODE, errorCode);
+                            JsonObject errorDetails=sourceJson.get(PacmanRuleConstants.ERROR_DETAILS).getAsJsonObject();
+                            if(errorDetails!=null){
+                                String errorResolution = stripCommas(errorDetails.get(PacmanRuleConstants.ERROR_RESOLUTION).getAsString());
+                                String errorMessage = stripCommas(errorDetails.get(PacmanRuleConstants.ERROR_MESSAGE_ATTRIBUTE).getAsString());
+                                resourceVerified.put(PacmanRuleConstants.ERROR_MESSAGE_ATTRIBUTE,errorMessage);
+                                resourceVerified.put(PacmanRuleConstants.ERROR_RESOLUTION,errorResolution);
+                            }
                         } else {
+                            if (!sourceJson.has(PacmanRuleConstants.LAST_VULN_SCAN)
+                                    || sourceJson.get(PacmanRuleConstants.LAST_VULN_SCAN).isJsonNull()) {
+                                resourceVerified.put(PacmanRuleConstants.FAILED_REASON,
+                                        "unable to determine as last scanned date is not available!!");
+                                return resourceVerified;
+                            } else {
 
-                            if (!org.apache.commons.lang.StringUtils.isEmpty(instanceId)) {
-                                String lastVulnScan = sourceJson.get(PacmanRuleConstants.LAST_VULN_SCAN).getAsString();
-                                if (calculateDuration(lastVulnScan) < Long.parseLong(target)) {
-                                    return resourceVerified;
-                                } else {
-                                    resourceVerified.put(PacmanRuleConstants.FAILED_REASON, "qualys not scanned since "
-                                            + target + " days!!");
-                                    return resourceVerified;
+                                if (!org.apache.commons.lang.StringUtils.isEmpty(instanceId)) {
+                                    String lastVulnScan = sourceJson.get(PacmanRuleConstants.LAST_VULN_SCAN).getAsString();
+                                    if (calculateDuration(lastVulnScan) < Long.parseLong(target)) {
+                                        return resourceVerified;
+                                    } else {
+                                        resourceVerified.put(PacmanRuleConstants.FAILED_REASON, "qualys not scanned since "
+                                                + target + " days!!");
+                                        return resourceVerified;
+                                    }
                                 }
                             }
                         }
@@ -2517,6 +2530,13 @@ public class PacmanUtils {
             }
         }
         return resourceVerified;
+    }
+
+    private static String stripCommas(String input) {
+        if(input!=null && input.contains(", ")){
+            return input.replaceAll(", "," ");
+        }
+        return input;
     }
 
     public static Map<String, String> getLowUtilizationEc2Details(String checkId, String id, String esUrl,

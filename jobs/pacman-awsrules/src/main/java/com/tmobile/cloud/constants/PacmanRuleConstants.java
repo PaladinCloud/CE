@@ -568,4 +568,9 @@ public class PacmanRuleConstants {
     public static final String RETENTION_IN_DAYS="retentionInDays";
     public static final String AUTO_MINOR_VERSION_UPGRADE = "autominorversionupgrade";
     public static final String CLOUD_ASSET="cloudAsset";
+
+    public static final String ERROR_CODE = "errorCode";
+    public static final String ERROR_DETAILS = "errorDetails";
+    public static final String ERROR_RESOLUTION = "errorResolution";
+    public static final String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
 }
