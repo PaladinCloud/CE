@@ -25,6 +25,9 @@
 }
 
 .violations-content .violations-title{
+  /* overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; */
   color: var(--text-high-emphasis);
   font: var(--text-body-2);
 }
@@ -40,6 +43,9 @@
 }
 
 .violations-details-wrapper .name{
+  /* overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; */
   font: var(--text-caption);
   font-family: var(--text-light-font-family);
   color: var(--text-medium-emphasis);

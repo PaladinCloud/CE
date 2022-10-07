@@ -30,9 +30,9 @@ import { DomainTypeObservableService } from "../../../../core/services/domain-ty
 import { PacmanIssuesService } from "../../../services/pacman-issues.service";
 import { RefactorFieldsService } from "../../../../shared/services/refactor-fields.service";
 import { OverallComplianceService } from "src/app/pacman-features/services/overall-compliance.service";
-import { DataCacheService } from "src/app/core/services/data-cache.service";
 import { MultilineChartService } from "src/app/pacman-features/services/multilinechart.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { TableStateService } from "src/app/core/services/table-state.service";
 
 @Component({
   selector: "app-compliance-dashboard",
@@ -193,6 +193,9 @@ export class ComplianceDashboardComponent implements OnInit {
 
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
+  isStatePreserved = false;
+  showDownloadBtn = true;
+  tableScrollTop = 0;
 
   massageAssetTrendGraphData(graphData){
     let data = [];
@@ -230,39 +233,12 @@ export class ComplianceDashboardComponent implements OnInit {
     });
   };
 
-  handleGraphIntervalSelection = (e) => {
-    let date = new Date();
-    e = e.toLowerCase();
-    let queryParamObj = {};
-    switch(e){
-      case "1 week":
-        date.setDate(date.getDate() - 7);
-        break;
-      case "1 month":
-        date.setMonth(date.getMonth() - 1);
-        break;
-      case "6 months":
-        date.setMonth(date.getMonth() - 6);
-        break;
-      case "12 months":
-        date.setFullYear(date.getFullYear() - 1);
-        break;
-    }
-
-    if(e != "all time" && e != "custom"){
-      const offset = date.getTimezoneOffset()
-      let fromDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0]
-      queryParamObj["from"] = fromDate;
-    }        
-    this.getAssetsCountData(queryParamObj);
-  }
-
   violationCards = [
-    { id: 1, name: "critical", num: 0 },
-    { id: 2, name: "high", num: 0 },
-    { id: 3, name: "medium", num: 0 },
-    { id: 4, name: "low", num: 0 },
-  ];
+    {id: 1, name: "critical", totalViolations: 0, subInfo: {Policy: 0, Assets: 0, "Average age": 0}},
+    {id: 2, name: "high", totalViolations: 0, subInfo: {Policy: 0, Assets: 0, "Average age": 0}},
+    {id: 3, name: "medium", totalViolations: 0, subInfo: {Policy: 0, Assets: 0, "Average age": 0}},
+    {id: 4, name: "low", totalViolations: 0, subInfo: {Policy: 0, Assets: 0, "Average age": 0}},
+  ]
 
   cards = [
     {
@@ -282,7 +258,6 @@ export class ComplianceDashboardComponent implements OnInit {
       header: "Total Assets",
       footer: "View Asset Distribution",
       cardButtonAction: this.navigateToAssetSummary,
-      onSelectGraphInterval: this.handleGraphIntervalSelection,
     },
   ];
 
@@ -302,48 +277,58 @@ export class ComplianceDashboardComponent implements OnInit {
     private refactorFieldsService: RefactorFieldsService,
     private domainObservableService: DomainTypeObservableService,
     private overallComplianceService: OverallComplianceService, 
-    private dataCacheService: DataCacheService,
+    private tableStateService: TableStateService,
     private multilineChartService: MultilineChartService
   ) {
-    this.state = this.dataCacheService.get("dashboard") || {};
+    const state = this.tableStateService.getState("dashboard") || {};    
       
-    this.headerColName = this.state.headerColName || 'Policy';
-    this.direction = this.state.direction || 'asc';
-    // this.bucketNumber = this.state.bucketNumber || 0;
+    this.headerColName = state.headerColName || '';
+    this.direction = state.direction || '';
+    // this.bucketNumber = state.bucketNumber || 0;
     
     this.displayedColumns = Object.keys(this.columnWidths);
-    this.whiteListColumns = this.state?.whiteListColumns || this.displayedColumns;
-    // this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
-    // this.direction = this.activatedRoute.snapshot.queryParams.direction;
-    // this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
+    this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+    this.complianceTableData = state?.data || [];
     this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+    this.tableScrollTop = state?.tableScrollTop;    
+    this.totalRows = state.totalRows || 0;
+      
+      if(this.complianceTableData && this.complianceTableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
+
     this.assetGroupSubscription = this.subscriptionToAssetGroup =
       this.assetGroupObservableService
         .getAssetGroup()
-        .subscribe((assetGroupName) => {
+        .subscribe((assetGroupName) => {          
           this.selectedAssetGroup = assetGroupName;
+          this.updateComponent();
         });
 
     this.subscriptionDomain = this.domainObservableService
       .getDomainType()
-      .subscribe((domain) => {
+      .subscribe((domain) => {        
         this.selectedDomain = domain;
-        this.updateComponent();
+        if(this.selectedAssetGroup){
+          this.updateComponent();
+        }
       });
-
-    this.getRouteQueryParameters();
   }
 
   handleHeaderColNameSelection(event) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.state.headerColName = this.headerColName;
-    this.state.direction = this.direction;
-    this.storeState();
   }
 
-  storeState(){
-    this.dataCacheService.set(this.state, "dashboard");
+  clearState(){
+    this.tableStateService.clearState("dashboard");
+    this.isStatePreserved = false;
+  }
+
+  storeState(state){
+    this.tableStateService.setState("dashboard", state);    
   }
 
   getUpdatedUrl() {
@@ -362,16 +347,39 @@ export class ComplianceDashboardComponent implements OnInit {
     });
   }
 
-  getPacmanIssues() {
-    if(!this.queryParameters.ag){
-      return;
+  getDistributionBySeverity(){
+    const distributionBySeverityUrl = environment.distributionBySeverity.url;
+    const distributionBySeverityMethod = environment.distributionBySeverity.method;
+    const queryParams = {
+      ag: this.selectedAssetGroup,
+      domain: this.selectedDomain,
+    };
+
+    try {
+      this.commonResponseService.getData(distributionBySeverityUrl, distributionBySeverityMethod, {},queryParams).subscribe(response => {
+        const data = response.distribution.distributionBySeverity;
+        for(let i=0; i<this.violationCards.length; i++){
+            this.violationCards[i].totalViolations =
+                  data[this.violationCards[i].name].totalViolations;
+            this.violationCards[i].subInfo = {
+              Policy: data[this.violationCards[i].name].policyCount,
+              Assets: data[this.violationCards[i].name].assetCount,
+              "Average age": Math.round(data[this.violationCards[i].name].averageAge)
+            }
+        }
+      })
+    } catch (error) {
+      
     }
+  }
+
+  getPacmanIssues() {
     if (this.dataSubscriber) {
       this.dataSubscriber.unsubscribe();
     }
     const queryParams = {
-      ag: this.queryParameters.ag,
-      domain: this.queryParameters.domain,
+      ag: this.selectedAssetGroup,
+      domain: this.selectedDomain,
     };
     const pacmanIssuesUrl = environment.pacmanIssues.url;
     const pacmanIssuesMethod = environment.pacmanIssues.method;
@@ -405,12 +413,11 @@ export class ComplianceDashboardComponent implements OnInit {
               let dataValue = [],
                 totalCount = 0;
               for (let i = 0; i < this.pacmanIssues.severity.length; i++) {
-                this.violationCards[i].num =
-                  this.pacmanIssues.severity[i][
+                const count = this.pacmanIssues.severity[i][
                   Object.keys(this.pacmanIssues.severity[i])[0]
-                  ];
-                totalCount += this.violationCards[i].num;
-                dataValue.push(this.violationCards[i].num);
+                ];
+                totalCount += count;
+                dataValue.push(count);
               }
               this.fetchedViolations = true;
               this.policyDataError = '';
@@ -480,7 +487,7 @@ export class ComplianceDashboardComponent implements OnInit {
     }
   }
 
-  updateComponent() {
+  updateComponent() {    
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
@@ -491,19 +498,27 @@ export class ComplianceDashboardComponent implements OnInit {
     this.noMinHeight = false;
     // this.bucketNumber = 0;
     this.firstPaginator = 1;
-    this.complianceTableData = [];
     // this.currentPointer = 0;
-    this.tableDataLoaded = false;
     this.errorValue = 0;
-    this.dataLoaded = false;
     this.seekdata = false;
     this.showGenericMessage = false;
     this.assetsCountData = [];
     this.assetsCountDataError = '';
     this.complianceData = [];
     this.complianceDataError = '';
-    this.policyDataError = ''
-    this.getData();
+    this.policyDataError = '';
+    if(this.isStatePreserved){      
+      this.clearState();
+    }else{
+      this.complianceTableData = [];
+      this.dataLoaded = false;
+      this.tableDataLoaded = false;
+      this.bucketNumber = 0;
+      this.complianceTableData = [];
+      this.getData();
+      
+    }
+    this.getDistributionBySeverity();
     this.getPacmanIssues();
     this.getAssetsCountData({});
     this.getComplianceData();
@@ -578,13 +593,13 @@ export class ComplianceDashboardComponent implements OnInit {
     } catch (error) {}
   }
 
-  private getAssetsCountData(queryObj) {
-    if(!this.queryParameters.ag){
+  getAssetsCountData(queryObj) {
+    if(!this.selectedAssetGroup){
       return;
     }
     const queryParams = {
-      ag: this.queryParameters.ag,
-      domain: this.queryParameters.domain,
+      ag: this.selectedAssetGroup,
+      domain: this.selectedDomain,
       ...queryObj
     };
 
@@ -605,12 +620,12 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   private getComplianceData() {    
-    if(!this.queryParameters.ag || !this.queryParameters.domain){
+    if(!this.selectedAssetGroup || !this.selectedDomain){
       return;
     }
     const queryParams = {
-      ag: this.queryParameters.ag,
-      domain: this.queryParameters.domain,
+      ag: this.selectedAssetGroup,
+      domain: this.selectedDomain,
     };
 
     const overallComplianceUrl = environment.overallCompliance.url;
@@ -649,7 +664,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   getData() {
-    if(!this.queryParameters.ag){
+    if(!this.selectedAssetGroup){
       return;
     }
     const filters = this.utils.arrayToObject(
@@ -675,6 +690,7 @@ export class ComplianceDashboardComponent implements OnInit {
       .subscribe(
         (response) => {
           this.showGenericMessage = false;
+          this.totalRows = response.total;
           try {
             this.errorValue = 1;
             this.complianceTableData = this.massageData(response.data.response);            
@@ -990,7 +1006,21 @@ export class ComplianceDashboardComponent implements OnInit {
   //   return data;
   // }
 
-  goToDetails(selectedRow) {
+  goToDetails(event) {
+    const selectedRow = event.rowSelected;
+    const data = event.data;
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      bucketNumber: this.bucketNumber,
+      searchTxt: this.searchTxt,
+      tableScrollTop: event.tableScrollTop
+      // filterText: this.filterText
+    }    
+    this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root
@@ -1044,16 +1074,7 @@ export class ComplianceDashboardComponent implements OnInit {
     return monthString + "-" + dayString + "-" + year;
   }
 
-  getRouteQueryParameters(): any {
-    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe(
-      (params) => {
-        this.queryParameters = params;
-        this.updateComponent();
-      }
-    );
-  }
-
-  handlePopClick(rowText) {
+  handlePopClick() {
     const fileType = "csv";
 
     try {

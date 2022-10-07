@@ -15,23 +15,15 @@
       </div>
       <div class="violations-content flex flex-col">
         <div class="violations-title capitalize">{{card.name}} Violations</div>
-        <div class="violations-count" (click)="redirect()">{{card.num}} <img src="/assets/icons/Path.svg" /></div>
+        <div class="violations-count" (click)="redirect()">{{card.totalViolations}} <img src="/assets/icons/Path.svg" /></div>
       </div>
     </div>
     <hr width="100%" style="color: var(--border-200);">
     <div class="violations-details-container">
       <div class="violations-details-wrapper flex flex-row">
-        <div class="policy-count flex flex-col">
-          <div class="name">Policy</div>
-          <div class="count">4</div>
-        </div>
-        <div class="asset-count flex flex-col">
-          <div class="name">Assets</div>
-          <div class="count">4</div>
-        </div>
-        <div class="average-age-count flex flex-col">
-          <div class="name">Average age</div>
-          <div class="count">4</div>
+        <div class="{{item}}-count flex flex-col" *ngFor="let item of getKeys(card.subInfo)">
+          <div class="name">{{ item }}</div>
+          <div class="count">{{ card.subInfo[item] }}</div>
         </div>
       </div>
     </div>

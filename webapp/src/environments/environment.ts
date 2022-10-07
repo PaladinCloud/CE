@@ -33,6 +33,10 @@ export const environment = {
         url: '{{baseUrl}}/auth/user/login',
         method: 'POST'
     },
+    distributionBySeverity:{
+        url: '{{baseUrl}}/compliance/v1/issues/distribution/aggregate',
+        method: 'GET'
+    },
     pacmanIssues: {
         url: '{{baseUrl}}/compliance/v1/issues/distribution',
         method: 'GET'

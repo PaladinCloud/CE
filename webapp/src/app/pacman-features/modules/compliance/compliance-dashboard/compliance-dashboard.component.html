@@ -19,7 +19,7 @@
     <div class="container-3">
         <mat-grid-list [cols]="breakpoint3" rowHeight="500px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="cards[2]" [totalAssetsCountDataError]="totalAssetsCountDataError" [totalAssetsCountData]="totalAssetsCountData"></app-card>
+                <app-card [card]="cards[2]" [totalAssetsCountDataError]="totalAssetsCountDataError" [totalAssetsCountData]="totalAssetsCountData" (graphIntervalSelected)="getAssetsCountData($event)"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
@@ -28,12 +28,12 @@
             <mat-grid-tile style="background-color: var(--background-white);">
                 <div [class.loader]="complianceTableData.length==0 && tableErrorMessage==''"></div>
                 <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
-                <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" *ngIf="tableErrorMessage=='' && complianceTableData.length>0" 
-                    [data]="complianceTableData" [columnWidths]="columnWidths" [columnNamesMap]="columnNamesMap" 
+                <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
+                    [data]="complianceTableData" [columnWidths]="columnWidths"
                     [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                     [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
                     [imageDataMap]="tableDataMap" [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (downloadClicked)="handlePopClick()"
-                    >
+                    [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn">
                 </app-table>
             </mat-grid-tile>
         </mat-grid-list>

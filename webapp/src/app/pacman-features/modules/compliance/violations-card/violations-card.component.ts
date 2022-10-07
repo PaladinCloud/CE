@@ -23,6 +23,10 @@ export class ViolationsCardComponent implements OnInit {
   ngOnInit() {
   }
 
+  getKeys(obj){
+    return Object.keys(obj);
+  }
+
   redirect() {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
     if (this.routeTo !== undefined) {

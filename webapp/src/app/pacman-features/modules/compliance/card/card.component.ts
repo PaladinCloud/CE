@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ErrorHandlingService } from "src/app/shared/services/error-handling.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
@@ -31,8 +31,27 @@ export class CardComponent implements OnInit {
   @Input() assetsCountDataError: string = '';
   @Input() policyDataError: string = '';
   @Input() totalAssetsCountDataError: string = '';
-
-  private agAndDomain = {};
+  @Output() graphIntervalSelected = new EventEmitter<any>();
+  
+  isCustomSelected = false;
+  years = [];
+  allMonths = [
+    { text: 'January', id: 0 },
+    { text: 'February', id: 1 },
+    { text: 'March', id: 2 },
+    { text: 'April', id: 3 },
+    { text: 'May', id: 4 },
+    { text: 'June', id: 5 },
+    { text: 'July', id: 6 },
+    { text: 'August', id: 7 },
+    { text: 'September', id: 8 },
+    { text: 'October', id: 9 },
+    { text: 'November', id: 10 },
+    { text: 'December', id: 11 }
+  ];
+  allMonthDays = [];
+  fromDate: Date = new Date(2022, 1, 1);
+  toDate: Date = new Date(2200, 12, 31);
 
   constructor(
     private errorHandling: ErrorHandlingService,
@@ -43,7 +62,105 @@ export class CardComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    for (let i = 2022; i <= 2200; i++) {
+      this.years.push(i);
+    }
+  }
+
+  private getNumberOfDays = function (year, monthId: any) {
+    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
+  };
+
+  onSelectYear(date: Date, selectedYear){
+    date.setFullYear(selectedYear);
+  }
+
+  getMonthId(selectedMonth){
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == selectedMonth) {
+        monthId = id;
+      }
+    }
+    return monthId;
+  }
+
+  getMonth(date: Date){
+    let selectedMonth = "";
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].id == date.getMonth()) {
+        selectedMonth = this.allMonths[id].text;
+      }
+    }
+    return selectedMonth;
+  }
+
+  onSelectMonth(date: Date, selectedMonth: any) {
+    const monthDays: any = [];
+    let monthId = this.getMonthId(selectedMonth);
+    
+    const daysCount = this.getNumberOfDays(date.getFullYear(), monthId);
+    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
+      monthDays.push({ id: dayNo, text: dayNo.toString() });
+    }
+    this.allMonthDays = monthDays;
+    date.setMonth(monthId);
+  }
+
+  onSelectDay(date: Date, selectedDay: any) {
+    date.setDate(selectedDay);    
+  }
+
+  handleGraphIntervalSelection = (e) => {
+    e = e.toLowerCase();
+    if(e == "all time" || e == "custom"){
+      if(e=="custom"){
+        this.isCustomSelected = true;
+        return;
+      }
+      this.customDateSelected();
+      return;
+    }
+    let date = new Date();
+    this.isCustomSelected = false;
+    let queryParamObj = {};
+    switch(e){
+      case "1 week":
+        date.setDate(date.getDate() - 7);
+        break;
+      case "1 month":
+        date.setMonth(date.getMonth() - 1);
+        break;
+      case "6 months":
+        date.setMonth(date.getMonth() - 6);
+        break;
+      case "12 months":
+        date.setFullYear(date.getFullYear() - 1);
+        break;
+    }
+
+    this.customDateSelected(date); 
+  }
+
+  getFormattedDate(date: Date){
+    const offset = date.getTimezoneOffset()
+    let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+    return formattedDate;
+  }
+
+  customDateSelected(fromDate?, toDate?){
+    let queryParamObj = {}
+    if(fromDate){
+      queryParamObj["from"] = this.getFormattedDate(fromDate);
+    }
+    if(toDate){
+      queryParamObj["to"] = this.getFormattedDate(toDate);
+    }    
+    this.isCustomSelected = false;
+    this.graphIntervalSelected.emit(queryParamObj);
+  }
 
 
   navigateDataTable(event) {
