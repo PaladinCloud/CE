@@ -1009,7 +1009,38 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "Cloud Trailt\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "cloudtrail", e.getMessage());
 				}
+			}); 
+			
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("cloudwatchlogs"))) {
+                    return;
+                }
+
+				try{
+					log.info(infoPrefix + "cloudwatchlogs");
+					FileManager.generateCloudWatchLogsFiles(InventoryUtil.fetchCloudWatchLogs(temporaryCredentials, skipRegions, accountId, accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "Cloud Watch Logs\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "cloudwatchlogs", e.getMessage());
+				}
+			}); 
+			
+			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("cloudwatchalarm"))) {
+                    return;
+                }
+
+				try{
+					log.info(infoPrefix + "cloudwatchalarm");
+					FileManager.generateCloudWatchAlarm(InventoryUtil.fetchCloudWatchAlarm(temporaryCredentials, skipRegions, accountId, accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "Cloud Watch alarm\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "cloudwatchalarm", e.getMessage());
+				}
 			});
+			
 			//****** Changes For Federated Rules End ******
 			executor.execute(() ->
 			{
@@ -1114,7 +1145,7 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "backupvault\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "backupvault", e.getMessage());
 				}
-			});
+			}); 
 			/**
 			 * This will collect all the customer managed policy details. 
 			 */
@@ -1130,7 +1161,7 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "iampolicies\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "iampolicies", e.getMessage());
 				}
-			});
+			}); 
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
