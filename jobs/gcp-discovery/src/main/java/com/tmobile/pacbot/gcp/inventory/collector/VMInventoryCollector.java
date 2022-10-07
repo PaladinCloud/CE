@@ -50,6 +50,9 @@ public class VMInventoryCollector {
                         logger.info("instance tags vm {}",instance.getTags().getItemsList());
 
                         logger.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+                        logger.info("instance tags vm {}",instance.getTags().getItemsList());
+
+                        logger.debug((instance.getName() + " " + instance.getCreationTimestamp()));
 
                         VirtualMachineVH virtualMachineVH = new VirtualMachineVH();
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
