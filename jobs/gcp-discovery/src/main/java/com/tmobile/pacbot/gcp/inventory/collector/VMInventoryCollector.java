@@ -47,6 +47,9 @@ public class VMInventoryCollector {
                 for (Instance instance : zoneInstances.getValue().getInstancesList()) {
                     try {
                         logger.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+                        logger.info("instance tags vm {}",instance.getTags().getItemsList());
+
+                        logger.debug((instance.getName() + " " + instance.getCreationTimestamp()));
 
                         VirtualMachineVH virtualMachineVH = new VirtualMachineVH();
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
@@ -63,6 +66,8 @@ public class VMInventoryCollector {
                         virtualMachineVH.setOnHostMaintainence(instance.getScheduling().getOnHostMaintenance());
                         virtualMachineVH.setProjectNumber(project.getProjectNumber().toString());
                         virtualMachineVH.setConfidentialComputing(instance.getConfidentialInstanceConfigOrBuilder().getEnableConfidentialCompute());
+                        virtualMachineVH.setCanIPForward(instance.getCanIpForward());
+                        logger.info("can IP Forward {}",instance.getCanIpForward());
                         this.setShieldedConfig(instance,virtualMachineVH);
                         this.setItemList(instance,virtualMachineVH);
                         this.setVMDisks(instance, virtualMachineVH);
