@@ -1942,4 +1942,430 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitjsonArrayForLogConnectionsDBFlag(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"discoveryDate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": \"us-central1\",\n" +
+                        "          \"id\": \"central-run-349616:us-central1:postgres-sql-instance\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"postgres-sql-instance\",\n" +
+                        "          \"kind\": \"sql#instance\",\n" +
+                        "          \"createdTime\": \"2022-08-23T05:29:21.569Z\",\n" +
+                        "          \"masterInstanceName\": null,\n" +
+                        "          \"backendType\": \"SECOND_GEN\",\n" +
+                        "          \"state\": \"RUNNABLE\",\n" +
+                        "          \"databaseVersion\": \"POSTGRES_14\",\n" +
+                        "          \"databaseInstalledVersion\": \"POSTGRES_14_4\",\n" +
+                        "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                        "          \"eTag\": \"8625315e7040227926f72afe544079154188e854805a4b370ed9fd4b1df4485d\",\n" +
+                        "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/central-run-349616/instances/postgres-sql-instance\",\n" +
+                        "          \"serviceAccountEmail\": \"p344106022091-wq3tlo@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                        "          \"kmsKeyVersion\": null,\n" +
+                        "          \"kmsKeyName\": null,\n" +
+                        "          \"maxDiskSize\": null,\n" +
+                        "          \"currentDiskSize\": null,\n" +
+                        "          \"ipAddress\": [\n" +
+                        "            {\n" +
+                        "              \"ip\": \"34.68.97.17\",\n" +
+                        "              \"type\": \"PRIMARY\"\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"serverCaCert\": {\n" +
+                        "            \"certSerialNumber\": \"0\",\n" +
+                        "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=e6c0cd26-9187-490a-a546-eef702746104\",\n" +
+                        "            \"createTime\": \"2022-08-23T05:29:27.780Z\",\n" +
+                        "            \"expirationTime\": \"2032-08-20T05:30:27.780Z\",\n" +
+                        "            \"instance\": \"postgres-sql-instance\",\n" +
+                        "            \"kind\": \"sql#sslCert\"\n" +
+                        "          },\n" +
+                        "          \"settings\": {\n" +
+                        "            \"activationPolicy\": \"ALWAYS\",\n" +
+                        "            \"authorizedGaeApplications\": [],\n" +
+                        "            \"availabilityType\": \"REGIONAL\",\n" +
+                        "            \"backupConfiguration\": {\n" +
+                        "              \"backupRetentionSettings\": {\n" +
+                        "                \"retainedBackups\": 7,\n" +
+                        "                \"retentionUnit\": \"COUNT\"\n" +
+                        "              },\n" +
+                        "              \"enabled\": true,\n" +
+                        "              \"kind\": \"sql#backupConfiguration\",\n" +
+                        "              \"location\": \"us\",\n" +
+                        "              \"pointInTimeRecoveryEnabled\": true,\n" +
+                        "              \"replicationLogArchivingEnabled\": true,\n" +
+                        "              \"startTime\": \"12:00\",\n" +
+                        "              \"transactionLogRetentionDays\": 7\n" +
+                        "            },\n" +
+                        "            \"dataDiskSizeGb\": 100,\n" +
+                        "            \"dataDiskType\": \"PD_SSD\",\n" +
+                        "            \"databaseFlags\": [\n" +
+                        "              {\n" +
+                        "                \"name\": \"log_connections\",\n" +
+                        "                \"value\": \"on\"\n" +
+                        "              }\n" +
+                        "            ],\n" +
+                        "            \"ipConfiguration\": {\n" +
+                        "              \"authorizedNetworks\": [],\n" +
+                        "              \"ipv4Enabled\": true\n" +
+                        "            },\n" +
+                        "            \"kind\": \"sql#settings\",\n" +
+                        "            \"locationPreference\": {\n" +
+                        "              \"kind\": \"sql#locationPreference\",\n" +
+                        "              \"secondaryZone\": \"us-central1-a\",\n" +
+                        "              \"zone\": \"us-central1-b\"\n" +
+                        "            },\n" +
+                        "            \"maintenanceWindow\": {\n" +
+                        "              \"day\": 0,\n" +
+                        "              \"hour\": 0,\n" +
+                        "              \"kind\": \"sql#maintenanceWindow\",\n" +
+                        "              \"updateTrack\": \"stable\"\n" +
+                        "            },\n" +
+                        "            \"pricingPlan\": \"PER_USE\",\n" +
+                        "            \"replicationType\": \"SYNCHRONOUS\",\n" +
+                        "            \"settingsVersion\": 17,\n" +
+                        "            \"storageAutoResize\": true,\n" +
+                        "            \"storageAutoResizeLimit\": 0,\n" +
+                        "            \"tier\": \"db-custom-2-8192\",\n" +
+                        "            \"connectorEnforcement\": \"NOT_REQUIRED\",\n" +
+                        "            \"deletionProtectionEnabled\": true\n" +
+                        "          },\n" +
+                        "          \"backupEnabled\": true,\n" +
+                        "          \"authorizedNetwork\": null,\n" +
+                        "          \"discoverydate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"central-run-349616:us-central1:postgres-sql-instance\",\n" +
+                        "          \"_docid\": \"central-run-349616:us-central1:postgres-sql-instance\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"cloudsql_postgres\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-10-07 05:46:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureHitjsonArrayForLogConnectionsDBFlag(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"discoveryDate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": \"us-central1\",\n" +
+                        "          \"id\": \"central-run-349616:us-central1:postgres-sql-instance\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"postgres-sql-instance\",\n" +
+                        "          \"kind\": \"sql#instance\",\n" +
+                        "          \"createdTime\": \"2022-08-23T05:29:21.569Z\",\n" +
+                        "          \"masterInstanceName\": null,\n" +
+                        "          \"backendType\": \"SECOND_GEN\",\n" +
+                        "          \"state\": \"RUNNABLE\",\n" +
+                        "          \"databaseVersion\": \"POSTGRES_14\",\n" +
+                        "          \"databaseInstalledVersion\": \"POSTGRES_14_4\",\n" +
+                        "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                        "          \"eTag\": \"8625315e7040227926f72afe544079154188e854805a4b370ed9fd4b1df4485d\",\n" +
+                        "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/central-run-349616/instances/postgres-sql-instance\",\n" +
+                        "          \"serviceAccountEmail\": \"p344106022091-wq3tlo@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                        "          \"kmsKeyVersion\": null,\n" +
+                        "          \"kmsKeyName\": null,\n" +
+                        "          \"maxDiskSize\": null,\n" +
+                        "          \"currentDiskSize\": null,\n" +
+                        "          \"ipAddress\": [\n" +
+                        "            {\n" +
+                        "              \"ip\": \"34.68.97.17\",\n" +
+                        "              \"type\": \"PRIMARY\"\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"serverCaCert\": {\n" +
+                        "            \"certSerialNumber\": \"0\",\n" +
+                        "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=e6c0cd26-9187-490a-a546-eef702746104\",\n" +
+                        "            \"createTime\": \"2022-08-23T05:29:27.780Z\",\n" +
+                        "            \"expirationTime\": \"2032-08-20T05:30:27.780Z\",\n" +
+                        "            \"instance\": \"postgres-sql-instance\",\n" +
+                        "            \"kind\": \"sql#sslCert\"\n" +
+                        "          },\n" +
+                        "          \"settings\": {\n" +
+                        "            \"activationPolicy\": \"ALWAYS\",\n" +
+                        "            \"authorizedGaeApplications\": [],\n" +
+                        "            \"availabilityType\": \"REGIONAL\",\n" +
+                        "            \"backupConfiguration\": {\n" +
+                        "              \"backupRetentionSettings\": {\n" +
+                        "                \"retainedBackups\": 7,\n" +
+                        "                \"retentionUnit\": \"COUNT\"\n" +
+                        "              },\n" +
+                        "              \"enabled\": true,\n" +
+                        "              \"kind\": \"sql#backupConfiguration\",\n" +
+                        "              \"location\": \"us\",\n" +
+                        "              \"pointInTimeRecoveryEnabled\": true,\n" +
+                        "              \"replicationLogArchivingEnabled\": true,\n" +
+                        "              \"startTime\": \"12:00\",\n" +
+                        "              \"transactionLogRetentionDays\": 7\n" +
+                        "            },\n" +
+                        "            \"dataDiskSizeGb\": 100,\n" +
+                        "            \"dataDiskType\": \"PD_SSD\",\n" +
+                        "            \"databaseFlags\": [\n" +
+                        "              {\n" +
+                        "                \"name\": \"log_connections\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              }\n" +
+                        "            ],\n" +
+                        "            \"ipConfiguration\": {\n" +
+                        "              \"authorizedNetworks\": [],\n" +
+                        "              \"ipv4Enabled\": true\n" +
+                        "            },\n" +
+                        "            \"kind\": \"sql#settings\",\n" +
+                        "            \"locationPreference\": {\n" +
+                        "              \"kind\": \"sql#locationPreference\",\n" +
+                        "              \"secondaryZone\": \"us-central1-a\",\n" +
+                        "              \"zone\": \"us-central1-b\"\n" +
+                        "            },\n" +
+                        "            \"maintenanceWindow\": {\n" +
+                        "              \"day\": 0,\n" +
+                        "              \"hour\": 0,\n" +
+                        "              \"kind\": \"sql#maintenanceWindow\",\n" +
+                        "              \"updateTrack\": \"stable\"\n" +
+                        "            },\n" +
+                        "            \"pricingPlan\": \"PER_USE\",\n" +
+                        "            \"replicationType\": \"SYNCHRONOUS\",\n" +
+                        "            \"settingsVersion\": 17,\n" +
+                        "            \"storageAutoResize\": true,\n" +
+                        "            \"storageAutoResizeLimit\": 0,\n" +
+                        "            \"tier\": \"db-custom-2-8192\",\n" +
+                        "            \"connectorEnforcement\": \"NOT_REQUIRED\",\n" +
+                        "            \"deletionProtectionEnabled\": true\n" +
+                        "          },\n" +
+                        "          \"backupEnabled\": true,\n" +
+                        "          \"authorizedNetwork\": null,\n" +
+                        "          \"discoverydate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"central-run-349616:us-central1:postgres-sql-instance\",\n" +
+                        "          \"_docid\": \"central-run-349616:us-central1:postgres-sql-instance\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"cloudsql_postgres\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-10-07 05:46:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getHitjsonArrayForLocalInFileDBFlag(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"discoveryDate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": \"us-central1\",\n" +
+                        "          \"id\": \"central-run-349616:us-central1:mysql\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"mysql\",\n" +
+                        "          \"kind\": \"sql#instance\",\n" +
+                        "          \"createdTime\": \"2022-09-28T11:04:25.395Z\",\n" +
+                        "          \"masterInstanceName\": null,\n" +
+                        "          \"backendType\": \"SECOND_GEN\",\n" +
+                        "          \"state\": \"RUNNABLE\",\n" +
+                        "          \"databaseVersion\": \"MYSQL_8_0\",\n" +
+                        "          \"databaseInstalledVersion\": \"MYSQL_8_0_26\",\n" +
+                        "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                        "          \"eTag\": \"56ecbb9bafc4fa69ba187d2a51b7be1cb02b0536879aa75ad03cf9dd2184e39d\",\n" +
+                        "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/central-run-349616/instances/mysql\",\n" +
+                        "          \"serviceAccountEmail\": \"p344106022091-fj93a4@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                        "          \"kmsKeyVersion\": null,\n" +
+                        "          \"kmsKeyName\": null,\n" +
+                        "          \"maxDiskSize\": null,\n" +
+                        "          \"currentDiskSize\": null,\n" +
+                        "          \"ipAddress\": [\n" +
+                        "            {\n" +
+                        "              \"ip\": \"35.192.40.45\",\n" +
+                        "              \"type\": \"PRIMARY\"\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"serverCaCert\": {\n" +
+                        "            \"certSerialNumber\": \"0\",\n" +
+                        "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=135a06f9-527f-4246-bb7c-eb65cc448954\",\n" +
+                        "            \"createTime\": \"2022-09-28T11:05:42.473Z\",\n" +
+                        "            \"expirationTime\": \"2032-09-25T11:06:42.473Z\",\n" +
+                        "            \"instance\": \"mysql\",\n" +
+                        "            \"kind\": \"sql#sslCert\"\n" +
+                        "          },\n" +
+                        "          \"settings\": {\n" +
+                        "            \"activationPolicy\": \"ALWAYS\",\n" +
+                        "            \"authorizedGaeApplications\": [],\n" +
+                        "            \"availabilityType\": \"REGIONAL\",\n" +
+                        "            \"backupConfiguration\": {\n" +
+                        "              \"backupRetentionSettings\": {\n" +
+                        "                \"retainedBackups\": 7,\n" +
+                        "                \"retentionUnit\": \"COUNT\"\n" +
+                        "              },\n" +
+                        "              \"binaryLogEnabled\": true,\n" +
+                        "              \"enabled\": true,\n" +
+                        "              \"kind\": \"sql#backupConfiguration\",\n" +
+                        "              \"location\": \"us\",\n" +
+                        "              \"startTime\": \"10:00\",\n" +
+                        "              \"transactionLogRetentionDays\": 7\n" +
+                        "            },\n" +
+                        "            \"dataDiskSizeGb\": 100,\n" +
+                        "            \"dataDiskType\": \"PD_SSD\",\n" +
+                        "            \"databaseFlags\": [\n" +
+                        "              {\n" +
+                        "                \"name\": \"local_infile\",\n" +
+                        "                \"value\": \"off\"\n" +
+                        "              }\n" +
+                        "            ],\n" +
+                        "            \"ipConfiguration\": {\n" +
+                        "              \"authorizedNetworks\": [],\n" +
+                        "              \"ipv4Enabled\": true\n" +
+                        "            },\n" +
+                        "            \"kind\": \"sql#settings\",\n" +
+                        "            \"locationPreference\": {\n" +
+                        "              \"kind\": \"sql#locationPreference\",\n" +
+                        "              \"secondaryZone\": \"us-central1-c\",\n" +
+                        "              \"zone\": \"us-central1-b\"\n" +
+                        "            },\n" +
+                        "            \"maintenanceWindow\": {\n" +
+                        "              \"day\": 0,\n" +
+                        "              \"hour\": 0,\n" +
+                        "              \"kind\": \"sql#maintenanceWindow\",\n" +
+                        "              \"updateTrack\": \"stable\"\n" +
+                        "            },\n" +
+                        "            \"pricingPlan\": \"PER_USE\",\n" +
+                        "            \"replicationType\": \"SYNCHRONOUS\",\n" +
+                        "            \"settingsVersion\": 7,\n" +
+                        "            \"storageAutoResize\": true,\n" +
+                        "            \"storageAutoResizeLimit\": 0,\n" +
+                        "            \"tier\": \"db-custom-4-26624\",\n" +
+                        "            \"connectorEnforcement\": \"NOT_REQUIRED\",\n" +
+                        "            \"deletionProtectionEnabled\": true\n" +
+                        "          },\n" +
+                        "          \"backupEnabled\": true,\n" +
+                        "          \"authorizedNetwork\": null,\n" +
+                        "          \"discoverydate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"central-run-349616:us-central1:mysql\",\n" +
+                        "          \"_docid\": \"central-run-349616:us-central1:mysql\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"cloudsql_mysqlserver\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-10-05 04:00:00+0000\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-10-07 07:01:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureHitjsonArrayForLocalInFileDBFlag(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\n" +
+                        "          \"discoveryDate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_cloudType\": \"gcp\",\n" +
+                        "          \"region\": \"us-central1\",\n" +
+                        "          \"id\": \"central-run-349616:us-central1:mysql\",\n" +
+                        "          \"projectName\": \"Paladin Cloud\",\n" +
+                        "          \"projectId\": \"central-run-349616\",\n" +
+                        "          \"name\": \"mysql\",\n" +
+                        "          \"kind\": \"sql#instance\",\n" +
+                        "          \"createdTime\": \"2022-09-28T11:04:25.395Z\",\n" +
+                        "          \"masterInstanceName\": null,\n" +
+                        "          \"backendType\": \"SECOND_GEN\",\n" +
+                        "          \"state\": \"RUNNABLE\",\n" +
+                        "          \"databaseVersion\": \"MYSQL_8_0\",\n" +
+                        "          \"databaseInstalledVersion\": \"MYSQL_8_0_26\",\n" +
+                        "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                        "          \"eTag\": \"56ecbb9bafc4fa69ba187d2a51b7be1cb02b0536879aa75ad03cf9dd2184e39d\",\n" +
+                        "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/central-run-349616/instances/mysql\",\n" +
+                        "          \"serviceAccountEmail\": \"p344106022091-fj93a4@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                        "          \"kmsKeyVersion\": null,\n" +
+                        "          \"kmsKeyName\": null,\n" +
+                        "          \"maxDiskSize\": null,\n" +
+                        "          \"currentDiskSize\": null,\n" +
+                        "          \"ipAddress\": [\n" +
+                        "            {\n" +
+                        "              \"ip\": \"35.192.40.45\",\n" +
+                        "              \"type\": \"PRIMARY\"\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"serverCaCert\": {\n" +
+                        "            \"certSerialNumber\": \"0\",\n" +
+                        "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=135a06f9-527f-4246-bb7c-eb65cc448954\",\n" +
+                        "            \"createTime\": \"2022-09-28T11:05:42.473Z\",\n" +
+                        "            \"expirationTime\": \"2032-09-25T11:06:42.473Z\",\n" +
+                        "            \"instance\": \"mysql\",\n" +
+                        "            \"kind\": \"sql#sslCert\"\n" +
+                        "          },\n" +
+                        "          \"settings\": {\n" +
+                        "            \"activationPolicy\": \"ALWAYS\",\n" +
+                        "            \"authorizedGaeApplications\": [],\n" +
+                        "            \"availabilityType\": \"REGIONAL\",\n" +
+                        "            \"backupConfiguration\": {\n" +
+                        "              \"backupRetentionSettings\": {\n" +
+                        "                \"retainedBackups\": 7,\n" +
+                        "                \"retentionUnit\": \"COUNT\"\n" +
+                        "              },\n" +
+                        "              \"binaryLogEnabled\": true,\n" +
+                        "              \"enabled\": true,\n" +
+                        "              \"kind\": \"sql#backupConfiguration\",\n" +
+                        "              \"location\": \"us\",\n" +
+                        "              \"startTime\": \"10:00\",\n" +
+                        "              \"transactionLogRetentionDays\": 7\n" +
+                        "            },\n" +
+                        "            \"dataDiskSizeGb\": 100,\n" +
+                        "            \"dataDiskType\": \"PD_SSD\",\n" +
+                        "            \"databaseFlags\": [\n" +
+                        "              {\n" +
+                        "                \"name\": \"local_infile\",\n" +
+                        "                \"value\": \"on\"\n" +
+                        "              }\n" +
+                        "            ],\n" +
+                        "            \"ipConfiguration\": {\n" +
+                        "              \"authorizedNetworks\": [],\n" +
+                        "              \"ipv4Enabled\": true\n" +
+                        "            },\n" +
+                        "            \"kind\": \"sql#settings\",\n" +
+                        "            \"locationPreference\": {\n" +
+                        "              \"kind\": \"sql#locationPreference\",\n" +
+                        "              \"secondaryZone\": \"us-central1-c\",\n" +
+                        "              \"zone\": \"us-central1-b\"\n" +
+                        "            },\n" +
+                        "            \"maintenanceWindow\": {\n" +
+                        "              \"day\": 0,\n" +
+                        "              \"hour\": 0,\n" +
+                        "              \"kind\": \"sql#maintenanceWindow\",\n" +
+                        "              \"updateTrack\": \"stable\"\n" +
+                        "            },\n" +
+                        "            \"pricingPlan\": \"PER_USE\",\n" +
+                        "            \"replicationType\": \"SYNCHRONOUS\",\n" +
+                        "            \"settingsVersion\": 7,\n" +
+                        "            \"storageAutoResize\": true,\n" +
+                        "            \"storageAutoResizeLimit\": 0,\n" +
+                        "            \"tier\": \"db-custom-4-26624\",\n" +
+                        "            \"connectorEnforcement\": \"NOT_REQUIRED\",\n" +
+                        "            \"deletionProtectionEnabled\": true\n" +
+                        "          },\n" +
+                        "          \"backupEnabled\": true,\n" +
+                        "          \"authorizedNetwork\": null,\n" +
+                        "          \"discoverydate\": \"2022-10-07 05:00:00+0000\",\n" +
+                        "          \"_resourceid\": \"central-run-349616:us-central1:mysql\",\n" +
+                        "          \"_docid\": \"central-run-349616:us-central1:mysql\",\n" +
+                        "          \"_entity\": \"true\",\n" +
+                        "          \"_entitytype\": \"cloudsql_mysqlserver\",\n" +
+                        "          \"firstdiscoveredon\": \"2022-10-05 04:00:00+0000\",\n" +
+                        "          \"latest\": true,\n" +
+                        "          \"_loaddate\": \"2022-10-07 07:01:00+0000\"\n" +
+                        "        }",
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
