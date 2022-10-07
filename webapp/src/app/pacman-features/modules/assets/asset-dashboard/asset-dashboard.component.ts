@@ -25,6 +25,9 @@ import { WorkflowService } from '../../../../core/services/workflow.service';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { CONFIGURATIONS } from './../../../../../config/configurations';
 import { MultilineChartService } from 'src/app/pacman-features/services/multilinechart.service';
+import { environment } from 'src/environments/environment';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
 
 @Component({
   selector: 'app-asset-dashboard',
@@ -47,6 +50,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   domainName;
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
+
+
   handleGraphIntervalSelection = (e) => {
     let date = new Date();
     e = e.toLowerCase();
@@ -86,7 +91,9 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private workflowService: WorkflowService,
     private assetGroupObservableService: AssetGroupObservableService,
-    private multilineChartService: MultilineChartService
+    private multilineChartService: MultilineChartService,
+    private commonResponseService: CommonResponseService,
+    private assetGroupsService: AssetTilesService
   ) {
     this.config = CONFIGURATIONS;
 
@@ -97,6 +104,25 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+  }
+
+  getAssetsTileData(){
+    const taggingSummaryUrl = environment.taggingSummary.url;
+    const taggingSummaryMethod = environment.taggingSummary.method;
+
+    let queryParams = {
+      ag: this.assetGroupName,
+    }
+
+    try {
+        this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
+          response => {
+            console.log("getAssetsTileData: ", response);
+            
+          }
+        )
+    }catch(e){}
+          
   }
 
   massageAssetTrendGraphData(graphData){
@@ -141,12 +167,53 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  getExemtedAssetsCount(){
+    const exemtedAssetCountUrl = environment.exemtedAssetCount.url;
+    const exemtedAssetCountMethod = environment.exemtedAssetCount.method;
+
+    let queryParams = {
+      ag: this.assetGroupName,
+    }
+
+    try {
+        this.commonResponseService.getData( exemtedAssetCountUrl, exemtedAssetCountMethod, {}, queryParams).subscribe(
+          response => {
+            console.log("getAssetsTileData: ", response);
+            
+          }
+        )
+    }catch(e){}
+  }
+
+  getTotalAssetsCount(){
+    const assetDetailUrl = environment.assetTilesdata.url;
+
+    const assetDetailMethod = environment.assetTilesdata.method;
+
+    const queryParams = {
+      'ag': this.assetGroupName
+    };
+     if (queryParams['ag'] !== undefined) {
+
+     this.assetGroupsService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
+       response => {
+         console.log("getTotalAssets: ", JSON.stringify(response));
+      },
+      error => {
+          
+      });
+     }
+  }
+
   getAssetGroup() {
     this.assetGroupObservableService.getAssetGroup().subscribe(
       assetGroupName => {
           this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
           this.assetGroupName = assetGroupName;
           this.getAssetsCountData({});
+          this.getAssetsTileData();
+          this.getTotalAssetsCount();
+          this.getExemtedAssetsCount();
     });
   }
 
