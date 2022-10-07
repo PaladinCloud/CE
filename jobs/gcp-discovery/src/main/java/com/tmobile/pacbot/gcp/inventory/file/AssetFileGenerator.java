@@ -160,7 +160,7 @@ public class AssetFileGenerator {
 					FileManager.generateCloudSqlFiles(cloudSqlVHList);
 					FileManager.generateCloudSqlServerFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.SQLSERVER));
 					FileManager.generateCloudMySqlServerFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.MYSQL));
-
+					FileManager.generateCloudPostgresFiles(cloudSqlFilter.filterByDatabaseVersion(cloudSqlVHList, DataBaseTypeEnum.POSTGRES));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
