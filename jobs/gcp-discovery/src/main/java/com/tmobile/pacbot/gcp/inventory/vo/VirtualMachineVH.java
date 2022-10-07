@@ -38,6 +38,17 @@ public class VirtualMachineVH extends GCPVH {
     private boolean canIPForward;
 
 
+    public boolean isCanIPForward() {
+        return canIPForward;
+    }
+
+    public void setCanIPForward(boolean canIPForward) {
+        this.canIPForward = canIPForward;
+    }
+
+    private boolean canIPForward;
+
+
     public List<HashMap<String, Object>> getServiceAccounts() {
         return serviceAccounts;
     }

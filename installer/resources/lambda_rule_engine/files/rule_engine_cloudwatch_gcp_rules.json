@@ -1560,5 +1560,27 @@
     "modifiedDate": "2022-10-16",
     "severity": "low",
     "category": "security"
+  },
+  {
+    "ruleId": "IP_forwarding_for_Instances",
+    "ruleUUID": "IP_forwarding_for_Instances",
+    "policyId": "IP_forwarding_for_Instances",
+    "ruleName": "Disable IP forwarding for Compute Engine  Instances",
+    "targetType": "vminstance",
+    "assetGroup": "Gcp",
+    "alexaKeyword": "IPFORWARDING",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"ip-forward-rule\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"IP_forwarding_for_Instances\",\"autofix\":false,\"alexaKeyword\":\"IPFORWARDING\",\"ruleRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"policyId\":\"IP_forwarding_for_Instances\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"IP_forwarding_for_Instances\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/IP_forwarding_for_Instances",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable IP forwarding for Compute Engine  Instances",
+    "createdDate": "2022-09-29",
+    "modifiedDate": "2022-09-29",
+    "severity": "medium",
+    "category": "security"
   }
 ]
