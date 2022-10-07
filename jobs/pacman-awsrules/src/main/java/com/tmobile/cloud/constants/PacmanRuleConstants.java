@@ -580,4 +580,6 @@ public class PacmanRuleConstants {
     public static final String EMAIL="email";
     public static final String EMAIL_PATTERN="-compute@developer.gserviceaccount.com";
     public static final String CONFIDENTIAL_COMPUTING="confidentialComputing";
+    public  static  final String CAN_IP_FORWARD="canIPForward";
+    public static final String GKE_CLUSTER_NAME="goog-gke-node";
 }
