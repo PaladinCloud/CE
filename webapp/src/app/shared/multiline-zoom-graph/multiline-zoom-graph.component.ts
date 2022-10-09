@@ -35,7 +35,7 @@ import * as d3Axis from "d3-axis";
 import * as d3Zoom from "d3-zoom";
 import * as d3Brush from "d3-brush";
 import * as d3TimeFormat from "d3-time-format";
-import { LoggerService } from "../../../shared/services/logger.service";
+import { LoggerService } from "../services/logger.service";
 
 @Component({
   selector: "app-multiline-zoom-graph",
