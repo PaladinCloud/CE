@@ -9,17 +9,17 @@
     <div class="container-2">
         <mat-grid-list [cols]="breakpoint2" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="cards[0]" [complianceData]="complianceData" [complianceDataError]="complianceDataError"></app-card>
+                <app-card [card]="cards[0]" [data]="complianceData" [dataError]="complianceDataError"></app-card>
             </mat-grid-tile>
             <mat-grid-tile>
-                <app-card [card]="cards[1]" [policyDataError]="policyDataError" [policyData]="policyData"></app-card>
+                <app-card [card]="cards[1]" [dataError]="policyDataError" [data]="policyData"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
     <div class="container-3">
         <mat-grid-list [cols]="breakpoint3" rowHeight="500px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="cards[2]" [totalAssetsCountDataError]="totalAssetsCountDataError" [totalAssetsCountData]="totalAssetsCountData" (graphIntervalSelected)="getAssetsCountData($event)"></app-card>
+                <app-card [card]="cards[2]" [dataError]="totalAssetsCountDataError" [data]="totalAssetsCountData" (graphIntervalSelected)="getAssetsCountData($event)"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>

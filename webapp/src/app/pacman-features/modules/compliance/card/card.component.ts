@@ -12,8 +12,8 @@ import { UtilsService } from "../../../../shared/services/utils.service";
 })
 export class CardComponent implements OnInit {
   @Input() card: any;
-  @Input() policyData: any;
-  @Input() totalAssetsCountData = [];
+  @Input() data: any;
+  @Input() dataError = '';
 
   errorType = '';
   widgetWidth = 225;
@@ -24,13 +24,6 @@ export class CardComponent implements OnInit {
   outerRadius: any = 60;
   errorMessage: any;
   widgetWidth2: number;
-  @Input() cardButtonAction;
-  @Input() complianceData = [];
-  @Input() assetsCountData = [];
-  @Input() complianceDataError:string = '';
-  @Input() assetsCountDataError: string = '';
-  @Input() policyDataError: string = '';
-  @Input() totalAssetsCountDataError: string = '';
   @Output() graphIntervalSelected = new EventEmitter<any>();
   
   isCustomSelected = false;

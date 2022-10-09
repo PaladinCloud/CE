@@ -189,8 +189,6 @@ export class ComplianceDashboardComponent implements OnInit {
   whiteListColumns;
   displayedColumns;
   
-  testObj = {};
-
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
   isStatePreserved = false;
@@ -199,7 +197,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
   massageAssetTrendGraphData(graphData){
     let data = [];
-    data.push({"key":"TotalAssetCount", "values":[]})
+    data.push({"key":"TotalAssetCount", "values":[], "info":{}})
     graphData.trend.forEach(e => {
        data[0].values.push({
             'date':new Date(e.date),
@@ -210,6 +208,13 @@ export class ComplianceDashboardComponent implements OnInit {
     data[0].values.sort(function(a,b){
         return new Date(a.date).valueOf() - new Date(b.date).valueOf();
     });
+
+    data[0].info = {
+      id: "TotalAssetsCountTrend",
+      showLegend: true,
+      yAxisLabel: 'Total Assets',
+      height: 320
+    }
 
     return data;
   }
