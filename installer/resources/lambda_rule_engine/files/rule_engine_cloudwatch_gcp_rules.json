@@ -1582,5 +1582,27 @@
     "modifiedDate": "2022-09-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting",
+    "ruleUUID": "Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting",
+    "policyId": "Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting",
+    "ruleName": "Enforce user Connections Database Flag for  Sql Server Instance is Set to  Non-limiting Value",
+    "targetType": "cloudsql_sqlserver",
+    "assetGroup": "gcp",
+    "alexaKeyword": "sqlserver",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"ruleKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_sqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"user connections\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"0\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enforce user Connections Database Flag for Sql Server Instance is Set to Non-limiting Value\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that the user connections database flag configured for your Google Cloud SQL Server database instances has the optimal value, in accordance with your organization or project guidelines.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"user connections DataBase flag  for your Google Cloud SQL Server database instances is not set to organization defined value.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"autofix\":false,\"alexaKeyword\":\"sqlserver\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql_sqlserver\",\"pac_ds\":\"gcp\",\"policyId\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enforce user Connections Database Flag for Sql Server Instance is Set to Non-limiting Value",
+    "createdDate": "2022-10-06",
+    "modifiedDate": "2022-10-06",
+    "severity": "medium",
+    "category": "security"
   }
 ]
