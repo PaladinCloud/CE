@@ -114,6 +114,7 @@ public class DisableOrEnableDBFlagsRule extends BaseRule {
 
                         if( flagName && value ) {
                             validationResult = true;
+                            break;
                         }
 
                     }
