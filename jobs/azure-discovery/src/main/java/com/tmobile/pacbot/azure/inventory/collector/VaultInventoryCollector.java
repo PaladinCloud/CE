@@ -99,14 +99,20 @@ public class VaultInventoryCollector {
 					String resourceGroupName=(vaultVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
 					log.debug("Resource group name: {}",resourceGroupName);
 					vaultVH.setResourceGroupName(resourceGroupName);
-					PagedList<Vault> vaults=azure.vaults().listByResourceGroup(resourceGroupName);
+					try
+					{
+						Vault azureVault=azure.vaults().getById(id);
 					//				.keys().list().get(0).attributes().expires()
-					for(Vault vault:vaults){
-						PagedList<Key> keys=vault.keys().list();
+
+						PagedList<Key> keys=azureVault.keys().list();
 						for(Key key:keys)
 						{
 							vaultVH.setKeyExpirationDate(key.attributes().expires().toString());
 						}
+					}
+					catch(Exception e)
+					{
+						log.error(e.getMessage());
 					}
 					vaultList.add(vaultVH);
 				}
