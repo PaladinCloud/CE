@@ -103,7 +103,7 @@ public class RootAccountHardwareMFACheckTest {
 		when(amazonIdentityManagementClient.getAccountSummary(anyObject())).thenReturn(mockSummary());
 		
 		ListVirtualMFADevicesRequest listMfaRequest = new ListVirtualMFADevicesRequest();
-		when(amazonIdentityManagementClient.listVirtualMFADevices(listMfaRequest.withAssignmentStatus(AssignmentStatusType.Assigned))).thenReturn(new ListVirtualMFADevicesResult());
+		when(amazonIdentityManagementClient.listVirtualMFADevices(listMfaRequest.withAssignmentStatus(AssignmentStatusType.Assigned))).thenReturn(null);
 		
 		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
@@ -173,7 +173,7 @@ public class RootAccountHardwareMFACheckTest {
 		
 		ListVirtualMFADevicesResult result = new ListVirtualMFADevicesResult();
 		VirtualMFADevice device1 = new VirtualMFADevice();
-		device1.setSerialNumber("122131312");
+		device1.setSerialNumber("root-account-mfa-device");
 		VirtualMFADevice device2 = new VirtualMFADevice();
 		device2.setSerialNumber("5654767676534");
 		result.setVirtualMFADevices(Arrays.asList(device1,device2));
