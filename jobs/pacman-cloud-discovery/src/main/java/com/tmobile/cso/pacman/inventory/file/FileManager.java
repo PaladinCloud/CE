@@ -33,6 +33,7 @@ import com.amazonaws.services.autoscaling.model.LaunchConfiguration;
 import com.amazonaws.services.autoscaling.model.ScalingPolicy;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.cloudwatch.model.MetricAlarm;
 import com.amazonaws.services.comprehend.model.EntitiesDetectionJobProperties;
 import com.amazonaws.services.databasemigrationservice.model.ReplicationInstance;
 import com.amazonaws.services.directconnect.model.Connection;
@@ -75,6 +76,8 @@ import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
 import com.tmobile.cso.pacman.inventory.vo.CloudFrontVH;
+import com.tmobile.cso.pacman.inventory.vo.CloudTrailVH;
+import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
 import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
 import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
@@ -283,6 +286,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-iampolicies.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-cloudwatchlogs.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.OPEN_ARRAY, false);
 		
 	}
 
@@ -444,6 +450,10 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ami-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-backupvault.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-iampolicies.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-cloudwatchlogs.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.CLOSE_ARRAY, true);
+
 	}
 
 	/**
@@ -1917,15 +1927,52 @@ public class FileManager {
 	/**
 	 * Generate CloudTrail files.
 	 *
-	 * @param acc file the iamCertificate map
+	 * @param cloud trail map
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void generateCloudTrailFiles(Map<String,List<Trail>> dbSnapShots) throws IOException {
+	public static void generateCloudTrailFiles(Map<String,List<CloudTrailVH>> cloudTrail) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "Name`S3BucketName`IncludeGlobalServiceEvents`IsMultiRegionTrail`HomeRegion`TrailARN`LogFileValidationEnabled`HasCustomEventSelectors";
-		keys = "discoverydate`accountid`accountname`region`name`s3bucketname`includeglobalserviceevents`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors";
-		FileGenerator.generateJson(dbSnapShots, fieldNames, "aws-cloudtrail.data", keys);
+		fieldNames = "trail.Name`trail.S3BucketName`trail.IncludeGlobalServiceEvents"
+				+ "`trail.IsMultiRegionTrail`trail.HomeRegion`trail.TrailARN`"
+				+ "trail.LogFileValidationEnabled`trail.HasCustomEventSelectors`logginEnabled";
+		keys = "discoverydate`accountid`accountname`region`name`s3bucketname`includeglobalserviceevents"
+				+ "`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors`islogging";
+		FileGenerator.generateJson(cloudTrail, fieldNames, "aws-cloudtrail.data", keys);
+	}
+	
+	/**
+	 * Generate CloudWatch logs files.
+	 *
+	 * @param cloudwatch log and filter map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateCloudWatchLogsFiles(Map<String,List<CloudWatchLogsVH>> logs) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "logGroup.arn`logGroup.logGroupName`logGroup.creationTime`logGroup.retentionInDays`logGroup.metricFilterCount`logGroup.storedBytes";
+		keys = "discoverydate`accountid`accountname`region`logarn`loggroupname`creationtime"
+				+ "`retentionindays`metricfiltercount`storedbytes";
+		FileGenerator.generateJson(logs, fieldNames, "aws-cloudwatchlogs.data", keys);
+		
+		fieldNames = "logGroup.arn`metricFilterVH.metricName`metricFilterVH.metricNamespace`metricFilterVH.metricValue`metricFilterVH.metricFilter.filterName`metricFilterVH.metricFilter.filterPattern";
+		keys = "discoverydate`accountid`accountname`region`logarn`metricname`metricnamespace`metricvalue`filtername`filterpattern";
+		FileGenerator.generateJson(logs, fieldNames, "aws-cloudwatchlogs-metric.data", keys);
+	}
+	
+	/**
+	 * Generate CloudWatch Alarm files.
+	 *
+	 * @param cloudwatch log and filter map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateCloudWatchAlarm(Map<String,List<MetricAlarm>> metricAlarm) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "alarmArn`alarmName`alarmDescription`alarmConfigurationUpdatedTimestamp`actionsEnabled`metricName`namespace`datapointsToAlarm";
+		keys = "discoverydate`accountid`accountname`region`alarmarn`alarmname`description`configupdatetime`actionsenabled`metricname`namespace`datapointstoalarm";
+		FileGenerator.generateJson(metricAlarm, fieldNames, "aws-cloudwatchalarm.data", keys);
+		
 	}
 	//****** Changes For Federated Rules End ******
 	

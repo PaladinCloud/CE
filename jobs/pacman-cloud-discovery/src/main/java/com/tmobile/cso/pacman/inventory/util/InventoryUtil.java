@@ -102,7 +102,15 @@ import com.amazonaws.services.cloudfront.model.ListDistributionsRequest;
 import com.amazonaws.services.cloudtrail.AWSCloudTrail;
 import com.amazonaws.services.cloudtrail.AWSCloudTrailClientBuilder;
 import com.amazonaws.services.cloudtrail.model.DescribeTrailsResult;
+import com.amazonaws.services.cloudtrail.model.GetTrailStatusRequest;
+import com.amazonaws.services.cloudtrail.model.GetTrailStatusResult;
 import com.amazonaws.services.cloudtrail.model.Trail;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
+import com.amazonaws.services.cloudwatch.model.DescribeAlarmsResult;
+import com.amazonaws.services.cloudwatch.model.MetricAlarm;
+import com.amazonaws.services.cloudwatchrum.AWSCloudWatchRUM;
+import com.amazonaws.services.cloudwatchrum.AWSCloudWatchRUMClientBuilder;
 import com.amazonaws.services.comprehend.AmazonComprehend;
 import com.amazonaws.services.comprehend.AmazonComprehendClientBuilder;
 import com.amazonaws.services.comprehend.model.EntitiesDetectionJobProperties;
@@ -247,6 +255,13 @@ import com.amazonaws.services.lambda.model.FunctionConfiguration;
 import com.amazonaws.services.lambda.model.ListFunctionsRequest;
 import com.amazonaws.services.lambda.model.ListFunctionsResult;
 import com.amazonaws.services.lambda.model.ListTagsRequest;
+import com.amazonaws.services.logs.AWSLogs;
+import com.amazonaws.services.logs.AWSLogsClientBuilder;
+import com.amazonaws.services.logs.model.DescribeLogGroupsResult;
+import com.amazonaws.services.logs.model.DescribeMetricFiltersRequest;
+import com.amazonaws.services.logs.model.DescribeMetricFiltersResult;
+import com.amazonaws.services.logs.model.LogGroup;
+import com.amazonaws.services.logs.model.MetricFilter;
 import com.amazonaws.services.rds.AmazonRDS;
 import com.amazonaws.services.rds.AmazonRDSClientBuilder;
 import com.amazonaws.services.rds.model.DBCluster;
@@ -316,6 +331,8 @@ import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
 import com.tmobile.cso.pacman.inventory.vo.CloudFrontVH;
+import com.tmobile.cso.pacman.inventory.vo.CloudTrailVH;
+import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
 import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
@@ -2856,29 +2873,140 @@ public class InventoryUtil {
 	 * @param account the account
 	 * @return the map
 	 */
-	public static Map<String,List<Trail>> fetchCloudTrails(BasicSessionCredentials temporaryCredentials, String skipRegions,String account, String accountName){
+	public static Map<String, List<CloudTrailVH>> fetchCloudTrails(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String account, String accountName) {
 		log.info("Fetch CloudTrails info start");
-		Map<String,List<Trail>> cloudTrails =  new LinkedHashMap<>();
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+account + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Cloud Trail\" , \"region\":\"" ;
-		for(Region region : RegionUtils.getRegions()){
-			try{
-				if(!skipRegions.contains(region.getName())){
-					AWSCloudTrail cloudTrailClient =  AWSCloudTrailClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
+		Map<String, List<CloudTrailVH>> cloudTrails = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + account
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Cloud Trail\" , \"region\":\"";
+
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AWSCloudTrail cloudTrailClient = AWSCloudTrailClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
 					DescribeTrailsResult rslt = cloudTrailClient.describeTrails();
 					List<Trail> trailTemp = rslt.getTrailList();
-
-					if(! trailTemp.isEmpty() ){
-						cloudTrails.put(account+delimiter+accountName+delimiter+region.getName(),  trailTemp);
+					List<CloudTrailVH> trailVHList = new ArrayList<CloudTrailVH>();
+					trailTemp.forEach(trail -> {
+						GetTrailStatusResult trailStatus = cloudTrailClient
+								.getTrailStatus(new GetTrailStatusRequest().withName(trail.getName()));
+						trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging()));
+					});
+					if (!trailVHList.isEmpty()) {
+						cloudTrails.put(account + delimiter + accountName + delimiter + region.getName(), trailVHList);
 					}
 				}
-			}catch(Exception e){
-				if(region.isServiceSupported(AmazonRDS.ENDPOINT_PREFIX)){
-					log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(account,region.getName(),"cloudtrail",e.getMessage());
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonRDS.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(account, region.getName(), "cloudtrail", e.getMessage());
 				}
 			}
 		}
 		return cloudTrails;
+	}
+
+	/**
+	 * Fetch CloudWath Log info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param account the account
+	 * @return the map
+	 */
+	public static Map<String, List<CloudWatchLogsVH>> fetchCloudWatchLogs(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String account, String accountName) {
+		log.info("Fetch CloudWatchLogs info start");
+		Map<String, List<CloudWatchLogsVH>> cloudWatchLogsMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + account
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Cloud Watch Logs\" , \"region\":\"";
+
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AWSLogs logClinet = AWSLogsClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+					List<LogGroup> logGroups = new ArrayList<LogGroup>();
+					List<CloudWatchLogsVH> cloudWatchLogslist = new ArrayList<>();
+					String token = null;
+					do {
+						DescribeLogGroupsResult logGroupResult = logClinet.describeLogGroups().withNextToken(token);
+						logGroups.addAll(logGroupResult.getLogGroups());
+
+						token = logGroupResult.getNextToken();
+					} while (token != null);
+
+					logGroups.forEach(logGroup -> {
+						String metrixToken = null;
+						List<MetricFilter> metricFilters = new ArrayList<>();
+						do {
+							DescribeMetricFiltersResult metrixFilterResult = logClinet
+									.describeMetricFilters(new DescribeMetricFiltersRequest(logGroup.getLogGroupName()))
+									.withNextToken(metrixToken);
+							metricFilters.addAll(metrixFilterResult.getMetricFilters());
+							metrixToken = metrixFilterResult.getNextToken();
+						} while (metrixToken != null);
+						cloudWatchLogslist.add(new CloudWatchLogsVH(logGroup, metricFilters));
+
+					});
+
+					if (!cloudWatchLogslist.isEmpty()) {
+						cloudWatchLogsMap.put(account + delimiter + accountName + delimiter + region.getName(),
+								cloudWatchLogslist);
+					}
+				}
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonRDS.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(account, region.getName(), "cloudwatchlogs", e.getMessage());
+				}
+			}
+		}
+		return cloudWatchLogsMap;
+	}
+	
+	/**
+	 * Fetch CloudWatch alarm info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param account the account
+	 * @return the map
+	 */
+	public static Map<String, List<MetricAlarm>> fetchCloudWatchAlarm(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String account, String accountName) {
+		log.info("Fetch Cloud Watch alarm info start");
+		Map<String, List<MetricAlarm>> alarmMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + account
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Cloud Watch alarm\" , \"region\":\"";
+
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AmazonCloudWatch cloudWatchClient = AmazonCloudWatchClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+					List<MetricAlarm> metricAlarms = new ArrayList<>();
+					String token = null;
+					do {
+						DescribeAlarmsResult describeAlarms = cloudWatchClient.describeAlarms().withNextToken(token);
+						metricAlarms.addAll(describeAlarms.getMetricAlarms());
+						token = describeAlarms.getNextToken();
+					} while (token != null);
+
+					if (!metricAlarms.isEmpty()) {
+						alarmMap.put(account + delimiter + accountName + delimiter + region.getName(), metricAlarms);
+					}
+				}
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonRDS.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(account, region.getName(), "cloudwatch alarm", e.getMessage());
+				}
+			}
+		}
+		return alarmMap;
 	}
 	
 	/**
