@@ -28,12 +28,13 @@ import { MultilineChartService } from 'src/app/pacman-features/services/multilin
 import { environment } from 'src/environments/environment';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
+import { FetchResourcesService } from 'src/app/pacman-features/services/fetch-resources.service';
 
 @Component({
   selector: 'app-asset-dashboard',
   templateUrl: './asset-dashboard.component.html',
   styleUrls: ['./asset-dashboard.component.css'],
-  providers: [LoggerService, ErrorHandlingService, MultilineChartService]
+  providers: [LoggerService, ErrorHandlingService, MultilineChartService, FetchResourcesService]
 })
 export class AssetDashboardComponent implements OnInit, OnDestroy {
 
@@ -50,11 +51,142 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   domainName;
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
+  dataSubscription;
+  
+  card = {
+      id: 3,
+      header: "Total Assets",
+    }
 
+    tiles = [
+      {
+        mainContent: {
+          title: "Total Assets",
+          count: 0,
+          image: "total-assets-icon"
+        },
+        subContent: [
+          {
+            title: "Asset Types",
+            count: 0
+          }
+        ]
+      },
+      {
+        mainContent: {
+          title: "Exempted Assets",
+          count: 0,
+          image: "exempted-assets-icon"
+        },
+        subContent: [
+          {
+            title: "My Exemptions",
+            count: 0,
+          }
+        ]
+      },
+      {
+        mainContent: {
+          title: "Tagged Assets",
+          count: 0,
+          image: "category-tagging"
+        },
+        subContent: [
+          {
+            title: "Untagged Assets",
+            count: 0
+          }
+        ]
+      }
+    ];
+  years = [];
+  allMonths = [];
+  allDays = [];
+  isCustomSelected: boolean = false;
+  fromDate: Date = new Date(2022, 1, 1);
+  toDate: Date = new Date(2200, 12, 31);
+
+  constructor(
+    private dataStore: DataCacheService,
+    private router: Router,
+    private logger: LoggerService,
+    private workflowService: WorkflowService,
+    private assetGroupObservableService: AssetGroupObservableService,
+    private multilineChartService: MultilineChartService,
+    private commonResponseService: CommonResponseService,
+    private assetGroupsService: AssetTilesService,
+    private fetchResourcesService: FetchResourcesService
+  ) {
+    this.config = CONFIGURATIONS;
+
+    this.oss = this.config && this.config.optional && this.config.optional.general && this.config.optional.general.OSS;
+
+    this.getAssetGroup();
+  }
+
+  ngOnInit() {
+    for (let i = 2022; i <= 2200; i++) {
+      this.years.push(i);
+    }
+  }
+
+  private getNumberOfDays = function (year, monthId: any) {
+    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
+    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
+  };
+
+  onSelectYear(date: Date, selectedYear){
+    date.setFullYear(selectedYear);
+  }
+
+  getMonthId(selectedMonth){
+    let monthId = 0;
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].text == selectedMonth) {
+        monthId = id;
+      }
+    }
+    return monthId;
+  }
+
+  getMonth(date: Date){
+    let selectedMonth = "";
+    for (let id = 0; id < this.allMonths.length; id++) {
+      if (this.allMonths[id].id == date.getMonth()) {
+        selectedMonth = this.allMonths[id].text;
+      }
+    }
+    return selectedMonth;
+  }
+
+  onSelectMonth(date: Date, selectedMonth: any) {
+    const monthDays: any = [];
+    let monthId = this.getMonthId(selectedMonth);
+    
+    const daysCount = this.getNumberOfDays(date.getFullYear(), monthId);
+    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
+      monthDays.push({ id: dayNo, text: dayNo.toString() });
+    }
+    this.allDays = monthDays;
+    date.setMonth(monthId);
+  }
+
+  onSelectDay(date: Date, selectedDay: any) {
+    date.setDate(selectedDay);    
+  }
 
   handleGraphIntervalSelection = (e) => {
-    let date = new Date();
     e = e.toLowerCase();
+    if(e == "all time" || e == "custom"){
+      if(e=="custom"){
+        this.isCustomSelected = true;
+        return;
+      }
+      this.customDateSelected();
+      return;
+    }
+    let date = new Date();
+    this.isCustomSelected = false;
     let queryParamObj = {};
     switch(e){
       case "1 week":
@@ -71,39 +203,25 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         break;
     }
 
-    if(e != "all time" && e != "custom"){
-      const offset = date.getTimezoneOffset()
-      let fromDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0]
-      queryParamObj["from"] = fromDate;
-    }        
-    this.getAssetsCountData(queryParamObj);
+    this.customDateSelected(date); 
   }
-  card = {
-      id: 3,
-      header: "Total Assets",
-      footer: "View Asset Distribution",
-      onSelectGraphInterval: this.handleGraphIntervalSelection,
+
+  getFormattedDate(date: Date){
+    const offset = date.getTimezoneOffset()
+    let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+    return formattedDate;
+  }
+
+  customDateSelected(fromDate?, toDate?){
+    let queryParamObj = {}
+    if(fromDate){
+      queryParamObj["from"] = this.getFormattedDate(fromDate);
     }
-
-  constructor(
-    private dataStore: DataCacheService,
-    private router: Router,
-    private logger: LoggerService,
-    private workflowService: WorkflowService,
-    private assetGroupObservableService: AssetGroupObservableService,
-    private multilineChartService: MultilineChartService,
-    private commonResponseService: CommonResponseService,
-    private assetGroupsService: AssetTilesService
-  ) {
-    this.config = CONFIGURATIONS;
-
-    this.oss = this.config && this.config.optional && this.config.optional.general && this.config.optional.general.OSS;
-
-    this.getAssetGroup();
-  }
-
-  ngOnInit() {
-
+    if(toDate){
+      queryParamObj["to"] = this.getFormattedDate(toDate);
+    }    
+    this.isCustomSelected = false;
+    this.getAssetsCountData(queryParamObj);
   }
 
   getAssetsTileData(){
@@ -118,7 +236,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
           response => {
             console.log("getAssetsTileData: ", response);
-            
+            this.tiles[2].mainContent.count = response.output.tagged;
+            this.tiles[2].subContent[0].count = response.output.untagged;
           }
         )
     }catch(e){}
@@ -127,7 +246,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
   massageAssetTrendGraphData(graphData){
     let data = [];
-    data.push({"key":"TotalAssetCount", "values":[]})
+    data.push({"key":"TotalAssetCount", "values":[], "info": {}})
     graphData.trend.forEach(e => {
        data[0].values.push({
             'date':new Date(e.date),
@@ -139,10 +258,17 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         return new Date(a.date).valueOf() - new Date(b.date).valueOf();
     });
 
+    data[0].info = {
+    id: "AssetsCountTrend",
+    showLegend: true,
+    yAxisLabel: 'Total Assets',
+    height: 320
+  }
+
     return data;
   }
 
-  private getAssetsCountData(queryObj) {
+  public getAssetsCountData(queryObj) {
     if(!this.assetGroupName){
       return;
     }
@@ -168,42 +294,69 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   }
 
   getExemtedAssetsCount(){
-    const exemtedAssetCountUrl = environment.exemtedAssetCount.url;
-    const exemtedAssetCountMethod = environment.exemtedAssetCount.method;
+    const exemptedAssetCountUrl = environment.exemptedAssetCount.url;
+    const exemptedAssetCountMethod = environment.exemptedAssetCount.method;
 
     let queryParams = {
       ag: this.assetGroupName,
     }
 
     try {
-        this.commonResponseService.getData( exemtedAssetCountUrl, exemtedAssetCountMethod, {}, queryParams).subscribe(
+        this.commonResponseService.getData( exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams).subscribe(
           response => {
             console.log("getAssetsTileData: ", response);
-            
+            this.tiles[1].mainContent.count = response.exemptedAssetsCount;
+            this.tiles[1].subContent[0].count = response.exemptedAssetsCount;
           }
         )
     }catch(e){}
   }
 
-  getTotalAssetsCount(){
-    const assetDetailUrl = environment.assetTilesdata.url;
+  // getTotalAssetsCount(){
+  //   const assetDetailUrl = environment.assetTilesdata.url;
 
-    const assetDetailMethod = environment.assetTilesdata.method;
+  //   const assetDetailMethod = environment.assetTilesdata.method;
 
-    const queryParams = {
-      'ag': this.assetGroupName
-    };
-     if (queryParams['ag'] !== undefined) {
+  //   const queryParams = {
+  //     'ag': this.assetGroupName
+  //   };
+  //    if (queryParams['ag'] !== undefined) {
 
-     this.assetGroupsService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
-       response => {
-         console.log("getTotalAssets: ", JSON.stringify(response));
-      },
-      error => {
+  //    this.assetGroupsService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
+  //      response => {
+  //        console.log("getTotalAssets: ", JSON.stringify(response));
+  //     },
+  //     error => {
           
-      });
-     }
-  }
+  //     });
+  //    }
+  // }
+
+  getResourceTypeAndCountAndRecommendation() {
+    try {
+      if (this.dataSubscription) {
+        this.dataSubscription.unsubscribe();
+      }
+      const queryParams = {
+        'ag': this.assetGroupName,
+        'domain': this.domainName
+      };
+
+      const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
+
+      this.dataSubscription = output.subscribe(results => {
+          console.log(results);
+          
+          console.log("RESULTS: ", JSON.stringify(results[1]["totalassets"]));
+          console.log("RESULTS: ", JSON.stringify(results[1]["assettype"]));
+          this.tiles[0].mainContent.count = results[1]["totalassets"];
+          this.tiles[0].subContent[0].count = results[1]["assettype"];
+        })
+      }catch(e){
+        console.log(e);
+        
+      }
+    }
 
   getAssetGroup() {
     this.assetGroupObservableService.getAssetGroup().subscribe(
@@ -212,8 +365,9 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
           this.assetGroupName = assetGroupName;
           this.getAssetsCountData({});
           this.getAssetsTileData();
-          this.getTotalAssetsCount();
+          // this.getTotalAssetsCount();
           this.getExemtedAssetsCount();
+          this.getResourceTypeAndCountAndRecommendation();
     });
   }
 

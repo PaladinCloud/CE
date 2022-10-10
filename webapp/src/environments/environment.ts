@@ -209,7 +209,7 @@ export const environment = {
         url: '{{baseUrl}}/asset/v1/assetgroup',
         method: 'GET'
     },
-    exemtedAssetCount: {
+    exemptedAssetCount: {
         url: '{{baseUrl}}/asset/v1/count/exempted',
         method: 'GET'
     },
