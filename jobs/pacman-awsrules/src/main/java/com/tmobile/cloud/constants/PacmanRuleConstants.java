@@ -557,6 +557,7 @@ public class PacmanRuleConstants {
     public static final String UNABLE_TO_GET_CLIENT_FOR_FOLLOWING_INPUT= "unable to get client for following input";
     public static final String ACCOUNT_ACCESS_KEYS_PRESENT = "AccountAccessKeysPresent";
     public static final String CLOUD_TRAIL_LOG_FILE_VALIDATION = "logfilevalidationenabled";
+    public static final String KMS_KEY_ID = "kmskeyid";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";

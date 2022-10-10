@@ -3520,6 +3520,28 @@
     "category": "security"
   },
   {
+    "ruleId": "CloudTrailLogsEncryptedByKMS_version-1_EnableKMSEncryption_cloudtrail",
+    "ruleUUID": "aws_cloud_trail_encrypt_logs_using_kms",
+    "policyId": "CloudTrailLogsEncryptedByKMS_version-1",
+    "ruleName": "CloudTrail logs should be configured to leverage SSE and KMS CMKs",
+    "targetType": "cloudtrail",
+    "assetGroup": "aws",
+    "alexaKeyword": "CloudTrailLogsEncryptedByKMS",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-cloudtrail-logs-encrypted-by-kms\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"CloudTrailLogsEncryptedByKMS_version-1_EnableKMSEncryption_cloudtrail\",\"autofix\":false,\"alexaKeyword\":\"CloudTrailLogsEncryptedByKMS\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"policyId\":\"CloudTrailLogsEncryptedByKMS_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_cloud_trail_encrypt_logs_using_kms\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_cloud_trail_encrypt_logs_using_kms",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Encrypt CloudTrail to use KMS CMKs",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "RemoveRootUserAccessKey_version-1_RemoveRootUserAccessKey_account",
     "ruleUUID": "aws_remove_root_user_account_access_key",
     "policyId": "RemoveRootUserAccessKey_version-1",

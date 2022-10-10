@@ -1935,9 +1935,9 @@ public class FileManager {
 		String keys;
 		fieldNames = "trail.Name`trail.S3BucketName`trail.IncludeGlobalServiceEvents"
 				+ "`trail.IsMultiRegionTrail`trail.HomeRegion`trail.TrailARN`"
-				+ "trail.LogFileValidationEnabled`trail.HasCustomEventSelectors`logginEnabled";
+				+ "trail.LogFileValidationEnabled`trail.HasCustomEventSelectors`logginEnabled`trail.KmsKeyId";
 		keys = "discoverydate`accountid`accountname`region`name`s3bucketname`includeglobalserviceevents"
-				+ "`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors`islogging";
+				+ "`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors`islogging`kmskeyid";
 		FileGenerator.generateJson(cloudTrail, fieldNames, "aws-cloudtrail.data", keys);
 	}
 	
