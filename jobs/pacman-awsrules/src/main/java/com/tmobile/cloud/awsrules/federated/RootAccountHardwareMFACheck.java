@@ -113,12 +113,16 @@ public class RootAccountHardwareMFACheck extends BaseRule {
 			if (summaryMap.get("AccountMFAEnabled") == 1) {
 				ListVirtualMFADevicesRequest listMfaRequest = new ListVirtualMFADevicesRequest();
 				ListVirtualMFADevicesResult result = new ListVirtualMFADevicesResult();
-
-				result = iamClient.listVirtualMFADevices(listMfaRequest.withAssignmentStatus(AssignmentStatusType.Assigned));
-				if (!CollectionUtils.isNullOrEmpty(result.getVirtualMFADevices())) {
-					return description = "Hardware MFA device is not configured for root account !!";
+				result = iamClient
+						.listVirtualMFADevices(listMfaRequest.withAssignmentStatus(AssignmentStatusType.Assigned));
+				if (null != result && !CollectionUtils.isNullOrEmpty(result.getVirtualMFADevices())) {
+					if (result.getVirtualMFADevices().stream()
+							.filter(device -> device.getSerialNumber().contains("root-account-mfa-device")).count() > 0)
+						return description = "Hardware MFA device is not configured for root account !!";
 				}
 
+			} else {
+				return description = "Hardware MFA device is not configured for root account !!";
 			}
 
 		} catch (UnableToCreateClientException e) {
