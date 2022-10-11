@@ -70,7 +70,6 @@ public class KeyVaultsExpirationdateRule extends BaseRule {
                             annotation);
                 }
             } catch (Exception e) {
-                logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
@@ -96,9 +95,9 @@ public class KeyVaultsExpirationdateRule extends BaseRule {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
 
-                String keyExpirationDate = jsonDataItem.get("keyExpirationDate").getAsString();
-                if(keyExpirationDate!=null)
+                if(!jsonDataItem.get("keyExpirationDate").isJsonNull())
                 {
+                    logger.debug("keyExpirationDate is NOT null");
                     validationResult=true;
                 }
 
