@@ -1428,5 +1428,27 @@
     "modifiedDate": "2022-10-09",
     "severity": "low",
     "category": "security"
+  },
+  {
+    "ruleId": "Disable_Log_min_duration_statement_for_PostgreSQL",
+    "ruleUUID": "Disable_Log_min_duration_statement_for_PostgreSQL",
+    "policyId": "Disable_Log_min_duration_statement_for_PostgreSQL",
+    "ruleName": "Disable Log_min_duration_statement Database Flag for PostgreSQL Instance",
+    "targetType": "cloudsql_postgres",
+    "assetGroup": "gcp",
+    "alexaKeyword": "postgres",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"ruleKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"log_min_duration_statement\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"-1\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Disable Log_min_duration_statement Database Flag for PostgreSQL Instance\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that log_min_duration_statement database flag is disabled for a Cloud PostgreSQL database instances.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Log_min_duration_statement flag for Postgres Instance is enabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_Log_min_duration_statement_for_PostgreSQL\",\"autofix\":false,\"alexaKeyword\":\"postgres\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"policyId\":\"Disable_Log_min_duration_statement_for_PostgreSQL\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_Log_min_duration_statement_for_PostgreSQL\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_Log_min_duration_statement_for_PostgreSQL",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable Log_min_duration_statement Database Flag for PostgreSQL Instance",
+    "createdDate": "2022-10-06",
+    "modifiedDate": "2022-10-06",
+    "severity": "medium",
+    "category": "security"
   }
 ]
