@@ -1,10 +1,7 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
@@ -105,10 +102,12 @@ public class VaultInventoryCollector {
 					//				.keys().list().get(0).attributes().expires()
 
 						PagedList<Key> keys=azureVault.keys().list();
+						Set<String> keyExpirationDate=new HashSet<>();
 						for(Key key:keys)
 						{
-							vaultVH.setKeyExpirationDate(key.attributes().expires().toString());
+							keyExpirationDate.add(key.attributes().expires().toString());
 						}
+						vaultVH.setKeyExpirationDate(keyExpirationDate);
 					}
 					catch(Exception e)
 					{
