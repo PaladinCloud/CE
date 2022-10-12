@@ -19,13 +19,13 @@ public class VaultVH extends AzureVH {
 	private List<String> permissionForKeys;
 	private List<String> permissionForSecrets;
 	private List<String> permissionForCertificates;
-	private String secretExpirationDate;
+	private Set<String> secretExpirationDate;
 
-	public String getSecretExpirationDate() {
+	public Set<String> getSecretExpirationDate() {
 		return secretExpirationDate;
 	}
 
-	public void setSecretExpirationDate(String secretExpirationDate) {
+	public void setSecretExpirationDate(Set<String> secretExpirationDate) {
 		this.secretExpirationDate = secretExpirationDate;
 	}
 

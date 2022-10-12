@@ -109,15 +109,13 @@ public class VaultInventoryCollector {
 							keyExpirationDate.add(key.attributes().expires().toString());
 						}
 						vaultVH.setKeyExpirationDate(keyExpirationDate);
-						PagedList<Vault> vaults=azure.vaults().listByResourceGroup(resourceGroupName);
-						//				.keys().list().get(0).attributes().expires()
-						for(Vault vault:vaults){
-							PagedList<Secret> secrets=vault.secrets().list();
-							for(Secret secret:secrets)
-							{
-								vaultVH.setSecretExpirationDate(secret.attributes().expires().toString());
-							}
+						PagedList<Secret> secrets = azureVault.secrets().list();
+						Set<String> secretExpirationDate=new HashSet<>();
+						for (Secret secret : secrets) {
+							secretExpirationDate.add(secret.attributes().expires().toString());
 						}
+						vaultVH.setSecretExpirationDate(secretExpirationDate);
+
 					}
 					catch(Exception e)
 					{
