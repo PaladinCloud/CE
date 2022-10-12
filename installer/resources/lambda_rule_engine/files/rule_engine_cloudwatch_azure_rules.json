@@ -2814,5 +2814,27 @@
     "modifiedDate": "2022-09-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Azure_KeyVault_Key_ExpiryDate",
+    "ruleUUID": "Azure_KeyVault_Key_ExpiryDate",
+    "policyId": "Azure_KeyVault_Key_ExpiryDate",
+    "ruleName": "Azure_KeyVault_Key_ExpiryDate",
+    "targetType": "vaults",
+    "assetGroup": "Azure",
+    "alexaKeyword": "KeyVaultKeyExpirationDate",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"key-should-have-expiration-date\",\"key\":\"ruleKey\"},{\"key\":\"failure\",\"value\":\"Key vault key does not have expiration date\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"Key vault key has expiration date\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Set expiration date for key in vault key\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Azure_KeyVault_Key_ExpiryDate\",\"autofix\":false,\"alexaKeyword\":\"KeyVaultKeyExpirationDate\",\"ruleRestUrl\":\"\",\"targetType\":\"vaults\",\"pac_ds\":\"azure\",\"policyId\":\"Azure_KeyVault_Key_ExpiryDate\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Azure_KeyVault_Key_ExpiryDate\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Azure_KeyVault_Key_ExpiryDate",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Set expiration date for key in vault key",
+    "createdDate": "2022-08-05",
+    "modifiedDate": "2022-08-05",
+    "severity": "medium",
+    "category": "security"
   }
 ]
