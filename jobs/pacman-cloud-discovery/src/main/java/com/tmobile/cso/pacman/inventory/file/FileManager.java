@@ -84,6 +84,8 @@ import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DeliveryStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
+import com.tmobile.cso.pacman.inventory.vo.ECSClusterVH;
+import com.tmobile.cso.pacman.inventory.vo.ECSTaskDefinitionVH;
 import com.tmobile.cso.pacman.inventory.vo.EKSVH;
 import com.tmobile.cso.pacman.inventory.vo.EbsVH;
 import com.tmobile.cso.pacman.inventory.vo.EfsVH;
@@ -277,7 +279,10 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.OPEN_ARRAY, false);
-		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecstaskdefinition.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecstaskdefinition-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecscluster.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-ecscluster-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
@@ -441,7 +446,10 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-awscomprehend.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-appflow.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-appflow-tags.data",InventoryConstants.CLOSE_ARRAY, true);
-		FileGenerator.writeToFile("aws-ecs.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecstaskdefinition.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecstaskdefinition-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecscluster.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecscluster-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -738,21 +746,41 @@ public class FileManager {
 	}
 
 	/**
-	 * Generate AWS ECS files.
+	 * Generate AWS ECS TaskDefinition files.
 	 *
 	 * @param fileInofMap the file info map
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void generateAWSECSFiles(Map<String,List<TaskDefinition>> appFlowMap) throws IOException {
+	public static void generateAWSECSFiles(Map<String,List<ECSTaskDefinitionVH>> ecsmap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "taskDefinitionArn`family`taskRoleArn`executionRoleArn`revision`status`cpu`memory`registeredAt`registeredBy`containerDefinitions.logConfiguration.logDriver";
+		fieldNames = "taskDef.taskDefinitionArn`taskDef.family`taskDef.taskRoleArn`taskDef.executionRoleArn`taskDef.revision`taskDef.status`taskDef.cpu`taskDef.memory`taskDef.registeredAt`taskDef.registeredBy`taskDef.containerDefinitions.logConfiguration.logDriver";
 		keys = "discoverydate`accountid`accountname`region`taskdefarn`family`taskrolearn`executionrolearn`revision`status`cpu`memory`registeredat`registeredby`logdriver";
-		FileGenerator.generateJson(appFlowMap, fieldNames, "aws-ecs.data",keys);
+		FileGenerator.generateJson(ecsmap, fieldNames, "aws-ecstaskdefinition.data",keys);
+		fieldNames = "taskDef.taskDefinitionArn`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`taskdefarn`key`value";
+		FileGenerator.generateJson(ecsmap, fieldNames, "aws-ecstaskdefinition-tags.data",keys);
 	}
 	
 	/**
-	 * Generate AWS ECS files.
+	 * Generate AWS ECS Cluster files.
+	 *
+	 * @param fileInofMap the file info map
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	public static void generateAWSECSClusterFiles(Map<String,List<ECSClusterVH>> ecsclustermap) throws IOException {
+		String fieldNames;
+		String keys;
+		fieldNames = "cluster.clusterArn`cluster.clusterName`cluster.status`cluster.registeredContainerInstancesCount`cluster.runningTasksCount`cluster.pendingTasksCount`cluster.activeServicesCount";
+		keys = "discoverydate`accountid`accountname`region`clusterarn`clustername`status`reginstancecount`runningtaskcount`pendingtaskcount`activeservicescount";
+		FileGenerator.generateJson(ecsclustermap, fieldNames, "aws-ecscluster.data",keys);
+		fieldNames = "cluster.clusterArn`tags.key`tags.value";
+		keys = "discoverydate`accountid`accountname`region`clusterarn`key`value";
+		FileGenerator.generateJson(ecsclustermap, fieldNames, "aws-ecscluster-tags.data",keys);
+	}
+	
+	/**
+	 * Generate AWS Access Analyzer files.
 	 *
 	 * @param fileInofMap the file info map
 	 * @throws IOException Signals that an I/O exception has occurred.
