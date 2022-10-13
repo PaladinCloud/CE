@@ -148,11 +148,11 @@
                 <div class="text-header">Start Time</div>
                 <div class="flex flex-align-center each-cell-list-row">
                   <div class="text-description highlight-link">
-                    {{ descData.startTime | date: "d MMM y, h:mm a" }}
+                    {{ descData.startTime }}
                   </div>
                   <app-copy-element
                     class="copy-object flex flex-align-center"
-                    [CopyElement]="descData.startTime | date: 'd MMM y, h:mm a'"
+                    [CopyElement]="descData.startTime"
                     [iconSize]="'10px'"
                   ></app-copy-element>
                 </div>
@@ -164,28 +164,28 @@
                 <div class="text-header">End Time</div>
                 <div class="flex flex-align-center each-cell-list-row">
                   <div class="text-description highlight-link">
-                    {{ descData.endTime | date: "d MMM y, h:mm a" }}
+                    {{ descData.endTime }}
                   </div>
                   <app-copy-element
                     class="copy-object flex flex-align-center"
-                    [CopyElement]="descData.endTime | date: 'd MMM y, h:mm a'"
+                    [CopyElement]="descData.endTime"
                     [iconSize]="'10px'"
                   ></app-copy-element>
                 </div>
               </div>
               <div
                 class="desc-wrapper"
-                *ngIf="autofixData ? autofixData.startTime : false"
+                *ngIf="startTime ? startTime : false"
               >
                 <div class="text-header">Start Time</div>
                 <div class="flex flex-align-center each-cell-list-row">
                   <div class="text-description highlight-link">
-                    {{ autofixData.startTime | date: "d MMM y, h:mm a" }}
+                    {{ startTime }}
                   </div>
                   <app-copy-element
                     class="copy-object flex flex-align-center"
                     [CopyElement]="
-                      autofixData.startTime | date: 'd MMM y, h:mm a'
+                      startTime
                     "
                     [iconSize]="'10px'"
                   ></app-copy-element>
@@ -193,17 +193,17 @@
               </div>
               <div
                 class="desc-wrapper"
-                *ngIf="autofixData ? autofixData.endTime : false"
+                *ngIf="endTime ? endTime : false"
               >
                 <div class="text-header">End Time</div>
                 <div class="flex flex-align-center each-cell-list-row">
                   <div class="text-description highlight-link">
-                    {{ autofixData.endTime | date: "d MMM y, h:mm a" }}
+                    {{ endTime }}
                   </div>
                   <app-copy-element
                     class="copy-object flex flex-align-center"
                     [CopyElement]="
-                      autofixData.endTime | date: 'd MMM y, h:mm a'
+                      endTime
                     "
                     [iconSize]="'10px'"
                   ></app-copy-element>

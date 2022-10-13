@@ -17,6 +17,8 @@ import { ExceptionInput } from "../../../../shared/models/exception-input.model"
   styleUrls: ["./event-details.component.css"],
 })
 export class EventDetailsComponent implements OnInit, OnDestroy {
+  endTime: string;
+  startTime: string;
   constructor(
     private activatedRoute: ActivatedRoute,
     private assetGroupObservableService: AssetGroupObservableService,
@@ -140,6 +142,16 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           (response) => {
             try {
               this.descData = response;
+              if (this.descData["startTime"]) {
+                this.descData["startTime"] = this.utils.calculateDateAndTime(
+                  this.descData["startTime"], true
+                )
+              }
+              if (this.descData["endTime"]) {
+                this.descData["endTime"] = this.utils.calculateDateAndTime(
+                  this.descData["endTime"], true
+                )
+              }
               this.responseStatusInfo.loadState = 1;
             } catch (e) {
               this.responseStatusInfo.errorMessage = "jsError";
@@ -186,6 +198,16 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
           (response) => {
             try {
               this.autofixData = response.data;
+              if (this.autofixData["startTime"]) {
+                this.startTime = this.utils.calculateDateAndTime(
+                  this.autofixData["startTime"], true
+                )
+              }
+              if (this.autofixData["endTime"]) {
+                this.endTime = this.utils.calculateDateAndTime(
+                  this.autofixData["endTime"], true
+                )
+              }
               this.inputToException["allResourceIds"] = [
                 this.autofixData.resourceId,
               ];

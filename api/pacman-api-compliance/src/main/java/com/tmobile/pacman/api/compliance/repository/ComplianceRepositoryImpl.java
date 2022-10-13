@@ -311,6 +311,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         fields.add(POLICYID);
         fields.add(_ID);
         fields.add(ENV);
+        fields.add(PAC_DS);
         // for sox domain
 
         String domain = filters.get(DOMAIN);

@@ -695,7 +695,7 @@ a.button:hover {
 }
 
 .issue-details-wrapper ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
-  width: 160px;
+  width: 230px;
 }
 
 /* Css added By Trinanjan on 22/05/2018 for new issue details design */

@@ -225,7 +225,7 @@ export class UtilsService {
         return monthString + '-' + dayString + '-' + year ;
     }
 
-    calculateDateAndTime(_JSDate) {
+    calculateDateAndTime(_JSDate,requiredTime = false) {
 
       const monthsList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
       const date = new Date(_JSDate);
@@ -234,13 +234,15 @@ export class UtilsService {
       const day = date.getDate();
       const monthValue = monthsList[month];
       let hours = date.getHours();
-      const minutes = date.getMinutes();
-      const seconds = date.getSeconds();
-      const ampm = (hours >= 12) ? 'PM' : 'AM';
-        if (ampm === 'PM') {
+      const ampm = (hours >= 12 && hours<24)  ? 'PM' : 'AM';
+        if ((ampm === 'PM' && hours != 12)|| (ampm=='AM' && hours==24)) {
           hours = hours - 12;
         }
-        return monthValue + ' ' + day + ',' + ' ' + year + ' ' + hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+      
+      if (requiredTime) {
+        return monthValue + ' ' + day + ',' + ' ' + year + ' ' + hours + ':00 ' + ampm;
+       }
+      return monthValue + ' ' + day + ',' + ' ' + year + ' ';
     }
 
     getNumberOfWeeks = function(year, quarter) {
