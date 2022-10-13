@@ -1096,18 +1096,31 @@ public class AssetFileGenerator {
 			});
 			executor.execute(() ->
 			{
-			    if(!(isTypeInScope("ecs"))) {
+			    if(!(isTypeInScope("ecstaskdefinition"))) {
 			        return;
 			    }
 				try{
-					log.info(infoPrefix + "ecs");
-					FileManager.generateAWSECSFiles(InventoryUtil.fetchECSInfo(temporaryCredentials, skipRegions,accountId,accountName));
+					log.info(infoPrefix + "ecstaskdefinition");
+					FileManager.generateAWSECSFiles(InventoryUtil.fetchECSTaskDefInfo(temporaryCredentials, skipRegions,accountId,accountName));
 				}catch(Exception e){
-					log.error(expPrefix+ "ecs\", \"cause\":\"" +e.getMessage()+"\"}");
-					ErrorManageUtil.uploadError(accountId, "", "ecs", e.getMessage());
+					log.error(expPrefix+ "ecstaskdefinition\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "ecstaskdefinition", e.getMessage());
 				}
 			});
 			executor.execute(() ->
+			{
+			    if(!(isTypeInScope("ecscluster"))) {
+			        return;
+			    }
+				try{
+					log.info(infoPrefix + "ecscluster");
+					FileManager.generateAWSECSClusterFiles(InventoryUtil.fetchECSClusterInfo(temporaryCredentials, skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "ecscluster\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "ecscluster", e.getMessage());
+				}
+			});
+		   executor.execute(() ->
 			{
 			    if(!(isTypeInScope("accessanalyzer"))) {
 			        return;
@@ -1145,7 +1158,7 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "backupvault\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "backupvault", e.getMessage());
 				}
-			}); 
+			});
 			/**
 			 * This will collect all the customer managed policy details. 
 			 */
@@ -1161,7 +1174,7 @@ public class AssetFileGenerator {
 					log.error(expPrefix+ "iampolicies\", \"cause\":\"" +e.getMessage()+"\"}");
 					ErrorManageUtil.uploadError(accountId, "", "iampolicies", e.getMessage());
 				}
-			}); 
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
