@@ -822,7 +822,7 @@ export class ComplianceDashboardComponent implements OnInit {
               hasPreImg: false,
               imgLink: "",
               valText: new Date(getData[row][getCols[col]]).getTime(),
-              text: this.calculateDate(getData[row][getCols[col]]),
+              text: this.utils.calculateDateAndTime(getData[row][getCols[col]],true),
             };
           } else {
             cellObj = {

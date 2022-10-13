@@ -44,11 +44,7 @@ export class IssueAuditService {
         this.getMethod = IssueAuditMethod;
 
         try {
-            return combineLatest(
-                this.httpService.getHttpResponse(url, method, payload, queryParams)
-                    .pipe(map(response => this.massageData(response) )
-                    // .catch(this.handleError)
-            ));
+            return this.httpService.getHttpResponse(url, method, payload, queryParams);
         } catch (error) {
             this.handleError(error);
         }
@@ -57,40 +53,6 @@ export class IssueAuditService {
 
     handleError(error: any): Observable<any> {
         return observableThrowError(error.message || error);
-    }
-
-    massageData(data): any {
-        const parsedData = data;
-        const response = parsedData.data.response;
-        for (let i = 0; i < response.length; i++) {
-            const auditdate = response[i].auditdate;
-            const dateValue = new Date(auditdate);
-            this.getHoursValue = dateValue.getHours();
-            if (this.getHoursValue < 10) {
-                this.getHoursValue = '0' + this.getHoursValue;
-            }
-            this.getMinutesValue = dateValue.getMinutes();
-            if (this.getMinutesValue < 10) {
-                this.getMinutesValue = '0' + this.getMinutesValue;
-            }
-            this.getSecondsValue = dateValue.getSeconds();
-            if (this.getSecondsValue < 10) {
-                this.getSecondsValue = '0' + this.getSecondsValue;
-            }
-            this.getDateValue = dateValue.getDate();
-            if (this.getDateValue < 10) {
-                this.getDateValue = '0' + this.getDateValue;
-            }
-            this.getMonthValue = dateValue.getMonth();
-            this.getMonthValue = this.getMonthValue + 1;
-            if (this.getMonthValue < 10) {
-                this.getMonthValue = '0' + this.getMonthValue;
-            }
-            this.getYearValue = dateValue.getFullYear();
-            const fullValue = this.getHoursValue + ':' + this.getMinutesValue + ':' + this.getSecondsValue + ' ' + this.getMonthValue + '-' + this.getDateValue + '-' + this.getYearValue;
-            parsedData.data.response[i].auditdate = fullValue;
-        }
-        return parsedData;
     }
 
 }

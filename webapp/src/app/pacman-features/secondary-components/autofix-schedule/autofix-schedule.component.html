@@ -26,7 +26,7 @@
             </div>
             <div class="flex flex-col flex-center text-box">
                 <div class="plan-txt">{{plan.action == 'AUTOFIX_ACTION_EMAIL' ? 'Email Notification ' + (i + 1) : 'Fixed'}}</div>
-                <div class="plan-txt">{{plan.plannedActionTime | date: 'd MMM y, h:mm a'}}</div>
+                <div class="plan-txt">{{plan.plannedActionTime}}</div>
             </div>
         </div>
         <img *ngIf='transformVal >= 0' [ngStyle]="{'transform': 'translateX(' + transformVal + 'px' }" class='absolute today-marker' src='../assets/icons/instanceState.gif'>

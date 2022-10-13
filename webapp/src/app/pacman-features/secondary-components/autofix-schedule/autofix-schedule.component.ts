@@ -13,6 +13,7 @@
 */
 
 import { Component, OnInit, Input } from '@angular/core';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 @Component({
   selector: 'app-autofix-schedule',
@@ -22,17 +23,22 @@ import { Component, OnInit, Input } from '@angular/core';
 
 export class AutofixScheduleComponent implements OnInit {
 
-  constructor() { }
+  constructor(private utils: UtilsService) { }
 
   @Input() autofixData;
   transformVal = -1;
 
   ngOnInit() {
+    this.autofixData.planItems.forEach(plan => {
+      plan.plannedActionTime = this.utils.calculateDateAndTime(
+        plan.plannedActionTime, true
+      )
+    });
     if (this.autofixData && this.autofixData.planItems && this.autofixData.planItems.length > 1
       && new Date().getTime()
-      >= new Date( this.autofixData.planItems[0].plannedActionTime ).getTime()
+      >= new Date(this.autofixData.planItems[0].plannedActionTime).getTime()
       && new Date().getTime()
-      <= new Date( this.autofixData.planItems[this.autofixData.planItems.length - 1].plannedActionTime ).getTime()
+      <= new Date(this.autofixData.planItems[this.autofixData.planItems.length - 1].plannedActionTime).getTime()
     ) {
       this.transformVal = 0;
       setTimeout(() => {
