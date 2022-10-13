@@ -46,6 +46,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedTabName = 'All';
   dataLoaded = false;
   searchTxt = '';
+  breadcrumbPresent;
   searchPassed = "";
   tabName: any = [];
   count = [];
@@ -116,6 +117,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       }else{
         this.isStatePreserved = false;
       }
+
+      this.breadcrumbPresent = "Policy"
 
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
@@ -375,7 +378,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     }
     const ruleId = tileData["Rule ID"];
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["searchValue"] = undefined;
       this.router.navigate(

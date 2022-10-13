@@ -30,6 +30,7 @@ export class PolicyViolationDescComponent implements OnInit {
   @Input() violationData;
   @Input() autofixData;
   @Input() pageLevel: number;
+  @Input() breadcrumbPresent;
   urlToRedirect = "";
   private subscriptionToAssetGroup: Subscription;
   private domainSubscription: Subscription;
@@ -147,28 +148,28 @@ export class PolicyViolationDescComponent implements OnInit {
    */
 
   navigateTo(destination, id1?, id2?) {
+    this.workflowService.addRouterSnapshotToLevel(
+      this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
+    );
     try {
-      // this.workflowService.addRouterSnapshotToLevel(
-      //   this.router.routerState.snapshot.root
-      // );
       if (destination === "asset details") {
         const resourceId = id1;
         const resourceType = id2;
-        // this.router.navigate(
-        //   ["../../../../", "assets", "asset-list", resourceType, resourceId],
-        //   {
-        //     relativeTo: this.activatedRoute,
-        //     queryParamsHandling: "merge",
-        //   }
-        // );
-        window.open("/pl/assets/asset-list/"+resourceType+"/"+resourceId);
+        this.router.navigate(
+          ["../../../../", "assets", "asset-list", resourceType, resourceId],
+          {
+            relativeTo: this.activatedRoute,
+            queryParamsHandling: "merge",
+          }
+        );
+        // window.open("/pl/assets/asset-list/"+resourceType+"/"+resourceId);
       } else if (destination === "policy knowledgebase details") {
         const ruleId = id1;
-        // this.router.navigate(["../../../policy-knowledgebase-details", ruleId, "false"], {
-        //   relativeTo: this.activatedRoute,
-        //   queryParamsHandling: "merge",
-        // });
-        window.open("/pl/compliance/policy-knowledgebase-details/"+ruleId+"/false", "_blank");
+        this.router.navigate(["../../../policy-knowledgebase-details", ruleId, "false"], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: "merge",
+        });
+        // window.open("/pl/compliance/policy-knowledgebase-details/"+ruleId+"/false", "_blank");
       }
     } catch (e) {
       this.logger.log("error", e);

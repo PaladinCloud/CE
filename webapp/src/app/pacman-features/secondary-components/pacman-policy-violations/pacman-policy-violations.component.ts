@@ -69,6 +69,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   headerColName;
   direction;
 
+  @Input() breadcrumbPresent;
   private urlToRedirect: string;
   @Input() pageLevel: number;
   @Input() resourceId = "";
@@ -150,7 +151,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
   goToDetails(row) {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["headerColName"] = undefined;

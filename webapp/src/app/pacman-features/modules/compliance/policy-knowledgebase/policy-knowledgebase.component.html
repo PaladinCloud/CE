@@ -14,10 +14,9 @@
 
 <div class="policy-knowledgebase-wrapper flex flex-between flex-col">
     <div class="flex flex-col">
-        <app-breadcrumb *ngIf='currentPageLevel === 1'></app-breadcrumb>
         <div class="floating-widgets-header pk-header flex flex-between">
             <div>
-                <app-back-navigation></app-back-navigation>
+                <app-back-navigation [pageTitle]="breadcrumbPresent"></app-back-navigation>
             </div>
         </div>
     </div>

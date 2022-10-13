@@ -189,6 +189,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   queryParamsWithoutFilter;
   urlToRedirect = '';
   mandatory;
+  private pageLevel = 0;
 
   public labels;
   private previousUrl = '';
@@ -213,6 +214,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
+      this.pageLevel
+    );
   }
 
   isNumber(val){

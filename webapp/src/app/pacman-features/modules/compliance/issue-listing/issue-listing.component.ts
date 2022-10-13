@@ -43,8 +43,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   issueListingdata: any = [];
   selectedAssetGroup: string;
   selectedDomain: string;
-  breadcrumbArray: any = ["Compliance"];
-  breadcrumbLinks: any = ["compliance-dashboard"];
+  breadcrumbArray: any = [];
+  breadcrumbLinks: any = [];
   breadcrumbPresent: any;
   outerArr: any = [];
   dataLoaded = false;
@@ -104,8 +104,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Policy Name': 1, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
-  columnNamesMap = {};
+  columnWidths = {'Name': 2, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
+  columnNamesMap = {"PolicyName": "Name"};
   columnsSortFunctionMap = {
     severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
@@ -213,9 +213,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.isStatePreserved = false;
       }
     }
-    
 
-    this.breadcrumbPresent = "Policy Violations";
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
+
+    this.breadcrumbPresent = "Violations";
     // check for admin access
     this.adminAccess = this.permissions.checkAdminPermission();
   }
@@ -534,10 +540,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.issueListingSubscription.unsubscribe();
       }
       const filterToBePassed = this.filterText;
-      filterToBePassed.domain = this.selectedDomain;
-      if (!filterToBePassed.include_exempt) {
-        filterToBePassed.include_exempt = "yes";
-      }
+      if(filterToBePassed){
+        filterToBePassed.domain = this.selectedDomain;
+        if (!filterToBePassed.include_exempt) {
+          filterToBePassed.include_exempt = "yes";
+        }
+      } 
+      
       const payload = {
         ag: this.selectedAssetGroup,
         filter: filterToBePassed,
@@ -552,6 +561,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         .getData(issueListingUrl, issueListingMethod, payload, {})
         .subscribe(
           (response) => {
+            console.log("response:", response);
+            
             this.showGenericMessage = false;
             try {
               this.errorValue = 1;
@@ -833,7 +844,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       this.router
           .navigate(["issue-details", row["Issue ID"]], {

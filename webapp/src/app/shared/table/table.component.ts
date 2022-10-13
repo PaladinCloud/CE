@@ -97,7 +97,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.getWidthFactor();
 
     if(this.onScrollDataLoader){
-      this.onScrollDataLoader.subscribe(data => {      
+      this.onScrollDataLoader.subscribe(data => {
       this.isDataLoading = false;
         if(data && data.length>0){
           this.data.push(...data);
@@ -112,10 +112,18 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(!this.doLocalSearch || (changes.data && changes.data.previousValue.length==0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
+      if(window.innerHeight>1800 && this.data.length>0){
+        this.nextPageCalled.emit();
+        this.isDataLoading = true;
+      }
     }
   }
 
   ngAfterViewInit(): void { 
+    console.log("this.tableScrollTop:", this.tableScrollTop);
+    console.log(this.customTable);
+    
+    
     this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
     if(this.select){
       this.select.options.forEach((item: MatOption) => {
@@ -243,8 +251,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     let key = _.find(this.filterTypeOptions, {
         optionName: e,
       })["optionValue"];
-    this.filteredArray[i].compareKey = key;
-    this.filteredArray[i].filterkey = key;
+    this.filteredArray[i].compareKey = key.toLowerCase().trim();
+    this.filteredArray[i].filterkey = key.trim();
     this.filteredArray[i].key = e;
     this.filteredArray[i].keyDisplayValue = e; 
     this.filteredArray[i].value = undefined;
@@ -355,7 +363,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   onScroll(event: any) {
     // visible height + pixel scrolled >= total height 
-    if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
+    if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 10) {
       if(this.data.length<this.totalRows && !this.isDataLoading) {
         this.nextPageCalled.emit();
         this.isDataLoading = true;

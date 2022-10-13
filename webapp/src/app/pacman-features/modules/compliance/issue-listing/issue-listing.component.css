@@ -16,6 +16,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: scroll;
 }
 
 app-data-table{
@@ -45,7 +46,7 @@ app-data-table{
 
 .wrapper {
     position: relative;
-    height: 100%;
+    height: calc(100% - 62px); /* removed page title height*/ 
 }
 
 app-issue-exception{

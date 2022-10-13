@@ -135,13 +135,31 @@ export class ComplianceDashboardComponent implements OnInit {
   complianceDataError = '';
   assetsCountData = [];
   assetsCountDataError = '';
-  columnNamesMap = {name: "Policy", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
-  columnWidths = {"Policy": 3, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  breadcrumbArray = [];
+  breadcrumbLinks = [];
+  breadcrumbPresent = "Dashboard";
+  columnNamesMap = {name: "Title", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
+  columnWidths = {"Title": 3, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
       return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
     },
+    Compliance: (a: string, b: string, isAsc) => {
+      a = a["Compliance"];
+      b = b["Compliance"]
+
+      if(a=="NR") isAsc?a="101%":a = "-1%";
+      if(b=="NR") isAsc?b="101%":b = "-1%";
+
+      a = a.substring(0, a.length-1);
+      b = b.substring(0, b.length-1);
+
+      let aNum = parseFloat(a);
+      let bNum = parseFloat(b);
+      
+      return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
+    }
   };
   tableDataMap = {
       security:{
@@ -286,6 +304,8 @@ export class ComplianceDashboardComponent implements OnInit {
     private multilineChartService: MultilineChartService
   ) {
     const state = this.tableStateService.getState("dashboard") || {};    
+    console.log("state: ", state);
+    
       
     this.headerColName = state.headerColName || '';
     this.direction = state.direction || '';
@@ -468,6 +488,15 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
+
+    this.breadcrumbPresent = "Dashboard";
+
     this.breakpoint1 = window.innerWidth <= 800 ? 2 : 4;
     this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
     this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
@@ -515,7 +544,6 @@ export class ComplianceDashboardComponent implements OnInit {
     if(this.isStatePreserved){      
       this.clearState();
     }else{
-      this.complianceTableData = [];
       this.dataLoaded = false;
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
@@ -773,7 +801,7 @@ export class ComplianceDashboardComponent implements OnInit {
         // change data value
         newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
-      newObj["Compliance"] = newObj["assetsScanned"]==0?'NA':newObj["Compliance"]+"%";
+      newObj["Compliance"] = newObj["assetsScanned"]==0?'NR':newObj["Compliance"]+"%";
       newData.push(newObj);
     });
     return newData;
@@ -1012,6 +1040,8 @@ export class ComplianceDashboardComponent implements OnInit {
   // }
 
   goToDetails(event) {
+    console.log("event: ", event);
+    
     const selectedRow = event.rowSelected;
     const data = event.data;
     const state = {
@@ -1024,11 +1054,11 @@ export class ComplianceDashboardComponent implements OnInit {
       searchTxt: this.searchTxt,
       tableScrollTop: event.tableScrollTop
       // filterText: this.filterText
-    }    
+    }
     this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent,
       );
       let updatedQueryParams = { ...this.activatedRoute.snapshot.queryParams };
       updatedQueryParams["searchValue"] = undefined;

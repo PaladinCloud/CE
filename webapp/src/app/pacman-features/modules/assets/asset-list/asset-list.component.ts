@@ -45,8 +45,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   pageTitle = "Asset List";
   issueListingdata: any;
   selectedAssetGroup: string;
-  breadcrumbArray: any = ["Assets"];
-  breadcrumbLinks: any = ["asset-dashboard"];
+  breadcrumbArray: any = [];
+  breadcrumbLinks: any = [];
   breadcrumbPresent: any;
   outerArr: any = [];
   dataLoaded = false;
@@ -146,6 +146,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = "Asset List";
   }
 
@@ -660,7 +666,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   goToDetails(row) {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       let resourceType;
       if (row.row["Asset Type"]) {
