@@ -85,6 +85,7 @@ public class FileManager {
 
 		FileGenerator.writeToFile("azure-mysqlflexible.data", "[", false);
 		FileGenerator.writeToFile("azure-diagnosticsetting.data", "[", false);
+		FileGenerator.writeToFile("azure-defender.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
@@ -129,6 +130,7 @@ public class FileManager {
 
 		FileGenerator.writeToFile("azure-mysqlflexible.data", "]", true);
 		FileGenerator.writeToFile("azure-diagnosticsetting.data", "]", true);
+		FileGenerator.writeToFile("azure-defender.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -319,4 +321,8 @@ public class FileManager {
     public static void generateDiagnosticSettingFiles(List<DiagnosticSettingVH> fetchDiagnosticSettingsList) {
 		FileGenerator.generateJson(fetchDiagnosticSettingsList, "azure-diagnosticsetting.data");
     }
+
+	public static void generateSecurityContactsInfoFile(List<SecurityContactsVH> securityContactsVHList) {
+		FileGenerator.generateJson(securityContactsVHList, "azure-defender.data");
+	}
 }
