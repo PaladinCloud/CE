@@ -21,3 +21,8 @@
   ::ng-deep .mat-form-field-should-float.mat-form-field-label{
       display: none !important;
   }
+
+.dropdown-wrapper ::ng-deep .mat-select{
+    color: var(--text-high-emphasis);
+    font: var(--text-body-2);
+  }

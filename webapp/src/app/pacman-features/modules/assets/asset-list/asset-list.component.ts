@@ -136,11 +136,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       .getDomainType()
       .subscribe((domain) => {
         this.selectedDomain = domain;
-        this.routerParam();
-        this.getFilters();
-        this.deleteFilters();
-        this.getFilterArray();
-        this.updateComponent();
       });
   }
 
@@ -153,6 +148,21 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
     this.breadcrumbPresent = "Asset List";
+    this.getRouteQueryParameters();
+  }
+
+  getRouteQueryParameters(): any {
+    this.activatedRoute.queryParams.subscribe(
+      (params) => {
+        if(this.selectedAssetGroup && this.selectedDomain){
+          this.routerParam();
+          this.getFilters();
+          this.deleteFilters();
+          this.getFilterArray();
+          this.updateComponent();
+        }
+      }
+    );
   }
 
   handleHeaderColNameSelection(event){

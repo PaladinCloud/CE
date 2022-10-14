@@ -182,7 +182,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         this.isCustomSelected = true;
         return;
       }
-      this.customDateSelected();
+      this.dateIntervalSelected();
       return;
     }
     let date = new Date();
@@ -203,7 +203,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.customDateSelected(date); 
+    this.dateIntervalSelected(date); 
   }
 
   getFormattedDate(date: Date){
@@ -212,7 +212,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     return formattedDate;
   }
 
-  customDateSelected(fromDate?, toDate?){
+  dateIntervalSelected(fromDate?, toDate?){
     let queryParamObj = {}
     if(fromDate){
       queryParamObj["from"] = this.getFormattedDate(fromDate);

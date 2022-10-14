@@ -91,17 +91,26 @@
 }
 
 .filter-modal-container{
-  z-index: 101;
+  /* z-index: 101;
+  position: absolute;
+  right: 20px;
+  top: 120px; */
   min-height: 100px;
   min-width: 445px;
   max-height: 200px;
-  position: absolute;
   background-color: var(--background-white);
   border: 1px solid var(--border-200);
   padding: 20px;
   border-radius: 4px;
-  right: 20px;
-  top: 120px;
+}
+
+::ng-deep .mat-menu-panel{
+  min-height: auto !important;
+  min-width: fit-content !important;
+}
+
+::ng-deep .mat-menu-content{
+  padding: 0 !important;
 }
 
 .filter-modal-wrapper{
@@ -137,6 +146,16 @@
   height: 24px;
   width: 24px;
   padding: 4px;
+}
+
+.filter-modal-container .clear-all-btn{
+  margin-left: auto;
+}
+
+.filters-container{
+  overflow-y: scroll;
+  min-height: 50px;
+  max-height: 100px;
 }
 
 .table-header .search-in-columns{
@@ -275,14 +294,4 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   border: 1px solid var(--border-200);
   cursor: pointer;
   margin-left: auto;
-}
-
-.filter-modal-container .clear-all-btn{
-  margin-left: auto;
-}
-
-.filters-container{
-  overflow: scroll;
-  min-height: 50px;
-  max-height: 100px;
 }

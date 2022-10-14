@@ -115,7 +115,7 @@ mat-card-actions img {
   z-index: 99;
 }
 
-.custom-selection-content-wrapper{
+/* .custom-selection-content-wrapper{
   display: grid;
   gap: 10px;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -127,4 +127,4 @@ mat-card-actions img {
 
 .date-selection-modal ::ng-deep .mat-card{
   border: 1px solid var(--border-200);
-}
+} */
