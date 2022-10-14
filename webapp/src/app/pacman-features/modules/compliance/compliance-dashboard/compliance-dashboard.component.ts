@@ -302,45 +302,7 @@ export class ComplianceDashboardComponent implements OnInit {
     private overallComplianceService: OverallComplianceService, 
     private tableStateService: TableStateService,
     private multilineChartService: MultilineChartService
-  ) {
-    const state = this.tableStateService.getState("dashboard") || {};    
-    console.log("state: ", state);
-    
-      
-    this.headerColName = state.headerColName || '';
-    this.direction = state.direction || '';
-    // this.bucketNumber = state.bucketNumber || 0;
-    
-    this.displayedColumns = Object.keys(this.columnWidths);
-    this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-    this.complianceTableData = state?.data || [];
-    this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
-    this.tableScrollTop = state?.tableScrollTop;    
-    this.totalRows = state.totalRows || 0;
-      
-      if(this.complianceTableData && this.complianceTableData.length>0){
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
-
-    this.assetGroupSubscription = this.subscriptionToAssetGroup =
-      this.assetGroupObservableService
-        .getAssetGroup()
-        .subscribe((assetGroupName) => {          
-          this.selectedAssetGroup = assetGroupName;
-          this.updateComponent();
-        });
-
-    this.subscriptionDomain = this.domainObservableService
-      .getDomainType()
-      .subscribe((domain) => {        
-        this.selectedDomain = domain;
-        if(this.selectedAssetGroup){
-          this.updateComponent();
-        }
-      });
-  }
+  ) {}
 
   handleHeaderColNameSelection(event) {
     this.headerColName = event.headerColName;
@@ -488,6 +450,45 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    const state = this.tableStateService.getState("dashboard") || {};    
+      
+    this.headerColName = state.headerColName || '';
+    this.direction = state.direction || '';
+    // this.bucketNumber = state.bucketNumber || 0;
+    
+    this.displayedColumns = Object.keys(this.columnWidths);
+    this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+    this.complianceTableData = state?.data || [];
+    this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+    this.tableScrollTop = state?.tableScrollTop;    
+    this.totalRows = state.totalRows || 0;
+
+    if(this.complianceTableData && this.complianceTableData.length>0){        
+      this.isStatePreserved = true;
+    }else{
+      this.isStatePreserved = false;
+    }
+      
+
+    this.assetGroupSubscription = this.subscriptionToAssetGroup =
+      this.assetGroupObservableService
+        .getAssetGroup()
+        .subscribe((assetGroupName) => {          
+          this.selectedAssetGroup = assetGroupName;
+          // this.updateComponent();
+        });
+
+    this.subscriptionDomain = this.domainObservableService
+      .getDomainType()
+      .subscribe((domain) => {        
+        this.selectedDomain = domain;
+        // if(this.selectedAssetGroup){
+        //   this.updateComponent();
+        // }
+      });
+
+      this.getRouteQueryParameters();
+
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
     
     if(breadcrumbInfo){
@@ -525,7 +526,6 @@ export class ComplianceDashboardComponent implements OnInit {
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
-    this.outerArr = [];
     this.searchTxt = "";
     this.ruleCatFilter = undefined;
     this.currentBucket = [];
@@ -533,8 +533,7 @@ export class ComplianceDashboardComponent implements OnInit {
     // this.bucketNumber = 0;
     this.firstPaginator = 1;
     // this.currentPointer = 0;
-    this.errorValue = 0;
-    this.seekdata = false;
+    
     this.showGenericMessage = false;
     this.assetsCountData = [];
     this.assetsCountDataError = '';
@@ -543,7 +542,9 @@ export class ComplianceDashboardComponent implements OnInit {
     this.policyDataError = '';
     if(this.isStatePreserved){      
       this.clearState();
-    }else{
+    }else{      
+      this.errorValue = 0;
+      this.seekdata = false;
       this.dataLoaded = false;
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
@@ -721,7 +722,7 @@ export class ComplianceDashboardComponent implements OnInit {
     this.complianceTableSubscription = this.commonResponseService
       .getData(complianceTableUrl, complianceTableMethod, payload, {})
       .subscribe(
-        (response) => {
+        (response) => {          
           this.showGenericMessage = false;
           this.totalRows = response.total;
           try {
@@ -760,7 +761,6 @@ export class ComplianceDashboardComponent implements OnInit {
           } catch (e) {
             this.tableErrorMessage = 'apiResponseError';
             this.errorValue = 0;
-            this.outerArr = [];
             this.errorValue = -1;
             this.dataLoaded = true;
             this.seekdata = true;
@@ -769,13 +769,22 @@ export class ComplianceDashboardComponent implements OnInit {
         },
         (error) => {
           this.showGenericMessage = true;
-          this.outerArr = [];
           this.errorValue = -1;
           this.dataLoaded = true;
           this.seekdata = true;
           this.errorMessage = "apiResponseError";
         }
       );
+  }
+
+  getRouteQueryParameters(): any {
+    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe(
+      (params) => {
+        if(this.selectedAssetGroup && this.selectedDomain){
+          this.updateComponent();
+        }
+      }
+    );
   }
 
   massageData(data){
@@ -807,241 +816,7 @@ export class ComplianceDashboardComponent implements OnInit {
     return newData;
   }
 
-  // processData(data) {
-  //   try {
-  //     let innerArr = {};
-  //     const totalVariablesObj = {};
-  //     let cellObj = {};
-  //     this.outerArr = [];
-  //     const getData = this.addCompliance(data);
-  //     const getCols = Object.keys(getData[0]);
-  //     for (let row = 0; row < getData.length; row++) {
-  //       innerArr = {};
-  //       for (let col = 0; col < getCols.length; col++) {
-  //         if (getCols[col] && getCols[col].toLowerCase() === "compliance") {
-  //           if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "full_compliance"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "justify-content": "center",
-  //               },
-  //               textProp: {
-  //                 display: "none",
-  //               },
-  //               colName: getCols[col],
-  //               imgProp: { height: "1.2em" },
-  //               hasPreImg: true,
-  //               imgLink: "../assets/icons/Compliant.svg",
-
-  //               text: "Compliant",
-  //               valText: 1,
-  //             };
-  //           } else if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "good_compliance"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "justify-content": "center",
-  //               },
-  //               textProp: {
-  //                 display: "none",
-  //               },
-  //               colName: getCols[col],
-  //               imgProp: { height: "1.2em" },
-  //               hasPreImg: true,
-  //               imgLink: "../assets/icons/good-compliance.svg",
-  //               text: "Not Compliant",
-  //               valText: 3,
-  //             };
-  //           } else {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "justify-content": "center",
-  //               },
-  //               textProp: {
-  //                 display: "none",
-  //               },
-  //               colName: getCols[col],
-  //               imgProp: { height: "1.2em" },
-  //               hasPreImg: true,
-  //               imgLink: "../assets/icons/bad-compliance.svg",
-  //               text: "Not Compliant",
-  //               valText: 2,
-  //             };
-  //           }
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "policy title"
-  //         ) {
-  //           cellObj = {
-  //             link: "true",
-  //             properties: {
-  //               "font-size": "1.04em",
-  //               "text-shadow": "0.1px 0",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             text: getData[row][getCols[col]],
-  //             valText: getData[row][getCols[col]],
-  //           };
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "severity"
-  //         ) {
-  //           if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "low"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               text: getData[row][getCols[col]],
-  //               valText: 1,
-  //             };
-  //           } else if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "medium"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               text: getData[row][getCols[col]],
-  //               valText: 2,
-  //             };
-  //           } else if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "high"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               valText: 3,
-  //               text: getData[row][getCols[col]],
-  //             };
-  //           } else {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               text: getData[row][getCols[col]],
-  //               valText: 4,
-  //             };
-  //           }
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "compliance"
-  //         ) {
-  //           cellObj = {
-  //             link: "",
-  //             properties: {
-  //               color: "#000",
-  //               "font-size": "1.04em",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             valText: getData[row][getCols[col]],
-  //             text: getData[row][getCols[col]]=='NA'?getData[row][getCols[col]]:getData[row][getCols[col]] + "%",
-  //           };
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "last scanned"
-  //         ) {
-  //           cellObj = {
-  //             link: "",
-  //             properties: {
-  //               color: "#000",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             valText: new Date(getData[row][getCols[col]]).getTime(),
-  //             text: this.calculateDate(getData[row][getCols[col]]),
-  //           };
-  //         } else {
-  //           cellObj = {
-  //             link: "",
-  //             properties: {
-  //               color: "",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             valText: getData[row][getCols[col]],
-  //             text: getData[row][getCols[col]],
-  //           };
-  //         }
-  //         innerArr[getCols[col]] = cellObj;
-  //         totalVariablesObj[getCols[col]] = "";
-  //       }
-  //       this.outerArr.push(innerArr);
-  //     }
-
-  //     if (this.outerArr.length > getData.length) {
-  //       const halfLength = this.outerArr.length / 2;
-  //       this.outerArr = this.outerArr.splice(halfLength);
-  //     }
-
-  //     this.allColumns = Object.keys(totalVariablesObj);
-  //   } catch (error) {
-  //     this.dataLoaded = true;
-  //     this.seekdata = true;
-  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
-  //   }
-  // }
-
-  // addCompliance(data) {
-  //   for (let i = 0; i < data.length; i++) {
-  //     if (data[i]["Compliance"] === 100) {
-  //       data[i].compliance = "full_compliance";
-  //     } else if (
-  //       data[i]["Compliance"] < 100 &&
-  //       data[i]["Compliance"] > 49
-  //     ) {
-  //       data[i].compliance = "bad_compliance";
-  //     } else {
-  //       data[i].compliance = "good_compliance";
-  //     }
-  //   }
-  //   return data;
-  // }
-
-  goToDetails(event) {
-    console.log("event: ", event);
-    
+  goToDetails(event) {    
     const selectedRow = event.rowSelected;
     const data = event.data;
     const state = {

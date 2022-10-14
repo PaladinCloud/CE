@@ -67,8 +67,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   direction;
   showSearchBar = true;
   showAddRemoveCol = true;
-  columnWidths = {'Policy Name': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
-  columnNamesMap = {name: "Policy Name"};
+  columnWidths = {'Title': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
+  columnNamesMap = {name: "Title"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
@@ -127,9 +127,19 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
       this.selectedDomain = domain;
       this.agAndDomain['domain'] = this.selectedDomain;
-      this.updateComponent();
     });
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
+    this.getRouteQueryParameters();
+  }
+
+  getRouteQueryParameters(): any {
+    this.activatedRoute.queryParams.subscribe(
+      (params) => {
+        if(this.selectedAssetGroup && this.selectedDomain){
+          this.updateComponent();
+        }
+      }
+    );
   }
 
   handleHeaderColNameSelection(event){
