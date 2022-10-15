@@ -25,7 +25,8 @@
     <div class="graph-legend-cont flex" *ngIf="graphData.legend" [ngStyle]="{'color': graphData.legendTextcolor}">
         <div class="legend-each" *ngFor="let eachGraphPath of graphData.legend;let i = index"
             [ngStyle]="{'color': graphData.legendTextcolor}">
-            <div class="legend-color" [ngStyle]="{'background-color': graphData.color[i]}"></div>
+            <!-- <div class="legend-color" [ngStyle]="{'background-color': graphData.color[i]}"></div> -->
+            <img style="margin-right: 5px;" src="/assets/icons/violations-{{eachGraphPath.toLowerCase()}}-icon.svg" alt="">
             <span class="legend-text" [ngStyle]="{'color':isFullScreen === true ? '#fff' : '#000' }">{{eachGraphPath}}
             </span>
             <span class="legend-text-count"

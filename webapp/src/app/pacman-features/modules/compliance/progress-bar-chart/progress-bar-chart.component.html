@@ -1,6 +1,11 @@
 <div *ngFor="let bar of bars">
   <div class="label">
-    <div class="label-name">{{ bar.title }}</div>
+    <div class="label-name flex"> 
+      <img src="/assets/icons/category-{{bar.title.toLowerCase()}}.svg" alt="">
+      <div class="capitalize">
+        {{ bar.title }}
+      </div>
+    </div>
     <div class="label-percent">{{ bar.val }}%</div>
   </div>
   <div class="{{ bar.class }}">

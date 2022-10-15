@@ -230,14 +230,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    // this.state.headerColName = this.headerColName;
-    // this.state.direction = this.direction;
-    // this.storeState();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
-    // this.storeState();
   }
 
   storeState(state){

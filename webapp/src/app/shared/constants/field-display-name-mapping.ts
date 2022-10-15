@@ -97,7 +97,7 @@ export const MAPPING = {
     'ResourceId': 'Resource ID',
     'RuleId': 'Rule ID',
     'description': 'Description',
-    'compliance_percent': 'Compliance %',
+    'compliance_percent': 'Compliance',
     'lastScan': 'Last Scanned',
     'lastscan': 'Last Scanned',
     'tags.Application.keyword': 'Application',

@@ -140,7 +140,6 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
 
   handleSearchInColumnsChange(event){
     // this.state.searchInColumns = event;
-    // this.storeState();
   }
 
   handlePopClick() {
@@ -255,8 +254,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
       delete this.typeObj[''];
       for (let i = 0; i < getData.length; i++) {
         this.typeObj['All Policies']++;
-        this.typeObj[getData[i].Category]++;
-        this.typeObj[getData[i].Severity]++;
+        this.typeObj[getData[i].Category.toLowerCase()]++;
+        this.typeObj[getData[i].Severity.toLowerCase()]++;
         if (getData[i].autoFixEnabled === true) {
           this.typeObj['Auto Fix']++;
         }
