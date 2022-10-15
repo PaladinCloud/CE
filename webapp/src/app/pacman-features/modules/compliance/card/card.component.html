@@ -1,31 +1,60 @@
 <mat-card class="panel">
   <mat-card-header>
     {{ card.header }}
+    <div class="graph-dropdown-container" *ngIf="card.id == 3">
+      <div (click)="isCustomSelected = false" class="graph-dropdown-wrapper">
+        <app-dropdown [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="'All time'" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
+      </div>
+      <div class="date-selection-modal" *ngIf="isCustomSelected">
+        <mat-card>
+          <mat-card-header>Custom Selection</mat-card-header>
+          <mat-card-content>
+            <div class="custom-selection-content-wrapper">
+                <span>from:</span>
+                <app-dropdown [items]="years" (selected)="onSelectYear(fromDate, $event)" placeholder="Year"></app-dropdown>
+                <app-dropdown [items]="allMonths" (selected)="onSelectMonth(fromDate, $event)" placeholder="Month"></app-dropdown>
+                <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(fromDate, $event)" placeholder="Date"></app-dropdown>
+                <span>to:</span>
+                <app-dropdown [items]="years" (selected)="onSelectYear(toDate, $event)" placeholder="Year"></app-dropdown>
+                <app-dropdown [items]="allMonths" (selected)="onSelectMonth(toDate, $event)" placeholder="Month"></app-dropdown>
+                <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(toDate, $event)" placeholder="Date"></app-dropdown>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button (click)="customDateSelected(fromDate, toDate)">
+              Apply
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
   </mat-card-header>
   <mat-card-content>
     <div class="chart" *ngIf="card.id == 1">
-      <div [class.loader]="complianceData.length==0 && complianceDataError==''"></div>
-      <app-error-message *ngIf="complianceDataError" [selectedValue]="complianceDataError"></app-error-message>
-      <app-progress-bar-chart *ngIf="complianceDataError=='' && complianceData.length>0" [bars]="complianceData"></app-progress-bar-chart>
+      <div [class.loader]="data.length==0 && dataError==''"></div>
+      <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
+      <app-progress-bar-chart *ngIf="dataError=='' && data.length>0" [bars]="data"></app-progress-bar-chart>
     </div>
     <div class="chart" *ngIf="card.id == 2">
-      <div [class.loader]="!policyData && policyDataError==''"></div>
-      <app-error-message *ngIf="policyDataError" [selectedValue]="policyDataError"></app-error-message>
+      <div [class.loader]="!data && dataError==''"></div>
+      <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
       <div class="graph-chart-cont relative" id="dashboardDoughnut">
-        <app-doughnut-chart *ngIf="policyDataError=='' && policyData" [chartContId]="'dashboardDoughnut'" [graphData]="policyData"
+        <app-doughnut-chart *ngIf="dataError=='' && data" [chartContId]="'dashboardDoughnut'" [graphData]="data"
           [graphWidth]="widgetWidth" [flexTrue]="true" [graphHeight]="widgetHeight" [MainTextcolor]="MainTextcolor"
           [innerRadius]="innerRadius" [outerRadius]="outerRadius" [strokeColor]="strokeColor"
           (navigatePage)="navigateDataTable($event)">
         </app-doughnut-chart>
       </div>
     </div>
-    <div class="chart" *ngIf="card.id == 3" style="overflow-y: scroll">
-      <div [class.loader]="assetsCountData.length==0 && assetsCountDataError==''"></div>
-      <app-error-message *ngIf="assetsCountDataError" [selectedValue]="assetsCountDataError"></app-error-message>
-      <app-horizontal-bar-chart *ngIf="assetsCountDataError=='' && assetsCountData.length>0" [data]="assetsCountData"></app-horizontal-bar-chart>
+    <div class="chart" *ngIf="card.id == 3" style="overflow-y: scroll;">
+      <div [class.loader]="data.length==0 && dataError==''"></div>
+      <app-error-message *ngIf="dataError" [selectedValue]="dataError"></app-error-message>
+      <div class="chart-wrapper" id="TotalAssetsCountTrend" style="height: 100%; width: 100%; background-color: white;">
+          <app-multiline-zoom-graph *ngIf="data.length>0 && dataError==''" [id]="data[0].info.id" [showLegend]="data[0].info.showLegend" [yAxisLabel]="data[0].info.yAxisLabel" [graphHeight]="data[0].info.height" [graphLinesData]="data"></app-multiline-zoom-graph>
+      </div>
     </div>
   </mat-card-content>
-  <mat-card-actions>
+  <mat-card-actions *ngIf="card.footer">
     <button mat-button (click)="card.cardButtonAction()">
       {{ card.footer }} <img src="/assets/icons/right-arrow-icon.svg" />
     </button>

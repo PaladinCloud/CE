@@ -18,20 +18,22 @@ export class DropdownComponent implements OnInit, OnChanges {
 
   constructor() { }
 
-  massageData(list: any, selectedOption: any) {
-    this.itemList = [];
-    if (list.length > 0 && typeof list[0] == 'object') {
-      for (let i = 0; i < list.length; i++) {
-        this.itemList.push(list[i].text);
+  massageData(list: any, selectedOption: any) {    
+    if(list){
+      this.itemList = [];
+      if (list.length > 0 && typeof list[0] == 'object') {
+        for (let i = 0; i < list.length; i++) {
+          this.itemList.push(list[i].text);
+        }
       }
-    }
-    else this.itemList = list;
+      else this.itemList = list;
 
-    if (typeof selectedOption == 'object' && selectedOption[0]) {
-      this.selectedOption = selectedOption[0].text;
-    }
-    else {
-      this.selectedOption = selectedOption;
+      if (typeof selectedOption == 'object' && selectedOption[0]) {
+        this.selectedOption = selectedOption[0].text;
+      }
+      else {
+        this.selectedOption = selectedOption;
+      }
     }
   }
 

@@ -100,6 +100,7 @@ import { MatInputModule } from "@angular/material/input";
 import { TableComponent } from "./table/table.component";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
+import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zoom-graph.component";
 
 @NgModule({
   imports: [
@@ -120,6 +121,7 @@ import { MatSortModule } from "@angular/material/sort";
     AgGridModule
   ],
   declarations: [
+    MultilineZoomGraphComponent,
     TableComponent,
     DropdownComponent,
     FilterDropdownComponent,
@@ -178,6 +180,7 @@ import { MatSortModule } from "@angular/material/sort";
     TableListComponent,
   ],
   exports: [
+    MultilineZoomGraphComponent,
     TableComponent,
     DropdownComponent,
     DoughnutChartComponent,

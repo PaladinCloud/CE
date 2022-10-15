@@ -46,12 +46,13 @@ mat-card-content {
   align-items: flex-start;
   padding: 20px 24px 0px 24px;
   width: 100%;
-  height: 286px;
+  height: 100%;
   margin: 0;
   background: var(--background-white);
 }
 
 mat-card-actions {
+  margin-bottom: 0 !important;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -88,4 +89,42 @@ mat-card-actions img {
   margin-left: 9px;
   height: 17px;
   width: 10px;
+}
+
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .horizontal .tick line{
+    stroke-dasharray: 3;
+    stroke: var(--gamma-grey-600);
+}
+
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .vertical .tick line{
+    display: none;
+}
+
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .focus .axis .domain{
+  display: none;
+}
+
+.graph-dropdown-container{
+  margin-left: auto;
+}
+
+.date-selection-modal{
+  background-color: var(--background-white);
+  position: absolute;
+  right: 20px;
+  z-index: 99;
+}
+
+.custom-selection-content-wrapper{
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.date-selection-modal ::ng-deep .mat-form-field-infix{
+  width: 100px;
+}
+
+.date-selection-modal ::ng-deep .mat-card{
+  border: 1px solid var(--border-200);
 }

@@ -1,20 +1,6 @@
-<!--
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- -->
-
 <div class="container-wrapper">
     <div class="container-1">
-        <mat-grid-list [cols]="breakpoint1" rowHeight="108px" gutterSize="20px" (window:resize)="onresize($event)">
+        <mat-grid-list [cols]="breakpoint1" rowHeight="186px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile class="violation-tile" *ngFor="let card of violationCards">
                 <app-violations-card [card]="card"></app-violations-card>
             </mat-grid-tile>
@@ -23,38 +9,32 @@
     <div class="container-2">
         <mat-grid-list [cols]="breakpoint2" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
-                <app-card [card]="cards[0]" [complianceData]="complianceData" [complianceDataError]="complianceDataError"></app-card>
+                <app-card [card]="cards[0]" [data]="complianceData" [dataError]="complianceDataError"></app-card>
             </mat-grid-tile>
             <mat-grid-tile>
-                <app-card [card]="cards[1]" [policyDataError]="policyDataError" [policyData]="policyData"></app-card>
+                <app-card [card]="cards[1]" [dataError]="policyDataError" [data]="policyData"></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
-    <div class="container-3" (window:resize)="onresize($event)">
+    <div class="container-3">
+        <mat-grid-list [cols]="breakpoint3" rowHeight="500px" gutterSize="20px" (window:resize)="onresize($event)">
+            <mat-grid-tile>
+                <app-card [card]="cards[2]" [dataError]="totalAssetsCountDataError" [data]="totalAssetsCountData" (graphIntervalSelected)="getAssetsCountData($event)"></app-card>
+            </mat-grid-tile>
+        </mat-grid-list>
+    </div>
+    <div class="container-4" (window:resize)="onresize($event)">
         <mat-grid-list [cols]="breakpoint4" rowHeight="504px">
-            <mat-grid-tile>
-                <app-data-table (noScrollDetected)="noMinHeight=true" [searchTextValues]='searchTxt'
-                    [errorValue]='errorValue' [parentName]="'policySummaryTableMessage'"
-                    [showGenericMessage]='showGenericMessage' [showingArr]='showingArr' [outerArr]='outerArr'
-                    [heightValue]="'calc(70vh - 14em)'" [searchableHeader]='true' [allColumns]='allColumns'
-                    (selectedRow)='goToDetails($event)' [dataHead]="'Policy Compliance Overview'"
-                    [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [popRows]='popRows'
-                    [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
-                    (searchTriggerred)='callNewSearch()'
-                    [headerColName]="'Policy Severity'"
-                    [direction]='-1' [tabFilterProperty]="'Rule Category'"
-                    [columnWhiteList]="['Policy Title', 'Compliance %', 'Policy Severity', 'Rule Category','Last Scanned']"
-                    [paginatorAbsent]='true' [popRows]='popRows' (rowClickText)='handlePopClick($event)'
-                    [searchPassed]='searchPassed' (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                    [headerColName]="headerColName" [direction]="direction">
-                </app-data-table>
-            </mat-grid-tile>
-        </mat-grid-list>
-    </div>
-    <div class="container-4">
-        <mat-grid-list [cols]="breakpoint3" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
-            <mat-grid-tile>
-                <app-card [card]="cards[2]" [assetsCountData]="assetsCountData" [assetsCountDataError]="assetsCountDataError"></app-card>
+            <mat-grid-tile style="background-color: var(--background-white);">
+                <div [class.loader]="complianceTableData.length==0 && tableErrorMessage==''"></div>
+                <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
+                <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
+                    [data]="complianceTableData" [columnWidths]="columnWidths"
+                    [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+                    [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
+                    [imageDataMap]="tableDataMap" [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (downloadClicked)="handlePopClick()"
+                    [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn">
+                </app-table>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
