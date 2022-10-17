@@ -1538,5 +1538,27 @@
     "modifiedDate": "2022-10-06",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Remove_user_options_for_SQLServer",
+    "ruleUUID": "Remove_user_options_for_SQLServer",
+    "policyId": "Remove_user_options_for_SQLServer",
+    "ruleName": "Remove user options database flag",
+    "targetType": "cloudsql_sqlserver",
+    "assetGroup": "gcp",
+    "alexaKeyword": "sqlserver",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"ruleKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_sqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"user options\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"NULL\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Remove 'user options' database flag for Cloud SQL SERVER instance\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"In order to avoid defining global defaults for all database users, delete \"user options\" database flag\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"user options flag is enabled for your Google Cloud SQL Server database instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Remove_user_options_for_SQLServer\",\"autofix\":false,\"alexaKeyword\":\"sqlserver\",\"ruleRestUrl\":\"\",\"targetType\":\"cloudsql_sqlserver\",\"pac_ds\":\"gcp\",\"policyId\":\"Remove_user_options_for_SQLServer\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Remove_user_options_for_SQLServer\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Remove_user_options_for_SQLServer",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Remove 'user options' database flag for Cloud SQL SERVER instance",
+    "createdDate": "2022-10-16",
+    "modifiedDate": "2022-10-16",
+    "severity": "low",
+    "category": "security"
   }
 ]
