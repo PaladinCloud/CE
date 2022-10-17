@@ -153,6 +153,9 @@ public class AssetFileGenerator {
 	@Autowired
 	DiagnosticSettingsCollector diagnosticSettingsCollector;
 
+	@Autowired
+	SecurityContactsCollector securityContactsCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -180,17 +183,14 @@ public class AssetFileGenerator {
 			List<ResourceGroupVH> resourceGroupList = new ArrayList<ResourceGroupVH>();
 			try {
 				resourceGroupList = resourceGroupInventoryCollector.fetchResourceGroupDetails(subscription);
-
 			} catch (Exception e) {
 				e.printStackTrace();
-
 			}
 			Map<String, Map<String, String>> tagMap = resourceGroupList.stream()
 					.collect(Collectors.toMap(x -> x.getResourceGroupName().toLowerCase(), x -> x.getTags()));
 
 			List<PolicyDefinitionVH> policyDefinitionList = policyDefinitionInventoryCollector
 					.fetchPolicyDefinitionDetails(subscription);
-
 			ExecutorService executor = Executors.newCachedThreadPool();
 
 			executor.execute(() -> {
@@ -640,7 +640,6 @@ public class AssetFileGenerator {
 					return;
 				}
 				try {
-
 					FileManager
 							.generateFunctionAppFiles(functionAppInventoryCollector.fetchFunctionAppDetails(subscription));
 					log.info("subscription data saved!");
@@ -691,6 +690,20 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("defender"))) {
+					log.info("no target type found for functionApp!!");
+					return;
+				}
+				try {
+					FileManager.generateSecurityContactsInfoFile(securityContactsCollector.fetchSecurityContactsInfo(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
