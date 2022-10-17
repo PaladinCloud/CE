@@ -384,23 +384,20 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                   if (this.issueBlocks['violationCreatedDate']) {
                     this.issueBlocks[
                       'violationCreatedDate'
-                    ] = this.utilityService.calculateDate(
+                    ] = this.utilityService.calculateDateAndTime(
                       this.issueBlocks['violationCreatedDate']
                     );
                   }
                   if (this.issueBlocks['violationModifiedDate']) {
                     this.issueBlocks[
                       'violationModifiedDate'
-                    ] = this.utilityService.calculateDate(
-                      this.issueBlocks['violationModifiedDate']
+                    ] = this.utilityService.calculateDateAndTime(
+                      this.issueBlocks['violationModifiedDate'], true
                     );
                   }
                   if (this.issueBlocks['pac_ds'] !== undefined) {
                     this.issueAssetGroup = this.issueBlocks['pac_ds'];
                   }
-                  console.log(this.issueBlocks," and ",this.issueBlocks['pac_ds']," ",this.issueAssetGroup);
-                  
-
                   this.issueIdValue = this.issueBlocks.resouceViolatedPolicy;
 
                   if (this.issueBlocks.status !== undefined) {
@@ -663,9 +660,9 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
           response => {
             this.errorValue = 1;
             this.tableDataLoaded = true;
-            this.issueAudit = response[0].data.response;
+            this.issueAudit = response.data.response;
             this.dataTableData = this.issueAudit;
-            this.totalRows = response[0].data.total;
+            this.totalRows = response.data.total;
             this.firstPaginator = this.bucketNumber * this.paginatorSize + 1;
             this.lastPaginator =
               this.bucketNumber * this.paginatorSize + this.paginatorSize;
@@ -727,10 +724,10 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
               hasPreImg: false,
               imgLink: '',
               text: this.utilityService.calculateDateAndTime(
-                data[row][getCols[col]]
+                data[row][getCols[col]], true
               ),
               valText: this.utilityService.calculateDateAndTime(
-                data[row][getCols[col]]
+                data[row][getCols[col]], true
               )
             };
           } else {

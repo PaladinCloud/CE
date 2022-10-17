@@ -2,6 +2,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class VaultVH extends AzureVH {
 	private String name;
@@ -18,6 +19,27 @@ public class VaultVH extends AzureVH {
 	private List<String> permissionForKeys;
 	private List<String> permissionForSecrets;
 	private List<String> permissionForCertificates;
+	private Set<String> secretExpirationDate;
+
+	public Set<String> getSecretExpirationDate() {
+		return secretExpirationDate;
+	}
+
+	public void setSecretExpirationDate(Set<String> secretExpirationDate) {
+		this.secretExpirationDate = secretExpirationDate;
+	}
+
+
+	private Set<String> keyExpirationDate;
+
+	public Set<String> getKeyExpirationDate() {
+		return keyExpirationDate;
+	}
+
+	public void setKeyExpirationDate(Set<String> keyExpirationDate) {
+		this.keyExpirationDate = keyExpirationDate;
+	}
+
 	public Map<String, Object> getSku() {
 		return sku;
 	}

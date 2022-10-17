@@ -28,7 +28,6 @@ public class DisableOrEnableDBFlagsRule extends BaseRule {
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-
         logger.debug("========CloudSQL to check sql server Contained Auth flag Rule is started=========");
         Annotation annotation = null;
 

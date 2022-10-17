@@ -1,11 +1,13 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.microsoft.azure.PagedList;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.keyvault.Key;
+import com.microsoft.azure.management.keyvault.Secret;
+import com.microsoft.azure.management.keyvault.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +34,9 @@ public class VaultInventoryCollector {
 
 	public List<VaultVH> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
 
-		List<VaultVH> vaultList = new ArrayList<VaultVH>();
+		List<VaultVH> vaultList = new ArrayList();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 
 		String url = String.format(apiUrlTemplate, URLEncoder.encode(subscription.getSubscriptionId()));
 		try {
@@ -89,7 +92,35 @@ public class VaultInventoryCollector {
 						HashMap<String, Object> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
 						vaultVH.setTags(tagsMap);
 					}
+					String id =vaultVH.getId();
+					int beginningIndex=id.indexOf("resourceGroups")+15;
+					String resourceGroupName=(vaultVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+					log.debug("Resource group name: {}",resourceGroupName);
+					vaultVH.setResourceGroupName(resourceGroupName);
+					try
+					{
+						Vault azureVault=azure.vaults().getById(id);
+					//				.keys().list().get(0).attributes().expires()
 
+						PagedList<Key> keys=azureVault.keys().list();
+						Set<String> keyExpirationDate=new HashSet<>();
+						for(Key key:keys)
+						{
+							keyExpirationDate.add(key.attributes().expires().toString());
+						}
+						vaultVH.setKeyExpirationDate(keyExpirationDate);
+						PagedList<Secret> secrets = azureVault.secrets().list();
+						Set<String> secretExpirationDate=new HashSet<>();
+						for (Secret secret : secrets) {
+							secretExpirationDate.add(secret.attributes().expires().toString());
+						}
+						vaultVH.setSecretExpirationDate(secretExpirationDate);
+
+					}
+					catch(Exception e)
+					{
+						log.error(e.getMessage());
+					}
 					vaultList.add(vaultVH);
 				}
 			}
