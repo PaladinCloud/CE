@@ -582,4 +582,5 @@ public class PacmanRuleConstants {
     public static final String CONFIDENTIAL_COMPUTING="confidentialComputing";
     public  static  final String CAN_IP_FORWARD="canIPForward";
     public static final String GKE_CLUSTER_NAME="goog-gke-node";
+    public  static final String BACKUP_ENABLED="backupEnabled";
 }
