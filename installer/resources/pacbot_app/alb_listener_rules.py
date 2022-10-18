@@ -3,8 +3,6 @@ from core.config import Settings
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app import alb_target_groups as tg
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
-from core.mixins import MsgMixin
-import sys
 
 
 PATH_PREFIX = '/api/'
@@ -16,13 +14,6 @@ class ApplicationLoadBalancerListener(ALBListenerResource):
     default_action_type = "forward"
     port = 80
     protocol = "HTTP"
-
-    def pre_generate_terraform(self):
-        warn_msg = "Make ALB_PROTOCOL = HTTPS"
-        if ((Settings.MAKE_ALB_INTERNAL == False) and (Settings.ALB_PROTOCOL == "HTTP")):
-            message = "\n\t ** %s **\n" % warn_msg
-            print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
-            sys.exit()
 
     # certificate_arn = Settings.get('SSL_CERTIFICATE_ARN') if Settings.get('ALB_PROTOCOL', None) == "HTTPS" else None
     # port = 80 if Settings.get('ALB_PROTOCOL', "HTTP") != "HTTPS" else 443
