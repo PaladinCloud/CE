@@ -14,13 +14,13 @@ class ApplicationLoadBalancer(LoadBalancerResource):
 
     @classmethod
     def get_http_url(cls):
-        # pacbot_domain = cls.get_output_attr('dns_name')
-        # return "%s://%s" % ("http", pacbot_domain)
+        pacbot_domain = cls.get_output_attr('dns_name')
+        return "%s://%s" % ("http", pacbot_domain)
 
         # TODO: Replace with this once dev team fix https issue
-        pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
-        pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
-        return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
+        # pacbot_domain = Settings.get('PACBOT_DOMAIN', None)
+        # pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
+        # return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
 
     @classmethod
     def get_pacbot_domain_url(cls):
@@ -31,13 +31,13 @@ class ApplicationLoadBalancer(LoadBalancerResource):
 
     @classmethod
     def get_api_base_url(cls):
-        # pacbot_domain = cls.get_output_attr('dns_name')
-        # return "%s://%s/api" % ("http", pacbot_domain)
+        pacbot_domain = cls.get_output_attr('dns_name')
+        return "%s://%s/api" % ("http", pacbot_domain)
 
         # TODO: Replace with this once dev team fix https issue
-        pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
-        pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
-        return "%s://%s/api" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
+        # pacbot_domain = Settings.get('PACBOT_DOMAIN', None)
+        # pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
+        # return "%s://%s/api" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
 
     @classmethod
     def get_api_version_url(cls, service):
