@@ -340,13 +340,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     /**
      * {@inheritDoc}
      */
-    public ResponseWithOrder getIssueAuditLog(String annotationId, String targetType, int from, int size,
+    public ResponseWithOrder getIssueAuditLog(String dataSource,String annotationId, String targetType, int from, int size,
             String searchText) throws ServiceException {
 
         List<LinkedHashMap<String, Object>> issueAuditLogList;
         try {
             long issueAuditCount = repository.getIssueAuditLogCount(annotationId, targetType);
-            issueAuditLogList = repository.getIssueAuditLog(annotationId, targetType, from, size, searchText);
+            issueAuditLogList = repository.getIssueAuditLog(dataSource,annotationId, targetType, from, size, searchText);
 
             if (issueAuditLogList.isEmpty()) {
                 throw new ServiceException(NO_DATA_FOUND);

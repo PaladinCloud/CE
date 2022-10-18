@@ -28,6 +28,7 @@ package com.tmobile.pacman.api.compliance.domain;
 public class IssueAuditLogRequest {
 
     /** The issue id. */
+    String  dataSource;
     String issueId;
 
     /** The target type. */
@@ -50,13 +51,14 @@ public class IssueAuditLogRequest {
      * @param from the from
      * @param size the size
      */
-    public IssueAuditLogRequest(String issueId, String targetType, int from,
+    public IssueAuditLogRequest(String dataSource,String issueId, String targetType, int from,
             int size) {
         super();
         this.issueId = issueId;
         this.targetType = targetType;
         this.from = from;
         this.size = size;
+        this.dataSource=dataSource;
 
     }
 
@@ -121,7 +123,9 @@ public class IssueAuditLogRequest {
     public String getTargetType() {
         return targetType;
     }
-
+    public String getDataSource() {
+        return dataSource;
+    }
     /**
      * Sets the target type.
      *
@@ -131,6 +135,10 @@ public class IssueAuditLogRequest {
         this.targetType = targetType;
     }
 
+
+    public void setDataSource(String dataSource){
+        this.dataSource=dataSource;
+    }
     /**
      * Gets the from.
      *

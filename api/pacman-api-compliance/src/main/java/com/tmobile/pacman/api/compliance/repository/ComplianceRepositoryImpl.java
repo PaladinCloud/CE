@@ -720,7 +720,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * @throws DataException
      *                       the data exception
      */
-    public List<LinkedHashMap<String, Object>> getIssueAuditLog(String annotationId, String targetType, int from,
+    public List<LinkedHashMap<String, Object>> getIssueAuditLog(String datasource ,String annotationId, String targetType, int from,
             int size, String searchText) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(CommonUtils.convertAttributetoKeyword("annotationid"), annotationId);
@@ -730,7 +730,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         fields.add(AUDIT_DATE);
         fields.add(DATA_SOURCE);
         try {
-            return elasticSearchRepository.getDetailsFromESBySize(AWS, type, mustFilter, null, null, fields, from,
+            return elasticSearchRepository.getDetailsFromESBySize(datasource, type, mustFilter, null, null, fields, from,
                     size, null, null);
         } catch (Exception e) {
             throw new DataException(e);
