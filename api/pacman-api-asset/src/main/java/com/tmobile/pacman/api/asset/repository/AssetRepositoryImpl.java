@@ -171,8 +171,10 @@ public class AssetRepositoryImpl implements AssetRepository {
     @Override
 	public List<Map<String, Object>> getTargetTypesByAssetGroup(String aseetGroupName, String domain, String provider) {
 
-		String query = "select distinct targetType as type, c.displayName as displayName ,c.category as category,c.domain as domain, dataSourceName as " + Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName ='"
-				+ aseetGroupName.trim() + "'";
+		String query = "select distinct targetType as type, c.displayName as displayName ,c.category as category,c.domain as domain, dataSourceName as "
+		+ Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c "
+				+ " where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName =' "
+				+ aseetGroupName.trim() + "'  and (c.status = 'active' or c.status = 'enabled') ";
 		if (!StringUtils.isEmpty(domain)) {
 			query = query + " and lower(c.domain) = '" + domain.toLowerCase().trim() + "'";
 		}
@@ -187,7 +189,9 @@ public class AssetRepositoryImpl implements AssetRepository {
 
 		String query = "select distinct targetName as type,displayName as displayName, category, dataSourceName as " + Constants.PROVIDER + " from cf_Target ";
 		if(datasource!=null) {
-			query = query + "where lower(dataSourceName) = '"+datasource.toLowerCase()+"'";
+			query = query + " where lower(dataSourceName) = '"+datasource.toLowerCase()+"' and (status = 'active' or status = 'enabled')";
+		}else {
+			query = query + " where status = 'active' or status = 'enabled'";
 		}
 		return rdsRepository.getDataFromPacman(query);
 
