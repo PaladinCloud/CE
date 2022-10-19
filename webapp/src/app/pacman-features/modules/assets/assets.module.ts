@@ -45,9 +45,11 @@ import { OnpremAssetsComponent } from "./onprem-assets/onprem-assets.component";
 import { AgGridModule } from "ag-grid-angular/main";
 import { AwsNotificationsComponent } from "./aws-notifications/aws-notifications.component";
 import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from "@angular/material/card";
 
 @NgModule({
   imports: [
+    MatCardModule,
     MatSelectModule,
     CommonModule,
     AssetsRoutingModule,
