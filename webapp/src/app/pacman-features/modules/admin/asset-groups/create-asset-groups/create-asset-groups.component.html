@@ -69,7 +69,7 @@
                                         (click)="addTagetType(targetTypeValue)">+ Add</button>
                                 </ul>
                                 <input type="text" class="searchBox" placeholder="Filter Attributes..."
-                                    [(ngModel)]="searchTerm" (ngModelChange)="searchAttribute()"
+                                    [(ngModel)]="searchTerm"
                                     *ngIf="stepIndex==3 && showWidget">
                             </div>
                         </div>
@@ -341,8 +341,9 @@
                                 <div class="formcontainerwrapper" *ngIf="!pageContent[3].hide">
                                     <div class="attribute-contents asset-formctn">
                                         <div class="outer-div">
-                                            <div class="inner-div attrlist"
-                                                *ngFor="let attributeDetail of allAttributeDetails; let idx = index;">
+                                            <div class="inner-div attrlist" 
+                                                *ngFor="let attributeDetail of allAttributeDetails; let idx = index;"
+                                                [class.hide]="searchTerm != '' && !MatchAttribute(attributeDetail)">
                                                 <h1>{{attributeDetail.targetName}}</h1>
                                                 <div class="attrspacer"></div>
                                                 <h3 class="added" *ngIf="!attributeDetail.includeAll">

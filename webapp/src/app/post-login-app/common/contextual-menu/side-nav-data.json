@@ -27,6 +27,12 @@
         "name": "Details",
         "parent": "Assets",
         "route": "/pl/assets/asset-list"
+      },
+      {
+        "id": 25,
+        "name": "Distribution",
+        "parent": "Assets",
+        "route": "/pl/assets/asset-distribution"
       }
     ]
   },

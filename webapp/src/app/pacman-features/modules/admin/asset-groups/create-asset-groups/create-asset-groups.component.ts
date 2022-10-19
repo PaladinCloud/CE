@@ -625,11 +625,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.hideContent = false;
   }
 
-  searchAttribute() {
+  MatchAttribute(atrributeDetail:any) {
     const term = this.searchTerm;
-    this.allAttributeDetails = this.allSelectedAttributeDetailsCopy.filter(function (tag) {
-      return tag.targetName.indexOf(term) >= 0;
-    });
+    return atrributeDetail.targetName.indexOf(term) >= 0;
   }
 
   onClickAvailableItem(index, availableItem, key) {

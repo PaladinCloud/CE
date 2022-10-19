@@ -15,7 +15,7 @@
 /**
  * Created by Mohammed_Furqan on 10/10/17.
  */
-import { Observable ,  combineLatest, of } from 'rxjs';
+import { Observable, combineLatest, of, Subject, BehaviorSubject, ReplaySubject, AsyncSubject } from 'rxjs';
 import { Injectable, Inject } from '@angular/core';
 
 import { environment } from './../../../environments/environment';
@@ -24,7 +24,9 @@ import { ErrorHandlingService } from '../../shared/services/error-handling.servi
 import { catchError, map } from 'rxjs/operators';
 
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class FetchResourcesService {
 
     constructor (
@@ -32,7 +34,7 @@ export class FetchResourcesService {
                  private errorHandling: ErrorHandlingService) {}
 
 
-    getAllResourceCounts(queryParams) {
+    getAllResourceCounts(queryParams: any) {
         try {
             const url = environment.resourceCount.url;
             const method = environment.resourceCount.method;
@@ -78,15 +80,20 @@ export class FetchResourcesService {
     }
 
     getResourceTypesAndCount(queryParams) {
-        try {
+        return new Promise((resolve) => {
             const resourceType = this.getAllResourceCategories(queryParams);
             const resourceTypeCount = this.getAllResourceCounts(queryParams);
             const recommendations = this.getRecommendations(queryParams);
             const resourceTypeAndCountAndRecommendation = combineLatest(resourceType, resourceTypeCount, recommendations);
-            return resourceTypeAndCountAndRecommendation;
-        } catch (error) {
-            this.errorHandling.handleJavascriptError(error);
-        }
+            try {
+                resourceTypeAndCountAndRecommendation.subscribe(results => {
+                    resolve(results);
+                })
+            }
+            catch (error) {
+                this.errorHandling.handleJavascriptError(error);
+            }
+        })
     }
 
     dataCheck(data) {
