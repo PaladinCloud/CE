@@ -189,6 +189,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   queryParamsWithoutFilter;
   urlToRedirect = '';
   mandatory;
+  private pageLevel = 0;
 
   public labels;
   private previousUrl = '';
@@ -213,6 +214,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
+      this.pageLevel
+    );
   }
 
   isNumber(val){
@@ -233,7 +237,6 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
       this.state = 'open';
       this.menuState = 'in';
       this.selectedIndex = index;
-      console.log('attributeDetail==============>', attributeDetail);
       this.selectedAttributeDetails = attributeDetail.allAttributesName;
       this.selectedAttributes = attributeDetail.attributes;
       this.selectedAttributeIndex = '/aws_' + attributeDetail.targetName + '/_search?filter_path=aggregations.alldata.buckets.key';
@@ -311,7 +314,6 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     const url = environment.listTargetTypeAttributeValues.url;
     const method = environment.listTargetTypeAttributeValues.method;
     let queryParams = { index: this.selectedAttributeIndex, payload: JSON.stringify(attrNameObj) };
-    console.log('queryParams=============>', queryParams);
     this.adminService.executeHttpAction(url, method, queryParams, {}).subscribe(attributeValues => {
       if (attributeValues.length > 0) {
 

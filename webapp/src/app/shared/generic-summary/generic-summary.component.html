@@ -17,8 +17,8 @@
 		<ng-container *ngFor="let data of finalData.response; let i = index ">
 			<div class="each-tile" *ngIf='data.value || data.value == 0'>
 				<div class="wrapper" (click)="data.value > 0 && instructParentToNavigate(data)" [ngStyle]="{'cursor': data.value > 0 && data.styling.cursor }" >
-					<div *ngIf='textValue == undefined' class="value nowrap-ellipsis" [style.border-bottom-color]="colors[i]" [style.color]="colors[i]" title="{{data.value | number}}" [ngClass]="{'link-text underline-link-num': data.value > 0 && data.link}">{{data.value | number}}
-						<span class="percent" *ngIf='percent[i]'>%</span>
+					<div *ngIf='textValue == undefined' class="value nowrap-ellipsis" [style.border-bottom-color]="colors[i]" [style.color]="colors[i]" title="{{data.value=='NR'?'No Resources': data.value}}" [ngClass]="{'link-text underline-link-num': (data.value=='NR' || data.value > 0) && data.link}">{{data.value}}
+						<span class="percent" *ngIf='data.value!="NR" && percent[i]'>%</span>
 					</div>
 					<div *ngIf='textValue == true && (data.value || data.value == 0)' class="value nowrap-ellipsis" [class.small]="text[i] == true" [class.flexClass]="data.image" [style.color]="colors[i]" title="{{data.value}}">
 						<span class="image" *ngIf='data.image'><img class="image-wrapper" src="{{data.image}}"></span><span class='nowrap-ellipsis'>{{data.value}}</span><span class="percent" *ngIf='percent[i]'>%</span><span class="percent" *ngIf='outOf[i]'>/10</span>

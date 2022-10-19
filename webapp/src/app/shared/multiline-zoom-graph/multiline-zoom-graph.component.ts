@@ -85,7 +85,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     pullrequest: "#f2425f", // Red
     repository: "#3f4a59", // Dark Blue,
     noOfAlerts: "#3F4A59", // Dark Blue,
-    TotalAssetCount: "#506EA7"
+    "Number of Assets": "#506EA7"
   };
   private lineColorsArray = Object.keys(this.lineColorsObject);
   private countInRange: any;
@@ -1341,76 +1341,50 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         .append("rect")
         .attr("class", "hover rectCoverDate")
         .attr("fill", "#fff")
-        .attr("fill-opacity", "0.7")
-        .attr("height", "30px")
-        .attr("width", "48px")
+        // .attr("fill-opacity", "0.9")
+        .attr("height", "69px")
+        .attr("width", "69px")
+        .attr("stroke", "#DFE6EE")
         .attr("display", "none")
         .attr("text-align", "middle")
-        .attr("rx", 3)
-        .attr("ry", 3)
+        .attr("rx", 8)
+        .attr("ry", 8)
         .attr("x", 15)
         .attr("y", -7);
 
       this.focus
         .append("text")
         .attr("class", "hover dateData")
-        .attr("x", -5)
+        .attr("x", 2)
         .attr("dy", ".35em");
 
-      this.focus
-        .append("text")
-        .attr("class", "hover yearData")
-        .attr("x", -5)
-        .attr("dy", "1.5em");
+
 
       for (let i = 0; i < self.graphLinesData.length; i++) {
-        // self.focus
-        //   .append("rect")
-        //   .attr("class", "hover rectData" + i)
-        //   .attr(
-        //     "fill",
-        //     self.lineColorsObject[self.graphLinesData[numOfLines - i].key]
-        //   )
-        //   .attr("height", "18px")
-        //   .attr("width", "92px")
-        //   .attr("display", "none")
-        //   .attr("text-align", "middle")
-        //   .style(
-        //     "stroke",
-        //     self.lineColorsObject[self.graphLinesData[numOfLines - i].key]
-        //   )
-        //   .attr("x", -110)
-        //   .attr("y", -7);
+        
 
-        self.focus
+        this.focus
           .append("rect")
-          .attr("class", "hover rectCoverData" + i)
-          .attr("fill", "#fff")
-          .attr("fill-opacity", "0.7")
-          .attr("height", "18px")
-          .attr("width", "48px")
-          .attr("display", "none")
-          .attr("text-align", "middle")
-          .attr("rx", 3)
-          .attr("ry", 3)
-          .attr("x", -60)
-          .attr("y", -7);
+          .attr("class", "hover rectBlueBox"+i)
+          .attr("fill", "#506EA7")
+          // .attr("fill-opacity", "0.9")
+          .attr("height", "14px")
+          .attr("width", "14px")
+          // .attr("display", "none")
+          // .attr("text-align", "middle")
+          // .attr("rx", 3)
+          // .attr("ry", 3)
+          .attr("x", 5)
+          .attr("dy", "0.50em");
+          // .attr("y", -7);
 
         self.focus
           .append("text")
           .attr("class", "hover valueData" + i)
-          .attr("x", 18)
+          .attr("x", 25)
           .attr("dy", "0.50em");
 
-        self.focus
-          .append("text")
-          .attr("class", "hover rectText" + i)
-          .style("stroke-width", "0px")
-          .style("fill", "#fff")
-          .style("text-transform", "capitalize")
-          .style("font-size", "10px")
-          .attr("x", 9)
-          .attr("dy", ".35em");
+        
       }
 
       this.focus
@@ -1441,6 +1415,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         self.focus.selectAll(".hover").style("display", "none");
       })
       .on("mousemove", mousemove);
+
     function mousemove() {
       try {
         self.firstMouseMove++;
@@ -1485,16 +1460,45 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           .attr("y2", self.height);
 
         const valueData = {};
+        const rectBlueBox = {};
         const rectCoverData = {};
         const rectCoverDate = {};
         const rectText = {};
         const rectData = {};
         const dateData = {};
         const yearData = {};
-        valueData["dx"] = mousePosition < axisRange / 4 ? "8.5em" : "-4.7em";
+        
         rectText["dx"] = mousePosition < axisRange / 4 ? "6.7em" : "-14.5em";
         rectData["dx"] = mousePosition < axisRange / 4 ? "70" : "-140";
-        rectCoverData["dx"] = mousePosition < axisRange / 4 ? "100" : "-45";
+        valueData["dx"] =
+          mousePosition < axisRange / 4
+            ? "2em"
+            : mousePosition > axisRange * 0.75
+            ? "-17em"
+            : "3em";
+        valueData["dy"] =
+          mousePosition < axisRange / 4
+            ? "3.5em"
+            : mousePosition > axisRange * 0.75
+            ? "3.8em"
+            : "3.5em";
+        rectBlueBox["dx"] =
+          mousePosition < axisRange / 4
+            ? "2.1em"
+            : mousePosition > axisRange * 0.75
+            ? "-17em"
+            : "3.1em";
+        rectBlueBox["dy"] =
+          mousePosition < axisRange / 4
+            ? "3.5em"
+            : mousePosition > axisRange * 0.75
+            ? "3.8em"
+            : "3.5em";
+        rectBlueBox["y"] = mousePosition < axisRange / 4
+            ? 28
+            : mousePosition > axisRange * 0.75
+            ? 31
+            : 28;
         rectCoverDate["dx"] =
           mousePosition < axisRange / 4
             ? "15"
@@ -1503,16 +1507,16 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
             : "25";
         dateData["dx"] =
           mousePosition < axisRange / 4
-            ? "1em"
+            ? "2em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
-            : "2em";
+            ? "-17em"
+            : "3em";
         dateData["dy"] =
           mousePosition < axisRange / 4
-            ? ".35em"
+            ? ".95em"
             : mousePosition > axisRange * 0.75
-            ? ".5em"
-            : ".35em";
+            ? "1.1em"
+            : ".95em";
         yearData["dx"] =
           mousePosition < axisRange / 4
             ? "1em"
@@ -1538,18 +1542,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
             .attr("dy", dateData["dy"]);
         });
 
-        // self.graphLinesData.forEach((eachline) => {
-        //   self.focus
-        //     .select(".yearData")
-        //     .attr(
-        //       "transform",
-        //       "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
-        //     )
-        //     .text(formatYear(dobj[`label`]).toUpperCase())
-        //     .attr("dx", yearData["dx"])
-        //     .attr("dy", yearData["dy"]);
-        // });
-
         for (let m = 0; m < self.graphLinesData.length; m++) {
           self.graphLinesData.forEach((eachline) => {            
             self.focus
@@ -1559,44 +1551,21 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
                 "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
               )
               .text(dobj["value" + m])
-              .attr("dx", yearData["dx"])
-              .attr("dy", yearData["dy"]);
+              .attr("dx", valueData["dx"])
+              .attr("dy", valueData["dy"]);
           });
 
-          // const legend = self.graphLinesData[numOfLines - m].key;
-          // self.graphLinesData.forEach((eachline) => {
-          //   self.focus
-          //     .select(".rectText" + m)
-          //     .attr(
-          //       "transform",
-          //       "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
-          //     )
-          //     .text(legend)
-          //     .attr("dx", rectText["dx"])
-          //     .attr("dy", 0.5 + m * 3 + "em");
-          // });
+          self.graphLinesData.forEach((eachline) => {
+            self.focus
+              .select(".rectBlueBox" + m)
+              .attr(
+                "transform",
+                "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
+              )
+              .attr("x", rectBlueBox["dx"])
+              .attr("y", rectBlueBox["y"] + m);
+          });
 
-          // self.graphLinesData.forEach((eachline) => {
-          //   self.focus
-          //     .select(".rectData" + m)
-          //     .attr(
-          //       "transform",
-          //       "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
-          //     )
-          //     .attr("x", rectData["dx"])
-          //     .attr("y", -7 + m * 30);
-          // });
-
-          // self.graphLinesData.forEach((eachline) => {
-          //   self.focus
-          //     .select(".rectCoverData" + m)
-          //     .attr(
-          //       "transform",
-          //       "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
-          //     )
-          //     .attr("x", rectCoverData["dx"])
-          //     .attr("y", -7 + m * 30);
-          // });
 
           self.graphLinesData.forEach((eachline) => {
             self.focus

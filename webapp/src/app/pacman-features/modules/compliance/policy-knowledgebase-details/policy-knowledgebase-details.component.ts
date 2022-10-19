@@ -86,6 +86,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.durationParams = this.autorefreshService.getDuration();
       this.durationParams = parseInt(this.durationParams, 10);
       this.autoRefresh = this.autorefreshService.autoRefresh;
+      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
       this.breadcrumbPresent = "Policy Details ";
     } catch (error) {
       this.logger.log("error", error);

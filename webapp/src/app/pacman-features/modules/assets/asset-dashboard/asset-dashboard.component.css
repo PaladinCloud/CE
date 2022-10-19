@@ -1,7 +1,8 @@
 .container-wrapper {
     width: 100%;
     height: 100%;
-    padding: 28px 28px;
+    padding: 24px;
+    overflow: scroll;
 }
 .asset-dashboard-wrapper {
   /* background-color: var(--background-white); */
@@ -9,19 +10,25 @@
   width: 100%;
   gap: 20px;
 }
-.asset-dashboard-header {
+.asset-dashboard-header .title {
     box-sizing: border-box;
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 16px 24px;
+    padding: 0px 0px 8px;
     width: 100%;
-    line-height: 22px;
-    border-radius: var(--border-radius) var(--border-radius) 0px 0px;
-    font: var(--text-body-2);
+    /* line-height: 22px; */
+    /* border-radius: var(--border-radius) var(--border-radius) 0px 0px; */
+    font: var(--text-headline-6);
     color: var(--text-high-emphasis);
-    border-bottom: 2px solid var(--border-200);
 }
+
+.asset-dashboard-header .description{
+  color: #515459;
+  font: var(--text-body-1);
+  padding: 0px 0px 24px;
+}
+
 .type-count-container{
     /* padding-bottom: 20px; */
     gap: 18px;
@@ -165,6 +172,7 @@ mat-card-content {
   padding: 20px 24px 0px 24px;
   width: 100%;
   height: 100%;
+  min-height: 300px;
   margin: 0;
   background: var(--background-white);
   border-radius: 0 0 var(--border-radius) var(--border-radius);
@@ -177,6 +185,15 @@ mat-card-content {
 
 .graph-dropdown-container{
   margin-left: auto;
+}
+
+.asset-dashboard-container ::ng-deep .mat-form-field-infix{
+  padding: 8px 16px;
+  width: 150px;
+}
+
+.asset-dashboard-container ::ng-deep .mat-form-field.mat-focused.mat-primary .mat-select-arrow{
+  color: #687780;
 }
 
 #TotalAssetsSummaryTrend ::ng-deep .multiline-graph-container .horizontal .tick line{
@@ -197,18 +214,4 @@ mat-card-content {
   position: absolute;
   right: 20px;
   z-index: 99;
-}
-
-.custom-selection-content-wrapper{
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
-.date-selection-modal ::ng-deep .mat-form-field-infix{
-  width: 100px;
-}
-
-.date-selection-modal ::ng-deep .mat-card{
-  border: 1px solid var(--border-200);
 }

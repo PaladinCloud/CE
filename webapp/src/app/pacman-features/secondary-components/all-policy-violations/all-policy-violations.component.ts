@@ -71,6 +71,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
   headerColName;
   direction;
 
+  @Input() breadcrumbPresent;
   @Input() ruleID: any;
   constructor(
     private commonResponseService: CommonResponseService,
@@ -449,7 +450,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
   goToDetails(row) {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["headerColName"] = undefined;

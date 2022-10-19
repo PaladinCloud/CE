@@ -99,12 +99,10 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         ]
       }
     ];
-  years = [];
-  allMonths = [];
-  allDays = [];
+  
+  selectedItem = "All time";
   isCustomSelected: boolean = false;
-  fromDate: Date = new Date(2022, 1, 1);
-  toDate: Date = new Date(2200, 12, 31);
+ 
 
   constructor(
     private dataStore: DataCacheService,
@@ -125,69 +123,28 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    for (let i = 2022; i <= 2200; i++) {
-      this.years.push(i);
+
+  }
+
+  ifCustomSelected(){
+    if(this.selectedItem=="Custom"){
+      // this.selectedItem = "";
     }
-  }
-
-  private getNumberOfDays = function (year, monthId: any) {
-    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
-  };
-
-  onSelectYear(date: Date, selectedYear){
-    date.setFullYear(selectedYear);
-  }
-
-  getMonthId(selectedMonth){
-    let monthId = 0;
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].text == selectedMonth) {
-        monthId = id;
-      }
-    }
-    return monthId;
-  }
-
-  getMonth(date: Date){
-    let selectedMonth = "";
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].id == date.getMonth()) {
-        selectedMonth = this.allMonths[id].text;
-      }
-    }
-    return selectedMonth;
-  }
-
-  onSelectMonth(date: Date, selectedMonth: any) {
-    const monthDays: any = [];
-    let monthId = this.getMonthId(selectedMonth);
-    
-    const daysCount = this.getNumberOfDays(date.getFullYear(), monthId);
-    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
-      monthDays.push({ id: dayNo, text: dayNo.toString() });
-    }
-    this.allDays = monthDays;
-    date.setMonth(monthId);
-  }
-
-  onSelectDay(date: Date, selectedDay: any) {
-    date.setDate(selectedDay);    
   }
 
   handleGraphIntervalSelection = (e) => {
+    this.selectedItem = e;
     e = e.toLowerCase();
     if(e == "all time" || e == "custom"){
       if(e=="custom"){
         this.isCustomSelected = true;
         return;
       }
-      this.customDateSelected();
+      this.dateIntervalSelected();
       return;
     }
     let date = new Date();
     this.isCustomSelected = false;
-    let queryParamObj = {};
     switch(e){
       case "1 week":
         date.setDate(date.getDate() - 7);
@@ -202,8 +159,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         date.setFullYear(date.getFullYear() - 1);
         break;
     }
-
-    this.customDateSelected(date); 
+    this.dateIntervalSelected(date); 
   }
 
   getFormattedDate(date: Date){
@@ -212,7 +168,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     return formattedDate;
   }
 
-  customDateSelected(fromDate?, toDate?){
+  dateIntervalSelected(fromDate?, toDate?){
     let queryParamObj = {}
     if(fromDate){
       queryParamObj["from"] = this.getFormattedDate(fromDate);
@@ -235,7 +191,6 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     try {
         this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
           response => {
-            console.log("getAssetsTileData: ", response);
             this.tiles[2].mainContent.count = response.output.tagged;
             this.tiles[2].subContent[0].count = response.output.untagged;
           }
@@ -246,7 +201,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
   massageAssetTrendGraphData(graphData){
     let data = [];
-    data.push({"key":"TotalAssetCount", "values":[], "info": {}})
+    data.push({"key":"Number of Assets", "values":[], "info": {}})
     graphData.trend.forEach(e => {
        data[0].values.push({
             'date':new Date(e.date),
@@ -282,14 +237,15 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
     try {
         this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
-            this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-            if(this.totalAssetsCountData.length==0){
-                this.totalAssetsCountDataError = 'noDataAvailable';
-            }
+          if(response[0].length==0){
+              this.totalAssetsCountDataError = 'noDataAvailable';
+              return;
+          }
+          this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
         });
     } catch (error) {
         this.totalAssetsCountDataError = "apiResponseError";
-        this.logger.log("error", error);
+        this.logger.log("--error--", error);
     }
   }
 
@@ -304,7 +260,6 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     try {
         this.commonResponseService.getData( exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams).subscribe(
           response => {
-            console.log("getAssetsTileData: ", response);
             this.tiles[1].mainContent.count = response.exemptedAssetsCount;
             this.tiles[1].subContent[0].count = response.exemptedAssetsCount;
           }
@@ -325,15 +280,11 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
       const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
 
       this.dataSubscription = output.subscribe(results => {
-          console.log(results);
-          
-          console.log("RESULTS: ", JSON.stringify(results[1]["totalassets"]));
-          console.log("RESULTS: ", JSON.stringify(results[1]["assettype"]));
           this.tiles[0].mainContent.count = results[1]["totalassets"];
           this.tiles[0].subContent[0].count = results[1]["assettype"];
         })
       }catch(e){
-        console.log(e);
+        this.logger.log(e, "error")
         
       }
     }
@@ -345,7 +296,6 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
           this.assetGroupName = assetGroupName;
           this.getAssetsCountData({});
           this.getAssetsTileData();
-          // this.getTotalAssetsCount();
           this.getExemtedAssetsCount();
           this.getResourceTypeAndCountAndRecommendation();
     });

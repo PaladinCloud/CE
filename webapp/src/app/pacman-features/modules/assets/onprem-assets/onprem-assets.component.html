@@ -14,7 +14,9 @@
 
  <div class="floating-widgets-section flex flex-col asset-update-wrapper">
     <div class='flex flex-align-center flex-between bc-wrap'>
+        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
         <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [asset]="true" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        </div>
         <div class='saved-target' *ngIf='savedTarget'>Target Type: {{savedTarget | uppercase}}</div>
     </div>
     <div class="floating-widgets-header flex flex-between">
