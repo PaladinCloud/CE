@@ -14,8 +14,10 @@
 
 <div class="asset-details-wrapper flex flex-between">
     <div class="floating-widgets-section flex flex-col">
-        <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [asset]="true" [breadcrumbArray]="breadcrumbArray"
-            [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
+            <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray"
+                [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        </div>
         <div class="floating-widgets-header flex flex-align-center assets-header">
             <img *ngIf="backButtonRequired" class="arrow-img" (click)="navigateBack()" style="height: 1.4em;"
                 src="../assets/icons/left-arrow.svg">
@@ -28,7 +30,7 @@
                 <ul class='adjust-padding'>
                     <li class="widget-wrapper">
                         <div class="widget">
-                            <app-pacman-policy-violations *ngIf="resourceId" [resourceId]='resourceId' [resourceType]='resourceType'
+                            <app-pacman-policy-violations *ngIf="resourceId" [breadcrumbPresent]="breadcrumbPresent" [resourceId]='resourceId' [resourceType]='resourceType'
                                 [pageLevel]="pageLevel"></app-pacman-policy-violations>
                         </div>
                     </li>

@@ -274,6 +274,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
   }
 
   selectNode(node: TreeNode, event: any) {
+    this.workflowService.clearAllLevels();
     node.toggleExpanded();
     this.currentNodeId = node.id;
     this.currentParentId = node.parent.id;

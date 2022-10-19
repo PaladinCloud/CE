@@ -114,17 +114,3 @@ mat-card-actions img {
   right: 20px;
   z-index: 99;
 }
-
-.custom-selection-content-wrapper{
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
-.date-selection-modal ::ng-deep .mat-form-field-infix{
-  width: 100px;
-}
-
-.date-selection-modal ::ng-deep .mat-card{
-  border: 1px solid var(--border-200);
-}

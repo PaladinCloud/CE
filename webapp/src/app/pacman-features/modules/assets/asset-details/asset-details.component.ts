@@ -65,8 +65,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   private routeSubscription: Subscription;
 
   /*variables for breadcrumb data*/
-  breadcrumbArray: any = ['Asset List'];
-  breadcrumbLinks: any = ['asset-list'];
+  breadcrumbArray: any = [];
+  breadcrumbLinks: any = [];
   breadcrumbPresent: any;
 
   filteredData = false;
@@ -213,6 +213,12 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = 'Asset Details';
     this.userEmail = new FormGroup({
       ename: new FormControl('', [Validators.required, Validators.minLength(6)])
@@ -679,7 +685,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
    */
 
   navigateDataTable(event) {
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
     try {
       const queryObj = event;
       // the api has to accept resoueceId and resourcetype ,,,,,,not accepting now
@@ -699,7 +705,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!event) {
         return;
       }
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
       const queryObj = this.utilityService.extractNumbersFromString(event);
       const eachParams = { 'severitylevel': queryObj, '_resourceid.keyword': this.resourceId };
       const newParams = this.utilityService.makeFilterObj(eachParams);

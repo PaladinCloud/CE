@@ -46,6 +46,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   selectedTabName = 'All';
   dataLoaded = false;
   searchTxt = '';
+  breadcrumbPresent;
   searchPassed = "";
   tabName: any = [];
   count = [];
@@ -66,8 +67,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
   direction;
   showSearchBar = true;
   showAddRemoveCol = true;
-  columnWidths = {'Policy Name': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
-  columnNamesMap = {name: "Policy Name"};
+  columnWidths = {'Title': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
+  columnNamesMap = {name: "Title"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
@@ -117,6 +118,8 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
         this.isStatePreserved = false;
       }
 
+      this.breadcrumbPresent = "Policy"
+
     this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
       this.selectedAssetGroup = assetGroupName;
       this.agAndDomain['ag'] = this.selectedAssetGroup;
@@ -124,9 +127,19 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
       this.selectedDomain = domain;
       this.agAndDomain['domain'] = this.selectedDomain;
-      this.updateComponent();
     });
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
+    this.getRouteQueryParameters();
+  }
+
+  getRouteQueryParameters(): any {
+    this.activatedRoute.queryParams.subscribe(
+      (params) => {
+        if(this.selectedAssetGroup && this.selectedDomain){
+          this.updateComponent();
+        }
+      }
+    );
   }
 
   handleHeaderColNameSelection(event){
@@ -375,7 +388,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     }
     const ruleId = tileData["Rule ID"];
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["searchValue"] = undefined;
       this.router.navigate(

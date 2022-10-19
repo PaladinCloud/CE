@@ -6,26 +6,7 @@
         <app-dropdown [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="'All time'" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
       </div>
       <div class="date-selection-modal" *ngIf="isCustomSelected">
-        <mat-card>
-          <mat-card-header>Custom Selection</mat-card-header>
-          <mat-card-content>
-            <div class="custom-selection-content-wrapper">
-                <span>from:</span>
-                <app-dropdown [items]="years" (selected)="onSelectYear(fromDate, $event)" placeholder="Year"></app-dropdown>
-                <app-dropdown [items]="allMonths" (selected)="onSelectMonth(fromDate, $event)" placeholder="Month"></app-dropdown>
-                <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(fromDate, $event)" placeholder="Date"></app-dropdown>
-                <span>to:</span>
-                <app-dropdown [items]="years" (selected)="onSelectYear(toDate, $event)" placeholder="Year"></app-dropdown>
-                <app-dropdown [items]="allMonths" (selected)="onSelectMonth(toDate, $event)" placeholder="Month"></app-dropdown>
-                <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(toDate, $event)" placeholder="Date"></app-dropdown>
-            </div>
-          </mat-card-content>
-          <mat-card-actions>
-            <button mat-button (click)="customDateSelected(fromDate, toDate)">
-              Apply
-            </button>
-          </mat-card-actions>
-        </mat-card>
+        <app-date-selection (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
       </div>
     </div>
   </mat-card-header>

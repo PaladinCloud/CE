@@ -80,8 +80,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
   /*variables for breadcrumb data*/
 
-  breadcrumbArray: any = ['Compliance', 'Policy Violations'];
-  breadcrumbLinks: any = ['compliance-dashboard', 'issue-listing'];
+  breadcrumbArray: any = [];
+  breadcrumbLinks: any = [];
   breadcrumbPresent: any;
 
   /* variables for handling data*/
@@ -297,7 +297,13 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         fname: new FormControl('', [Validators.required, Validators.minLength(6)])
       });
 
-      this.breadcrumbPresent = 'Policy Violations Details';
+      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
+      this.breadcrumbPresent = 'Violation Details';
 
       // this.getData();
     } catch (error) {

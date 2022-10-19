@@ -1,7 +1,10 @@
 <div class="container-wrapper">
     <div class="asset-dashboard-container">
-        <!-- <div class="asset-dashboard-header">Asset Overview</div> -->
         <div class="asset-dashboard-wrapper flex flex-col">
+            <div class="asset-dashboard-header">
+                <span class="title">Asset Overview</span>
+                <span class="description">Asset summary provides details about an asset group’s assets.</span>
+            </div>
             <div class="type-count-container flex flex-row">
                 <div class="asset-summary-card" *ngFor="let tile of tiles">
                 <div class="asset-summary-card-wrapper flex flex-col">
@@ -31,37 +34,18 @@
             <mat-card class="panel">
                 <mat-card-header>
                     {{ card.header }}
-                    <div (click)="isCustomSelected = false" class="graph-dropdown-container" *ngIf="card.id == 3">
-                        <app-dropdown [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="'All time'" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
-                    </div>
-                    <div class="date-selection-modal" *ngIf="isCustomSelected">
-                        <mat-card>
-                        <mat-card-header>Custom Selection</mat-card-header>
-                        <mat-card-content>
-                            <div class="custom-selection-content-wrapper">
-                                <span>from:</span>
-                                <app-dropdown [items]="years" (selected)="onSelectYear(fromDate, $event)" placeholder="Year"></app-dropdown>
-                                <app-dropdown [items]="allMonths" (selected)="onSelectMonth(fromDate, $event)" placeholder="Month"></app-dropdown>
-                                <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(fromDate, $event)" placeholder="Date"></app-dropdown>
-                                <span>to:</span>
-                                <app-dropdown [items]="years" (selected)="onSelectYear(toDate, $event)" placeholder="Year"></app-dropdown>
-                                <app-dropdown [items]="allMonths" (selected)="onSelectMonth(toDate, $event)" placeholder="Month"></app-dropdown>
-                                <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(toDate, $event)" placeholder="Date"></app-dropdown>
-                            </div>
-                        </mat-card-content>
-                        <mat-card-actions>
-                            <button mat-button (click)="customDateSelected(fromDate, toDate)">
-                            Apply
-                            </button>
-                        </mat-card-actions>
-                        </mat-card>
+                    <div (click)="isCustomSelected = false" class="graph-dropdown-container">
+                        <app-dropdown (click)="ifCustomSelected()" [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
+                        <div class="date-selection-modal" *ngIf="isCustomSelected">
+                             <app-date-selection (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+                        </div>
                     </div>
                 </mat-card-header>
                 <mat-card-content>
-                    <div class="chart" *ngIf="card.id == 3" style="overflow-y: scroll;">
-                        <div [class.loader]="totalAssetsCountData.length==0 && totalAssetsCountDataError==''"></div>
-                        <app-error-message *ngIf="totalAssetsCountDataError" [selectedValue]="totalAssetsCountDataError"></app-error-message>
+                    <div class="chart" style="overflow-y: scroll;">
                         <div class="chart-wrapper" id="TotalAssetsSummaryTrend" style="height: 100%; width: 100%; background-color: white;">
+                            <div [class.loader]="totalAssetsCountData.length==0 && totalAssetsCountDataError==''"></div>
+                            <app-error-message *ngIf="totalAssetsCountDataError" [selectedValue]="totalAssetsCountDataError"></app-error-message>
                             <app-multiline-zoom-graph *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''" [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'" [graphHeight]="320" [graphLinesData]="totalAssetsCountData"></app-multiline-zoom-graph>
                         </div>
                     </div>

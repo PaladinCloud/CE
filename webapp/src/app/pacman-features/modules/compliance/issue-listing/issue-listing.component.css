@@ -16,6 +16,29 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: scroll;
+}
+
+.violations-header{
+    padding-bottom: 18px;
+}
+
+.violations-header .title {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 0px 8px;
+    width: 100%;
+    line-height: 22px;
+    font: var(--text-headline-6);
+    color: var(--text-high-emphasis);
+}
+
+.violations-header .description{
+  color: #515459;
+  font: var(--text-body-1);
+  padding: 0px 0px 24px;
 }
 
 app-data-table{
@@ -45,7 +68,7 @@ app-data-table{
 
 .wrapper {
     position: relative;
-    height: 100%;
+    height: calc(100% - 62px); /* removed page title height*/ 
 }
 
 app-issue-exception{

@@ -1,18 +1,4 @@
-/*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
- 
- .container-wrapper {
+.container-wrapper {
   display: flex;
   flex-direction: column;
   padding: 28px;
@@ -34,6 +20,15 @@
 }
 .container-4 {
   height: 504px;
+}
+
+.container-3 ::ng-deep .mat-form-field-infix{
+  padding: 8px 16px;
+  width: 150px;
+}
+
+.container-3 ::ng-deep .mat-form-field.mat-focused.mat-primary .mat-select-arrow{
+  color: #687780;
 }
 
 mat-grid-tile {
@@ -65,39 +60,3 @@ app-data-table{
   height: 100%;
   width: 100%;
 }
-
-/* .container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(1) {
-  width: 40%;
-  margin-left: 8px;
-}
-.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(2) {
-  width: 13%;
-}
-.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(3) {
-  width: 14%;
-}
-.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(4) {
-  width: 14%;
-}
-.container-3 ::ng-deep .data-table-wrap .table-cells:nth-child(5) {
-  width: 17%;
-} */
-/* .container-3  ::ng-deep .table-cells {
-  padding: 16px 10px !important;
-}
-
-.container-3 ::ng-deep .data-table-inner-wrap {
-  padding-top: 10px;
-  width: 100% !important;
-}
-.container-3 ::ng-deep .data-table-inner-content {
-  width: 100% !important;
-}
-
-.container-3 ::ng-deep .data-table-head {
-  width: 100% !important;
-}
-
-.container-3 ::ng-deep .data-table-rows {
-  width: 100% !important;
-} */

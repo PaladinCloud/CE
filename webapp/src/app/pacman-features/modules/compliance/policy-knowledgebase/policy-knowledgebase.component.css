@@ -16,13 +16,12 @@
   height: 100%;
   justify-content: flex-start;
   overflow-y: hidden;
-  padding-bottom: 2px;
+  padding: 24px;
   background-color: var(--background-grey);
 }
 
 .policy-knowledgebase-content-wrapper {
   height: 100%;
-  padding: 24px;
 }
 
 .policy-knowledgebase-content{
@@ -30,6 +29,14 @@
   background-color: var(--background-white);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-100);
+}
+
+.policy-header{
+  padding-bottom: 24px;
+}
+.policy-header .title{
+  font: var(--text-headline-6);
+  color: var(--text-high-emphasis);
 }
 
 .pk-header {
@@ -290,7 +297,7 @@
 }
 
 .type-count-container{
-  padding: 0px 24px;
+  padding-bottom: 24px;
 }
 
 .type-count-content-wrapper{
