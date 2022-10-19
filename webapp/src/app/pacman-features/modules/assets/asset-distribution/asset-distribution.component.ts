@@ -100,7 +100,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy {
     }
   ];
 
-  isSortedByName = false;
+  isSortedByName = true;
   isSortedByAssetNo = false;
 
 
