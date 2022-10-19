@@ -29,6 +29,7 @@ import { environment } from 'src/environments/environment';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
 import { FetchResourcesService } from 'src/app/pacman-features/services/fetch-resources.service';
+import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
 
 @Component({
   selector: 'app-asset-dashboard',
@@ -113,7 +114,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     private multilineChartService: MultilineChartService,
     private commonResponseService: CommonResponseService,
     private assetGroupsService: AssetTilesService,
-    private fetchResourcesService: FetchResourcesService
+    private fetchResourcesService: FetchResourcesService,
+    private awsResourceTypeSelectionService: AwsResourceTypeSelectionService
   ) {
     this.config = CONFIGURATIONS;
 
@@ -279,10 +281,10 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
       const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
 
-      this.dataSubscription = output.subscribe(results => {
-          this.tiles[0].mainContent.count = results[1]["totalassets"];
-          this.tiles[0].subContent[0].count = results[1]["assettype"];
-        })
+      this.awsResourceTypeSelectionService.getAssetTypeCount().subscribe(asset => {
+        this.tiles[0].mainContent.count = asset["totalassets"];
+        this.tiles[0].subContent[0].count = asset["assettype"];
+      })
       }catch(e){
         this.logger.log(e, "error")
         

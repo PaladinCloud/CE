@@ -250,8 +250,8 @@ export class ComplianceDashboardComponent implements OnInit {
     );
   };
 
-  navigateToAssetSummary = () => {
-    this.router.navigate(["/pl/assets/asset-dashboard/"], {
+  navigateToAssetDistribution = () => {
+    this.router.navigate(["/pl/assets/asset-distribution/"], {
       queryParamsHandling: "merge",
     });
   };
@@ -280,7 +280,7 @@ export class ComplianceDashboardComponent implements OnInit {
       id: 3,
       header: "Total Assets",
       footer: "View Asset Distribution",
-      cardButtonAction: this.navigateToAssetSummary,
+      cardButtonAction: this.navigateToAssetDistribution,
     },
   ];
 
