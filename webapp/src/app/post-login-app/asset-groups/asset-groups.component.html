@@ -27,7 +27,7 @@
             </article>
             <article class="sub-header-asset flex flex-between flex-align-center">
                 <div class='asset-tabs-outer-wrap'>
-                    <app-asset-group-tabs *ngIf='assetTabName' (updateTabs)='updateTab($event)' [(selectedTabName)]='selectedTabName' [assetTabName]='assetTabName'></app-asset-group-tabs>
+                    <app-asset-group-tabs *ngIf='assetTabName' [(selectedTabName)]='selectedTabName' [assetTabName]='assetTabName'></app-asset-group-tabs>
                 </div>
                 <div class="search">
                     <app-asset-group-search (searchQuery)='getSearch($event)'></app-asset-group-search>
@@ -37,7 +37,8 @@
                 <div class="asset-tiles-wrapper flex flex-between">
                     <div *ngIf='showError' class='error-msg absolute'>Unable to fetch asset groups!</div>
                     <section class="asset-tile-content flex flex-wrap" *ngIf='loaded'>
-                        <div class="container relative" [class.left-most]='i%3 == 0' [hidden]="!((selectedTabName && selectedTabName.toLowerCase())==(assetTabName[0] && assetTabName[0].toLowerCase()) || (selectedTabName && selectedTabName.toLowerCase())==(assettile.type && assettile.type.toLowerCase()) || checkRecentlyViewed(assettile) ) " [class.active]='thisAssetTile' [class.dark-bg]='thisAssetTile ==  assettile.name' [class.currently-selected]='selectedGroup==assettile.name' *ngFor="let assettile of ( assetTiles | searchFilter: returnedSearch  ) | orderBy: { property: 'displayname', direction: 1}  ; let i = index; " (click)='assetTileClicked(assettile.name, assettile); getCurrentAssetInfo(assettile)'>
+                        <div class="container relative" [class.left-most]='i%3 == 0'[hidden]="!( checkIsRecentlyViewedOrAll() || (selectedTabName && selectedTabName.toLowerCase())==(assettile.type && assettile.type.toLowerCase()))"
+                         [class.active]='thisAssetTile' [class.dark-bg]='thisAssetTile ==  assettile.name' [class.currently-selected]='selectedGroup==assettile.name' *ngFor="let assettile of ( selectedTabName !== 'recently viewed' ? assetTiles : recentlyViewedAssets | searchFilter: returnedSearch  ); let i = index; " (click)='assetTileClicked(assettile.name, assettile); getCurrentAssetInfo(assettile)'>
                             <div class="name-title">{{assettile.displayname}}</div>
                             <div *ngIf='assettile.description' class="description line-clamp">{{assettile.description}}</div>
                             <div *ngIf='!assettile.description' class="description line-clamp">Select this asset group to fetch data under this asset group</div>

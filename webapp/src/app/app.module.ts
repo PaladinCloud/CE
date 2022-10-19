@@ -29,6 +29,7 @@ import { PostLoginAppModule } from './post-login-app/post-login-app.module';
 import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
 import { ErrorHandlingService } from './shared/services/error-handling.service';
+import { FetchResourcesService } from './pacman-features/services/fetch-resources.service';
 
 @NgModule({
     declarations: [
@@ -48,7 +49,7 @@ import { ErrorHandlingService } from './shared/services/error-handling.service';
         PostLoginAppModule,
         CoreModule
     ],
-    providers: [],
+    providers: [FetchResourcesService],
     bootstrap: [AppComponent]
 })
 

@@ -46,6 +46,9 @@ import { AgGridModule } from "ag-grid-angular/main";
 import { AwsNotificationsComponent } from "./aws-notifications/aws-notifications.component";
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from "@angular/material/card";
+import { NgApexchartsModule } from "ng-apexcharts";
+import { AssetDistributionComponent } from "./asset-distribution/asset-distribution.component";
+import { FetchResourcesService } from "../../services/fetch-resources.service";
 
 @NgModule({
   imports: [
@@ -53,6 +56,7 @@ import { MatCardModule } from "@angular/material/card";
     MatSelectModule,
     CommonModule,
     AssetsRoutingModule,
+    NgApexchartsModule,
     SharedModule,
     AgGridModule.withComponents([OnpremAssetsComponent]),
   ],
@@ -71,6 +75,7 @@ import { MatCardModule } from "@angular/material/card";
     AssetWafComponent,
     AssetCropComponent,
     AssetCertificateComponent,
+    AssetDistributionComponent,
     RecommendationComponent,
     AssetDetailsComponent,
     OpenPortsComponent,
@@ -85,5 +90,6 @@ import { MatCardModule } from "@angular/material/card";
     OnpremAssetsComponent,
     AwsNotificationsComponent,
   ],
+  providers: [FetchResourcesService]
 })
 export class AssetsModule { }

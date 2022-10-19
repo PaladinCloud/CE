@@ -1,0 +1,70 @@
+<div class="page-header">
+    <h6 class="sub-header-text">Asset Distribution</h6>
+    <span class="text-desc">
+        This is a list of events and alerts taking place within paladin cloud specific to the choosen asset group
+    </span>
+</div>
+<div class="overall-distribution">
+    <div class="title-header">
+        <span> {{totalAssetTypes}} Asset Types | {{totalAssetCount}} Assets</span>
+    </div>
+    <div class="search-container">
+        <div class="search-bar">
+            <div class="header-search-content-container">
+                <img _ngcontent-c3="" class="search-icon" alt="" src="/assets/icons/header-search.svg">
+                <input class="search-box" type="text" placeholder="Search for keywords" [(ngModel)]="searchText"
+                    [ngModelOptions]="{standalone: true}">
+            </div>
+        </div>
+    </div>
+    <div class="distribution-content">
+        <div class="chart" [class.expanded]="!isCollapsed" #widgetContainer>
+            <div class="legend">
+                <div class="legend-wrap" *ngFor="let range of colors">
+                    <div class="legend-color" [style.background-color]=range.color></div>
+                    <div class="range">{{range.from}} - {{range.to}}</div>
+                </div>
+            </div>
+            <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
+                [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
+                [tooltip]="chartOptions.tooltip">
+            </apx-chart>
+        </div>
+        <div class="slider" [class.collapsed]="isCollapsed">
+            <div class="slider-header">
+                <span class="asset-header" [class.isCollapsed]="isCollapsed">
+                    Asset Types
+                </span>
+                <img class="slider-img" [class.collapsed]="isCollapsed" src='/assets/icons/slider.svg' (click)="expandAssetTypeList()">
+            </div>
+            <div class="slider-content" [class.isCollapsed]="isCollapsed">
+                <div class="content-header">
+                    <div class="column-wrapper-header">
+                        <div class="col-1">
+                            <span class="col-header">Asset</span>
+                            <img class="sort-img" [class.sorted] = "!isSortedByName" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-1')">
+                        </div>
+                        <div class="col-2">
+                            <span class="col-header">Number of Assets</span>
+                            <img class="sort-img" [class.sorted] = "isSortedByAssetNo" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-2')">
+                        </div>
+                    </div>
+                </div>
+                <div class="asset-list">
+                    <div class="column-wrapper"
+                        *ngFor="let asset of filteredResources | searchFilter: searchText:'displayName'"
+                        (click)="redirect(asset)">
+                        <div class="col-1">
+                            <img class="asset-img" src='/assets/icons/{{asset.provider}}-color.svg'
+                                (click)="expandAsset()">
+                            <span class="asset-name" title="{{asset.displayName}}">{{asset.displayName}}</span>
+                        </div>
+                        <div class="col-2">
+                            <span class="asset-count">{{asset.count}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

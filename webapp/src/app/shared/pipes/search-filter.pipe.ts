@@ -25,7 +25,10 @@ export class SearchFilterPipe implements PipeTransform {
 
   constructor(private loggerService: LoggerService) { }
 
-  transform(input: any, searchQuery: any): any {
+  transform(input: any, searchQuery: any, column = ''): any {
+    if (!input) return [];
+    if (!searchQuery) return input;
+
     try {
       return input.filter(item => {
         for (const key in item) {

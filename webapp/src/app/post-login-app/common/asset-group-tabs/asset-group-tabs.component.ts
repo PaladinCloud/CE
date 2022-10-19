@@ -40,7 +40,6 @@ export class AssetGroupTabsComponent implements OnInit, AfterViewInit {
   thisAssetTile: any;
   assetTempTabName: any;
   showMorePop = false;
-  @Output() updateTabs: EventEmitter<string> = new EventEmitter<string>();
 
   ngOnInit() {
     this.assetTempTabName = this.assetTabName;
@@ -129,7 +128,5 @@ export class AssetGroupTabsComponent implements OnInit, AfterViewInit {
 
   tabsClicked(tabName) {
     this.router.navigate([], {queryParamsHandling: 'merge', fragment: tabName});
-    /* Changing the fragment of the url and not emitting the selected category */
-    // this.updateTabs.emit(tabName);
   }
 }

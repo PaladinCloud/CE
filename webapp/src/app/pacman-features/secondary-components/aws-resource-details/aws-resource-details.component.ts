@@ -13,7 +13,6 @@
  */
 
 import { Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
-import { FetchResourcesService } from './../../services/fetch-resources.service';
 import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs';
@@ -30,17 +29,14 @@ import { UtilsService } from '../../../shared/services/utils.service';
   selector: 'app-aws-resource-details',
   templateUrl: './aws-resource-details.component.html',
   styleUrls: ['./aws-resource-details.component.css'],
-  providers: [FetchResourcesService]
 })
 
 export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
-  //  @Input() filteredResources: any;
   private awsResources: any = [];
   private activeTileIndex: any = 0;
   public categories = [];
   private categoryNames = [];
   public filteredResources: any = [];
-  //  private selectedResource: any;
   public activeFilterCategory: any;
   public searchTxt = '';
   routeTo = 'asset-list';
@@ -67,7 +63,6 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   private assetGroupSubscription: Subscription;
   private routeSubscription: Subscription;
   private resourceSelectionSubscription: Subscription;
-  private dataSubscription: Subscription;
   subscriptionDomain: Subscription;
   selectedDomain: any;
 
@@ -89,7 +84,7 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
         this.filteredResources.push(element);
       }
     });
-    this.filteredResources.sort((a,b)=>b.count - a.count);
+    this.filteredResources.sort((a, b) => b.count - a.count);
     this.selectedResource = this.filteredResources[0];
   }
 
@@ -128,15 +123,15 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   }
 
   getAwsResources() {
-    if (this.resourceTypeSelectionSubscription) { this.resourceTypeSelectionSubscription.unsubscribe(); }
     this.resourceTypeSelectionSubscription = this.awsResourceTypeSelectionService.getAllAwsResources().subscribe(
       allAwsResources => {
         this.filteredResources = [];
         this.awsResources = allAwsResources;
-        this.getAllCategories();
         this.filteredResources = this.awsResources.slice();
-        this.filteredResources.sort((a,b)=>b.count - a.count);
+        this.filteredResources.sort((a, b) => b.count - a.count);
         this.selectedResource = this.filteredResources[0];
+        this.getAllCategories();
+        this.setDataLoaded();
       },
       error => {
         this.logger.log('error', error);
@@ -145,7 +140,6 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
   }
   constructor(
     private utils: UtilsService,
-    private fetchResourcesService: FetchResourcesService,
     private route: ActivatedRoute,
     private assetGroupObservableService: AssetGroupObservableService,
     private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
@@ -173,13 +167,13 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
         this.selectedResourceTypeFromUrl = params['type'];
       }
 
+
     });
 
   }
 
   ngOnInit() {
     // Reset all variables
-    this.getAwsResources();
     this.loading = false;
     this.dataLoaded = false;
     this.error = false;
@@ -188,6 +182,7 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
     this.selectedResource['recommendations'] = [];
     this.getData();
     this.viewAllSetup();
+    this.getAwsResources();
   }
 
   init() {
@@ -260,81 +255,6 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
 
   getData() {
     this.setDataLoading();
-    this.getResourceTypeAndCountAndRecommendation();
-  }
-
-  getResourceTypeAndCountAndRecommendation() {
-    try {
-      if (this.dataSubscription) {
-        this.dataSubscription.unsubscribe();
-      }
-      const queryParams = {
-        'ag': this.selectedAssetGroup,
-        'domain': this.selectedDomain
-      };
-
-      const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
-
-      this.dataSubscription = output.subscribe(results => {
-        try {
-
-          const resourceTypes = results[0]['targettypes'];
-          let resourceTypeCount = results[1];
-          let recommendations:any = results[2];
-
-          this.setDataLoaded();
-
-          this.awsResourceDetails = resourceTypes.map(function (resourceType) {
-
-            if (resourceTypeCount !== undefined && resourceTypeCount !== null) {
-              resourceTypeCount = results[1].assetcount;
-              const countObj = resourceTypeCount.find(obj => obj.type === resourceType.type);
-              resourceType.count = countObj ? countObj.count : 0;
-            }
-
-            if (recommendations !== undefined && recommendations !== null) {
-              recommendations = results[2]['response'];
-              let recommendationArray = [];
-              recommendationArray = recommendations.filter((value) => {
-                return value.targetType === resourceType.type;
-              });
-              resourceType.recommendations = recommendationArray;
-
-              resourceType.recommendationAvailable = recommendationArray.length > 0 ? true : false;
-            }
-
-            return resourceType;
-          });
-
-          this.awsResourceDetails = this.removeTargetTypesOfCategoryOthers(this.awsResourceDetails, 'Other');
-
-          this.sortAwsResources();
-
-          // Update the aws resources in the common shared service
-          this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(this.awsResourceDetails);
-
-          this.assignIconsToResources();
-
-          this.setDataLoaded();
-          this.setupMainPageResourceTypes();
-
-        } catch (error) {
-          this.errorMessage = this.errorHandling.handleJavascriptError(error);
-          this.setError(error);
-          this.logger.log('error', error);
-        }
-      },
-        error => {
-          this.setError(error);
-          this.errorMessage = error;
-          this.logger.log('error', error);
-        }
-      );
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.setError(error);
-      this.logger.log('error', error);
-    }
   }
 
   assignIconsToResources() {
@@ -449,7 +369,6 @@ export class AwsResourceDetailsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
-      this.dataSubscription.unsubscribe();
       this.routeSubscription.unsubscribe();
       this.assetGroupSubscription.unsubscribe();
       this.resourceSelectionSubscription.unsubscribe();
