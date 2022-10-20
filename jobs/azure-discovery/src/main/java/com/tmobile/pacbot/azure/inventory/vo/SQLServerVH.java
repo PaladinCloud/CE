@@ -2,7 +2,6 @@ package com.tmobile.pacbot.azure.inventory.vo;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -21,6 +20,43 @@ public class SQLServerVH extends AzureVH {
 	List<ElasticPoolVH> elasticPoolList;
 	List<FailoverGroupVH> failoverGroupList;
 	private List<Map<String, String>> firewallRuleDetails;
+
+	private String storageContainerPath;
+	private boolean recurringScansEnabled;
+	private boolean emailSubscriptionAdmins;
+	private String emails;
+
+	public boolean isRecurringScansEnabled() {
+		return recurringScansEnabled;
+	}
+
+	public void setRecurringScansEnabled(boolean recurringScansEnabled) {
+		this.recurringScansEnabled = recurringScansEnabled;
+	}
+
+	public boolean isEmailSubscriptionAdmins() {
+		return emailSubscriptionAdmins;
+	}
+
+	public void setEmailSubscriptionAdmins(boolean emailSubscriptionAdmins) {
+		this.emailSubscriptionAdmins = emailSubscriptionAdmins;
+	}
+
+	public String getEmails() {
+		return emails;
+	}
+
+	public void setEmails(String emails) {
+		this.emails = emails;
+	}
+
+	public String getStorageContainerPath() {
+		return storageContainerPath;
+	}
+
+	public void setStorageContainerPath(String storageContainerPath) {
+		this.storageContainerPath = storageContainerPath;
+	}
 
 	public String getKind() {
 		return kind;
