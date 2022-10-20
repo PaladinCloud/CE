@@ -138,7 +138,7 @@ public interface ComplianceService {
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    public ResponseWithOrder getIssueAuditLog(String annotationId, String targetType, int from, int size,
+    public ResponseWithOrder getIssueAuditLog(String datasource,String annotationId, String targetType, int from, int size,
             String searchText) throws ServiceException;
 
     /**

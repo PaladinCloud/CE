@@ -164,11 +164,11 @@ public class ComplianceControllerTest {
     
     @Test
     public void getIssueAuditTest() throws Exception {
-        when(complianceService.getIssueAuditLog(anyString(),anyString(),anyInt(),anyInt(),anyString())).thenReturn(CommonTestUtil.getResponseWithOrder());
+        when(complianceService.getIssueAuditLog(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString())).thenReturn(CommonTestUtil.getResponseWithOrder());
         assertThat(complianceController.getIssueAudit(CommonTestUtil.getIssueAuditLogRequest()), is(notNullValue()));
         assertThat(complianceController.getIssueAudit(CommonTestUtil.getIssueAuditLogRequestEmpty()), is(notNullValue()));
         
-        when(complianceService.getIssueAuditLog(anyString(),anyString(),anyInt(),anyInt(),anyString())).thenThrow(new ServiceException());
+        when(complianceService.getIssueAuditLog(anyString(),anyString(),anyString(),anyInt(),anyInt(),anyString())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.getIssueAudit(CommonTestUtil.getIssueAuditLogRequest());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);

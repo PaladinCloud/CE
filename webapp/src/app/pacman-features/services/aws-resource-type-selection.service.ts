@@ -17,13 +17,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable ,  ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 
 @Injectable()
 
 export class AwsResourceTypeSelectionService {
     private subject = new ReplaySubject<any>();
-    private allResources = new ReplaySubject<any>();
+    private allResources = new ReplaySubject<any>(1);
+    private resourcesCountAndType = new ReplaySubject<any>(1);
 
     awsResourceSelected(resource: string) {
         this.subject.next(resource);
@@ -31,6 +32,14 @@ export class AwsResourceTypeSelectionService {
 
     allAwsResourcesForAssetGroup(allAwsResources: {}) {
         this.allResources.next(allAwsResources);
+    }
+
+    setAssetTypeCount(assetType) {
+        this.resourcesCountAndType.next(assetType);
+    }
+
+    getAssetTypeCount() {
+        return this.resourcesCountAndType.asObservable();
     }
 
     getAllAwsResources(): Observable<any> {

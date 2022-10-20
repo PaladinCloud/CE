@@ -22,7 +22,7 @@ import { environment } from "./../../../../environments/environment";
 import { LoggerService } from "../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../shared/services/error-handling.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ToastObservableService } from "../../../post-login-app/common/services/toast-observable.service";
+import { UtilsService } from "src/app/shared/services/utils.service";
 import { WorkflowService } from "../../../core/services/workflow.service";
 import { RefactorFieldsService } from "../../../shared/services/refactor-fields.service";
 import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
@@ -71,6 +71,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
   headerColName;
   direction;
 
+  @Input() breadcrumbPresent;
   @Input() ruleID: any;
   constructor(
     private commonResponseService: CommonResponseService,
@@ -81,7 +82,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private downloadService: DownloadService,
-    private toastObservableService: ToastObservableService,
+    private utils: UtilsService,
     private workflowService: WorkflowService,
     private refactorFieldsService: RefactorFieldsService,
     private domainObservableService: DomainTypeObservableService
@@ -339,8 +340,8 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
             colName: getCols[col],
             hasPreImg: false,
             imgLink: "",
-            text: this.calculateDate(getData[row][getCols[col]]),
-            valText: new Date(getData[row][getCols[col]]).getTime(),
+            text: this.utils.calculateDateAndTime(getData[row][getCols[col]]),
+            valText: this.utils.calculateDateAndTime(getData[row][getCols[col]])
           };
         } else if (getCols[col].toLowerCase() === "severity") {
           if (getData[row][getCols[col]].toLowerCase() === "low") {
@@ -446,33 +447,10 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
     this.allColumns = Object.keys(totalVariablesObj);
   }
 
-  calculateDate(_JSDate) {
-    if (!_JSDate) {
-      return "No Data";
-    }
-    const date = new Date(_JSDate);
-    const year = date.getFullYear().toString();
-    const month = date.getMonth() + 1;
-    let monthString;
-    if (month < 10) {
-      monthString = "0" + month.toString();
-    } else {
-      monthString = month.toString();
-    }
-    const day = date.getDate();
-    let dayString;
-    if (day < 10) {
-      dayString = "0" + day.toString();
-    } else {
-      dayString = day.toString();
-    }
-    return monthString + "-" + dayString + "-" + year;
-  }
-
   goToDetails(row) {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["headerColName"] = undefined;

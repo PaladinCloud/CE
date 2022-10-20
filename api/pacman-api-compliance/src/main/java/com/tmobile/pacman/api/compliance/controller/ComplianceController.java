@@ -301,6 +301,7 @@ public class ComplianceController implements Constants {
     public ResponseEntity<Object> getIssueAudit(@RequestBody IssueAuditLogRequest request) {
         String issueId = request.getIssueId();
         String targetType = request.getTargetType();
+        String dataSource=request.getDataSource();
         int from = request.getFrom();
         int size = request.getSize();
         String searchText = request.getSearchText();
@@ -309,7 +310,7 @@ public class ComplianceController implements Constants {
         }
         ResponseWithOrder response = null;
         try {
-            response = complianceService.getIssueAuditLog(issueId, targetType, from, size, searchText);
+            response = complianceService.getIssueAuditLog(dataSource,issueId, targetType, from, size, searchText);
         } catch (ServiceException e) {
            return complianceService.formatException(e);
         }

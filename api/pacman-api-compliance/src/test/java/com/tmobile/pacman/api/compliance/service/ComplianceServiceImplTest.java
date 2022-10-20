@@ -340,19 +340,19 @@ public class ComplianceServiceImplTest {
                 complianceRepository.getIssueAuditLogCount(anyString(),
                         anyString())).thenReturn(5000l);
         when(
-                complianceRepository.getIssueAuditLog(anyString(), anyString(),
+                complianceRepository.getIssueAuditLog(anyString(),anyString(), anyString(),
                         anyInt(), anyInt(), anyString())).thenReturn(
                 CommonTestUtil.getLinkedHashMapObjectList());
-        assertThat(complianceService.getIssueAuditLog("dummyString",
+        assertThat(complianceService.getIssueAuditLog("aws","dummyString",
                 "dummyString", 2, 2, "dummyString"), is(notNullValue()));
 
         when(
-                complianceRepository.getIssueAuditLog(anyString(), anyString(),
+                complianceRepository.getIssueAuditLog(anyString(),anyString(), anyString(),
                         anyInt(), anyInt(), anyString())).thenThrow(
                 new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.getIssueAuditLog("dummyString",
+                () -> complianceService.getIssueAuditLog("aws","dummyString",
                         "dummyString", 2, 2, "dummyString")).isInstanceOf(
                 ServiceException.class);
     }

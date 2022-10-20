@@ -366,8 +366,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             'colName': getCols[col],
             'hasPreImg': false,
             'imgLink': '',
-            'text': getData[row][getCols[col]] ? new Date(getData[row][getCols[col]]).toLocaleString() : '',
-            'valText': getData[row][getCols[col]] ? new Date(getData[row][getCols[col]]).getTime() : ''
+            'text': getData[row][getCols[col]] ? this.utils.calculateDateAndTime(getData[row][getCols[col]],true) : '',
+            'valText': getData[row][getCols[col]] ? this.utils.calculateDateAndTime(getData[row][getCols[col]],true) : ''
           };
         } else {
           cellObj = {

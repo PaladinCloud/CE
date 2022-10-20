@@ -1,0 +1,20 @@
+<mat-card style="padding: 0; height: 100%; max-width: 450px;" (click)="$event.stopPropagation()">
+    <mat-card-header style="padding: 16px 24px; height:auto">Custom Selection</mat-card-header>
+    <mat-card-content style="padding: 20px 24px;">
+    <div class="custom-selection-content-wrapper">
+        <span>From :</span>
+        <app-dropdown [items]="years" (selected)="onSelectYear(fromDate, $event)" placeholder="Year"></app-dropdown>
+        <app-dropdown [items]="allMonths" (selected)="onSelectMonth(fromDate, $event)" placeholder="Month"></app-dropdown>
+        <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(fromDate, $event)" placeholder="Date"></app-dropdown>
+        <span>To :</span>
+        <app-dropdown [items]="years" (selected)="onSelectYear(toDate, $event)" placeholder="Year"></app-dropdown>
+        <app-dropdown [items]="allMonths" (selected)="onSelectMonth(toDate, $event)" placeholder="Month"></app-dropdown>
+        <app-dropdown [items]="allMonthDays" (selected)="onSelectDay(toDate, $event)" placeholder="Date"></app-dropdown>
+    </div>
+    </mat-card-content>
+    <mat-card-actions>
+    <button style="margin-left: auto; color: var(--primary-400);" mat-button (click)="customDateSelected(fromDate, toDate)">
+        Apply
+    </button>
+    </mat-card-actions>
+</mat-card>

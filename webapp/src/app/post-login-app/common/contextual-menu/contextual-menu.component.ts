@@ -76,6 +76,12 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
           parent: "Assets",
           route: "/pl/assets/asset-list",
         },
+        {
+          "id": 25,
+          "name": "Distribution",
+          "parent": "Assets",
+          "route": "/pl/assets/asset-distribution"
+        }
       ],
     },
     {
@@ -274,6 +280,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
   }
 
   selectNode(node: TreeNode, event: any) {
+    this.workflowService.clearAllLevels();
     node.toggleExpanded();
     this.currentNodeId = node.id;
     this.currentParentId = node.parent.id;

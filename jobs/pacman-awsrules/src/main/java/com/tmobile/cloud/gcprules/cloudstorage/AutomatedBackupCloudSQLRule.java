@@ -41,7 +41,7 @@ public class AutomatedBackupCloudSQLRule extends BaseRule {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_cloudstorage/_search";
+            vmEsURL = vmEsURL + "/gcp_cloudsql/_search";
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
 
@@ -93,11 +93,12 @@ public class AutomatedBackupCloudSQLRule extends BaseRule {
 
             logger.debug("Validating the data item: {}", backupObject);
 
-            Boolean isBackupEnabled=backupObject.getAsJsonObject().get(PacmanRuleConstants.BACKUP_CONFIG).getAsBoolean();
+            Boolean isBackupEnabled=backupObject.getAsJsonObject().get(PacmanRuleConstants.BACKUP_ENABLED).getAsBoolean();
 
             if (isBackupEnabled) {
                 validationResult = true;
-            } else {
+            }
+            else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
 

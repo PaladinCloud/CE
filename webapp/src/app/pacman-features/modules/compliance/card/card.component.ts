@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ErrorHandlingService } from "src/app/shared/services/error-handling.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
@@ -12,25 +12,22 @@ import { UtilsService } from "../../../../shared/services/utils.service";
 })
 export class CardComponent implements OnInit {
   @Input() card: any;
-  @Input() policyData: any;
+  @Input() data: any;
+  @Input() dataError = '';
 
   errorType = '';
   widgetWidth = 225;
   widgetHeight = 250;
-  strokeColor = 'red';
+  strokeColor = '#fff';
   MainTextcolor = '#000';
   innerRadius: any = 85;
   outerRadius: any = 60;
   errorMessage: any;
   widgetWidth2: number;
-  @Input() cardButtonAction;
-  @Input() complianceData = [];
-  @Input() assetsCountData = [];
-  @Input() complianceDataError:string = '';
-  @Input() assetsCountDataError: string = '';
-  @Input() policyDataError: string = '';
-
-  private agAndDomain = {};
+  @Output() graphIntervalSelected = new EventEmitter<any>();
+  
+  isCustomSelected = false;
+  
 
   constructor(
     private errorHandling: ErrorHandlingService,
@@ -41,7 +38,60 @@ export class CardComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    
+  }
+
+  
+
+  handleGraphIntervalSelection = (e) => {
+    e = e.toLowerCase();
+    if(e == "all time" || e == "custom"){
+      if(e=="custom"){
+        this.isCustomSelected = true;
+        return;
+      }
+      this.dateIntervalSelected();
+      return;
+    }
+    let date = new Date();
+    this.isCustomSelected = false;
+    let queryParamObj = {};
+    switch(e){
+      case "1 week":
+        date.setDate(date.getDate() - 7);
+        break;
+      case "1 month":
+        date.setMonth(date.getMonth() - 1);
+        break;
+      case "6 months":
+        date.setMonth(date.getMonth() - 6);
+        break;
+      case "12 months":
+        date.setFullYear(date.getFullYear() - 1);
+        break;
+    }
+
+    this.dateIntervalSelected(date); 
+  }
+
+  getFormattedDate(date: Date){
+    const offset = date.getTimezoneOffset()
+    let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+    return formattedDate;
+  }
+
+  dateIntervalSelected(fromDate?, toDate?){
+    let queryParamObj = {}
+    if(fromDate){
+      queryParamObj["from"] = this.getFormattedDate(fromDate);
+    }
+    if(toDate){
+      queryParamObj["to"] = this.getFormattedDate(toDate);
+    }    
+    this.isCustomSelected = false;
+    this.graphIntervalSelected.emit(queryParamObj);
+  }
 
 
   navigateDataTable(event) {

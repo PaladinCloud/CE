@@ -6,6 +6,7 @@ import java.util.*;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.keyvault.Key;
+import com.microsoft.azure.management.keyvault.Secret;
 import com.microsoft.azure.management.keyvault.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +109,13 @@ public class VaultInventoryCollector {
 							keyExpirationDate.add(key.attributes().expires().toString());
 						}
 						vaultVH.setKeyExpirationDate(keyExpirationDate);
+						PagedList<Secret> secrets = azureVault.secrets().list();
+						Set<String> secretExpirationDate=new HashSet<>();
+						for (Secret secret : secrets) {
+							secretExpirationDate.add(secret.attributes().expires().toString());
+						}
+						vaultVH.setSecretExpirationDate(secretExpirationDate);
+
 					}
 					catch(Exception e)
 					{

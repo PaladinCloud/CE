@@ -75,6 +75,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.sidenavExpanderLeft = 250;
       this.rotationVar = 'rotate(180deg)';
       this.mode = "over";
+      this.windowExpansionService.setExpansionStatus(this.isExpanded);
     }
   }
 
@@ -84,6 +85,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
       this.sidenavExpanderLeft = 70;
       this.rotationVar = 'rotate(0)';
       this.mode = "side";
+      this.windowExpansionService.setExpansionStatus(this.isExpanded);
     }
   }
 

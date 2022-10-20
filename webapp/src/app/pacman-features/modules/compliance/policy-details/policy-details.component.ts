@@ -37,8 +37,8 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   widgetWidth: number;
   widgetHeight: number;
   /*variables for breadcrumb data*/
-  breadcrumbArray: any= ['Compliance'];
-  breadcrumbLinks: any= ['compliance-dashboard'];
+  breadcrumbArray: any= [];
+  breadcrumbLinks: any= [];
   breadcrumbPresent: any;
   complianceDropdowns: any = [];
   searchDropdownData: any = {};
@@ -79,6 +79,12 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     try {
+      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
       // gets the current page url,which is used to come back to the same page after navigate
       this.breadcrumbPresent = 'Policy Compliance';
       this.widgetWidth = parseInt(window.getComputedStyle(this.widgetContainer.nativeElement, null).getPropertyValue('width'), 10);
@@ -128,7 +134,9 @@ export class PolicyDetailsComponent implements OnInit, OnDestroy {
   }
   navigateBack() {
     try {
-        this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
+      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+        this.router.routerState.snapshot.root
+      );
       } catch (error) {
         this.logger.log('error', error);
       }

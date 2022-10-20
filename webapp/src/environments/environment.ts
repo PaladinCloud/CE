@@ -33,6 +33,10 @@ export const environment = {
         url: '{{baseUrl}}/auth/user/login',
         method: 'POST'
     },
+    distributionBySeverity:{
+        url: '{{baseUrl}}/compliance/v1/issues/distribution/aggregate',
+        method: 'GET'
+    },
     pacmanIssues: {
         url: '{{baseUrl}}/compliance/v1/issues/distribution',
         method: 'GET'
@@ -203,6 +207,14 @@ export const environment = {
     },
     assetTilesdata: {
         url: '{{baseUrl}}/asset/v1/assetgroup',
+        method: 'GET'
+    },
+    exemptedAssetCount: {
+        url: '{{baseUrl}}/asset/v1/count/exempted',
+        method: 'GET'
+    },
+    assetTrend: {
+        url: '{{baseUrl}}/asset/v1/trend/assetcount',
         method: 'GET'
     },
     resourceCount: {

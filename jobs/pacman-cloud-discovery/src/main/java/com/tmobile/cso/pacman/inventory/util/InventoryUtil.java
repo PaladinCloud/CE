@@ -163,6 +163,7 @@ import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.DescribeTaskDefinitionRequest;
 import com.amazonaws.services.ecs.model.DescribeTaskDefinitionResult;
+import com.amazonaws.services.ecs.model.ListTagsForResourceResult;
 import com.amazonaws.services.ecs.model.ListTaskDefinitionsRequest;
 import com.amazonaws.services.ecs.model.ListTaskDefinitionsResult;
 import com.amazonaws.services.ecs.model.TaskDefinition;
@@ -336,6 +337,8 @@ import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
 import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
 import com.tmobile.cso.pacman.inventory.vo.DynamoVH;
+import com.tmobile.cso.pacman.inventory.vo.ECSClusterVH;
+import com.tmobile.cso.pacman.inventory.vo.ECSTaskDefinitionVH;
 import com.tmobile.cso.pacman.inventory.vo.EKSVH;
 import com.tmobile.cso.pacman.inventory.vo.EbsVH;
 import com.tmobile.cso.pacman.inventory.vo.EfsVH;
@@ -1009,7 +1012,7 @@ public class InventoryUtil {
 	}
 	
 	/**
-	 * Fetch AWS ECS Cluster info.
+	 * Fetch AWS ECS TaskDefinition info.
 	 *
 	 * @param temporaryCredentials the temporary credentials
 	 * @param skipRegions          the skip regions
@@ -1017,12 +1020,12 @@ public class InventoryUtil {
 	 * @param accountName          the account name
 	 * @return the map
 	 */
-	public static Map<String, List<TaskDefinition>> fetchECSInfo(BasicSessionCredentials temporaryCredentials,
-			String skipRegions, String accountId, String accountName) {
+	public static Map<String, List<ECSTaskDefinitionVH>> fetchECSTaskDefInfo(
+			BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName) {
 
-		Map<String, List<TaskDefinition>> ecsTaskDefMap = new LinkedHashMap<>();
+		Map<String, List<ECSTaskDefinitionVH>> ecsTaskDefMap = new LinkedHashMap<>();
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
-				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ECS\" , \"region\":\"";
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ecstaskdefinition\" , \"region\":\"";
 		for (Region region : RegionUtils.getRegions()) {
 			try {
 				if (!skipRegions.contains(region.getName())) {
@@ -1038,16 +1041,20 @@ public class InventoryUtil {
 						token = taskDefinRes.getNextToken();
 					} while (token != null);
 
-					List<TaskDefinition> taskDefList = new ArrayList<>();
+					List<ECSTaskDefinitionVH> taskDefList = new ArrayList<>();
 					if (!taskDefArnList.isEmpty()) {
 						taskDefArnList.forEach(taskDef -> {
 							DescribeTaskDefinitionResult describeTaskDefinition = ecsClient.describeTaskDefinition(
 									new DescribeTaskDefinitionRequest().withTaskDefinition(taskDef));
 							TaskDefinition taskDefinition = describeTaskDefinition.getTaskDefinition();
-							taskDefList.add(taskDefinition);
+							ListTagsForResourceResult listTagsForResource = ecsClient.listTagsForResource(
+									new com.amazonaws.services.ecs.model.ListTagsForResourceRequest()
+											.withResourceArn(taskDefinition.getTaskDefinitionArn()));
+							List<com.amazonaws.services.ecs.model.Tag> tags = listTagsForResource.getTags();
+							taskDefList.add(new ECSTaskDefinitionVH(taskDefinition, tags));
 						});
-						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ECS " + region.getName() + " >> "
-								+ taskDefList.size());
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ecstaskdefinition "
+								+ region.getName() + " >> " + taskDefList.size());
 						ecsTaskDefMap.put(accountId + delimiter + accountName + delimiter + region.getName(),
 								taskDefList);
 					}
@@ -1055,13 +1062,76 @@ public class InventoryUtil {
 			} catch (Exception e) {
 				if (region.isServiceSupported(AmazonECS.ENDPOINT_PREFIX)) {
 					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
-					ErrorManageUtil.uploadError(accountId, region.getName(), "ECS", e.getMessage());
+					ErrorManageUtil.uploadError(accountId, region.getName(), "ecstaskdefinition", e.getMessage());
 				}
 			}
 		}
 		return ecsTaskDefMap;
 	}
 
+	/**
+	 * Fetch AWS ECS Cluster info.
+	 *
+	 * @param temporaryCredentials the temporary credentials
+	 * @param skipRegions          the skip regions
+	 * @param accountId            the accountId
+	 * @param accountName          the account name
+	 * @return the map
+	 */
+	public static Map<String, List<ECSClusterVH>> fetchECSClusterInfo(BasicSessionCredentials temporaryCredentials,
+			String skipRegions, String accountId, String accountName) {
+
+		Map<String, List<ECSClusterVH>> ecsClusterMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ecscluster\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AmazonECS ecsClient = AmazonECSClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+					List<String> clusterArnList = new ArrayList<>();
+					String token = null;
+					do {
+						com.amazonaws.services.ecs.model.ListClustersResult clusterRes = ecsClient
+								.listClusters(new com.amazonaws.services.ecs.model.ListClustersRequest())
+								.withNextToken(token);
+						clusterArnList.addAll(clusterRes.getClusterArns());
+						token = clusterRes.getNextToken();
+					} while (token != null);
+
+					List<ECSClusterVH> clusterList = new ArrayList<>();
+					if (!clusterArnList.isEmpty()) {
+						clusterArnList.forEach(clusderarn -> {
+							com.amazonaws.services.ecs.model.DescribeClustersResult clusterResult = ecsClient
+									.describeClusters(new com.amazonaws.services.ecs.model.DescribeClustersRequest()
+											.withClusters(clusderarn));
+							List<com.amazonaws.services.ecs.model.Cluster> clusters = clusterResult.getClusters();
+							clusters.forEach(cluster -> {
+								ListTagsForResourceResult listTagsForResource = ecsClient.listTagsForResource(
+										new com.amazonaws.services.ecs.model.ListTagsForResourceRequest()
+												.withResourceArn(cluster.getClusterArn()));
+								List<com.amazonaws.services.ecs.model.Tag> tags = listTagsForResource.getTags();
+								clusterList.add(new ECSClusterVH(cluster, tags));
+							});
+
+						});
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ecscluster " + region.getName()
+								+ " >> " + clusterList.size());
+						ecsClusterMap.put(accountId + delimiter + accountName + delimiter + region.getName(),
+								clusterList);
+					}
+				}
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonECS.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, region.getName(), "ecscluster", e.getMessage());
+				}
+			}
+		}
+		return ecsClusterMap;
+	}
+	
 	/**
 	 * Fetch AWS Access Analyzer info.
 	 *

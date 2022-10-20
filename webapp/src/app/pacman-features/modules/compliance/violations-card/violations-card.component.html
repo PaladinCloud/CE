@@ -1,8 +1,22 @@
-<mat-card class="violations-card">
-  <mat-card-title-group>
-    <mat-card-title>{{card.name}} Violations</mat-card-title>
-    <div class="card-{{card.id}}"><img src="/assets/icons/exclamation-triangle.svg" style="padding: 8px;" /></div>
-  </mat-card-title-group>
-  <mat-card-subtitle (click)="redirect()">{{card.num}}<img style="padding: 5px 12.5px;" src="/assets/icons/Path.svg" />
-  </mat-card-subtitle>
-</mat-card>
+<div class="violations-card">
+  <div class="violations-card-wrapper flex flex-col">
+    <div class="violations-content-container flex flex-row">
+      <div class="violations-img">
+        <img src="/assets/icons/violations-{{card.name}}.svg" alt="" >
+      </div>
+      <div class="violations-content flex flex-col">
+        <div class="violations-title capitalize">{{card.name}} Violations</div>
+        <div class="violations-count" (click)="redirect()">{{card.totalViolations}} <img src="/assets/icons/Path.svg" /></div>
+      </div>
+    </div>
+    <hr width="100%" style="color: var(--border-200);">
+    <div class="violations-details-container">
+      <div class="violations-details-wrapper flex flex-row">
+        <div class="{{item}}-count flex flex-col" *ngFor="let item of getKeys(card.subInfo)">
+          <div class="name">{{ item }}</div>
+          <div class="count">{{ card.subInfo[item] }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

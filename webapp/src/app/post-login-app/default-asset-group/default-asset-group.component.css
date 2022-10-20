@@ -53,6 +53,7 @@
   padding-bottom: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .defualt-asset-count {

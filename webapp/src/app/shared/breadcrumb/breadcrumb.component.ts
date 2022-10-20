@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, Input, OnDestroy} from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, OnChanges, SimpleChanges} from '@angular/core';
 import { AssetGroupObservableService } from '../../core/services/asset-group-observable.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
@@ -74,17 +74,8 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   }
 
   navigateRespective(index): any {
-      if (this.asset === true) {
-        this.router.navigate(['/pl/assets', this.breadcrumbLinks[index]], {queryParams: this.agAndDomain});
-      } else if (this.isCustomParentRoute === true && this.parentRouteName !== undefined) {
-        this.router.navigate(['/pl/' + this.parentRouteName, this.breadcrumbLinks[index]], {queryParams: this.agAndDomain});
-      } else {
-        this.router.navigate(['/pl/compliance', this.breadcrumbLinks[index]], {queryParams: this.agAndDomain});
-      }
-    /**
-     * added by Trinanjan on 09/02/2018 for back button functionality
-     * To clear page levels
-     */
+    let pathArr = [this.breadcrumbLinks[index]];
+    this.router.navigate(pathArr, {queryParams: this.agAndDomain});
       this.workflowService.clearAllLevels();
   }
 

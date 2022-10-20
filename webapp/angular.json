@@ -12,7 +12,6 @@
           "strict": true
         }
       },
-      
       "prefix": "app",
       "architect": {
         "build": {
@@ -99,7 +98,8 @@
             "tsConfig": "tsconfig.spec.json",
             "scripts": [
               "node_modules/offline-js/offline.js",
-              "node_modules/ag-grid/dist/ag-grid.js"
+              "node_modules/ag-grid/dist/ag-grid.js",
+              "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
             "styles": [
               "src/styles.css",

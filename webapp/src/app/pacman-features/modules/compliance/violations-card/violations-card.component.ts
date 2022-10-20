@@ -10,6 +10,7 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 })
 export class ViolationsCardComponent implements OnInit {
   @Input() card: any;
+  @Input() breadcrumbPresent;
   constructor(
     private router: Router,
     private workflowService: WorkflowService,
@@ -23,8 +24,12 @@ export class ViolationsCardComponent implements OnInit {
   ngOnInit() {
   }
 
+  getKeys(obj){
+    return Object.keys(obj);
+  }
+
   redirect() {
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
     if (this.routeTo !== undefined) {
       const eachParams = { 'severity.keyword': this.card.name.toLowerCase() };
       const newParams = this.utils.makeFilterObj(eachParams);

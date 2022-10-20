@@ -13,7 +13,7 @@
  -->
 
  <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div class='layer-breadcrumb-wrapper'>
+    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
         <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
     <div class="floating-widgets-header flex flex-between">
