@@ -2105,11 +2105,29 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         return urlToQuery;
     }
+    private  String createAuditTrail(String ds, String type, String status, String id) {
+        String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Map<String, String> auditTrail = new LinkedHashMap<>();
+        auditTrail.put("datasource", ds);
+        auditTrail.put("targetType", type);
+        auditTrail.put("annotationid", id);
+        auditTrail.put("status", status);
+        auditTrail.put("auditdate", date);
+        auditTrail.put("_auditdate", date.substring(0, date.indexOf('T')));
+        String _auditTrail = null;
+        try {
+            _auditTrail = new ObjectMapper().writeValueAsString(auditTrail);
+        } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
+        }
+        return _auditTrail;
+    }
 
     @Override
     public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup,IssuesException issuesException)
             throws DataException {
-
+        String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
+        StringBuilder builderRequestAudit= new StringBuilder();
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
         String actionTemplateException = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\"} }%n";
@@ -2119,6 +2137,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         Map<String, String> exceptions = new HashMap<>();
         List<String> failedIssueIds = new ArrayList<>();
         List<String> errors = new ArrayList<>();
+        List<String> auditErrors = new ArrayList<>();
+
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
             issueDetails = getMultipleIssueDetails(assetGroup,issueIds, OPEN);
@@ -2171,12 +2191,20 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         bulkRequest.append(
                                 String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
                         bulkRequest.append(doc + "\n");
+                        String _index = dataSource;
+                        String _type = targetType + "_audit";
+
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "enforced", id)+"\n");
+
                     }
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
                         logger.info("Uploading {}" + i);
                         bulkUpload(errors, bulkRequest.toString());
+                        bulkUpload(auditErrors, builderRequestAudit.toString());
+
                         bulkRequest = new StringBuilder();
+                        builderRequestAudit= new StringBuilder();
                     }
                 } catch (Exception e) {
                     throw new DataException(e);
@@ -2185,6 +2213,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (bulkRequest.length() > 0) {
                 logger.info("Uploading {}" + i);
                 bulkUpload(errors, bulkRequest.toString());
+                bulkUpload(auditErrors, builderRequestAudit.toString());
+
             }
 
             if (!errors.isEmpty()) {
@@ -2194,6 +2224,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             failedIssueIds.addAll(revokeException(assetGroup,issueIds));
 
             if (failedIssueIds.isEmpty()) {
+                System.out.println("exception size"+failedIssueIds);
                 i = 0;
                 for (Map.Entry<String, String> entry : exceptions.entrySet()) {
                     bulkRequest.append(entry.getValue());
@@ -2254,12 +2285,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     @Override
     public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup,List<String> issueIds) throws DataException {
 
+        String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
+        StringBuilder builderRequestAudit= new StringBuilder();
         String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
 
         StringBuilder bulkRequest = new StringBuilder();
         List<String> failedIssueIds = new ArrayList<>();
         List<String> errors = new ArrayList<>();
+        List<String> auditErrors = new ArrayList<>();
 
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
@@ -2295,11 +2329,18 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         bulkRequest.append(
                                 String.format(actionTemplateIssue, id, dataSource, targetType, routing, parent));
                         bulkRequest.append(doc + "\n");
+                        String _index = dataSource;
+                        String _type = targetType + "_audit";
+
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id)+"\n");
+
                     }
                     i++;
                     if (i % 100 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
                         logger.info("Uploading {}" + i);
                         bulkUpload(errors, bulkRequest.toString());
+                        bulkUpload(auditErrors, builderRequestAudit.toString());
+
                         bulkRequest = new StringBuilder();
                     }
                 } catch (Exception e) {
@@ -2309,6 +2350,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (bulkRequest.length() > 0) {
                 logger.info("Uploading {}" + i);
                 bulkUpload(errors, bulkRequest.toString());
+                bulkUpload(auditErrors, builderRequestAudit.toString());
+
             }
 
             if (!errors.isEmpty()) {
@@ -2376,6 +2419,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         StringBuilder bulkRequest = new StringBuilder();
 
         List<String> errors = new ArrayList<>();
+        List<String> auditErrors = new ArrayList<>();
         List<String> failedIssueIds = new ArrayList<>();
         List<Map<String, Object>> exceptionDetails = new ArrayList<>();
 
@@ -2437,16 +2481,17 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private void bulkUpload(List<String> errors, String bulkRequest) {
+        System.out.println("bulkRequest"+ bulkRequest);
         try {
             Response resp = invokeAPI("POST", "/_bulk?refresh=true", bulkRequest);
             String responseStr = EntityUtils.toString(resp.getEntity());
             if (responseStr.contains("\"errors\":true")) {
                 logger.error(responseStr);
-                errors.add(responseStr);
+  errors.add(responseStr);
             }
         } catch (Exception e) {
             logger.error("Bulk upload failed", e);
-            errors.add(e.getMessage());
+         errors.add(e.getMessage());
         }
     }
 
