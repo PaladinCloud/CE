@@ -1,10 +1,17 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.tmobile.pacbot.azure.inventory.vo.*;
+import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +25,6 @@ import com.microsoft.azure.management.sql.SqlFirewallRule;
 import com.microsoft.azure.management.sql.SqlServer;
 import com.microsoft.azure.management.sql.SqlVirtualNetworkRule;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.vo.ElasticPoolVH;
-import com.tmobile.pacbot.azure.inventory.vo.FailoverGroupVH;
-import com.tmobile.pacbot.azure.inventory.vo.SQLServerVH;
-import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 
 @Component
 public class SQLServerInventoryCollector {
@@ -57,10 +60,53 @@ public class SQLServerInventoryCollector {
 			firewallRule(sqlServer, sqlServerVH);
 			getElasticPoolList(sqlServer.elasticPools().list(), sqlServerVH);
 			getFailoverGroupList(sqlServer.failoverGroups().list(), sqlServerVH);
+			setVulnerabilityAssessment(sqlServerVH,subscription,sqlServer);
 			sqlServerList.add(sqlServerVH);
 		}
 		log.info("Target Type : {}  Total: {} ","SqlServer",sqlServerList.size());
 		return sqlServerList;
+
+	}
+
+	private void setVulnerabilityAssessment(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
+		try{
+			String apiUrlTemplate="https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Sql/servers/%s/vulnerabilityAssessments?api-version=2020-11-01-preview";
+			String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+			String url = String.format(apiUrlTemplate,
+					URLEncoder.encode(subscription.getSubscriptionId(),
+							java.nio.charset.StandardCharsets.UTF_8.toString()),
+					URLEncoder.encode(sqlServer.resourceGroupName(),
+							java.nio.charset.StandardCharsets.UTF_8.toString()),
+					URLEncoder.encode(sqlServer.name(),
+							java.nio.charset.StandardCharsets.UTF_8.toString()));
+			log.info("The url is {}",url);
+
+			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+			log.info("Response is :{}",response);
+			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+			JsonArray defenderObjects = responseObj.getAsJsonArray("value");
+
+			for(JsonElement defenderElement:defenderObjects){
+				JsonObject  defenderObject = defenderElement.getAsJsonObject();
+				JsonObject properties = defenderObject.getAsJsonObject("properties");
+				log.debug("Properties data{}",properties);
+				if(properties!=null) {
+				    if(properties.has("storageContainerPath")) {
+						sqlServerVH.setStorageContainerPath(properties.get("storageContainerPath").getAsJsonPrimitive().getAsString());
+					}
+					JsonObject recurringScans=properties.getAsJsonObject("recurringScans");
+					sqlServerVH.setRecurringScansEnabled(recurringScans.getAsJsonPrimitive("isEnabled").getAsBoolean());
+					if(properties.has("emails")) {
+						sqlServerVH.setEmails(recurringScans.getAsJsonArray("emails").getAsString());
+					}
+					sqlServerVH.setEmailSubscriptionAdmins(recurringScans.getAsJsonPrimitive("emailSubscriptionAdmins").getAsBoolean());
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 
 	}
 
