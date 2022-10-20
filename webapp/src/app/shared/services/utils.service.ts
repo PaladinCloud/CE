@@ -234,13 +234,19 @@ export class UtilsService {
       const day = date.getDate();
       const monthValue = monthsList[month];
       let hours = date.getHours();
+      let hrs = ''+hours;
+      if(hours<10)
+      hrs = '0' + hours;
+      let minutes = date.getMinutes();
+      let mins = ''+hours;
+      if(minutes<10)
+      mins = '0' + minutes;
       const ampm = (hours >= 12 && hours<24)  ? 'PM' : 'AM';
         if ((ampm === 'PM' && hours != 12)|| (ampm=='AM' && hours==24)) {
           hours = hours - 12;
         }
-      
       if (requiredTime) {
-        return monthValue + ' ' + day + ',' + ' ' + year + ' ' + hours + ':00 ' + ampm;
+        return monthValue + ' ' + day + ',' + ' ' + year + ' '+ hrs + ':' + mins + ' ' + ampm;
        }
       return monthValue + ' ' + day + ',' + ' ' + year + ' ';
     }
