@@ -23,9 +23,10 @@
 
 .multiline-graph-container .legend-text {
   height: 4vh;
-  padding: 0 0.7vw;
+  padding: 4px .7vw;
   background-color: var(--background-white);
   white-space: nowrap;
+  font: var(--text-body-2);
 }
 
 .multiline-graph-container .legend-color {
@@ -39,4 +40,10 @@
 
 .hover {
   transition: 0.2s ease;
+}
+
+.x-axis-text{
+  font: var(--text-caption);
+  display: flex;
+  justify-content: center;
 }

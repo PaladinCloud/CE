@@ -4,12 +4,20 @@
     padding: 24px;
     overflow: scroll;
 }
+
+
+.asset-dashboard-container{
+  height: 100%;
+  width: 100%;
+}
+
 .asset-dashboard-wrapper {
-  /* background-color: var(--background-white); */
   border-radius: var(--border-radius);
   width: 100%;
+  height: 100%;
   gap: 20px;
 }
+
 .asset-dashboard-header .title {
     box-sizing: border-box;
     display: flex;
@@ -17,8 +25,6 @@
     align-items: center;
     padding: 0px 0px 8px;
     width: 100%;
-    /* line-height: 22px; */
-    /* border-radius: var(--border-radius) var(--border-radius) 0px 0px; */
     font: var(--text-headline-6);
     color: var(--text-high-emphasis);
 }
@@ -30,15 +36,10 @@
 }
 
 .type-count-container{
-    /* padding-bottom: 20px; */
     gap: 18px;
 }
 
 .asset-summary-card {
-  /* box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; */
   justify-content: center;
   padding: 20px 16px;
   border-radius: var(--border-radius);
@@ -69,6 +70,10 @@
   gap: 16px;
 }
 
+.asset-summary-content{
+  gap: 16px;
+}
+
 .asset-summary-content .asset-summary-title{
   color: var(--text-high-emphasis);
   font: var(--text-body-2);
@@ -82,6 +87,9 @@
 
 .asset-summary-content .asset-summary-count img{
   filter: invert(46%) sepia(3%) saturate(1769%) hue-rotate(159deg) brightness(96%) contrast(85%);
+}
+.asset-summary-details{
+  gap: 8px;
 }
 
 .asset-summary-details-wrapper{
@@ -169,7 +177,7 @@ mat-card-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20px 24px 0px 24px;
+  padding: 20px 24px;
   width: 100%;
   height: 100%;
   min-height: 300px;
@@ -183,8 +191,17 @@ mat-card-content {
   width: 100%;
 }
 
-.graph-dropdown-container{
+.date-dropdown-container{
   margin-left: auto;
+}
+
+::ng-deep .mat-menu-panel{
+  min-height: auto !important;
+  min-width: fit-content !important;
+}
+
+::ng-deep .mat-menu-content{
+  padding: 0 !important;
 }
 
 .asset-dashboard-container ::ng-deep .mat-form-field-infix{
@@ -207,11 +224,4 @@ mat-card-content {
 
 #TotalAssetsSummaryTrend ::ng-deep .multiline-graph-container .focus .axis .domain{
   display: none;
-}
-
-.date-selection-modal{
-  background-color: var(--background-white);
-  position: absolute;
-  right: 20px;
-  z-index: 99;
 }

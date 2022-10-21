@@ -12,11 +12,16 @@ export class DropdownComponent implements OnInit, OnChanges {
   @Input() selectedItem: string;
 
   @Output() selected = new EventEmitter();
+  @Output() closeEventEmitter = new EventEmitter();
 
   itemList = [];
   selectedOption;
 
   constructor() { }
+
+  onClose(){
+    this.closeEventEmitter.emit();
+  }
 
   massageData(list: any, selectedOption: any) {    
     if(list){

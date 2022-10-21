@@ -15,7 +15,7 @@
   margin-bottom: 20px;
 }
 .container-3{
-  height: 500px;
+  height: 530px;
   margin-bottom: 20px;
 }
 .container-4 {
@@ -55,6 +55,22 @@ mat-grid-tile {
       height: auto;
   }
 }
+
+@media (max-width:1000px){
+  .container-1 {
+      height: auto;
+  }
+  .container-2 {
+      height: auto;
+  }
+  .container-3 {
+    height: auto;
+}
+  .container-4 {
+      height: auto;
+  }
+}
+
 
 app-data-table{
   height: 100%;
