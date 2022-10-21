@@ -1,12 +1,15 @@
 <mat-card class="panel">
   <mat-card-header>
     {{ card.header }}
-    <div class="graph-dropdown-container" *ngIf="card.id == 3">
-      <div (click)="isCustomSelected = false" class="graph-dropdown-wrapper">
-        <app-dropdown [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="'All time'" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
-      </div>
-      <div class="date-selection-modal" *ngIf="isCustomSelected">
-        <app-date-selection (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+    <div class="graph-dropdown-container" (blur)="test()" *ngIf="card.id == 3">
+      <div class="graph-dropdown-wrapper">
+        <app-dropdown (closeEventEmitter)="onDropdownClose()" (click)="ifCustomSelected()" [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
+        <div mat-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"></div>
+          <mat-menu #menu="matMenu">
+              <div class="date-selection-modal" >
+                  <app-date-selection [fromDate]="fromDate" [toDate]="toDate" (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+              </div>
+          </mat-menu>
       </div>
     </div>
   </mat-card-header>

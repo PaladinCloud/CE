@@ -23,6 +23,11 @@
     padding-bottom: 18px;
 }
 
+.arrow-img{
+    height: 1.4em; 
+    align-self: baseline;
+}
+
 .violations-header .title {
     box-sizing: border-box;
     display: flex;

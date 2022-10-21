@@ -36,6 +36,11 @@
     min-height: 17em;
 } 
 
+.floating-widgets-header .title-text{
+    font: var(--text-headline-6);
+    color: var(--text-high-emphasis);
+}
+
 .data-table-desc{
     margin: 1em 0 0;
     color: rgb(85, 85, 85);

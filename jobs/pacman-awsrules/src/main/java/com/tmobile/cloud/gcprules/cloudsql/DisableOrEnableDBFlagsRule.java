@@ -111,8 +111,10 @@ public class DisableOrEnableDBFlagsRule extends BaseRule {
                         return verifyUserOptionsNotPresentInDbFlags(databaseFlagsList);
                     }
                     for (JsonElement flag: databaseFlagsList) {
-                        boolean flagName=flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equals(dbFlagName);
-                        boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equals(dbFlagValue);
+                        boolean flagName=flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equalsIgnoreCase(dbFlagName);
+                        boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equalsIgnoreCase(dbFlagValue);
+                        logger.debug("flagName"+flagName);
+                        logger.debug("value"+value);
 
                         if( flagName && value ) {
                             validationResult = true;
