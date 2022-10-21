@@ -6,7 +6,7 @@
         {{ bar.title }}
       </div>
     </div>
-    <div class="label-percent">{{ bar.val }}%</div>
+    <div class="label-percent">{{ bar.val=="NR"?"NR":bar.val+"%" }}</div>
   </div>
   <div class="{{ bar.class }}">
     <mat-progress-bar
