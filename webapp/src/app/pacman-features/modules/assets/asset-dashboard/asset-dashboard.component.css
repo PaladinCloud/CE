@@ -82,7 +82,6 @@
 .asset-summary-content .asset-summary-count{
   color: var(--text-high-emphasis);
   font: var(--text-headline-3);
-  cursor: pointer;
 }
 
 .asset-summary-content .asset-summary-count img{

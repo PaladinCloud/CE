@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as d3 from 'd3';
 import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
@@ -23,8 +23,6 @@ import {
   ApexDataLabels,
   ApexChart,
   ApexPlotOptions,
-  ApexLegend,
-  ChartComponent,
   ApexTooltip
 } from "ng-apexcharts";
 import { Router } from "@angular/router";
