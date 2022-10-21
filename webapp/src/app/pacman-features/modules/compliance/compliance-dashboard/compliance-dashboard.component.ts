@@ -278,7 +278,7 @@ export class ComplianceDashboardComponent implements OnInit {
     },
     {
       id: 3,
-      header: "Total Assets",
+      header: "Total Assets vs Time",
       footer: "View Asset Distribution",
       cardButtonAction: this.navigateToAssetDistribution,
     },
@@ -671,22 +671,44 @@ export class ComplianceDashboardComponent implements OnInit {
         overallComplianceMethod
       )
       .subscribe((response) => {  
-        try {     
+        try {
           if(response[0].error){
             throw response[0];
           }
           this.complianceDataError = ''
-          this.complianceData = [];
+          this.complianceData = [
+            { class: "", title: "Security", val: "NR" },
+            { class: "", title: "Cost", val: "NR" },
+            { class: "", title: "Operations", val: "NR" },
+            { class: "", title: "Tagging", val: "NR" },
+          ];
           response[0].data.forEach((element) => {
-            if (element[1]["val"] <= 40) {
-              element[1]["class"] = "red";
-            } else if (element[1]["val"] <= 75) {
-              element[1]["class"] = "or";
-            } else {
-              element[1]["class"] = "gr";
+            let category = element[1]["title"].toLowerCase();
+            let index;
+            switch(category){
+              case "security":
+                index = 0;
+                break;
+              case "cost":
+                index = 1;
+                break;
+              case "operations":
+                index = 2;
+                break;
+              case "tagging":
+                index = 3;
+                break;
             }
-            this.complianceData.push(element[1]);
-          });
+              this.complianceData[index].val = element[1]["val"];
+
+            if (element[1]["val"] <= 40) {
+              this.complianceData[index].class = "red";
+            } else if (element[1]["val"] <= 75) {
+              this.complianceData[index].class = "or";
+            } else {
+              this.complianceData[index].class = "gr";
+            }
+          });          
           if(this.complianceData.length==0){
             this.complianceDataError = 'noDataAvailable';
           }          
@@ -952,7 +974,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   onresize(event): void {
-    this.breakpoint1 = event.target.innerWidth <= 800 ? 2 : 4;
+    this.breakpoint1 = event.target.innerWidth <= 1000 ? 2 : 4;
     this.breakpoint2 = event.target.innerWidth <= 800 ? 1 : 2;
     this.breakpoint3 = event.target.innerWidth <= 400 ? 1 : 1;
     this.breakpoint4 = event.target.innerWidth <= 400 ? 1 : 1;

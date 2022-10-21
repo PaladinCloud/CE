@@ -1,4 +1,5 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { MatMenuTrigger } from "@angular/material/menu";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ErrorHandlingService } from "src/app/shared/services/error-handling.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
@@ -26,7 +27,11 @@ export class CardComponent implements OnInit {
   widgetWidth2: number;
   @Output() graphIntervalSelected = new EventEmitter<any>();
   
+  @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
   isCustomSelected = false;
+  fromDate: Date = new Date(2022, 1, 1);
+  toDate: Date = new Date(2200, 12, 31);
+  selectedItem = "All time";
   
 
   constructor(
@@ -42,12 +47,27 @@ export class CardComponent implements OnInit {
     
   }
 
+  ifCustomSelected(){
+    
+    if(this.selectedItem=="Custom"){
+      this.selectedItem = "";
+    }
+  }
+
+  onDropdownClose(){
+    if(this.selectedItem==""){
+      this.selectedItem = "Custom";
+    }
+  }
+
   
 
   handleGraphIntervalSelection = (e) => {
+    this.selectedItem = e;
     e = e.toLowerCase();
     if(e == "all time" || e == "custom"){
       if(e=="custom"){
+        this.matMenuTrigger.openMenu()
         this.isCustomSelected = true;
         return;
       }

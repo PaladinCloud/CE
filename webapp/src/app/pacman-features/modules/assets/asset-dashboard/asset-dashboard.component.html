@@ -19,10 +19,9 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <hr width="100%" style="color: var(--border-200);"> -->
                     <div class="asset-summary-lower-container">
                         <div class="asset-summary-details-wrapper flex flex-row">
-                            <div class="flex flex-col" *ngFor="let data of tile.subContent">
+                            <div class="flex flex-col asset-summary-details" *ngFor="let data of tile.subContent">
                                 <div class="name">{{ data.title }}</div>
                                 <div class="count">{{data.count}}</div>
                             </div>
@@ -34,11 +33,14 @@
             <mat-card class="panel">
                 <mat-card-header>
                     {{ card.header }}
-                    <div (click)="isCustomSelected = false" class="graph-dropdown-container">
-                        <app-dropdown (click)="ifCustomSelected()" [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
-                        <div class="date-selection-modal" *ngIf="isCustomSelected">
-                             <app-date-selection (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
-                        </div>
+                    <div class="date-dropdown-container">
+                        <app-dropdown (closeEventEmitter)="onDropdownClose()" (click)="ifCustomSelected()" [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
+                        <div mat-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"></div>
+                        <mat-menu #menu="matMenu">
+                            <div class="date-selection-modal" >
+                                <app-date-selection [fromDate]="fromDate" [toDate]="toDate" (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+                            </div>
+                        </mat-menu>
                     </div>
                 </mat-card-header>
                 <mat-card-content>
@@ -46,7 +48,7 @@
                         <div class="chart-wrapper" id="TotalAssetsSummaryTrend" style="height: 100%; width: 100%; background-color: white;">
                             <div [class.loader]="totalAssetsCountData.length==0 && totalAssetsCountDataError==''"></div>
                             <app-error-message *ngIf="totalAssetsCountDataError" [selectedValue]="totalAssetsCountDataError"></app-error-message>
-                            <app-multiline-zoom-graph *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''" [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'" [graphHeight]="320" [graphLinesData]="totalAssetsCountData"></app-multiline-zoom-graph>
+                            <app-multiline-zoom-graph *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''" [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'" [graphHeight]="graphHeight" [graphLinesData]="totalAssetsCountData"></app-multiline-zoom-graph>
                         </div>
                     </div>
                 </mat-card-content>

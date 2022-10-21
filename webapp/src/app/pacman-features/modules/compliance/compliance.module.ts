@@ -119,9 +119,11 @@ import { PolicyViolationSummaryService } from "../../services/policy-violation-s
 import { PacmanIssuesService } from "../../services/pacman-issues.service";
 import { ProgressBarChartComponent } from "./progress-bar-chart/progress-bar-chart.component";
 import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-bar-chart.component";
+import { MatMenuModule } from "@angular/material/menu";
 
 @NgModule({
   imports: [
+    MatMenuModule,
     MatCardModule,
     MatGridListModule,
     MatProgressBarModule,

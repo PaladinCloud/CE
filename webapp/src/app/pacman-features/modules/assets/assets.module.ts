@@ -49,10 +49,12 @@ import { MatCardModule } from "@angular/material/card";
 import { NgApexchartsModule } from "ng-apexcharts";
 import { AssetDistributionComponent } from "./asset-distribution/asset-distribution.component";
 import { FetchResourcesService } from "../../services/fetch-resources.service";
+import { MatMenuModule } from "@angular/material/menu";
 
 @NgModule({
   imports: [
     MatCardModule,
+    MatMenuModule,
     MatSelectModule,
     CommonModule,
     AssetsRoutingModule,

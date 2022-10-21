@@ -17,7 +17,7 @@
         </mat-grid-list>
     </div>
     <div class="container-3">
-        <mat-grid-list [cols]="breakpoint3" rowHeight="500px" gutterSize="20px" (window:resize)="onresize($event)">
+        <mat-grid-list [cols]="breakpoint3" rowHeight="530px" gutterSize="20px" (window:resize)="onresize($event)">
             <mat-grid-tile>
                 <app-card [card]="cards[2]" [dataError]="totalAssetsCountDataError" [data]="totalAssetsCountData" (graphIntervalSelected)="getAssetsCountData($event)"></app-card>
             </mat-grid-tile>
