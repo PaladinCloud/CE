@@ -238,7 +238,7 @@ export class UtilsService {
       if(hours<10)
       hrs = '0' + hours;
       let minutes = date.getMinutes();
-      let mins = ''+hours;
+      let mins = ''+minutes;
       if(minutes<10)
       mins = '0' + minutes;
       const ampm = (hours >= 12 && hours<24)  ? 'PM' : 'AM';
