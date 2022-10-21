@@ -1186,8 +1186,6 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('abc4c00c-5fd4-4367-a899-62d7399d86ac','cdffb9cd-71de-4e29-9cae-783c2aa211ac','networkinterface','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a4293ded-951e-4b01-8633-6a10ec4b9457','cdffb9cd-71de-4e29-9cae-783c2aa211ac','nsg','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a4293ded-951e-4b01-8633-6a10ec4b9458','cdffb9cd-71de-4e29-9cae-783c2aa211ac','namespace','all','all');
-INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a4293ded-951e-4b01-8633-6a10ec4b9459','cdffb9cd-71de-4e29-9cae-783c2aa211ac','policydefinitions','all','all');
-INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a4293ded-951e-4b01-8633-6a10ec4b9460','cdffb9cd-71de-4e29-9cae-783c2aa211ac','policyevaluationresults','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a32495ca-ffc5-48af-ba26-316e7cb90012','cdffb9cd-71de-4e29-9cae-783c2aa211ac','postgresql','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('a32495ca-ffc5-48af-ba26-316e7cb90013','cdffb9cd-71de-4e29-9cae-783c2aa211ac','publicipaddress','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('9d115e83-2821-4eeb-8224-ba2bbba1a5fa','cdffb9cd-71de-4e29-9cae-783c2aa211ac','resourcegroup','all','all');
@@ -1233,6 +1231,9 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('b9udr432cf8-3465-4235-9612-4990d4ercrt70-30','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_project','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('b9udr432cf8-3465-4235-9612-4990d4erdrt80-40','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_serviceaccounts','all','all');
 
+delete from `cf_AssetGroupTargetDetails` where targetType ='ecs';
+delete from `cf_AssetGroupTargetDetails` where targetType = 'policydefinitions';
+delete from `cf_AssetGroupTargetDetails` where targetType = 'policyevaluationresults';
 
 /*Insert Domain in required table*/
 
