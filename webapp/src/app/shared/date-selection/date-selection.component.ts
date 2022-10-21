@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
 @Component({
   selector: "app-date-selection",
@@ -21,9 +21,10 @@ export class DateSelection implements OnInit {
         { text: 'November', id: 10 },
         { text: 'December', id: 11 }
     ];
-  allMonthDays = [];
-  fromDate: Date = new Date(2022, 1, 1);
-  toDate: Date = new Date(2200, 12, 31);
+  fromDays = [];
+  toDays = [];
+  @Input() fromDate: Date = new Date(2022, 1, 1);
+  @Input() toDate: Date = new Date(2200, 12, 31);
 
   @Output() datesSelected = new EventEmitter<any>();
 
@@ -62,7 +63,7 @@ export class DateSelection implements OnInit {
     return selectedMonth;
   }
 
-  onSelectMonth(date: Date, selectedMonth: any) {
+  onSelectMonth(date: Date, selectedMonth: any, allMonthDays) {
     const monthDays: any = [];
     let monthId = this.getMonthId(selectedMonth);
     
@@ -70,7 +71,11 @@ export class DateSelection implements OnInit {
     for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
       monthDays.push({ id: dayNo, text: dayNo.toString() });
     }
-    this.allMonthDays = monthDays;
+    if(allMonthDays=="from"){
+      this.fromDays = monthDays;
+    }else{ 
+      this.toDays = monthDays;
+    }
     date.setMonth(monthId);
   }
 

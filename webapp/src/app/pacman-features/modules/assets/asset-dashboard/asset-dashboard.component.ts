@@ -15,7 +15,8 @@
 import {
   Component,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  ViewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
@@ -30,6 +31,7 @@ import { CommonResponseService } from 'src/app/shared/services/common-response.s
 import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
 import { FetchResourcesService } from 'src/app/pacman-features/services/fetch-resources.service';
 import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-asset-dashboard',
@@ -53,10 +55,13 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
   dataSubscription;
+
+  graphHeight;
+  @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
   
   card = {
       id: 3,
-      header: "Total Assets",
+      header: "Total Assets vs Time",
     }
 
     tiles = [
@@ -103,6 +108,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   
   selectedItem = "All time";
   isCustomSelected: boolean = false;
+  fromDate: Date = new Date(2022, 1, 1);
+  toDate: Date = new Date(2200, 12, 31);
  
 
   constructor(
@@ -125,12 +132,18 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-
+    this.graphHeight = 320;
   }
 
   ifCustomSelected(){
     if(this.selectedItem=="Custom"){
-      // this.selectedItem = "";
+      this.selectedItem = "";
+    }
+  }
+
+  onDropdownClose(){
+    if(this.selectedItem==""){
+      this.selectedItem = "Custom";
     }
   }
 
@@ -140,6 +153,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     if(e == "all time" || e == "custom"){
       if(e=="custom"){
         this.isCustomSelected = true;
+        this.matMenuTrigger.openMenu()
         return;
       }
       this.dateIntervalSelected();
