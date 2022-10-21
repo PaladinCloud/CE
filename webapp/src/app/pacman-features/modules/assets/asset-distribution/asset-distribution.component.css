@@ -294,3 +294,7 @@ flex-grow: 0;
   padding: 6px 0px 8px 12px;
 }
 
+::ng-deep .apexcharts-canvas {
+  width: inherit !important;
+  overflow: hidden !important;
+}

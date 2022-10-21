@@ -200,6 +200,7 @@
   padding: 1em 1.6em 0;
   min-height: 5em;
   position: relative;
+  background-color: var(--background-white);
 }
 
 .tags {

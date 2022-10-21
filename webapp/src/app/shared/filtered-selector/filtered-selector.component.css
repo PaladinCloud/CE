@@ -55,10 +55,6 @@
     cursor: pointer;
 }
 
-.filter-without-cross {
-    padding: 0.6em 1em 0.7em 1em;
-}
-
 .filters{
 gap: 10px;
 display: flex;
