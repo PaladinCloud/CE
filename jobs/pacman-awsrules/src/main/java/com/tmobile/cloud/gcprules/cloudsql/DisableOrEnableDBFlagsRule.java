@@ -113,6 +113,8 @@ public class DisableOrEnableDBFlagsRule extends BaseRule {
                     for (JsonElement flag: databaseFlagsList) {
                         boolean flagName=flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equalsIgnoreCase(dbFlagName);
                         boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equalsIgnoreCase(dbFlagValue);
+                        logger.debug("flagName"+flagName);
+                        logger.debug("value"+value);
 
                         if( flagName && value ) {
                             validationResult = true;
