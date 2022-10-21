@@ -40,6 +40,7 @@ public class SQLServerInventoryCollector {
 		List<SQLServerVH> sqlServerList = new ArrayList<>();
 		Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
 		PagedList<SqlServer> sqlServers = azure.sqlServers().list();
+
 		for (SqlServer sqlServer : sqlServers) {
 			SQLServerVH sqlServerVH = new SQLServerVH();
 			sqlServerVH.setSubscription(subscription.getSubscriptionId());
@@ -94,13 +95,16 @@ public class SQLServerInventoryCollector {
 				    if(properties.has("storageContainerPath")) {
 						sqlServerVH.setStorageContainerPath(properties.get("storageContainerPath").getAsJsonPrimitive().getAsString());
 					}
-					JsonObject recurringScans=properties.getAsJsonObject("recurringScans");
-					sqlServerVH.setRecurringScansEnabled(recurringScans.getAsJsonPrimitive("isEnabled").getAsBoolean());
-					if(properties.has("emails")) {
-						sqlServerVH.setEmails(recurringScans.getAsJsonArray("emails").getAsString());
+					if(properties.has("recurringScans")) {
+						JsonObject recurringScans = properties.getAsJsonObject("recurringScans");
+						sqlServerVH.setRecurringScansEnabled(recurringScans.getAsJsonPrimitive("isEnabled").getAsBoolean());
+						if (properties.has("emails")) {
+							sqlServerVH.setEmails(recurringScans.getAsJsonArray("emails").getAsString());
+						}
+						sqlServerVH.setEmailSubscriptionAdmins(recurringScans.getAsJsonPrimitive("emailSubscriptionAdmins").getAsBoolean());
 					}
-					sqlServerVH.setEmailSubscriptionAdmins(recurringScans.getAsJsonPrimitive("emailSubscriptionAdmins").getAsBoolean());
-				}
+					}
+
 			}
 		}
 		catch (Exception e) {

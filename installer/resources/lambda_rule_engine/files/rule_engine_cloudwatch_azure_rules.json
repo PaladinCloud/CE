@@ -3012,5 +3012,27 @@
     "modifiedDate": "2022-10-19",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Email_Subscription_Admin",
+    "ruleUUID": "Enable_Email_Subscription_Admin",
+    "policyId": "Enable_Email_Subscription_Admin",
+    "ruleName": "Enable Also send email notifications to admins and subscription owners",
+    "targetType": "sqlserver",
+    "assetGroup": "Azure",
+    "alexaKeyword": "EmailSubscriptionAdminSQLServer",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-emailSubscriptionAdmins-is-enabled\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Email_Subscription_Admin\",\"autofix\":false,\"alexaKeyword\":\"EmailSubscriptionAdminSQLServer\",\"ruleRestUrl\":\"\",\"targetType\":\"sqlserver\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_Email_Subscription_Admin\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Enable_Email_Subscription_Admin\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Email_Subscription_Admin",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable send email notifications to admins and subscription owners in vulnerability settings for sql server",
+    "createdDate": "2022-10-20",
+    "modifiedDate": "2022-10-20",
+    "severity": "medium",
+    "category": "security"
   }
 ]
