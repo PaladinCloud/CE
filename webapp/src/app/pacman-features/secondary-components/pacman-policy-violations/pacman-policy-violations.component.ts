@@ -158,7 +158,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
       updatedQueryParams["direction"] = undefined;
       updatedQueryParams["bucketNumber"] = undefined;
       updatedQueryParams["searchValue"] = undefined;
-      if (row.col.toLowerCase() === "policy name") {
+      if (row.col.toLowerCase() === "Rule name") {
         this.router.navigate(
           [
             "/pl/compliance/policy-knowledgebase-details",
@@ -398,7 +398,7 @@ export class PacmanPolicyViolationsComponent implements OnInit, OnDestroy {
             valText: getData[row][getCols[col]],
             text: arr,
           };
-        } else if (getCols[col].toLowerCase() === "policy name") {
+        } else if (getCols[col].toLowerCase() === "Rule name") {
           cellObj = {
             link: "true",
             properties: {
