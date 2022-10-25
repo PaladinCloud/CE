@@ -1,0 +1,7 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - chmod +x ../installer/provison.sh
+      - bash ../installer/provison.sh
+      - sudo python3 ../installer/manager.py install
