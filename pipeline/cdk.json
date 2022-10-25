@@ -41,7 +41,7 @@
     "accountNumber":"500559730414",
     "region":"us-west-1",
     "repoToken":"github_acess",
-    "owner":"PaladinCloud",
+    "owner":"rnithinpaladin",
     "repo":"CE",
     "branch":"chore/saasmodel",
     "@aws-cdk/core:target-partitions": [
