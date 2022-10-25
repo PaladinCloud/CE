@@ -31,17 +31,22 @@ import { RouterUtilityService } from "../../shared/services/router-utility.servi
 import { Subscription } from "rxjs";
 import { WorkflowService } from "../../core/services/workflow.service";
 import { FetchResourcesService } from "../../pacman-features/services/fetch-resources.service";
+import { result } from "lodash";
+import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
 
 @Component({
   selector: "app-default-asset-group",
   templateUrl: "./default-asset-group.component.html",
   styleUrls: ["./default-asset-group.component.css"],
-  providers: [DataCacheService, FetchResourcesService],
+  providers: [DataCacheService],
 })
 export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
+  awsResourceDetails: any;
+  agAndDomain: any;
   constructor(
     private route: ActivatedRoute,
     private fetchResourcesService: FetchResourcesService,
+    private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
     private dataStore: DataCacheService,
     private assetGroupObservableService: AssetGroupObservableService,
     private logger: LoggerService,
@@ -51,14 +56,13 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private routingUtilityService: RouterUtilityService,
     private workflowService: WorkflowService
-  ) { 
-  }
+  ) { }
 
   clicked = false;
 
   assetCount;
   @Input() defaultAssetGroup: string;
-  @Input() provider = [];
+  @Input() provider;
   @Input() dataLoaded;
   @Input() isExpanded;
   private assetGroupSubscription: Subscription;
@@ -73,9 +77,50 @@ export class DefaultAssetGroupComponent implements OnInit, OnDestroy {
     try {
       this.subscribeToAssetGroupChange();
       this.subscribeToDomainChange();
-    } catch (error) {
+      this.getResources();
+    }
+    catch (error) {
       this.logger.log("error", error);
     }
+  }
+
+
+  getResources() {
+    this.route.queryParams.subscribe((params) => {
+      this.agAndDomain = params;
+      this.fetchResourcesService
+        .getResourceTypesAndCount(this.agAndDomain).then(results => {
+          this.assetCount = results[1].totalassets;
+          const resourceTypes = results[0]['targettypes'];
+          let resourceTypeCount = results[1];
+          let recommendations: any = results[2];
+
+          this.awsResourceTypeSelectionService.setAssetTypeCount(resourceTypeCount);
+          this.awsResourceDetails = resourceTypes.map(function (resourceType: any) {
+
+            if (resourceTypeCount !== undefined && resourceTypeCount !== null) {
+              resourceTypeCount = results[1].assetcount;
+              const countObj = resourceTypeCount.find(obj => obj.type === resourceType.type);
+              resourceType.count = countObj ? countObj.count : 0;
+            }
+
+            if (recommendations !== undefined && recommendations !== null) {
+              recommendations = results[2]['response'];
+              let recommendationArray = [];
+              recommendationArray = recommendations.filter((value) => {
+                return value.targetType === resourceType.type;
+              });
+              resourceType.recommendations = recommendationArray;
+
+              resourceType.recommendationAvailable = recommendationArray.length > 0 ? true : false;
+            }
+
+            return resourceType;
+          });
+          this.awsResourceTypeSelectionService.allAwsResourcesForAssetGroup(this.awsResourceDetails);
+        })
+    });
+
   }
 
   getAssetsCount(){

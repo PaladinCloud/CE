@@ -10,10 +10,11 @@
             </div>
             <div class="right">
                 <div class="more-wrapper" *ngIf="showDownloadBtn">
-                    <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
+                    <!-- <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
                     <button (click)="download()" mat-menu-item>Download</button>
-                    </mat-menu>
+                    </mat-menu> -->
+                    <img (click)="download()" src="/assets/icons/download-icon.svg" alt="">
                 </div>
             </div>
         </div>
@@ -37,7 +38,7 @@
             <div class="header-right flex flex-row">
                 <div class="add-remove-columns-wrapper" *ngIf="showAddRemoveCol">
                     <mat-form-field>
-                        <mat-select #select multiple>
+                        <mat-select #select multiple disableOptionCentering>
                             <mat-option class="disabled-option" disabled="true" value="disabled">Show/hide columns</mat-option>
                             <mat-option #allColumnsSelected (click)="toggleAllSelection()" value="selectAll">Select All</mat-option>
                             <mat-option (click)="optionClick()" *ngFor="let column of displayedColumns" [value]="column">
@@ -47,12 +48,13 @@
                     </mat-form-field>
                     <span> Columns </span>
                 </div>
-                <div class="filter-wrapper flex flex-row" (click)="showFilterModal = !showFilterModal;" *ngIf="showFilterBtn">
+                <div class="filter-wrapper flex flex-row" (click)="showFilterModal = !showFilterModal;" [matMenuTriggerFor]="filterModal" *ngIf="showFilterBtn">
                     <img src="/assets/icons/filter-icon.svg" alt="">
                     <span>Filter</span>
                 </div>
-                <div class="filter-modal-container" *ngIf="showFilterModal">
-                    <div class="filter-modal-wrapper flex flex-col">
+                <mat-menu #filterModal="matMenu">
+                        <div class="filter-modal-container" (click)="$event.stopPropagation()">
+                        <div class="filter-modal-wrapper flex flex-col">
                         <div class="header flex flex-row">
                             <div class="title">Filters</div>
                             <div class="clear-all-btn" (click)="removeAllFilters()">Clear all</div>
@@ -82,6 +84,7 @@
                         </div>
                     </div>
                 </div>
+                    </mat-menu>
                 <div class="more-wrapper" *ngIf="!tableTitle && showDownloadBtn">
                     <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
@@ -99,8 +102,8 @@
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
                 <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }} </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell *matCellDef="let element"> 
-                    <img *ngIf="imageDataMap[element[column].toLowerCase()] && imageDataMap[element[column].toLowerCase()]['image']" style="margin-right: 10px; vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column].toLowerCase()].image}}.svg" [title]="element[column]"> 
-                    <span *ngIf="!imageDataMap[element[column].toLowerCase()] || !imageDataMap[element[column].toLowerCase()].imageOnly" [title]="element[column]">{{ element[column] }} </span>
+                    <img *ngIf="imageDataMap[element[column].toLowerCase()] && imageDataMap[element[column].toLowerCase()]['image']" style="vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column].toLowerCase()].image}}.svg" [title]="element[column]"> 
+                    <span *ngIf="!imageDataMap[element[column].toLowerCase()] || !imageDataMap[element[column].toLowerCase()].imageOnly" [title]="element[column]=='NR'?'No Resources':element[column]">{{ element[column] }} </span>
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>

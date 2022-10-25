@@ -188,7 +188,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
 
         if (data.response[0].compliance_percent !== undefined) {
             compliant = {
-                'value': data.response[0].compliance_percent,
+                'value': data.response[0].assetsScanned==0?"NR":data.response[0].compliance_percent,
                 'text': 'Compliant',
                 'link': false,
                 'styling': {

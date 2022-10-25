@@ -107,9 +107,12 @@ public class DisableOrEnableDBFlagsRule extends BaseRule {
             if(settings!=null ){
                 JsonArray databaseFlagsList=   settings.get(PacmanRuleConstants.DBFLAGS).getAsJsonArray();
                 if(databaseFlagsList.size()>0){
+                    if(dbFlagName.equals("user options")) {
+                        return verifyUserOptionsNotPresentInDbFlags(databaseFlagsList);
+                    }
                     for (JsonElement flag: databaseFlagsList) {
-                        boolean flagName=flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equals(dbFlagName);
-                        boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equals(dbFlagValue);
+                        boolean flagName=flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equalsIgnoreCase(dbFlagName);
+                        boolean value=flag.getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsString().equalsIgnoreCase(dbFlagValue);
 
                         if( flagName && value ) {
                             validationResult = true;
@@ -129,6 +132,16 @@ public class DisableOrEnableDBFlagsRule extends BaseRule {
         }
 
         return validationResult;
+    }
+
+    private boolean verifyUserOptionsNotPresentInDbFlags(JsonArray databaseFlagsList) {
+        for (JsonElement flag: databaseFlagsList) {
+            if(flag.getAsJsonObject().get(PacmanRuleConstants.NAME).getAsString().equals("user options"))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

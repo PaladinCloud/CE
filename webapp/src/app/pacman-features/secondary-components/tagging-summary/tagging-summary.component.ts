@@ -60,6 +60,7 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
     private autorefreshInterval;
     private urlToRedirect: any = '';
     @Input() pageLevel: number;
+    @Input() breadcrumbPresent;
 
   constructor(
     private commonResponseService: CommonResponseService,
@@ -234,7 +235,7 @@ export class TaggingSummaryComponent implements OnInit, OnDestroy {
       navigatePage(event) {
 
         try {
-            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
             const localObjKeys = Object.keys(event);
             const apiTarget = {'TypeAsset' : 'taggable'};
 

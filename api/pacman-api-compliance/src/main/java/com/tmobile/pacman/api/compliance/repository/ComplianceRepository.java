@@ -167,7 +167,7 @@ public interface ComplianceRepository {
      * @throws DataException the data exception
      */
     public List<LinkedHashMap<String, Object>> getIssueAuditLog(
-            String annotationId, String targetType, int from, int size,
+            String dataSource,String annotationId, String targetType, int from, int size,
             String searchText) throws DataException;
 
     /**

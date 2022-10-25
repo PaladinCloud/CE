@@ -58,6 +58,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
   @Input() notLoadedAsModel;
   @Output() closeAssetGroup = new EventEmitter();
 
+  recentlyViewedAssets = [];
   assetTabName: any;
   selectedTab = 0;
   selectedTabName;
@@ -96,6 +97,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
   retrieveFragment() {
     this.activatedRoute.fragment.subscribe((fragment: string) => {
       this.selectedTabName = fragment;
+      this.getRecentlyViewed();
     });
   }
 
@@ -209,10 +211,6 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  updateTab(newTab) {
-    this.selectedTabName = newTab.toLowerCase();
-  }
-
   getAssetDetailTiles(groupName) {
 
     const assetDetailUrl = environment.assetTilesdata.url;
@@ -244,7 +242,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
 
     const updateRecentAGMethod = environment.updateRecentAG.method;
 
-    const userId = this.dataStore.getUserDetailsValue().getUserId();
+    const userId = this.dataStore.getUserDetailsValue().getUserName();
 
     const queryParams = {
       'ag': groupName,
@@ -258,7 +256,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
          this.recentTiles = response.data.response[0].recentlyViewedAg;
       },
       error => {
-
+        this.logger.log("Error in fetching Recent Tiles", error);
       });
     }
   }
@@ -267,24 +265,30 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
       this.closeAssetGroup.emit(assetGroupName);
   }
 
-  checkRecentlyViewed(name) {
-
-    if (!name || !this.selectedTabName) {
-      return false;
+  getRecentlyViewed() {
+    if (!this.selectedTabName) {
+      return;
     }
+    this.recentlyViewedAssets = [];
     const tiles = this.recentTiles.map(item => {
       return item['ag'];
     });
     if (this.selectedTabName.toLowerCase() === 'recently viewed') {
-       if (tiles.includes(name.name.toLowerCase())) {
-         return true;
-       } else {
-         return false;
-       }
-    } else {
-      return false;
+      tiles.forEach(recentTileName => {
+        this.assetTiles.forEach(assetTile => {
+             if (assetTile.name == recentTileName) {
+               this.recentlyViewedAssets.push(assetTile);
+               }
+           });
+      });
     }
+  }
 
+  checkIsRecentlyViewedOrAll() {
+    if (this.selectedTabName && (this.selectedTabName.toLowerCase() === 'recently viewed' || this.selectedTabName.toLowerCase() === 'all')) {
+      return true;
+    }
+    return false;
   }
 
     /**

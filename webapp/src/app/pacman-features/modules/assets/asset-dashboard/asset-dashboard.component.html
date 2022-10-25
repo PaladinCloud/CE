@@ -1,22 +1,58 @@
-<!--
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- -->
-
- <div class="container-wrapper">
-    <div class="asset-dashboard-wrapper flex flex-col">
-        <div class="asset-dashboard-header">Asset Overview</div>
-        <div class="asset-dashboard-container">
-            <app-aws-resource-details [pageLevel]="pageLevel"></app-aws-resource-details>
+<div class="container-wrapper">
+    <div class="asset-dashboard-container">
+        <div class="asset-dashboard-wrapper flex flex-col">
+            <div class="asset-dashboard-header">
+                <span class="title">Asset Overview</span>
+                <span class="description">Asset summary provides details about an asset group’s assets.</span>
+            </div>
+            <div class="type-count-container flex flex-row">
+                <div class="asset-summary-card" *ngFor="let tile of tiles">
+                <div class="asset-summary-card-wrapper flex flex-col">
+                    <div class="asset-summary-upper-container flex flex-row">
+                        <div class="asset-summary-content flex flex-col">
+                            <div class="asset-summary-title capitalize">{{tile.mainContent.title}}</div>
+                            <div class="asset-summary-count">{{tile.mainContent.count}} </div>
+                        </div>
+                        <div class="asset-summary-img">
+                            <div class="tile-img-wrapper">
+                                <img src="/assets/icons/{{tile.mainContent.image}}.svg" alt="" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="asset-summary-lower-container">
+                        <div class="asset-summary-details-wrapper flex flex-row">
+                            <div class="flex flex-col asset-summary-details" *ngFor="let data of tile.subContent">
+                                <div class="name">{{ data.title }}</div>
+                                <div class="count">{{data.count}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <mat-card class="panel">
+                <mat-card-header>
+                    {{ card.header }}
+                    <div class="date-dropdown-container">
+                        <app-dropdown (closeEventEmitter)="onDropdownClose()" (click)="ifCustomSelected()" [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
+                        <div mat-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"></div>
+                        <mat-menu #menu="matMenu">
+                            <div class="date-selection-modal" >
+                                <app-date-selection [fromDate]="fromDate" [toDate]="toDate" (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+                            </div>
+                        </mat-menu>
+                    </div>
+                </mat-card-header>
+                <mat-card-content>
+                    <div class="chart" style="overflow-y: scroll;">
+                        <div class="chart-wrapper" id="TotalAssetsSummaryTrend" style="height: 100%; width: 100%; background-color: white;">
+                            <div [class.loader]="totalAssetsCountData.length==0 && totalAssetsCountDataError==''"></div>
+                            <app-error-message *ngIf="totalAssetsCountDataError" [selectedValue]="totalAssetsCountDataError"></app-error-message>
+                            <app-multiline-zoom-graph *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''" [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'" [graphHeight]="graphHeight" [graphLinesData]="totalAssetsCountData"></app-multiline-zoom-graph>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
         </div>
     </div>
  </div>

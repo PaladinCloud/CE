@@ -26,11 +26,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -399,4 +396,16 @@ public class CommonUtils {
 			return Constants.OTHER_ENV;
 		}
 	}
+	public static String getCurrentDateStringWithFormat(String timeZone, String format) {
+
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(format);
+		if (!Strings.isNullOrEmpty(timeZone))
+			dateFormatter.setTimeZone(TimeZone.getTimeZone(timeZone));
+		else
+			dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+		return dateFormatter.format(new Date());
+	}
+
+
 }

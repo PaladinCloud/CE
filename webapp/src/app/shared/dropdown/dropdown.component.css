@@ -5,7 +5,7 @@
 }
 
 ::ng-deep .mat-select-panel{
-    margin-top: 20px !important;
+    /* margin-top: 20px !important; */
     width: 100% !important;
     margin-left: 15px !important;
 }
@@ -20,4 +20,9 @@
 
   ::ng-deep .mat-form-field-should-float.mat-form-field-label{
       display: none !important;
+  }
+
+.dropdown-wrapper ::ng-deep .mat-select{
+    color: var(--text-high-emphasis);
+    font: var(--text-body-2);
   }

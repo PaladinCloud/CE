@@ -101,10 +101,13 @@ import { TableComponent } from "./table/table.component";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zoom-graph.component";
+import { DateSelection } from "./date-selection/date-selection.component";
+import { MatCardModule } from "@angular/material/card";
 
 @NgModule({
   imports: [
     MatGridListModule,
+    MatCardModule,
     MatSelectModule,
     MatIconModule,
     MatMenuModule,
@@ -123,6 +126,7 @@ import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zo
   declarations: [
     MultilineZoomGraphComponent,
     TableComponent,
+    DateSelection,
     DropdownComponent,
     FilterDropdownComponent,
     CanvasSidePanelComponent,
@@ -182,6 +186,7 @@ import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zo
   exports: [
     MultilineZoomGraphComponent,
     TableComponent,
+    DateSelection,
     DropdownComponent,
     DoughnutChartComponent,
     CommonModule,

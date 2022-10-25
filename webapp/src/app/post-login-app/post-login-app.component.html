@@ -29,12 +29,9 @@
         </div>
       </mat-sidenav>
       <mat-sidenav-content>
-        <!-- <div class="contextual-container"> -->
-        <!-- <app-header></app-header> -->
         <div class="contextual-content-container">
           <router-outlet #o="outlet" (deactivate)="onDeactivate($event)"></router-outlet>
         </div>
-        <!-- </div> -->
       </mat-sidenav-content>
     </mat-sidenav-container>
   </section>

@@ -50,7 +50,8 @@
                 <li *ngFor="let resource of filteredResources | assetSummarySearchFilter: searchTxt; let i = index"
                     (click)="awsTileClicked(resource)" class="flex">
                     <app-aws-app-tile [i]='i' class='full-width' [active]="selectedResource.type == resource.type"
-                        [awsResource]="resource" [awsResourceName]="resource.displayName || resource.type" [resourceInstances]="resource.count" [assetGroup]="resource.provider">
+                        [awsResource]="resource" [awsResourceName]="resource.displayName || resource.type"
+                        [resourceInstances]="resource.count" [assetGroup]="resource.provider">
                     </app-aws-app-tile>
                 </li>
             </ul>
@@ -60,7 +61,8 @@
         </div>
     </div>
     <div class="resource-details-container flex-col" *ngIf="dataLoaded">
-        <div class="resource-name-type" *ngIf="selectedResource.type !== undefined">{{selectedResource.displayName || selectedResource.type}}</div>
+        <div class="resource-name-type" *ngIf="selectedResource.type !== undefined">{{selectedResource.displayName ||
+            selectedResource.type}}</div>
         <div class="flex-col asset-info-container">
             <div class="asset-dist-header">Asset by application</div>
             <div class="tagged" *ngIf="selectedResource.type !== undefined">
@@ -68,7 +70,9 @@
             </div>
         </div>
         <div class="multiline-chart-header">
-            <app-title-burger-head [subHeadTitle]="'Inventory'" [arrow]="'true'" [routeParams]="utils.makeFilterObj({ 'resourceType': selectedResource.type })" [routeTo]="routeTo" [pageLevel]="pageLevel"></app-title-burger-head>
+            <app-title-burger-head [subHeadTitle]="'Inventory'" [arrow]="'true'"
+                [routeParams]="utils.makeFilterObj({ 'resourceType': selectedResource.type })" [routeTo]="routeTo"
+                [pageLevel]="pageLevel"></app-title-burger-head>
         </div>
         <div class="multiline-chart" *ngIf="selectedResource !== undefined">
             <app-inventory-container [targetType]="selectedResource.type" [pageLevel]="pageLevel">

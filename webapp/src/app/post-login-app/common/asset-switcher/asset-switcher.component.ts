@@ -97,7 +97,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
         if (assetGroupName) {
           this.currentAg = assetGroupName;
           this.cloudIconDataLoaded = false;
-          // this.updateRecentAssetGroup(this.currentAg);
+          this.updateRecentAssetGroup(this.currentAg);
         }
       });
 
@@ -196,7 +196,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     }
     const updateRecentAGUrl = environment.updateRecentAG.url;
     const updateRecentAGMethod = environment.updateRecentAG.method;
-    const userId = this.dataCacheService.getUserDetailsValue().getUserId();
+    const userId = this.dataCacheService.getUserDetailsValue().getUserName();
     const queryParams = {
       ag: groupName,
       userId: userId,

@@ -71,6 +71,7 @@ import { SystemManagementComponent } from "../../pacman-features/modules/admin/s
 import { ConfigManagementComponent } from "../../pacman-features/modules/admin/config-management/config-management.component";
 import { RecommendationsComponent } from "../../pacman-features/modules/compliance/recommendations/recommendations.component";
 import { RecommendationsDetailsComponent } from "../../pacman-features/modules/compliance/recommendations-details/recommendations-details.component";
+import { AssetDistributionComponent } from "src/app/pacman-features/modules/assets/asset-distribution/asset-distribution.component";
 
 export const COMPLIANCE_ROUTES = [
   {
@@ -255,6 +256,14 @@ export const ASSETS_ROUTES = [
     component: AssetDetailsComponent,
     data: {
       title: "Asset 360",
+    },
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: "asset-distribution",
+    component: AssetDistributionComponent,
+    data: {
+      title: "Asset Distribution",
     },
     canActivate: [AuthGuardService],
   },

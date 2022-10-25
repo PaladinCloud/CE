@@ -135,13 +135,31 @@ export class ComplianceDashboardComponent implements OnInit {
   complianceDataError = '';
   assetsCountData = [];
   assetsCountDataError = '';
-  columnNamesMap = {name: "Policy", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
-  columnWidths = {"Policy": 3, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  breadcrumbArray = [];
+  breadcrumbLinks = [];
+  breadcrumbPresent = "Dashboard";
+  columnNamesMap = {name: "Title", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
+  columnWidths = {"Title": 3, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
       return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
     },
+    Compliance: (a: string, b: string, isAsc) => {
+      a = a["Compliance"];
+      b = b["Compliance"]
+
+      if(a=="NR") isAsc?a="101%":a = "-1%";
+      if(b=="NR") isAsc?b="101%":b = "-1%";
+
+      a = a.substring(0, a.length-1);
+      b = b.substring(0, b.length-1);
+
+      let aNum = parseFloat(a);
+      let bNum = parseFloat(b);
+      
+      return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
+    }
   };
   tableDataMap = {
       security:{
@@ -197,7 +215,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
   massageAssetTrendGraphData(graphData){
     let data = [];
-    data.push({"key":"TotalAssetCount", "values":[], "info":{}})
+    data.push({"key":"Number of Assets", "values":[], "info":{}})
     graphData.trend.forEach(e => {
        data[0].values.push({
             'date':new Date(e.date),
@@ -232,8 +250,8 @@ export class ComplianceDashboardComponent implements OnInit {
     );
   };
 
-  navigateToAssetSummary = () => {
-    this.router.navigate(["/pl/assets/asset-dashboard/"], {
+  navigateToAssetDistribution = () => {
+    this.router.navigate(["/pl/assets/asset-distribution/"], {
       queryParamsHandling: "merge",
     });
   };
@@ -260,9 +278,9 @@ export class ComplianceDashboardComponent implements OnInit {
     },
     {
       id: 3,
-      header: "Total Assets",
+      header: "Total Assets vs Time",
       footer: "View Asset Distribution",
-      cardButtonAction: this.navigateToAssetSummary,
+      cardButtonAction: this.navigateToAssetDistribution,
     },
   ];
 
@@ -284,43 +302,7 @@ export class ComplianceDashboardComponent implements OnInit {
     private overallComplianceService: OverallComplianceService, 
     private tableStateService: TableStateService,
     private multilineChartService: MultilineChartService
-  ) {
-    const state = this.tableStateService.getState("dashboard") || {};    
-      
-    this.headerColName = state.headerColName || '';
-    this.direction = state.direction || '';
-    // this.bucketNumber = state.bucketNumber || 0;
-    
-    this.displayedColumns = Object.keys(this.columnWidths);
-    this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-    this.complianceTableData = state?.data || [];
-    this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
-    this.tableScrollTop = state?.tableScrollTop;    
-    this.totalRows = state.totalRows || 0;
-      
-      if(this.complianceTableData && this.complianceTableData.length>0){
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
-
-    this.assetGroupSubscription = this.subscriptionToAssetGroup =
-      this.assetGroupObservableService
-        .getAssetGroup()
-        .subscribe((assetGroupName) => {          
-          this.selectedAssetGroup = assetGroupName;
-          this.updateComponent();
-        });
-
-    this.subscriptionDomain = this.domainObservableService
-      .getDomainType()
-      .subscribe((domain) => {        
-        this.selectedDomain = domain;
-        if(this.selectedAssetGroup){
-          this.updateComponent();
-        }
-      });
-  }
+  ) {}
 
   handleHeaderColNameSelection(event) {
     this.headerColName = event.headerColName;
@@ -468,6 +450,54 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+    const state = this.tableStateService.getState("dashboard") || {};    
+      
+    this.headerColName = state.headerColName || '';
+    this.direction = state.direction || '';
+    // this.bucketNumber = state.bucketNumber || 0;
+    
+    this.displayedColumns = Object.keys(this.columnWidths);
+    this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+    this.complianceTableData = state?.data || [];
+    this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+    this.tableScrollTop = state?.tableScrollTop;    
+    this.totalRows = state.totalRows || 0;
+
+    if(this.complianceTableData && this.complianceTableData.length>0){        
+      this.isStatePreserved = true;
+    }else{
+      this.isStatePreserved = false;
+    }
+      
+
+    this.assetGroupSubscription = this.subscriptionToAssetGroup =
+      this.assetGroupObservableService
+        .getAssetGroup()
+        .subscribe((assetGroupName) => {          
+          this.selectedAssetGroup = assetGroupName;
+          // this.updateComponent();
+        });
+
+    this.subscriptionDomain = this.domainObservableService
+      .getDomainType()
+      .subscribe((domain) => {        
+        this.selectedDomain = domain;
+        // if(this.selectedAssetGroup){
+        //   this.updateComponent();
+        // }
+      });
+
+      this.getRouteQueryParameters();
+
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
+
+    this.breadcrumbPresent = "Dashboard";
+
     this.breakpoint1 = window.innerWidth <= 800 ? 2 : 4;
     this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
     this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
@@ -496,7 +526,6 @@ export class ComplianceDashboardComponent implements OnInit {
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
-    this.outerArr = [];
     this.searchTxt = "";
     this.ruleCatFilter = undefined;
     this.currentBucket = [];
@@ -504,8 +533,7 @@ export class ComplianceDashboardComponent implements OnInit {
     // this.bucketNumber = 0;
     this.firstPaginator = 1;
     // this.currentPointer = 0;
-    this.errorValue = 0;
-    this.seekdata = false;
+    
     this.showGenericMessage = false;
     this.assetsCountData = [];
     this.assetsCountDataError = '';
@@ -514,8 +542,9 @@ export class ComplianceDashboardComponent implements OnInit {
     this.policyDataError = '';
     if(this.isStatePreserved){      
       this.clearState();
-    }else{
-      this.complianceTableData = [];
+    }else{      
+      this.errorValue = 0;
+      this.seekdata = false;
       this.dataLoaded = false;
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
@@ -642,22 +671,44 @@ export class ComplianceDashboardComponent implements OnInit {
         overallComplianceMethod
       )
       .subscribe((response) => {  
-        try {     
+        try {
           if(response[0].error){
             throw response[0];
           }
           this.complianceDataError = ''
-          this.complianceData = [];
+          this.complianceData = [
+            { class: "", title: "Security", val: "NR" },
+            { class: "", title: "Cost", val: "NR" },
+            { class: "", title: "Operations", val: "NR" },
+            { class: "", title: "Tagging", val: "NR" },
+          ];
           response[0].data.forEach((element) => {
-            if (element[1]["val"] <= 40) {
-              element[1]["class"] = "red";
-            } else if (element[1]["val"] <= 75) {
-              element[1]["class"] = "or";
-            } else {
-              element[1]["class"] = "gr";
+            let category = element[1]["title"].toLowerCase();
+            let index;
+            switch(category){
+              case "security":
+                index = 0;
+                break;
+              case "cost":
+                index = 1;
+                break;
+              case "operations":
+                index = 2;
+                break;
+              case "tagging":
+                index = 3;
+                break;
             }
-            this.complianceData.push(element[1]);
-          });
+              this.complianceData[index].val = element[1]["val"];
+
+            if (element[1]["val"] <= 40) {
+              this.complianceData[index].class = "red";
+            } else if (element[1]["val"] <= 75) {
+              this.complianceData[index].class = "or";
+            } else {
+              this.complianceData[index].class = "gr";
+            }
+          });          
           if(this.complianceData.length==0){
             this.complianceDataError = 'noDataAvailable';
           }          
@@ -732,7 +783,6 @@ export class ComplianceDashboardComponent implements OnInit {
           } catch (e) {
             this.tableErrorMessage = 'apiResponseError';
             this.errorValue = 0;
-            this.outerArr = [];
             this.errorValue = -1;
             this.dataLoaded = true;
             this.seekdata = true;
@@ -741,13 +791,22 @@ export class ComplianceDashboardComponent implements OnInit {
         },
         (error) => {
           this.showGenericMessage = true;
-          this.outerArr = [];
           this.errorValue = -1;
           this.dataLoaded = true;
           this.seekdata = true;
           this.errorMessage = "apiResponseError";
         }
       );
+  }
+
+  getRouteQueryParameters(): any {
+    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe(
+      (params) => {
+        if(this.selectedAssetGroup && this.selectedDomain){
+          this.updateComponent();
+        }
+      }
+    );
   }
 
   massageData(data){
@@ -773,245 +832,13 @@ export class ComplianceDashboardComponent implements OnInit {
         // change data value
         newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
-      newObj["Compliance"] = newObj["assetsScanned"]==0?'NA':newObj["Compliance"]+"%";
+      newObj["Compliance"] = newObj["assetsScanned"]==0?'NR':newObj["Compliance"]+"%";
       newData.push(newObj);
     });
     return newData;
   }
 
-  // processData(data) {
-  //   try {
-  //     let innerArr = {};
-  //     const totalVariablesObj = {};
-  //     let cellObj = {};
-  //     this.outerArr = [];
-  //     const getData = this.addCompliance(data);
-  //     const getCols = Object.keys(getData[0]);
-  //     for (let row = 0; row < getData.length; row++) {
-  //       innerArr = {};
-  //       for (let col = 0; col < getCols.length; col++) {
-  //         if (getCols[col] && getCols[col].toLowerCase() === "compliance") {
-  //           if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "full_compliance"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "justify-content": "center",
-  //               },
-  //               textProp: {
-  //                 display: "none",
-  //               },
-  //               colName: getCols[col],
-  //               imgProp: { height: "1.2em" },
-  //               hasPreImg: true,
-  //               imgLink: "../assets/icons/Compliant.svg",
-
-  //               text: "Compliant",
-  //               valText: 1,
-  //             };
-  //           } else if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "good_compliance"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "justify-content": "center",
-  //               },
-  //               textProp: {
-  //                 display: "none",
-  //               },
-  //               colName: getCols[col],
-  //               imgProp: { height: "1.2em" },
-  //               hasPreImg: true,
-  //               imgLink: "../assets/icons/good-compliance.svg",
-  //               text: "Not Compliant",
-  //               valText: 3,
-  //             };
-  //           } else {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "justify-content": "center",
-  //               },
-  //               textProp: {
-  //                 display: "none",
-  //               },
-  //               colName: getCols[col],
-  //               imgProp: { height: "1.2em" },
-  //               hasPreImg: true,
-  //               imgLink: "../assets/icons/bad-compliance.svg",
-  //               text: "Not Compliant",
-  //               valText: 2,
-  //             };
-  //           }
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "policy title"
-  //         ) {
-  //           cellObj = {
-  //             link: "true",
-  //             properties: {
-  //               "font-size": "1.04em",
-  //               "text-shadow": "0.1px 0",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             text: getData[row][getCols[col]],
-  //             valText: getData[row][getCols[col]],
-  //           };
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "severity"
-  //         ) {
-  //           if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "low"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               text: getData[row][getCols[col]],
-  //               valText: 1,
-  //             };
-  //           } else if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "medium"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               text: getData[row][getCols[col]],
-  //               valText: 2,
-  //             };
-  //           } else if (
-  //             getData[row][getCols[col]] &&
-  //             getData[row][getCols[col]].toLowerCase() === "high"
-  //           ) {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               valText: 3,
-  //               text: getData[row][getCols[col]],
-  //             };
-  //           } else {
-  //             cellObj = {
-  //               link: "",
-  //               properties: {
-  //                 color: "#000",
-  //                 "text-transform": "capitalize",
-  //               },
-  //               colName: getCols[col],
-  //               hasPreImg: false,
-  //               imgLink: "",
-  //               text: getData[row][getCols[col]],
-  //               valText: 4,
-  //             };
-  //           }
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "compliance"
-  //         ) {
-  //           cellObj = {
-  //             link: "",
-  //             properties: {
-  //               color: "#000",
-  //               "font-size": "1.04em",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             valText: getData[row][getCols[col]],
-  //             text: getData[row][getCols[col]]=='NA'?getData[row][getCols[col]]:getData[row][getCols[col]] + "%",
-  //           };
-  //         } else if (
-  //           getCols[col] &&
-  //           getCols[col].toLowerCase() === "last scanned"
-  //         ) {
-  //           cellObj = {
-  //             link: "",
-  //             properties: {
-  //               color: "#000",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             valText: new Date(getData[row][getCols[col]]).getTime(),
-  //             text: this.calculateDate(getData[row][getCols[col]]),
-  //           };
-  //         } else {
-  //           cellObj = {
-  //             link: "",
-  //             properties: {
-  //               color: "",
-  //             },
-  //             colName: getCols[col],
-  //             hasPreImg: false,
-  //             imgLink: "",
-  //             valText: getData[row][getCols[col]],
-  //             text: getData[row][getCols[col]],
-  //           };
-  //         }
-  //         innerArr[getCols[col]] = cellObj;
-  //         totalVariablesObj[getCols[col]] = "";
-  //       }
-  //       this.outerArr.push(innerArr);
-  //     }
-
-  //     if (this.outerArr.length > getData.length) {
-  //       const halfLength = this.outerArr.length / 2;
-  //       this.outerArr = this.outerArr.splice(halfLength);
-  //     }
-
-  //     this.allColumns = Object.keys(totalVariablesObj);
-  //   } catch (error) {
-  //     this.dataLoaded = true;
-  //     this.seekdata = true;
-  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
-  //   }
-  // }
-
-  // addCompliance(data) {
-  //   for (let i = 0; i < data.length; i++) {
-  //     if (data[i]["Compliance"] === 100) {
-  //       data[i].compliance = "full_compliance";
-  //     } else if (
-  //       data[i]["Compliance"] < 100 &&
-  //       data[i]["Compliance"] > 49
-  //     ) {
-  //       data[i].compliance = "bad_compliance";
-  //     } else {
-  //       data[i].compliance = "good_compliance";
-  //     }
-  //   }
-  //   return data;
-  // }
-
-  goToDetails(event) {
+  goToDetails(event) {    
     const selectedRow = event.rowSelected;
     const data = event.data;
     const state = {
@@ -1024,11 +851,11 @@ export class ComplianceDashboardComponent implements OnInit {
       searchTxt: this.searchTxt,
       tableScrollTop: event.tableScrollTop
       // filterText: this.filterText
-    }    
+    }
     this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent,
       );
       let updatedQueryParams = { ...this.activatedRoute.snapshot.queryParams };
       updatedQueryParams["searchValue"] = undefined;
@@ -1147,7 +974,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   onresize(event): void {
-    this.breakpoint1 = event.target.innerWidth <= 800 ? 2 : 4;
+    this.breakpoint1 = event.target.innerWidth <= 1000 ? 2 : 4;
     this.breakpoint2 = event.target.innerWidth <= 800 ? 1 : 2;
     this.breakpoint3 = event.target.innerWidth <= 400 ? 1 : 1;
     this.breakpoint4 = event.target.innerWidth <= 400 ? 1 : 1;

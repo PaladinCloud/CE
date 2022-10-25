@@ -36,7 +36,7 @@ export class WorkflowService {
     /* This would track which page user has clicked in a module */
     private trackOpenedPageInAModule = {};
 
-    addRouterSnapshotToLevel(routerSnapshot: ActivatedRouteSnapshot, currentLevel: number= 0) {
+    addRouterSnapshotToLevel(routerSnapshot: ActivatedRouteSnapshot, currentLevel: number= 0, title=null) {
 
         const urlPath = this.routerUtilityService.getFullUrlFromSnapshopt(routerSnapshot);
 
@@ -45,6 +45,7 @@ export class WorkflowService {
         this.level = this.getDetailsFromStorage();
 
         const obj = {
+            "title": title,
             'url': urlPath,
             'queryParams': queryParams
         };
@@ -57,7 +58,6 @@ export class WorkflowService {
 
     goBackToLastOpenedPageAndUpdateLevel(currentRouterSnapshot: ActivatedRouteSnapshot, currentLevel: number = 0) {
         let destinationUrlAndParams;
-
         this.level = this.getDetailsFromStorage();
         while (!destinationUrlAndParams && currentLevel >= 0) {
             if ( this.level['level' + currentLevel] && this.level['level' + currentLevel].length > 0 ) {
