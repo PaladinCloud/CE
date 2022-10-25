@@ -71,12 +71,7 @@ export class MyPipelineStack extends cdk.Stack {
       environmentVariables: getEnvironmentVariables()
     });
 
-     // Manual Approval
 
-     const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
-      actionName: 'Approve',
-      notifyEmails: this.node.tryGetContext("mailId"),
-     });
 
     // Deploy 
     const deployProject = new codebuild.PipelineProject(this, "deployProject", {
@@ -116,12 +111,12 @@ export class MyPipelineStack extends cdk.Stack {
       ]
     });
 
-    pipeline.addStage({
-      stageName:"Approval",
-      actions:[
-        manualApprovalAction
-      ]
-    });
+    // pipeline.addStage({
+    //   stageName:"Approval",
+    //   actions:[
+    //     manualApprovalAction
+    //   ]
+    // });
 
     pipeline.addStage({
       stageName:"Deploy",
