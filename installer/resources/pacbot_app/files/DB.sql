@@ -3482,3 +3482,8 @@ INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `pr
 
 /* Update DisplayName  to TargetName if the value is null in Target table */
 update cf_Target set displayName = targetName where displayName is null;
+
+
+/* disable policydefinition , policyevaluationresults and phd */
+update  pacmandata.cf_Target set status = 'disable' where targetName in ( 'policydefinitions', 'policyevaluationresults', 'phd');
+delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions', 'policyevaluationresults', 'phd');
