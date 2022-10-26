@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
+import java.util.List;
 import java.util.Map;
 
 public class GKEClusterVH extends GCPVH {
@@ -7,6 +8,16 @@ public class GKEClusterVH extends GCPVH {
     private String bootDiskKmsKey;
 
     private String keyName;
+
+    private List<Boolean> nodePoolIntegrityMonitoring;
+
+    public List<Boolean> getNodePoolIntegrityMonitoring() {
+        return nodePoolIntegrityMonitoring;
+    }
+
+    public void setNodePoolIntegrityMonitoring(List<Boolean> nodePoolIntegrityMonitoring) {
+        this.nodePoolIntegrityMonitoring = nodePoolIntegrityMonitoring;
+    }
 
     public String getBootDiskKmsKey() {
         return bootDiskKmsKey;

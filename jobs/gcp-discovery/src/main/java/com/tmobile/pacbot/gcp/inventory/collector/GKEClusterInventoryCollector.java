@@ -74,15 +74,16 @@ public class GKEClusterInventoryCollector {
                     ListNodePoolsResponse listNodePools =clusterManagerClient.listNodePools(project.getProjectId(), region, clusterId);
                     logger.info("### GKe cluster NodePoolList ########### ");
                     logger.info("Nodepool size {}", listNodePools.getNodePoolsCount());
-
+                    List<Boolean> nodePoolIntegrityMonitoring=new ArrayList();
                     for(NodePool nodePool:listNodePools.getNodePoolsList()){
 
                         if(nodePool.getConfig().getBootDiskKmsKey()!=null){
                             String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
                             gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
                         }
+                        nodePoolIntegrityMonitoring.add(nodePool.getConfig().getShieldedInstanceConfig().getEnableIntegrityMonitoring());
                     }
-
+                    gkeClusterVH.setNodePoolIntegrityMonitoring(nodePoolIntegrityMonitoring);
                     gkeClusterVH.setId(String.valueOf(cluster.getId()));
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
@@ -96,6 +97,7 @@ public class GKEClusterInventoryCollector {
                 clusterManagerClient.close();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             logger.debug(e.getMessage());
         }
         return gkeClusterlist;
