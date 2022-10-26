@@ -161,7 +161,7 @@ public interface AssetService {
      *
      *  @return exempted assets count
      */
-    public long getExemptedAssetsCount(String ag) throws ServiceException;
+     public Map<String, Long>  getExemptedAssetsCount(String ag);
 
     /**
      * Saves the recently viewed asset group for the user id.
@@ -260,6 +260,17 @@ public interface AssetService {
      */
     public List<Map<String, Object>> getListAssetsPatchable(String assetGroup, Map<String, String> filter);
 
+     /**
+     * Fetches the exempted assets for the given assetgroup.If exempted filter is false it returns the unexempted assets
+     * and if exempted is true returns the exempted assets.
+     *
+     * @param assetGroup  name of the asset group
+     * @param filter exempted(true/false)
+     * 
+     * @return list of assets exempted/unexempted.
+     */
+    public List<Map<String, Object>> getListAssetsExempted(String assetGroup, Map<String, String> filter);
+    
     /**
      * Fetches the taggable assets for the given assetgroup.If tagged filter is false it returns the untagged assets
      * and if tagged is true returns the tagged assets.It also filters the the list based on resource type passed in filter 

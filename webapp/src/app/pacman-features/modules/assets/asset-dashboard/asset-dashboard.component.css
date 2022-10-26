@@ -19,14 +19,9 @@
 }
 
 .asset-dashboard-header .title {
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0px 0px 8px;
-    width: 100%;
-    font: var(--text-headline-6);
-    color: var(--text-high-emphasis);
+   font-size: 2em;
+   font-family: var(--text-font-family);
+   font-weight: 500;
 }
 
 .asset-dashboard-header .description{
@@ -81,7 +76,10 @@
 
 .asset-summary-content .asset-summary-count{
   color: var(--text-high-emphasis);
-  font: var(--text-headline-3);
+  font-family: var(--text-medium-font-family);
+  font-weight: 500;
+  font-size: 28px;
+  cursor: pointer;
 }
 
 .asset-summary-content .asset-summary-count img{
@@ -105,8 +103,11 @@
 }
 
 .asset-summary-details-wrapper .count{
-  font: var(--text-headline-6);
+  font-family: var(--text-font-family);
+  font-size: 20px;
+  font-weight: 400;
   color: var(--text-medium-emphasis);
+  cursor: pointer;
 }
 
 .asset-summary-details-wrapper{
@@ -126,7 +127,6 @@
 }
 
 .panel {
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

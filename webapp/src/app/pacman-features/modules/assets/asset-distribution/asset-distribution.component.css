@@ -34,10 +34,9 @@ flex-grow: 1;
   }
 
 .sub-header-text{
-font: var(--text-headline-6);
-flex: none;
-order: 0;
-flex-grow: 0;
+  font-size: 2em;
+  font-family: var(--text-font-family);
+  font-weight: 500;
 }
 
 .text-desc{
@@ -140,10 +139,11 @@ flex-grow: 0;
 .sort-img{
   width: 14px;
   height: 14px;
+  transform: rotate(180deg);
 }
 
 .sort-img.sorted{
-  transform: rotate(180deg);
+  transform: rotate(0deg);
 }
 
   .header-search-content-container{

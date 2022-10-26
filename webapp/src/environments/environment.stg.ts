@@ -397,6 +397,10 @@ export const environment = {
         url: '{{baseUrl}}/asset/v1/list/assets',
         method: 'POST'
     },
+    assetListExempted: {
+        url: '{{baseUrl}}/asset/v1/list/assets/exempted',
+        method: 'POST'
+    },
     assetListTaggable: {
         url: '{{baseUrl}}/asset/v1/list/assets/taggable',
         method: 'POST'

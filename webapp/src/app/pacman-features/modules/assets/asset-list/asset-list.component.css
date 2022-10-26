@@ -37,8 +37,8 @@
 } 
 
 .floating-widgets-header .title-text{
-    font: var(--text-headline-6);
-    color: var(--text-high-emphasis);
+    font-family: var(--text-font-family);
+    font-weight: 500;
 }
 
 .data-table-desc{

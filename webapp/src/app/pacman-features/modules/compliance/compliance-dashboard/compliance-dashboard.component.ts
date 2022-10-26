@@ -278,7 +278,7 @@ export class ComplianceDashboardComponent implements OnInit {
     },
     {
       id: 3,
-      header: "Total Assets vs Time",
+      header: "Asset Graph",
       footer: "View Asset Distribution",
       cardButtonAction: this.navigateToAssetDistribution,
     },

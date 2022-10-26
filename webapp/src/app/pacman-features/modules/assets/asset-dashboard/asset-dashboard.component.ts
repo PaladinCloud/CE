@@ -86,7 +86,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         },
         subContent: [
           {
-            title: "My Exemptions",
+            title: "Exempted Asset Types",
             count: 0,
           }
         ]
@@ -99,7 +99,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         },
         subContent: [
           {
-            title: "Untagged Assets",
+            title: "UnTagged Assets",
             count: 0
           }
         ]
@@ -239,6 +239,35 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     return data;
   }
 
+  redirectTo(data: any) {
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    if (data == "Exempted Assets" || data == "Exempted Asset Types")
+    {
+      const queryParams = {
+        filter: "exempted=true",
+        TypeAsset: "exempted"
+      }
+      this.router.navigate(['pl/assets/asset-list'], {
+        queryParams: queryParams,
+        queryParamsHandling: 'merge'
+      });
+    } else if (data == "Total Assets" || data == "Asset Types") {
+      this.router.navigate(['pl/assets/asset-list'], {
+        queryParams: null,
+        queryParamsHandling: 'merge'
+      });
+    } else if (data == "Tagged Assets" || data == "UnTagged Assets") {
+      const queryParams = {
+        filter: data == "Tagged Assets"?"tagged=true":"tagged=false",
+        TypeAsset: "taggable"
+      }
+      this.router.navigate(['pl/assets/asset-list'], {
+        queryParams: queryParams,
+        queryParamsHandling: 'merge'
+      });
+    }
+  }
+
   public getAssetsCountData(queryObj) {
     if(!this.assetGroupName){
       return;
@@ -276,8 +305,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     try {
         this.commonResponseService.getData( exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams).subscribe(
           response => {
-            this.tiles[1].mainContent.count = response.exemptedAssetsCount;
-            this.tiles[1].subContent[0].count = response.exemptedAssetsCount;
+            this.tiles[1].mainContent.count = response.totalassets;
+            this.tiles[1].subContent[0].count = response.assettype;
           }
         )
     }catch(e){}
