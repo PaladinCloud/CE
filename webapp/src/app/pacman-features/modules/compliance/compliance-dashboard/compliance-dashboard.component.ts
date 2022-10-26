@@ -138,8 +138,8 @@ export class ComplianceDashboardComponent implements OnInit {
   breadcrumbArray = [];
   breadcrumbLinks = [];
   breadcrumbPresent = "Dashboard";
-  columnNamesMap = {name: "Title", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
-  columnWidths = {"Title": 3, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  columnNamesMap = {name: "Title", failed: "Violations", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
+  columnWidths = {"Title": 3, "Violations": 1, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4}
