@@ -1,6 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.List;
+import java.util.List;
 import java.util.Map;
 
 public class GKEClusterVH extends GCPVH {
@@ -9,10 +10,6 @@ public class GKEClusterVH extends GCPVH {
 
     private String keyName;
 
-
-    private List<NodePoolVH> nodePools;
-
-
     public List<NodePoolVH> getNodePools() {
         return nodePools;
     }
@@ -20,6 +17,9 @@ public class GKEClusterVH extends GCPVH {
     public void setNodePools(List<NodePoolVH> nodePools) {
         this.nodePools = nodePools;
     }
+
+    private List<NodePoolVH> nodePools;
+
 
     public String getBootDiskKmsKey() {
         return bootDiskKmsKey;

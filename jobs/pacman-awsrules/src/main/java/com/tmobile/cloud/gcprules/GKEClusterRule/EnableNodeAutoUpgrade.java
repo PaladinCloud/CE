@@ -96,7 +96,7 @@ public class EnableNodeAutoUpgrade extends BaseRule {
             JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", gkeCluster);
+            logger.debug("Validating the data item: {}", gkeCluster.toString());
 
             JsonArray nodePools = null;
             if(gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS)!=null){
