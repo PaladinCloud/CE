@@ -282,7 +282,7 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public long getExemptedAssetsCount(String ag){
+    public Map<String, Long> getExemptedAssetsCount(String ag){
         return repository.getExemptedAssetsCount(ag);
     }
 
@@ -355,6 +355,11 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Map<String, Object>> getListAssetsPatchable(String assetGroup, Map<String, String> filter) {
         return repository.getListAssetsPatchable(assetGroup, filter);
+    }
+
+    @Override
+    public List<Map<String, Object>> getListAssetsExempted(String assetGroup, Map<String, String> filter) {
+        return repository.getListAssetsExempted(assetGroup, filter);
     }
 
     @Override
@@ -999,7 +1004,7 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<Map<String, Object>> getAssetCountAndEnvDistributionByAssetGroup(String assetGroup, String type,
-                                                                                 String domain, String application, String provider) {
+            String domain, String application, String provider) {
 
         LOGGER.debug("Fetch counts from elastic search");
 
@@ -1048,7 +1053,8 @@ public class AssetServiceImpl implements AssetService {
                 typeMap.put(Constants.COUNT, totalCount);
                 typeMap.put(Constants.PROVIDER, providerInfo);
 
-                List<Map<String, String>> envDistribution = calculateEnvironmentDistribution((Map<String, Long>) envMap.get(entry.getKey()), totalCount);
+                List<Map<String, String>> envDistribution = calculateEnvironmentDistribution(
+                        (Map<String, Long>) envMap.get(entry.getKey()), totalCount);
 
                 typeMap.put(Constants.ENVIRONMENTS, envDistribution);
 

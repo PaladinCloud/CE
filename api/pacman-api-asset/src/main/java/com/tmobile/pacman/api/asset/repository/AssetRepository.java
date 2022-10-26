@@ -179,7 +179,7 @@ public interface AssetRepository {
     *
     *  @return exempted assets count
     */
-   public long getExemptedAssetsCount(String ag);
+   public Map<String, Long> getExemptedAssetsCount(String ag);
 
 
     /**
@@ -297,6 +297,18 @@ public interface AssetRepository {
      * @return list of assets patched/unpatched.
      */
     public List<Map<String, Object>> getListAssetsPatchable(String assetGroup, Map<String, String> filter);
+
+    /**
+     * Fetches the exempted assets for the given assetgroup.If exempted filter is false it returns the unexempted assets
+     * and if exempted is true returns the exempted assets.
+     *
+     * @param assetGroup  name of the asset group
+     * @param filter exempted(true/false)
+     * 
+     * @return list of assets exempted/unexempted.
+     */
+    public List<Map<String, Object>> getListAssetsExempted(String assetGroup, Map<String, String> filter);
+
 
     /**
      * Fetches the taggable assets for the given assetgroup.If tagged filter is false it returns the untagged assets

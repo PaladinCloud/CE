@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as d3 from 'd3';
 import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
@@ -50,7 +50,7 @@ export type colorOptions = {
   providers: [LoggerService, ErrorHandlingService]
 })
 
-export class AssetDistributionComponent implements OnInit, OnDestroy {
+export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   resourceTypeSelectionSubscription: Subscription;
   filteredResources: any[];
@@ -99,7 +99,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy {
   ];
 
   isSortedByName = true;
-  isSortedByAssetNo = false;
+  isSortedByAssetNo = true;
 
 
   ngOnInit() {
@@ -116,10 +116,15 @@ export class AssetDistributionComponent implements OnInit, OnDestroy {
     private windowExpansionService: WindowExpansionService,
     private workflowService: WorkflowService)
   {
-    this.setTreemap();
     this.windowExpansionService.getExpansionStatus().subscribe((countMap: any) => {
       this.setTreemap();
     });
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.setTreemap();
+    },500)
   }
 
   @HostListener('window:resize', ['$event'])
@@ -303,6 +308,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy {
         this.treemapData = [];
         this.awsResources = allAwsResources;
         this.filteredResources = this.awsResources.slice();
+        this.filteredResources.sort((a, b) => b.count - a.count);
         this.selectedResource = this.filteredResources[0];
         this.setDataLoaded();
         this.massageData();

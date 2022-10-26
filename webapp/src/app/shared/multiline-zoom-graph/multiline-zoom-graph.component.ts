@@ -149,15 +149,15 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     window.onresize = (e) => {
       // ngZone.run will help to run change detection
       this.ngZone.run(() => {
-      this.graphWidth = this.graphContainer?parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10):700;
+      this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
       });
     };
   }
 
   @HostListener("window:resize", ["$event"]) onSizeChanges() {
     console.log("AM I CALLED?");
-    this.graphWidth = this.graphContainer?parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10):700;
-    // this.graphHeight = this.graphContainer?parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10):700;
+    this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
+    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;
     console.log(this.graphWidth);
     console.log(this.graphHeight);
     
@@ -281,11 +281,12 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {    
-    this.ngZone.run(() => {
-    });
-    // this.graphHeight = this.getInnerHeight(document.querySelector(".multiline-graph-container")) - 32;
-    this.graphWidth = this.graphContainer?parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10):1000 - 250;
-    this.init();    
+    setTimeout(() => {
+      this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
+      // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
+      console.log(this.graphWidth, "graphWidth");
+      this.init();
+    }, 500);
   }
 
   getInnerHeight( elm ){

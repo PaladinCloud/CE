@@ -30,6 +30,10 @@
     font-family: var(--text-light-font-family);
     line-height: 1.2;
     flex-wrap: wrap;
+    text-transform: capitalize;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .each-label {

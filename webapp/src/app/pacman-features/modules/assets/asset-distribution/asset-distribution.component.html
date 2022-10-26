@@ -1,8 +1,5 @@
 <div class="page-header">
     <h6 class="sub-header-text">Asset Distribution</h6>
-    <span class="text-desc">
-        This is a list of events and alerts taking place within paladin cloud specific to the choosen asset group
-    </span>
 </div>
 <div class="overall-distribution">
     <div class="title-header">
@@ -41,11 +38,11 @@
                 <div class="content-header">
                     <div class="column-wrapper-header">
                         <div class="col-1">
-                            <span class="col-header">Asset</span>
-                            <img class="sort-img" [class.sorted] = "!isSortedByName" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-1')">
+                            <span class="col-header">Name</span>
+                            <img class="sort-img" [class.sorted] = "isSortedByName" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-1')">
                         </div>
                         <div class="col-2">
-                            <span class="col-header">Number of Assets</span>
+                            <span class="col-header">Count</span>
                             <img class="sort-img" [class.sorted] = "isSortedByAssetNo" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-2')">
                         </div>
                     </div>
