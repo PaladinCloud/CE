@@ -119,6 +119,54 @@ public class AssetListController {
         return ResponseUtils.buildSucessResponse(response);
     }
 
+       /**
+       * Fetches the exempted assets for the given assetgroup.If exempted filter is false it returns the unexempted assets
+       * and if tagged is true returns the exempted assets.
+       *
+       * @param assetGroup  name of the asset group
+       * @param filter exempted(true/false)
+       * 
+       * @return list of assets exempted/unexempted.
+       */
+      @ApiOperation(httpMethod = "POST", value = "Get the list of exempted assets in an asset group. ")
+      @PostMapping(value = "/v1/list/assets/exempted")
+    public ResponseEntity<Object> getListAssetsExempted(@RequestBody(required = true) Request request)
+    {
+        String assetGroup = request.getAg();
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new Exception(Constants.ASSET_MANDATORY));
+        }
+
+        int from = request.getFrom();
+        int size = request.getSize();
+        if (from < 0) {
+            return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FROM_NEGATIVE));
+        }
+
+        String searchText = request.getSearchtext();
+        Map<String, String> filter = request.getFilter();
+        if (filter == null) {
+            filter = new HashMap<>();
+        }
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
+        AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_EXEMPTED);
+        for (Map.Entry<String, String> entry : filter.entrySet()) {
+            if (!acceptedFilterKeys.contains(entry.getKey())) {
+                return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
+                        + StringUtils.join(acceptedFilterKeys, ", ")));
+            }
+        }
+
+        List<Map<String, Object>> masterList;
+        try {
+            masterList = assetService.getListAssetsExempted(assetGroup, filter);
+        } catch (Exception e) {
+            LOGGER.error("Error in listExemptedAssets ",e);
+            return ResponseUtils.buildFailureResponse(e);
+        }
+        return formResponseWithCount(masterList, from, size, searchText);
+    }
+
     /**
      * Fetches the taggable assets for the given assetgroup.If tagged filter is false it returns the untagged assets
      * and if tagged is true returns the tagged assets.It also filters the the list based on resource type passed in filter 

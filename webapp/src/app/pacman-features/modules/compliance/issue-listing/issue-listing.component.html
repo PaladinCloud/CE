@@ -18,14 +18,10 @@
     <div class="violations-header">
         <div class="flex flex-align-center">
             <img *ngIf="backButtonRequired" class="arrow-img" (click)="navigateBack()" src="../assets/icons/left-arrow.svg">
-            <!-- <h1 class="title-text nowrap-ellipsis">{{ breadcrumbPresent }}</h1> -->
             <span class="title">{{ breadcrumbPresent }}</span>
         </div>
-        <span class="description">View violations that run against each policy. </span>
     </div>
     <div class="wrapper">
-        <!-- <div [class.loader]="tableData.length==0 && tableErrorMessage==''"></div>
-        <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message> -->
         <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
             [data]="tableData" [columnWidths]="columnWidths"
             [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 

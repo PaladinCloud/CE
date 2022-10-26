@@ -62,6 +62,9 @@ public class PolicyViolationDetails {
     /** The policy id. */
     String policyId;
 
+    /** The asset group. */
+    String assetGroup;
+
     /** The rule id. */
     String ruleId;
 
@@ -83,6 +86,7 @@ public class PolicyViolationDetails {
      * @param violationModifiedDate the violation modified date
      * @param policyId the policy id
      * @param ruleId the rule id
+     * @param assetGroup the asset group
      * @param violationDetails the violation details
      */
     public PolicyViolationDetails(String resourceType, String status,
@@ -90,6 +94,7 @@ public class PolicyViolationDetails {
             String policyViolated, String policyDescription,
             String violationReason, String violationCreatedDate,
             String violationModifiedDate, String policyId, String ruleId,
+            String assetGroup,
             List<Map<String, Object>> violationDetails) {
         super();
         this.resourceType = resourceType;
@@ -105,6 +110,25 @@ public class PolicyViolationDetails {
         this.policyId = policyId;
         this.ruleId = ruleId;
         this.violationDetails = violationDetails;
+        this.assetGroup = assetGroup;
+    }
+
+      /**
+     * Gets the asset Group
+     *
+     * @return the asset Group
+     */
+    public String getAssetGroup() {
+        return this.assetGroup;
+    }
+
+    /**
+     * Sets the asset Group.
+     *
+     * @param assetGroup the new asset Group
+     */
+    public void setAssetGroup(String assetGroup) {
+        this.assetGroup = assetGroup;
     }
 
     /**

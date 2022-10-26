@@ -1307,13 +1307,8 @@ public class ElasticSearchRepository implements Constants {
 		Gson serializer = new GsonBuilder().create();
 		String request = serializer.toJson(requestBody);
 		String responseDetails = null;
-		System.out.println("urlToQuery "+urlToQuery);
-
-		System.out.println("request "+request);
 		try {
 			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, request);
-			System.out.println("responseDetails "+responseDetails);
-
 			serializer = new GsonBuilder().create();
 			Map<String, Object> response = (Map<String, Object>) serializer.fromJson(responseDetails, Object.class);
 			if (response.containsKey(HITS)) {

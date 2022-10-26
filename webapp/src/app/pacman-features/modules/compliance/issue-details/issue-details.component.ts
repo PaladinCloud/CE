@@ -401,8 +401,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                       this.issueBlocks['violationModifiedDate'], true
                     );
                   }
-                  if (this.issueBlocks['pac_ds'] !== undefined) {
-                    this.issueAssetGroup = this.issueBlocks['pac_ds'];
+                  if (this.issueBlocks['assetGroup'] !== undefined) {
+                    this.issueAssetGroup = this.issueBlocks['assetGroup'];
                   }
                   this.issueIdValue = this.issueBlocks.resouceViolatedPolicy;
 
@@ -650,7 +650,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       });
 
       const payload = {
-        dataSource: this.selectedAssetGroup,
+        dataSource: this.issueAssetGroup,
         from: this.bucketNumber * this.paginatorSize,
         issueId: issueId,
         size: this.paginatorSize,
@@ -692,6 +692,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
   massageData(data) {
     try {
+      this.issueBlocks['violationModifiedDate']
+        = this.utilityService.calculateDateAndTime(data[0].auditdate, true);
       for (let i = 0; i < data.length; i++) {
         data[i][`Date`] = data[i].auditdate;
         data[i][`Source`] = data[i].datasource;
@@ -951,6 +953,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.showLoadcomplete = true;
             this.showTopSection = false;
             this.exceptionAdded = !this.exceptionAdded;
+            this.getIssueAudit();
             this.upateStatusOnAddOrRevokeException('Exempted');
           },
           error => {
