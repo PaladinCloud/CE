@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { IssueListingService } from "../../../services/issue-listing.service";
 import { IssueFilterService } from "../../../services/issue-filter.service";
 import * as _ from "lodash";
@@ -29,6 +29,7 @@ import { RefactorFieldsService } from "./../../../../shared/services/refactor-fi
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
+import { TableStateService } from "src/app/core/services/table-state.service";
 
 @Component({
   selector: "app-asset-list",
@@ -65,10 +66,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
   paginatorSize = 25;
   searchTxt = "";
   filterTypeOptions: any = [];
-  filterTagOptions: any = [];
+  filterTagOptions: any = {};
   currentFilterType;
   filterTypeLabels = [];
-  filterTagLabels = [];
+  filterTagLabels = {};
   dataTableData: any = [];
   tableDataLoaded = false;
   filters: any = [];
@@ -89,8 +90,64 @@ export class AssetListComponent implements OnInit, OnDestroy {
   private pageLevel = 0;
   public backButtonRequired;
   mandatory: any;
+  showDownloadBtn = true;
+  showFilterBtn = true;
+  tableTitle = "Asset list";
+  tableErrorMessage = '';
   headerColName;
   direction;
+  tableScrollTop=0;
+  onScrollDataLoader: Subject<any> = new Subject<any>();
+  columnWidths = {'Resource ID': 2, 'Region': 1, 'Cloud Type': 1, 'Volume Type': 1, 'Account ID':1};
+  columnNamesMap = {};
+  columnsSortFunctionMap = {
+    Severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  };
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+  whiteListColumns;
+  displayedColumns;
+  tableData = [];
+  isStatePreserved = false;
 
   private assetGroupSubscription: Subscription;
   private routeSubscription: Subscription;
@@ -115,7 +172,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private refactorFieldsService: RefactorFieldsService,
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
-    private routerUtilityService: RouterUtilityService
+    private routerUtilityService: RouterUtilityService,
+    private tableStateService: TableStateService
   ) {
 
     this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
@@ -140,6 +198,27 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    const state = this.tableStateService.getState("assetList") || {};
+    if(state){      
+      this.headerColName = state.headerColName || '';
+      this.direction = state.direction || '';
+      this.bucketNumber = state.bucketNumber || 0;
+      this.totalRows = state.totalRows || 0;
+      this.searchTxt = state?.searchTxt || '';
+      
+      this.tableData = state?.data || [];
+      this.displayedColumns = Object.keys(this.columnWidths);
+      this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+      this.tableScrollTop = state?.tableScrollTop;
+      
+      if(this.tableData && this.tableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
+    }
+
     this.urlToRedirect = this.router.routerState.snapshot.url;
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
     
@@ -165,10 +244,24 @@ export class AssetListComponent implements OnInit, OnDestroy {
     );
   }
 
+  handleAddFilterClick(e){}
+
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.getUpdatedUrl();
+  }
+
+  handleWhitelistColumnsChange(event){
+    this.whiteListColumns = event;
+  }
+
+  storeState(state){
+    this.tableStateService.setState("assetList", state);    
+  }
+
+  clearState(){
+    this.tableStateService.clearState("assetList");
+    this.isStatePreserved = false;
   }
 
   /*
@@ -205,6 +298,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.logger.log("error", error);
     }
   }
+
   deleteFilters(event?) {
     try {
       if (!event) {
@@ -212,46 +306,62 @@ export class AssetListComponent implements OnInit, OnDestroy {
       } else {
         if (event.clearAll) {
           this.filters = [];
-          // Adding again Mandatory filters if found any.
-          event.array.forEach((obj) => {
-            if (obj.hasOwnProperty("mandatoryFilter")) {
-              this.filters.push(obj);
-            }
-          });
         } else {
           this.filters.splice(event.index, 1);
         }
-
-        this.filterText = this.utils.arrayToObject(
-          this.filters,
-          "filterkey",
-          "value"
-        ); // <-- TO update the queryparam which is passed in the filter of the api
-        this.filterText = this.utils.makeFilterObj(this.filterText);
-
-        /**
-         * To change the url
-         * with the deleted filter value along with the other existing paramter(ex-->tv:true)
-         */
-
-        const updatedFilters = Object.assign(
-          this.filterText,
-          this.queryParamsWithoutFilter
-        );
-        this.router.navigate([], {
-          relativeTo: this.activatedRoute,
-          queryParams: updatedFilters,
-        });
-        /**
-         * Finally after changing URL Link
-         * api is again called with the updated filter
-         */
-        this.filterText = this.utils.processFilterObj(this.filterText);
+        this.getUpdatedUrl();
         this.updateComponent();
       }
-    } catch (error) {}
+    } catch (error) { }
     /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
   }
+  // deleteFilters(event?) {
+  //   try {
+  //     if (!event) {
+  //       this.filters = [];
+  //     } else {
+  //       if (event.clearAll) {
+  //         this.filters = [];
+  //         // Adding again Mandatory filters if found any.
+  //         event.array.forEach((obj) => {
+  //           if (obj.hasOwnProperty("mandatoryFilter")) {
+  //             this.filters.push(obj);
+  //           }
+  //         });
+  //       } else {
+  //         this.filters.splice(event.index, 1);
+  //       }
+
+  //       this.filterText = this.utils.arrayToObject(
+  //         this.filters,
+  //         "filterkey",
+  //         "value"
+  //       ); // <-- TO update the queryparam which is passed in the filter of the api
+  //       this.filterText = this.utils.makeFilterObj(this.filterText);
+
+  //       /**
+  //        * To change the url
+  //        * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+  //        */
+
+  //       const updatedFilters = Object.assign(
+  //         this.filterText,
+  //         this.queryParamsWithoutFilter
+  //       );
+  //       this.router.navigate([], {
+  //         relativeTo: this.activatedRoute,
+  //         queryParams: updatedFilters,
+  //       });
+  //       /**
+  //        * Finally after changing URL Link
+  //        * api is again called with the updated filter
+  //        */
+  //       this.filterText = this.utils.processFilterObj(this.filterText);
+  //       this.updateComponent();
+  //     }
+  //   } catch (error) {}
+  //   /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  // }
   /*
    * this function passes query params to filter component to show filter
    */
@@ -301,7 +411,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.outerArr = [];
     // this.searchTxt = "";
     this.currentBucket = [];
-    // this.bucketNumber = 0;
     this.firstPaginator = 1;
     this.showLoader = true;
     // this.currentPointer = 0;
@@ -311,7 +420,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.seekdata = false;
     this.errorValue = 0;
     this.showGenericMessage = false;
-    this.getData();
+    if(this.isStatePreserved){  
+      console.log("Clear state called");
+          
+      this.clearState();
+    }else{
+      console.log("Get data called");
+      
+      this.bucketNumber = 0;
+      this.tableData = [];
+      this.getData();
+    }
   }
 
   navigateBack() {
@@ -324,7 +443,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  getData() {
+  getData(isNextPageCalled=false) {
     try {
       let queryParams;
       let assetListUrl;
@@ -449,7 +568,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.getDataForAParticularTypeOfAssets(
         queryParams,
         assetListUrl,
-        assetListMethod
+        assetListMethod,
+        isNextPageCalled
       );
     } catch (error) {
       this.showLoader = false;
@@ -461,7 +581,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   getDataForAParticularTypeOfAssets(
     queryParams,
     assetListUrl,
-    assetListMethod
+    assetListMethod,
+    isNextPageCalled=false
   ) {
     if (this.issueListingSubscription) {
       this.issueListingSubscription.unsubscribe();
@@ -470,6 +591,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       .getData(queryParams, assetListUrl, assetListMethod)
       .subscribe(
         (response) => {
+          console.log("RESP: ", response);
+          
           this.showGenericMessage = false;
           try {
             this.errorValue = 1;
@@ -497,8 +620,16 @@ export class AssetListComponent implements OnInit, OnDestroy {
                 this.lastPaginator = this.totalRows;
               }
               const updatedResponse = this.massageData(this.issueListingdata);
+              // this.tableData = updatedResponse;
               this.currentBucket[this.bucketNumber] = updatedResponse;
-              this.processData(updatedResponse);
+              if(isNextPageCalled){
+                console.log("NEXT PG CALLED");
+                
+                  this.onScrollDataLoader.next(updatedResponse)
+                }else{
+                  this.tableData = updatedResponse;
+                }
+              // this.processData(updatedResponse);
             }
           } catch (e) {
             this.errorValue = 0;
@@ -680,14 +811,30 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDetails(row) {
+  goToDetails(event) {
+    console.log("event: ", event);
+    
+    const row = event.rowSelected;
+    const data = event.data;
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      bucketNumber: this.bucketNumber,
+      searchTxt: this.searchTxt,
+      tableScrollTop: event.tableScrollTop
+      // filterText: this.filterText
+    }
+    this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       let resourceType;
-      if (row.row["Asset Type"]) {
-        resourceType = row.row["Asset Type"].text;
+      if (row["Asset Type"]) {
+        resourceType = row["Asset Type"];
       }
 
       if (
@@ -698,7 +845,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       ) {
         resourceType = this.filterText.resourceType;
       }
-      const resourceID = encodeURIComponent(row.row["Resource ID"].text);
+      const resourceID = encodeURIComponent(row["Resource ID"]);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["headerColName"] = undefined;
       updatedQueryParams["direction"] = undefined;
@@ -737,20 +884,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   nextPg() {
     try {
-      if (this.currentPointer < this.bucketNumber) {
-        this.currentPointer++;
-        this.processData(this.currentBucket[this.currentPointer]);
-        this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-        this.lastPaginator =
-          this.currentPointer * this.paginatorSize + this.paginatorSize;
-        if (this.lastPaginator > this.totalRows) {
-          this.lastPaginator = this.totalRows;
-        }
-      } else {
         this.bucketNumber++;
-        this.getData();
-      }
-      this.getUpdatedUrl();
+        this.getData(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -807,11 +942,18 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  callNewSearch() {
-    this.bucketNumber = 0;
-    this.currentBucket = [];
-    this.getData();
-    this.getUpdatedUrl();
+  // callNewSearch() {
+  //   this.bucketNumber = 0;
+  //   this.currentBucket = [];
+  //   this.getData();
+  //   this.getUpdatedUrl();
+  // }
+  callNewSearch(searchVal){    
+    this.searchTxt = searchVal;
+    // this.state.searchValue = searchVal;
+    this.isStatePreserved = false;
+    this.updateComponent();  
+    // this.getUpdatedUrl();
   }
 
   /**
@@ -849,9 +991,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
   changeFilterType(value) {
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
-        optionName: value.value,
+        optionName: value,
       });
-      this.issueFilterSubscription = this.issueFilterService
+      console.log(value);
+      console.log(this.filterTypeOptions);
+      
+      console.log(this.currentFilterType);
+      
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        this.issueFilterSubscription = this.issueFilterService
         .getFilters(
           {
             ag: this.selectedAssetGroup,
@@ -863,19 +1011,23 @@ export class AssetListComponent implements OnInit, OnDestroy {
           "GET"
         )
         .subscribe((response) => {
-          this.filterTagOptions = response[0].response;
-          this.filterTagLabels = _.map(response[0].response, "name");
+          this.filterTagOptions[value] = response[0].response;
+          this.filterTagLabels[value] = _.map(response[0].response, "name");
         });
+      }
+      
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  changeFilterTags(value) {
+  changeFilterTags(event) {
+    console.log(event);
+    let value = event.filterValue;
     try {
       if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions, { name: value.value });
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
         this.utils.addOrReplaceElement(
           this.filters,
           {
@@ -917,9 +1069,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     updatedQueryParams = {
       filter: this.filterText.filter,
-      headerColName: this.headerColName,
-      direction : this.direction,
-      bucketNumber : this.bucketNumber,
       searchValue: this.searchTxt
     }
 
