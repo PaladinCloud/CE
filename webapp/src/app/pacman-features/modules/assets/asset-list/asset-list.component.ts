@@ -30,6 +30,7 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { TableStateService } from "src/app/core/services/table-state.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 
 @Component({
   selector: "app-asset-list",
@@ -176,11 +177,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private tableStateService: TableStateService
   ) {
 
-    this.headerColName = this.activatedRoute.snapshot.queryParams.headerColName;
-    this.direction = this.activatedRoute.snapshot.queryParams.direction;
-    this.bucketNumber = this.activatedRoute.snapshot.queryParams.bucketNumber || 0;
-    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
-
     /**************************************************** */
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
@@ -188,6 +184,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
+        this.updateComponent();
       });
 
     this.subscriptionDomain = this.domainObservableService
@@ -195,6 +192,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       .subscribe((domain) => {
         this.selectedDomain = domain;
       });
+
+      this.getFilters();
   }
 
   ngOnInit() {
@@ -227,21 +226,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
     this.breadcrumbPresent = "Asset List";
-    this.getRouteQueryParameters();
-  }
-
-  getRouteQueryParameters(): any {
-    this.activatedRoute.queryParams.subscribe(
-      (params) => {
-        if(this.selectedAssetGroup && this.selectedDomain){
-          this.routerParam();
-          this.getFilters();
-          this.deleteFilters();
-          this.getFilterArray();
-          this.updateComponent();
-        }
-      }
-    );
   }
 
   handleAddFilterClick(e){}
@@ -378,22 +362,39 @@ export class AssetListComponent implements OnInit, OnDestroy {
         };
         dataArray.push(obj);
       }
-      const filterValues = dataArray;
-      const refactoredService = this.refactorFieldsService;
-      const formattedFilters = dataArray.map(function (data) {
-        data.name =
-          refactoredService.getDisplayNameForAKey(data.name) || data.name;
-        return data;
-      });
-
+      const formattedFilters = dataArray
+      // .map(function (data) {
+      //   data.name =
+      //     refactoredService.getDisplayNameForAKey(data.name) || data.name;
+      //   return data;
+      // });
+      let keyValue;
       for (let i = 0; i < formattedFilters.length; i++) {
-        const eachObj = {
-          key: formattedFilters[i].name, // <-- displayKey-- Resource Type
-          value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-          filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-          compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-        };
-        localFilters.push(eachObj);
+        for(let j=0; j<this.filterTypeOptions.length; j++){
+          if(formattedFilters[i].name.trim().toLowerCase()==this.filterTypeOptions[j].optionValue.trim().toLowerCase()){
+            keyValue = this.filterTypeOptions[j].optionName;
+            break;
+          }
+        }
+        // let keyValue = _.find(this.filterTypeOptions, {
+        //   optionValue: formattedFilters[i].name,
+        // })["optionName"];
+        
+        // this.changeFilterType(keyValue);
+        this.changeFilterType(keyValue).subscribe(filterTagOptions => {          
+            let filterValue = _.find(filterTagOptions, {
+              id: this.filterText[filterObjKeys[i]],
+            })["name"];
+          const eachObj = {
+            keyDisplayValue: keyValue,
+            filterValue: filterValue,
+            key: keyValue, // <-- displayKey-- Resource Type
+            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
+            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
+            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+          };
+          localFilters.push(eachObj);
+        })
       }
       this.filters = localFilters;
     } catch (error) {
@@ -421,12 +422,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.errorValue = 0;
     this.showGenericMessage = false;
     if(this.isStatePreserved){  
-      console.log("Clear state called");
-          
       this.clearState();
     }else{
-      console.log("Get data called");
-      
       this.bucketNumber = 0;
       this.tableData = [];
       this.getData();
@@ -591,8 +588,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       .getData(queryParams, assetListUrl, assetListMethod)
       .subscribe(
         (response) => {
-          console.log("RESP: ", response);
-          
           this.showGenericMessage = false;
           try {
             this.errorValue = 1;
@@ -623,8 +618,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
               // this.tableData = updatedResponse;
               this.currentBucket[this.bucketNumber] = updatedResponse;
               if(isNextPageCalled){
-                console.log("NEXT PG CALLED");
-                
                   this.onScrollDataLoader.next(updatedResponse)
                 }else{
                   this.tableData = updatedResponse;
@@ -650,30 +643,29 @@ export class AssetListComponent implements OnInit, OnDestroy {
         }
       );
   }
-  massageData(data) {
-    /*
-     * added by Trinanjan 14/02/2017
-     * the funciton replaces keys of the table header data to a readable format
-     */
+  massageData(data){
     const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
     const newData = [];
-    data.map(function (responseData) {
-      const KeysTobeChanged = Object.keys(responseData);
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
       let newObj = {};
-      let entityType;
       KeysTobeChanged.forEach((element) => {
-        if (element === "_entitytype") {
-          entityType = responseData["_entitytype"];
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
-        const elementnew =
+        else {
+        elementnew =
           refactoredService.getDisplayNameForAKey(
             element.toLocaleLowerCase()
           ) || element;
-        newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
-      if (entityType) {
-        newObj["Asset Type"] = entityType;
-      }
       newData.push(newObj);
     });
     return newData;
@@ -812,7 +804,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    console.log("event: ", event);
     
     const row = event.rowSelected;
     const data = event.data;
@@ -981,6 +972,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
+
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.updateComponent();
         });
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -989,15 +985,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
+    var subject = new Subject<any>();
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
-      console.log(value);
-      console.log(this.filterTypeOptions);
-      
-      console.log(this.currentFilterType);
-      
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -1013,6 +1005,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTagOptions[value] = response[0].response;
           this.filterTagLabels[value] = _.map(response[0].response, "name");
+          // if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
+          subject.next(this.filterTagOptions[value]);
         });
       }
       
@@ -1020,10 +1014,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
+    return subject.asObservable();
   }
 
   changeFilterTags(event) {
-    console.log(event);
     let value = event.filterValue;
     try {
       if (this.currentFilterType) {
@@ -1031,8 +1025,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.utils.addOrReplaceElement(
           this.filters,
           {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: value,
             key: this.currentFilterType.optionName,
-            value: filterTag["id"].trim(),
+            value: filterTag["id"],
             filterkey: this.currentFilterType.optionValue.trim(),
             compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
           },

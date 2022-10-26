@@ -289,7 +289,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     const queryParams = {
       filter: "resourceType=" + selectedTargetType
     }
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, "Asset Distribution");
     this.router.navigate(['pl/assets/asset-list'], {
       queryParams: queryParams,
       queryParamsHandling: 'merge'
