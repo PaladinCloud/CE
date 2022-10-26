@@ -102,8 +102,8 @@
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
                 <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }} </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell *matCellDef="let element"> 
-                    <img *ngIf="imageDataMap[element[column].toLowerCase()] && imageDataMap[element[column].toLowerCase()]['image']" style="vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column].toLowerCase()].image}}.svg" [title]="element[column]"> 
-                    <span *ngIf="!imageDataMap[element[column].toLowerCase()] || !imageDataMap[element[column].toLowerCase()].imageOnly" [title]="element[column]=='NR'?'No Resources':element[column]">{{ element[column] }} </span>
+                    <img *ngIf="imageDataMap[element[column]] && imageDataMap[element[column]]['image']" style="vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column]].image}}.svg" [title]="element[column]"> 
+                    <span *ngIf="!imageDataMap[element[column]] || !imageDataMap[element[column]].imageOnly" [title]="element[column]=='NR'?'No Resources':element[column]">{{ element[column] }} </span>
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
