@@ -40,7 +40,7 @@ public class CMKEncryptionForOsAndDataDiskRule extends BaseRule {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "azure_disk/_search";
+            esUrl = url + "/azure_disk/_search";
         }
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         boolean isValid = false;
@@ -102,12 +102,15 @@ public class CMKEncryptionForOsAndDataDiskRule extends BaseRule {
                 logger.debug("Validating the data item: {}", jsonDataItem.toString());
                 JsonObject diskInner = jsonDataItem.getAsJsonObject()
                         .get("diskInner").getAsJsonObject();
+                logger.debug("diskInner"+diskInner);
                 if (diskInner != null) {
                     JsonObject encryptionProperty=diskInner.getAsJsonObject()
                             .get("properties.encryption").getAsJsonObject();
+                    logger.debug("encryptionProperty"+encryptionProperty);
                     if  (encryptionProperty!=null){
                         String encryptionType=encryptionProperty.getAsJsonObject()
                                 .get(PacmanRuleConstants.TYPE).getAsString();
+                        logger.debug("encryptionType"+encryptionType);
                         if(encryptionType.equalsIgnoreCase("EncryptionAtRestWithPlatformKey")){
                             validationResult=false;
                         }
