@@ -305,7 +305,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     try {
         this.commonResponseService.getData( exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams).subscribe(
           response => {
-            this.tiles[1].mainContent.count = response.totalassets;
+            this.tiles[1].mainContent.count = response.totalassets!=null?response.totalassets:0;
             this.tiles[1].subContent[0].count = response.assettype;
           }
         )

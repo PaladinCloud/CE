@@ -173,7 +173,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
 		String query = "select distinct targetType as type, c.displayName as displayName ,c.category as category,c.domain as domain, dataSourceName as "
 		+ Constants.PROVIDER + " from cf_AssetGroupTargetDetails a , cf_AssetGroupDetails b ,cf_Target c "
-				+ " where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName =' "
+				+ " where a.groupId = b.groupId and a.targetType = c.targetName and b.groupName ='"
 				+ aseetGroupName.trim() + "'  and (c.status = 'active' or c.status = 'enabled') ";
 		if (!StringUtils.isEmpty(domain)) {
 			query = query + " and lower(c.domain) = '" + domain.toLowerCase().trim() + "'";
