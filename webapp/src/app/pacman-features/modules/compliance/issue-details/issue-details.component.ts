@@ -694,6 +694,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     try {
       this.issueBlocks['violationModifiedDate']
         = this.utilityService.calculateDateAndTime(data[0].auditdate, true);
+      this.issueBlocks['status'] = data[0].status;
       for (let i = 0; i < data.length; i++) {
         data[i][`Date`] = data[i].auditdate;
         data[i][`Source`] = data[i].datasource;
@@ -834,6 +835,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
               this.exceptionAdded = !this.exceptionAdded;
               this.checkRevoke = false;
               this.showLoadcompleteRevoke = true;
+              this.getIssueAudit();
             }, 100);
           },
           error => {
