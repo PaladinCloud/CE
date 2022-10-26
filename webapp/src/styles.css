@@ -779,7 +779,7 @@ input:-webkit-autofill {
 
 .floating-widgets-header {
   min-height: 4em;
-  padding: 0em 1.8em;
+  padding: 0px 24px;
 }
 
 .floating-widgets-header h1 {
@@ -834,7 +834,7 @@ input:-webkit-autofill {
 }
 
 .floating-widgets-container {
-  padding: 28px;
+  padding: 0px 24px;
   overflow: overlay;
 }
 
@@ -1679,7 +1679,7 @@ app-tools-landing-page {
 
 .admin-widgets-header {
   height: 6em;
-  padding: 1.9em 1.8em;
+  padding: 18px 28px 0px 28px;
 }
 
 /* treemap icon classes */

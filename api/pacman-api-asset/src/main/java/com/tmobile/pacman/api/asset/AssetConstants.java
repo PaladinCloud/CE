@@ -31,6 +31,7 @@ public final class AssetConstants {
     public static final String FILTER_ENVIRONMENT = "environment";
     public static final String FILTER_PATCHED = "patched";
     public static final String FILTER_TAGGED = "tagged";
+    public static final String FILTER_EXEMPTED = "exempted";
     public static final String FILTER_TAGNAME = "tagName";
     public static final String FILTER_RULEID = "ruleId";
     public static final String FILTER_COMPLIANT = "compliant";

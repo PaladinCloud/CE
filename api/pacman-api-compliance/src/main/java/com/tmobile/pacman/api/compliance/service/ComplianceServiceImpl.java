@@ -972,6 +972,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         String resourceId = null;
         String ruleId = null;
         String issueDetails = null;
+        String pac_ds = "";
         List<Map<String, Object>> violationList = new ArrayList<>();
         Map<String, Object> violation = null;
         Map<String, Object> policyViolationByIssueId;
@@ -983,6 +984,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         if (!policyViolationByIssueId.isEmpty()) {
             ruleId = policyViolationByIssueId.get(RULEID).toString();
             resourceId = policyViolationByIssueId.get(RESOURCEID).toString();
+            pac_ds = policyViolationByIssueId.get(PAC_DS).toString();
             // get policy description from DB
             policyDescription = (null != getRuleDescription(ruleId).get(RULE_DESC)) ? getRuleDescription(ruleId).get(
                     RULE_DESC).toString() : "";
@@ -1007,7 +1009,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     policyViolated, policyDescription, policyViolationByIssueId.get(ISSUE_REASON).toString(),
                     policyViolationByIssueId.get(CREATED_DATE).toString(), policyViolationByIssueId.get(MODIFIED_DATE)
                             .toString(),
-                    policyViolationByIssueId.get(POLICYID).toString(), ruleId, violationList);
+                    policyViolationByIssueId.get(POLICYID).toString(), ruleId, pac_ds, violationList);
 
         } else {
             throw new ServiceException(NO_DATA_FOUND);

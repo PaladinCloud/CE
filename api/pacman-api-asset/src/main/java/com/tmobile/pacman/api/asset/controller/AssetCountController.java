@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,10 @@ public class AssetCountController {
         if (type == null) {
             type = "all";
         }
-        List<Map<String, Object>> countMap = assetService.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type, domain, application, provider);
-        LongSummaryStatistics totalCount = countMap.stream().collect(Collectors.summarizingLong(map -> (Long) map.get(Constants.COUNT)));
+        List<Map<String, Object>> countMap = assetService.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type,
+                domain, application, provider);
+        LongSummaryStatistics totalCount = countMap.stream()
+                .collect(Collectors.summarizingLong(map -> (Long) map.get(Constants.COUNT)));
         Map<String, Object> response = new HashMap<>();
         response.put("ag", assetGroup);
         response.put(AssetConstants.ASSET_COUNT, countMap);
@@ -153,15 +156,20 @@ public class AssetCountController {
      */
     @GetMapping(path = "v1/count/exempted")
     public ResponseEntity<Object> getExemptedAssetsCount(@RequestParam("ag") String assetGroup) {
-        Map<String, Long> response = new HashMap<>();
-        if (!Util.isValidAssetGroup(assetGroup)) {
-            return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/ruleId is mandatory"));
-        }
-        try {
-            response.put("exemptedAssetsCount", assetService.getExemptedAssetsCount(assetGroup));
-        } catch (Exception e) {
-            return ResponseUtils.buildFailureResponse(e);
-        }
-        return ResponseUtils.buildSucessResponse(response);
+    Map<String, Object> response = new HashMap<>();
+    if (!Util.isValidAssetGroup(assetGroup)) {
+        return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/ruleId is mandatory"));
+    }
+    
+    Map<String, Long> countMap = assetService.getExemptedAssetsCount(assetGroup);
+    int exemptedAssetTypes = countMap.size();
+
+    Optional<Long> exemptedAssetCount;
+    exemptedAssetCount = countMap.values().stream().reduce((a, b) -> (a + b));
+
+    response.put("ag", assetGroup);
+    response.put(AssetConstants.ASSET_TYPE, exemptedAssetTypes);
+    response.put(AssetConstants.TOTAL_ASSETS, exemptedAssetCount);
+    return ResponseUtils.buildSucessResponse(response);
     }
 }

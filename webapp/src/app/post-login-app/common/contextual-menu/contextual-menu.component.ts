@@ -71,16 +71,16 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
           route: "/pl/assets/asset-dashboard",
         },
         {
-          id: 5,
-          name: "Details",
-          parent: "Assets",
-          route: "/pl/assets/asset-list",
-        },
-        {
           "id": 25,
           "name": "Distribution",
           "parent": "Assets",
           "route": "/pl/assets/asset-distribution"
+        },
+        {
+          id: 5,
+          name: "Details",
+          parent: "Assets",
+          route: "/pl/assets/asset-list",
         }
       ],
     },

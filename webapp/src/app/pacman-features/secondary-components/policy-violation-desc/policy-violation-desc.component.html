@@ -69,10 +69,15 @@
     </div>
     <div class="policy-violation-label flex flex-col" *ngIf="violationData.violationModifiedDate">
         <div class="policy-violation-label-header capitalize">
-            Last modified date
+            Current Status
         </div>
         <div class="policy-violation-label-content" title="{{violationData.violationModifiedDate}}">
-            {{violationData.violationModifiedDate}}
+            <div>
+            {{ violationData.status}}
+          </div>
+            <div >
+              {{violationData.violationModifiedDate}}
+            </div>
         </div>
     </div>
 </section>

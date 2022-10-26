@@ -39,6 +39,7 @@
     padding: 1px;
     min-height: 30vh;
     font-size: 1em;
+    background-color: var(--background-white);
      /* added for height adjustment by trinanjan on 9th jan,2017.
         Once it is verified by puneet,it will be added to other table page also
     */

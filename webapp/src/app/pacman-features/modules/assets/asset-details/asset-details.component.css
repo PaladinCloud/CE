@@ -52,9 +52,9 @@
 }
 
 .title-text {
-  display: inline-block;
-  font: var(--text-headline-6);
-  color: var(--text-high-emphasis);
+  font-size: 2em;
+  font-family: var(--text-font-family);
+  font-weight: 500;
 }
 
 .arrow-img {

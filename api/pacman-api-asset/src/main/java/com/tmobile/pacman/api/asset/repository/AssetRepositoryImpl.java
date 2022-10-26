@@ -865,22 +865,19 @@ public class AssetRepositoryImpl implements AssetRepository {
         return 0;
     }
 
-    public long getExemptedAssetsCount(String assetGroup){
-       long exemptedAssetsCount;
+    public Map<String, Long> getExemptedAssetsCount(String assetGroup){
+        Map<String, Long> ExemptedCountMap = new HashMap<>();
         Map<String, Object> mustFilter = new HashMap<>();
-        Map<String, Object> mustTermsFilter = new HashMap<>();
-        Map<String, Object> mustNotFilter = new HashMap<>();
-        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         mustFilter.put(AssetConstants.TYPE, "issue");
         mustFilter.put(AssetConstants.ISSUE_STATUS, "exempted");
         try {
-            exemptedAssetsCount = esRepository.getTotalDocumentCountForIndexAndType(assetGroup, null,
-                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
-            return exemptedAssetsCount;
+            ExemptedCountMap = esRepository.getTotalDistributionForIndexAndType(assetGroup, null, mustFilter, null,
+                    null, AssetConstants.UNDERSCORE_TYPE, Constants.THOUSAND, null);
+            return ExemptedCountMap;
         } catch (Exception e) {
             LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
         }
-        return 0;
+        return ExemptedCountMap;
     }
 
     public List<Map<String, Object>> getCpuUtilizationByAssetGroupAndInstanceId(String instanceId) throws DataException {
@@ -1139,6 +1136,34 @@ public class AssetRepositoryImpl implements AssetRepository {
 		LOGGER.info("Exiting getListAssetsPatchable");
 		return assetList;
 	}
+
+    @Override
+    public List<Map<String, Object>> getListAssetsExempted(String assetGroup, Map<String, String> filter) 
+    {
+        LOGGER.info("Inside getListAssetsExempted");
+        List<Map<String, Object>> assetList = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
+        if (filter.containsKey("exempted")) {
+            String exempted = filter.get("exempted");
+            if (exempted.equals("true")) {
+                mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
+            }
+            else
+            mustNotFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.EXEMPTED);
+        }
+        try {
+            assetList = esRepository.getDataFromES(assetGroup, null,
+                    mustFilter, mustNotFilter, shouldFilter, null, mustTermsFilter);
+            return assetList;
+        } catch (Exception e) {
+            LOGGER.error("Error retrieving inventory from ES in getExemptedAssetCount ", e);
+        }
+        return assetList;
+    }
 
     @Override
     public List<Map<String, Object>> getListAssetsTaggable(String assetGroup, Map<String, String> filter) {
