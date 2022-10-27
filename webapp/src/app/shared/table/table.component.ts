@@ -115,7 +115,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(window.innerHeight>1800 && this.data.length>0){
         this.nextPageCalled.emit();
         this.isDataLoading = true;
-      }
+      }      
+      // for(let j=this.filteredArray.length; j<1; j++){
+      //   this.addFilter();
+      // }
     }
   }
 
@@ -129,7 +132,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       });
       this.changeDetectorRef.detectChanges();
     }
-    this.addFilter();
   }
 
   getWidthFactor(){

@@ -99,7 +99,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Resource ID': 2, 'Region': 1, 'Cloud Type': 1, 'Volume Type': 1, 'Account ID':1};
+  columnWidths = {'Resource ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
   columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -177,27 +177,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private tableStateService: TableStateService
   ) {
 
-    /**************************************************** */
-    this.assetGroupSubscription = this.assetGroupObservableService
-      .getAssetGroup()
-      .subscribe((assetGroupName) => {
-        this.backButtonRequired =
-          this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
-        this.selectedAssetGroup = assetGroupName;
-        this.updateComponent();
-      });
-
-    this.subscriptionDomain = this.domainObservableService
-      .getDomainType()
-      .subscribe((domain) => {
-        this.selectedDomain = domain;
-      });
-
-      this.getFilters();
+    
   }
 
   ngOnInit() {
-
     const state = this.tableStateService.getState("assetList") || {};
     if(state){      
       this.headerColName = state.headerColName || '';
@@ -226,6 +209,26 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
     this.breadcrumbPresent = "Asset List";
+
+
+    /**************************************************** */
+    this.assetGroupSubscription = this.assetGroupObservableService
+      .getAssetGroup()
+      .subscribe((assetGroupName) => {
+        this.backButtonRequired =
+          this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+        this.selectedAssetGroup = assetGroupName;
+        // this.updateComponent();
+        this.getFilters();
+      });
+
+    this.subscriptionDomain = this.domainObservableService
+      .getDomainType()
+      .subscribe((domain) => {
+        this.selectedDomain = domain;
+      });
+
+      
   }
 
   handleAddFilterClick(e){}

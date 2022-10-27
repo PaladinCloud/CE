@@ -181,7 +181,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
         this.agAndDomain["ag"] = this.selectedAssetGroup;
-        this.updateComponent();
+        // this.updateComponent();
+        this.getFilters();
       });
 
     this.domainSubscription = this.domainObservableService
@@ -190,7 +191,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.selectedDomain = domain;
         this.agAndDomain["domain"] = this.selectedDomain;
       });
-      this.getFilters();
   }
 
   ngOnInit() {
