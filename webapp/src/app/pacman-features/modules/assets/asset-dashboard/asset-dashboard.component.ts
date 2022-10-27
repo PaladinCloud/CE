@@ -240,7 +240,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   }
 
   redirectTo(data: any) {
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, "Asset Summary");
     if (data == "Exempted Assets" || data == "Exempted Asset Types")
     {
       const queryParams = {

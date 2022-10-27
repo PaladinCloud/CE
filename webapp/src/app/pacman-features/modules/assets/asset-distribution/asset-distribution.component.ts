@@ -289,7 +289,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     const queryParams = {
       filter: "resourceType=" + selectedTargetType
     }
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, "Asset Distribution");
     this.router.navigate(['pl/assets/asset-list'], {
       queryParams: queryParams,
       queryParamsHandling: 'merge'
@@ -312,7 +312,6 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         this.selectedResource = this.filteredResources[0];
         this.setDataLoaded();
         this.massageData();
-        console.log("Fetched awsResources", this.awsResources);
       },
       error => {
         this.logger.log('error', error);
