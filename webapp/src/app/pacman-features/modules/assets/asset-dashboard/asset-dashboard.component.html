@@ -42,7 +42,7 @@
                 </mat-card-header>
                 <mat-card-content>
                     <div class="chart" style="overflow-y: scroll;">
-                        <div class="chart-wrapper" id="TotalAssetsSummaryTrend" style="height: 100%; width: 100%; background-color: white;">
+                        <div class="chart-wrapper" id="TotalAssetsSummaryTrend" style="min-height: 300px;height: 100%; width: 100%; background-color: white;">
                             <div [class.loader]="totalAssetsCountData.length==0 && totalAssetsCountDataError==''"></div>
                             <app-error-message *ngIf="totalAssetsCountDataError" [selectedValue]="totalAssetsCountDataError"></app-error-message>
                             <app-multiline-zoom-graph *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''" [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'" [graphHeight]="320" [graphLinesData]="totalAssetsCountData"></app-multiline-zoom-graph>

@@ -180,27 +180,30 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
-        this.agAndDomain["ag"] = this.selectedAssetGroup;
-        this.updateComponent();
+        if(this.selectedDomain){
+          this.updateComponent();
+        }
       });
 
     this.domainSubscription = this.domainObservableService
       .getDomainType()
       .subscribe((domain) => {
         this.selectedDomain = domain;
-        this.agAndDomain["domain"] = this.selectedDomain;
+        if(this.selectedAssetGroup){
+          this.updateComponent();
+        }
       });
       this.getFilters();
   }
 
   ngOnInit() {
     const state = this.tableStateService.getState("issueListing") || {};
+    this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
     if(state){      
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
-      this.searchTxt = state?.searchTxt || '';
       
       this.tableData = state?.data || [];
       this.displayedColumns = Object.keys(this.columnWidths);
@@ -296,6 +299,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     updatedQueryParams = {
       filter: this.filterText.filter,
+      searchValue: this.searchTxt
     }
 
 
@@ -535,6 +539,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   getData(isNextPageCalled=false) {
+    if(!this.selectedAssetGroup || !this.selectedDomain){
+      return;
+    }
     try {
       if (this.issueListingSubscription) {
         this.issueListingSubscription.unsubscribe();
@@ -561,8 +568,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         .getData(issueListingUrl, issueListingMethod, payload, {})
         .subscribe(
           (response) => {
-            console.log("response:", response);
-            
             this.showGenericMessage = false;
             try {
               this.errorValue = 1;
@@ -827,7 +832,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    // store in this function    
     const row = event.rowSelected;
     const data = event.data;
     const state = {
@@ -837,7 +841,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
       bucketNumber: this.bucketNumber,
-      searchTxt: this.searchTxt,
+      // searchTxt: this.searchTxt,
       tableScrollTop: event.tableScrollTop
       // filterText: this.filterText
     }
@@ -949,7 +953,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     // this.state.searchValue = searchVal;
     this.isStatePreserved = false;
     this.updateComponent();  
-    // this.getUpdatedUrl();
+    this.getUpdatedUrl();
   }
 
 

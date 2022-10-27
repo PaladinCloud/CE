@@ -124,56 +124,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     this.getAssetGroup();
   }
 
-  ngOnInit() {
-    for (let i = 2022; i <= 2200; i++) {
-      this.years.push(i);
-    }
-  }
+  ngOnInit() {}
 
-  private getNumberOfDays = function (year, monthId: any) {
-    const isLeap = ((year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0));
-    return [31, (isLeap ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][monthId];
-  };
-
-  onSelectYear(date: Date, selectedYear){
-    date.setFullYear(selectedYear);
-  }
-
-  getMonthId(selectedMonth){
-    let monthId = 0;
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].text == selectedMonth) {
-        monthId = id;
-      }
-    }
-    return monthId;
-  }
-
-  getMonth(date: Date){
-    let selectedMonth = "";
-    for (let id = 0; id < this.allMonths.length; id++) {
-      if (this.allMonths[id].id == date.getMonth()) {
-        selectedMonth = this.allMonths[id].text;
-      }
-    }
-    return selectedMonth;
-  }
-
-  onSelectMonth(date: Date, selectedMonth: any) {
-    const monthDays: any = [];
-    let monthId = this.getMonthId(selectedMonth);
-    
-    const daysCount = this.getNumberOfDays(date.getFullYear(), monthId);
-    for (let dayNo = 1; dayNo <= daysCount; dayNo++) {
-      monthDays.push({ id: dayNo, text: dayNo.toString() });
-    }
-    this.allDays = monthDays;
-    date.setMonth(monthId);
-  }
-
-  onSelectDay(date: Date, selectedDay: any) {
-    date.setDate(selectedDay);    
-  }
 
   handleGraphIntervalSelection = (e) => {
     e = e.toLowerCase();
@@ -235,12 +187,13 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     try {
         this.commonResponseService.getData( taggingSummaryUrl, taggingSummaryMethod, {}, queryParams).subscribe(
           response => {
-            console.log("getAssetsTileData: ", response);
             this.tiles[2].mainContent.count = response.output.tagged;
             this.tiles[2].subContent[0].count = response.output.untagged;
           }
         )
-    }catch(e){}
+    }catch(e){
+        this.logger.log("error: ", e);
+      }
           
   }
 
@@ -304,33 +257,14 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     try {
         this.commonResponseService.getData( exemptedAssetCountUrl, exemptedAssetCountMethod, {}, queryParams).subscribe(
           response => {
-            console.log("getAssetsTileData: ", response);
             this.tiles[1].mainContent.count = response.exemptedAssetsCount;
             this.tiles[1].subContent[0].count = response.exemptedAssetsCount;
           }
         )
-    }catch(e){}
+    }catch(e){
+        this.logger.log("error: ", e);
+      }
   }
-
-  // getTotalAssetsCount(){
-  //   const assetDetailUrl = environment.assetTilesdata.url;
-
-  //   const assetDetailMethod = environment.assetTilesdata.method;
-
-  //   const queryParams = {
-  //     'ag': this.assetGroupName
-  //   };
-  //    if (queryParams['ag'] !== undefined) {
-
-  //    this.assetGroupsService.getAssetdetailTiles(queryParams, assetDetailUrl, assetDetailMethod).subscribe(
-  //      response => {
-  //        console.log("getTotalAssets: ", JSON.stringify(response));
-  //     },
-  //     error => {
-          
-  //     });
-  //    }
-  // }
 
   getResourceTypeAndCountAndRecommendation() {
     try {
@@ -344,18 +278,20 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
       const output = this.fetchResourcesService.getResourceTypesAndCount(queryParams);
 
-      this.dataSubscription = output.subscribe(results => {
-          console.log(results);
-          
-          console.log("RESULTS: ", JSON.stringify(results[1]["totalassets"]));
-          console.log("RESULTS: ", JSON.stringify(results[1]["assettype"]));
+      this.dataSubscription = output.subscribe(results => {          
           this.tiles[0].mainContent.count = results[1]["totalassets"];
           this.tiles[0].subContent[0].count = results[1]["assettype"];
         })
       }catch(e){
-        console.log(e);
-        
+        this.logger.log("error: ", e);
       }
+    }
+
+    updateComponent(){
+      this.getAssetsCountData({});
+      this.getAssetsTileData();
+      this.getExemtedAssetsCount();
+      this.getResourceTypeAndCountAndRecommendation();
     }
 
   getAssetGroup() {
@@ -363,11 +299,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
       assetGroupName => {
           this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
           this.assetGroupName = assetGroupName;
-          this.getAssetsCountData({});
-          this.getAssetsTileData();
-          // this.getTotalAssetsCount();
-          this.getExemtedAssetsCount();
-          this.getResourceTypeAndCountAndRecommendation();
+          this.updateComponent();
     });
   }
 

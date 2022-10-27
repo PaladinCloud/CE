@@ -475,19 +475,20 @@ export class ComplianceDashboardComponent implements OnInit {
         .getAssetGroup()
         .subscribe((assetGroupName) => {          
           this.selectedAssetGroup = assetGroupName;
-          // this.updateComponent();
+          if(this.selectedDomain){
+            this.updateComponent();
+          }
         });
 
     this.subscriptionDomain = this.domainObservableService
       .getDomainType()
       .subscribe((domain) => {        
         this.selectedDomain = domain;
-        // if(this.selectedAssetGroup){
-        //   this.updateComponent();
-        // }
+        if(this.selectedAssetGroup){
+          this.updateComponent();
+        }
       });
 
-      this.getRouteQueryParameters();
 
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
     
@@ -523,6 +524,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   updateComponent() {    
+    
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
@@ -628,6 +630,8 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   getAssetsCountData(queryObj) {
+    console.log("getAssetsCountData called!!");
+    
     if(!this.selectedAssetGroup){
       return;
     }
@@ -777,15 +781,6 @@ export class ComplianceDashboardComponent implements OnInit {
       );
   }
 
-  getRouteQueryParameters(): any {
-    this.activatedRouteSubscription = this.activatedRoute.queryParams.subscribe(
-      (params) => {
-        if(this.selectedAssetGroup && this.selectedDomain){
-          this.updateComponent();
-        }
-      }
-    );
-  }
 
   massageData(data){
     const refactoredService = this.refactorFieldsService;
