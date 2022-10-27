@@ -91,8 +91,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(this.searchQuery && this.doLocalSearch){
       this.customSearch(this.searchQuery);
     }
-    if(this.headerColName) this.customSort(this.headerColName, this.direction);
-
     this.screenWidth = window.innerWidth;
     this.getWidthFactor();
 
@@ -112,9 +110,13 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(!this.doLocalSearch || (changes.data && changes.data.previousValue.length==0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
+      if(this.headerColName) this.customSort(this.headerColName, this.direction);
       if(window.innerHeight>1800 && this.data.length>0){
         this.nextPageCalled.emit();
         this.isDataLoading = true;
+      }      
+      for(let j=this.filteredArray.length; j<1; j++){
+        this.addFilter();
       }
     }
   }
@@ -129,7 +131,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       });
       this.changeDetectorRef.detectChanges();
     }
-    this.addFilter();
   }
 
   getWidthFactor(){

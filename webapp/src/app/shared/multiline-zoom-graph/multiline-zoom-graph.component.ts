@@ -155,12 +155,8 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   }
 
   @HostListener("window:resize", ["$event"]) onSizeChanges() {
-    console.log("AM I CALLED?");
     this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;
-    console.log(this.graphWidth);
-    console.log(this.graphHeight);
-    
+    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;    
     this.init();
   }
 
@@ -284,7 +280,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
       // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
-      console.log(this.graphWidth, "graphWidth");
       this.init();
     }, 500);
   }

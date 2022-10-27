@@ -16,6 +16,7 @@
     background-color: var(--background-grey);
     height: 100%;
     width: 100%;
+    padding: 24px;
 }
 
 .floating-widgets-container {
@@ -36,9 +37,14 @@
     min-height: 17em;
 } 
 
-.floating-widgets-header .title-text{
+.floating-widgets-section .title-text{
+    padding-bottom: 24px;
+    width: 100%;
+    line-height: 22px;
+    font-size: 2em;
     font-family: var(--text-font-family);
     font-weight: 500;
+    color: var(--text-high-emphasis);
 }
 
 .data-table-desc{
