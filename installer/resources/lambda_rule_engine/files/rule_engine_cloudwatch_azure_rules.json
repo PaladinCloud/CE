@@ -3034,5 +3034,27 @@
     "modifiedDate": "2022-10-20",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_rbac_for_azure_kubernetes",
+    "ruleUUID": "Enable_rbac_for_azure_kubernetes",
+    "policyId": "Enable_rbac_for_azure_kubernetes",
+    "ruleName": "Enable RBAC for Azure Kubernetes Services",
+    "targetType": "kubernetes",
+    "assetGroup": "Azure",
+    "alexaKeyword": "EnableRbacForAzureKubernetes",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-rbac-role-for-kubernetes\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Enable RBAC for Azure Kubernetes Services.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In Azure kubernetes services, role-based access control is enabled.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In Azure kubernetes services, role-based access control is not enabled.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable RBAC for Azure Kubernetes Services\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_rbac_for_azure_kubernetes\",\"autofix\":false,\"alexaKeyword\":\"EnableRbacForAzureKubernetes\",\"ruleRestUrl\":\"\",\"targetType\":\"kubernetes\",\"pac_ds\":\"azure\",\"policyId\":\"Enable_rbac_for_azure_kubernetes\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Enable_rbac_for_azure_kubernetes\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_rbac_for_azure_kubernetes",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable RBAC for Azure Kubernetes Services",
+    "createdDate": "2022-10-27",
+    "modifiedDate": "2022-10-27",
+    "severity": "medium",
+    "category": "security"
   }
 ]

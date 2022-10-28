@@ -21,6 +21,7 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
+import com.tmobile.pacbot.azure.inventory.collector.KubernettesServicesCollector;
 
 @Component
 public class AssetFileGenerator {
@@ -156,6 +157,9 @@ public class AssetFileGenerator {
 	@Autowired
 	SecurityContactsCollector securityContactsCollector;
 
+	@Autowired
+	KubernettesServicesCollector kubernettesServicesCollector;
+
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
 		try {
@@ -164,6 +168,7 @@ public class AssetFileGenerator {
 			e1.printStackTrace();
 		}
 		// generateAzureAplicationList();
+
 
 		for (SubscriptionVH subscription : subscriptions) {
 			log.info("Started Discovery for sub {}", subscription);
@@ -174,7 +179,6 @@ public class AssetFileGenerator {
 						subscription.getSubscriptionId());
 				azureCredentialProvider.putClient(subscription.getTenant(), subscription.getSubscriptionId(), azure);
 				azureCredentialProvider.putToken(subscription.getTenant(), accessToken);
-
 			} catch (Exception e) {
 				log.error("Error authenticating for {}", subscription, e);
 				continue;
@@ -698,6 +702,19 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateSecurityContactsInfoFile(securityContactsCollector.fetchSecurityContactsInfo(subscription));
+					log.info("subscription data saved!");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("kubernetes"))) {
+					log.info("no target type found for functionApp!!");
+					return;
+				}
+				try {
+					FileManager.generateKubernetesClusterDetailsInfoFile(kubernettesServicesCollector.fetchKubernetesClusterDetails(subscription));
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();

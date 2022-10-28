@@ -86,6 +86,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-mysqlflexible.data", "[", false);
 		FileGenerator.writeToFile("azure-diagnosticsetting.data", "[", false);
 		FileGenerator.writeToFile("azure-defender.data", "[", false);
+		FileGenerator.writeToFile("azure-kubernetes.data", "[", false);
 	}
 
 	public static void finalise() throws IOException {
@@ -131,6 +132,7 @@ public class FileManager {
 		FileGenerator.writeToFile("azure-mysqlflexible.data", "]", true);
 		FileGenerator.writeToFile("azure-diagnosticsetting.data", "]", true);
 		FileGenerator.writeToFile("azure-defender.data", "]", true);
+		FileGenerator.writeToFile("azure-kubernetes.data", "]", true);
 	}
 
 	public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -324,5 +326,9 @@ public class FileManager {
 
 	public static void generateSecurityContactsInfoFile(List<SecurityContactsVH> securityContactsVHList) {
 		FileGenerator.generateJson(securityContactsVHList, "azure-defender.data");
+	}
+
+	public static void generateKubernetesClusterDetailsInfoFile(List<KubernettesClustersVH> knetesClusterList) {
+		FileGenerator.generateJson(knetesClusterList, "azure-kubernetes.data");
 	}
 }
