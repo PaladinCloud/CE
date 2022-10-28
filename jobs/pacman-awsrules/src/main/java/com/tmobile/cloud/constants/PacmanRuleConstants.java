@@ -66,6 +66,7 @@ public class PacmanRuleConstants {
     public static final String GCP_NAME = "name";
     public static final String DBFLAGVALUE ="dbFlagValue" ;
     public static final String DB_TYPE = "dataBaseType";
+    public static final String NODE_POOLS = "nodePools";
 
     private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -591,4 +592,5 @@ public class PacmanRuleConstants {
     public  static  final String CAN_IP_FORWARD="canIPForward";
     public static final String GKE_CLUSTER_NAME="goog-gke-node";
     public  static final String BACKUP_ENABLED="backupEnabled";
+    public static final String NODE_POOL_KEY="nodePoolKey";
 }

@@ -9,14 +9,16 @@ public class GKEClusterVH extends GCPVH {
 
     private String keyName;
 
-    private List<Boolean> nodePoolIntegrityMonitoring;
 
-    public List<Boolean> getNodePoolIntegrityMonitoring() {
-        return nodePoolIntegrityMonitoring;
+    private List<NodePoolVH> nodePools;
+
+
+    public List<NodePoolVH> getNodePools() {
+        return nodePools;
     }
 
-    public void setNodePoolIntegrityMonitoring(List<Boolean> nodePoolIntegrityMonitoring) {
-        this.nodePoolIntegrityMonitoring = nodePoolIntegrityMonitoring;
+    public void setNodePools(List<NodePoolVH> nodePools) {
+        this.nodePools = nodePools;
     }
 
     public String getBootDiskKmsKey() {
