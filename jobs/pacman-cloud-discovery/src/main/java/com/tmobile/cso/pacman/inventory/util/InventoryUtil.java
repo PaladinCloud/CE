@@ -101,7 +101,11 @@ import com.amazonaws.services.cloudfront.model.GetDistributionConfigRequest;
 import com.amazonaws.services.cloudfront.model.ListDistributionsRequest;
 import com.amazonaws.services.cloudtrail.AWSCloudTrail;
 import com.amazonaws.services.cloudtrail.AWSCloudTrailClientBuilder;
+import com.amazonaws.services.cloudtrail.model.DataResource;
 import com.amazonaws.services.cloudtrail.model.DescribeTrailsResult;
+import com.amazonaws.services.cloudtrail.model.EventSelector;
+import com.amazonaws.services.cloudtrail.model.GetEventSelectorsRequest;
+import com.amazonaws.services.cloudtrail.model.GetEventSelectorsResult;
 import com.amazonaws.services.cloudtrail.model.GetTrailStatusRequest;
 import com.amazonaws.services.cloudtrail.model.GetTrailStatusResult;
 import com.amazonaws.services.cloudtrail.model.Trail;
@@ -332,6 +336,7 @@ import com.tmobile.cso.pacman.inventory.vo.BucketVH;
 import com.tmobile.cso.pacman.inventory.vo.CheckVH;
 import com.tmobile.cso.pacman.inventory.vo.ClassicELBVH;
 import com.tmobile.cso.pacman.inventory.vo.CloudFrontVH;
+import com.tmobile.cso.pacman.inventory.vo.CloudTrailEventSelectorVH;
 import com.tmobile.cso.pacman.inventory.vo.CloudTrailVH;
 import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
 import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
@@ -2936,6 +2941,7 @@ public class InventoryUtil {
 
 		return iamGroups;
 	}
+	
 	/**
 	 * Fetch CloudTrails info.
 	 *
@@ -2960,9 +2966,36 @@ public class InventoryUtil {
 					List<Trail> trailTemp = rslt.getTrailList();
 					List<CloudTrailVH> trailVHList = new ArrayList<CloudTrailVH>();
 					trailTemp.forEach(trail -> {
-						GetTrailStatusResult trailStatus = cloudTrailClient
-								.getTrailStatus(new GetTrailStatusRequest().withName(trail.getName()));
-						trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging()));
+						if (trail.getHomeRegion().equals(region.getName())) {
+							GetTrailStatusResult trailStatus = cloudTrailClient
+									.getTrailStatus(new GetTrailStatusRequest().withName(trail.getName()));
+							GetEventSelectorsResult selectorResult = cloudTrailClient
+									.getEventSelectors(new GetEventSelectorsRequest().withTrailName(trail.getName()));
+							List<EventSelector> eventSelectorsList = selectorResult.getEventSelectors();
+							List<CloudTrailEventSelectorVH> eventSelectorVHList = new ArrayList<>();
+							if (eventSelectorsList != null && eventSelectorsList.size() > 0) {
+								eventSelectorsList.forEach(eventSelector -> {
+									CloudTrailEventSelectorVH eventSelectorVH = new CloudTrailEventSelectorVH();
+									eventSelectorVH.setReadWriteType(eventSelector.getReadWriteType());
+									eventSelectorVH
+											.setIncludeManagementEvents(eventSelector.getIncludeManagementEvents());
+									List<DataResource> dataResourcesList = eventSelector.getDataResources();
+									if (dataResourcesList != null && dataResourcesList.size() > 0) {
+										dataResourcesList.forEach(dataResource -> {
+											eventSelectorVH.setDataResourcesType(dataResource.getType());
+											if (dataResource.getValues() != null
+													&& dataResource.getValues().size() > 0) {
+												eventSelectorVH.setDataResourcesValue(
+														String.join(",", dataResource.getValues()));
+											}
+										});
+										eventSelectorVHList.add(eventSelectorVH);
+									}
+
+								});
+							}
+							trailVHList.add(new CloudTrailVH(trail, trailStatus.getIsLogging(), eventSelectorVHList));
+						}
 					});
 					if (!trailVHList.isEmpty()) {
 						cloudTrails.put(account + delimiter + accountName + delimiter + region.getName(), trailVHList);
