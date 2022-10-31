@@ -3107,4 +3107,24 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitJsonForVPCNativeClusterRule(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-10-3116:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-a\",\"id\":\"d3b517c68dce42f6bd3a693d3e54be7596c51aabdf73449aaf274975e21a19db\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":false,\"discoverydate\":null},{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":false,\"discoverydate\":null}],\"ipalias\":true,\"discoverydate\":\"2022-10-3116:00:00+0530\"}" ,
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonForVPCNativeClusterRule(){
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-10-3116:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":false,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":false,\"discoverydate\":null}],\"ipalias\":true,\"discoverydate\":\"2022-10-3116:00:00+0530\"},{\"discoveryDate\":\"2022-10-3116:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"ed5f5b7a0d344a5f93c7af45a2e5ce4eabbb0f52d3344679ac30f741f9ad8555\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":false,\"discoverydate\":null}],\"ipalias\":false,\"discoverydate\":\"2022-10-3116:00:00+0530\"}" ,
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
