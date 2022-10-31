@@ -3,9 +3,8 @@ package com.tmobile.pacbot.gcp.inventory.vo;
 public class NodePoolVH extends GCPVH{
     private boolean autoUpgrade;
     private boolean enableIntegrityMonitoring;
-
     private boolean enableSecureBoot;
-
+    private boolean autoRepair;
 
     public boolean isAutoUpgrade() {
         return autoUpgrade;
@@ -21,6 +20,14 @@ public class NodePoolVH extends GCPVH{
 
     public void setEnableIntegrityMonitoring(boolean enableIntegrityMonitoring) {
         this.enableIntegrityMonitoring = enableIntegrityMonitoring;
+    }
+
+    public boolean isAutoRepair() {
+        return autoRepair;
+    }
+
+    public void setAutoRepair(boolean autoRepair) {
+        this.autoRepair = autoRepair;
     }
 
     public boolean isEnableSecureBoot() {

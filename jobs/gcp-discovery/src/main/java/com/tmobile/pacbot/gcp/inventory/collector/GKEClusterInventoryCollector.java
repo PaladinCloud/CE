@@ -97,6 +97,7 @@ public class GKEClusterInventoryCollector {
                         for (NodePool nodePool : listNodePools.getNodePoolsList()) {
                         NodePoolVH nodePoolVH=new NodePoolVH();
                             nodePoolVH.setAutoUpgrade(nodePool.getManagement().getAutoUpgrade());
+                            nodePoolVH.setAutoRepair(nodePool.getManagement().getAutoRepair());
                         if(nodePool.getConfig().getBootDiskKmsKey()!=null){
                             String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
                             gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
