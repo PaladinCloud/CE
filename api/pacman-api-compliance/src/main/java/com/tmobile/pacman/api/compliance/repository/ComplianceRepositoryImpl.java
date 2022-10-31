@@ -1827,9 +1827,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueDetails.put(PAC_DS, source.get(PAC_DS).getAsString());
                 if (source.has("desc")) {
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
-                } else {
-                    JsonObject message = (JsonObject) jsonParser.parse(source.get("message").getAsString());
-                    issueDetails.put(ISSUE_REASON, message.get("desc").getAsString());
+                } else if (source.has(STATUS_REASON)) {
+                    issueDetails.put(ISSUE_REASON, source.get(STATUS_REASON).getAsString());
+                }
+                else {
+                    issueDetails.put(ISSUE_REASON, UNABLE_TO_DETERMINE);
                 }
                 if (null != source.get(ISSUE_DETAILS)) {
                     issueDetails.put(ISSUE_DETAILS, source.get(ISSUE_DETAILS).getAsString());

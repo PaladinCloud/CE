@@ -153,7 +153,7 @@ export class PolicyViolationDescComponent implements OnInit {
     );
     try {
       if (destination === "asset details") {
-        const resourceId = id1;
+        const resourceId = encodeURIComponent(id1);
         const resourceType = id2;
         this.router.navigate(
           ["../../../../", "assets", "asset-list", resourceType, resourceId],
