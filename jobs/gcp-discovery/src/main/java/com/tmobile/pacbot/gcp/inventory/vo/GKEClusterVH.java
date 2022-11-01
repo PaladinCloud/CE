@@ -6,12 +6,9 @@ import java.util.Map;
 public class GKEClusterVH extends GCPVH {
     private Map<String, Object> masterAuthorizedNetworksConfig;
     private String bootDiskKmsKey;
-
     private String keyName;
-
-
     private List<NodePoolVH> nodePools;
-
+    private Boolean intraNodeVisibility;
 
     public List<NodePoolVH> getNodePools() {
         return nodePools;
@@ -43,6 +40,14 @@ public class GKEClusterVH extends GCPVH {
 
     public void setKeyName(String keyName) {
         this.keyName = keyName;
+    }
+
+    public Boolean getIntraNodeVisibility() {
+        return intraNodeVisibility;
+    }
+
+    public void setIntraNodeVisibility(Boolean intraNodeVisibility) {
+        this.intraNodeVisibility = intraNodeVisibility;
     }
 
 }
