@@ -103,8 +103,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     if(this.policyName.trim().length<5 || this.policyDesc.trim().length<15 || this.policyResolution.trim().length<15 || !this.isValidUrl(this.policyUrl)){
       retVal = false;
     }
-    console.log(retVal);
-    
     return retVal;
   }
 
@@ -124,6 +122,12 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = 'Create Policy';
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel

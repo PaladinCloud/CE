@@ -100,6 +100,12 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = "Sticky Exceptions";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
@@ -374,7 +380,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
   goToCreateRules() {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router.navigate(["create-sticky-exceptions"], {
         relativeTo: this.activatedRoute,
@@ -391,7 +397,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
     if (row.col === "Delete") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["delete-sticky-exceptions"], {
           relativeTo: this.activatedRoute,
@@ -408,7 +414,7 @@ export class StickyExceptionsComponent implements OnInit, OnDestroy {
     } else if (row.col === "Edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["create-sticky-exceptions"], {
           relativeTo: this.activatedRoute,

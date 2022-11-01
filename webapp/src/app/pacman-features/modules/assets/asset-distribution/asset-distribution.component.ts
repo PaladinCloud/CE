@@ -74,6 +74,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
   graphWidth: number = 0;
   graphHeight: number = 0;
   colorRanges: Array<colorOptions> = [];
+  pageTitle = "Asset Distribution";
 
   colors: Array<colorOptions> = [
     {
@@ -289,7 +290,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     const queryParams = {
       filter: "resourceType=" + selectedTargetType
     }
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, "Asset Distribution");
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
     this.router.navigate(['pl/assets/asset-list'], {
       queryParams: queryParams,
       queryParamsHandling: 'merge'

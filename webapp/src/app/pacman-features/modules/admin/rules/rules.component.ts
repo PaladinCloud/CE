@@ -387,7 +387,7 @@ export class RulesComponent implements OnInit, OnDestroy {
   goToCreateRules() {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router.navigate(["create-rule"], {
         relativeTo: this.activatedRoute,
@@ -404,7 +404,7 @@ export class RulesComponent implements OnInit, OnDestroy {
     if (row.col === "Actions") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["../create-edit-policy"], {
           relativeTo: this.activatedRoute,
@@ -420,7 +420,7 @@ export class RulesComponent implements OnInit, OnDestroy {
     } else if (row.col === "Edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["update-rule"], {
           relativeTo: this.activatedRoute,
@@ -436,7 +436,7 @@ export class RulesComponent implements OnInit, OnDestroy {
     } else if (row.col === "Invoke") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["invoke-rule"], {
           relativeTo: this.activatedRoute,
@@ -452,7 +452,7 @@ export class RulesComponent implements OnInit, OnDestroy {
     } else if (row.col === "Enable" || row.col === "Disable") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["enable-disable-rule"], {
           relativeTo: this.activatedRoute,
