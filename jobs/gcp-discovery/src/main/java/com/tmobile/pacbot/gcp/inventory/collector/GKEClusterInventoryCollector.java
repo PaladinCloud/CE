@@ -38,7 +38,8 @@ public class GKEClusterInventoryCollector {
         logger.info("### GKe cluster  collector ###########");
         try {
             List<String> regions = gcPlocationUtil.getZoneList(project.getProjectId());
-            regions.addAll(gcPlocationUtil.getLocations(project.getProjectId()));
+          regions.addAll(gcPlocationUtil.getLocations(project.getProjectId()));
+//            logger.info("locations {}",gcPlocationUtil.getLocations(project.getProjectId()));
             regions.remove("us");
             regions.remove("global");
             logger.debug("Number of regions {}", regions.size());
@@ -55,19 +56,25 @@ public class GKEClusterInventoryCollector {
 
                 }
                 catch (Exception e){
-                    logger.info("Exception {}",e.getMessage());
+                    logger.info("Exception {}",e);
 
                 }
 
 
                 for (Cluster cluster : clusterList.getClustersList()) {
 
+
                     GKEClusterVH gkeClusterVH = new GKEClusterVH();
                     gkeClusterVH.setId(cluster.getId());
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
+                    gkeClusterVH.setId(cluster.getId());
+                    gkeClusterVH.setProjectName(project.getProjectName());
+                    gkeClusterVH.setProjectId(project.getProjectId());
+                    gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
 
+                    gkeClusterVH.setRegion(cluster.getLocation());
                     gkeClusterVH.setRegion(cluster.getLocation());
                     if (cluster.getMasterAuthorizedNetworksConfig() != null) {
                         HashMap<String, Object> masterAuthorizedNetworksConfigMap = new Gson().fromJson(
@@ -90,27 +97,26 @@ public class GKEClusterInventoryCollector {
                     try {
                         listNodePools = clusterManagerClient.listNodePools(nodepoolParent);
                     } catch (Exception e) {
-                        e.printStackTrace();
                     }
 
                     List<NodePoolVH> nodePoolVHList = new ArrayList<>();
                     if (listNodePools != null) {
                         for (NodePool nodePool : listNodePools.getNodePoolsList()) {
-                            NodePoolVH nodePoolVH=new NodePoolVH();
+                        NodePoolVH nodePoolVH=new NodePoolVH();
                             nodePoolVH.setAutoUpgrade(nodePool.getManagement().getAutoUpgrade());
-                            if(nodePool.getConfig().getBootDiskKmsKey()!=null){
-                                String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
-                                gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
+                        if(nodePool.getConfig().getBootDiskKmsKey()!=null){
+                            String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
+                            gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
 
-                            }
-                            nodePoolVH.setEnableIntegrityMonitoring(nodePool.getConfig().getShieldedInstanceConfig().getEnableIntegrityMonitoring());
-                            nodePoolVH.setEnableSecureBoot(nodePool.getConfig().getShieldedInstanceConfig().getEnableSecureBoot());
-                            nodePoolVHList.add(nodePoolVH);
+                        }
+                        nodePoolVH.setEnableIntegrityMonitoring(nodePool.getConfig().getShieldedInstanceConfig().getEnableIntegrityMonitoring());
+                        nodePoolVH.setEnableSecureBoot(nodePool.getConfig().getShieldedInstanceConfig().getEnableSecureBoot());
+                        nodePoolVHList.add(nodePoolVH);
                         }
                     }
-                    gkeClusterVH.setNodePools(nodePoolVHList);
+                  gkeClusterVH.setNodePools(nodePoolVHList);
 
-                    gkeClusterlist.add(gkeClusterVH);
+                        gkeClusterlist.add(gkeClusterVH);
 
                 }
                 logger.debug("##########ending########-> {}", gkeClusterlist);

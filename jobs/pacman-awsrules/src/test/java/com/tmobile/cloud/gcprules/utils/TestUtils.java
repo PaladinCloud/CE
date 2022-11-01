@@ -3063,4 +3063,26 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonArrayForNodeUpgrade() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"_index\":\"gcp_gkecluster\",\"_type\":\"gkecluster\",\"_id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_score\":1,\"_source\":{\"discoveryDate\":\"2022-10-2722:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"discoverydate\":null}],\"discoverydate\":\"2022-10-2722:00:00+0530\",\"_resourceid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_docid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_entity\":\"true\",\"_entitytype\":\"gkecluster\",\"firstdiscoveredon\":\"2022-10-2712:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-10-2716:53:00+0000\"}}",
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayForNodeUpgrade() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-10-2722:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":false,\"discoverydate\":null}],\"discoverydate\":\"2022-10-2722:00:00+0530\",\"_resourceid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_docid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_entity\":\"true\",\"_entitytype\":\"gkecluster\",\"firstdiscoveredon\":\"2022-10-2712:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-10-2716:53:00+0000\"}",
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
