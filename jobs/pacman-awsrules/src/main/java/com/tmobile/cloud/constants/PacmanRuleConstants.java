@@ -595,4 +595,5 @@ public class PacmanRuleConstants {
     public static final String LEGACY_AUTH="legacyAuthorization";
     public  static  final  String INTRANODE_VISIBILITY ="intraNodeVisibility";
     public static final  String IP_ALIAS="ipalias";
+    public static final String CLIENT_KEY="clientKey";
 }
