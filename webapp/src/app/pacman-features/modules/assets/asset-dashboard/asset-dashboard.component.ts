@@ -80,13 +80,13 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
       },
       {
         mainContent: {
-          title: "Exempted Assets",
+          title: "Exempt Assets",
           count: 0,
           image: "exempted-assets-icon"
         },
         subContent: [
           {
-            title: "Exempted Asset Types",
+            title: "Exempt Asset Types",
             count: 0,
           }
         ]
@@ -241,7 +241,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
   redirectTo(data: any) {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-    if (data == "Exempted Assets" || data == "Exempted Asset Types")
+    if (data == "Exempt Assets" || data == "Exempt Asset Types")
     {
       const queryParams = {
         filter: "exempted=true",
