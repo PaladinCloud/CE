@@ -203,6 +203,12 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
@@ -443,7 +449,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   navigateToCreateAssetGroup() {
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
       this.router.navigate(['../create-asset-groups'], {
         relativeTo: this.activatedRoute,
         queryParamsHandling: 'merge',

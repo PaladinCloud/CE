@@ -105,6 +105,12 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = 'User Role Allocations';
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
@@ -350,7 +356,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
 
     if (row.col === 'Actions') {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
         this.router.navigate(['../create-edit-policy'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
@@ -364,7 +370,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
       }
     } else if (row.col === 'Edit') {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
         this.router.navigate(['../update-rule'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
@@ -378,7 +384,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
       }
     } else if (row.col === 'Invoke') {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
         this.router.navigate(['../invoke-rule'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
@@ -392,7 +398,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
       }
     } else if (row.col === 'Enable' || row.col === 'Disable') {
       try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
         this.router.navigate(['../enable-disable-rule'], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',

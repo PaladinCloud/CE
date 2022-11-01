@@ -55,7 +55,7 @@
                                 [selectedValue]="totalAssetsCountDataError"></app-error-message>
                             <app-multiline-zoom-graph
                                 *ngIf="totalAssetsCountData.length>0 && totalAssetsCountDataError==''"
-                                [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Total Assets'"
+                                [id]="'TotalAssetsSummaryTrend'" [showLegend]="true" [yAxisLabel]="'Count'"
                                 [graphHeight]="graphHeight" [graphLinesData]="totalAssetsCountData">
                             </app-multiline-zoom-graph>
                         </div>

@@ -111,6 +111,9 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    window.addEventListener('popstate', (event) => {
+      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root,);
+    });
     this.haveAdminPageAccess = this.permissions.checkAdminPermission();
     try {
       this.agAndDomainKey = "";

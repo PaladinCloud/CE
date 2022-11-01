@@ -98,6 +98,12 @@ export class DeleteAssetGroupsComponent implements OnInit {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = "Delete Asset Groups";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
