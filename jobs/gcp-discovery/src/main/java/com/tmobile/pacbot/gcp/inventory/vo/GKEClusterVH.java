@@ -8,11 +8,30 @@ public class GKEClusterVH extends GCPVH {
     private Map<String, Object> masterAuthorizedNetworksConfig;
     private String bootDiskKmsKey;
     private String keyName;
+    private String username;
+    private String password;
     private List<NodePoolVH> nodePools;
     private Boolean intraNodeVisibility;
     private boolean enableKubernetesAlpha;
     private boolean enablePrivateEndPoints;
     private boolean enablePrivateNodes;
+
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public boolean isEnableKubernetesAlpha() {
         return enableKubernetesAlpha;
