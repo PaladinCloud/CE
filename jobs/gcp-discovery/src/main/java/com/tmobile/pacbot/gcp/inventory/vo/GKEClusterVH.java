@@ -1,7 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.List;
-import java.util.List;
 import java.util.Map;
 
 public class GKEClusterVH extends GCPVH {
@@ -9,6 +8,16 @@ public class GKEClusterVH extends GCPVH {
     private String bootDiskKmsKey;
 
     private String keyName;
+
+    private boolean enableKubernetesAlpha;
+
+    public boolean isEnableKubernetesAlpha() {
+        return enableKubernetesAlpha;
+    }
+
+    public void setEnableKubernetesAlpha(boolean enableKubernetesAlpha) {
+        this.enableKubernetesAlpha = enableKubernetesAlpha;
+    }
 
     public List<NodePoolVH> getNodePools() {
         return nodePools;
