@@ -405,13 +405,20 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     this.issueAssetGroup = this.issueBlocks['assetGroup'];
                   }
                   this.issueIdValue = this.issueBlocks.resouceViolatedPolicy;
-
+                  let statusIcon;
                   if (this.issueBlocks.status !== undefined) {
                     this.exceptionAdded = (this.issueBlocks.status === 'exempted');
+                    if (this.exceptionAdded) {
+                      this.issueBlocks.status = "exempt";
+                        statusIcon = '../assets/icons/Lock-Closed.svg';
+                    }
+                    else {
+                         statusIcon = '../assets/icons/Lock-Open.svg';
+                    }
                     const obj = {
                       header: 'Status',
                       footer: this.issueBlocks.status,
-                      img: '../assets/icons/Lock-Open.svg'
+                      img: statusIcon
                     };
                     this.issueTopblocks.push(obj);
                   }
@@ -694,7 +701,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     try {
       this.issueBlocks['violationModifiedDate']
         = this.utilityService.calculateDateAndTime(data[0].auditdate, true);
-      this.issueBlocks['status'] = data[0].status;
+      this.issueBlocks['status'] = data[0].status.toLowerCase() == "enforced" ? "exempt": data[0].status;
       for (let i = 0; i < data.length; i++) {
         data[i][`Date`] = data[i].auditdate;
         data[i][`Source`] = data[i].datasource;
@@ -740,7 +747,19 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 data[row][getCols[col]], true
               )
             };
-          } else {
+          } else if (getCols[col].toLowerCase() === 'status') {
+           const status = data[row][getCols[col]] == "enforced" ? "exempt" : data[row][getCols[col]];
+            cellObj = {
+              link: '',
+              properties: {},
+              colName: getCols[col],
+              hasPreImg: false,
+              imgLink: '',
+              text: status,
+              valText: status
+            };
+          }
+          else {
             cellObj = {
               link: '',
               properties: {},
@@ -956,7 +975,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.showTopSection = false;
             this.exceptionAdded = !this.exceptionAdded;
             this.getIssueAudit();
-            this.upateStatusOnAddOrRevokeException('Exempted');
+            this.upateStatusOnAddOrRevokeException('Exempt');
           },
           error => {
             this.check = false;
@@ -1027,7 +1046,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
       let statusIcon;
 
-      if (status && status.toLowerCase() === 'exempted') {
+      if (status && status.toLowerCase() === 'exempt') {
         statusIcon = '../assets/icons/Lock-Closed.svg';
       } else if (status && status.toLowerCase() === 'open') {
         statusIcon = '../assets/icons/Lock-Open.svg';
