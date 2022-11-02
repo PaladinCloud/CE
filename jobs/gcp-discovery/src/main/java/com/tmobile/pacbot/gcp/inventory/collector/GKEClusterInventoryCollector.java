@@ -56,7 +56,7 @@ public class GKEClusterInventoryCollector {
 
                 }
                 catch (Exception e){
-                    logger.info("Exception {}",e);
+                    logger.info("Exception {}",e.getMessage());
 
                 }
 
@@ -102,6 +102,7 @@ public class GKEClusterInventoryCollector {
                     try {
                         listNodePools = clusterManagerClient.listNodePools(nodepoolParent);
                     } catch (Exception e) {
+                        logger.debug(e.getMessage());
                     }
 
                     List<NodePoolVH> nodePoolVHList = new ArrayList<>();
@@ -123,6 +124,8 @@ public class GKEClusterInventoryCollector {
                     }
                   gkeClusterVH.setNodePools(nodePoolVHList);
                   gkeClusterVH.setEnableKubernetesAlpha(cluster.getEnableKubernetesAlpha());
+                  gkeClusterVH.setPassword(cluster.getMasterAuth().getPassword());
+                  gkeClusterVH.setUsername(cluster.getMasterAuth().getUsername());
 
                         gkeClusterlist.add(gkeClusterVH);
 
