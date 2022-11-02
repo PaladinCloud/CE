@@ -254,7 +254,7 @@ describe('ComplianceDashboardComponent', () => {
   it('should navigate to Asset Summary Page on view all Assets button click', fakeAsync(() => {
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate').and.stub();
-    component.navigateToAssetSummary();
+    component.navigateToAssetDistribution();
     expect(router.navigate).toHaveBeenCalledWith(
       ["/pl/assets/asset-dashboard/"], {
       queryParamsHandling: "merge"
