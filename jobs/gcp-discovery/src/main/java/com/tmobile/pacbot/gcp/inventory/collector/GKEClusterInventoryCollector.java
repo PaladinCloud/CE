@@ -39,7 +39,7 @@ public class GKEClusterInventoryCollector {
         try {
             List<String> regions = gcPlocationUtil.getZoneList(project.getProjectId());
           regions.addAll(gcPlocationUtil.getLocations(project.getProjectId()));
-//            logger.info("locations {}",gcPlocationUtil.getLocations(project.getProjectId()));
+
             regions.remove("us");
             regions.remove("global");
             logger.debug("Number of regions {}", regions.size());
@@ -115,6 +115,7 @@ public class GKEClusterInventoryCollector {
                         }
                     }
                   gkeClusterVH.setNodePools(nodePoolVHList);
+                  gkeClusterVH.setEnableKubernetesAlpha(cluster.getEnableKubernetesAlpha());
 
                         gkeClusterlist.add(gkeClusterVH);
 
