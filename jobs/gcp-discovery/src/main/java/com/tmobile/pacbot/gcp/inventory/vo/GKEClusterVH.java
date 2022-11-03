@@ -1,7 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.List;
-import java.util.List;
 import java.util.Map;
 
 public class GKEClusterVH extends GCPVH {
@@ -19,6 +18,8 @@ public class GKEClusterVH extends GCPVH {
     }
 
     private List<NodePoolVH> nodePools;
+
+    private  boolean legacyAuthorization;
 
 
     public String getBootDiskKmsKey() {
@@ -43,6 +44,14 @@ public class GKEClusterVH extends GCPVH {
 
     public void setKeyName(String keyName) {
         this.keyName = keyName;
+    }
+
+    public boolean isLegacyAuthorization() {
+        return legacyAuthorization;
+    }
+
+    public void setLegacyAuthorization(boolean legacyAuthorization) {
+        this.legacyAuthorization = legacyAuthorization;
     }
 
 }

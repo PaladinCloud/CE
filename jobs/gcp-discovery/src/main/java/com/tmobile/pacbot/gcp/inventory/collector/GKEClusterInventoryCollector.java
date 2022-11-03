@@ -91,6 +91,7 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setKeyName(keyName);
                     }
 
+                    gkeClusterVH.setLegacyAuthorization(cluster.hasLegacyAbac());
 
                     String nodepoolParent = "projects/" + project.getProjectId() + "/locations/" + region + "/clusters/" + cluster.getName();
                     ListNodePoolsResponse listNodePools = null;
