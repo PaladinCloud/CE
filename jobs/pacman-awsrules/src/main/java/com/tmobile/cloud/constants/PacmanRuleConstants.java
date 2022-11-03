@@ -560,6 +560,9 @@ public class PacmanRuleConstants {
     public static final String CLOUD_TRAIL_LOG_FILE_VALIDATION = "logfilevalidationenabled";
     public static final String KMS_KEY_ID = "kmskeyid";
     public static final String MULTI_REGION_TRAIL = "ismultiregiontrail";
+    public static final String DATA_RESOURCE_TYPE = "datresourcestype";
+    public static final String DATA_RESOURCE_VALUE = "dataresourcesvalue";
+    public static final String TRAIL_ARN = "trailarn";
     public static final String LOGGING = "islogging";
     public static final String METRIC_NAME = "metricname";
     public static final String METRIC_NAMESPACE = "metricnamespace";
