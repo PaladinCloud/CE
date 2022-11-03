@@ -11,6 +11,8 @@ public class GKEClusterVH extends GCPVH {
     private List<NodePoolVH> nodePools;
     private Boolean intraNodeVisibility;
     private boolean enableKubernetesAlpha;
+    private boolean enablePrivateEndPoints;
+    private boolean enablePrivateNodes;
 
     public boolean isEnableKubernetesAlpha() {
         return enableKubernetesAlpha;
@@ -19,6 +21,7 @@ public class GKEClusterVH extends GCPVH {
     public void setEnableKubernetesAlpha(boolean enableKubernetesAlpha) {
         this.enableKubernetesAlpha = enableKubernetesAlpha;
     }
+
 
     public List<NodePoolVH> getNodePools() {
         return nodePools;
@@ -60,4 +63,19 @@ public class GKEClusterVH extends GCPVH {
         this.intraNodeVisibility = intraNodeVisibility;
     }
 
+    public boolean isEnablePrivateEndPoints() {
+        return enablePrivateEndPoints;
+    }
+
+    public void setEnablePrivateEndPoints(boolean enablePrivateEndPoints) {
+        this.enablePrivateEndPoints = enablePrivateEndPoints;
+    }
+
+    public boolean isEnablePrivateNodes() {
+        return enablePrivateNodes;
+    }
+
+    public void setEnablePrivateNodes(boolean enablePrivateNodes) {
+        this.enablePrivateNodes = enablePrivateNodes;
+    }
 }
