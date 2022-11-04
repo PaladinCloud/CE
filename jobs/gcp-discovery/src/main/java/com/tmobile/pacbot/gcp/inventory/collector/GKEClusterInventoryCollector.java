@@ -84,6 +84,8 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setKeyName(keyName);
                     }
 
+                    gkeClusterVH.setIntraNodeVisibility(cluster.getNetworkConfig().getEnableIntraNodeVisibility());
+
 
                     String nodepoolParent = "projects/" + project.getProjectId() + "/locations/" + region + "/clusters/" + cluster.getName();
                     ListNodePoolsResponse listNodePools = null;
