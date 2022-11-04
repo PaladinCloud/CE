@@ -2,25 +2,10 @@
     <h6 class="sub-header-text">Asset Distribution</h6>
 </div>
 <div class="overall-distribution">
-    <div class="title-header">
-        <span> {{totalAssetTypes}} Asset Types | {{totalAssetCount}} Assets</span>
-    </div>
-    <div class="search-container">
-        <div class="search-bar">
-            <div class="header-search-content-container">
-                <img _ngcontent-c3="" class="search-icon" alt="" src="/assets/icons/header-search.svg">
-                <input class="search-box" type="text" placeholder="Search for keywords" [(ngModel)]="searchText"
-                    [ngModelOptions]="{standalone: true}">
-            </div>
-        </div>
-    </div>
     <div class="distribution-content">
         <div class="chart" [class.expanded]="!isCollapsed" #widgetContainer>
-            <div class="legend">
-                <div class="legend-wrap" *ngFor="let range of colors">
-                    <div class="legend-color" [style.background-color]=range.color></div>
-                    <div class="range">{{range.from}} - {{range.to}}</div>
-                </div>
+            <div>
+                <span> {{totalAssetTypes}} Asset Types | {{totalAssetCount}} Assets</span>
             </div>
             <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
                 [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
@@ -33,6 +18,15 @@
                     Asset Types
                 </span>
                 <img class="slider-img" [class.collapsed]="isCollapsed" src='/assets/icons/slider.svg' (click)="expandAssetTypeList()">
+            </div>
+            <div class="search-container">
+                <div class="search-bar">
+                    <div class="header-search-content-container">
+                        <img _ngcontent-c3="" class="search-icon" alt="" src="/assets/icons/header-search.svg">
+                        <input class="search-box" type="text" placeholder="Search for keywords" [(ngModel)]="searchText"
+                            [ngModelOptions]="{standalone: true}">
+                    </div>
+                </div>
             </div>
             <div class="slider-content" [class.isCollapsed]="isCollapsed">
                 <div class="content-header">

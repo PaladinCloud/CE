@@ -2,7 +2,6 @@ package com.tmobile.cloud.gcprules.GKEClusterRule;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -20,11 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-
-@PacmanRule(key = "enable-node-pool-managements", desc = "Enable  GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableNodeAutoUpgrade extends BaseRule {
-    private static final Logger logger = LoggerFactory.getLogger(EnableNodeAutoUpgrade.class);
-
+@PacmanRule(key = "disable-alpha-clusters", desc = "disable alpha clusters for production workloads", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class DisableAlphaClusterRule extends BaseRule {
+    private static final Logger logger = LoggerFactory.getLogger(DisableAlphaClusterRule.class);
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         Annotation annotation = null;
@@ -34,7 +31,6 @@ public class EnableNodeAutoUpgrade extends BaseRule {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String key= ruleParam.get(PacmanRuleConstants.NODE_POOL_KEY);
         String violationReason=ruleParam.get(PacmanRuleConstants.VIOLATION_REASON);
         String description=ruleParam.get(PacmanRuleConstants.DESCRIPTION);
         String vmEsURL = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
@@ -61,7 +57,7 @@ public class EnableNodeAutoUpgrade extends BaseRule {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                isKeyEnabled = checkKeyEnabled(vmEsURL, mustFilter,key);
+                isKeyEnabled = checkIfAlphaClusterDisabled(vmEsURL, mustFilter);
                 if (!isKeyEnabled) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -86,35 +82,31 @@ public class EnableNodeAutoUpgrade extends BaseRule {
         logger.debug("======== ended with status true=========");
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
-    private boolean checkKeyEnabled(String vmEsURL, Map<String, Object> mustFilter,String key) throws Exception {
-        logger.debug("========verifyports  started=========");
+
+    private boolean checkIfAlphaClusterDisabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
+        logger.debug("========checkIfAlphaClusterDisabled  started=========");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = true;
         if (hitsJsonArray.size() > 0) {
-            logger.debug("========verifyports hit array=========");
+            logger.debug("========checkIfAlphaClusterDisabled hit array=========");
 
             JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", gkeCluster.toString());
+            logger.debug("Validating the data item: {}", gkeCluster);
 
-            JsonArray nodePools = null;
-            if(gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS)!=null){
-                nodePools=gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS).getAsJsonArray();
-                for (JsonElement nodePool:nodePools){
-                    logger.info("auto upgrade {}",nodePool.getAsJsonObject());
-                    if(nodePool.getAsJsonObject().get(key)!=null &&nodePool.getAsJsonObject().get(key).getAsBoolean()==false){
-                        validationResult=false;
-                    }
-                }
+            boolean enableKubernetesAlpha=gkeCluster.getAsJsonPrimitive("enableKubernetesAlpha").getAsBoolean();
+            if(enableKubernetesAlpha){
+               validationResult=false;
             }
 
         }
 
         return validationResult;
     }
+
     @Override
     public String getHelpText() {
-        return "Enable  GKE nodes management properties";
+        return "Disable Alpha clusters for Production Workloads";
     }
 }

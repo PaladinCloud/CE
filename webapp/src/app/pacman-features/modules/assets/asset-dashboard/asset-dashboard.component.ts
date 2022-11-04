@@ -41,7 +41,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 })
 export class AssetDashboardComponent implements OnInit, OnDestroy {
 
-  pageTitle = 'Overview';
+  pageTitle = "Asset Summary";
   showNotif = false;
   beepCount = 0;
   public errorMessage: any;
@@ -80,13 +80,13 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
       },
       {
         mainContent: {
-          title: "Exempted Assets",
+          title: "Exempt Assets",
           count: 0,
           image: "exempted-assets-icon"
         },
         subContent: [
           {
-            title: "Exempted Asset Types",
+            title: "Exempt Asset Types",
             count: 0,
           }
         ]
@@ -217,7 +217,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
   massageAssetTrendGraphData(graphData){
     let data = [];
-    data.push({"key":"Number of Assets", "values":[], "info": {}})
+    data.push({"key":"Total Assets", "values":[], "info": {}})
     graphData.trend.forEach(e => {
        data[0].values.push({
             'date':new Date(e.date),
@@ -240,8 +240,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   }
 
   redirectTo(data: any) {
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-    if (data == "Exempted Assets" || data == "Exempted Asset Types")
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
+    if (data == "Exempt Assets" || data == "Exempt Asset Types")
     {
       const queryParams = {
         filter: "exempted=true",

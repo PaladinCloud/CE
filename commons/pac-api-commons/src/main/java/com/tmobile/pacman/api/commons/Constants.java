@@ -327,4 +327,6 @@ public interface Constants {
     String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";
     String GCP = "gcp";
     String RESOLUTION_URL = "resolutionUrl";
+    String UNABLE_TO_DETERMINE = "unable to determine";
+    String STATUS_REASON = "status-reason";
 }

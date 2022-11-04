@@ -390,7 +390,7 @@ export class DomainsComponent implements OnInit, OnDestroy {
   goToCreateUpdateDomain() {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router.navigate(["create-update-domain"], {
         relativeTo: this.activatedRoute,
@@ -407,7 +407,7 @@ export class DomainsComponent implements OnInit, OnDestroy {
     if (row.col === "Actions") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["create-update-domain"], {
           relativeTo: this.activatedRoute,

@@ -396,7 +396,7 @@ export class AssetGroupsComponent implements OnInit {
   goToCreateAssetGroup() {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router.navigate(["create-asset-groups"], {
         relativeTo: this.activatedRoute,
@@ -413,7 +413,7 @@ export class AssetGroupsComponent implements OnInit {
     if (row.col === "Delete") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["delete-asset-groups"], {
           relativeTo: this.activatedRoute,
@@ -430,7 +430,7 @@ export class AssetGroupsComponent implements OnInit {
     } else if (row.col === "Edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["create-asset-groups"], {
           relativeTo: this.activatedRoute,

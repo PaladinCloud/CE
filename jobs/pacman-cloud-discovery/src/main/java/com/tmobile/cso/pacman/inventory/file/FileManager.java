@@ -267,6 +267,7 @@ public class FileManager {
         FileGenerator.writeToFile("aws-account.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-iamgroup.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-cloudtrail.data",InventoryConstants.OPEN_ARRAY, false);
+        FileGenerator.writeToFile("aws-cloudtrail-eventselector.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.OPEN_ARRAY,false);
         FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.OPEN_ARRAY, false);
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.OPEN_ARRAY, false);
@@ -434,6 +435,7 @@ public class FileManager {
         FileGenerator.writeToFile("aws-account.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-iamgroup.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-cloudtrail.data",InventoryConstants.CLOSE_ARRAY, true);
+        FileGenerator.writeToFile("aws-cloudtrail-eventselector.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-classicelb-listeners.data",InventoryConstants.CLOSE_ARRAY,true);
         FileGenerator.writeToFile("aws-appelb-listeners.data",InventoryConstants.CLOSE_ARRAY, true);
         FileGenerator.writeToFile("aws-appelb-rules.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -1967,6 +1969,11 @@ public class FileManager {
 		keys = "discoverydate`accountid`accountname`region`name`s3bucketname`includeglobalserviceevents"
 				+ "`ismultiregiontrail`homeregion`trailarn`logfilevalidationenabled`hascustomeventselectors`islogging`kmskeyid";
 		FileGenerator.generateJson(cloudTrail, fieldNames, "aws-cloudtrail.data", keys);
+		
+		fieldNames = "trail.TrailARN`evenSelectorList.readWriteType`evenSelectorList.includeManagementEvents`evenSelectorList.dataResourcesType"
+				+ "`evenSelectorList.dataResourcesValue";
+		keys = "discoverydate`accountid`accountname`region`trailarn`readwritetype`includemanagementevents`datresourcestype`dataresourcesvalue";
+		FileGenerator.generateJson(cloudTrail, fieldNames, "aws-cloudtrail-eventselector.data", keys);
 	}
 	
 	/**

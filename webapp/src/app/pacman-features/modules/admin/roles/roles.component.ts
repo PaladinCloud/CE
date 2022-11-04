@@ -383,7 +383,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   goToCreatRoles() {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router.navigate(["create-update-roles"], {
         relativeTo: this.activatedRoute,
@@ -399,7 +399,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   goToViewUserRoles() {
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       this.router.navigate(["roles-allocation"], {
         relativeTo: this.activatedRoute,
@@ -415,7 +415,7 @@ export class RolesComponent implements OnInit, OnDestroy {
     if (row.col === "Edit Role") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["create-update-roles"], {
           relativeTo: this.activatedRoute,
@@ -434,7 +434,7 @@ export class RolesComponent implements OnInit, OnDestroy {
     if (row.col === "Config Users") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root
+          this.router.routerState.snapshot.root, 0, this.pageTitle
         );
         this.router.navigate(["config-users"], {
           relativeTo: this.activatedRoute,

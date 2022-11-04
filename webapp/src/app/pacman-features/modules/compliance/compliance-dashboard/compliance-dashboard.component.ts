@@ -215,7 +215,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
   massageAssetTrendGraphData(graphData){
     let data = [];
-    data.push({"key":"Number of Assets", "values":[], "info":{}})
+    data.push({"key":"Total Assets", "values":[], "info":{}})
     graphData.trend.forEach(e => {
        data[0].values.push({
             'date':new Date(e.date),
@@ -230,7 +230,7 @@ export class ComplianceDashboardComponent implements OnInit {
     data[0].info = {
       id: "TotalAssetsCountTrend",
       showLegend: true,
-      yAxisLabel: 'Total Assets',
+      yAxisLabel: 'Count',
       height: 320
     }
 
@@ -452,8 +452,8 @@ export class ComplianceDashboardComponent implements OnInit {
   ngOnInit() {
     const state = this.tableStateService.getState("dashboard") || {};    
       
-    this.headerColName = state.headerColName || '';
-    this.direction = state.direction || '';
+    this.headerColName = state.headerColName || 'Compliance';
+    this.direction = state.direction || 'asc';
     // this.bucketNumber = state.bucketNumber || 0;
     
     this.displayedColumns = Object.keys(this.columnWidths);

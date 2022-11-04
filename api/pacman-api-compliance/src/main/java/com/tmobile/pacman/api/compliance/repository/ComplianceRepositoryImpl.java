@@ -799,7 +799,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
-                partialDocument.put(STATUS, "enforced");
+                partialDocument.put(STATUS, "exempt");
                 Boolean isUpdated = elasticSearchRepository.updatePartialDataToES(dataSource, targetType, id, routing,
                         parent, partialDocument);
                 if (isUpdated) {
@@ -1827,9 +1827,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueDetails.put(PAC_DS, source.get(PAC_DS).getAsString());
                 if (source.has("desc")) {
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
-                } else {
-                    JsonObject message = (JsonObject) jsonParser.parse(source.get("message").getAsString());
-                    issueDetails.put(ISSUE_REASON, message.get("desc").getAsString());
+                } else if (source.has(STATUS_REASON)) {
+                    issueDetails.put(ISSUE_REASON, source.get(STATUS_REASON).getAsString());
+                }
+                else {
+                    issueDetails.put(ISSUE_REASON, UNABLE_TO_DETERMINE);
                 }
                 if (null != source.get(ISSUE_DETAILS)) {
                     issueDetails.put(ISSUE_DETAILS, source.get(ISSUE_DETAILS).getAsString());
@@ -2174,7 +2176,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, EXEMPTED);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
-                    partialDocument.put(STATUS, "enforced");
+                    partialDocument.put(STATUS, "exempt");
 
                     StringBuilder exceptionDoc = new StringBuilder(createESDoc(issueExceptionDetails));
                     if (exceptionDoc != null) {
@@ -2194,7 +2196,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "enforced", id)+"\n");
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id)+"\n");
 
                     }
                     i++;

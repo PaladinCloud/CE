@@ -24,6 +24,7 @@ import { ErrorHandlingService } from '../../shared/services/error-handling.servi
 import { DataCacheService } from '../../core/services/data-cache.service';
 import { LoggerService } from '../../shared/services/logger.service';
 import { UtilsService } from '../../shared/services/utils.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
 
 @Component({
   selector: 'app-asset-groups',
@@ -42,7 +43,8 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
               private activatedRoute: ActivatedRoute,
               private errorHandlingService: ErrorHandlingService,
               private logger: LoggerService,
-              private utils: UtilsService) {
+              private utils: UtilsService,
+              private workflowService: WorkflowService) {
               this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
               assetGroupName => {
 
@@ -142,6 +144,8 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
   }
 
   setDefault() {
+    this.workflowService.clearAllLevels();
+    
     try {
 
       this.instructParentToCloseAssetGroup(this.thisAssetTile);
@@ -157,6 +161,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
   }
 
   selectAsset(assetGroup) {
+    this.workflowService.clearAllLevels();
     try {
       this.instructParentToCloseAssetGroup(assetGroup.name);
       if (assetGroup.name !== this.selectedGroup) {

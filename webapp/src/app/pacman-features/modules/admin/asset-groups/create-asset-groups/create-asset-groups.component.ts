@@ -214,6 +214,12 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );

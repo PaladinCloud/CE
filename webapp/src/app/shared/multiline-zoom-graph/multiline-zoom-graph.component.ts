@@ -1,17 +1,3 @@
-/*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {
   Component,
   OnInit,
@@ -36,6 +22,7 @@ import * as d3Zoom from "d3-zoom";
 import * as d3Brush from "d3-brush";
 import * as d3TimeFormat from "d3-time-format";
 import { LoggerService } from "../services/logger.service";
+import { WindowExpansionService } from "src/app/core/services/window-expansion.service";
 
 @Component({
   selector: "app-multiline-zoom-graph",
@@ -54,6 +41,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   @Input() singlePercentLine = false;
   @Input() hoverActive = true;
   @Input() doNotShowContext;
+  axisMinValue=1;
 
   @Output() error: EventEmitter<any> = new EventEmitter();
 
@@ -85,7 +73,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     pullrequest: "#f2425f", // Red
     repository: "#3f4a59", // Dark Blue,
     noOfAlerts: "#3F4A59", // Dark Blue,
-    "Number of Assets": "#506EA7"
+    "Total Assets": "#506EA7"
   };
   private lineColorsArray = Object.keys(this.lineColorsObject);
   private countInRange: any;
@@ -143,6 +131,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   private firstMouseMove = 0;
 
   constructor(private loggerService: LoggerService,
+    private windowExpansionService: WindowExpansionService,
     private ngZone: NgZone
   ) 
   {
@@ -155,12 +144,8 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   }
 
   @HostListener("window:resize", ["$event"]) onSizeChanges() {
-    console.log("AM I CALLED?");
     this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;
-    console.log(this.graphWidth);
-    console.log(this.graphHeight);
-    
+    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;    
     this.init();
   }
 
@@ -284,9 +269,16 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
       // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
-      console.log(this.graphWidth, "graphWidth");
       this.init();
     }, 500);
+
+    this.windowExpansionService.getExpansionStatus().subscribe((countMap: any) => {
+      setTimeout(() => {      
+      this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
+      // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;      
+      this.init();
+      }, 500)
+    });
   }
 
   getInnerHeight( elm ){
@@ -297,6 +289,13 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {    
+    this.axisMinValue = Infinity;
+    this.graphLinesData[0].values.forEach(element => {      
+      if(element.value<this.axisMinValue){
+        this.axisMinValue = element.value;
+      }
+    });
+    
     this.margin2 = {
       top: this.graphHeight - 40,
       right: 20,
@@ -432,7 +431,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           this.y.domain([0, 100]);
         } else {
           this.y.domain([
-            0,
+            0.8*this.axisMinValue,
             d3Array.max(this.graphData, (c) => {
               return d3Array.max(c[`values`], (d) => {
                 return d[`value`];
@@ -449,7 +448,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       this.y = d3Scale.scaleLog().range([this.height, 0]);
 
       this.y.domain([
-        1,
+        0.8*this.axisMinValue,
         d3Array.max(this.graphData, (c) => {
           return d3Array.max(c[`values`], (d) => {
             return d[`value`];
@@ -1111,7 +1110,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .attr("class", "axis-title")
       .attr("transform", "rotate(-90)")
       .attr("y", -60)
-      .attr("x", -28)
+      .attr("x", -60)
       // .attr('dx', '-10%')
       .attr("dy", ".71em")
       .attr("stroke-width", "0.5")

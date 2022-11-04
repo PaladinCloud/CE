@@ -1105,7 +1105,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
       .append("text")
       .attr("class", "axis-title")
       .attr("transform", "rotate(-90)")
-      .attr("y", -60)
+      .attr("y", -50)
       .attr("x", -28)
       // .attr('dx', '-10%')
       .attr("dy", ".71em")

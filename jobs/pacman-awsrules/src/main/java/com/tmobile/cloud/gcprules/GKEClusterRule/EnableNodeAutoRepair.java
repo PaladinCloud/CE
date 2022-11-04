@@ -21,9 +21,9 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "enable-node-pool-managements", desc = "Enable  GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableNodeAutoUpgrade extends BaseRule {
-    private static final Logger logger = LoggerFactory.getLogger(EnableNodeAutoUpgrade.class);
+@PacmanRule(key = "enable-auto-repair-for-gke-nodes", desc = "Enable GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class EnableNodeAutoRepair extends BaseRule {
+    private static final Logger logger = LoggerFactory.getLogger(EnableNodeAutoRepair.class);
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -102,19 +102,18 @@ public class EnableNodeAutoUpgrade extends BaseRule {
             if(gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS)!=null){
                 nodePools=gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS).getAsJsonArray();
                 for (JsonElement nodePool:nodePools){
-                    logger.info("auto upgrade {}",nodePool.getAsJsonObject());
-                    if(nodePool.getAsJsonObject().get(key)!=null &&nodePool.getAsJsonObject().get(key).getAsBoolean()==false){
+                    logger.info("auto repair{}",nodePool.getAsJsonObject());
+                    if(nodePool.getAsJsonObject().get(key)!=null && nodePool.getAsJsonObject().get(key).getAsBoolean()==false){
                         validationResult=false;
                     }
                 }
             }
-
         }
 
         return validationResult;
     }
     @Override
     public String getHelpText() {
-        return "Enable  GKE nodes management properties";
+        return "This rule checks if auto-repair feature is enabled for GKE nodes.";
     }
 }

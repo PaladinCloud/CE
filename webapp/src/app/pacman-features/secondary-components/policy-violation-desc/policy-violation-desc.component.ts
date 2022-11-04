@@ -153,8 +153,8 @@ export class PolicyViolationDescComponent implements OnInit {
     );
     try {
       if (destination === "asset details") {
-        const resourceId = id1;
-        const resourceType = id2;
+        const resourceId = encodeURIComponent(id1);
+        const resourceType = encodeURIComponent(id2);
         this.router.navigate(
           ["../../../../", "assets", "asset-list", resourceType, resourceId],
           {
@@ -164,7 +164,7 @@ export class PolicyViolationDescComponent implements OnInit {
         );
         // window.open("/pl/assets/asset-list/"+resourceType+"/"+resourceId);
       } else if (destination === "policy knowledgebase details") {
-        const ruleId = id1;
+        const ruleId = encodeURIComponent(id1);
         this.router.navigate(["../../../policy-knowledgebase-details", ruleId, "false"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",

@@ -171,6 +171,12 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
     this.breadcrumbPresent = 'Create Job Execution Manager';
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
@@ -224,7 +230,6 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
     newJobModel.jobExecutable = this.jobJarFileName;
     newJobModel.isFileChanged = true;
 
-    console.log(newJobModel);
 
     const url = environment.createJob.url;
     const method = environment.createJob.method;
@@ -568,7 +573,7 @@ export class CreateJobExecutionManagerComponent implements OnInit, OnDestroy {
 
   goToCreatePolicy() {
     try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
       this.router.navigate(['../create-edit-policy'], {
         relativeTo: this.activatedRoute,
         queryParamsHandling: 'merge',
