@@ -62,20 +62,13 @@ public class GKEClusterInventoryCollector {
 
 
                 for (Cluster cluster : clusterList.getClustersList()) {
-
-
                     GKEClusterVH gkeClusterVH = new GKEClusterVH();
                     gkeClusterVH.setId(cluster.getId());
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
-                    gkeClusterVH.setId(cluster.getId());
-                    gkeClusterVH.setProjectName(project.getProjectName());
-                    gkeClusterVH.setProjectId(project.getProjectId());
-                    gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
+                    gkeClusterVH.setRegion(cluster.getLocation());
 
-                    gkeClusterVH.setRegion(cluster.getLocation());
-                    gkeClusterVH.setRegion(cluster.getLocation());
                     if (cluster.getMasterAuthorizedNetworksConfig() != null) {
                         HashMap<String, Object> masterAuthorizedNetworksConfigMap = new Gson().fromJson(
                                 cluster.getMasterAuthorizedNetworksConfig().toString(),
@@ -104,6 +97,7 @@ public class GKEClusterInventoryCollector {
                         for (NodePool nodePool : listNodePools.getNodePoolsList()) {
                         NodePoolVH nodePoolVH=new NodePoolVH();
                             nodePoolVH.setAutoUpgrade(nodePool.getManagement().getAutoUpgrade());
+                            nodePoolVH.setAutoRepair(nodePool.getManagement().getAutoRepair());
                         if(nodePool.getConfig().getBootDiskKmsKey()!=null){
                             String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
                             gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
@@ -111,6 +105,7 @@ public class GKEClusterInventoryCollector {
                         }
                         nodePoolVH.setEnableIntegrityMonitoring(nodePool.getConfig().getShieldedInstanceConfig().getEnableIntegrityMonitoring());
                         nodePoolVH.setEnableSecureBoot(nodePool.getConfig().getShieldedInstanceConfig().getEnableSecureBoot());
+
                         nodePoolVHList.add(nodePoolVH);
                         }
                     }
@@ -121,7 +116,6 @@ public class GKEClusterInventoryCollector {
 
                 }
                 logger.debug("##########ending########-> {}", gkeClusterlist);
-
             }
         } catch (Exception e) {
             logger.debug(e.getMessage());
