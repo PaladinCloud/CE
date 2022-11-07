@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -77,15 +76,9 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setEnablePrivateEndPoints(false);
                     }
 
+                    gkeClusterVH.setVersion(cluster.getCurrentMasterVersion());
                     gkeClusterVH.setRegion(cluster.getLocation());
 
-                    if (cluster.getMasterAuthorizedNetworksConfig() != null) {
-                        HashMap<String, Object> masterAuthorizedNetworksConfigMap = new Gson().fromJson(
-                                cluster.getMasterAuthorizedNetworksConfig().toString(),
-                                HashMap.class);
-
-                        gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
-                    }
 
                     if (cluster.getDatabaseEncryption().getKeyName() != null) {
                         String keyName = new Gson().fromJson(
