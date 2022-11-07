@@ -15,7 +15,7 @@ public class GKEClusterVH extends GCPVH {
     private boolean enableKubernetesAlpha;
     private boolean enablePrivateEndPoints;
     private boolean enablePrivateNodes;
-
+    private String version;
 
     public String getUsername() {
         return username;
@@ -96,5 +96,12 @@ public class GKEClusterVH extends GCPVH {
 
     public void setEnablePrivateNodes(boolean enablePrivateNodes) {
         this.enablePrivateNodes = enablePrivateNodes;
+    }
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }
