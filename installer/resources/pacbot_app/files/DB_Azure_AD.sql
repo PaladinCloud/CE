@@ -33,7 +33,7 @@ insert into pac_config_properties (cfkey,value,application,profile,label,created
 insert into pac_config_properties (cfkey,value,application,profile,label,createdby,createdDate) value ('azure.id-token.claims.user-name','name','api','prd','latest','admin',now()) ON DUPLICATE KEY UPDATE `value`="name";
 insert into pac_config_properties (cfkey,value,application,profile,label,createdby,createdDate) value ('azure.id-token.claims.first-name','given_name','api','prd','latest','admin',now()) ON DUPLICATE KEY UPDATE `value`="given_name";
 insert into pac_config_properties (cfkey,value,application,profile,label,createdby,createdDate) value ('azure.id-token.claims.last-name','family_name','api','prd','latest','admin',now()) ON DUPLICATE KEY UPDATE `value`="family_name";
-insert into pac_config_properties (cfkey,value,application,profile,label,createdby,createdDate) value ('azure.id-token.claims.email','email','api','prd','latest','admin',now()) ON DUPLICATE KEY UPDATE `value`="email";
+insert into pac_config_properties (cfkey,value,application,profile,label,createdby,createdDate) value ('azure.id-token.claims.email','unique_name','api','prd','latest','admin',now()) ON DUPLICATE KEY UPDATE `value`="email";
 
 delete from oauth_client_details where client_id = concat(@AD_CLIENT_ID,'');
 insert into oauth_client_details(`client_id`,`resource_ids`,`client_secret`,`scope`,`authorized_grant_types`,`web_server_redirect_uri`,`authorities`,`access_token_validity`,`refresh_token_validity`,`additional_information`,`autoapprove`)
