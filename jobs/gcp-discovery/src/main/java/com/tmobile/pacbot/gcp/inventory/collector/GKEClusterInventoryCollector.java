@@ -67,6 +67,16 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
+
+                    if(cluster.getPrivateClusterConfig()!=null){
+                        gkeClusterVH.setEnablePrivateNodes(cluster.getPrivateClusterConfig().getEnablePrivateNodes());
+                        gkeClusterVH.setEnablePrivateEndPoints(cluster.getPrivateClusterConfig().getEnablePrivateEndpoint());
+                    }
+                    else{
+                        gkeClusterVH.setEnablePrivateNodes(false);
+                        gkeClusterVH.setEnablePrivateEndPoints(false);
+                    }
+
                     gkeClusterVH.setRegion(cluster.getLocation());
 
                     if (cluster.getMasterAuthorizedNetworksConfig() != null) {
