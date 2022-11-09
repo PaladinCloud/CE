@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +55,7 @@ public class GKEClusterInventoryCollector {
 
                 }
                 catch (Exception e){
-                    logger.info("Exception {}",e);
+                    logger.info("Exception {}",e.getMessage());
 
                 }
 
@@ -77,15 +76,9 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setEnablePrivateEndPoints(false);
                     }
 
+                    gkeClusterVH.setVersion(cluster.getCurrentMasterVersion());
                     gkeClusterVH.setRegion(cluster.getLocation());
 
-                    if (cluster.getMasterAuthorizedNetworksConfig() != null) {
-                        HashMap<String, Object> masterAuthorizedNetworksConfigMap = new Gson().fromJson(
-                                cluster.getMasterAuthorizedNetworksConfig().toString(),
-                                HashMap.class);
-
-                        gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
-                    }
 
                     if (cluster.getDatabaseEncryption().getKeyName() != null) {
                         String keyName = new Gson().fromJson(
@@ -103,6 +96,7 @@ public class GKEClusterInventoryCollector {
                     try {
                         listNodePools = clusterManagerClient.listNodePools(nodepoolParent);
                     } catch (Exception e) {
+                        logger.debug(e.getMessage());
                     }
 
                     List<NodePoolVH> nodePoolVHList = new ArrayList<>();
@@ -124,6 +118,8 @@ public class GKEClusterInventoryCollector {
                     }
                   gkeClusterVH.setNodePools(nodePoolVHList);
                   gkeClusterVH.setEnableKubernetesAlpha(cluster.getEnableKubernetesAlpha());
+                  gkeClusterVH.setPassword(cluster.getMasterAuth().getPassword());
+                  gkeClusterVH.setUsername(cluster.getMasterAuth().getUsername());
 
                         gkeClusterlist.add(gkeClusterVH);
 
