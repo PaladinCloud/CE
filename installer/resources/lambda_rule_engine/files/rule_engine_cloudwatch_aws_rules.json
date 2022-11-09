@@ -3960,6 +3960,28 @@
     "category": "security"
   },
   {
+    "ruleId": "AWS_account_security_hub_exists_version-1_enable_security_hub_account",
+    "ruleUUID": "aws_account_security_hub",
+    "policyId": "AWS_account_security_hub_exists_version-1",
+    "ruleName": "AWS Security hub should be enabled",
+    "targetType": "account",
+    "assetGroup": "aws",
+    "alexaKeyword": "AccountSecurityHub",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-security-hub-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"us-east-1\",\"key\":\"regions\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"AWS_account_security_hub_exists_version-1_enable_security_hub_account\",\"autofix\":false,\"alexaKeyword\":\"AccountSecurityHub\",\"ruleRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"policyId\":\"AWS_account_security_hub_exists_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_account_security_hub\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_security_hub",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable AWS Security hub",
+    "createdDate": "2022-05-12",
+    "modifiedDate": "2022-05-12",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "S3BucketAllowHTTPRequest_version-1_S3BucketAllowHTTPRequest_s3",
     "ruleUUID": "aws_s3_bucket_should_not_allow_http_requests",
     "policyId": "S3BucketAllowHTTPRequest_version-1",

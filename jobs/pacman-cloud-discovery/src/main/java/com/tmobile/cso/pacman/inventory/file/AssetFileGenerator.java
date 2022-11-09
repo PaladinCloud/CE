@@ -1175,6 +1175,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "iampolicies", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+				if (!(isTypeInScope("securityhub"))) {
+					return;
+				}
+				try {
+					log.info(infoPrefix + "securityhub");
+					FileManager.generateSecurityHubFiles(InventoryUtil.fetchSecurityHub(temporaryCredentials, skipRegions, accountId, accountName));
+				} catch (Exception e) {
+					log.error(expPrefix + "securityhub\", \"cause\":\"" + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, "", "securityhub", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 
