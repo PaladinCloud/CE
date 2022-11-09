@@ -1,7 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.List;
-
 import java.util.Map;
 
 public class GKEClusterVH extends GCPVH {
@@ -15,6 +14,7 @@ public class GKEClusterVH extends GCPVH {
     private boolean enableKubernetesAlpha;
     private boolean enablePrivateEndPoints;
     private boolean enablePrivateNodes;
+    private  boolean legacyAuthorization;
     private String version;
 
     public String getUsername() {
@@ -32,15 +32,6 @@ public class GKEClusterVH extends GCPVH {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public boolean isEnableKubernetesAlpha() {
-        return enableKubernetesAlpha;
-    }
-
-    public void setEnableKubernetesAlpha(boolean enableKubernetesAlpha) {
-        this.enableKubernetesAlpha = enableKubernetesAlpha;
-    }
-
 
     public List<NodePoolVH> getNodePools() {
         return nodePools;
@@ -74,6 +65,14 @@ public class GKEClusterVH extends GCPVH {
         this.keyName = keyName;
     }
 
+    public boolean isLegacyAuthorization() {
+        return legacyAuthorization;
+    }
+
+    public void setLegacyAuthorization(boolean legacyAuthorization) {
+        this.legacyAuthorization = legacyAuthorization;
+    }
+
     public Boolean getIntraNodeVisibility() {
         return intraNodeVisibility;
     }
@@ -97,6 +96,15 @@ public class GKEClusterVH extends GCPVH {
     public void setEnablePrivateNodes(boolean enablePrivateNodes) {
         this.enablePrivateNodes = enablePrivateNodes;
     }
+
+    public boolean isEnableKubernetesAlpha() {
+        return enableKubernetesAlpha;
+    }
+
+    public void setEnableKubernetesAlpha(boolean enableKubernetesAlpha) {
+        this.enableKubernetesAlpha = enableKubernetesAlpha;
+    }
+
     public String getVersion() {
         return version;
     }

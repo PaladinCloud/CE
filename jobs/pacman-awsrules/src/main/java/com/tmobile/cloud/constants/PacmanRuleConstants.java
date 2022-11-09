@@ -592,5 +592,6 @@ public class PacmanRuleConstants {
     public  static final String BACKUP_ENABLED="backupEnabled";
     public static  final  String NODE_POOLS="nodePools";
     public static final String NODE_POOL_KEY="nodePoolKey";
+    public static final String LEGACY_AUTH="legacyAuthorization";
     public  static  final  String INTRANODE_VISIBILITY ="intraNodeVisibility";
 }

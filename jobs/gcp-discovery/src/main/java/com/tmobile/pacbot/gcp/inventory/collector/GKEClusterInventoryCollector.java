@@ -87,6 +87,7 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setKeyName(keyName);
                     }
 
+                    gkeClusterVH.setLegacyAuthorization(cluster.hasLegacyAbac());
                     gkeClusterVH.setIntraNodeVisibility(cluster.getNetworkConfig().getEnableIntraNodeVisibility());
 
 
