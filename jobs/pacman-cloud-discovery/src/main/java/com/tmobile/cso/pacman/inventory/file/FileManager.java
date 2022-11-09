@@ -63,6 +63,7 @@ import com.amazonaws.services.elasticmapreduce.model.Cluster;
 import com.amazonaws.services.identitymanagement.model.Policy;
 import com.amazonaws.services.identitymanagement.model.Role;
 import com.amazonaws.services.rds.model.DBSnapshot;
+import com.amazonaws.services.securityhub.model.DescribeHubResult;
 import com.amazonaws.services.simplesystemsmanagement.model.InstanceInformation;
 import com.amazonaws.services.sns.model.Topic;
 import com.tmobile.cso.pacman.inventory.InventoryConstants;
@@ -284,6 +285,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ecstaskdefinition-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ecscluster.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ecscluster-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-securityhub.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
@@ -452,6 +454,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ecstaskdefinition-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ecscluster.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ecscluster-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-securityhub.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -728,6 +731,19 @@ public class FileManager {
 		FileGenerator.generateJson(eksMap, fieldNames, "aws-awscomprehend.data",keys);
 		
 
+	}
+
+	/**
+	 * Generates aws security hub files.
+	 *
+	 * @param securityHubMap the file info map
+	 */
+	public static void generateSecurityHubFiles(Map<String, List<DescribeHubResult>> securityHubMap) {
+		String fieldNames;
+		String keys;
+		fieldNames = "hubArn`subscribedAt`autoEnableControls";
+		keys = "discoverydate`accountid`accountname`region`hubarn`subcribedat`autoenablecontrols";
+		FileGenerator.generateJson(securityHubMap, fieldNames, "aws-securityhub.data", keys);
 	}
 	
 	/**

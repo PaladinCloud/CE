@@ -25,10 +25,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.securityhub.AWSSecurityHub;
+import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
+import com.amazonaws.services.securityhub.model.DescribeHubRequest;
+import com.amazonaws.services.securityhub.model.DescribeHubResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -3110,6 +3115,40 @@ public class InventoryUtil {
 			}
 		}
 		return alarmMap;
+	}
+
+	public static Map<String, List<DescribeHubResult>> fetchSecurityHub(BasicSessionCredentials temporaryCredentials,
+																		String skipRegions, String account, String accountName) {
+		log.info("Fetch security hub info start");
+
+		Map<String, List<DescribeHubResult>> securityHubMap = new LinkedHashMap<>();
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + account
+				+ "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"Security Hub\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			List<DescribeHubResult> securityHubList = new ArrayList<>();
+			try {
+				if (!skipRegions.contains(region.getName())) {
+					AWSSecurityHub awsSecurityHubClient = AWSSecurityHubClientBuilder.standard()
+							.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials))
+							.withRegion(region.getName()).build();
+
+					DescribeHubResult describeHubResult = awsSecurityHubClient.describeHub(new DescribeHubRequest());
+					if (!Objects.isNull(describeHubResult)) {
+						securityHubList.add(describeHubResult);
+					}
+				}
+				if (!securityHubList.isEmpty()) {
+					securityHubMap.put(account + delimiter + accountName + delimiter + region.getName(), securityHubList);
+				}
+			} catch (Exception e) {
+				if (region.isServiceSupported(AmazonRDS.ENDPOINT_PREFIX)) {
+					log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(account, region.getName(), "security hub", e.getMessage());
+				}
+			}
+
+		}
+		return securityHubMap;
 	}
 	
 	/**

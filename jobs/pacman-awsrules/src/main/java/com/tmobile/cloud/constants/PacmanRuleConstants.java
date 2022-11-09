@@ -81,6 +81,7 @@ public class PacmanRuleConstants {
     public static final String YES = "YES";
     public static final String NO = "NO";
     public static final String REGION = "region";
+    public static final String REGIONS = "regions";
     public static final String INTSANCE_NAME = "Instance Name";
     public static final String RUNNING_STATE = "running";
     public static final String STOPPED_STATE = "stopped";
