@@ -131,11 +131,12 @@ public class IAMRoleWithUnapprovedAccessRule extends BaseRule {
 					}
 				}
 				if (!unapprovedAttachedAndInlineActionList.isEmpty()) {
+					String  unapprovedAttachedAndInlineActionString = "["+String.join(",", unapprovedAttachedAndInlineActionList) + "]";
 					annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 					annotation.put(PacmanSdkConstants.DESCRIPTION,
-							"Unapproved IAM role has " + unapprovedAttachedAndInlineActionList);
+							"Unapproved IAM role has " + unapprovedAttachedAndInlineActionString);
 					issue.put(PacmanRuleConstants.VIOLATION_REASON,
-							"Unapproved IAM role has " + unapprovedAttachedAndInlineActionList);
+							"Unapproved IAM role has " + unapprovedAttachedAndInlineActionString);
 					issue.put("privileges", unapprovedActionsParam);
 					annotation.put(ROLE_NAME, roleName);
 					issueList.add(issue);

@@ -124,8 +124,8 @@ public class LogMetricFilterAndAlarmRule extends BaseRule {
 					shouldFilter, mustTermsFilter, "_resourceid", null);
 
 			if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-				return "CloudTrail log with matching conditions does not exists, isMultiRegionTrail: true"
-						+ ", isLogging: true, accountId: " + accountId;
+				return "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
+						+ ",isLogging: true,accountId: " + accountId;
 			}
 
 			mustFilter = new HashMap<>();
@@ -136,15 +136,15 @@ public class LogMetricFilterAndAlarmRule extends BaseRule {
 			resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esCloudTrailPubAccessUrl, mustFilter, shouldFilter,
 					mustTermsFilter, PacmanRuleConstants.FILTER_PATTERN, null);
 			if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-				return "Cloudwatch logs with matching conditions does not exists, metricname: " + metricName
-						+ ", metricnamespace: " + metricNamespace + ", filtername: " + filterName + ", accountId: "
+				return "Cloudwatch logs with matching conditions does not exists,metricname: " + metricName
+						+ ",metricnamespace: " + metricNamespace + ",filtername: " + filterName + ",accountId: "
 						+ accountId;
 			}
 			String filterResponse = resultSet.iterator().next();
 			if (!filterResponse.replaceAll("[\\n\t ]", "")
 					.equalsIgnoreCase(FilterTypes.valueOf(filterName.toUpperCase()).label.replaceAll("[\\n\t ]", ""))) {
-				return "Cloudwatch logs with matching filter patterns does not exists, filtername: " + filterName
-						+ ", accountId: " + accountId;
+				return "Cloudwatch logs with matching filter patterns does not exists,filtername: " + filterName
+						+ ",accountId: " + accountId;
 			}
 
 			mustFilter = new HashMap<>();
@@ -156,13 +156,13 @@ public class LogMetricFilterAndAlarmRule extends BaseRule {
 			resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esCloudTrailPubAccessUrl, mustFilter, shouldFilter,
 					mustTermsFilter, "_resourceid", null);
 			if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-				return "Cloudwatch alarm with matching conditions does not exists, metricname: " + metricName
-						+ ", namespace: " + metricNamespace + ", accountId: " + accountId;
+				return "Cloudwatch alarm with matching conditions does not exists,metricname: " + metricName
+						+ ",namespace: " + metricNamespace + ",accountId: " + accountId;
 			}
 
 		} catch (IllegalArgumentException e) {
 			logger.error("Invalid value for filter, filter: " + filterName + e.getMessage(), e);
-			description = "Invalid value for filter, filter: " + filterName;
+			description = "Invalid value for filter,filter: " + filterName;
 		} catch (Exception ex) {
 			logger.error("Cloudwatch alarm not found" + ex.getMessage(), ex);
 			description = "Cloudwatch alarm not found";
