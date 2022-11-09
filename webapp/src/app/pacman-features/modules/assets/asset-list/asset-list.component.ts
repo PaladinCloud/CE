@@ -406,12 +406,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
       if (this.urlID) {
         if (this.urlID.toLowerCase() === "exempted") {
-          this.dataTableDesc = "Note: This page shows all the exempted assets";
+          this.dataTableDesc = "Note: This page shows all the exempt assets";
           // the url and method for exempted << -- defines url and method
           assetListUrl = environment.assetListExempted.url;
           assetListMethod = environment.assetListExempted.method;
           this.serviceId = 15;
-          this.tableDownloadName = "Exempted Assets";
+          this.tableDownloadName = "Exempt Assets";
         } else if (this.urlID.toLowerCase() === "taggable") {
           this.dataTableDesc = "Note: This page shows all the taggable assets";
           // the url and method for tagging << -- defines url and method

@@ -799,7 +799,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
                 partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
-                partialDocument.put(STATUS, "enforced");
+                partialDocument.put(STATUS, "exempt");
                 Boolean isUpdated = elasticSearchRepository.updatePartialDataToES(dataSource, targetType, id, routing,
                         parent, partialDocument);
                 if (isUpdated) {
@@ -2176,7 +2176,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     Map<String, Object> partialDocument = Maps.newHashMap();
                     partialDocument.put(ISSUE_STATUS, EXEMPTED);
                     partialDocument.put(MODIFIED_DATE, sdf.format(new Date()));
-                    partialDocument.put(STATUS, "enforced");
+                    partialDocument.put(STATUS, "exempt");
 
                     StringBuilder exceptionDoc = new StringBuilder(createESDoc(issueExceptionDetails));
                     if (exceptionDoc != null) {
@@ -2196,7 +2196,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "enforced", id)+"\n");
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id)+"\n");
 
                     }
                     i++;
