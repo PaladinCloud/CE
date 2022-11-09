@@ -614,4 +614,5 @@ public class PacmanRuleConstants {
     public static final String CLOUD_LOGGING_VALUE="logging.googleapis.com/kubernetes";
 
 
+    public static final String DISABLE_KUBERNETES_DASHBOARD="disableKubernetesDashBoard";
 }

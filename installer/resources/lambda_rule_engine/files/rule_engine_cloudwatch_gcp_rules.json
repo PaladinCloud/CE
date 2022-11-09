@@ -1912,5 +1912,27 @@
     "modifiedDate": "2022-11-01",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Disable_Kubernetes_Web_UI",
+    "ruleUUID": "Disable_Kubernetes_Web_UI",
+    "policyId": "Disable_Kubernetes_Web_UI",
+    "ruleName": "Disable Kubernetes Web UI",
+    "targetType": "gkecluster",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Disable_Kubernetes_Web_UI",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-kubernetes-web-ui\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Disable_Kubernetes_Web_UI\",\"autofix\":false,\"alexaKeyword\":\"Disable_Kubernetes_Web_UI\",\"ruleRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"policyId\":\"Disable_Kubernetes_Web_UI\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_Kubernetes_Web_UI\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_Kubernetes_Web_UI",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable Kubernetes Web UI",
+    "createdDate": "2022-11-01",
+    "modifiedDate": "2022-11-01",
+    "severity": "low",
+    "category": "security"
   }
 ]
