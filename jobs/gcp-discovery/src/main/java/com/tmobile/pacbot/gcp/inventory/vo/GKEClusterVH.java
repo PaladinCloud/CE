@@ -16,6 +16,15 @@ public class GKEClusterVH extends GCPVH {
     private boolean enablePrivateNodes;
     private  boolean legacyAuthorization;
     private String version;
+    private boolean disableKubernetesDashBoard;
+
+    public boolean isDisableKubernetesDashBoard() {
+        return disableKubernetesDashBoard;
+    }
+
+    public void setDisableKubernetesDashBoard(boolean disableKubernetesDashBoard) {
+        this.disableKubernetesDashBoard = disableKubernetesDashBoard;
+    }
 
     private  String cloudLogging;
     private  String cloudMonitoring;
