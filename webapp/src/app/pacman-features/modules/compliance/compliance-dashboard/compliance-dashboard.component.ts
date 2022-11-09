@@ -459,7 +459,7 @@ export class ComplianceDashboardComponent implements OnInit {
     this.displayedColumns = Object.keys(this.columnWidths);
     this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
     this.complianceTableData = state?.data || [];
-    this.searchPassed = this.activatedRoute.snapshot.queryParams.searchValue || '';
+    this.searchTxt = state?.searchTxt || '';
     this.tableScrollTop = state?.tableScrollTop;    
     this.totalRows = state.totalRows || 0;
 
@@ -878,9 +878,10 @@ export class ComplianceDashboardComponent implements OnInit {
     }
   }
 
-  callNewSearch() {
-    this.searchPassed = this.searchTxt;
-    this.getUpdatedUrl();
+  callNewSearch(searchVal){    
+    this.searchTxt = searchVal;
+    this.isStatePreserved = false;
+    this.getData();  
   }
 
   calculateDate(_JSDate) {

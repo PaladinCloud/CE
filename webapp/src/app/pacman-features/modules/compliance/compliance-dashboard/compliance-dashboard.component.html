@@ -32,8 +32,8 @@
                     [data]="complianceTableData" [columnWidths]="columnWidths"
                     [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                     [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
-                    [imageDataMap]="tableDataMap" [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (downloadClicked)="handlePopClick()"
-                    [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn">
+                    [imageDataMap]="tableDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
+                    [searchQuery]="searchTxt" (downloadClicked)="handlePopClick()" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn">
                 </app-table>
             </mat-grid-tile>
         </mat-grid-list>

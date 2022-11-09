@@ -55,6 +55,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @ViewChild('select') select: MatSelect;
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
   @ViewChildren('customTable') customTable: any;
+  @ViewChild("tableContainer") tableContainer: ElementRef;
 
   allSelected=true;
   screenWidth;
@@ -64,7 +65,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   isWindowExpanded = true;
   isDataLoading = false;
 
-  showFilterModal = false;
+
   @Input() filteredArray = [];
   @Input() filterTypeOptions;
   
@@ -72,8 +73,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
     private windowExpansionService: WindowExpansionService) { 
       this.windowExpansionService.getExpansionStatus().subscribe((res) => {
-        this.isWindowExpanded = res;
-        this.getScreenWidthFactor();
+        this.waitAndResizeTable();
+
+        // this.getScreenWidthFactor();
       });
     }
 
@@ -91,9 +93,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(this.searchQuery && this.doLocalSearch){
       this.customSearch(this.searchQuery);
     }
-    this.screenWidth = window.innerWidth;
-    this.getWidthFactor();
-
     if(this.onScrollDataLoader){
       this.onScrollDataLoader.subscribe(data => {
       this.isDataLoading = false;
@@ -101,20 +100,21 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
           this.data.push(...data);
           this.mainDataSource = new MatTableDataSource(this.data);
           this.dataSource = new MatTableDataSource(this.data);
+          if(this.headerColName) this.customSort(this.headerColName, this.direction);
         }
     })
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {    
-    if(!this.doLocalSearch || (changes.data && changes.data.previousValue.length==0)){
+  ngOnChanges(changes: SimpleChanges): void {
+    if(!this.doLocalSearch || (changes.data && changes.data.currentValue && changes.data.currentValue.length>0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
       if(this.headerColName) this.customSort(this.headerColName, this.direction);
       if(window.innerHeight>1800 && this.data.length>0){
         this.nextPageCalled.emit();
         this.isDataLoading = true;
-      }      
+      }
       for(let j=this.filteredArray.length; j<1; j++){
         this.addFilter();
       }
@@ -123,6 +123,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void { 
     this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
+    this.waitAndResizeTable();
+
     if(this.select){
       this.select.options.forEach((item: MatOption) => {
         if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
@@ -131,6 +133,17 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       });
       this.changeDetectorRef.detectChanges();
     }
+  }
+
+  waitAndResizeTable(){
+    setTimeout(() => {      
+      this.screenWidth = parseInt(window.getComputedStyle(this.tableContainer.nativeElement, null).getPropertyValue('width'), 10);
+      this.getWidthFactor();
+    }, 100);
+  }
+
+  openColumnSelectorModal(){
+    this.select.open();
   }
 
   getWidthFactor(){
@@ -143,17 +156,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   getScreenWidthFactor(){
-    if(this.isWindowExpanded){
-      this.screenWidthFactor = (this.screenWidth - this.removeFromScreenWidth) / this.denominator;
-    }else{
-      this.screenWidthFactor = (this.screenWidth - 140) / this.denominator;
-    }
+      this.screenWidthFactor = (this.screenWidth - 30) / this.denominator;
   }
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
-    this.screenWidth = window.innerWidth;
-    this.getScreenWidthFactor();
+    this.waitAndResizeTable();
   }
 
   handleSearchInColumnsChange(){
@@ -210,6 +218,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   onSelectFilter(e, i){
+    this.customTable.first.nativeElement.scrollTop = 0;
     let filterIndex = _.findIndex(this.filteredArray, (el, j) => {
       return (
         el["keyDisplayValue"] ===
@@ -220,11 +229,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     
     if(filterIndex>=0 && filterIndex!=i){
       if(filterIndex>i){
-        //remove filterIndex        
         this.filteredArray.splice(filterIndex, 1);
         currIdx = i;
       }else{
-        //remove i
         this.filteredArray.splice(i, 1);
         currIdx = filterIndex;
       }
@@ -239,10 +246,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       filterValue: this.filteredArray[currIdx].filterValue
     }
 
-    // this.filteredArray.splice(i, 1);
-    // if (e.keyCode === 13) { 
+    setTimeout(() => {
       this.selectedFilter.emit(event);
-    // }    
+    }, 50)
   }
 
   onSelectFilterType(e, i){      

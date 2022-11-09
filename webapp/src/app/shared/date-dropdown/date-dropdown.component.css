@@ -34,9 +34,6 @@
     width: 100% !important;
 }
 
-::ng-deep .cdk-overlay-connected-position-bounding-box {
-	position: relative !important;
-}
 
 ::ng-deep .date-wrapper .mat-form-field-subscript-wrapper {
 	position:static !important;
