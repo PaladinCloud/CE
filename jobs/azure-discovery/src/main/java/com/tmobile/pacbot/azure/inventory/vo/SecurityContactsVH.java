@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import java.util.List;
 import java.util.Map;
 
 public class SecurityContactsVH extends AzureVH {
@@ -7,7 +8,10 @@ public class SecurityContactsVH extends AzureVH {
     private Map<String, Object> properties;
     private String name;
     private String type;
+
     private String etag;
+
+    private List<AutoProvisioningSettingsVH>autoProvisioningSettingsList;
 
     public String getName() {
         return name;
@@ -39,6 +43,13 @@ public class SecurityContactsVH extends AzureVH {
 
     public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
+    }
+    public List<AutoProvisioningSettingsVH> getAutoProvisioningSettingsList() {
+        return autoProvisioningSettingsList;
+    }
+
+    public void setAutoProvisioningSettingsList(List<AutoProvisioningSettingsVH> autoProvisioningSettingsList) {
+        this.autoProvisioningSettingsList = autoProvisioningSettingsList;
     }
 }
 
