@@ -5,6 +5,7 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.rule.BaseRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -12,11 +13,17 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -33,24 +40,25 @@ public class S3ObjectLevelLoggingRuleTest {
 
     private static final String CLOUD_TRAIL_URL = "/aws/cloudtrail/_search";
     private static final String CLOUD_TRAIL_EVENT_SELECTOR_URL = "/aws/cloudtrail_eventselector/_search";
-    private static final String DATA_RESOURCE_TYPE = "AWS::S3::Object";
+    Map<String, String> ruleParam;
+    Map<String, String> resourceAttribute;
 
-    @Test
-    public void executeReadTest() throws Exception {
-
+    @Before
+    public void setup() {
         mockStatic(PacmanUtils.class);
-
         when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(true);
+        ruleParam = getInputParamMap();
+        resourceAttribute = getValidResourceData();
+    }
 
-        Map<String, String> ruleParam = getInputParamMap();
+    @Test
+    public void executeReadTest() throws Exception {
+
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
-
-        Map<String, String> resourceAttribute = getValidResourceData("test1");
-
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
                 any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
@@ -65,19 +73,7 @@ public class S3ObjectLevelLoggingRuleTest {
 
     @Test
     public void executeWriteTest() throws Exception {
-
-        mockStatic(PacmanUtils.class);
-
-        when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(true);
-
-        Map<String, String> ruleParam = getInputParamMap();
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
-
-        Map<String, String> resourceAttribute = getValidResourceData("test1");
 
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
@@ -93,18 +89,7 @@ public class S3ObjectLevelLoggingRuleTest {
 
     @Test
     public void trailEventsNotFoundTest() throws Exception {
-
-        mockStatic(PacmanUtils.class);
-
-        when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(true);
-        Map<String, String> ruleParam = getInputParamMap();
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
-
-        Map<String, String> resourceAttribute = getValidResourceData("test1");
 
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
@@ -123,19 +108,8 @@ public class S3ObjectLevelLoggingRuleTest {
 
     @Test
     public void wrongTypeTest() throws Exception {
-
-        mockStatic(PacmanUtils.class);
-
-        when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(true);
-        Map<String, String> ruleParam = getInputParamMap();
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
         String readTypeFromSearch = "test";
-
-        Map<String, String> resourceAttribute = getValidResourceData("test1");
 
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
@@ -159,19 +133,8 @@ public class S3ObjectLevelLoggingRuleTest {
 
     @Test
     public void multiRegionTrailNotFoundTest() throws Exception {
-
-        mockStatic(PacmanUtils.class);
-
-        when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(true);
-        Map<String, String> ruleParam = getInputParamMap();
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
         String readTypeFromSearch = "All";
-
-        Map<String, String> resourceAttribute = getValidResourceData("test1");
 
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
@@ -194,19 +157,7 @@ public class S3ObjectLevelLoggingRuleTest {
 
     @Test
     public void executeThrowsTest() throws Exception {
-
-        mockStatic(PacmanUtils.class);
-
-        when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString(), anyString()))
-                .thenReturn(true);
-        Map<String, String> ruleParam = getInputParamMap();
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
-        String readTypeFromSearch = "test";
-
-        Map<String, String> resourceAttribute = getValidResourceData("test1");
 
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
@@ -247,18 +198,12 @@ public class S3ObjectLevelLoggingRuleTest {
         return ruleParam;
     }
 
-    private Map<String, String> getValidResourceData(String id) {
+    private Map<String, String> getValidResourceData() {
         Map<String, String> resObj = new HashMap<>();
-        resObj.put("_resourceid", id);
+        resObj.put("_resourceid", "test1");
         resObj.put(PacmanRuleConstants.ACCOUNTID, "123456789");
         resObj.put(PacmanRuleConstants.NAME, "test");
         ;
-        return resObj;
-    }
-
-    private Map<String, String> getInValidResourceData(String id) {
-        Map<String, String> resObj = new HashMap<>();
-        resObj.put("_resourceid", id);
         return resObj;
     }
 }
