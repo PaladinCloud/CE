@@ -30,6 +30,10 @@ const routes: Routes = [
         path: 'post-login',
         redirectTo: '/home',
         pathMatch: 'prefix'
+    },
+    {
+        path: 'callback',
+        redirectTo: '/pl',
     }
 ];
 
@@ -37,4 +41,4 @@ const routes: Routes = [
     imports: [RouterModule.forRoot(routes)],
     exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -1,3 +1,5 @@
+server:
+  port: 8082
 spring:
   application:
     name: asset-service
@@ -5,11 +7,11 @@ spring:
     description: Pacman Asset API provides Asset capabilities
   cloud:
     config:
-      uri: ${CONFIG_SERVER_URL:http://localhost:8888/api/config/}
+      uri: https://dev.paladincloud.io/api/config/
       enabled: true
       fail-fast: true
       name: api,asset-service
-      password: ${CONFIG_PASSWORD}
+      password: pacman
       username: user
       label: latest
 
@@ -19,4 +21,9 @@ spring:
 security: 
   oauth2:
     resource:
-      user-info-uri: ${PACMAN_HOST_NAME}/api/auth/user
+      #user-info-uri: https://test-domain-paladin-1.auth.eu-west-1.amazoncognito.com/oauth2/userInfo
+      #tokenInfoUri: https://test-domain-paladin-1.auth.us-east-1.amazoncognito.com/oauth2/token
+      jwk:
+         key-set-uri: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_4Y3ZEgfpy/.well-known/jwks.json
+      client:
+          clientId: 2i40k95uuql4kmanm47o4e6fho

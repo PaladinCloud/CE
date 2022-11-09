@@ -26,6 +26,7 @@ import { OmnisearchComponent } from "../pacman-features/modules/omnisearch/omnis
 import { VulnerabilityReportComponent } from "./vulnerability-report/vulnerability-report.component";
 import { ComplianceOverviewTrendComponent } from "../pacman-features/secondary-components/compliance-overview-trend/compliance-overview-trend.component";
 import { IssuesTrendHistoryComponent } from "../pacman-features/secondary-components/issues-trend-history/issues-trend-history.component";
+import { TokenResolverService } from "../resolver/token-resolver.service";
 
 const routes: Routes = [
   {
@@ -37,7 +38,10 @@ const routes: Routes = [
         component: FirstTimeUserJourneyComponent,
       },
     ],
-    canActivate: [AuthGuardService],
+    // canActivate: [AuthGuardService],
+    resolve: {
+      access: TokenResolverService
+    }
   },
   {
     path: "pl",
@@ -115,7 +119,7 @@ const routes: Routes = [
         outlet: "helpTextModal",
       },
     ],
-    canActivate: [AuthGuardService],
+    // canActivate: [AuthGuardService],
   },
   {
     path: "**",
@@ -127,4 +131,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class PostLoginAppRoutingModule {}
+export class PostLoginAppRoutingModule { }

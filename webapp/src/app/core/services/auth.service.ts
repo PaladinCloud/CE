@@ -175,7 +175,7 @@ export class AuthService {
             url = '/pl/first-time-user-journey';
         } else {
             this.assetGroupObservableService.updateAssetGroup(defaultAssetGroup);
-            url = '/pl/compliance/compliance-dashboard?ag=' + defaultAssetGroup;
+            url = '/pl';
         }
         this.router.navigateByUrl(url).then(result => {
             if (result) {
