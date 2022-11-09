@@ -1,18 +1,4 @@
-/*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Renderer2, OnInit } from '@angular/core';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { Subscription } from 'rxjs';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
@@ -34,7 +20,7 @@ import { TableStateService } from 'src/app/core/services/table-state.service';
   styleUrls: ['./policy-knowledgebase.component.css'],
   providers: [CommonResponseService, LoggerService, ErrorHandlingService]
 })
-export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
+export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDestroy {
   pageTitle = 'Policies';
   selectedAssetGroup: string;
   selectedDomain: string;
@@ -96,8 +82,9 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
-    private downloadService: DownloadService) {
+    private downloadService: DownloadService) {}
 
+    ngOnInit(): void {
       const state = this.tableStateService.getState("policyKnowledgebase") || {};
       
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
@@ -130,7 +117,7 @@ export class PolicyKnowledgebaseComponent implements AfterViewInit, OnDestroy {
     });
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
     this.getRouteQueryParameters();
-  }
+    }
 
   getRouteQueryParameters(): any {
     this.activatedRoute.queryParams.subscribe(

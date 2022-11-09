@@ -36,6 +36,7 @@ h2 {
   letter-spacing: 0.3px;
   margin-bottom: 3em;
   color: #555555;
+  white-space: normal;
 }
 
 .close-button {
