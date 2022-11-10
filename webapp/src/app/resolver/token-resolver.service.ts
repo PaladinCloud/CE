@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { switchMap, finalize, catchError } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { AwsCognitoService } from './../core/services/aws-cognito.service';
+import { DataCacheService } from '../core/services/data-cache.service';
 
 
 @Injectable()
@@ -12,6 +13,7 @@ export class TokenResolverService implements Resolve<any> {
   i = 0;
   constructor(private location: Location,
     private awsCognitoService: AwsCognitoService,
+    private dataCacheService: DataCacheService,
     private router: Router) { }
 
   resolve(): Observable<any | null> {
@@ -44,13 +46,27 @@ export class TokenResolverService implements Resolve<any> {
     if (this.i < 1) {
       return this.awsCognitoService.getTokenDetailsFromCognito(code).pipe(
         switchMap((response: any) => {
-          this.i++;
           console.log('Response: ', response);
           window.alert('Response: ' + response);
           localStorage.setItem('token', response.access_token);
+          const currentUserLoginDetails = 
+          {
+            "access_token": response.access_token,
+            "refresh_token": response.refresh_token,
+            "userInfo": {
+              "firstName": "admin", "lastName": "",
+              "userRoles": ["ROLE_USER", "ROLE_ADMIN"],
+              "defaultAssetGroup": "azure", "userName": "admin",
+              "userId": "admin@paladincloud.io", "email": "admin@paladincloud.io"
+             }, "success": true, "scope": "resource-access", "token_type": "bearer",
+            "message": "Authentication Successfull",
+            "expires_in": 35337
+          }
+        
+          this.dataCacheService.setCurrentUserLoginDetails(JSON.stringify(currentUserLoginDetails));
 
           if (response) {
-            this.router.navigate(['/pl']);
+            this.router.navigate(['/pl/compliance/issue-listing']);
           }
 
           return of(response);

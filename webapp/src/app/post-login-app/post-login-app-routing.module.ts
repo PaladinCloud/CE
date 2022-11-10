@@ -39,9 +39,6 @@ const routes: Routes = [
       },
     ],
     // canActivate: [AuthGuardService],
-    resolve: {
-      access: TokenResolverService
-    }
   },
   {
     path: "pl",

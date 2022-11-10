@@ -41,21 +41,8 @@ export class AwsCognitoService {
         })
       }
     );
-    response.subscribe(data => {
-      console.log('Response data', data);
-      this.router.navigate(['/pl/compliance/issue-listing']);
-    })
-    console.log('Type of response', typeof response);
-    console.log('Token response', response);
     return response;
-    // return this.http.post<any>(CONFIGURATIONS.optional.auth.cognitoConfig.cognitoTokenURL,
-    //   formBody, {
-    //   responseType: 'json',
-    //   headers: new HttpHeaders({
-    //     'Content-Type': 'application/x-www-form-urlencoded',
-    //     Authorization: 'Basic ' + btoa(`${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_username}:${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_pwd}`)
-    //   })
-    // });
+  
   }
 
   public logoutUserFromCognito(): Observable<any> {

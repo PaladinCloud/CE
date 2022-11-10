@@ -72,6 +72,7 @@ import { ConfigManagementComponent } from "../../pacman-features/modules/admin/c
 import { RecommendationsComponent } from "../../pacman-features/modules/compliance/recommendations/recommendations.component";
 import { RecommendationsDetailsComponent } from "../../pacman-features/modules/compliance/recommendations-details/recommendations-details.component";
 import { AssetDistributionComponent } from "src/app/pacman-features/modules/assets/asset-distribution/asset-distribution.component";
+import { TokenResolverService } from "src/app/resolver/token-resolver.service";
 
 export const COMPLIANCE_ROUTES = [
   {
@@ -89,6 +90,9 @@ export const COMPLIANCE_ROUTES = [
       title: "Policy Violations",
     },
     canActivate: [AuthGuardService],
+    resolve: {
+      access: TokenResolverService
+    }
   },
   {
     path: "issue-listing/issue-details/:issueId",

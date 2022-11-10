@@ -81,6 +81,7 @@ export class DataCacheService {
 
   public getUserDetailsValue() {
     let secretData = this.getCurrentUserLoginDetails();
+    console.log(secretData," SD ");
     if (secretData) {
       secretData = JSON.parse(secretData);
       return {

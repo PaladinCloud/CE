@@ -47,9 +47,9 @@ export const CONFIGURATIONS = {
 
         loginURL: 'https://test-domain-paladin-1.auth.us-east-1.amazoncognito.com/login?' +
           'client_id=2i40k95uuql4kmanm47o4e6fho&response_type=code&scope=openid+profile&' +
-          'redirect_uri=http://localhost:4201/pl',
+          'redirect_uri=http://localhost:4201/pl/compliance/issue-listing',
 
-        redirectURL: 'http://localhost:4201/pl',
+        redirectURL: 'http://localhost:4201/pl/compliance/issue-listing',
 
         cognitoTokenURL: 'https://test-domain-paladin-1.auth.us-east-1.amazoncognito.com/oauth2/token',
 
