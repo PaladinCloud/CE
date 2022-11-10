@@ -37,6 +37,17 @@ public class GKEClusterVH extends GCPVH {
         return nodePools;
     }
 
+    public boolean isIPAlias() {
+        return IPAlias;
+    }
+
+    public void setIPAlias(boolean IPAlias) {
+        this.IPAlias = IPAlias;
+    }
+
+    private  boolean IPAlias;
+
+
     public void setNodePools(List<NodePoolVH> nodePools) {
         this.nodePools = nodePools;
     }

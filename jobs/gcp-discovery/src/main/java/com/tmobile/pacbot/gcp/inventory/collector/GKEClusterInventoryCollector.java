@@ -66,6 +66,8 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
+                    gkeClusterVH.setIPAlias(cluster.getIpAllocationPolicy().getUseIpAliases());
+
 
                     if(cluster.getPrivateClusterConfig()!=null){
                         gkeClusterVH.setEnablePrivateNodes(cluster.getPrivateClusterConfig().getEnablePrivateNodes());
