@@ -60,6 +60,7 @@ public class GKEClusterInventoryCollector {
                 }
 
 
+
                 for (Cluster cluster : clusterList.getClustersList()) {
                     GKEClusterVH gkeClusterVH = new GKEClusterVH();
                     gkeClusterVH.setId(cluster.getId());
@@ -77,6 +78,7 @@ public class GKEClusterInventoryCollector {
                         gkeClusterVH.setEnablePrivateNodes(false);
                         gkeClusterVH.setEnablePrivateEndPoints(false);
                     }
+                    gkeClusterVH.setClientKey(cluster.getMasterAuth().getClientKey());
 
                     gkeClusterVH.setVersion(cluster.getCurrentMasterVersion());
                     gkeClusterVH.setRegion(cluster.getLocation());

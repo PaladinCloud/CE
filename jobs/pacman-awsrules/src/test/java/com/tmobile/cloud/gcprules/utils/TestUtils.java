@@ -3127,4 +3127,28 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getFailureJsonArrayForGKEClientCertRule() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-0114:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"f0336360ca484fb581d8cd2c414ecc768dad2f0b0b8846c1a6c93871816019a2\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"clientKey\":\"LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBbWhodkhiUTBvaEFqSDA5NGZwc3FwNVkrckZVNkZmVXljL0RMSHJKQzRYMldJaGtoCnZCOXVLNmJleEJ6M3JQY0FXVFJIbDkwM0tSQjNTMjNFR0ZHNVhLVEF1Y1ZOS3M0bTNaYnJBRDBEUGZoeEEwTHIKc0tPWjBrOVpqZS91b0xjNG5pcXRrekJhTlpkYmF6QnhhZEtwQ2dlOWtEc0FicENuNVlYOG9ya1ZybGZITDcyNwo3WGtveER1NmpkWUxiVkF4N0dTVkkveHdvYTZ5eXVCbjljdFdGRnVtWXltZW03TWw3aTZvMysyNHAra0xldldDCkF6eXM0eUkvUDdBSVI2dDNWMUZvei9iM1dGaGVXODdmM0dRWDhrVkxsSTlvRG9ncWxIbWVxbDFpbndrNFpxZW0KYWZLam9Nb1lNVDRtWGFKcEtZaFhta3NzbGJUaVdvY3dRL1NSR3dJREFRQUJBb0lCQUNDZ0JycVh3a01EdnFQcwo2L3FHT0xBMXQ3dzk2U2ZuKzVBZmphbkluUzlucXdjNklmSFdCN25YUVRmdFdDVDNRTXdpTFB4Q3VtQ0gyM0lOClllU3lQTmdZQzdQcFNZN0VDZWVGZ2VqUmdpTzNPNW93cTMwQkRsckFNUnBEajliWUkvVWMzUllhT1NjNmpnRHkKUnpqY0FLMGVlV3lWaVdCZllTVFB5dTdhMS9QS3pxSWxOMEttdzFyV3BGelFPMmpueGRtaU9ZRzJXS2J6TGo4TgpPTk5IVUFWR2M2ZUJCUldBOFowNXprbFF6UUZMM0FMU1pELzgwRUpTY3BRZ3pZMERTVktxOEhvenZxVU55eUNaCnE3dy9La280aUUvVmtWQlZVOW9LdGFHUWJoMERVUTMwYXJYZzRwQUtQRTlFTlRud3VFbTdYNm9LSmI5ci9ZeWEKNTRlR3hBMENnWUVBMHFTSHNjWWFIOGFYY0RiT01jOU13ZmFqZ0cxc1h5ckNpaXBsRnZsL09kb1hQaWNyemdKeApyanE0d3dhVjY4UENENkZMdEkxOEw5Yy9hemJtN2pIMzdDL3Y4ei81Q1Q3MXpQM1Y2dHg5ZkdkYVc5NnE5eTB4CnRScWludDVqbEdIUm00WU5zbTZROEFTWWtGYnl2Z1FtVzkwZ09La1VaWElpUUNjY1gyUnF5dmNDZ1lFQXUwYksKOTlPTnJSSjBBMGdNTlpZK0lYQjljMXlZV0c5MmI2dzNZdkpHeW94OU85cXN3MmdZaEIreW0wem16dFg4UDVneQpMcHdMRTQ2cDNjcjR3M3dnMmpQcG1QY0tBaDd5NDFCU3lHaHl4M2JuS2F4SVFHVmhWMEh4OFNJazl6TGVRbDN1CmFjS0xtaWFiaEt1SzRBQzkrbUVNam5hc2laM3JDNllhR3RiMEhmMENnWUFFMEpIeGRFL0FqaStEOXh5N2NydVUKYTJqTlZMTDNjZWpFYzdlZjBOQWhxR1NEblMyWkplRW5WRnhJeU92QVdkY2p1RkljckdjOFNMVkFaQjdmTHZFMQp5dHEzT3EwY2t2M1hVNjRDRWt3ai9kREk3TXdIbmxiV2h1ZFVya3lrWlovKzZBK0VGcGJsaFpWZkp6MmhMa01hCk1uRzhHZEZIaUZaVUZSREc5V3FqZlFLQmdRQ0hyaVYwNFk5K2VhVVZqNGhROXBYeThpWGhnNDlZV3dEcXJWRy8KWFJwT3V2UXNmaVMydWQ4eE1pbmJmQjZvY2IzOGNRN0NXQWxxVk96YXBLZ1FNUWs0TFc0cmhhZDVtK1NMTGZHYwpBcGhOek9aemViOHE4SWhTaUpONkNTdlE4TWk0T29kMWxoNUFRNEplMzAyUk50aHM0dzBPMWdudzlqbUpTZ0VWCnV2QklIUUtCZ0ZjNVR0dFdXaC82REZqbXhpMEFiS0FKT2FrVFV2cGxVQVZ6a1cyS2ZDdnNQZ3hBSVlxdjllNEYKc3lWc0hQZEhuODlLK01RaGFSaFp0YkprUnUvRm1VcHZWbVVWN3lhRkF6OEhNVmFGV1d5LzZHaG03cXZzcW0xRQpHQ1FoVDNoTmdPTGxraWN2WW05Y0ZYc3VqYkFwbiswa0NmS0d2bndMQ0pUYXdkVkJMSGlCCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==\",\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":false,\"discoverydate\":null}],\"discoverydate\":\"2022-11-0114:00:00+0530\"}" ,
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+
+    public static JsonArray getHitsJsonArrayForGKEClientCertRule() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-0114:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"clientKey\":\"\",\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":false,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":false,\"discoverydate\":null}],\"discoverydate\":\"2022-11-0114:00:00+0530\"}",
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

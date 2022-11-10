@@ -33,9 +33,19 @@ public class GKEClusterVH extends GCPVH {
         this.password = password;
     }
 
+    public String getClientKey() {
+        return clientKey;
+    }
+
+    public void setClientKey(String clientKey) {
+        this.clientKey = clientKey;
+    }
+
     public List<NodePoolVH> getNodePools() {
         return nodePools;
     }
+    private String clientKey;
+
 
     public boolean isIPAlias() {
         return IPAlias;
