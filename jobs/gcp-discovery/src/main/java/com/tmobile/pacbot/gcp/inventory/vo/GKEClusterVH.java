@@ -17,6 +17,25 @@ public class GKEClusterVH extends GCPVH {
     private  boolean legacyAuthorization;
     private String version;
 
+    private  String cloudLogging;
+    private  String cloudMonitoring;
+
+    public String getCloudLogging() {
+        return cloudLogging;
+    }
+
+    public void setCloudLogging(String cloudLogging) {
+        this.cloudLogging = cloudLogging;
+    }
+
+    public String getCloudMonitoring() {
+        return cloudMonitoring;
+    }
+
+    public void setCloudMonitoring(String cloudMonitoring) {
+        this.cloudMonitoring = cloudMonitoring;
+    }
+
     public String getUsername() {
         return username;
     }
