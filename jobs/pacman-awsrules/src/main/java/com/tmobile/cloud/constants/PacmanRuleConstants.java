@@ -81,6 +81,7 @@ public class PacmanRuleConstants {
     public static final String YES = "YES";
     public static final String NO = "NO";
     public static final String REGION = "region";
+    public static final String REGIONS = "regions";
     public static final String INTSANCE_NAME = "Instance Name";
     public static final String RUNNING_STATE = "running";
     public static final String STOPPED_STATE = "stopped";
@@ -592,6 +593,10 @@ public class PacmanRuleConstants {
     public  static final String BACKUP_ENABLED="backupEnabled";
     public static  final  String NODE_POOLS="nodePools";
     public static final String NODE_POOL_KEY="nodePoolKey";
+    public static final String LEGACY_AUTH="legacyAuthorization";
     public  static  final  String INTRANODE_VISIBILITY ="intraNodeVisibility";
     public static  final  String AUTO_PROVISION ="autoProvision";
+    public static final  String IP_ALIAS="ipalias";
+    public static final String CLIENT_KEY="clientKey";
+
 }
