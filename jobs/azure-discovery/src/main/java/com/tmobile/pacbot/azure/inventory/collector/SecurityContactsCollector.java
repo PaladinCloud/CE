@@ -25,6 +25,12 @@ public class SecurityContactsCollector {
     private static Logger LOGGER = LoggerFactory.getLogger(SecurityContactsCollector.class);
     private String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview";
 
+    private static  final String ID="id";
+    private  static final String NAME="name";
+    private static  final String TYPE="type";
+    private static  final String PROPERTY="properties";
+    private static final String AUTO_PROVISION="autoProvision";
+
     public List<SecurityContactsVH> fetchSecurityContactsInfo(SubscriptionVH subscription) throws Exception {
         List<SecurityContactsVH> securityContactsList = new ArrayList<>();
         String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
@@ -35,19 +41,19 @@ public class SecurityContactsCollector {
             JsonArray jsonArray = (JsonArray) parser.parse(response);
             SecurityContactsVH securityContactsVH = new SecurityContactsVH();
             JsonObject responseJson = jsonArray.get(0).getAsJsonObject();
-            securityContactsVH.setId(responseJson.get("id").getAsString());
+            securityContactsVH.setId(responseJson.get(ID).getAsString());
             securityContactsVH.setEtag(responseJson.get("etag").getAsString());
-            securityContactsVH.setName(responseJson.get("name").getAsString());
+            securityContactsVH.setName(responseJson.get(NAME).getAsString());
             securityContactsVH.setRegion(responseJson.get("location").getAsString());
-            securityContactsVH.setType(responseJson.get("type").getAsString());
-            JsonObject propertiesJson = responseJson.get("properties").getAsJsonObject();
+            securityContactsVH.setType(responseJson.get(TYPE).getAsString());
+            JsonObject propertiesJson = responseJson.get(PROPERTY).getAsJsonObject();
             HashMap<String, Object> propertiesMap = new Gson().fromJson(propertiesJson.toString(), HashMap.class);
             securityContactsVH.setProperties(propertiesMap);
             securityContactsVH.setAutoProvisioningSettingsList(fetchAutoProvisioningSettingsList(subscription));
             securityContactsList.add(securityContactsVH);
 
         } catch (Exception e) {
-            LOGGER.error("Error fetching BatchAccount", e);
+            LOGGER.error("Error fetching Security Contacts", e);
         }
         LOGGER.info("Target Type : {}  Total: {} ", "Batch Account", securityContactsList.size());
         return securityContactsList;
@@ -70,18 +76,18 @@ public class SecurityContactsCollector {
             for(JsonElement autoProvisioningElement:autoProvisioningObjects){
                 AutoProvisioningSettingsVH autoProvisioningSettingsVH=new AutoProvisioningSettingsVH();
                 JsonObject autoProvisioningObject=autoProvisioningElement.getAsJsonObject();
-                String id=autoProvisioningObject.get("id").getAsString();
+                String id=autoProvisioningObject.get(ID).getAsString();
                 autoProvisioningSettingsVH.setId(id);
-                String name=autoProvisioningObject.get("name").getAsString();
+                String name=autoProvisioningObject.get(NAME).getAsString();
                 autoProvisioningSettingsVH.setName(name);
-                String type=autoProvisioningObject.get("type").getAsString();
+                String type=autoProvisioningObject.get(TYPE).getAsString();
                 autoProvisioningSettingsVH.setType(type);
 
-                JsonObject properties =autoProvisioningObject.getAsJsonObject("properties");
+                JsonObject properties =autoProvisioningObject.getAsJsonObject(PROPERTY);
                 LOGGER.debug("Properties data{}",properties);
 
                 if(properties!=null){
-                    String autoProvision=properties.get("autoProvision").getAsString();
+                    String autoProvision=properties.get(AUTO_PROVISION).getAsString();
                     autoProvisioningSettingsVH.setAutoProvision(autoProvision);
                 }
                 autoProvisioningSettingsVHList.add(autoProvisioningSettingsVH);
