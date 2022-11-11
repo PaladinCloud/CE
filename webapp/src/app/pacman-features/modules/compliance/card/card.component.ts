@@ -76,7 +76,6 @@ export class CardComponent implements OnInit {
     }
     let date = new Date();
     this.isCustomSelected = false;
-    let queryParamObj = {};
     switch(e){
       case "1 week":
         date.setDate(date.getDate() - 7);
@@ -95,19 +94,14 @@ export class CardComponent implements OnInit {
     this.dateIntervalSelected(date); 
   }
 
-  getFormattedDate(date: Date){
-    const offset = date.getTimezoneOffset()
-    let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
-    return formattedDate;
-  }
 
   dateIntervalSelected(fromDate?, toDate?){
     let queryParamObj = {}
     if(fromDate){
-      queryParamObj["from"] = this.getFormattedDate(fromDate);
+      queryParamObj["from"] = fromDate;
     }
     if(toDate){
-      queryParamObj["to"] = this.getFormattedDate(toDate);
+      queryParamObj["to"] = toDate;
     }    
     this.isCustomSelected = false;
     this.graphIntervalSelected.emit(queryParamObj);
