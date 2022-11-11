@@ -1381,22 +1381,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
 
       for (let i = 0; i < self.graphLinesData.length; i++) {
-        
-
-        // this.focus
-        //   .append("rect")
-        //   .attr("class", "hover rectBlueBox"+i)
-        //   .attr("fill", "#506EA7")
-        //   // .attr("fill-opacity", "0.9")
-        //   .attr("height", "14px")
-        //   .attr("width", "14px")
-        //   // .attr("display", "none")
-        //   // .attr("text-align", "middle")
-        //   // .attr("rx", 3)
-        //   // .attr("ry", 3)
-        //   .attr("x", 5)
-        //   .attr("dy", "0.50em");
-        //   // .attr("y", -7);
 
         self.focus
           .append("text")
@@ -1507,7 +1491,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           .attr("y2", self.height);
 
         const valueData = {};
-        const rectBlueBox = {};
         const rectCoverData = {};
         const rectCoverDate = {};
         const rectText = {};
@@ -1605,17 +1588,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
               .attr("dx", valueData["dx"])
               .attr("dy", 3.5 + m * 2.5 + "em");
           });
-
-          // self.graphLinesData.forEach((eachline, m) => {
-          //   self.focus
-          //     .select(".rectBlueBox" + m)
-          //     .attr(
-          //       "transform",
-          //       "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
-          //     )
-          //     .attr("x", rectBlueBox["dx"])
-          //     .attr("y", 2.5 + m * 2.5 + "em");
-          // });
 
           self.graphLinesData.forEach((eachline, m) => {
             self.focus
