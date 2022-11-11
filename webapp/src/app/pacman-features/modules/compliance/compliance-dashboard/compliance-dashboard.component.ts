@@ -212,6 +212,8 @@ export class ComplianceDashboardComponent implements OnInit {
   isStatePreserved = false;
   showDownloadBtn = true;
   tableScrollTop = 0;
+  graphFromDate: Date = new Date(2022, 1, 1);
+  graphToDate: Date = new Date(2200, 12, 31);
 
   massageAssetTrendGraphData(graphData){
     let data = [];
@@ -627,14 +629,28 @@ export class ComplianceDashboardComponent implements OnInit {
     } catch (error) {}
   }
 
+  getFormattedDate(date: Date){
+    const offset = date.getTimezoneOffset()
+    let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+    return formattedDate;
+  }
+
   getAssetsCountData(queryObj) {
     if(!this.selectedAssetGroup){
       return;
     }
+    if(queryObj.from){
+      this.graphFromDate = queryObj.from;
+    }
+
+    if(queryObj.to){
+      this.graphToDate = queryObj.to;
+    }
     const queryParams = {
       ag: this.selectedAssetGroup,
       domain: this.selectedDomain,
-      ...queryObj
+      from: this.getFormattedDate(this.graphFromDate),
+      to: this.getFormattedDate(this.graphToDate)
     };
 
     this.totalAssetsCountDataError = '';

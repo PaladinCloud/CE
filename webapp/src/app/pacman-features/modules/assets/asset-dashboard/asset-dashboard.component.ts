@@ -187,9 +187,11 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   dateIntervalSelected(fromDate?, toDate?){
     let queryParamObj = {}
     if(fromDate){
+      this.fromDate = fromDate;
       queryParamObj["from"] = this.getFormattedDate(fromDate);
     }
     if(toDate){
+      this.toDate = toDate;
       queryParamObj["to"] = this.getFormattedDate(toDate);
     }    
     this.isCustomSelected = false;
@@ -339,7 +341,10 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
       assetGroupName => {
           this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
           this.assetGroupName = assetGroupName;
-          this.getAssetsCountData({});
+          this.getAssetsCountData({
+            from: this.getFormattedDate(this.fromDate),
+            to: this.getFormattedDate(this.toDate)
+          });
           this.getAssetsTileData();
           this.getExemtedAssetsCount();
           this.getResourceTypeAndCountAndRecommendation();

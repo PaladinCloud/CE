@@ -139,7 +139,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     setTimeout(() => {      
       this.screenWidth = parseInt(window.getComputedStyle(this.tableContainer.nativeElement, null).getPropertyValue('width'), 10);
       this.getWidthFactor();
-    }, 100);
+    }, 1000);
   }
 
   openColumnSelectorModal(){
@@ -248,7 +248,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
     setTimeout(() => {
       this.selectedFilter.emit(event);
-    }, 50)
+    }, 100)
   }
 
   onSelectFilterType(e, i){      
