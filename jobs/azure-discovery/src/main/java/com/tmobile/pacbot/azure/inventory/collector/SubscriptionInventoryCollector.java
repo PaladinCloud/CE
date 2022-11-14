@@ -6,8 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.graphrbac.Permission;
+import com.microsoft.azure.management.graphrbac.RoleDefinition;
 import com.microsoft.azure.management.storage.StorageAccount;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
+import com.tmobile.pacbot.azure.inventory.vo.RoleDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.StorageAccountActivityLogVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
@@ -18,7 +21,9 @@ import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SubscriptionInventoryCollector {
@@ -40,6 +45,8 @@ public class SubscriptionInventoryCollector {
         subscriptionVH.setSubscription(subscription.getSubscriptionId());
 
         subscriptionVH.setStorageAccountLogList(fetchStorageAccountActivityLog(subscriptionVH));
+        subscriptionVH.setRoleDefinitionList(fetchAzureRoleDefinition(subscriptionVH));
+
 
         subscriptionList.add(subscriptionVH);
 
@@ -96,6 +103,49 @@ public class SubscriptionInventoryCollector {
         }
 
         return result;
+    }
+
+    private List<RoleDefinitionVH>fetchAzureRoleDefinition(SubscriptionVH subscription){
+        List<RoleDefinitionVH>roleDefinitionVHList=new ArrayList<>();
+
+        try{
+            Azure azure = azureCredentialProvider.getClient(subscription.getTenant(),subscription.getSubscriptionId());
+
+            PagedList<RoleDefinition>roleDefinitions=azure.accessManagement().roleDefinitions().listByScope(subscription.getSubscriptionId());
+
+            for(RoleDefinition roleDefinition:roleDefinitions){
+                RoleDefinitionVH roleDefinitionVH=new RoleDefinitionVH();
+
+                String roleName=roleDefinition.roleName();
+                log.debug("Role Name{}",roleName);
+                roleDefinitionVH.setRoleName(roleName);
+
+                Set<String>assignableScopes=roleDefinition.assignableScopes();
+                log.debug("Assignable Scopes size{}",assignableScopes.size());
+                roleDefinitionVH.setAssignableScopes(assignableScopes);
+
+                Set<Permission>permissions= azure.accessManagement().roleDefinitions().getByScopeAndRoleName(subscription.getSubscriptionId(),roleName).permissions();
+                log.debug("Permissions size{}",permissions.size());
+
+                Iterator<Permission>permissionIterator=permissions.iterator();
+
+                while(permissionIterator.hasNext()){
+
+                  List<String>actions= permissionIterator.next().actions();
+                  log.debug("Action size{}",actions.size());
+
+                  roleDefinitionVH.setActions(actions);
+                }
+
+
+                roleDefinitionVHList.add(roleDefinitionVH);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return  roleDefinitionVHList;
     }
 }
 
