@@ -31,6 +31,7 @@ public class KeyVaultsSecretExpirationDate extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String successMSG = ruleParam.get(PacmanRuleConstants.SUCCESS);
         String failureMsg = ruleParam.get(PacmanRuleConstants.FAILURE);
+        String targetType=ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
 
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -39,7 +40,7 @@ public class KeyVaultsSecretExpirationDate extends BaseRule {
         String esUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         String url = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
         if (!StringUtils.isNullOrEmpty(url)) {
-            esUrl = url + "/azure_vaults/_search";
+            esUrl = url + "/azure_"+targetType+"/_search";
         }
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);

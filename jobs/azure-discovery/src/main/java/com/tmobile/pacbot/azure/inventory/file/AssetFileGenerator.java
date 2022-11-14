@@ -1,15 +1,13 @@
 package com.tmobile.pacbot.azure.inventory.file;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.tmobile.pacbot.azure.inventory.collector.*;
+import com.tmobile.pacbot.azure.inventory.vo.VaultVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -499,8 +497,9 @@ public class AssetFileGenerator {
 				}
 
 				try {
-					FileManager.generateVaultFiles(
-							vaultInventoryCollector.fetchVaultDetails(subscription));
+					HashMap<String,List<VaultVH>> vaults=vaultInventoryCollector.fetchVaultDetails(subscription);
+					FileManager.generateVaultFiles(vaults.get("vaultList"));
+					FileManager.generateVaultRABCFiles(vaults.get("vaultRBACList"));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
