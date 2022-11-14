@@ -20,6 +20,8 @@ public class SubscriptionVH extends AzureVH {
 
 	private List<StorageAccountActivityLogVH>storageAccountLogList;
 
+	private List<RoleDefinitionVH>roleDefinitionList;
+
 	public String getTenant() {
 		return tenant;
 	}
@@ -57,6 +59,14 @@ public class SubscriptionVH extends AzureVH {
 
 	public void setStorageAccountLogList(List<StorageAccountActivityLogVH> storageAccountLogList) {
 		this.storageAccountLogList = storageAccountLogList;
+	}
+
+	public List<RoleDefinitionVH> getRoleDefinitionList() {
+		return roleDefinitionList;
+	}
+
+	public void setRoleDefinitionList(List<RoleDefinitionVH> roleDefinitionList) {
+		this.roleDefinitionList = roleDefinitionList;
 	}
 
 
