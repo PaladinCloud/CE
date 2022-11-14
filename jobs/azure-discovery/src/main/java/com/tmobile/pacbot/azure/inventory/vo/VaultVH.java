@@ -21,6 +21,16 @@ public class VaultVH extends AzureVH {
 	private List<String> permissionForCertificates;
 	private Set<String> secretExpirationDate;
 
+	private boolean enableRbacAuthorization;
+
+	public boolean isEnableRbacAuthorization() {
+		return enableRbacAuthorization;
+	}
+
+	public void setEnableRbacAuthorization(boolean enableRbacAuthorization) {
+		this.enableRbacAuthorization = enableRbacAuthorization;
+	}
+
 	public Set<String> getSecretExpirationDate() {
 		return secretExpirationDate;
 	}

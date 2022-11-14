@@ -73,6 +73,10 @@ public class VaultInventoryCollector {
 					if(propertiesMap.get("enableSoftDelete")!=null){
 						vaultVH.setEnableSoftDelete((boolean)propertiesMap.get("enableSoftDelete"));
 					}
+					if(propertiesMap.get("enableRbacAuthorization")!=null)
+					{
+						vaultVH.setEnableRbacAuthorization((boolean)propertiesMap.get("enableRbacAuthorization"));
+					}
 					if(properties.get("accessPolicies")!=null) {
 						JsonArray accessPolicies = properties.getAsJsonArray("accessPolicies");
 						if(accessPolicies.size()>0) {
@@ -119,10 +123,6 @@ public class VaultInventoryCollector {
 				{
 					log.error(e.getMessage());
 				}
-
-
-
-/************************************************/
 		}
 		catch (Exception e){
 			log.error(e.getMessage());
@@ -130,9 +130,11 @@ public class VaultInventoryCollector {
 		}
 		return  vaultVH;
 	}
-	public List<VaultVH> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
+	public HashMap<String,List<VaultVH>> fetchVaultDetails(SubscriptionVH subscription) throws Exception {
 
 		List<VaultVH> vaultList = new ArrayList();
+		List<VaultVH> vaultRBACList=new ArrayList();
+		HashMap<String,List<VaultVH>> vaults=new HashMap();
 		String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
 		 String vaultListTemplate = "https://management.azure.com/subscriptions/"+subscription.getSubscriptionId()+"/resources?$filter=resourceType%20eq%20'Microsoft.KeyVault/vaults'&api-version=2015-11-01";
 
@@ -146,17 +148,23 @@ public class VaultInventoryCollector {
 			if (vaultObjects != null) {
 				for (JsonElement vaultElement : vaultObjects) {
 					JsonObject vaultObject = vaultElement.getAsJsonObject();
-					vaultList.add(fetchVaultDetailsById(vaultObject.get("id").getAsString(),subscription));
+					VaultVH vault=fetchVaultDetailsById(vaultObject.get("id").getAsString(),subscription);
+					if(!vault.isEnableRbacAuthorization()) {
+						vaultList.add(vault);
+					}else {
+						vaultRBACList.add(vault);
+					}
 				}
 
 			}
-
+			vaults.put("vaultList",vaultList);
+			vaults.put("vaultRBACList",vaultRBACList);
 		} catch (Exception e) {
 			log.error("Error Colectting vaults ",e);
 		}
 
 		log.info("Target Type : {}  Total: {} ","Vault",vaultList.size());
-		return vaultList;
+		return vaults;
 	}
 
 }
