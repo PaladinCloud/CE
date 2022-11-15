@@ -123,12 +123,8 @@ public class RemoveCustomOwnerRoles extends BaseRule {
                             String assignableScopeValue=assignableScope.getAsString();
                             logger.debug("assignableScopes {}",assignableScopeValue);
 
-                            if(assignableScopeValue.equalsIgnoreCase("/")) {
+                            if(assignableScopeValue.equalsIgnoreCase("/") || assignableScopeValue.equalsIgnoreCase("/subscriptions/"+subscriptionId)) {
                                 assignableScopesFlag = true;
-                                break;
-                            }
-                            else if (assignableScopeValue.equalsIgnoreCase("/subscriptions/"+subscriptionId)) {
-                                assignableScopesFlag=true;
                                 break;
                             }
                         }
