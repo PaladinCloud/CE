@@ -1,5 +1,11 @@
 <div class="page-header">
-    <h6 class="sub-header-text">Asset Distribution</h6>
+    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="pageTitle"></app-breadcrumb>
+    </div>
+    <div class="flex">
+        <img *ngIf="backButtonRequired" class="arrow-img" (click)="navigateBack()" src="../assets/icons/left-arrow.svg">
+        <h6 class="sub-header-text">{{ pageTitle }}</h6>
+    </div>
 </div>
 <div class="overall-distribution">
     <div class="distribution-content">
