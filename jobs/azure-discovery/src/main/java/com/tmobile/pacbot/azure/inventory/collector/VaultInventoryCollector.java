@@ -44,8 +44,6 @@ public class VaultInventoryCollector {
 			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
 			JsonObject vaultObject = new JsonParser().parse(response).getAsJsonObject();
 
-			/**********************************************/
-
 				vaultVH.setSubscription(subscription.getSubscriptionId());
 				vaultVH.setSubscriptionName(subscription.getSubscriptionName());
 				vaultVH.setId(vaultObject.get("id").getAsString());
@@ -102,19 +100,30 @@ public class VaultInventoryCollector {
 				try
 				{
 					Vault azureVault=azure.vaults().getById(id);
-					//				.keys().list().get(0).attributes().expires()
-
 					PagedList<Key> keys=azureVault.keys().list();
 					Set<String> keyExpirationDate=new HashSet<>();
 					for(Key key:keys)
 					{
-						keyExpirationDate.add(key.attributes().expires().toString());
+						if(key.attributes().expires()!=null) {
+							keyExpirationDate.add(key.attributes().expires().toString());
+						}
+						else {
+							keyExpirationDate=null;
+							break;
+						}
 					}
 					vaultVH.setKeyExpirationDate(keyExpirationDate);
 					PagedList<Secret> secrets = azureVault.secrets().list();
 					Set<String> secretExpirationDate=new HashSet<>();
 					for (Secret secret : secrets) {
-						secretExpirationDate.add(secret.attributes().expires().toString());
+						if(secret.attributes().expires()!=null) {
+							secretExpirationDate.add(secret.attributes().expires().toString());
+						}
+						else
+						{
+							secretExpirationDate=null;
+							break;
+						}
 					}
 					vaultVH.setSecretExpirationDate(secretExpirationDate);
 
