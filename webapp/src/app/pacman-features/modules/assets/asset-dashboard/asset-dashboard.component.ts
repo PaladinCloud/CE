@@ -253,8 +253,13 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
         queryParams: queryParams,
         queryParamsHandling: 'merge'
       });
-    } else if (data == "Total Assets" || data == "Asset Types") {
+    } else if (data == "Total Assets") {
       this.router.navigate(['pl/assets/asset-list'], {
+        queryParams: null,
+        queryParamsHandling: 'merge'
+      });
+    }else if(data == "Asset Types"){
+      this.router.navigate(['pl/assets/asset-distribution'], {
         queryParams: null,
         queryParamsHandling: 'merge'
       });

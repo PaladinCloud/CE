@@ -75,6 +75,10 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
   graphHeight: number = 0;
   colorRanges: Array<colorOptions> = [];
   pageTitle = "Asset Distribution";
+  breadcrumbArray = [];
+  breadcrumbLinks = [];
+  backButtonRequired = false;
+  pageLevel = 0;
 
   colors: Array<colorOptions> = [
     {
@@ -104,6 +108,16 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
 
 
   ngOnInit() {
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
+    
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+    }
+
+    this.backButtonRequired =
+          this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+
     this.dataLoaded = false;
     this.buildTreeMap();
     this.getAwsResources();
@@ -318,6 +332,16 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         this.logger.log('error', error);
       }
     );
+  }
+
+  navigateBack() {
+    try {
+      this.workflowService.goBackToLastOpenedPageAndUpdateLevel(
+        this.router.routerState.snapshot.root
+      );
+    } catch (error) {
+      this.logger.log("error", error);
+    }
   }
 
   ngOnDestroy(): void {
