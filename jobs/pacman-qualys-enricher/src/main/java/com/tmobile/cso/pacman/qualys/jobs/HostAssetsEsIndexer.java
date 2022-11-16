@@ -1,14 +1,14 @@
 package com.tmobile.cso.pacman.qualys.jobs;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
+import com.tmobile.cso.pacman.qualys.dto.KNOWLEDGEBASEVULNLISTOUTPUT;
+import com.tmobile.cso.pacman.qualys.dto.Vuln;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
@@ -20,6 +20,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.qualys.Constants;
 import com.tmobile.cso.pacman.qualys.util.ElasticSearchManager;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import static com.tmobile.cso.pacman.qualys.jobs.QualysDataImporter.callApi;
+
 
 /**
  * The Class HostAssetsEsIndexer.
@@ -29,6 +38,7 @@ public class HostAssetsEsIndexer implements Constants {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HostAssetsEsIndexer.class);
+    private static final String kbGetUri = "https://qualysapi.qg1.apps.qualys.in/api/2.0/fo/knowledge_base/vuln/?action=list&ids=%s";
 
     /**
      * Post host asset to ES.
@@ -143,15 +153,15 @@ public class HostAssetsEsIndexer implements Constants {
                 if (vulnList != null) {
                     for (Map<String, Object> hostvuln : vulnList) {
                         Map<String, Object> vuln = new HashMap<>((Map<String, Object>) hostvuln.get("HostAssetVuln"));
-                        if(vuln.containsKey("severitylevel") && vuln.containsKey("vulntype")) {
-                        	if(Long.valueOf(vuln.get("severitylevel").toString())>=3 && "Vulnerability".equals(vuln.get("vulntype"))){
+                        List<String> kbaseDetailsList = getKbDetailsOfQid(vuln.get("qid").toString());
+                        if(!kbaseDetailsList.isEmpty() && kbaseDetailsList.get(0)!=null &&  Long.valueOf(kbaseDetailsList.get(0))>=3 && "Vulnerability".equals(kbaseDetailsList.get(1))) {
                                 vuln.put(DOC_ID, asset.get(DOC_ID));
                                 vuln.put("discoverydate", asset.get("discoverydate"));
-                                vuln.put("severity", "S" + vuln.get("severitylevel"));
+                                vuln.put("severity", "S" + kbaseDetailsList.get(0));
                                 vuln.put("@id", asset.get(DOC_ID).toString() + "_" + vuln.get("qid").toString());
                                 vuln.put("latest", true);
                                 vuln.put("_resourceid", asset.get("_resourceid"));
-        
+                                vuln.put("title", kbaseDetailsList.get(2));
                                 Object firstFound = vuln.get("firstFound");
                                 Object lastFound = vuln.get("lastFound");
         
@@ -176,7 +186,6 @@ public class HostAssetsEsIndexer implements Constants {
                                 vuln.put("_lastFound", _lastFound);
         
                                 vulnInfoList.add(vuln);
-                            }
                         }
                     }    
                 }
@@ -190,6 +199,53 @@ public class HostAssetsEsIndexer implements Constants {
             errorList.add(errorMap);
         }
         return vulnInfoList;
+    }
+
+    /**
+     * getKbDetailsOfQid
+     *
+     * @param qid of violation reported by qualys.
+     * @return  list, first element of list will be severity level, second element will be vulnerability type
+     * and third element will be violation title.
+     */
+    private List<String> getKbDetailsOfQid(String qid) {
+        List<String> kbDetailsList = new ArrayList<>();
+        try {
+            double dblValue = Double.valueOf(qid);
+            long longValue=(long)dblValue;
+            String resultXML = callApi(String.format(kbGetUri,String.valueOf(longValue)), "GET", null, null);
+            final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            final StringReader reader = new StringReader(resultXML);
+            XMLStreamReader xreader = inputFactory.createXMLStreamReader(reader);
+            JAXBContext jaxbContext = JAXBContext.newInstance(KNOWLEDGEBASEVULNLISTOUTPUT.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            KNOWLEDGEBASEVULNLISTOUTPUT resp = (KNOWLEDGEBASEVULNLISTOUTPUT) jaxbUnmarshaller.unmarshal(xreader);
+            KNOWLEDGEBASEVULNLISTOUTPUT.RESPONSE.VULNLIST vulnList = resp.getRESPONSE().getVULNLIST();
+            if (vulnList != null && vulnList.getVULN() != null && vulnList.getVULN().get(0) != null) {
+                KNOWLEDGEBASEVULNLISTOUTPUT.RESPONSE.VULNLIST.VULN vulnInfo = vulnList.getVULN().get(0);
+                kbDetailsList.add(String.valueOf(vulnInfo.getSEVERITYLEVEL()));
+                kbDetailsList.add(vulnInfo.getVULNTYPE());
+                kbDetailsList.add(vulnInfo.getTITLE());
+            } else {
+                return Collections.emptyList();
+            }
+        } catch (XMLStreamException exception) {
+            LOGGER.debug("XMLStreamException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            return Collections.emptyList();
+        } catch (JAXBException e) {
+            LOGGER.debug("JAXBException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            return Collections.emptyList();
+        } catch (ClientProtocolException e) {
+            LOGGER.debug("ClientProtocolException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            return Collections.emptyList();
+        } catch (IOException e) {
+            LOGGER.debug("IOException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            return Collections.emptyList();
+        } catch (Exception e) {
+            LOGGER.debug("Exception occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            return Collections.emptyList();
+        }
+        return kbDetailsList;
     }
 
     /**
