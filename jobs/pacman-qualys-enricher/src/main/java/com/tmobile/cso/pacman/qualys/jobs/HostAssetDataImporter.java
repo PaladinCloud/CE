@@ -231,7 +231,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	            if ("onpremserver".equals(type)) {
 	                name = entry.getValue().get("name");
 	                ip = entry.getValue().get("ip_address");
-	            } else if("ec2".equals("type")) {
+	            } else if("ec2".equals(type)) {
 	                name = entry.getValue().get("tags.Name");
 	                ip = entry.getValue().get("privateipaddress");
 	            }else if("virtualmachine".equals(type)){
