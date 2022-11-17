@@ -570,6 +570,13 @@ public class PacmanRuleConstants {
     public static final String FILTER_NAME = "filtername";
     public static final String FILTER_PATTERN = "filterpattern";
     public static final String METRIC_ACTION_ENABLED = "actionsenabled";
+    public static final String ENDPOINT_PUBLIC_ACCESS = "endpointpublicaccess";
+    public static final String ENDPOINT_PRIVATE_ACCESS = "endpointprivateaccess";
+    public static final String PUBLIC_ACCESS_CIDRS = "publicaccesscidrs";
+    public static final String CLUSTER_LOGGING_ENABLED = "clusterloggingenabled";
+    public static final String CLUSTER_NAME = "clustername";
+    public static final String LATEST_VERSION = "latestversion";
+    public static final String VERSION = "version";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";

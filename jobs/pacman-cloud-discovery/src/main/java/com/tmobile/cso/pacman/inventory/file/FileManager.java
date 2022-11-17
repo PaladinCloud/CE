@@ -676,8 +676,12 @@ public class FileManager {
 	public static void generateEKSFiles(Map<String,List<EKSVH>> eksMap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "cluster.name`cluster.arn`cluster.status`cluster.encryptionConfig.provider.keyArn`cluster.version";
-		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`keyarn`version";
+		fieldNames = "cluster.name`cluster.arn`cluster.status`cluster.encryptionConfig.provider.keyArn" +
+				"`cluster.version`cluster.resourcesVpcConfig.endpointPublicAccess" +
+				"`cluster.resourcesVpcConfig.endpointPrivateAccess`cluster.resourcesVpcConfig.publicAccessCidrs" +
+				"`cluster.logging.clusterLogging.enabled";
+		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`keyarn`version" +
+				"`endpointpublicaccess`endpointprivateaccess`publicaccesscidrs`clusterloggingenabled";
 		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks.data",keys);
 		fieldNames ="cluster.arn`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`clusterarn`key`value";
