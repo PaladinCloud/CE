@@ -60,8 +60,6 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
   recentTiles = [];
   provider = [];
   cloudIconDataLoaded = false;
-  public agAndDomain = {};
-  private selectedDomainName;
   public showMenu;
   public environment;
   tvState;
@@ -78,15 +76,10 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private recentAssetsObservableService: RecentlyViewedObservableService,
-    private domainMappingService: DomainMappingService,
-    private domainTypeObservableService: DomainTypeObservableService,
     private assetGroupObservableService: AssetGroupObservableService,
     private permissions: PermissionGuardService,
     private routerUtilityService: RouterUtilityService,
     private updateRecentAGService: UpdateRecentAGService,
-    private adalService: AdalService,
-    private httpResponseService: HttpService,
-    private utilService: UtilsService
   ) {
     this.config = CONFIGURATIONS;
     this.staticContent = CONTENT;
@@ -121,10 +114,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
         this.config.required.APP_NAME.toLowerCase() +
         "-white-text-logo.svg";
       this.haveAdminPageAccess = this.permissions.checkAdminPermission();
-      this.selectedDomainName = "";
 
-      this.subscribeToAssetGroup();
-      this.subscribeToDomainType();
     } catch (error) {
       this.loggerService.log("error", "JS Error" + error);
     }
@@ -141,38 +131,6 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     this.workflowService.clearAllLevels();
   }
 
-  subscribeToAssetGroup() {
-    try {
-      this.assetGroupSubscription = this.assetGroupObservableService
-        .getAssetGroup()
-        .subscribe((assetGroup) => {
-          if (assetGroup) {
-            this.agAndDomain["ag"] = assetGroup;
-          }
-        });
-    } catch (error) {
-      this.loggerService.log("error", error);
-    }
-  }
-
-  /**
-   *This is the subscribtion function for domain selection
-   */
-
-  subscribeToDomainType() {
-    try {
-      this.subscriptionToDomainType = this.domainTypeObservableService
-        .getDomainType()
-        .subscribe((domainName) => {
-          if (domainName) {
-            this.agAndDomain["domain"] = domainName;
-            this.selectedDomainName = domainName;
-          }
-        });
-    } catch (error) {
-      this.loggerService.log("error", error);
-    }
-  }
 
   changeAg(agData) {
     const updatedFilters = JSON.parse(

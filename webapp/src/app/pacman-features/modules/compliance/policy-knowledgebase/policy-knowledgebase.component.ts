@@ -27,27 +27,12 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   subscriptionToAssetGroup: Subscription;
   domainSubscription: Subscription;
   complianceTableSubscription: Subscription;
-  assetTiles: any = ['Security', 'Governance'];
-  assetTabName: any;
-  selectedTabName = 'All';
-  dataLoaded = false;
+  tableDataLoaded = false;
   searchTxt = '';
   breadcrumbPresent;
-  searchPassed = "";
-  tabName: any = [];
-  count = [];
-  num = 0;
-  selName: any = [];
-  selectedTab = 0;
-  selectedFilter = 0;
-  selectedFilterName = '';
   typeObj;
-  loaded = false;
-  datacoming = false;
-  seekdata = false;
+  tabName: any = [];
   errorMessage: any = '';
-  urlToRedirect: any = '';
-  public agAndDomain = {};
   currentPageLevel = 0;
   headerColName;
   direction;
@@ -69,8 +54,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   isStatePreserved = false;
   doLocalSearch = true; // should be removed once tiles data is available from backend
 
-  @ViewChild('pkInp') pkInp: ElementRef;
-
   constructor(private assetGroupObservableService: AssetGroupObservableService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -82,7 +65,16 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
-    private downloadService: DownloadService) {}
+    private downloadService: DownloadService) {
+      
+      this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
+        this.selectedAssetGroup = assetGroupName;
+        this.searchTxt = "";
+      });
+      this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
+        this.selectedDomain = domain;
+      });
+    }
 
     ngOnInit(): void {
       const state = this.tableStateService.getState("policyKnowledgebase") || {};
@@ -94,9 +86,9 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.direction = state?.direction || '';
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-      this.searchPassed = state?.searchTxt || '';
+      this.searchTxt = state?.searchTxt || '';
       this.tableData = state?.data || [];
-      
+      this.tableDataLoaded = true;
       this.tableScrollTop = state?.tableScrollTop;
 
       if(this.tableData && this.tableData.length>0){
@@ -107,14 +99,6 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
       this.breadcrumbPresent = "Policy"
 
-    this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
-      this.selectedAssetGroup = assetGroupName;
-      this.agAndDomain['ag'] = this.selectedAssetGroup;
-    });
-    this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
-      this.selectedDomain = domain;
-      this.agAndDomain['domain'] = this.selectedDomain;
-    });
     this.currentPageLevel = this.routerUtilityService.getpageLevel(this.router.routerState.snapshot.root);
     this.getRouteQueryParameters();
     }
@@ -189,7 +173,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   getUpdatedUrl(){
     let updatedQueryParams = {};
     updatedQueryParams = {
-      // searchValue: this.searchPassed,
+      // searchValue: this.searchTxt,
     }
 
     this.router.navigate([], {
@@ -201,11 +185,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   callNewSearch(searchVal){
     if(!this.doLocalSearch){
-      this.searchPassed = searchVal;
+      this.searchTxt = searchVal;
       // this.state.searchValue = searchVal;
       this.updateComponent();
     }else{
-      this.searchPassed = searchVal;
+      this.searchTxt = searchVal;
     }
     // this.getUpdatedUrl();
   }
@@ -215,17 +199,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   updateComponent() {
-    this.loaded = false;
-    this.datacoming = false;
-    this.seekdata = false;
     if(this.isStatePreserved){
       this.processData(this.tableData);
-      
+      this.tableDataLoaded = true;
       this.clearState();
     }else{
-      this.tableData = [];
-      this.getData();
-      
+      this.tableDataLoaded = false;
+      this.getData();      
     }
     // this.typeObj = undefined;
   }
@@ -263,10 +243,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
       let typeArr = [];
       typeArr = Object.keys(this.typeObj);
-      // this.tabName = typeArr;
       this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
-      
-      this.selectedTabName = this.tabName[this.selectedTab];
     } catch (error) {
       this.logger.log('error', error);
     }
@@ -301,14 +278,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   getData() {
-    this.seekdata = false;
-    this.dataLoaded = false;
+    this.tableDataLoaded = false;
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
     const payload = {
       'ag': this.selectedAssetGroup,
-      'searchtext': this.searchPassed,
+      'searchtext': this.searchTxt,
       'filter': {
         'domain': this.selectedDomain
       },
@@ -324,29 +300,17 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         response => {
           if (response.data.response.length !== 0) {
             this.errorMessage = '';
-            this.datacoming = true;
             this.tableData = this.massageData(response.data.response);
             
-            this.dataLoaded = true;
-            const x = this;
-            setTimeout(function () {
-              x.loaded = true;
-              if (x.pkInp) {
-                x.pkInp.nativeElement.focus();
-              }
-            }, 200);
+            this.tableDataLoaded = true;
             this.processData(this.tableData);
           } else {
-            this.datacoming = false;
-            this.dataLoaded = true;
-            this.seekdata = true;
+            this.tableDataLoaded = true;
             this.errorMessage = 'noDataAvailable';
           }
         },
         error => {
-          this.datacoming = false;
-          this.dataLoaded = true;
-          this.seekdata = true;
+          this.tableDataLoaded = true;
           this.errorMessage = 'apiResponseError';
         });
   }
@@ -364,7 +328,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
-      searchTxt: this.searchPassed,
+      searchTxt: this.searchTxt,
       tableScrollTop: event.tableScrollTop
       // filterText: this.filterText
     }

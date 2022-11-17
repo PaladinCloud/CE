@@ -52,30 +52,15 @@ export class ComplianceDashboardComponent implements OnInit {
   @ViewChild("widget") widgetContainer: ElementRef;
 
   pageTitle = "Overview";
-  complianceDropdowns: any;
-  searchDropdownData: any = {};
-  selectedDD = "";
-  currentObj: any = {};
   filterArr: any = [];
   subscriptionToAssetGroup: Subscription;
   selectedAssetGroup: string;
-  outerArr: any = [];
-  dataLoaded = false;
-  errorMessage: any;
   showingArr: any;
   ruleCatFilter;
-  allColumns: any = [];
   noMinHeight = false;
   paginatorSize = 20;
   totalRows = 0;
-  currentBucket: any = [];
   bucketNumber = 0;
-  firstPaginator = 1;
-  popRows: any = ["Download Data"];
-  lastPaginator: number;
-  currentPointer = 0;
-  seekdata = false;
-  UI_pagination_mode = false;
   searchTxt = "";
   complianceTableData: any = [];
   currentFilterType;
@@ -84,16 +69,11 @@ export class ComplianceDashboardComponent implements OnInit {
   filterTypeOptions: any = [];
   filters: any = [];
   filterTagOptions: any = [];
-  returnType = false;
   selectedDomain: any = "";
-  errorValue = 0;
-  showGenericMessage = false;
-  urlToRedirect: any = "";
   searchPassed = "";
   tableDataLoaded = false;
   showSearchBar = false;
   showAddRemoveCol = false;
-  tabArr: any = ["All", "Security", "Governance"];
   private assetGroupSubscription: Subscription;
   private onFilterChange: Subscription;
   private routeSubscription: Subscription;
@@ -103,7 +83,6 @@ export class ComplianceDashboardComponent implements OnInit {
   private activatedRouteSubscription: Subscription;
   private subscriptionDomain: Subscription;
   private queryParameters: any = {};
-  public carouselState = "";
   public pageLevel = 0;
   dataSubscriber: any;
   policyData: {
@@ -129,6 +108,7 @@ export class ComplianceDashboardComponent implements OnInit {
   breakpoint4: number;
   tableTitle = "Policy Compliance Overview";
   tableErrorMessage = '';
+  errorMessage = '';
   headerColName;
   direction;
   complianceData = [];
@@ -218,16 +198,20 @@ export class ComplianceDashboardComponent implements OnInit {
   massageAssetTrendGraphData(graphData){
     let data = [];
     data.push({"key":"Total Assets", "values":[], "info":{}})
-    graphData.trend.forEach(e => {
-       data[0].values.push({
+
+    for(let i=0; i<data.length; i++){
+        graphData.trend.forEach(e => {
+        data[i].values.push({
             'date':new Date(e.date),
-            'value':e.totalassets,
-            'zero-value':e.totalassets==0
+            'value':e.totalassets+i*25,
+            'zero-value':e.totalassets+i*25==0
         });
-    })   
-    data[0].values.sort(function(a,b){
+      })   
+      data[i].values.sort(function(a,b){
         return new Date(a.date).valueOf() - new Date(b.date).valueOf();
-    });
+      });
+      }
+       
 
     data[0].info = {
       id: "TotalAssetsCountTrend",
@@ -253,6 +237,9 @@ export class ComplianceDashboardComponent implements OnInit {
   };
 
   navigateToAssetDistribution = () => {
+    this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent,
+      );
     this.router.navigate(["/pl/assets/asset-distribution/"], {
       queryParamsHandling: "merge",
     });
@@ -326,7 +313,7 @@ export class ComplianceDashboardComponent implements OnInit {
       headerColName: this.headerColName,
       direction: this.direction,
       bucketNumber: this.bucketNumber,
-      searchValue: this.searchPassed
+      searchValue: this.searchTxt
     }
 
     this.router.navigate([], {
@@ -430,17 +417,17 @@ export class ComplianceDashboardComponent implements OnInit {
               this.error = false;
             } catch (e) {
               this.policyDataError = 'apiResponseError';
-              this.errorMessage = this.errorHandling.handleJavascriptError(e);
+              this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
               this.getErrorValues();
             }
           },
           (error) => {
-            this.errorMessage = error;
+            this.tableErrorMessage = error;
             this.getErrorValues();
           }
         );
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.getErrorValues();
     }
   }
@@ -448,7 +435,6 @@ export class ComplianceDashboardComponent implements OnInit {
   getErrorValues(): void {
     this.loaded = true;
     this.error = true;
-    this.seekdata = true;
   }
 
   ngOnInit() {
@@ -461,6 +447,7 @@ export class ComplianceDashboardComponent implements OnInit {
     this.displayedColumns = Object.keys(this.columnWidths);
     this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
     this.complianceTableData = state?.data || [];
+    this.tableDataLoaded = true;
     this.searchTxt = state?.searchTxt || '';
     this.tableScrollTop = state?.tableScrollTop;    
     this.totalRows = state.totalRows || 0;
@@ -470,26 +457,25 @@ export class ComplianceDashboardComponent implements OnInit {
     }else{
       this.isStatePreserved = false;
     }
-      
+
 
     this.assetGroupSubscription = this.subscriptionToAssetGroup =
       this.assetGroupObservableService
         .getAssetGroup()
-        .subscribe((assetGroupName) => {          
+        .subscribe((assetGroupName) => {  
           this.selectedAssetGroup = assetGroupName;
-          // this.updateComponent();
+          this.updateComponent();
         });
 
     this.subscriptionDomain = this.domainObservableService
       .getDomainType()
       .subscribe((domain) => {        
         this.selectedDomain = domain;
-        // if(this.selectedAssetGroup){
-        //   this.updateComponent();
-        // }
+        if(this.selectedAssetGroup){
+          this.updateComponent();
+        }
       });
 
-      this.getRouteQueryParameters();
 
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
     
@@ -528,26 +514,28 @@ export class ComplianceDashboardComponent implements OnInit {
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
-    this.searchTxt = "";
+    // below condition ensures that on initial landing, updatecomponent executes only once
+    if(!this.selectedAssetGroup || !this.selectedDomain){
+      return;
+    }
     this.ruleCatFilter = undefined;
-    this.currentBucket = [];
     this.noMinHeight = false;
     // this.bucketNumber = 0;
-    this.firstPaginator = 1;
     // this.currentPointer = 0;
     
-    this.showGenericMessage = false;
     this.assetsCountData = [];
     this.assetsCountDataError = '';
     this.complianceData = [];
     this.complianceDataError = '';
     this.policyDataError = '';
     if(this.isStatePreserved){      
+      this.tableDataLoaded = true;
       this.clearState();
     }else{      
-      this.errorValue = 0;
-      this.seekdata = false;
-      this.dataLoaded = false;
+      this.tableScrollTop = 0;
+      this.searchTxt = "";
+      this.tableErrorMessage = '';
+      this.errorMessage = '';
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
       this.complianceTableData = [];
@@ -736,7 +724,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   getData() {
-    if(!this.selectedAssetGroup){
+    if(!this.selectedAssetGroup || !this.selectedDomain){
       return;
     }
     const filters = this.utils.arrayToObject(
@@ -754,23 +742,18 @@ export class ComplianceDashboardComponent implements OnInit {
       size: 0,
     };
 
-    this.errorValue = 0;
+    this.tableErrorMessage = '';
     const complianceTableUrl = environment.complianceTable.url;
     const complianceTableMethod = environment.complianceTable.method;
     this.complianceTableSubscription = this.commonResponseService
       .getData(complianceTableUrl, complianceTableMethod, payload, {})
       .subscribe(
         (response) => {
-          this.showGenericMessage = false;
           this.totalRows = response.total;
           try {
-            this.errorValue = 1;
             this.complianceTableData = this.massageData(response.data.response);            
-            this.dataLoaded = true;
-            this.seekdata = false;
             this.tableDataLoaded = true;
             if (this.complianceTableData.length === 0) {
-              this.errorValue = -1;
               this.totalRows = 0;
               this.tableErrorMessage = 'noDataAvailable';
             }
@@ -778,39 +761,15 @@ export class ComplianceDashboardComponent implements OnInit {
               this.totalRows = response.data.total;
             } else {
               this.totalRows = this.complianceTableData.length;
-              this.UI_pagination_mode = true;
             }
-
-            this.firstPaginator = this.bucketNumber * this.paginatorSize + 1;
-            this.lastPaginator =
-              this.bucketNumber * this.paginatorSize + this.paginatorSize;
-
-            this.currentPointer = this.bucketNumber;
-            if (
-              this.lastPaginator > this.totalRows ||
-              !response.hasOwnProperty("total")
-            ) {
-              this.lastPaginator = this.totalRows;
-            }
-
-            // const data = this.massageData(this.complianceTableData);
-            // this.currentBucket[this.bucketNumber] = data;
-            // this.processData(data);
           } catch (e) {
-            this.tableErrorMessage = 'apiResponseError';
-            this.errorValue = 0;
-            this.errorValue = -1;
-            this.dataLoaded = true;
-            this.seekdata = true;
-            this.errorMessage = this.errorHandling.handleJavascriptError(e);
+            this.tableDataLoaded = true;
+            this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
           }
         },
         (error) => {
-          this.showGenericMessage = true;
-          this.errorValue = -1;
-          this.dataLoaded = true;
-          this.seekdata = true;
-          this.errorMessage = "apiResponseError";
+          this.tableDataLoaded = true;
+          this.tableErrorMessage = "apiResponseError";
         }
       );
   }
@@ -886,17 +845,11 @@ export class ComplianceDashboardComponent implements OnInit {
     }
   }
 
-  searchCalled(search) {
-    this.searchTxt = search;
-    if (this.searchTxt !== "") {
-      this.searchPassed = this.searchTxt;
-      this.getUpdatedUrl();
-    }
-  }
 
   callNewSearch(searchVal){    
     this.searchTxt = searchVal;
     this.isStatePreserved = false;
+    this.tableDataLoaded = false;
     this.getData();  
   }
 

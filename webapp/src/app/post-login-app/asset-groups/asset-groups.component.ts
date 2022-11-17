@@ -47,10 +47,9 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
               private workflowService: WorkflowService) {
               this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(
               assetGroupName => {
-
+                  if(!this.thisAssetTile) this.assetTileClicked(assetGroupName);
                   this.thisAssetTile = assetGroupName;
                   this.selectedGroup = assetGroupName;
-                  this.assetTileClicked(this.thisAssetTile);
               });
 
 }

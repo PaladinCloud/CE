@@ -34,6 +34,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() totalRows = 0;
   @Input() tableScrollTop;
   @Input() doLocalSearch = false; // should remove this once we get tiles data from backend.
+  @Input() tableDataLoaded;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -61,7 +62,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   screenWidth;
   denominator;
   screenWidthFactor;
-  removeFromScreenWidth = 330;
   isWindowExpanded = true;
   isDataLoading = false;
 
@@ -74,8 +74,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     private windowExpansionService: WindowExpansionService) { 
       this.windowExpansionService.getExpansionStatus().subscribe((res) => {
         this.waitAndResizeTable();
-
-        // this.getScreenWidthFactor();
       });
     }
 
@@ -107,14 +105,25 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if(this.customTable && changes.tableScrollTop && changes.tableScrollTop.currentValue!=undefined){      
+      this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
+    }
+    if(!this.tableDataLoaded && this.customTable){
+       this.tableScrollTop = 0;
+      this.customTable.first.nativeElement.scrollTop = 0;
+      this.data = [];
+      this.dataSource = new MatTableDataSource(this.data);
+      this.mainDataSource = new MatTableDataSource(this.data);
+    }
     if(!this.doLocalSearch || (changes.data && changes.data.currentValue && changes.data.currentValue.length>0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
       if(this.headerColName) this.customSort(this.headerColName, this.direction);
-      if(window.innerHeight>1800 && this.data.length>0){
-        this.nextPageCalled.emit();
-        this.isDataLoading = true;
-      }
+      // handles when pagesize is small and screen height is large
+      // if(window.innerHeight>1800 && this.data.length>0){
+      //   this.nextPageCalled.emit();
+      //   this.isDataLoading = true;
+      // }
       for(let j=this.filteredArray.length; j<1; j++){
         this.addFilter();
       }
@@ -218,7 +227,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   onSelectFilter(e, i){
-    this.customTable.first.nativeElement.scrollTop = 0;
     let filterIndex = _.findIndex(this.filteredArray, (el, j) => {
       return (
         el["keyDisplayValue"] ===
@@ -246,9 +254,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       filterValue: this.filteredArray[currIdx].filterValue
     }
 
-    setTimeout(() => {
       this.selectedFilter.emit(event);
-    }, 100)
   }
 
   onSelectFilterType(e, i){      
@@ -336,7 +342,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     let searchTxt = event.target.value.toLowerCase();
     
     if (event.keyCode === 13 || searchTxt=='') {
-      this.tableErrorMessage = ''
+      // this.customTable.first.nativeElement.scrollTop = 0;
+      this.tableErrorMessage = '';
       if(this.doLocalSearch){
         this.customSearch(searchTxt);
         this.customSort(this.headerColName, this.direction);
@@ -371,8 +378,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   onScroll(event: any) {
     // visible height + pixel scrolled >= total height 
     if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 10) {
-      if(this.data.length<this.totalRows && !this.isDataLoading) {
-        this.nextPageCalled.emit();
+      if(this.data.length<this.totalRows && !this.isDataLoading && this.data.length>0) {
+        this.tableScrollTop = event.target.scrollTop;        
+        this.nextPageCalled.emit(this.tableScrollTop);
         this.isDataLoading = true;
       }
     }
