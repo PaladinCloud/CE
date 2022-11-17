@@ -103,6 +103,7 @@ import { MatSortModule } from "@angular/material/sort";
 import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zoom-graph.component";
 import { DateSelection } from "./date-selection/date-selection.component";
 import { MatCardModule } from "@angular/material/card";
+import { MultilineGraphWithHeaderComponent } from './multiline-graph-with-header/multiline-graph-with-header.component';
 
 @NgModule({
   imports: [
@@ -182,6 +183,7 @@ import { MatCardModule } from "@angular/material/card";
     InputModalComponent,
     BackNavigationComponent,
     TableListComponent,
+    MultilineGraphWithHeaderComponent,
   ],
   exports: [
     MultilineZoomGraphComponent,

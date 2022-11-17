@@ -194,10 +194,15 @@ export class ComplianceDashboardComponent implements OnInit {
   tableScrollTop = 0;
   graphFromDate: Date = new Date(2022, 1, 1);
   graphToDate: Date = new Date(2200, 12, 31);
+  graphIntervalSelectedItem = "All time";
 
   massageAssetTrendGraphData(graphData){
     let data = [];
     data.push({"key":"Total Assets", "values":[], "info":{}})
+    data.push({"key":"low", "values":[], "info":{}})
+    data.push({"key":"high", "values":[], "info":{}})
+    data.push({"key":"critical", "values":[], "info":{}})
+
 
     for(let i=0; i<data.length; i++){
         graphData.trend.forEach(e => {
@@ -528,6 +533,9 @@ export class ComplianceDashboardComponent implements OnInit {
     this.complianceData = [];
     this.complianceDataError = '';
     this.policyDataError = '';
+    this.graphIntervalSelectedItem = "All time";
+    this.graphFromDate = new Date(2022, 1, 1);
+    this.graphToDate = new Date(2200, 12, 31);
     if(this.isStatePreserved){      
       this.tableDataLoaded = true;
       this.clearState();

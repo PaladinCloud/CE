@@ -149,6 +149,44 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     this.init();
   }
 
+  mouseEnter(e){
+    // highlight only this graph and reduce opacity of rest lines
+
+    // this.focus.selectAll("path").remove(); // remove previous path
+    // this.drawLine(e);    // draw new lines with lest opacity except line with key 'e'
+
+    const currentKey = e.split(" ").map(e => e.toLowerCase()).join("-");
+    for (let i = 0; i < this.graphData.length; i++) {
+      const processedKey = this.graphData[i].key.split(" ").map(e => e.toLowerCase()).join("-");
+      if(processedKey!=currentKey){
+        const lineElement = document.querySelector("."+processedKey);
+        lineElement.setAttribute("opacity", "0.1");
+      }
+    }
+
+    const overlayElement = document.querySelector(".overlay");
+    const mouseoverEvent = new Event('mouseover');
+
+    console.log(overlayElement);
+    console.log(mouseoverEvent);
+    
+    
+    overlayElement.dispatchEvent(mouseoverEvent);
+  }
+
+  mouseLeave(e){
+    // highlist all graphs
+    // this.focus
+    //     .selectAll("path").remove();
+    // this.drawLine();   
+
+    for (let i = 0; i < this.graphData.length; i++) {
+      const processedKey = this.graphData[i].key.split(" ").map(e => e.toLowerCase()).join("-");
+      const lineElement = document.querySelector("."+processedKey);
+      lineElement.setAttribute("opacity", "1");
+    }
+  }
+
   plotGraph() {    
     try {
       this.removeZeroValues();
@@ -1149,6 +1187,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .curve(d3Shape.curveMonotoneX);
 
     for (let i = 0; i < this.graphData.length; i++) {
+      const processedKey = this.graphData[i].key.split(" ").map(e => e.toLowerCase()).join("-");      
       const lineKeys = Object.keys(this.lineColorsObject);
       const lineColor =
         this.lineColorsObject[this.graphData[i].key] ||
@@ -1159,11 +1198,12 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         .attr("clip-path", "url(#clip)")
         .transition()
         .duration(5000)
-        .attr("class", "line line" + `${i + 1}`)
+        .attr("class", `line ${processedKey} line + ${i + 1}`)
         .attr("fill", "none")
         .attr("stroke-width", "2px")
         .attr("stroke", lineColor)
-        .attr("d", this.line);
+        .attr("d", this.line)
+        .attr("opacity", 1);
     }
 
     this.area = d3Shape
@@ -1362,7 +1402,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         .attr("class", "hover rectCoverDate")
         .attr("fill", "#fff")
         // .attr("fill-opacity", "0.9")
-        .attr("height", "69px")
+        .attr("height", (this.graphLinesData.length*27+44)+"px")
+        // .attr("max-height", "170px")
+        // .attr("overflow", "scroll")
         .attr("width", "149px")
         .attr("stroke", "#DFE6EE")
         .attr("display", "none")
@@ -1445,7 +1487,11 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .on("mouseout", () => {
         self.focus.selectAll(".hover").style("display", "none");
       })
-      .on("mousemove", mousemove);
+      .on("mousemove", mousemove)
+      .on("loadeddata", () => {
+        console.log("called??");
+        
+      });
 
     function mousemove() {
       try {
@@ -1454,6 +1500,8 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           self.drawHover();
         }
         const mousePosition = d3.mouse(this)[0];
+        console.log("mousePosition: ", mousePosition);
+        
         const formatDate = d3TimeFormat.timeFormat("%b %d");
         const formatYear = d3TimeFormat.timeFormat("%Y");
         const label = self.x.invert(d3.mouse(this)[0]);
@@ -1548,10 +1596,10 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
             : "3em";
         dateData["dy"] =
           mousePosition < axisRange / 4
-            ? ".95em"
+            ? "1.5em"
             : mousePosition > axisRange * 0.75
-            ? "1.1em"
-            : ".95em";
+            ? "1.6em"
+            : "1.5em";
         yearData["dx"] =
           mousePosition < axisRange / 4
             ? "1em"
@@ -1586,7 +1634,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
               )
               .text(dobj["value" + m])
               .attr("dx", valueData["dx"])
-              .attr("dy", 3.5 + m * 2.5 + "em");
+              .attr("dy", 4 + m * 2.5 + "em");
           });
 
           self.graphLinesData.forEach((eachline, m) => {
@@ -1597,7 +1645,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
                 "translate(" + self.x(dobj[`label`]) + "," + 0 + ")"
               )
               .attr("x", rectData["dx"])
-              .attr("y", 2.5 + m * 2.5 + "em");
+              .attr("y", 3 + m * 2.5 + "em");
           });
 
           self.graphLinesData.forEach((eachline, m) => {
@@ -1610,7 +1658,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
               )
               .text(legend)
               .attr("dx", rectText["dx"])
-              .attr("dy", 3.7 + m * 2.5 + "em");
+              .attr("dy", 4.2 + m * 2.78 + "em");
           });
 
           self.graphLinesData.forEach((eachline, m) => {

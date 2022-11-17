@@ -1,6 +1,6 @@
  <div #graphContainer class="multiline-graph-container">
      <ul *ngIf="showLegend" class="flex flex-row flex-center flex-wrap">
-        <li *ngFor="let line of graphData; let i = index;" class="flex flex-align-center">
+        <li (mouseenter) ="mouseEnter(line.key.split('-')[0])"  (mouseleave) ="mouseLeave(line.key.split('-')[0])" *ngFor="let line of graphData; let i = index;" class="flex flex-align-center">
             <div class="legend-color" [ngStyle]="{'background-color': lineColorsObject[line.key.split('-')[0]] || lineColorsObject[lineColorsArray[i]] }"></div>
             <div class="flex flex-col flex-center legend-text capitalize">{{line.key.split("-")[0]}}</div>
         </li>

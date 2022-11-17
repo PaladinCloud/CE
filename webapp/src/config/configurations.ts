@@ -20,10 +20,10 @@ export const CONFIGURATIONS = {
   required: {
     APP_NAME: 'Paladin Cloud',
     domains: {
-      PROD_BASE_URL: '', // Expected values: domain where the API is deployed, ex: http://beta.pacbot.com/api
-      STG_BASE_URL: '', // Expected values: domain where the API is deployed, ex: http://stgbeta.pacbot.com/api
-      DEV_BASE_URL: '', // Expected values: domain where the API is deployed, ex: http://devbeta.pacbot.com/api
-      CLOUD_BASE_URL: '', // Expected values: domain where the API is deployed
+      PROD_BASE_URL: 'https://dev.paladincloud.io/api', // Expected values: domain where the API is deployed, ex: http://beta.pacbot.com/api
+      STG_BASE_URL: 'https://dev.paladincloud.io/api', // Expected values: domain where the API is deployed, ex: http://stgbeta.pacbot.com/api
+      DEV_BASE_URL: 'https://dev.paladincloud.io/api', // Expected values: domain where the API is deployed, ex: http://devbeta.pacbot.com/api
+      CLOUD_BASE_URL: 'https://dev.paladincloud.io/api', // Expected values: domain where the API is deployed
     },
     featureModules: {
       COMPLIANCE_MODULE: true, // Expected values: true || false

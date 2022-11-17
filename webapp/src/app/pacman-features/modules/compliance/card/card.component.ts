@@ -31,7 +31,7 @@ export class CardComponent implements OnInit {
   isCustomSelected = false;
   fromDate: Date = new Date(2022, 1, 1);
   toDate: Date = new Date(2200, 12, 31);
-  selectedItem = "All time";
+  @Input() selectedItem;
   
 
   constructor(
