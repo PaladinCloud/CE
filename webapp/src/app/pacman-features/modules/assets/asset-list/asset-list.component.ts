@@ -45,39 +45,26 @@ import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 })
 export class AssetListComponent implements OnInit, OnDestroy {
   pageTitle = "Asset List";
-  issueListingdata: any;
+  assetListData: any;
   selectedAssetGroup: string;
   breadcrumbArray: any = [];
   breadcrumbLinks: any = [];
   breadcrumbPresent: any;
-  outerArr: any = [];
-  dataLoaded = false;
   errorMessage: any;
-  showingArr: any = ["severity", "owner", "executionId"];
   allColumns: any = [];
   totalRows = 0;
-  currentBucket: any = [];
-  popRows = ["Download Data"];
   bucketNumber = 0;
-  firstPaginator = 1;
-  lastPaginator: number;
-  currentPointer = 0;
-  seekdata = false;
-  showLoader = true;
-  paginatorSize = 25;
+  paginatorSize = 100;
   searchTxt = "";
   filterTypeOptions: any = [];
   filterTagOptions: any = {};
   currentFilterType;
   filterTypeLabels = [];
   filterTagLabels = {};
-  dataTableData: any = [];
   tableDataLoaded = false;
   filters: any = [];
   searchCriteria: any;
   filterText: any = {};
-  errorValue = 0;
-  showGenericMessage = false;
   dataTableDesc = "";
   urlID = "";
   public labels: any;
@@ -175,12 +162,28 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
     private tableStateService: TableStateService
-  ) {
-
+  ) { 
+    this.assetGroupSubscription = this.assetGroupObservableService
+    .getAssetGroup()
+    .subscribe((assetGroupName) => {
+      this.tableScrollTop = 0;
+      this.searchTxt = "";
+      this.backButtonRequired =
+      this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+      this.selectedAssetGroup = assetGroupName;
+      // this.updateComponent();
+      this.getFilters();
+    });
     
+    this.subscriptionDomain = this.domainObservableService
+    .getDomainType()
+    .subscribe((domain) => {
+      this.selectedDomain = domain;
+    });
   }
 
-  ngOnInit() {
+  ngOnInit() { 
+    
     const state = this.tableStateService.getState("assetList") || {};
     if(state){      
       this.headerColName = state.headerColName || '';
@@ -190,6 +193,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.searchTxt = state?.searchTxt || '';
       
       this.tableData = state?.data || [];
+      this.tableDataLoaded = true;
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
       this.tableScrollTop = state?.tableScrollTop;
@@ -209,26 +213,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
     this.breadcrumbPresent = "Asset List";
-
-
-    /**************************************************** */
-    this.assetGroupSubscription = this.assetGroupObservableService
-      .getAssetGroup()
-      .subscribe((assetGroupName) => {
-        this.backButtonRequired =
-          this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
-        this.selectedAssetGroup = assetGroupName;
-        // this.updateComponent();
-        this.getFilters();
-      });
-
-    this.subscriptionDomain = this.domainObservableService
-      .getDomainType()
-      .subscribe((domain) => {
-        this.selectedDomain = domain;
-      });
-
-      
   }
 
   handleAddFilterClick(e){}
@@ -366,23 +350,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
-    this.outerArr = [];
-    // this.searchTxt = "";
-    this.currentBucket = [];
-    this.firstPaginator = 1;
-    this.showLoader = true;
-    // this.currentPointer = 0;
-    this.dataTableData = [];
-    this.tableDataLoaded = false;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
     if(this.isStatePreserved){  
+      this.tableDataLoaded = true;
       this.clearState();
     }else{
+      this.tableDataLoaded = false;
       this.bucketNumber = 0;
-      this.tableData = [];
+      // this.tableData = [];
       this.getData();
     }
   }
@@ -402,7 +376,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       let queryParams;
       let assetListUrl;
       let assetListMethod;
-      this.errorValue = 0;
 
       if (this.urlID) {
         if (this.urlID.toLowerCase() === "exempted") {
@@ -526,7 +499,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
         isNextPageCalled
       );
     } catch (error) {
-      this.showLoader = false;
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
@@ -541,39 +513,25 @@ export class AssetListComponent implements OnInit, OnDestroy {
     if (this.issueListingSubscription) {
       this.issueListingSubscription.unsubscribe();
     }
+    this.tableErrorMessage = '';
     this.issueListingSubscription = this.issueListingService
       .getData(queryParams, assetListUrl, assetListMethod)
       .subscribe(
         (response) => {
-          this.showGenericMessage = false;
           try {
-            this.errorValue = 1;
             this.searchCriteria = undefined;
             const data = response[0];
-            this.showLoader = false;
             this.tableDataLoaded = true;
-            this.dataTableData = response[0].response;
-            this.dataLoaded = true;
             if (response[0].response.length === 0) {
-              this.errorValue = -1;
-              this.outerArr = [];
               this.allColumns = [];
               this.totalRows = 0;
+              this.tableErrorMessage = 'noDataAvailable'
             }
             if (data.response.length > 0) {
-              this.issueListingdata = data.response;
-              this.seekdata = false;
+              this.assetListData = data.response;
               this.totalRows = data.total;
-              this.firstPaginator = this.bucketNumber * this.paginatorSize + 1;
-              this.lastPaginator =
-                this.bucketNumber * this.paginatorSize + this.paginatorSize;
-              this.currentPointer = this.bucketNumber;
-              if (this.lastPaginator > this.totalRows) {
-                this.lastPaginator = this.totalRows;
-              }
-              const updatedResponse = this.massageData(this.issueListingdata);
-              // this.tableData = updatedResponse;
-              this.currentBucket[this.bucketNumber] = updatedResponse;
+             
+              const updatedResponse = this.massageData(this.assetListData);
               if(isNextPageCalled){
                   this.onScrollDataLoader.next(updatedResponse)
                 }else{
@@ -582,21 +540,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
               // this.processData(updatedResponse);
             }
           } catch (e) {
-            this.errorValue = 0;
-            this.errorValue = -1;
-            this.outerArr = [];
-            this.dataLoaded = true;
-            this.seekdata = true;
-            this.errorMessage = this.errorHandling.handleJavascriptError(e);
+            this.tableDataLoaded = true;
+            this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
           }
         },
         (error) => {
-          this.showGenericMessage = true;
-          this.errorValue = -1;
-          this.outerArr = [];
-          this.dataLoaded = true;
-          this.seekdata = true;
-          this.errorMessage = "apiResponseError";
+          this.tableDataLoaded = true;
+          this.tableErrorMessage = "apiResponseError";
         }
       );
   }
@@ -626,138 +576,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       newData.push(newObj);
     });
     return newData;
-  }
-  processData(data) {
-    try {
-      let innerArr = {};
-      const totalVariablesObj = {};
-      let cellObj = {};
-      const magenta = "#336cc9";
-      const green = "#26ba9d";
-      const red = "#f2425f";
-      const orange = "#ffb00d";
-      const yellow = "yellow";
-      this.outerArr = [];
-      const getData = data;
-      let getCols;
-      if (getData.length) {
-        getCols = Object.keys(getData[0]);
-      } else {
-        this.seekdata = true;
-      }
-
-      for (let row = 0; row < getData.length; row++) {
-        innerArr = {};
-        for (let col = 0; col < getCols.length; col++) {
-          if (
-            getCols[col].toLowerCase() === "resourceid" ||
-            getCols[col].toLowerCase() === "resource id"
-          ) {
-            cellObj = {
-              link: "true",
-              properties: {
-                "text-shadow": "0.1px 0",
-                "text-transform": "lowercase",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
-            };
-          } else if (getCols[col].toLowerCase() === "severity") {
-            if (getData[row][getCols[col]] === "low") {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                imgLink: "",
-                text: getData[row][getCols[col]],
-                valText: 1,
-                statusProp: {
-                  "background-color": "#ffe00d",
-                },
-              };
-            } else if (getData[row][getCols[col]] === "medium") {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                imgLink: "",
-                valText: 2,
-                text: getData[row][getCols[col]],
-                statusProp: {
-                  "background-color": "#ffb00d",
-                },
-              };
-            } else if (getData[row][getCols[col]] === "high") {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                valText: 3,
-                imgLink: "",
-                text: getData[row][getCols[col]],
-                statusProp: {
-                  "background-color": "#0047bb",
-                },
-              };
-            } else {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                imgLink: "",
-                valText: 4,
-                text: getData[row][getCols[col]],
-                statusProp: {
-                  "background-color": "#e60127",
-                },
-              };
-            }
-          } else {
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
-            };
-          }
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = "";
-        }
-        this.outerArr.push(innerArr);
-      }
-      if (this.outerArr.length > getData.length) {
-        const halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
-      }
-      this.allColumns = Object.keys(totalVariablesObj);
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
   }
 
   goToDetails(event) {
@@ -795,10 +613,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       }
       const resourceID = encodeURIComponent(row["Resource ID"]);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
-      updatedQueryParams["headerColName"] = undefined;
-      updatedQueryParams["direction"] = undefined;
-      updatedQueryParams["bucketNumber"] = undefined;
-      updatedQueryParams["searchValue"] = undefined;
+      // updatedQueryParams["searchValue"] = undefined;
       this.router.navigate([resourceType, resourceID], {
         relativeTo: this.activatedRoute,
         queryParams: updatedQueryParams,
@@ -810,17 +625,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  searchCalled(search) {
-    this.searchTxt = search;
-  }
-
   prevPg() {
     try {
-      this.currentPointer--;
-      // this.processData(this.currentBucket[this.currentPointer]);
-      this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
-      this.lastPaginator =
-        this.currentPointer * this.paginatorSize + this.paginatorSize;
       this.bucketNumber--;
       this.getData();
       this.getUpdatedUrl();
@@ -830,8 +636,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  nextPg() {
+  nextPg(e) {
     try {
+      this.tableScrollTop = e;
         this.bucketNumber++;
         this.getData(true);
     } catch (error) {

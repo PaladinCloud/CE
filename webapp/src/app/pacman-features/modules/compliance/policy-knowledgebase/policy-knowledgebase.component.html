@@ -33,10 +33,10 @@
             <app-table (rowSelectEventEmitter)="goToDetails($event)" 
                 [data]="tableData" [columnWidths]="columnWidths"
                 [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchPassed"
+                [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
                 [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick()" [doLocalSearch]="doLocalSearch"
-                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop">
+                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded">
             </app-table>
         </div>
     </div>

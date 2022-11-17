@@ -26,50 +26,25 @@ import { TableStateService } from "src/app/core/services/table-state.service";
 })
 export class IssueListingComponent implements OnInit, OnDestroy {
   pageTitle = "Violations";
-  issueListingdata: any = [];
   selectedAssetGroup: string;
   selectedDomain: string;
   breadcrumbArray: any = [];
   breadcrumbLinks: any = [];
   breadcrumbPresent: any;
-  outerArr: any = [];
-  dataLoaded = false;
-  errorMessage: any;
-  showingArr: any = ["severity", "owner", "executionId"];
-  allColumns: any = [];
   totalRows = 0;
-  currentBucket: any = [];
   bucketNumber = 0;
-  firstPaginator = 1;
-  lastPaginator: number;
-  currentPointer = 0;
-  seekdata = false;
-  showLoader = true;
   paginatorSize = 100;
   searchTxt = "";
-  popRows: any = ["Download Data"];
   filterTypeOptions: any = [];
   filterTagOptions: any = {};
   currentFilterType;
   filterTypeLabels = [];
-  cbArr = [];
-  cbModel = [];
-  cbObj = {};
   filterTagLabels = {};
   filters: any = [];
-  searchCriteria: any;
   filterText: any;
-  errorValue = 0;
-  showGenericMessage = false;
-  public labels: any;
   FullQueryParams: any;
   queryParamsWithoutFilter: any;
-  private previousUrl: any = "";
-  dataTableData: any = [];
   tableDataLoaded = false;
-  issueList: any = [];
-  exceptionAction: any;
-  showExceptionalModal = false;
   adminAccess = false; // check for admin access
   showDownloadBtn = true;
   showFilterBtn = true;
@@ -81,11 +56,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   private issueFilterSubscription: Subscription;
   public pageLevel = 0;
   public backButtonRequired;
-  public agAndDomain = {};
   public doNotDisplaySearch=true;
   filterErrorMessage = '';
   tableTitle = "Violations";
   tableErrorMessage = '';
+  errorMessage = '';
   headerColName;
   direction;
   tableScrollTop=0;
@@ -167,11 +142,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
       .subscribe((assetGroupName) => {        
+        this.tableScrollTop = 0;
+        this.searchTxt = "";
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
-        this.agAndDomain["ag"] = this.selectedAssetGroup;
-        // this.updateComponent();
         this.getFilters();
       });
 
@@ -179,7 +154,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .getDomainType()
       .subscribe((domain) => {
         this.selectedDomain = domain;
-        this.agAndDomain["domain"] = this.selectedDomain;
       });
   }
 
@@ -191,6 +165,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
+      
+      this.tableDataLoaded = true;
       
       this.tableData = state?.data || [];
       this.displayedColumns = Object.keys(this.columnWidths);
@@ -476,40 +452,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  checkBoxClicked(event) {
-    this.cbArr = [];
-    if (!this.cbObj[event.index + this.firstPaginator - 1]) {
-      this.cbObj[event.index + this.firstPaginator - 1] = event.data;
-    } else {
-      delete this.cbObj[event.index + this.firstPaginator - 1];
-    }
-    for (let i = 0; i < Object.keys(this.cbObj).length; i++) {
-      this.cbArr[i] = this.cbObj[Object.keys(this.cbObj)[i]];
-    }
-  }
-
   updateComponent() {
-    this.cbArr = [];
-    this.cbObj = {};
-    // this.outerArr = [];
-    this.tableDataLoaded = false;
-    // this.searchTxt = "";
-    this.currentBucket = [];
-    this.cbModel = [];
-    this.dataTableData = [];
-    this.issueListingdata = [];
-    // this.firstPaginator = 1;
-    this.showLoader = true;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
-    // this.clearState();
-    if(this.isStatePreserved){      
+    if(this.isStatePreserved){     
+      this.tableDataLoaded = true;
       this.clearState();
     }else{
+      this.tableDataLoaded = false;
       this.bucketNumber = 0;
-      this.tableData = [];
+      // this.tableData = [];
       this.getData();
     }
   }
@@ -546,42 +496,25 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       };
       const issueListingUrl = environment.issueListing.url;
       const issueListingMethod = environment.issueListing.method;
-      this.errorValue = 0;
       this.issueListingSubscription = this.commonResponseService
         .getData(issueListingUrl, issueListingMethod, payload, {})
         .subscribe(
           (response) => {
-            this.showGenericMessage = false;
             try {
-              this.errorValue = 1;
-              this.searchCriteria = undefined;
+              if(!isNextPageCalled){
+                this.tableData = [];
+              }
               this.tableDataLoaded = true;
               const data = response.data;
-              this.dataTableData = data.response;              
-              this.showLoader = false;
-              this.dataLoaded = true;
               if (response.data.response.length === 0) {
                 this.tableErrorMessage = 'noDataAvailable';
-                this.errorValue = -1;
-                this.outerArr = [];
-                this.allColumns = [];
                 this.totalRows = 0;
               }
               if (data.response.length > 0) {
                 this.tableErrorMessage = '';
-                this.issueListingdata = data.response;
-                this.seekdata = false;
                 this.totalRows = data.total;
-                this.firstPaginator =
-                  this.bucketNumber * this.paginatorSize + 1;
-                this.lastPaginator =
-                  this.bucketNumber * this.paginatorSize + this.paginatorSize;
-                this.currentPointer = this.bucketNumber;
-                if (this.lastPaginator > this.totalRows) {
-                  this.lastPaginator = this.totalRows;
-                }
-                const updatedResponse = this.massageData(this.issueListingdata);
-                this.currentBucket[this.bucketNumber] = updatedResponse;
+
+                const updatedResponse = this.massageData(data.response);
                 if(isNextPageCalled){
                   this.onScrollDataLoader.next(updatedResponse)
                 }else{
@@ -591,36 +524,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               }
             } catch (e) {
               this.tableErrorMessage = 'apiResponseError';
-              this.errorValue = 0;
-              this.errorValue = -1;
-              this.outerArr = [];
-              this.dataLoaded = true;
-              this.seekdata = true;
-              this.errorMessage = this.errorHandling.handleJavascriptError(e);
+              this.tableData = [];
+              this.tableErrorMessage = this.errorHandling.handleJavascriptError(e);
             }
           },
           (error) => {
-            this.showGenericMessage = true;
-            this.errorValue = -1;
-            this.outerArr = [];
-            this.dataLoaded = true;
-            this.seekdata = true;
-            this.errorMessage = "apiResponseError";
+            this.tableErrorMessage = "apiResponseError";
           }
         );
     } catch (error) {
-      this.showLoader = false;
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-  }
-  showExceptionModal(exceptionAction) {
-    this.exceptionAction = exceptionAction;
-    this.showExceptionalModal = true;
-  }
-
-  closeExceptionalModal($event) {
-    this.showExceptionalModal = false;
   }
 
   refreshDataTable($event) {
@@ -653,165 +568,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       newData.push(newObj);
     });
     return newData;
-  }
-
-  processData(data) {
-    try {
-      let innerArr = {};
-      const totalVariablesObj = {};
-      let cellObj = {};
-      this.outerArr = [];
-      const getData = data;
-      let getCols;
-      if (getData.length) {
-        getCols = Object.keys(getData[0]);
-      } else {
-        this.seekdata = true;
-      }
-
-      for (let row = 0; row < getData.length; row++) {
-        innerArr = {};
-        for (let col = 0; col < getCols.length; col++) {
-          if (
-            getCols[col].toLowerCase() === "resource id" ||
-            getCols[col].toLowerCase() === "resourceid"
-          ) {
-            cellObj = {
-              link: "true",
-              properties: {
-                "text-shadow": "0.1px 0",
-                "text-transform": "lowercase",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
-            };
-          } else if (
-            getCols[col].toLowerCase() === "rule name" ||
-            getCols[col].toLowerCase() === "issue id"
-          ) {
-            cellObj = {
-              link: "true",
-              properties: {
-                "text-transform": "lowercase",
-                "text-shadow": "0.1px 0",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              valText: getData[row][getCols[col]],
-              text: getData[row][getCols[col]],
-            };
-          } else if (getCols[col].toLowerCase() === "severity") {
-            if (getData[row][getCols[col]] === "low") {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                imgLink: "",
-                text: getData[row][getCols[col]],
-                valText: 1,
-                statusProp: {
-                  "background-color": "#ffe00d",
-                },
-              };
-            } else if (getData[row][getCols[col]] === "medium") {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                imgLink: "",
-                valText: 2,
-                text: getData[row][getCols[col]],
-                statusProp: {
-                  "background-color": "#ffb00d",
-                },
-              };
-            } else if (getData[row][getCols[col]] === "high") {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                valText: 3,
-                imgLink: "",
-                text: getData[row][getCols[col]],
-                statusProp: {
-                  "background-color": "#0047bb",
-                },
-              };
-            } else {
-              cellObj = {
-                link: "",
-                properties: {
-                  color: "",
-                  "text-transform": "capitalize",
-                },
-                colName: getCols[col],
-                hasPreImg: true,
-                imgLink: "",
-                valText: 4,
-                text: getData[row][getCols[col]],
-                statusProp: {
-                  "background-color": "#e60127",
-                },
-              };
-            }
-          } else if (
-            getCols[col].toLowerCase() === "created on" ||
-            getCols[col].toLowerCase() === "modified on"
-          ) {
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: this.calculateDate(getData[row][getCols[col]]),
-              valText: new Date(getData[row][getCols[col]]).getTime(),
-            };
-          } else {
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
-            };
-          }
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = "";
-        }
-        this.outerArr.push(innerArr);
-      }
-      if (this.outerArr.length > getData.length) {
-        const halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
-      }
-      this.allColumns = Object.keys(totalVariablesObj);
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
   }
 
   goToDetails(event) {
@@ -877,11 +633,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     return monthString + "-" + dayString + "-" + year;
   }
 
-  searchCalled(search) {
-    this.searchTxt = search;
-    // this.getUpdatedUrl();
-  }
-
   handlePopClick(e) {
     const fileType = "csv";
 
@@ -922,8 +673,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
 
-  nextPg() {
+  nextPg(e) {
     try {
+      this.tableScrollTop = e;
         this.bucketNumber++;
         this.getData(true);
     } catch (error) {

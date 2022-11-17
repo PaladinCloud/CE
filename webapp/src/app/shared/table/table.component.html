@@ -92,7 +92,7 @@
         </div>
     </div>
     <div #customTable class="table-content-container" (scroll)="onScroll($event)">
-    <div [class.loader]="data.length==0 && tableErrorMessage==''"></div>
+    <div [class.loader]="!tableDataLoaded && tableErrorMessage==''"></div>
     <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
         <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">

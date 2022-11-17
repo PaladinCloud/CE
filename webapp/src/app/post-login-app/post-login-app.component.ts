@@ -236,11 +236,20 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
             return false;
           }
 
-          this.queryParameters = params;
           this.agAndDomainKey = newKey;
+          // this.queryParameters = params;
 
-          this.updateAssetGroup(this.queryParameters["ag"]);
-          this.updateDomainName(this.queryParameters["domain"]);
+          // this.updateAssetGroup(this.queryParameters["ag"]);
+          // this.updateDomainName(this.queryParameters["domain"]);
+          
+          if(params["ag"] && params["ag"]!=this.queryParameters["ag"]){
+            this.queryParameters["ag"] = params["ag"];
+            this.updateAssetGroup(this.queryParameters["ag"]);            
+          }
+          if(params["domain"] && params["domain"]!=this.queryParameters["domain"]){
+            this.queryParameters["domain"] = params["domain"];
+            this.updateDomainName(this.queryParameters["domain"]);            
+          }
         }
         /* User will enter it in minutes */
         if (params["reload"]) {

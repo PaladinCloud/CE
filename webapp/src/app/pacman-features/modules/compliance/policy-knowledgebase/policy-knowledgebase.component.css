@@ -25,7 +25,7 @@
 }
 
 .policy-knowledgebase-content{
-  height: calc(100vh - 250px);
+  height: calc(100vh - 260px);
   background-color: var(--background-white);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-100);
@@ -302,8 +302,9 @@
 }
 
 .type-count-content-wrapper{
+    gap: 10px;
     padding: 12px 0px 12px 24px;
-    background: #FFFFFF;
+    background: var(--background-white);
     border-right: 1px solid var(--border-100);
 }
 

@@ -16,11 +16,11 @@
                         [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                         [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
                         [imageDataMap]="tableImageDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
-                        [searchQuery]="searchTxt" (nextPageCalled)="nextPg()" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
+                        [searchQuery]="searchTxt" (nextPageCalled)="nextPg($event)" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
                         (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
                         (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'
                         [showDownloadBtn]="showDownloadBtn" [showFilterBtn]="showFilterBtn" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                        [tableScrollTop]="tableScrollTop"></app-table>
+                        [tableScrollTop]="tableScrollTop" [tableDataLoaded]='tableDataLoaded'></app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>
                 </li>
