@@ -94,7 +94,7 @@ public class S3ObjectLevelLoggingRuleTest {
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
                 any(), any(), any())).thenReturn(null);
-        String expected = "CloudTrail log with matching conditions does not exists, accountId: "
+        String expected = "CloudTrail log with matching conditions does not exists,accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 
@@ -119,7 +119,7 @@ public class S3ObjectLevelLoggingRuleTest {
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(null);
         String expected = "CloudTrail log with matching conditions does not exists," +
-                " readwritetype: " + readTypeFromSearch + ", accountId: "
+                " readwritetype: " + readTypeFromSearch + ",accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 
@@ -143,7 +143,7 @@ public class S3ObjectLevelLoggingRuleTest {
                 any(), any(), any(), eq("readwritetype"), any())).thenReturn(new HashSet<>(Collections.singletonList(readTypeFromSearch)));
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(null);
-        String expected = "CloudTrail log with matching conditions does not exists, isMultiRegionTrail: true, accountId: "
+        String expected = "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true,accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 
