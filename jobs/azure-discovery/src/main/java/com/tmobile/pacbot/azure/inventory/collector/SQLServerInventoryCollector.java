@@ -62,11 +62,48 @@ public class SQLServerInventoryCollector {
 			getElasticPoolList(sqlServer.elasticPools().list(), sqlServerVH);
 			getFailoverGroupList(sqlServer.failoverGroups().list(), sqlServerVH);
 			setVulnerabilityAssessment(sqlServerVH,subscription,sqlServer);
+			setRetentionDays(sqlServerVH,subscription,sqlServer);
 			sqlServerList.add(sqlServerVH);
 		}
 		log.info("Target Type : {}  Total: {} ","SqlServer",sqlServerList.size());
 		return sqlServerList;
 
+	}
+
+	private void setRetentionDays(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
+		try {
+			String apiUrlTemplate = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Sql/servers/%s/auditingSettings?api-version=2020-11-01-preview";
+			String accessToken = azureCredentialProvider.getToken(subscription.getTenant());
+			String url = null;
+
+			url = String.format(apiUrlTemplate,
+					URLEncoder.encode(subscription.getSubscriptionId(),
+							java.nio.charset.StandardCharsets.UTF_8.toString()),
+					URLEncoder.encode(sqlServer.resourceGroupName(),
+							java.nio.charset.StandardCharsets.UTF_8.toString()),
+					URLEncoder.encode(sqlServer.name(),
+							java.nio.charset.StandardCharsets.UTF_8.toString()));
+
+			log.info("The url is {}", url);
+
+			String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
+			log.info("Response is :{}", response);
+			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
+			JsonArray auditSettings = responseObj.getAsJsonArray("value");
+			for(JsonElement auditElement:auditSettings){
+				JsonObject  auditObject = auditElement.getAsJsonObject();
+				JsonObject properties = auditObject.getAsJsonObject("properties");
+				log.debug("Properties data{}",properties);
+				if(properties!=null) {
+					if(properties.has("retentionDays")) {
+						sqlServerVH.setRetentionDays(properties.get("retentionDays").getAsJsonPrimitive().getAsInt());
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void setVulnerabilityAssessment(SQLServerVH sqlServerVH, SubscriptionVH subscription, SqlServer sqlServer) {
