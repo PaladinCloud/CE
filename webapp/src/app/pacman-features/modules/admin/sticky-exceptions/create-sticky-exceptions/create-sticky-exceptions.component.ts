@@ -242,7 +242,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   addAttributes(attributeName, attributeValue) {
-    let ruleDetails = _.find(this.allAttributeDetails[this.selectedIndex].allRules, { id: attributeName[0].id });
+    let ruleDetails = _.find(this.allAttributeDetails[this.selectedIndex].allRules, { text: attributeName });
     this.allAttributeDetails[this.selectedIndex].rules.push(ruleDetails);
     let itemIndex = this.allAttributeDetails[this.selectedIndex].allRules.indexOf(ruleDetails);
     if (itemIndex !== -1) {
@@ -375,8 +375,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     let url = environment.getTargetTypesByAssetGroupName.url;
     let method = environment.getTargetTypesByAssetGroupName.method;
     let assetGroupName = '';
-    if (this.exceptionDetailsForm.assetGroup.length > 0) {
-      assetGroupName = this.exceptionDetailsForm.assetGroup[0].text;
+    if (this.exceptionDetailsForm.assetGroup) {
+      assetGroupName = this.exceptionDetailsForm.assetGroup;
     }
     this.adminService.executeHttpAction(url, method, {}, { assetGroupName: assetGroupName }).subscribe(reponse => {
       this.assetLoader = false;
@@ -530,7 +530,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   updateException(exceptionFormDetails) {
-    let exceptionDetails = this.marshallingCreateExceptionData(exceptionFormDetails);
+    let exceptionDetails = this.marshallingUpdateExceptionData(exceptionFormDetails);
     this.loadingContent = 'updation';
     this.successTitle = 'Exception Updated';
     this.highlightName = exceptionFormDetails.name;
@@ -559,12 +559,24 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       })
   }
 
-  marshallingCreateExceptionData(exceptionFormDetails) {
+  marshallingUpdateExceptionData(exceptionFormDetails) {
     let exceptionDetails = {
       exceptionName: exceptionFormDetails.name,
       exceptionReason: exceptionFormDetails.reason,
       expiryDate: this.expiryDate,
       assetGroup: exceptionFormDetails.assetGroup[0].text,
+      dataSource: 'aws',
+      targetTypes: this.allAttributeDetails
+    }
+    return exceptionDetails;
+  }
+
+  marshallingCreateExceptionData(exceptionFormDetails) {
+    let exceptionDetails = {
+      exceptionName: exceptionFormDetails.name,
+      exceptionReason: exceptionFormDetails.reason,
+      expiryDate: this.expiryDate,
+      assetGroup: exceptionFormDetails.assetGroup,
       dataSource: 'aws',
       targetTypes: this.allAttributeDetails
     }
