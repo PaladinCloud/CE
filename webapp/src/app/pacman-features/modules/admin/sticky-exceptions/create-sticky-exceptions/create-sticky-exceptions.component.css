@@ -1736,9 +1736,10 @@ button.attrbutton:hover {
   overflow-y: auto;
 }
 
-::ng-deep .cdk-overlay-connected-position-bounding-box {
+/* below code is disturbing filters position in violations */
+/* ::ng-deep .cdk-overlay-connected-position-bounding-box {
   position: relative !important;
-}
+} */
 ::ng-deep #cdk-overlay-1 {
   top: 280px!important;
 }
