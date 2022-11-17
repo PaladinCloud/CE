@@ -106,14 +106,14 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
 
             if (Objects.isNull(resultSet) || resultSet.isEmpty() || Objects.isNull(typeResultSet)
                     || typeResultSet.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists, accountId: " + accountId
+                return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
                         + " for s3 bucket: " + bucketName;
             }
             String trailFromSearch = resultSet.iterator().next();
             String readTypeFromSearch = typeResultSet.iterator().next();
             if (!readWriteTypes.contains(readTypeFromSearch)) {
                 return "CloudTrail log with matching conditions does not exists," +
-                        " readwritetype: " + readTypeFromSearch + ", accountId: " + accountId
+                        " readwritetype: " + readTypeFromSearch + ",accountId: " + accountId
                         + " for s3 bucket: " + bucketName;
             }
 
@@ -124,8 +124,8 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
             resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
                     shouldFilter, mustTermsFilter, "trailarn", null);
             if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists, isMultiRegionTrail: true"
-                        + ", accountId: " + accountId + " for s3 bucket: " + bucketName;
+                return "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
+                        + ",accountId: " + accountId + " for s3 bucket: " + bucketName;
             }
 
 
