@@ -3144,5 +3144,27 @@
     "modifiedDate": "2022-11-12",
     "severity": "high",
     "category": "security"
+  },
+  {
+    "ruleId": "Set_Retention_Days_Greater_Than_Ninety",
+    "ruleUUID": "Set_Retention_Days_Greater_Than_Ninety",
+    "policyId": "Set_Retention_Days_Greater_Than_Ninety",
+    "ruleName": "Retention days should be greater than 90",
+    "targetType": "sqlserver",
+    "assetGroup": "Azure",
+    "alexaKeyword": "RetentionDaysGreaterThan90",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-retention-days-is-greater-than-ninety\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Set_Retention_Days_Greater_Than_Ninety\",\"autofix\":false,\"alexaKeyword\":\"RetentionDaysGreaterThan90\",\"ruleRestUrl\":\"\",\"targetType\":\"sqlserver\",\"pac_ds\":\"azure\",\"policyId\":\"Set_Retention_Days_Greater_Than_Ninety\",\"assetGroup\":\"azure\",\"ruleUUID\":\"Set_Retention_Days_Greater_Than_Ninety\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Set_Retention_Days_Greater_Than_Ninety",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Set Retention days greater than 90 for SQL Server",
+    "createdDate": "2022-11-17",
+    "modifiedDate": "2022-11-17",
+    "severity": "medium",
+    "category": "security"
   }
 ]

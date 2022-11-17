@@ -25,6 +25,15 @@ public class SQLServerVH extends AzureVH {
 	private boolean recurringScansEnabled;
 	private boolean emailSubscriptionAdmins;
 	private String emails;
+	private int retentionDays;
+
+	public int getRetentionDays() {
+		return retentionDays;
+	}
+
+	public void setRetentionDays(int retentionDays) {
+		this.retentionDays = retentionDays;
+	}
 
 	public boolean isRecurringScansEnabled() {
 		return recurringScansEnabled;
