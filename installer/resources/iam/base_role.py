@@ -30,12 +30,6 @@ class BaseRole(iam.IAMRoleResource):
     assume_role_policy = PolicyDocumentForBaseRole.get_output_attr('json')
     force_detach_policies = True
 
-
-#class BaseReadOnlyAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
- #   role = BaseRole.get_output_attr('name')
-  #  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
-
-
 class BaseGuardDutyPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/AmazonGuardDutyReadOnlyAccess"
@@ -171,7 +165,7 @@ class PolicySpecificReadOnlyAccessPolicyDocument(iam.IAMPolicyDocumentData):
 				"ecs:List*",
 				"ec2:Describe*",
 				"ec2:Get*",
-				"ec2:ListImagesInRecycleBin",
+                "ec2:ListImagesInRecycleBin",
 				"ec2:ListSnapshotsInRecycleBin",
 				"ec2:SearchLocalGatewayRoutes",
 				"ec2:SearchTransitGatewayRoutes",
