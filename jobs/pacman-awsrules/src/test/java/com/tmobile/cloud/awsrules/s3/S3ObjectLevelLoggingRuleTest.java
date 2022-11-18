@@ -119,7 +119,7 @@ public class S3ObjectLevelLoggingRuleTest {
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(null);
         String expected = "CloudTrail log with matching conditions does not exists," +
-                " readwritetype: " + readTypeFromSearch + ",accountId: "
+                "readwritetype: " + readTypeFromSearch + ",accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 

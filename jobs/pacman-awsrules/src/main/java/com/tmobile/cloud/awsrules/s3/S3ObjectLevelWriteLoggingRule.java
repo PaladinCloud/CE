@@ -113,7 +113,7 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
             String readTypeFromSearch = typeResultSet.iterator().next();
             if (!readWriteTypes.contains(readTypeFromSearch)) {
                 return "CloudTrail log with matching conditions does not exists," +
-                        " readwritetype: " + readTypeFromSearch + ",accountId: " + accountId
+                        "readwritetype: " + readTypeFromSearch + ",accountId: " + accountId
                         + " for s3 bucket: " + bucketName;
             }
 
