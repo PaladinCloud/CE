@@ -66,17 +66,17 @@ QUALYS_INFO = ""  # Base64 encoded user:password of qualys
 
 # Settings for enable AZURE  
 ENABLE_AZURE = False
-# Tenants should be a list of dict containing tenantId, clientId and secretId
+# Tenants should be a list of dict containing tenantId, clientId and secretValue
 AZURE_TENANTS = [
     {
         'tenantId': "t111",
         'clientId': "c111",
-        'secretId': "s111"
+        'secretValue': "s111"
     },
     {
         'tenantId': "t222",
         'clientId': "c222",
-        'secretId': "s222"
+        'secretValue': "s222"
     },
 ]
 # Settings for enable GCP 

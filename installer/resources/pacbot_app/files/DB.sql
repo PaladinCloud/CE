@@ -3059,9 +3059,11 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('qualys_api_url',concat(@QUALYS_API_URL,''),'qualys-enricher','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.data','azure-inventory','azure-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.processed','backup-azure','azure-discovery','prd','latest',NULL,NULL,NULL,NULL);
+DELETE IGNORE FROM pac_config_properties where cfKey = 'azure.credentials';
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('azure.credentials',concat(@AZURE_CREDENTIALS,''),'azure-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.data','gcp-inventory','gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('s3.processed','backup-gcp','gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
+DELETE IGNORE FROM pac_config_properties where cfKey='gcp.credentials';
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('gcp.credentials',concat(@GCP_CREDENTIALS,''),'gcp-discovery','prd','latest',NULL,NULL,NULL,NULL);
 
 DELETE IGNORE FROM pac_config_properties where cfKey='current-release';

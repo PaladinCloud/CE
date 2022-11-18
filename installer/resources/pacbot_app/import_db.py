@@ -37,7 +37,7 @@ class ReplaceSQLPlaceHolder(NullResource):
             for tenant in tenants:
                 tenant_id = tenant['tenantId']
                 client_id = tenant['clientId']
-                seccret_id = tenant['secretId']
+                seccret_id = tenant['secretValue']
                 credential_string = "" if credential_string == "" else (credential_string + "##")
                 credential_string += "tenant:%s,clientId:%s,secretId:%s" % (tenant_id, client_id, seccret_id)
 

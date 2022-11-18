@@ -3,7 +3,8 @@ from core.config import Settings
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.pacbot_app import alb_target_groups as tg
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
-
+from core.mixins import MsgMixin
+import sys
 # PATH_PREFIX = '/api/'
 
 
@@ -15,6 +16,12 @@ class PacBotHttpsListener(ALBListenerResource):
     certificate_arn = Settings.get('SSL_CERTIFICATE_ARN')
     default_action_target_group_arn = tg.NginxALBTargetGroup.get_output_attr('arn')
     default_action_type = "forward"
+   
+    warn_msg = "*** Make ALB_PROTOCOL == HTTPS for external domian ***"
+    if Settings.MAKE_ALB_INTERNAL == False and Settings.ALB_PROTOCOL == "HTTP":
+        message = "\n\t ** %s **\n" % warn_msg
+        print(MsgMixin.BERROR_ANSI + message + MsgMixin.RESET_ANSI)
+        sys.exit()
 
 
 class BaseLR:
