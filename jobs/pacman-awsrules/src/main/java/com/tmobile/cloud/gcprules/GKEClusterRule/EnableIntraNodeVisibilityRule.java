@@ -20,7 +20,7 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-intranode-visibility",desc = "Enable VPC Flow Logs and Intranode Visibility to see pod-level traffic, even for traffic within a worker node.", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanRule(key = "check-intraNode-visibility",desc = "Enable VPC Flow Logs and Intranode Visibility to see pod-level traffic, even for traffic within a worker node.", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class EnableIntraNodeVisibilityRule extends BaseRule  {
 
     private static final Logger logger = LoggerFactory.getLogger(EnableIntraNodeVisibilityRule.class);
