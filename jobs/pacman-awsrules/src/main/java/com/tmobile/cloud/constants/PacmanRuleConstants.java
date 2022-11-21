@@ -608,5 +608,10 @@ public class PacmanRuleConstants {
     public static  final  String AUTO_PROVISION ="autoProvision";
     public static final  String IP_ALIAS="ipalias";
     public static final String CLIENT_KEY="clientKey";
+    public static final String CLOUD_MONITORING="cloudMonitoring";
+    public static final String CLOUD_LOGGING="cloudLogging";
+    public static final String CLOUD_MONITORING_VALUE="monitoring.googleapis.com/kubernetes";
+    public static final String CLOUD_LOGGING_VALUE="logging.googleapis.com/kubernetes";
+
 
 }

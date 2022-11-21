@@ -1890,5 +1890,27 @@
     "modifiedDate": "2022-11-01",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Enable_Cloud_Logging_Monitoring",
+    "ruleUUID": "Enable_Cloud_Logging_Monitoring",
+    "policyId": "Enable_Cloud_Logging_Monitoring",
+    "ruleName": "Enable Cloud Logging and Monitoring",
+    "targetType": "gkecluster",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Kubernates",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-cloud-logging-monitoring\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Cloud_Logging_Monitoring\",\"autofix\":false,\"alexaKeyword\":\"Kubernates\",\"ruleRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_Cloud_Logging_Monitoring\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Disable_client_certificate_Authentication_for_Cluster\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Cloud_Logging_Monitoring",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable Cloud Logging and Monitoring",
+    "createdDate": "2022-11-01",
+    "modifiedDate": "2022-11-01",
+    "severity": "medium",
+    "category": "security"
   }
 ]
