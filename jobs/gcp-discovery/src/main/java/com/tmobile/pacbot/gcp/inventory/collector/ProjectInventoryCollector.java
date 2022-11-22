@@ -1,6 +1,9 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 
+import com.google.cloud.essentialcontacts.v1.Contact;
+import com.google.cloud.essentialcontacts.v1.EssentialContactsServiceClient;
+import com.google.common.collect.Lists;
 import com.google.gson.*;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
@@ -35,8 +38,17 @@ public class ProjectInventoryCollector {
         this.fetchComputeEngineMetadata(project.getProjectId().toString(),projectMetadataVH);
         projectMetadataVH.setCloudAsset(cloudAssetInventoryCollector.fetchCloudAssetDetails(project));
         projectMetadataVHList.add(projectMetadataVH);
-
+        logger.info("####Project contact list");
+        EssentialContactsServiceClient.ListContactsPagedResponse pagedListResponseProject = gcpCredentialsProvider.getEssentialContactClient().listContacts("projects/"+project.getProjectId());
+        List<Contact> resourcesProject = Lists.newArrayList(pagedListResponseProject.iterateAll());
+        logger.info("{}",resourcesProject.toString());
         logger.info("project data {}",projectMetadataVH);
+        logger.info("####Organistaion contact list");
+        EssentialContactsServiceClient.ListContactsPagedResponse pagedListResponse = gcpCredentialsProvider.getEssentialContactClient().listContacts("organizations/427933974387");
+        List<Contact> resources = Lists.newArrayList(pagedListResponse.iterateAll());
+        logger.info("{}",resources.toString());
+
+
         return  projectMetadataVHList;
     }
 

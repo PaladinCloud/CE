@@ -13,14 +13,13 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.compute.v1.*;
-import com.google.cloud.compute.v1.Zone;
-import com.google.cloud.compute.v1.*;
 import com.google.cloud.container.v1.ClusterManagerClient;
 import com.google.cloud.container.v1.ClusterManagerSettings;
 import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.google.cloud.dataproc.v1.ClusterControllerSettings;
 import com.google.cloud.dns.Dns;
 import com.google.cloud.dns.DnsOptions;
+import com.google.cloud.essentialcontacts.v1.*;
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
 import com.google.cloud.kms.v1.KeyManagementServiceSettings;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
@@ -28,10 +27,6 @@ import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.container.v1.DNSConfig;
-import com.google.container.v1.DNSConfigOrBuilder;
-import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,6 +35,7 @@ import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
 @Component
 public class GCPCredentialsProvider {
 
@@ -222,6 +218,11 @@ public class GCPCredentialsProvider {
                     jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
         }
         return cloudResourceManager;
+    }
+    public EssentialContactsServiceClient getEssentialContactClient() throws IOException {
+        EssentialContactsServiceSettings essentialContactsServiceSettings=EssentialContactsServiceSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+        EssentialContactsServiceClient essentialContactsServiceClient=EssentialContactsServiceClient.create(essentialContactsServiceSettings);
+        return essentialContactsServiceClient;
     }
 
     public  Iam getIamService() throws  IOException, GeneralSecurityException{
