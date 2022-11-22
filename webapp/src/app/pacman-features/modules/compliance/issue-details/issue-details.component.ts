@@ -1172,6 +1172,11 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
       const emailUrl = environment.email.url;
       const emailMethod = environment.email.method;
+      const resourceId = encodeURIComponent(encodeURIComponent(this.issueBlocks.resouceViolatedPolicy));
+      const resourceType = encodeURIComponent(encodeURIComponent(this.issueBlocks.resourceType));
+      const assetGroup = encodeURIComponent(encodeURIComponent(this.selectedAssetGroup));
+      const domainName = encodeURIComponent(encodeURIComponent(this.selectedDomain));
+      const ruleID = encodeURIComponent(encodeURIComponent(this.issueBlocks.ruleId));
       const payload = {
         attachmentUrl: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL + '/html.handlebars',
         from: this.fromEmailID,
@@ -1191,6 +1196,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
           policyDescription: this.issueBlocks.policyDescription,
           violationReason: this.issueBlocks.violationReason,
           resourceId: this.issueBlocks.resouceViolatedPolicy,
+          resourceUrl: window.location.origin+'/pl/assets/asset-list/'+resourceType+'/'+resourceId+'?ag='+assetGroup+'&domain='+domainName,
+          policyUrl: window.location.origin+'/pl/compliance/policy-knowledgebase-details/'+ruleID+'/false?ag='+assetGroup+'&domain='+domainName,
           createdOn: this.issueBlocks.violationModifiedDate,
           lastModifiedDate: this.issueBlocks.violationModifiedDate,
           templatePath: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL
