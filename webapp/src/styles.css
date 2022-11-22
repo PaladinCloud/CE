@@ -357,7 +357,7 @@ text.axis-title {
 }
 
 .axis.axis--y .tick:nth-child(2) {
-  display: none;
+  /* display: none; */
 }
 
 .focus .axis .tick text {

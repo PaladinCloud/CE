@@ -335,12 +335,22 @@ export class ComplianceDashboardComponent implements OnInit {
       this.commonResponseService.getData(distributionBySeverityUrl, distributionBySeverityMethod, {},queryParams).subscribe(response => {
         const data = response.distribution.distributionBySeverity;
         for(let i=0; i<this.violationCards.length; i++){
-            this.violationCards[i].totalViolations =
-                  data[this.violationCards[i].name].totalViolations;
-            this.violationCards[i].subInfo = {
-              Policy: data[this.violationCards[i].name].policyCount,
-              Assets: data[this.violationCards[i].name].assetCount,
-              "Average age": Math.round(data[this.violationCards[i].name].averageAge)
+          const violationName = this.violationCards[i].name;
+            if(data[violationName]){
+              this.violationCards[i].totalViolations =
+                  data[violationName].totalViolations;
+              this.violationCards[i].subInfo = {
+                Policy: data[violationName].policyCount,
+                Assets: data[violationName].assetCount,
+                "Average age": Math.round(data[violationName].averageAge)
+              }
+            }else{
+              this.violationCards[i].totalViolations = 0;
+              this.violationCards[i].subInfo = {
+                Policy: 0,
+                Assets: 0,
+                "Average age": 0
+              }
             }
         }
       })
