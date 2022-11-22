@@ -246,11 +246,11 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
 
     const updateRecentAGMethod = environment.updateRecentAG.method;
 
-    const userId = this.dataStore.getUserDetailsValue().getUserName();
+    const userId = this.dataStore.getUserDetailsValue().getUserId();
 
     const queryParams = {
       'ag': groupName,
-      'userId': userId
+      'userId': userId.split(".")[0]
     };
 
     if (queryParams['ag'] !== undefined) {

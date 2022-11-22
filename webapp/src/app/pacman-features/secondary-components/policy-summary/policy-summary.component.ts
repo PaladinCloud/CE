@@ -53,6 +53,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
     private urlToRedirect: string;
     @Input() pageLevel: number;
     @Input() ruleID: any;
+    @Input() breadcrumbPresent;
 
   dataValue: any;
   colors: any = ['#00b946', '#1c5066', '#00b946', 'rgb(248,146,87)'];
@@ -257,7 +258,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
 
     navigatePage(event) {
         try {
-            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+            this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
             const localObjKeys = Object.keys(event);
             const apiTarget = {'TypeAsset' : 'scanned'};
 
