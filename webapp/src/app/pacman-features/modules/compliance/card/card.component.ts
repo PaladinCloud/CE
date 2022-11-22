@@ -63,6 +63,8 @@ export class CardComponent implements OnInit {
   
 
   handleGraphIntervalSelection = (e) => {
+    this.fromDate = new Date(2022, 1, 1);
+    this.toDate = new Date(2200, 12, 31);
     this.selectedItem = e;
     e = e.toLowerCase();
     if(e == "all time" || e == "custom"){
@@ -71,7 +73,7 @@ export class CardComponent implements OnInit {
         this.isCustomSelected = true;
         return;
       }
-      this.dateIntervalSelected();
+      this.dateIntervalSelected(this.fromDate, this.toDate);
       return;
     }
     let date = new Date();
@@ -91,7 +93,7 @@ export class CardComponent implements OnInit {
         break;
     }
 
-    this.dateIntervalSelected(date); 
+    this.dateIntervalSelected(date, this.toDate); 
   }
 
 
