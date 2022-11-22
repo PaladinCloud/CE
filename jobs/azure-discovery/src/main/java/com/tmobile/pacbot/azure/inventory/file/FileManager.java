@@ -334,7 +334,7 @@ public class FileManager {
 		FileGenerator.generateJson(securityContactsVHList, "azure-defender.data");
 	}
 
-	public static void generateKubernetesClusterDetailsInfoFile(List<KubernettesClustersVH> knetesClusterList) {
-		FileGenerator.generateJson(knetesClusterList, "azure-kubernetes.data");
+	public static void generateKubernetesClusterDetailsInfoFile(List<KubernetesClustersVH> kubernetesClusterList) {
+		FileGenerator.generateJson(kubernetesClusterList, "azure-kubernetes.data");
 	}
 }

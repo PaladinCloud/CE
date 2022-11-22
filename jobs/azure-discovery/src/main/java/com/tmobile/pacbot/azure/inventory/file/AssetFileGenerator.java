@@ -19,7 +19,7 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
-import com.tmobile.pacbot.azure.inventory.collector.KubernettesServicesCollector;
+import com.tmobile.pacbot.azure.inventory.collector.KubernetesServicesCollector;
 
 @Component
 public class AssetFileGenerator {
@@ -156,7 +156,7 @@ public class AssetFileGenerator {
 	SecurityContactsCollector securityContactsCollector;
 
 	@Autowired
-	KubernettesServicesCollector kubernettesServicesCollector;
+	KubernetesServicesCollector kubernetesServicesCollector;
 
 	public void generateFiles(List<SubscriptionVH> subscriptions, String filePath) {
 
@@ -713,7 +713,7 @@ public class AssetFileGenerator {
 					return;
 				}
 				try {
-					FileManager.generateKubernetesClusterDetailsInfoFile(kubernettesServicesCollector.fetchKubernetesClusterDetails(subscription));
+					FileManager.generateKubernetesClusterDetailsInfoFile(kubernetesServicesCollector.fetchKubernetesClusterDetails(subscription));
 					log.info("subscription data saved!");
 				} catch (Exception e) {
 					e.printStackTrace();
