@@ -165,7 +165,6 @@ public class AssetFileGenerator {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		// generateAzureAplicationList();
 
 
 		for (SubscriptionVH subscription : subscriptions) {
