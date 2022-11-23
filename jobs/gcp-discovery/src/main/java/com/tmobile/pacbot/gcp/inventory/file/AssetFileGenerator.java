@@ -69,6 +69,8 @@ public class AssetFileGenerator {
 
 	@Autowired
 	ServiceAccountInventoryCollector serviceAccountInventoryCollector;
+	@Autowired
+	IAMUserCollector iamUserCollector;
 
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
@@ -236,7 +238,16 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
-
+			executor.execute(() -> {
+				if (!(isTypeInScope("iamusers"))) {
+					return;
+				}
+				try {
+					FileManager.generateIamUsers(iamUserCollector.fetchIamUsers(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 			executor.shutdown();
 
 			while (!executor.isTerminated()) {

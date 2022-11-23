@@ -3198,4 +3198,26 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitJsonArrayIAMUserDuties() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-2217:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616_arun.kotratil@paladincloud.io\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"userId\":\"user:arun.kotratil@paladincloud.io\",\"email\":\"arun.kotratil@paladincloud.io\",\"roles\":[\"roles/editor\"],\"discoverydate\":\"2022-11-2217:00:00+0530\",\"_resourceid\":\"central-run-349616_arun.kotratil@paladincloud.io\",\"_docid\":\"central-run-349616_arun.kotratil@paladincloud.io\",\"_entity\":\"true\",\"_entitytype\":\"iamusers\",\"firstdiscoveredon\":\"2022-11-2214:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-11-2212:14:00+0000\"}"              ,
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayForIAMUserDuties() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-2214:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616_service-344106022091@gcp-sa-cloudkms.iam.gserviceaccount.com\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"userId\":\"serviceAccount:service-344106022091@gcp-sa-cloudkms.iam.gserviceaccount.com\",\"email\":\"service-344106022091@gcp-sa-cloudkms.iam.gserviceaccount.com\",\"roles\":[\"roles/iam.serviceAccountAdmin\",\"roles/iam.serviceAccountUser\"],\"discoverydate\":\"2022-11-2214:00:00+0530\"}"    ,
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
