@@ -19,7 +19,6 @@ import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.PolicyDefinitionVH;
 import com.tmobile.pacbot.azure.inventory.vo.ResourceGroupVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
-import com.tmobile.pacbot.azure.inventory.collector.KubernetesServicesCollector;
 
 @Component
 public class AssetFileGenerator {
