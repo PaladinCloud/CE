@@ -27,6 +27,7 @@ public class CheckFtpStateRule extends BaseRule {
 
     private static final Logger logger = LoggerFactory
             .getLogger(CheckFtpStateRule.class);
+    private static final String ALL_ALLOWED="AllAllowed";
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -76,10 +77,13 @@ public class CheckFtpStateRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
 
+                logger.info("Rule ended with a failure{}");
+
                 return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
+          logger.debug("Rule ended with a success {}");
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
@@ -102,17 +106,17 @@ public class CheckFtpStateRule extends BaseRule {
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem.toString());
 
-                String ftpState=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.FTP_STATE).toString();
+                String ftpState=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.FTP_STATE).getAsString();
+                logger.info("ftpState Value{} "+ ftpState);
 
-                if(ftpState.equalsIgnoreCase(String.valueOf(FtpsState.ALL_ALLOWED))){
-                    validationResult=false;
+                if(ftpState.equalsIgnoreCase(ALL_ALLOWED)){
+                    validationResult = false;
                 }
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
         } else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-
         }
 
         return validationResult;
