@@ -40,34 +40,38 @@ public class KubernetesPrivateClusterEnableRule extends BaseRule {
             esUrl = url + "/azure_kubernetes/_search";
         }
         boolean isValid = false;
-        Map<String, Object> mustFilter = new HashMap<>();
-        mustFilter.put(PacmanRuleConstants.LATEST, true);
-        try {
-            isValid = checkPrivateClusterEnabledForKubernetes(esUrl, mustFilter);
-            if (!isValid) {
-                List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
-                LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
-                Annotation annotation = null;
-                annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        failureMsg);
-                annotation.put(PacmanRuleConstants.SEVERITY, severity);
-                annotation.put(PacmanRuleConstants.CATEGORY, category);
-                issue.put(PacmanRuleConstants.VIOLATION_REASON,
-                        ruleParam.get(PacmanRuleConstants.RULE_ID) + failureMsg + " Violation Found!");
-                issueList.add(issue);
-                annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-                logger.debug(
-                        failureMsg);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
-                        annotation);
+        String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        if (!StringUtils.isNullOrEmpty(resourceId)) {
+            Map<String, Object> mustFilter = new HashMap<>();
+            mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
+            mustFilter.put(PacmanRuleConstants.LATEST, true);
+
+            try {
+                isValid = checkPrivateClusterEnabledForKubernetes(esUrl, mustFilter);
+                if (!isValid) {
+                    List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+                    LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+                    Annotation annotation = null;
+                    annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                    annotation.put(PacmanSdkConstants.DESCRIPTION,
+                            failureMsg);
+                    annotation.put(PacmanRuleConstants.SEVERITY, severity);
+                    annotation.put(PacmanRuleConstants.CATEGORY, category);
+                    issue.put(PacmanRuleConstants.VIOLATION_REASON,
+                            ruleParam.get(PacmanRuleConstants.RULE_ID) + failureMsg + " Violation Found!");
+                    issueList.add(issue);
+                    annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
+                    logger.debug(
+                            failureMsg);
+                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                            annotation);
+                }
+            } catch (Exception e) {
+                throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
-        } catch (Exception e) {
-            throw new RuleExecutionFailedExeption("unable to determine" + e);
         }
         logger.debug(successMSG);
         return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
-
     }
     private boolean checkPrivateClusterEnabledForKubernetes(String esUrl, Map<String, Object> mustFilter) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
