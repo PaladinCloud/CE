@@ -57,13 +57,13 @@ public class KubernetesServicesCollector {
                 logger.info("kubernetesClusterObject: {}", kubernetesClusterObject);
 
                 if(kubernetesClusterObject!=null){
-                    KubernetesClustersVH kubernettesClustersVH= new KubernetesClustersVH();
-                    kubernettesClustersVH.setId(azure.kubernetesClusters().list().get(0).id());
-                    kubernettesClustersVH.setEnableRBAC(azure.kubernetesClusters().list().get(0).enableRBAC());
-                    kubernettesClustersVH.setSubscription(subscription.getSubscriptionId());
-                    kubernettesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
-                    kubernettesClustersVH.setRegion(kubernetesClusterObject.get("location").getAsString());
-                    kubernettesClustersVH.setResourceGroupName(
+                    KubernetesClustersVH kubernetesClustersVH= new KubernetesClustersVH();
+                    kubernetesClustersVH.setId(kubernetesCluster.id());
+                    kubernetesClustersVH.setEnableRBAC(kubernetesCluster.enableRBAC());
+                    kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());
+                    kubernetesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
+                    kubernetesClustersVH.setRegion(kubernetesClusterObject.get("location").getAsString());
+                    kubernetesClustersVH.setResourceGroupName(
                             kubernetesCluster.resourceGroupName());
                     JsonObject properties = kubernetesClusterObject.getAsJsonObject("properties");
 
@@ -71,10 +71,10 @@ public class KubernetesServicesCollector {
                         HashMap<String, Object> propertiesMap = new Gson().fromJson(
                                 properties.toString(),
                                 HashMap.class);
-                        kubernettesClustersVH.setProperties(propertiesMap);
+                        kubernetesClustersVH.setProperties(propertiesMap);
                     }
 
-                    kubernetesClustersVHList.add(kubernettesClustersVH);
+                    kubernetesClustersVHList.add(kubernetesClustersVH);
                 }
 
             } catch (Exception e){
@@ -84,4 +84,5 @@ public class KubernetesServicesCollector {
         }
         return kubernetesClustersVHList;
     }
+
 }
