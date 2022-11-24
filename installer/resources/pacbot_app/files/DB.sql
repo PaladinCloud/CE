@@ -3530,3 +3530,46 @@ update  pacmandata.cf_Target set status = 'disable' where targetName in ( 'polic
 delete from cf_AssetGroupTargetDetails where targetType in ( 'policydefinitions', 'policyevaluationresults', 'phd');
 /* remove older entries from table, can be removed in future */
 delete from cf_RuleInstance where ruleUUID = 'aws_account_ensure_cloudwatch_alarm';
+
+CREATE TABLE IF NOT EXISTS cf_PolicyPack (
+  policyPackId varchar(200) COLLATE utf8_bin NOT NULL,
+  policyPackName varchar(200) COLLATE utf8_bin NOT NULL,
+  policyPackDescription longtext,
+  PRIMARY KEY (policyPackId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS cf_PolicyPackInfo (
+	policyPackInfoId varchar(200)  NOT NULL,
+    childPolicyPackId varchar(200) COLLATE utf8_bin DEFAULT NULL,
+    parentPolicyPackId varchar(200) COLLATE utf8_bin NOT NULL,
+    PRIMARY KEY (policyPackInfoId),
+    CONSTRAINT child_policy_pack_id_fkey FOREIGN KEY (childPolicyPackId) REFERENCES cf_PolicyPack (policyPackId) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT parent_policy_pack_id_fkey FOREIGN KEY (parentPolicyPackId) REFERENCES cf_PolicyPack (policyPackId) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS cf_PolicyPackRuleInfo (
+	policyPackRuleId varchar(200) NOT NULL,
+	policyId varchar(200) COLLATE utf8_bin NOT NULL,
+    policyPackId varchar(200) COLLATE utf8_bin NOT NULL,
+    primary key (policyPackRuleId),
+    constraint policy_pack_id_fkey FOREIGN KEY (policyPackId) REFERENCES cf_PolicyPack (policyPackId) ON DELETE CASCADE ON UPDATE CASCADE,
+    constraint policy_id_fkey FOREIGN KEY (policyId) REFERENCES cf_Policy (policyId) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+insert into cf_PolicyPack values ('1e3dbd9a-6bce-11ed-a1eb-0242ac120002','CIS',null);
+insert into cf_PolicyPack values ('4b10600c-6bce-11ed-a1eb-0242ac120002','ISO',null);
+insert into cf_PolicyPack values ('577e4a98-6bce-11ed-a1eb-0242ac120002','NIST',null);
+insert into cf_PolicyPack values ('bfb79376-6bce-11ed-a1eb-0242ac120002','AWS',null);
+insert into cf_PolicyPack values ('1d4272f4-6bcf-11ed-a1eb-0242ac120002','AZURE',null);
+insert into cf_PolicyPack values ('278b4d1c-6bcf-11ed-a1eb-0242ac120002','GCP',null);
+insert into cf_PolicyPack values ('e01f8886-6bd2-11ed-a1eb-0242ac120002','Security',null);
+insert into cf_PolicyPack values ('f1106d54-6bd2-11ed-a1eb-0242ac120002','Networking',null);
+
+
+insert into cf_PolicyPackInfo values ('aebd648c-6bcf-11ed-a1eb-0242ac120002','1d4272f4-6bcf-11ed-a1eb-0242ac120002','1e3dbd9a-6bce-11ed-a1eb-0242ac120002');
+insert into cf_PolicyPackInfo values ('f9cc432a-6bd0-11ed-a1eb-0242ac120002','bfb79376-6bce-11ed-a1eb-0242ac120002','1e3dbd9a-6bce-11ed-a1eb-0242ac120002');
+insert into cf_PolicyPackInfo values ('041158fc-6bd1-11ed-a1eb-0242ac120002','278b4d1c-6bcf-11ed-a1eb-0242ac120002','1e3dbd9a-6bce-11ed-a1eb-0242ac120002');
+insert into cf_PolicyPackInfo values ('af4f4880-6bd3-11ed-a1eb-0242ac120002','e01f8886-6bd2-11ed-a1eb-0242ac120002','bfb79376-6bce-11ed-a1eb-0242ac120002');
+insert into cf_PolicyPackInfo values ('b9151c3c-6bd3-11ed-a1eb-0242ac120002','f1106d54-6bd2-11ed-a1eb-0242ac120002','bfb79376-6bce-11ed-a1eb-0242ac120002');
+
+insert into cf_PolicyPackRuleInfo values ('0dc038da-6bdd-11ed-a1eb-0242ac120002','AWSRdsUnencryptedPublicInstances_version-1_AwsRdsUnencryptedPublicAccess_rdsdb','e01f8886-6bd2-11ed-a1eb-0242ac120002');
