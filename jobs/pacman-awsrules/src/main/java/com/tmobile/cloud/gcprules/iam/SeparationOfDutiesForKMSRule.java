@@ -2,8 +2,8 @@ package com.tmobile.cloud.gcprules.iam;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
@@ -12,6 +12,7 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.rule.Annotation;
 import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.rule.PacmanRule;
 import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-
+@PacmanRule(key = "enforce-separation-of-duties-for-kms", desc = "Enforce Separation of Duties While Assigning KMS Related Roles to Users", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class SeparationOfDutiesForKMSRule extends BaseRule {
     private static final Logger logger = LoggerFactory.getLogger(SeparationOfDutiesForKMSRule.class);
     @Override
@@ -79,15 +80,27 @@ public class SeparationOfDutiesForKMSRule extends BaseRule {
 
     private boolean checkIfKMSRolesAreSeparated(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("inside checkIfKMSRolesAreSeparated of SeparationOfDutiesForKMSRule");
+        boolean cloudKMSAdmin=false;
+        boolean encryptDecryptKMS=false;
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         if (hitsJsonArray.size() > 0) {
             JsonObject iamUser = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
-            JsonArray roles = iamUser.get("roles").getAsJsonArray();
-            if(roles.contains(JsonParser.parseString("roles/cloudkms.admin"))&&(roles.contains(JsonParser.parseString("roles/cloudkms.cryptoKeyEncrypter"))))
-                return false;
+            JsonArray roles = iamUser.getAsJsonObject().get(PacmanRuleConstants.ROLES).getAsJsonArray();
+            for (JsonElement role : roles) {
+                if (role.getAsString().equalsIgnoreCase("roles/cloudkms.admin")) {
+                    cloudKMSAdmin = true;
+                }
+                if (role.getAsString().equalsIgnoreCase("roles/cloudkms.cryptoKeyEncrypter") || role.getAsString().equalsIgnoreCase("roles/cloudkms.cryptoKeyEncrypterDecrypter") || role.getAsString().equalsIgnoreCase("roles/cloudkms.cryptoKeyDecrypter")) {
+                    encryptDecryptKMS = true;
+                }
+
+            }
         }
-        return true;
+            if(cloudKMSAdmin&&encryptDecryptKMS) {
+                return false;
+            }
+            return true;
     }
 
     @Override

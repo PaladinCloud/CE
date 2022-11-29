@@ -1934,5 +1934,27 @@
     "modifiedDate": "2022-11-01",
     "severity": "low",
     "category": "security"
+  },
+  {
+    "ruleId": "Enforce_Separation_Of_Duties_For_KMS_Roles",
+    "ruleUUID": "Enforce_Separation_Of_Duties_For_KMS_Roles",
+    "policyId": "Enforce_Separation_Of_Duties_For_KMS_Roles",
+    "ruleName": "Separation of duties",
+    "targetType": "iamusers",
+    "assetGroup": "gcp",
+    "alexaKeyword": "EnforceSeparationOfDutiesForKMS",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-separation-of-duties-for-kms\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Enforce Separation of Duties While Assigning KMS Related Roles to Users\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Separation of Duties While Assigning KMS Related Roles to Users is NOT Enforced\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"Separation of Duties While Assigning KMS Related Roles to Users is enforced\",\"key\":\"SUCCESS\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"autofix\":false,\"alexaKeyword\":\"EnforceSeparationOfDutiesForKMS\",\"ruleRestUrl\":\"\",\"targetType\":\"iamusers\",\"pac_ds\":\"gcp\",\"policyId\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enforce_Separation_Of_Duties_For_KMS_Roles",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enforce Separation of Duties While Assigning KMS Related Roles to Users",
+    "createdDate": "2022-11-29",
+    "modifiedDate": "2022-11-29",
+    "severity": "medium",
+    "category": "security"
   }
 ]
