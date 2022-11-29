@@ -34,7 +34,7 @@ public class CheckForTlsVersionRule extends BaseRule {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
-        String tlsVersion= ruleParam.get(PacmanRuleConstants.TLS_VERSION);
+        String tlsVersion= ruleParam.get("minTlsVersion");
         logger.info("The target type is:{}", targetType);
         if (!PacmanUtils.doesAllHaveValue(severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -67,7 +67,7 @@ public class CheckForTlsVersionRule extends BaseRule {
                 Annotation annotation = null;
                 annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.DESCRIPTION,
-                        "Ensure that all Microsoft Azure App Service web applications are using the latest version of TLS encryption protocol to secure the applications traffic over the Internet and comply with the industry standards");
+                        "Microsoft Azure App Service web applications are not using the latest version of TLS encryption.");
                 annotation.put(PacmanRuleConstants.SEVERITY, severity);
                 annotation.put(PacmanRuleConstants.CATEGORY, category);
                 issue.put(PacmanRuleConstants.VIOLATION_REASON,
@@ -100,7 +100,7 @@ public class CheckForTlsVersionRule extends BaseRule {
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem);
 
-                String minTLSVersion=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.TLS_VERSION).toString();
+                String minTLSVersion=jsonDataItem.getAsJsonObject().get("minTlsVersion").getAsString();
                 logger.info("minTLSVersion, {}",minTLSVersion);
 
                 if(minTLSVersion.equalsIgnoreCase(tlsVersion)){
