@@ -612,6 +612,9 @@ public class PacmanRuleConstants {
     public static final String CLOUD_LOGGING="cloudLogging";
     public static final String CLOUD_MONITORING_VALUE="monitoring.googleapis.com/kubernetes";
     public static final String CLOUD_LOGGING_VALUE="logging.googleapis.com/kubernetes";
+    public  static  final String AZURE_POLICY="azurepolicy";
+    public  static  final String ADDON_PROFILES="addonProfiles";
+
 
 
     public static final String DISABLE_KUBERNETES_DASHBOARD="disableKubernetesDashBoard";
