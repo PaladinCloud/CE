@@ -23,8 +23,9 @@ class ApplicationLoadBalancerListener(ALBListenerResource):
         sys.exit()
 
     # certificate_arn = Settings.get('SSL_CERTIFICATE_ARN') if Settings.get('ALB_PROTOCOL', None) == "HTTPS" else None
-    # port = 80 if Settings.get('ALB_PROTOCOL', "HTTP") != "HTTPS" else 443
-    # protocol = Settings.get('ALB_PROTOCOL', "HTTP")
+    default_action_type = "forward" if  Settings.get('ALB_PROTOCOL', "HTTP") != "HTTPS" else "redirect"
+    port = 80 if Settings.get('ALB_PROTOCOL', "HTTP") != "HTTPS" else 443
+    protocol = Settings.get('ALB_PROTOCOL', "HTTP")
     # ssl_policy = "ELBSecurityPolicy-2016-08" if Settings.get('ALB_PROTOCOL', None) == "HTTPS" else None
 
 
