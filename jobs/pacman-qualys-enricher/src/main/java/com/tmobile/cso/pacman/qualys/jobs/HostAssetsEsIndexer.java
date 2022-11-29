@@ -161,7 +161,8 @@ public class HostAssetsEsIndexer implements Constants {
                                 vuln.put("@id", asset.get(DOC_ID).toString() + "_" + vuln.get("qid").toString());
                                 vuln.put("latest", true);
                                 vuln.put("_resourceid", asset.get("_resourceid"));
-                                vuln.put("title", kbaseDetailsList.get(2));
+
+                                vuln.put("title", kbaseDetailsList.get(3)+";"+kbaseDetailsList.get(4)+";"+kbaseDetailsList.get(2));
                                 Object firstFound = vuln.get("firstFound");
                                 Object lastFound = vuln.get("lastFound");
         
@@ -226,6 +227,8 @@ public class HostAssetsEsIndexer implements Constants {
                 kbDetailsList.add(String.valueOf(vulnInfo.getSEVERITYLEVEL()));
                 kbDetailsList.add(vulnInfo.getVULNTYPE());
                 kbDetailsList.add(vulnInfo.getTITLE());
+                kbDetailsList.add(vulnInfo.getCVELIST().getCVE().get(0).getID());
+                kbDetailsList.add(vulnInfo.getCVELIST().getCVE().get(0).getURL());
             } else {
                 return Collections.emptyList();
             }
