@@ -1836,6 +1836,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 if (null != source.get(ISSUE_DETAILS)) {
                     issueDetails.put(ISSUE_DETAILS, source.get(ISSUE_DETAILS).getAsString());
                 }
+                if (null != source.get(QUALYS_DETAILS)) {
+                    issueDetails.put(QUALYS_DETAILS, source.get(QUALYS_DETAILS).getAsString());
+                }
             }
         }
         return issueDetails;
