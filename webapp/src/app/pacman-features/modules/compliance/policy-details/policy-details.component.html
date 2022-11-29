@@ -52,7 +52,7 @@
     </div>
     <div class="fixed-widgets-section" *ngIf="setRuleIdObtained == true">
         <div class="compliance-issues-container">
-            <app-policy-summary [ruleID]="ruleID" [pageLevel]="pageLevel"></app-policy-summary>
+            <app-policy-summary [breadcrumbPresent]="breadcrumbPresent" [ruleID]="ruleID" [pageLevel]="pageLevel"></app-policy-summary>
             <app-policy-across-application [ruleID]="ruleID" [pageLevel]="pageLevel"></app-policy-across-application>
         </div>
     </div>

@@ -154,10 +154,10 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     }
     const updateRecentAGUrl = environment.updateRecentAG.url;
     const updateRecentAGMethod = environment.updateRecentAG.method;
-    const userId = this.dataCacheService.getUserDetailsValue().getUserName();
+    const userId = this.dataCacheService.getUserDetailsValue().getUserId();
     const queryParams = {
       ag: groupName,
-      userId: userId,
+      userId: userId.split(".")[0],
     };
     if (queryParams["ag"] !== undefined) {
       this.updateRecentAGSubscription = this.updateRecentAGService

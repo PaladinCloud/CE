@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.amazonaws.services.dynamodbv2.document.Item;
 import com.google.container.v1.ListNodePoolsResponse;
 import com.google.container.v1.NodePool;
 import com.tmobile.pacbot.gcp.inventory.vo.GKEClusterVH;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -70,7 +72,9 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setIPAlias(cluster.getIpAllocationPolicy().getUseIpAliases());
                     gkeClusterVH.setCloudLogging(cluster.getLoggingService());
                  gkeClusterVH.setCloudMonitoring(cluster.getMonitoringService());
-                   logger.info("monitoring services {} {}", cluster.getName(),cluster.getMonitoringService());
+                   logger.info("monitoring services {} {}", cluster.getName(),cluster.getMonitoringService());                    if(cluster.getAddonsConfig()!=null && !cluster.getAddonsConfig().getAllFields().isEmpty()){
+                        gkeClusterVH.setDisableKubernetesDashBoard(cluster.getAddonsConfig().getKubernetesDashboard().getDisabled());
+                    }
                     if(cluster.getPrivateClusterConfig()!=null){
                         gkeClusterVH.setEnablePrivateNodes(cluster.getPrivateClusterConfig().getEnablePrivateNodes());
                         gkeClusterVH.setEnablePrivateEndPoints(cluster.getPrivateClusterConfig().getEnablePrivateEndpoint());
@@ -84,6 +88,19 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setVersion(cluster.getCurrentMasterVersion());
                     gkeClusterVH.setRegion(cluster.getLocation());
 
+                    if (cluster.getMasterAuthorizedNetworksConfig() !=null && !cluster.getMasterAuthorizedNetworksConfig().getAllFields().isEmpty()) {
+                        logger.info("getMasterAuthorizedNetworksConfig {} ***********",cluster.getMasterAuthorizedNetworksConfig().toString());
+                        HashMap<String, Object> masterAuthorizedNetworksConfigMap = new HashMap<>();
+
+                        cluster.getMasterAuthorizedNetworksConfig().getAllFields().forEach((fieldDescriptor, o) -> {
+                            logger.info("field Descriptor {} {}",fieldDescriptor.getName(),o.toString());
+                        masterAuthorizedNetworksConfigMap.put(fieldDescriptor.getName(),o.toString());
+                        }
+                        );
+
+
+                        gkeClusterVH.setMasterAuthorizedNetworksConfig(masterAuthorizedNetworksConfigMap);
+                    }
 
                     if (cluster.getDatabaseEncryption().getKeyName() != null) {
                         String keyName = new Gson().fromJson(

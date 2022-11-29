@@ -3176,4 +3176,26 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitsJsonArrayForKubernetesWebUI() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-0913:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":true,\"autoRepair\":true,\"discoverydate\":null}],\"intraNodeVisibility\":false,\"enableKubernetesAlpha\":false,\"enablePrivateEndPoints\":false,\"enablePrivateNodes\":false,\"disableKubernetesDashBoard\":true,\"discoverydate\":\"2022-11-0913:00:00+0530\",\"_resourceid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_docid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_entity\":\"true\",\"_entitytype\":\"gkecluster\",\"firstdiscoveredon\":\"2022-10-2712:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-11-0909:02:00+0000\"}"                ,
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+    public static JsonArray getFailureJsonArrayForKubernetesWebUI() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-0913:00:00+0530\",\"_cloudType\":\"gcp\",\"region\":\"us-central1-c\",\"id\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"masterAuthorizedNetworksConfig\":null,\"bootDiskKmsKey\":null,\"keyName\":null,\"nodePools\":[{\"discoveryDate\":null,\"_cloudType\":\"GCP\",\"region\":null,\"id\":null,\"projectName\":null,\"projectId\":null,\"autoUpgrade\":true,\"enableIntegrityMonitoring\":true,\"enableSecureBoot\":true,\"autoRepair\":true,\"discoverydate\":null}],\"intraNodeVisibility\":false,\"enableKubernetesAlpha\":false,\"enablePrivateEndPoints\":false,\"enablePrivateNodes\":false,\"disableKubernetesDashBoard\":false,\"discoverydate\":\"2022-11-0913:00:00+0530\",\"_resourceid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_docid\":\"27297f8c62ec43b5a3367b00cb2a6cacb97f7a20327a4eadb30e6d048661a545\",\"_entity\":\"true\",\"_entitytype\":\"gkecluster\",\"firstdiscoveredon\":\"2022-10-2712:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-11-0909:02:00+0000\"}"                ,
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }
