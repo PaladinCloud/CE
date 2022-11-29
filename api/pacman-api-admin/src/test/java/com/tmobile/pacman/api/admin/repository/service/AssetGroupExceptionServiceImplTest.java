@@ -87,7 +87,7 @@ public class AssetGroupExceptionServiceImplTest {
 	private PacmanConfiguration config;
 	
 	@Mock
-	private RuleService ruleService;
+	private PolicyService ruleService;
 	
 	@Mock
 	private ObjectMapper mapper;

@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.tmobile.pacman.api.admin.domain.RuleProjection;
+import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
 import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
@@ -46,7 +46,7 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 	private AssetGroupService assetGroupService;
 
 	@Autowired
-	private RuleService ruleService;
+	private PolicyService policyService;
 
 	@Override
 	public List<TargetTypeRuleDetails> getTargetTypesByAssetGroupName(String assetGroupName) {
@@ -59,7 +59,7 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 	Function<AssetGroupTargetDetails, TargetTypeRuleDetails> fetchTargetTypeRuleDetails = assetGroupTargetDetail -> {
 		TargetTypeRuleDetails targetTypeRuleDetails = new TargetTypeRuleDetails();
 		targetTypeRuleDetails.setTargetName(assetGroupTargetDetail.getTargetType());
-		List<RuleProjection> allRules = ruleService.getAllRulesByTargetTypeName(assetGroupTargetDetail.getTargetType());
+		List<PolicyProjection> allRules = policyService.getAllPoliciesByTargetTypeName(assetGroupTargetDetail.getTargetType());
 		targetTypeRuleDetails.setAllRules(allRules);
 		targetTypeRuleDetails.setRules(Lists.newArrayList());
 		return targetTypeRuleDetails;
@@ -85,7 +85,7 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 	Function<AssetGroupTargetDetails, TargetTypeRuleViewDetails> fetchStickyExceptionTargetTypeRuleDetails = assetGroupTargetDetail -> {
 		TargetTypeRuleViewDetails targetTypeRuleDetails = new TargetTypeRuleViewDetails();
 		targetTypeRuleDetails.setTargetName(assetGroupTargetDetail.getTargetType());
-		List<RuleProjection> allRules = ruleService.getAllRulesByTargetTypeName(assetGroupTargetDetail.getTargetType());
+		List<PolicyProjection> allRules = policyService.getAllPoliciesByTargetTypeName(assetGroupTargetDetail.getTargetType());
 		targetTypeRuleDetails.setAllRules(allRules);
 		targetTypeRuleDetails.setRules(Lists.newArrayList());
 		return targetTypeRuleDetails;

@@ -28,7 +28,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(name = "cf_RuleInstance", uniqueConstraints = @UniqueConstraint(columnNames = "ruleId"))
-public class Rule {
+public class RuleToBeDeleted {
 
 	@Id
 	@Column(name = "ruleId", unique = true, nullable = false)

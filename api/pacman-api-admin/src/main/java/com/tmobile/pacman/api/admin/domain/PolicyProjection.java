@@ -18,11 +18,9 @@ package com.tmobile.pacman.api.admin.domain;
 /**
  * RuleProjection Domain Interface
  */
-public interface RuleProjection {
+public interface PolicyProjection {
 
 	public String getId();
-
-	public String getPolicyId();
 
 	public String getType();
 

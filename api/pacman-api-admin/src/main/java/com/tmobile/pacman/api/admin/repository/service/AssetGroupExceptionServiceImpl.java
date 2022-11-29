@@ -54,7 +54,7 @@ import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionDetailsRequest;
 import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionProjections;
 import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupExceptionRequest;
 import com.tmobile.pacman.api.admin.domain.RuleDetails;
-import com.tmobile.pacman.api.admin.domain.RuleProjection;
+import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.domain.StickyExceptionResponse;
 import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
 import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
@@ -81,7 +81,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	private AssetGroupExceptionRepository assetGroupExceptionRepository;
 
 	@Autowired
-	private RuleService ruleService;
+	private PolicyService policyService;
 	
 	private static RestClient restClient;
 	
@@ -143,10 +143,10 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 		return stickyExceptionResponse;
 	}
 
-	private TargetTypeRuleViewDetails getTargetTypeRuleDetails(List<String> ruleIdList, TargetTypeRuleViewDetails targetTypeRuleDetails, String targetType) {
+	private TargetTypeRuleViewDetails getTargetTypeRuleDetails(List<String> policyIdList, TargetTypeRuleViewDetails targetTypeRuleDetails, String targetType) {
 		if(StringUtils.isNotBlank(targetType)) {
-			List<RuleProjection> allRules = ruleService.getAllRulesByTargetTypeAndNotInRuleIdList(targetType, ruleIdList);
-			List<RuleProjection> rules = ruleService.getAllRulesByTargetTypeAndRuleIdList(targetType, ruleIdList);
+			List<PolicyProjection> allRules = policyService.getAllPoliciesByTargetTypeAndNotInPolicyIdList(targetType, policyIdList);
+			List<PolicyProjection> rules = policyService.getAllPoliciesByTargetTypeAndPolicyIdList(targetType, policyIdList);
 			targetTypeRuleDetails.setAllRules(allRules);
 			targetTypeRuleDetails.setRules(rules);
 		}
@@ -159,7 +159,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 
 	@Override
 	public String createAssetGroupExceptions(final AssetGroupExceptionDetailsRequest assetGroupExceptionDetails, final String userId) throws PacManException {
-		List<String> ruleIds = Lists.newArrayList();
+		List<String> policyIds = Lists.newArrayList();
 		try {
 			List<TargetTypeRuleDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
 			deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetails.getExceptionName().trim(), assetGroupExceptionDetails.getAssetGroup().trim()), userId);	
@@ -179,7 +179,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 							assetGroupException.setExpiryDate(AdminUtils.getFormatedDate("dd/MM/yyyy", assetGroupExceptionDetails.getExpiryDate()));
 							assetGroupException.setRuleId(rules.get(ruleIndex).getId().trim());
 							assetGroupException.setRuleName(rules.get(ruleIndex).getText().trim());
-							ruleIds.add(rules.get(ruleIndex).getId().trim());
+							policyIds.add(rules.get(ruleIndex).getId().trim());
 							allAssetGroupExceptions.add(assetGroupException);
 							haveNoRules = false;
 						}
@@ -200,7 +200,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 
 					assetGroupExceptionRepository.saveAll(allAssetGroupExceptions);
 					if(targetTypes.size()!=0 && !haveNoRules) {
-						invokeAllRules(ruleIds);
+						invokeAllPolices(policyIds);
 					}
 					return CONFIG_STICKY_EXCEPTION_SUCCESS;
 				} catch (Exception e) {
@@ -216,9 +216,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 		}
 	}
 
-	private void invokeAllRules(List<String> ruleIds) {
+	private void invokeAllPolices(List<String> policyIds) {
 		try {	
-			ruleService.invokeAllRules(ruleIds);
+			policyService.invokeAllPolicies(policyIds);
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 		}

@@ -50,7 +50,7 @@ public class AssetGroupTargetDetailsServiceImplTest {
 	private AssetGroupService assetGroupService;
 
 	@Mock
-	private RuleService ruleService;
+	private PolicyService ruleService;
 
 	@Test
 	public void getTargetTypesByAssetGroupNameTest() throws PacManException {

@@ -7,15 +7,15 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * The Class RuleCategory.
+ * The Class PolicyCategory.
  */
 @Entity
-@Table(name = "pac_v2_ruleCategory_weightage", uniqueConstraints = @UniqueConstraint(columnNames = "ruleCategory"))
-public class RuleCategory {
+@Table(name = "cf_PolicyCategoryWeightage", uniqueConstraints = @UniqueConstraint(columnNames = "policyCategory"))
+public class PolicyCategory {
 
 	@Id
-	@Column(name = "ruleCategory", unique = true, nullable = false)
-	private String ruleCategory;
+	@Column(name = "policyCategory", unique = true, nullable = false)
+	private String policyCategory;
 	private String domain;
 	private String weightage;
 	
@@ -25,11 +25,12 @@ public class RuleCategory {
 	public void setDomain(String domain) {
 		this.domain = domain;
 	}
-	public String getRuleCategory() {
-		return ruleCategory;
+	
+	public String getPolicyCategory() {
+		return policyCategory;
 	}
-	public void setRuleCategory(String ruleCategory) {
-		this.ruleCategory = ruleCategory;
+	public void setPolicyCategory(String policyCategory) {
+		this.policyCategory = policyCategory;
 	}
 	public String getWeightage() {
 		return weightage;

@@ -18,7 +18,7 @@ package com.tmobile.pacman.api.admin.domain;
 /**
  * RuleDetails Domain Class
  */
-public class RuleDetails implements RuleProjection{
+public class RuleDetails implements PolicyProjection{
 	private String id;
 	private String policyId;
 	private String status;
