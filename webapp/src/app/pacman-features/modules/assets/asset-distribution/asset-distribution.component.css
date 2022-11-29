@@ -46,7 +46,7 @@ flex-grow: 1;
 
 .overall-distribution{
   margin: 0px 24px;
-  height: calc(97% - 88px);
+  height: calc(100% - 72px);
 }
 
 .slider{
@@ -74,7 +74,6 @@ border-bottom: 2px solid var(--border-200);
 }
 
 .col-header{
-  flex-grow: 1;
   font: var(--text-body-2);
   color: var(--text-low-emphasis);
 }
@@ -129,6 +128,10 @@ border-bottom: 2px solid var(--border-200);
     padding: 8px 24px;
     background-color: var(--background-white);
     border-bottom: 2px solid var(--border-200);
+  }
+
+  .search-container .isCollapsed{
+   display: none;
   }
 
   .column-wrapper{
