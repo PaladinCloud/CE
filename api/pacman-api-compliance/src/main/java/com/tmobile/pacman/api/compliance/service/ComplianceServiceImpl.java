@@ -993,7 +993,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     DISPLAY_NAME).toString() : "";
             issueDetails = (null != policyViolationByIssueId.get(ISSUE_DETAILS)) ? policyViolationByIssueId.get(
                     ISSUE_DETAILS).toString() : null;
-            if (null != issueDetails) {
+            if(null!=policyViolationByIssueId.get("qualysIssueDetails")){
+                String violationTitle= policyViolationByIssueId.get("qualysIssueDetails").toString();
+                violation=new HashMap<>();
+                violation.put("qualysViolationDetails",violationTitle);
+                violationList.add(violation);
+            }
+            else if (null != issueDetails) {
                 issueDetails = issueDetails.substring(TWO, issueDetails.length() - TWO);
                 violation = Arrays.stream(issueDetails.trim().split(", ")).map(s -> s.split("="))
                         .collect(Collectors.toMap(a -> a[0], // key

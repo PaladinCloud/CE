@@ -159,6 +159,7 @@ public interface Constants {
     String VALID_TO = "validto";
     String UNDERSCORE_COUNT = "_count";
     String ISSUE_DETAILS = "issueDetails";
+    String QUALYS_DETAILS = "qualysIssueDetails";
     String SEARCH = "_search";
     String INFRA_AND_PLATFORMS = "Infra & Platforms";
     String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
