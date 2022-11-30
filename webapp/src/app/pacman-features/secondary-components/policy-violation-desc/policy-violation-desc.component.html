@@ -47,7 +47,14 @@
                     <span class="anchor-link pointer" (click)='$event.stopPropagation(); showAccordion=!showAccordion '> View </span>
                     <app-nested-accordion (click)='$event.stopPropagation()' (accodionClicked)="$event.stopPropagation(); closeAccordion($event)"  [nestedAccordionData]="eachData.values" class="nested-accordion-component-wrapper absolute" *ngIf="showAccordion"></app-nested-accordion>
                 </div>
-                <div class="policy-violation-label-value" title="{{eachData.labelCount}}" *ngIf="eachData.isAccordion == false" [innerHTML]="eachData.labelCount">
+                <div *ngIf="eachData.isAccordion == false">
+                    <div class="policy-violation-label-value" *ngIf="eachData.labelCount" title="{{eachData.labelCount}}">
+                        {{ eachData.labelCount }}
+                    </div>
+                    <br>
+                    <span *ngFor="let item of eachData.data">
+                        <a class="anchor-link" [href]="item.link" target="_blank">{{item.cveNumber}}</a><span>: {{ item.displayName }}</span>, 
+                    </span>
                 </div>
             </div>
         </div>

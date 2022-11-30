@@ -84,6 +84,7 @@ export class PolicyViolationDescComponent implements OnInit {
       // check if there are nested obj inside
       Object.keys(dataToBeChecked).forEach((element) => {
         if (dataToBeChecked[element]) {
+          if(typeof dataToBeChecked[element] == "string"){
           checkifJsonString = dataToBeChecked[element].search("{");
           // .search returns returns -1 if string doesn't exists
           if (!(checkifJsonString === -1)) {
@@ -113,11 +114,43 @@ export class PolicyViolationDescComponent implements OnInit {
             };
             this.labelData.push(dataToPush);
           }
+          }else if(Array.isArray(dataToBeChecked[element])){
+            let data = [];
+            dataToBeChecked[element].forEach(item => {
+              let keys = Object.keys(item);
+              keys.forEach(key => {
+                if(key=="qualysViolationDetails"){
+                  data = this.processStringToArray(item[key])
+                  const dataToPush = {
+                    labelName: key.replace(/_/g, " "), // remove the '_' from the key name before pushing
+                    labelCount: null,
+                    values: null,
+                    isAccordion: false,
+                    data: data
+                  };
+      
+                  this.labelData.push(dataToPush);
+                }
+              })
+            });
+          }
         }
       });
     } catch (e) {
       this.logger.log("error", e);
     }
+  }
+  processStringToArray(dataToProcess) {
+    let processedData = []; // array of objects
+    dataToProcess.split(",").forEach(item => {
+      const splittedArr = item.split(";");
+      processedData.push({
+        cveNumber: splittedArr[0],
+        link: splittedArr[1],
+        displayName: splittedArr[2]
+      });
+    })
+    return processedData;
   }
 
   /**
