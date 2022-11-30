@@ -135,7 +135,7 @@ public class SQLServerInventoryCollector {
 					if(properties.has("recurringScans")) {
 						JsonObject recurringScans = properties.getAsJsonObject("recurringScans");
 						sqlServerVH.setRecurringScansEnabled(recurringScans.getAsJsonPrimitive("isEnabled").getAsBoolean());
-						if (properties.has("emails")) {
+						if (recurringScans.has("emails")) {
 							sqlServerVH.setEmails(recurringScans.getAsJsonArray("emails").getAsString());
 						}
 						sqlServerVH.setEmailSubscriptionAdmins(recurringScans.getAsJsonPrimitive("emailSubscriptionAdmins").getAsBoolean());
