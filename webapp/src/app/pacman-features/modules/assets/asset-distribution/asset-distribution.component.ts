@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as d3 from 'd3';
 import { AwsResourceTypeSelectionService } from "src/app/pacman-features/services/aws-resource-type-selection.service";
@@ -64,7 +64,6 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
   public chartOptions: ChartOptions;
   dataLoaded: boolean;
   treemapData = [];
-  agAndDomain: any;
   totalAssetCount = 0;
   totalAssetTypes = 0;
   dataPointIndex: any = 0;
@@ -125,6 +124,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   constructor(
+    private ngZone: NgZone,
     private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
     private logger: LoggerService,
     private router: Router,
@@ -273,7 +273,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
           click: (event, chartContext, Config) => {
             this.dataPointIndex = Config.dataPointIndex;
             const selectedTargetType = this.awsResources[this.dataPointIndex];
-            // this.redirect(selectedTargetType);
+            this.redirect(selectedTargetType);
           }
         }
       },
@@ -305,10 +305,12 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
       filter: "resourceType=" + selectedTargetType
     }
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-    this.router.navigate(['pl/assets/asset-list'], {
-      queryParams: queryParams,
-      queryParamsHandling: 'merge'
-    });
+    this.ngZone.run(() => {
+      this.router.navigate(['pl', 'assets', 'asset-list'], {
+        queryParams: queryParams,
+        queryParamsHandling: 'merge'
+      });
+    })
   }
 
   expandAssetTypeList() {
