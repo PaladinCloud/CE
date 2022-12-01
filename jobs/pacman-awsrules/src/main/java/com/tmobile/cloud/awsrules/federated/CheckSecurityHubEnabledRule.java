@@ -75,8 +75,8 @@ public class CheckSecurityHubEnabledRule extends BaseRule {
                 Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
                         shouldFilter, mustTermsFilter, "_resourceid", null);
                 if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-                    return "AWS Security Hub is not enabled in region: " + region + " from the list of regions"
-                            + regions + ", accountId: " + accountId;
+                    return "AWS Security Hub is not enabled in region:" + region + " from the list of regions"
+                            + regions + ",accountId:" + accountId;
                 }
             }
         } catch (Exception ex) {
