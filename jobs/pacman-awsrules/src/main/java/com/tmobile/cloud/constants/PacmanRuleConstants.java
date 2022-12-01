@@ -577,6 +577,8 @@ public class PacmanRuleConstants {
     public static final String CLUSTER_NAME = "clustername";
     public static final String LATEST_VERSION = "latestversion";
     public static final String VERSION = "version";
+    public static final String MAX_DAYS = "maxDays";
+    public static final String USER = "user";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";
