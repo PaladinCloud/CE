@@ -205,7 +205,7 @@ public class LogMetricFilterAndAlarmRule extends BaseRule {
 				"{ $.userIdentity.type = \"Root\" && $.userIdentity.invokedBy NOT EXISTS && $.eventType != \"AwsServiceEvent\" }"),
 		IAM_POL_CHANGES_FILTER(
 				"{($.eventName=DeleteGroupPolicy)||($.eventName=DeleteRolePolicy)||($.eventName=DeleteUserPolicy)||($.eventName=PutGroupPolicy)||($.eventName=PutRolePolicy)||($.eventName=PutUserPolicy)||($.eventName=CreatePolicy)||($.eventName=DeletePolicy)||($.eventName=CreatePolicyVersion)||($.eventName=DeletePolicyVersion)||($.eventName=AttachRolePolicy)||($.eventName=DetachRolePolicy)||($.eventName=AttachUserPolicy)||($.eventName=DetachUserPolicy)||($.eventName=AttachGroupPolicy)||($.eventName=DetachGroupPolicy)}"),
-		CT_CFG_CHANGES_FILTER(
+		CT_CFGN_CHANGES_FILTER(
 				"{ ($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) || ($.eventName = StartLogging) || ($.eventName = StopLogging) }"),
 		MC_AUTH_FAIL_FILTER("{ ($.eventName = ConsoleLogin) && ($.errorMessage = \"Failed authentication\") }"),
 		CUST_CMK_CHANGES_FILTER(
