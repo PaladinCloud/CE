@@ -150,6 +150,12 @@ export class WorkflowService {
         return this.trackOpenedPageInAModule[moduleName + 'queryparams'];
     }
 
+    goToLevel(level){
+        let currentLevel = this.level["level0"].length;        
+        this.level["level0"].splice(level, currentLevel);
+        this.saveToStorage(this.level)
+    }
+
     clearDataOfOpenedPageInModule() {
         this.trackOpenedPageInAModule = {};
     }

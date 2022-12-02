@@ -75,8 +75,8 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   navigateRespective(index): any {
     let pathArr = [this.breadcrumbLinks[index]];
+    this.workflowService.goToLevel(index)
     this.router.navigate(pathArr, {queryParams: this.agAndDomain});
-      this.workflowService.clearAllLevels();
   }
 
 }

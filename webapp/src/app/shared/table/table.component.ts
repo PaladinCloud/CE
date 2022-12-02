@@ -352,6 +352,11 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
+  clearSearchText(){
+    this.searchQuery = "";
+    this.searchCalledEventEmitter.emit(this.searchQuery);
+  }
+
   announceSortChange(sort) {
     this.customSort(sort.active, sort.direction);
     this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
