@@ -1956,5 +1956,27 @@
     "modifiedDate": "2022-11-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "ruleId": "Avoid_Service_roles_to_IAM_user_at_project_level",
+    "ruleUUID": "Avoid_Service_roles_to_IAM_user_at_project_level",
+    "policyId": "Avoid_Service_roles_to_IAM_user_at_project_level",
+    "ruleName": "Avoid Assigning Service Roles to IAM Users at the Project Level",
+    "targetType": "iamusers",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Avoid_Service_roles_to_IAM_user_at_project_level",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"avoid-assigning-service-roles-to-iam-user-at-project-level\",\"key\":\"ruleKey\"},{\"key\":\"description\",\"value\":\"Ensure that Service Account User (iam.serviceAccountUser) and Service Account Token Creator (iam.serviceAccountTokenCreator) roles to a user for a specific service account rather than assigning the role to a user at project level.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Assigned Service roles to IAM users at project level.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Avoid_Service_roles_to_IAM_user_at_project_level\",\"autofix\":false,\"alexaKeyword\":\"Avoid_Service_roles_to_IAM_user_at_project_level\",\"ruleRestUrl\":\"\",\"targetType\":\"iamusers\",\"pac_ds\":\"gcp\",\"policyId\":\"Avoid_Service_roles_to_IAM_user_at_project_level\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Avoid_Service_roles_to_IAM_user_at_project_level\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Avoid_Service_roles_to_IAM_user_at_project_level",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Avoid Assigning Service Roles to IAM Users at the Project Level",
+    "createdDate": "2022-11-29",
+    "modifiedDate": "2022-11-29",
+    "severity": "medium",
+    "category": "security"
   }
 ]
