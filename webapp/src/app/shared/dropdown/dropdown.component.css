@@ -18,7 +18,7 @@
     padding: 0px !important;
 }
 
-  ::ng-deep .mat-form-field-should-float.mat-form-field-label{
+  ::ng-deep .mat-form-field-should-float .mat-form-field-label{
       display: none !important;
   }
 

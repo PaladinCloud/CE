@@ -22,9 +22,10 @@
                             </mat-select>
                         </mat-form-field>
                     </div> -->
+                    <img class="pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
                     <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" *ngIf="showFilterBtn">
-                    <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
-                </div>
+                        <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
+                    </div>
                 <mat-menu #filterModal="matMenu">
                         <div class="filter-modal-container" (click)="$event.stopPropagation()">
                         <div class="filter-modal-wrapper flex flex-col">
