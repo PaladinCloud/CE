@@ -101,8 +101,11 @@ public class EnableTrustedMSServices extends  BaseRule {
                         .get(PacmanRuleConstants.SOURCE);
 
                 if(sourceJsonObject!=null){
+                    logger.info(" **** false********");
+
                     if(sourceJsonObject.get(PacmanRuleConstants.NETWORKRULEBYPASS)!=null) {
-                        if (sourceJsonObject.get(PacmanRuleConstants.NETWORKRULEBYPASS).getAsString().toLowerCase().equals("none")) {
+
+                        if (sourceJsonObject.get(PacmanRuleConstants.NETWORKRULEBYPASS).getAsString().equalsIgnoreCase("none")) {
                             validationResult = false;
                         }
                     }

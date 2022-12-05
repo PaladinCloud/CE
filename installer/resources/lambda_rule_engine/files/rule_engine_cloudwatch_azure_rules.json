@@ -2633,7 +2633,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Deny_Default_Network_Access_Rule_for_Storage_Accounts",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deny Network Access Rule for Storage Accounts",
+    "displayName": "Deny Default Network Access Rule for Storage Accounts",
     "createdDate": "2022-08-23",
     "modifiedDate": "2022-08-23",
     "severity": "medium",
