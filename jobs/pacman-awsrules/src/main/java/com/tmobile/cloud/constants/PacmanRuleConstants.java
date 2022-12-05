@@ -535,7 +535,7 @@ public class PacmanRuleConstants {
     public  static  final String DBFLAGS="databaseFlags";
     public static final String DB_PROPERTY_OWNER_CHANGING_FLAG="cross db ownership chaining";
     public static final String OFF="off";
-    public static final String NETWORKRULEBYPASS="networkruleBypass";
+    public static final String NETWORKRULEBYPASS="networkRuleBypass";
     public  static  final  String HTTPS_ONLY="httpsOnly";
     public  static  final String FTP_STATE="ftpsState";
     public static  final String DBFLAGNAME="dbFlagName";

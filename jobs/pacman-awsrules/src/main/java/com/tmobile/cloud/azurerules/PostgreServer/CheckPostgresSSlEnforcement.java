@@ -122,7 +122,7 @@ public class CheckPostgresSSlEnforcement extends BaseRule {
                 String sslEnforcement = properties.getAsJsonObject().get("sslEnforcement")
                         .getAsString();
                 if (sslEnforcement != null && sslEnforcement.equalsIgnoreCase("Disabled")) {
-                    validationResult = true;
+                    validationResult = false;
                 }
 
             }
