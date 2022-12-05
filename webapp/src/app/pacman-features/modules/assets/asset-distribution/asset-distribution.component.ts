@@ -83,17 +83,17 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     {
       'from': 0,
       'to': 100,
-      'color': "#6691D6"
+      'color': "#336CC9"
     },
     {
       'from': 100,
       'to': 1000,
-      'color': "#336CC9"
+      'color': "#0047BB"
     },
     {
       'from': 1000,
       'to': 10000,
-      'color': "#0047BB"
+      'color': "#003996"
     },
     {
       'from': 10000,
@@ -186,8 +186,9 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     this.colorRanges = [];
 
     this.awsResources.sort((a: any, b: any) => a.count - b.count);
+    const maxIndex = this.awsResources.length;
 
-    for (let i = 0; i < this.awsResources.length; i++) {
+    for (let i = 0; i < maxIndex; i++) {
       const obj = {
         x: this.awsResources[i].displayName,
         y: this.awsResources[i].count
@@ -196,9 +197,8 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     }
 
     let max = -1;
-    for (let j = 0; j < this.treemapData.length && this.treemapData[j].y <= 100; j++) {
-      max = Math.max(this.treemapData[j].y, max);
-    }
+    max = this.awsResources[maxIndex - 1].count;
+
 
     let countMap = [];
     let x = 1, prev_x = 0, curr_x, r = 0;
@@ -228,11 +228,6 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
           break;
         }
       }
-      this.colorRanges.push({
-        "from": prev_x + 0.001,
-        "to": x + 0.001,
-        "color": this.colors[r++].color
-      })
       prev_x = x;
       m = 0;
       k = k * 10;
@@ -241,6 +236,19 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     for (let j = 0; j < this.treemapData.length; j++) {
       this.treemapData[j].y = countMap[j];
     }
+    let maxVal = countMap[maxIndex - 1];
+    let diff = maxVal / 4;
+    let from = 0, to = diff;
+    for (let i = 0; i < 4; i++){
+      this.colorRanges.push({
+        "from": from,
+        "to": to,
+        "color": this.colors[r++].color
+      })
+      from = to;
+      to = to + diff; 
+    }
+
     this.buildTreeMap();
   }
 
@@ -283,7 +291,6 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
       },
       plotOptions: {
         treemap: {
-          enableShades: false,
           colorScale: {
             ranges: this.colorRanges
           }
