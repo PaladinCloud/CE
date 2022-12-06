@@ -60,9 +60,9 @@ import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionProjections;
 import com.tmobile.pacman.api.admin.domain.CreateAssetGroupExceptionDetailsRequest;
 import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupExceptionRequest;
 import com.tmobile.pacman.api.admin.domain.ElasticSearchProperty;
-import com.tmobile.pacman.api.admin.domain.RuleDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
+import com.tmobile.pacman.api.admin.domain.PolicyDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyViewDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.AssetGroupExceptionRepository;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupException;
@@ -125,11 +125,11 @@ public class AssetGroupExceptionServiceImplTest {
 		List<AssetGroupExceptionProjections> assetGroupExceptionDetails = Lists.newArrayList();
 		assetGroupExceptionDetails.add(getAssetGroupExceptionProjections());
 		when(assetGroupExceptionRepository.findAllAssetGroupExceptions(anyString(), anyString())).thenReturn(assetGroupExceptionDetails);
-		List<TargetTypeRuleViewDetails> allTargetTypeRuleViewDetails = Lists.newArrayList();
-		TargetTypeRuleViewDetails targetTypeRuleViewDetails = new TargetTypeRuleViewDetails();
+		List<TargetTypePolicyViewDetails> allTargetTypeRuleViewDetails = Lists.newArrayList();
+		TargetTypePolicyViewDetails targetTypeRuleViewDetails = new TargetTypePolicyViewDetails();
 		targetTypeRuleViewDetails.setAdded(false);
-		targetTypeRuleViewDetails.setAllRules("[]");
-		targetTypeRuleViewDetails.setRules("[]");
+		targetTypeRuleViewDetails.setAllPolicies("[]");
+		targetTypeRuleViewDetails.setPolicies("[]");
 		targetTypeRuleViewDetails.setTargetName("targetName123");
 		allTargetTypeRuleViewDetails.add(targetTypeRuleViewDetails);
 		when(assetGroupTargetDetailsService.getTargetTypesByAssetGroupIdAndTargetTypeNotIn(anyString(), any())).thenReturn(allTargetTypeRuleViewDetails);
@@ -266,11 +266,11 @@ public class AssetGroupExceptionServiceImplTest {
 	}
 
 	private CreateAssetGroupExceptionDetailsRequest getCreateAssetGroupExceptionDetailsRequest() {
-		List<TargetTypeRuleDetails> allTargetTypeRuleDetails = Lists.newArrayList();
-		TargetTypeRuleDetails targetTypeRuleDetails = new TargetTypeRuleDetails();
-		targetTypeRuleDetails.setAllRules("[]");
-		List<RuleDetails> allRuleDetails = getAllRuleDetails();
-		targetTypeRuleDetails.setRules(allRuleDetails);
+		List<TargetTypePolicyDetails> allTargetTypeRuleDetails = Lists.newArrayList();
+		TargetTypePolicyDetails targetTypeRuleDetails = new TargetTypePolicyDetails();
+		targetTypeRuleDetails.setAllPolicies("[]");
+		List<PolicyDetails> allRuleDetails = getAllRuleDetails();
+		targetTypeRuleDetails.setPolicies(allRuleDetails);
 		targetTypeRuleDetails.setTargetName("targetName123");
 		allTargetTypeRuleDetails.add(targetTypeRuleDetails);
 		
@@ -284,11 +284,10 @@ public class AssetGroupExceptionServiceImplTest {
 		return createAssetGroupExceptionDetailsRequest;
 	}
 
-	private List<RuleDetails> getAllRuleDetails() {
-		List<RuleDetails> allRuleDetails = Lists.newArrayList();
-		RuleDetails ruleDetails = new RuleDetails();
+	private List<PolicyDetails> getAllRuleDetails() {
+		List<PolicyDetails> allRuleDetails = Lists.newArrayList();
+		PolicyDetails ruleDetails = new PolicyDetails();
 		ruleDetails.setId("id123");
-		ruleDetails.setPolicyId("policyId123");
 		ruleDetails.setStatus("status123");
 		ruleDetails.setText("text123");
 		ruleDetails.setType("type123");
@@ -305,8 +304,8 @@ public class AssetGroupExceptionServiceImplTest {
 		assetGroupException.setExpiryDate(date);
 		assetGroupException.setGroupName("groupName123");
 		assetGroupException.setId(123l);
-		assetGroupException.setRuleId("ruleId123");
-		assetGroupException.setRuleName("ruleName123");
+		assetGroupException.setPolicyId("ruleId123");
+		assetGroupException.setPolicyName("ruleName123");
 		assetGroupException.setTargetType("targetType123"); 
 		assertEquals(assetGroupException.getDataSource(), "dataSource123");
 		assertEquals(assetGroupException.getExceptionName(), "exceptionName123");
@@ -314,8 +313,8 @@ public class AssetGroupExceptionServiceImplTest {
 		assertEquals(assetGroupException.getExpiryDate(), date);
 		assertEquals(assetGroupException.getGroupName(), "groupName123");
 		assertEquals(assetGroupException.getId(), 123l);
-		assertEquals(assetGroupException.getRuleId(), "ruleId123");
-		assertEquals(assetGroupException.getRuleName(), "ruleName123");
+		assertEquals(assetGroupException.getPolicyId(), "ruleId123");
+		assertEquals(assetGroupException.getPolicyName(), "ruleName123");
 		assertEquals(assetGroupException.getTargetType(), "targetType123"); 
 		return assetGroupException;
 	}
@@ -329,13 +328,13 @@ public class AssetGroupExceptionServiceImplTest {
 			}
 
 			@Override
-			public String getRuleName() {
-				return "RuleName123";
+			public String getPolicyName() {
+				return "PolicyName123";
 			}
 
 			@Override
-			public String getRuleId() {
-				return "RuleId123";
+			public String getPolicyId() {
+				return "PolicyId123";
 			}
 
 			@Override

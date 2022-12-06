@@ -15,20 +15,46 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.domain;
 
-import java.util.List;
-
 /**
- * TargetTypeRuleDetails Domain Class
+ * RuleDetails Domain Class
  */
-public class TargetTypeRuleDetails extends TargetTypeRuleBase {
+public class PolicyDetails implements PolicyProjection{
+	private String id;
 
-	private List<RuleDetails> rules;
+	private String status;
+	private String type;
+	private String text;
 
-	public List<RuleDetails> getRules() {
-		return rules;
+	public String getId() {
+		return id;
 	}
 
-	public void setRules(List<RuleDetails> rules) {
-		this.rules = rules;
+	public void setId(String id) {
+		this.id = id;
 	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
 }

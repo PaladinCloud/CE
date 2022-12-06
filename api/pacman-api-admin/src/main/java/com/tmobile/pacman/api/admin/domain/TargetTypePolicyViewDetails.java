@@ -16,53 +16,28 @@
 package com.tmobile.pacman.api.admin.domain;
 
 /**
- * RuleDetails Domain Class
+ * TargetTypeRuleViewDetails Domain Class
  */
-public class RuleDetails implements PolicyProjection{
-	private String id;
-	private String policyId;
-	private String status;
-	private String type;
-	private String text;
+public class TargetTypePolicyViewDetails extends TargetTypePolicyBase {
 
-	public String getId() {
-		return id;
+	private Object policies;
+	
+	private boolean isAdded;
+	
+
+	public Object getPolicies() {
+		return policies;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setPolicies(Object policies) {
+		this.policies = policies;
 	}
 
-	public String getPolicyId() {
-		return policyId;
+	public boolean isAdded() {
+		return isAdded;
 	}
 
-	public void setPolicyId(String policyId) {
-		this.policyId = policyId;
+	public void setAdded(boolean isAdded) {
+		this.isAdded = isAdded;
 	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
 }

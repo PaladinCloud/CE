@@ -18,18 +18,20 @@ package com.tmobile.pacman.api.admin.domain;
 /**
  * TargetTypeRuleBase Domain Class
  */
-public class TargetTypeRuleBase {
+public class TargetTypePolicyBase {
 	
-	private Object allRules;
+	private Object allPolicies;
 
 	private String targetName;
 
-	public Object getAllRules() {
-		return allRules;
+	
+
+	public Object getAllPolicies() {
+		return allPolicies;
 	}
 
-	public void setAllRules(Object allRules) {
-		this.allRules = allRules;
+	public void setAllPolicies(Object allPolicies) {
+		this.allPolicies = allPolicies;
 	}
 
 	public String getTargetName() {

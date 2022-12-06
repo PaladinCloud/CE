@@ -22,13 +22,13 @@ import java.util.List;
  */
 public class AssetGroupExceptionDetailsRequest extends ExceptionDetails {
 
-	private List<TargetTypeRuleDetails> targetTypes;
+	private List<TargetTypePolicyDetails> targetTypes;
 
-	public List<TargetTypeRuleDetails> getTargetTypes() {
+	public List<TargetTypePolicyDetails> getTargetTypes() {
 		return targetTypes;
 	}
 
-	public void setTargetTypes(List<TargetTypeRuleDetails> targetTypes) {
+	public void setTargetTypes(List<TargetTypePolicyDetails> targetTypes) {
 		this.targetTypes = targetTypes;
 	}
 }
