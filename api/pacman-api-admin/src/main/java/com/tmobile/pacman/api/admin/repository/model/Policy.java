@@ -12,7 +12,7 @@ import javax.persistence.UniqueConstraint;
  * Policy Model Class
  */
 @Entity
-@Table(name = "cf_Policy", uniqueConstraints = @UniqueConstraint(columnNames = "policyId"))
+@Table(name = "cf_PolicyTable", uniqueConstraints = @UniqueConstraint(columnNames = "policyId"))
 public class Policy {
 
 	@Id
