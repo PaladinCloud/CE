@@ -75,6 +75,9 @@ public class AssetFileGenerator {
 	@Autowired
 	LoadBalancerCollector loadBalancerCollector;
 
+	@Autowired
+	APIKeysInventoryCollector apiKeysInventoryCollector;
+
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -237,6 +240,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateServiceAccountFiles(serviceAccountInventoryCollector.fetchServiceAccountDetails(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("apikeys"))) {
+					return;
+				}
+				try {
+					FileManager.generateApiKeysFiles(apiKeysInventoryCollector.fetchApiKeys(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
