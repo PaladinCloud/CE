@@ -618,4 +618,6 @@ public class PacmanRuleConstants {
 
 
     public static final String DISABLE_KUBERNETES_DASHBOARD="disableKubernetesDashBoard";
+
+    public static final String RESTRICTIONS="restrictions";
 }

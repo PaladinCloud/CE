@@ -63,6 +63,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-project.data", "[", false);
         FileGenerator.writeToFile("gcp-serviceaccounts.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_postgres.data", "[", false);
+        FileGenerator.writeToFile("gcp-apikeys.data", "[", false);
+
 
     }
 
@@ -85,6 +87,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-project.data", "]", true);
         FileGenerator.writeToFile("gcp-serviceaccounts.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_postgres.data", "]", true);
+        FileGenerator.writeToFile("gcp-apikeys.data", "]", true);
+
 
 
     }
@@ -158,5 +162,8 @@ public class FileManager {
 
     public static void generateCloudPostgresFiles(List<CloudSqlVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_postgres.data");
+    }
+    public static void generateApiKeysFiles(List<APIKeysVH>apiKeysVHList){
+        FileGenerator.generateJson(apiKeysVHList, "gcp-apikeys.data");
     }
 }
