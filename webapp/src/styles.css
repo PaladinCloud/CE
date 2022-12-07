@@ -1226,6 +1226,46 @@ body {
   overflow: auto;
 }
 
+.gap-2{
+  gap: 2px;
+}
+
+.gap-4{
+  gap: 4px;
+}
+
+.gap-8{
+  gap: 8px;
+}
+
+.gap-12{
+  gap: 12px;
+}
+
+.gap-16{
+  gap: 16px;
+}
+
+.padding-2{
+  padding: 2px;
+}
+
+.padding-4{
+  padding: 4px;
+}
+
+.padding-8{
+  padding: 8px;
+}
+
+.padding-12{
+  padding: 12px;
+}
+
+.padding-16{
+  padding: 16px;
+}
+
 ::-webkit-scrollbar {
   max-width: 7px;
   background-color: transparent;

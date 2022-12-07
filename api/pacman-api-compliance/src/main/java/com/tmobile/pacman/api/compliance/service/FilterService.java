@@ -135,4 +135,7 @@ public interface FilterService {
         public List<Map<String, Object>> getCategoriesForAssetGroup(
                         String assetGroup, String domain) throws ServiceException;
 
+        public List<Map<String, Object>> getIssueStatusForAssetGroup(
+            String assetGroup, String domain) throws ServiceException;
+
 }

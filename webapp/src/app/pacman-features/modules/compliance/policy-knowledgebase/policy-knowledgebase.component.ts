@@ -53,6 +53,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   tableData = [];
   isStatePreserved = false;
   doLocalSearch = true; // should be removed once tiles data is available from backend
+  totalRows = 0;
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
     private router: Router,
@@ -300,6 +301,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         response => {
           if (response.data.response.length !== 0) {
             this.errorMessage = '';
+            this.totalRows = response.data.total;
             this.tableData = this.massageData(response.data.response);
             
             this.tableDataLoaded = true;

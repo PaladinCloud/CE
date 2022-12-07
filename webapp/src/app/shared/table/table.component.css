@@ -39,6 +39,10 @@
     border: 1px solid var(--border-200);
 }
 
+.table-header .search-bar-wrapper input{
+  min-width: 150px;
+}
+
 .table-header .header-left{
     height: 40px;
     max-width: 543px;
@@ -204,10 +208,6 @@
     display: none;
 }
 
-.table-header .header-left .search-bar-wrapper img{
-    padding: 12px;
-}
-
 .add-remove-columns-wrapper ::ng-deep .mat-select-value,
 .table-header .search-in-columns ::ng-deep .mat-select-value{
     display: none;
@@ -324,4 +324,18 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   border: 1px solid var(--border-200);
   cursor: pointer;
   margin-left: auto;
+}
+
+.chip{
+  max-width: 100px;
+  background: var(--background-grey);
+  padding: 0px 4px 0px 12px;
+  border-radius: 4px;
+}
+
+.more-filters-wrapper{
+  background: #F1F6FF;
+  color: var(--primary-400);
+  padding: 4px 10px;
+  border-radius: 4px;
 }

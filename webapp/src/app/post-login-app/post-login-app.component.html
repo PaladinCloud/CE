@@ -20,8 +20,8 @@
     <button class="sidenav-expander flex flex-center" mat-button (click)="sidenavExpanderClicked()"
       [ngStyle]="{ 'left.px':sidenavExpanderLeft, 'transform': rotationVar}"><img
         src="/assets/icons/Path.svg" /></button>
-    <mat-sidenav-container autosize [hasBackdrop]="false">
-      <mat-sidenav #sidenav [class.expanded-sidenav]="isExpanded" [class.collapsed-sidenav]="!isExpanded" [mode]="mode"
+    <mat-sidenav-container style="z-index: 0;" autosize [hasBackdrop]="false">
+      <mat-sidenav style="z-index: 0;" #sidenav [class.expanded-sidenav]="isExpanded" [class.collapsed-sidenav]="!isExpanded" [mode]="mode"
         opened="true" (mouseenter)="mouseenter()" (mouseleave)="mouseleave()">
         <div class="contextual-menu-container">
           <app-contextual-menu [haveAdminPageAccess]="haveAdminPageAccess" [expanded]="isExpanded">
