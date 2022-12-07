@@ -390,5 +390,19 @@ public class FilterServiceImpl implements FilterService, Constants {
                     }
                     return categories;      
                         }
+
+    public List<Map<String, Object>> getIssueStatusForAssetGroup(
+            String assetGroup, String domain) throws ServiceException {
+        List<Map<String, Object>> listOfIssueStatus = new ArrayList<>();
+        listOfIssueStatus.add(new HashMap<String, Object>(){{
+            put("name", "open");
+            put("id", "open");
+        }});
+        listOfIssueStatus.add(new HashMap<String, Object>(){{
+            put("name", "exempt");
+            put("id", "exempted");
+        }});
+        return listOfIssueStatus;
+    }
    
 }

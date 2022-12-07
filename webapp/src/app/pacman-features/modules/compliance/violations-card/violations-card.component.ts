@@ -31,7 +31,7 @@ export class ViolationsCardComponent implements OnInit {
   redirect() {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
     if (this.routeTo !== undefined) {
-      const eachParams = { 'severity.keyword': this.card.name.toLowerCase() };
+      const eachParams = { 'severity.keyword': this.card.name.toLowerCase(), include_exempt: "no" };
       const newParams = this.utils.makeFilterObj(eachParams);
       this.router.navigate(['../', this.routeTo], { relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge' });
     }

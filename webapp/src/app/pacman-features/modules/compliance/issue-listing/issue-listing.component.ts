@@ -309,6 +309,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         }
         this.getUpdatedUrl();
         this.updateComponent();
+        this.addEmptyFilter();
       }
     } catch (error) { }
     /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
@@ -358,10 +359,23 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           localFilters.push(eachObj);
         })
       }
-      this.filters = localFilters;
+      this.filters = localFilters;      
+      if(formattedFilters.length<1){
+        this.addEmptyFilter();
+      }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
+    }
+  }
+
+  addEmptyFilter(){
+    for(let j=this.filters.length; j<1; j++){
+      let obj = {
+        keyDisplayValue: "",
+        filterValue: ""
+      };
+      this.filters.push(obj);
     }
   }
 

@@ -68,6 +68,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   @Input() filteredArray = [];
   @Input() filterTypeOptions;
+  totalChips;
   
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
@@ -122,10 +123,15 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       //   this.nextPageCalled.emit();
       //   this.isDataLoading = true;
       // }
-      for(let j=this.filteredArray.length; j<1; j++){
-        this.addFilter();
-      }
     }
+    this.totalChips = this.filteredArray.length;
+  }
+
+  getSplicedArray(array, num){
+    // this function is triggering a lot of times
+    let arrayCopy = [...array];
+    arrayCopy.splice(num)
+    return arrayCopy;
   }
 
   ngAfterViewInit(): void { 
