@@ -1,16 +1,23 @@
 package com.tmobile.pacbot.gcp.inventory.auth;
 
+import com.google.api.Service;
+import com.google.api.apikeys.v2.ApiKeysClient;
+import com.google.api.apikeys.v2.ApiKeysSettings;
+import com.google.api.apikeys.v2.Key;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.gax.core.FixedCredentialsProvider;
+import com.google.api.gax.rpc.ClientContext;
+import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudtasks.v2.CloudTasks;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.sqladmin.SQLAdmin;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.GcpLaunchStage;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.compute.v1.*;
 import com.google.cloud.container.v1.ClusterManagerClient;
@@ -62,6 +69,9 @@ public class GCPCredentialsProvider {
     private TargetHttpsProxiesClient targetHttpsProxiesClient;
 
     private BackendServicesClient backendService;
+    private ApiKeysClient apiKeysClient;
+
+
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -166,6 +176,7 @@ public class GCPCredentialsProvider {
                     .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
             topicAdminClient = TopicAdminClient.create(topicAdminSettings);
         }
+
         return topicAdminClient;
     }
 
@@ -229,6 +240,17 @@ public class GCPCredentialsProvider {
          iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
         }
        return  iamService;
+    }
+
+    public ApiKeysClient getApiKeysService() throws Exception{
+        if(apiKeysClient==null){
+            ApiKeysSettings apiKeysSettings = ApiKeysSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+             apiKeysClient=   ApiKeysClient.create(apiKeysSettings);
+
+
+        }
+        return apiKeysClient;
     }
 
     public UrlMapsClient getURLMap() throws IOException {
