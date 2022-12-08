@@ -48,14 +48,17 @@ public class Request {
     /** The ag. */
     private String ag;
 
+    /** The sort Filters. */
+    private Map<String, Object> sortFilter;
+
     /**
      * Instantiates a new request.
      *
      * @param searchtext the searchtext
-     * @param from the from
-     * @param size the size
-     * @param filter the filter
-     * @param ag the ag
+     * @param from       the from
+     * @param size       the size
+     * @param filter     the filter
+     * @param ag         the ag
      */
     public Request(String searchtext, int from, int size,
             Map<String, String> filter, String ag) {
@@ -65,6 +68,27 @@ public class Request {
         this.size = size;
         this.filter = filter;
         this.ag = ag;
+    }
+
+     /**
+     * Instantiates a new request.
+     *
+     * @param searchtext the searchtext
+     * @param from       the from
+     * @param size       the size
+     * @param filter     the filter
+     * @param ag         the ag
+     * @param sortFilter the sortFilter
+     */
+    public Request(String searchtext, int from, int size,
+            Map<String, String> filter, String ag, Map<String, Object> sortFilter) {
+        super();
+        this.searchtext = searchtext;
+        this.from = from;
+        this.size = size;
+        this.filter = filter;
+        this.ag = ag;
+        this.sortFilter = sortFilter;
     }
 
     /**
@@ -158,6 +182,24 @@ public class Request {
      */
     public void setSize(int size) {
         this.size = size;
+    }
+
+    /**
+     * Gets the sort filter.
+     *
+     * @return the filter
+     */
+    public Map<String, Object> getSortFilter() {
+        return sortFilter;
+    }
+
+    /**
+     * Sets the sort filters.
+     *
+     * @param sortFilter the sort filters
+     */
+    public void setSortFilter(Map<String, Object> sortFilter) {
+        this.sortFilter = sortFilter;
     }
 
     /**

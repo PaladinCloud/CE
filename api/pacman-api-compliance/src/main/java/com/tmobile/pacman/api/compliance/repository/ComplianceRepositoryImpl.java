@@ -288,6 +288,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Map<String, Object>> ruleIdDetail = null;
         String assetGroup = request.getAg();
         Map<String, String> filters = request.getFilter();
+        Map<String, Object> sortFilters = request.getSortFilter();
         int size = request.getSize();
         int from = request.getFrom();
 
@@ -319,9 +320,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         // get all active rules.
         String targetTypes = getTargetTypeForAG(assetGroup, domain);
         List<Map<String, Object>> rulesList = getRuleIdWithDisplayNameQuery(targetTypes);
-        List<Object> rules = getRuleIds(targetTypes);
         List<Object> issueStatus = new ArrayList<>();
-
+        ArrayList<String> ruleIdOrder = new ArrayList<>();
+        rulesList.forEach(rule -> ruleIdOrder.add((String) rule.get(RULEID)));
         Map<String, String> ruleIdwithDisplayNameMap = rulesList.stream().collect(
                 Collectors.toMap(s -> (String) s.get(RULEID), s -> (String) s.get(RULE_DISPAY_NAME)));
         if (MapUtils.isNotEmpty(filters)) {
@@ -357,7 +358,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             issueStatus.add(EXEMPTED);
         }
         mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
-        mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(RULEID), rules);
+        mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(RULEID), ruleIdOrder);
 
         try {
             if (!Strings.isNullOrEmpty(ruleId) && ruleId.contains(TAGGING_POLICY)) {
@@ -407,9 +408,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
             } else {
                 if (MapUtils.isNotEmpty(filters) || size > 0 || !Strings.isNullOrEmpty(searchText)) {
-
+                    if (sortFilters.get("fieldName").equals("ruleId.keyword")) {
+                        sortFilters.put("sortOrder", ruleIdOrder);
+                    }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
-                            mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, null);
+                            mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter,
+                            sortFilters);
                     for (Map<String, Object> issueDetail : issueDetails) {
                         issueList = getIssueList(null, issueDetail, ruleIdwithDisplayNameMap, issueList, domain);
                     }
@@ -422,17 +426,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         issueList = getIssueList(null, issueDetail, ruleIdwithDisplayNameMap, issueList, domain);
                     }
                 }
-            }
-
-            if (!issueList.isEmpty()) {
-                // sorting by severity
-                Collections.sort(issueList, new Compare() {
-                    @Override
-                    public int compare(Map<String, Object> a, Map<String, Object> b) {
-                        return a.get(SEVERITY_DISPALY_NAME).toString()
-                                .compareTo(b.get(SEVERITY_DISPALY_NAME).toString());
-                    }
-                });
             }
 
             if (issueDetails != null && issueDetails.isEmpty()) {
@@ -992,7 +985,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      */
     public List<Map<String, Object>> getRuleIdWithDisplayNameQuery(String targetType) {
         String ruleIdWithDisplayquery = "SELECT ruleId, displayName,targetType,ruleParams FROM cf_RuleInstance WHERE STATUS = 'ENABLED'AND targetType IN ("
-                + targetType + ")";
+                + targetType + ") ORDER BY displayName asc";
         return rdsepository.getDataFromPacman(ruleIdWithDisplayquery);
     }
 
