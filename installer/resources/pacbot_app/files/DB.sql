@@ -1112,7 +1112,7 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `categ
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('serviceaccounts','Service Accounts','Service Account','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_serviceaccounts'),'2022-06-29','2022-06-29','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('defender','Defender for Cloud','Azure defender','Governance','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_defender/defender'),'2022-10-14','2022-10-14','Infra & Platforms');
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `category`, `dataSourceName`, `targetConfig`, `status`, `userId`, `endpoint`, `createdDate`, `modifiedDate`, `domain`) VALUES('kubernetes','AKS','Azure kubernetes cluster','Governance','azure','{\"key\":\"id\",\"id\":\"id\"}','enabled','admin@pacbot.org',concat(@eshost,':',@esport,'/azure_kubernetes/kubernetes'),'2022-10-27','2022-10-27','Infra & Platforms');
-
+INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('gcploadbalancer','GCP Load balancer','load balancer data','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_loadbalancer'),'2022-12-07','2022-12-07','Infra & Platforms');
 
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
@@ -1235,7 +1235,7 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('b9udr432cf8-3465-4235-9612-4990d4ercrt69-29','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_networks','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('b9udr432cf8-3465-4235-9612-4990d4ercrt70-30','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_project','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('b9udr432cf8-3465-4235-9612-4990d4erdrt80-40','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_serviceaccounts','all','all');
-
+INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('9b942f42-4bd0-4911-8fd3-a1661f0cbc97','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_loadbalancers','all','all');
 delete from `cf_AssetGroupTargetDetails` where targetType ='ecs';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policydefinitions';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policyevaluationresults';

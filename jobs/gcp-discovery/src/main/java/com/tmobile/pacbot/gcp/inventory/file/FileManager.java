@@ -63,7 +63,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-project.data", "[", false);
         FileGenerator.writeToFile("gcp-serviceaccounts.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_postgres.data", "[", false);
-
+        FileGenerator.writeToFile("gcp-gcploadbalancer.data", "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -85,7 +85,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-project.data", "]", true);
         FileGenerator.writeToFile("gcp-serviceaccounts.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_postgres.data", "]", true);
-
+        FileGenerator.writeToFile("gcp-gcploadbalancer.data", "]", true);
 
     }
 
@@ -158,5 +158,9 @@ public class FileManager {
 
     public static void generateCloudPostgresFiles(List<CloudSqlVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_postgres.data");
+    }
+
+    public static void generateLoadBalancerFiles(List<LoadBalancerVH> fetchLoadBalancerInventory) {
+        FileGenerator.generateJson(fetchLoadBalancerInventory, "gcp-gcploadbalancer.data");
     }
 }

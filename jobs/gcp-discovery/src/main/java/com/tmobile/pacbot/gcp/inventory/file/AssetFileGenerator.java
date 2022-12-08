@@ -70,6 +70,9 @@ public class AssetFileGenerator {
 	@Autowired
 	ServiceAccountInventoryCollector serviceAccountInventoryCollector;
 
+	@Autowired
+	LoadBalancerCollector loadBalancerCollector;
+
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -232,6 +235,16 @@ public class AssetFileGenerator {
 				}
 				try {
 					FileManager.generateServiceAccountFiles(serviceAccountInventoryCollector.fetchServiceAccountDetails(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("loadbalancer"))) {
+					return;
+				}
+				try {
+					FileManager.generateLoadBalancerFiles(loadBalancerCollector.fetchLoadBalancerInventory(project));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
