@@ -13,8 +13,6 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.compute.v1.*;
-import com.google.cloud.compute.v1.Zone;
-import com.google.cloud.compute.v1.*;
 import com.google.cloud.container.v1.ClusterManagerClient;
 import com.google.cloud.container.v1.ClusterManagerSettings;
 import com.google.cloud.dataproc.v1.ClusterControllerClient;
@@ -28,10 +26,6 @@ import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.container.v1.DNSConfig;
-import com.google.container.v1.DNSConfigOrBuilder;
-import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -40,6 +34,7 @@ import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
 @Component
 public class GCPCredentialsProvider {
 
@@ -88,21 +83,22 @@ public class GCPCredentialsProvider {
 
     public String getAccessToken() throws IOException {
         String cred = System.getProperty("gcp.credentials");
-        String token=GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
+        String token = GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
                 .refreshAccessToken().getTokenValue();
         return token.trim().replaceAll("\\.+$", "").toString();
     }
 
-    public NetworksClient getNetworksClient() throws Exception{
-        if(networksClient==null){
-            NetworksSettings networksSettings=NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-            networksClient=NetworksClient.create(networksSettings);
+    public NetworksClient getNetworksClient() throws Exception {
+        if (networksClient == null) {
+            NetworksSettings networksSettings = NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            networksClient = NetworksClient.create(networksSettings);
         }
 
         return networksClient;
 
     }
+
     public InstancesClient getInstancesClient() throws IOException {
 
         if (instancesClient == null) {
@@ -206,6 +202,7 @@ public class GCPCredentialsProvider {
         }
         return clusterManagerClient;
     }
+
     public Dns createCloudDNSServices() throws IOException {
         if (dns == null) {
             dns = DnsOptions.newBuilder().setCredentials(this.getCredentials()).build().getService();
@@ -216,21 +213,31 @@ public class GCPCredentialsProvider {
 
     public CloudResourceManager getCloudResourceManager() throws IOException, GeneralSecurityException {
         if (cloudResourceManager == null) {
-            HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-            JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-            cloudResourceManager= new CloudResourceManager.Builder(httpTransport,
-                    jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+            try {
+                logger.info("inside of getCloudResourceManager1");
+                HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+                logger.info("inside of getCloudResourceManager2");
+
+                JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
+                logger.info("inside of getCloudResourceManager3");
+
+                cloudResourceManager = new CloudResourceManager.Builder(httpTransport,
+                        jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+                logger.info("inside of getCloudResourceManager4");
+            } catch (Exception e) {
+                logger.info("exception in getCloudResourceManager!!! , {} ", e.getMessage());
+            }
         }
         return cloudResourceManager;
     }
 
-    public  Iam getIamService() throws  IOException, GeneralSecurityException{
+    public Iam getIamService() throws IOException, GeneralSecurityException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-        if(iamService==null){
-         iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+        if (iamService == null) {
+            iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
         }
-       return  iamService;
+        return iamService;
     }
 
 

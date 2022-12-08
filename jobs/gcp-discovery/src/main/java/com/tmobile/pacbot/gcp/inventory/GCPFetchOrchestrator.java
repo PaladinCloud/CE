@@ -84,10 +84,14 @@ public class GCPFetchOrchestrator {
 
         List<String> projectList = new ArrayList<>();
         List<ProjectVH> projectDetails=new ArrayList<>();
+        log.info("projects before: {} ", projects);
             if (projects != null && !"".equals(projects)) {
             projectList = Arrays.asList(projects.split(","));
         }
+
+            log.debug("Project post splitting: {} ", String.join(", ", projectList));
         try {
+            log.info("Entering getCloudResourceManager!!");
             CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager();
             for(String projectId:projectList){
 
