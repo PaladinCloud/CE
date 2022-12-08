@@ -67,12 +67,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Title': 2, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {"PolicyName": "Title"};
-  columnsSortFunctionMap = {
-    Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
-      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
-    },
-  };
+  fieldName: string = "ruleId.keyword";
+  fieldType: string = "number";
+  selectedOrder: string = "asc";
+  sortOrder: string[];
   tableImageDataMap = {
       security:{
           image: "category-security",
@@ -199,9 +197,31 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   handleAddFilterClick(e){}
 
-  handleHeaderColNameSelection(event){
+  handleHeaderColNameSelection(event: any) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.selectedOrder = this.direction;
+    this.bucketNumber = 0;
+    this.sortOrder = null;
+    if (this.headerColName == "Severity") {
+      this.fieldName = "severity.keyword";
+      this.fieldType = "number";
+      this.sortOrder = ["low", "medium", "high", "critical"]
+    } else if (this.headerColName == "Issue ID") {
+      this.fieldName = "_uid";
+      this.fieldType = "string";
+    } else if (this.headerColName == "Resource ID") {
+      this.fieldName = "_resourceid.keyword";
+      this.fieldType = "string";
+    } else if (this.headerColName == "Category") {
+      this.fieldName = "ruleCategory.keyword";
+      this.fieldType = "number";
+      this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
+    } else if (this.headerColName == "Title") {
+      this.fieldType = "number";
+      this.fieldName = "ruleId.keyword";
+    }
+    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
@@ -486,10 +506,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           filterToBePassed.include_exempt = "yes";
         }
       } 
+
+      const sortFilters = {
+        fieldName: this.fieldName,
+        fieldType: this.fieldType,
+        order: this.selectedOrder,
+        sortOrder: this.sortOrder
+      }    
       
       const payload = {
         ag: this.selectedAssetGroup,
         filter: filterToBePassed,
+        sortFilter: sortFilters,
         from: this.bucketNumber * this.paginatorSize,
         searchtext: this.searchTxt,
         size: this.paginatorSize,

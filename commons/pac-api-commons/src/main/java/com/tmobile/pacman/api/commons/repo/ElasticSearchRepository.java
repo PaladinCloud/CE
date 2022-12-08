@@ -953,7 +953,7 @@ public class ElasticSearchRepository implements Constants {
 	public List<Map<String, Object>> getSortedDataFromESBySize(String dataSource, String targetType,
 			final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
 			final HashMultimap<String, Object> shouldFilter, List<String> fields, int from, int size, String searchText,
-			final Map<String, Object> mustTermsFilter, List<Map<String, Object>> sortFieldMapList) throws Exception {
+			final Map<String, Object> mustTermsFilter, Map<String, Object> sortFieldMapList) throws Exception {
 		if (size <= 0) {
 			size = (int) getTotalDocumentCountForIndexAndType(dataSource, targetType, mustFilter, mustNotFilter, null,
 					searchText, mustTermsFilter);
@@ -971,14 +971,36 @@ public class ElasticSearchRepository implements Constants {
 		if ((from + size) < ES_PAGE_SIZE) {
 			requestBody.put(SIZE, (from + size));
 		}
-		requestBody.put(QUERY, buildQuery(mustFilter, mustNotFilter, shouldFilter, searchText, mustTermsFilter,null));
-
+		requestBody.put(QUERY, buildQuery(mustFilter, mustNotFilter, shouldFilter, searchText, mustTermsFilter, null));
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		Map<String, Object> sortScript = new HashMap<>();
+		Map<String, Object> paramsList = new HashMap<>();
+		Map<String, Object> script = new HashMap<>();
+		Map<String, Object> Outerscript = new HashMap<>();
 		if (null != sortFieldMapList && !sortFieldMapList.isEmpty()) {
-			requestBody.put(SORT, sortFieldMapList);
+			sortScript.put("type", sortFieldMapList.get("fieldType"));
+			String fieldName = (String) sortFieldMapList.get("fieldName");
+			String inlineScript = "doc['%s'].value";
+			if (sortFieldMapList.get("sortOrder") != null) {
+				script.put("params", paramsList);
+				inlineScript = "params.sortOrder.indexOf(doc['%s'].value)";
+			}
+			if(sortFieldMapList.get("fieldName").equals("_uid")){
+				inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
+			}
+			String inlineScriptString = String.format(inlineScript, fieldName);
+			script.put("inline", inlineScriptString);
+			paramsList.put("sortOrder", sortFieldMapList.get("sortOrder"));
+			sortScript.put("script", script);
+			sortScript.put("order", sortFieldMapList.get("order"));
+			Outerscript.put("_script", sortScript);
+			list.add(Outerscript);
+			requestBody.put(SORT, list);
 		}
 		requestBody.put(_SOURCE, fields);
 		Gson serializer = new GsonBuilder().create();
 		String request = serializer.toJson(requestBody);
+		System.out.println(request+" request ");
 		return prepareResultsUsingScroll(from, size, urlToQuery, request);
 	}
 

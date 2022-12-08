@@ -98,7 +98,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
           this.data.push(...data);
           this.mainDataSource = new MatTableDataSource(this.data);
           this.dataSource = new MatTableDataSource(this.data);
-          if(this.headerColName) this.customSort(this.headerColName, this.direction);
         }
     })
     }
@@ -118,7 +117,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(!this.doLocalSearch || (changes.data && changes.data.currentValue && changes.data.currentValue.length>0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
-      if(this.headerColName) this.customSort(this.headerColName, this.direction);
       // handles when pagesize is small and screen height is large
       // if(window.innerHeight>1800 && this.data.length>0){
       //   this.nextPageCalled.emit();
@@ -346,7 +344,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.tableErrorMessage = '';
       if(this.doLocalSearch){
         this.customSearch(searchTxt);
-        this.customSort(this.headerColName, this.direction);
       }
       this.searchCalledEventEmitter.emit(searchTxt);
     }
@@ -357,27 +354,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.searchCalledEventEmitter.emit(this.searchQuery);
   }
 
-  announceSortChange(sort) {
-    this.customSort(sort.active, sort.direction);
+  announceSortChange(sort:any) {
+    this.headerColName = sort.active;
+    this.direction = sort.direction;
     this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
-  }
-
-  customSort(columnName, direction){    
-    if (!columnName || direction === '') {
-      // this.dataSource.data = this.mainDataSource.data.slice();
-      return;
-    }
-
-    this.headerColName = columnName;
-    this.direction = direction;
-    const isAsc = this.direction=='asc';
-
-    this.dataSource.data = this.dataSource.data.sort((a, b) => {
-      if(this.columnsSortFunctionMap[this.headerColName]){
-        return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
-      }
-      return (a[this.headerColName]<b[this.headerColName]? -1: 1)*(isAsc ? 1 : -1);
-    });
   }
 
   onScroll(event: any) {
