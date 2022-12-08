@@ -676,12 +676,14 @@ public class FileManager {
 	public static void generateEKSFiles(Map<String,List<EKSVH>> eksMap) throws IOException {
 		String fieldNames;
 		String keys;
-		fieldNames = "cluster.name`cluster.arn`cluster.status`cluster.encryptionConfig.provider.keyArn" +
-				"`cluster.version`cluster.resourcesVpcConfig.endpointPublicAccess" +
+		fieldNames = "cluster.name`cluster.arn`cluster.status`cluster.version`cluster.resourcesVpcConfig.endpointPublicAccess" +
 				"`cluster.resourcesVpcConfig.endpointPrivateAccess`cluster.resourcesVpcConfig.publicAccessCidrs" +
-				"`cluster.logging.clusterLogging.enabled";
-		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`keyarn`version" +
-				"`endpointpublicaccess`endpointprivateaccess`publicaccesscidrs`clusterloggingenabled";
+				"`cluster.logging.clusterLogging.enabled`cluster.resourcesVpcConfig.clusterSecurityGroupId" +
+				"`cluster.encryptionConfig.provider.keyArn";
+		keys = "discoverydate`accountid`accountname`region`clustername`clusterarn`status`version" +
+				"`endpointpublicaccess`endpointprivateaccess`publicaccesscidrs`clusterloggingenabled" +
+				"`clustersecuritygroupid`keyarn";
+		/*keyarn moved to last because the value is sometimes null and is causing corrupted data*/
 		FileGenerator.generateJson(eksMap, fieldNames, "aws-eks.data",keys);
 		fieldNames ="cluster.arn`tags.key`tags.value";
 		keys ="discoverydate`accountid`accountname`region`clusterarn`key`value";
@@ -1117,6 +1119,10 @@ public class FileManager {
 				SGRuleVH rule = new SGRuleVH(groupId,type, fromPortStr, toPortStr,cidrIpv6, "", "-1".equals(ipProtocol)?"All":ipProtocol);
 				sgruleList.add(rule);
 			});
+			if (obj.getIpv4Ranges().isEmpty() && obj.getIpv6Ranges().isEmpty()) {
+				SGRuleVH rule = new SGRuleVH(groupId, type, fromPortStr, toPortStr, "", "", "-1".equals(ipProtocol) ? "All" : ipProtocol);
+				sgruleList.add(rule);
+			}
 		});
 		return sgruleList;
 
