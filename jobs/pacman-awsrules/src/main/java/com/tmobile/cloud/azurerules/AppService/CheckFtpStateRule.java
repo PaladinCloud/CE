@@ -76,15 +76,11 @@ public class CheckFtpStateRule extends BasePolicy {
                         ruleParam.get(PacmanRuleConstants.RULE_ID) + " Violation Found!");
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
-
-
-                logger.info("Rule ended with a failure{}");
                 return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
-                        annotation);
+                		annotation);
+
             }
         }
-
-          logger.debug("Rule ended with a success {}");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
