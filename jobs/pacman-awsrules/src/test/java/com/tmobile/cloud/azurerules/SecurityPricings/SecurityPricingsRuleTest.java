@@ -10,7 +10,8 @@ import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.azurerules.SecurityPricing.SecurityPricingRule;
 
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,7 +32,7 @@ import java.util.Map;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BaseRule.class, RulesElasticSearchRepositoryUtil.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class})
 public class SecurityPricingsRuleTest {
     @InjectMocks
     SecurityPricingRule securityPricingRule;

@@ -12,22 +12,22 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
 
-@PacmanRule(key = "Enforce-Network-Security-Group-Flow-Log-retention-for-more-than-90-days", desc = "Ensure Network Security Group Flow Log retention for more than 90 days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class NetworkFlowLogRetentionRule extends BaseRule {
+@PacmanPolicy(key = "Enforce-Network-Security-Group-Flow-Log-retention-for-more-than-90-days", desc = "Ensure Network Security Group Flow Log retention for more than 90 days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class NetworkFlowLogRetentionRule extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(PublicAccessforConfiguredPort.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("NSG flow log rule started");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -69,13 +69,13 @@ public class NetworkFlowLogRetentionRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug("Network Security Group Flow Log retention is less than 90 days");
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
         logger.debug(" Network Security Group Flow Log retention is more than 90 days");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean checkNSGFlowLogRetentionIsGreatherThan90(String esUrl, Map<String, Object> mustFilter) throws Exception {

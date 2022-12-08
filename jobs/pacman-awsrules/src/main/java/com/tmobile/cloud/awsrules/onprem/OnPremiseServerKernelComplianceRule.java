@@ -44,13 +44,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-kernel-compliance-onprem", desc = "Checks for kernel compliance in on-premise servers", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class OnPremiseServerKernelComplianceRule extends BaseRule {
+@PacmanPolicy(key = "check-for-kernel-compliance-onprem", desc = "Checks for kernel compliance in on-premise servers", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class OnPremiseServerKernelComplianceRule extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(OnPremiseServerKernelComplianceRule.class);
 
@@ -81,7 +81,7 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
      *
      */
 
-    public RuleResult execute(final Map<String, String> ruleParam,
+    public PolicyResult execute(final Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========OnPremiseServerKernelComplianceRule started=========");
@@ -101,7 +101,7 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
                 .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         String defaultKernelCriteriaUrl = ruleParam
@@ -164,7 +164,7 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
                             && (currentQuarter == patchedQuarter)) {
                         description = "resource got compliant through final_u_last_patched value "
                                 + lastPatchedDate;
-                        return new RuleResult(
+                        return new PolicyResult(
                                 PacmanSdkConstants.STATUS_SUCCESS, description);
                     } else if (!StringUtils.isNullOrEmpty(finalKernelRelease)) {
 
@@ -175,7 +175,7 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
                         if (isCompliant) {
                             description = "resource got compliant through final_kernel_release value "
                                     + finalKernelRelease;
-                            return new RuleResult(
+                            return new PolicyResult(
                                     PacmanSdkConstants.STATUS_SUCCESS,
                                     description);
                         }
@@ -188,7 +188,7 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
                     if (isCompliant) {
                         description = "resource got compliant through final_kernel_release value "
                                 + finalKernelRelease;
-                        return new RuleResult(
+                        return new PolicyResult(
                                 PacmanSdkConstants.STATUS_SUCCESS, description);
                     }
                 }
@@ -210,7 +210,7 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
 
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                             PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 
@@ -230,12 +230,12 @@ public class OnPremiseServerKernelComplianceRule extends BaseRule {
 
                 annotation.put("issueDetails", issueList.toString());
 
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                         PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
 
         }
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

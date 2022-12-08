@@ -40,13 +40,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-aws-cloudtrail-config", desc = "This rule checks for AWS CloudTrail Config is enabled for given account & region", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class CheckAWSCloudTrailConfig extends BaseRule {
+@PacmanPolicy(key = "check-for-aws-cloudtrail-config", desc = "This rule checks for AWS CloudTrail Config is enabled for given account & region", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class CheckAWSCloudTrailConfig extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(CheckAWSCloudTrailConfig.class);
@@ -78,7 +78,7 @@ public class CheckAWSCloudTrailConfig extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
         logger.debug("========CheckAWSCloudTrailConfig started=========");
         Map<String, Object> map = null;
@@ -92,7 +92,7 @@ public class CheckAWSCloudTrailConfig extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -138,11 +138,11 @@ public class CheckAWSCloudTrailConfig extends BaseRule {
             issueList.add(issue);
             annotation.put("issueDetails", issueList.toString());
             logger.debug("========CheckAWSCloudTrailConfig ended with annotation {} : =========",annotation);
-            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                     PacmanRuleConstants.FAILURE_MESSAGE, annotation);
         }
         logger.debug("========CheckAWSCloudTrailConfig ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }

@@ -14,17 +14,19 @@
  * the License.
  ******************************************************************************/
 /**
-  Copyright (C) 2017 T Mobile Inc - All Rights Reserve
-  Purpose:
-  Author :kkumar
-  Modified Date: Aug 8, 2017
+Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+Purpose:
+Author :kkumar
+Modified Date: Jun 14, 2017
 
 **/
-package com.tmobile.pacman.commons.rule;
+package com.tmobile.pacman.commons.policy;
+
+import java.util.HashMap;
 
 /**
- * The Interface PacmanExecute.
+ * The Class RuleParams.
  */
-public @interface PacmanExecute {
+public class PolicyParams extends HashMap<String, String> {
 
 }

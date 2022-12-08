@@ -12,23 +12,23 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-endpoint-protection-installed-for-virtual-machines", desc = "Azure policy for checking azure virtual machines have endpoint protection installed", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class EndpointProtectionRule extends BaseRule {
+@PacmanPolicy(key = "check-endpoint-protection-installed-for-virtual-machines", desc = "Azure policy for checking azure virtual machines have endpoint protection installed", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EndpointProtectionRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(EndpointProtectionRule.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing end point protection rule for azure virtual machines");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -74,12 +74,12 @@ public class EndpointProtectionRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug("checkIsEndpointProtectionInstalled completed with FAILURE isValid flag {} : ", isValid);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
         logger.debug("checkIsEndpointProtectionInstalled completed with SUCCESS. isValid flag: {}", isValid);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean checkIsEndpointProtectionInstalled(String esUrl, Map<String, Object> mustFilter) throws Exception {

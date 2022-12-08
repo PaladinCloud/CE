@@ -57,7 +57,7 @@ import com.tmobile.cloud.awsrules.utils.IAMUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({URLDecoder.class, PacmanUtils.class,IAMUtils.class})
@@ -89,7 +89,7 @@ public class ServiceAccountPrivilegesRuleTest {
         map.put("client", identityManagementClient);
         ServiceAccountPrivilegesRule spy = Mockito.spy(new ServiceAccountPrivilegesRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         mockStatic(IAMUtils.class);
         when(PacmanUtils.splitStringToAList(anyString(),anyString())).thenReturn(CommonTestUtils.getListString());

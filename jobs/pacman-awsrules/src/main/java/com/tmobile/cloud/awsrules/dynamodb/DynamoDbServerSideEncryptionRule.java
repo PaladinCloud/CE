@@ -36,13 +36,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-dynamodb-uses-aws-managed-cmks-for-sse", desc = "checks for dynamodb tables are using AWS-managed CMKs for server side encryption", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class DynamoDbServerSideEncryptionRule extends BaseRule {
+@PacmanPolicy(key = "check-for-dynamodb-uses-aws-managed-cmks-for-sse", desc = "checks for dynamodb tables are using AWS-managed CMKs for server side encryption", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class DynamoDbServerSideEncryptionRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(DynamoDbServerSideEncryptionRule.class);
     public static final String KMS_SSE_TYPE = "KMS";
@@ -66,7 +66,7 @@ public class DynamoDbServerSideEncryptionRule extends BaseRule {
      *
      */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 
 		logger.debug("========DynamoDbServerSideEncryptionRule started=========");
 		String sseType = null;
@@ -76,7 +76,7 @@ public class DynamoDbServerSideEncryptionRule extends BaseRule {
 		
 		
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -100,11 +100,11 @@ public class DynamoDbServerSideEncryptionRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails",issueList.toString());
 				logger.debug("========DynamoDbServerSideEncryptionRule ended with annotation {} :=========",annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 		}
 		logger.debug("========DynamoDbServerSideEncryptionRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

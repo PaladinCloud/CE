@@ -11,24 +11,24 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-if-auth-enabled-app-service", desc = "enable authentication for azure app service", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableAuthWebAppRule extends BaseRule {
+@PacmanPolicy(key = "check-if-auth-enabled-app-service", desc = "enable authentication for azure app service", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class EnableAuthWebAppRule extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(EnableAuthWebAppRule.class);
     private static final String RESOURCE_NOT_FOUND = "Resource data not found!!Skipping this validation";
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing enable authentication for azure app service");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -75,13 +75,13 @@ public class EnableAuthWebAppRule extends BaseRule {
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug("authentication for azure app service with FAILURE isValid flag {} : ",
                         isValid);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
         logger.debug("authentication for azure app service is enabled with Success isValid flag {}", isValid);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

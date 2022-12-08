@@ -3,8 +3,9 @@ package com.tmobile.cloud.awsrules.eks;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +26,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BaseRule.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class})
 public class CheckEKSClusterVersionIsUpdatedRuleTest {
 
     Map<String, String> ruleParam;
@@ -46,7 +47,7 @@ public class CheckEKSClusterVersionIsUpdatedRuleTest {
     @Test
     public void executeTest() throws Exception {
 
-        RuleResult ruleResult = checkEKSClusterVersionIsUpdatedRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = checkEKSClusterVersionIsUpdatedRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 
         ruleParam.put(PacmanRuleConstants.LATEST_VERSION, "1.0");
@@ -58,7 +59,7 @@ public class CheckEKSClusterVersionIsUpdatedRuleTest {
     public void executeFailTest() throws Exception {
 
         ruleParam.put(PacmanRuleConstants.LATEST_VERSION, "1.13");
-        RuleResult ruleResult = checkEKSClusterVersionIsUpdatedRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = checkEKSClusterVersionIsUpdatedRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), eq(null))).thenReturn(false);
@@ -74,7 +75,7 @@ public class CheckEKSClusterVersionIsUpdatedRuleTest {
     private Map<String, String> getInputParamMap() {
         Map<String, String> ruleParam = new HashMap<>();
         ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-        ruleParam.put(PacmanSdkConstants.RULE_ID,
+        ruleParam.put(PacmanSdkConstants.POLICY_ID,
                 "test_version-1_EksCluster_test");
         ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
         ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);

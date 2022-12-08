@@ -40,13 +40,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-ssl_certificate-expiry", desc = "This Rule should look for the SSL expiry with given Date Range", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class SSLCertificateExpiryRule extends BaseRule {
+@PacmanPolicy(key = "check-for-ssl_certificate-expiry", desc = "This Rule should look for the SSL expiry with given Date Range", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class SSLCertificateExpiryRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(SSLCertificateExpiryRule.class);
 
@@ -71,7 +71,7 @@ public class SSLCertificateExpiryRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========SSLCertificateExpiryRule started=========");
 		Annotation annotation = null;
 		String validTo = null;
@@ -83,7 +83,7 @@ public class SSLCertificateExpiryRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -109,14 +109,14 @@ public class SSLCertificateExpiryRule extends BaseRule {
 					issueList.add(issue);
 					annotation.put("issueDetails",issueList.toString());
 					logger.debug("========SSLCertificateExpiryRule ended with annotation {} : =========",annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 				}
 			} else {
 				logger.info("Elb with SSL validity not expired");
 			}
 		}
 		logger.debug("========SSLCertificateExpiryRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

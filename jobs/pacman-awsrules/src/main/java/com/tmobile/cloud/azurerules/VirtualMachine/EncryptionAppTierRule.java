@@ -11,23 +11,23 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-encryption-enabled-for-app-tier-disk-volumes", desc = "Ensure that Azure virtual machine disk volumes created for the app tier are encrypted.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class EncryptionAppTierRule extends BaseRule {
+@PacmanPolicy(key = "check-encryption-enabled-for-app-tier-disk-volumes", desc = "Ensure that Azure virtual machine disk volumes created for the app tier are encrypted.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EncryptionAppTierRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(EncryptionAppTierRule.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing Encryption for App-Tier disk volumes");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -72,12 +72,12 @@ public class EncryptionAppTierRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug(" checkIsAppTierAzureVmDiskEncryptionEnabled completed with FAILURE isValid flag {} : ", isValid);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
         logger.debug("checkIsAppTierAzureVmDiskEncryptionEnabled completed with SUCCESS. isValid flag: {}", isValid);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean checkIsAppTierAzureVmDiskEncryptionEnabled(String esUrl, Map<String, Object> mustFilter) throws Exception{

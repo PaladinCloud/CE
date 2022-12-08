@@ -17,13 +17,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-nacl-with-public-access-configured-ports", desc = "checks network ACL has rule which allow unrestricted access to server administration ports", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class UnrestrictedNACLRuleForConfiguredPort extends BaseRule {
+@PacmanPolicy(key = "check-for-nacl-with-public-access-configured-ports", desc = "checks network ACL has rule which allow unrestricted access to server administration ports", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class UnrestrictedNACLRuleForConfiguredPort extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(UnrestrictedNACLRuleForConfiguredPort.class);
 
@@ -51,12 +51,12 @@ public class UnrestrictedNACLRuleForConfiguredPort extends BaseRule {
 	 */
 
 	@Override
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========UnrestrictedNetworkACLRule started=========");
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		if (MapUtils.isNotEmpty(ruleParam) && !PacmanUtils.doesAllHaveValue(ruleParam.get(PacmanRuleConstants.SEVERITY),
 				ruleParam.get(PacmanRuleConstants.CATEGORY), ruleParam.get(PacmanRuleConstants.PORT_TO_CHECK),
@@ -68,9 +68,9 @@ public class UnrestrictedNACLRuleForConfiguredPort extends BaseRule {
 		Optional<String> opt = Optional.ofNullable(resourceAttributes)
 				.map(resource -> checkValidation(ruleParam, resource));
 
-		RuleResult ruleResult = Optional.ofNullable(ruleParam).filter(param -> opt.isPresent())
+		PolicyResult ruleResult = Optional.ofNullable(ruleParam).filter(param -> opt.isPresent())
 				.map(param -> buildFailureAnnotation(param, opt.get()))
-				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
 		logger.debug("========UnrestrictedNetworkACLRule ended=========");
 		return ruleResult;
@@ -114,7 +114,7 @@ public class UnrestrictedNACLRuleForConfiguredPort extends BaseRule {
 		return description;
 	}
 
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+	private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -129,7 +129,7 @@ public class UnrestrictedNACLRuleForConfiguredPort extends BaseRule {
 		issueList.add(issue);
 		annotation.put("issueDetails",issueList.toString());
 		logger.debug("========UnrestrictedNetworkACLRule annotation {} :=========",annotation);
-		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	
 	
 	}

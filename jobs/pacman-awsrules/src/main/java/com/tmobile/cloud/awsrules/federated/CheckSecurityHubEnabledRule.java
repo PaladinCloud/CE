@@ -6,18 +6,19 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-security-hub-exists", desc = "This rule checks if security hub enabled for account", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class CheckSecurityHubEnabledRule extends BaseRule {
+@PacmanPolicy(key = "check-security-hub-exists", desc = "This rule checks if security hub enabled for account", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class CheckSecurityHubEnabledRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(CheckSecurityHubEnabledRule.class);
     private static final String SECURITY_HUB_URL = "/aws/securityhub/_search";
@@ -35,10 +36,10 @@ public class CheckSecurityHubEnabledRule extends BaseRule {
      * @return ruleResult
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========CheckForSecurityHubEnabled started=========");
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         if (MapUtils.isNotEmpty(ruleParam) && !PacmanUtils.doesAllHaveValue(ruleParam.get(PacmanRuleConstants.SEVERITY),
                 ruleParam.get(PacmanRuleConstants.CATEGORY))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -46,9 +47,9 @@ public class CheckSecurityHubEnabledRule extends BaseRule {
         }
         Optional<String> opt = Optional.ofNullable(resourceAttributes)
                 .map(resource -> checkValidation(ruleParam, resource));
-        RuleResult ruleResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
+        PolicyResult ruleResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
                 .map(param -> buildFailureAnnotation(param, opt.get()))
-                .orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+                .orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
         logger.debug("========CheckForSecurityHubEnabled ended=========");
         return ruleResult;
     }
@@ -91,7 +92,7 @@ public class CheckSecurityHubEnabledRule extends BaseRule {
         return "Checks the AWS SecurityHub enabled";
     }
 
-    private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
@@ -103,6 +104,6 @@ public class CheckSecurityHubEnabledRule extends BaseRule {
         issueList.add(issue);
         annotation.put("issueDetails", issueList.toString());
         logger.debug("========CheckForSecurityHubEnabled annotation {} :=========", annotation);
-        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
     }
 }

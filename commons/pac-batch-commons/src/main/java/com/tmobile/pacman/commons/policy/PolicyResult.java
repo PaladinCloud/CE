@@ -20,7 +20,7 @@ Author :kkumar
 Modified Date: Jun 14, 2017
 
 **/
-package com.tmobile.pacman.commons.rule;
+package com.tmobile.pacman.commons.policy;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 /**
  * The Class RuleResult.
  */
-public class RuleResult  {
+public class PolicyResult  {
 
 	/** The annotation. */
 	Annotation annotation;
@@ -47,7 +47,7 @@ public class RuleResult  {
 	/**
 	 * Instantiates a new rule result.
 	 */
-	public RuleResult() {
+	public PolicyResult() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -57,7 +57,7 @@ public class RuleResult  {
 	 * @param status the status
 	 * @param desc the desc
 	 */
-	public RuleResult(String status,String desc)  {
+	public PolicyResult(String status,String desc)  {
 		if(PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(status)){
 			throw new RuntimeException("annotation expected in case of success, please use the other constructor");
 		}
@@ -72,7 +72,7 @@ public class RuleResult  {
 	 * @param desc the desc
 	 * @param annotation the annotation
 	 */
-	public RuleResult(String status,String desc, Annotation annotation)  {
+	public PolicyResult(String status,String desc, Annotation annotation)  {
 		if(PacmanSdkConstants.STATUS_SUCCESS.equalsIgnoreCase(status)){
 			throw new RuntimeException("annotation not expected in case of success");
 		}
@@ -140,8 +140,8 @@ public class RuleResult  {
 	 * @see java.lang.Object#clone()
 	 */
 	@Override
-	protected RuleResult clone() {
-		RuleResult result = new RuleResult();
+	protected PolicyResult clone() {
+		PolicyResult result = new PolicyResult();
 		result.setStatus(this.getStatus());
 		result.setDesc(this.getDesc());
 		result.setAnnotation(new Annotation(this.getAnnotation()));

@@ -17,49 +17,14 @@
   Copyright (C) 2017 T Mobile Inc - All Rights Reserve
   Purpose:
   Author :kkumar
-  Modified Date: Jun 14, 2017
+  Modified Date: Aug 8, 2017
 
 **/
-package com.tmobile.pacman.commons.rule;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-// TODO: Auto-generated Javadoc
+package com.tmobile.pacman.commons.policy;
 
 /**
- * The Interface PacmanRule.
+ * The Interface PacmanExecute.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface PacmanRule {
+public @interface PacmanExecute {
 
-	/**
-	 * Key.
-	 *
-	 * @return the string
-	 */
-	String key() default "pacman-rule-";
-
-	/**
-	 * Desc.
-	 *
-	 * @return the string
-	 */
-	String desc();
-
-	/**
-	 * Severity.
-	 *
-	 * @return the string
-	 */
-	String severity();
-
-	/**
-	 * Category.
-	 *
-	 * @return the string
-	 */
-	String category();
 }

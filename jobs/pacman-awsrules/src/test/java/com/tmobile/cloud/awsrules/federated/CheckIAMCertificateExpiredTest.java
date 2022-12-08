@@ -23,7 +23,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
@@ -37,12 +37,12 @@ public class CheckIAMCertificateExpiredTest {
 	public void validIAMCertificate() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "133254");
 		Map<String, String> resourceAttribute = getValidIamCertificate("133254");
-		RuleResult ruleResult = checkIAMCertificateExpired.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = checkIAMCertificateExpired.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 
@@ -50,12 +50,12 @@ public class CheckIAMCertificateExpiredTest {
 	public void expiredIAMCertificate() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "3254366");
 		Map<String, String> resourceAttribute = getExpiredIamCertificate("3254366");
-		RuleResult ruleResult = checkIAMCertificateExpired.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = checkIAMCertificateExpired.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 	
@@ -65,7 +65,7 @@ public class CheckIAMCertificateExpiredTest {
 		mockStatic(PacmanUtils.class);
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "Expired_AWS_IAMCertificate_version-1_Expired_IAMCertificate_iamcertificate");
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "12143");
 		Map<String, String> resourceAttribute = getValidIamCertificate("12143");

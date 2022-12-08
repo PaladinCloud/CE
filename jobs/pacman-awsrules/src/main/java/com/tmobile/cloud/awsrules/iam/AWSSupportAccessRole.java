@@ -23,13 +23,13 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "iam-role-for-aws-support-access", desc = "Checks any dedicated IAM role has created for AWS support access", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class AWSSupportAccessRole extends BaseRule {
+@PacmanPolicy(key = "iam-role-for-aws-support-access", desc = "Checks any dedicated IAM role has created for AWS support access", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class AWSSupportAccessRole extends BasePolicy {
 
 	/** The Constant LOGGER. */
 
@@ -60,12 +60,12 @@ public class AWSSupportAccessRole extends BaseRule {
 	 */
 
 	@Override
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========AWSSupportAccessRole started=========");
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		
 		Optional.ofNullable(ruleParam)
 				.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY),
@@ -79,10 +79,10 @@ public class AWSSupportAccessRole extends BaseRule {
 		Optional<String> opt = Optional.ofNullable(resourceAttributes)
 				.map(resource -> checkValidation(ruleParam, resource));
 		
-		RuleResult ruleResult = Optional.ofNullable(ruleParam)
+		PolicyResult ruleResult = Optional.ofNullable(ruleParam)
 				.filter(param -> opt.isPresent())
 				.map(param -> buildFailureAnnotation(param, opt.get()))
-				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
 
 		logger.debug("========AWSSupportAccessRole ended=========");
@@ -152,7 +152,7 @@ public class AWSSupportAccessRole extends BaseRule {
 		return null;
 	}
 
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+	private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -167,7 +167,7 @@ public class AWSSupportAccessRole extends BaseRule {
 		issueList.add(issue);
 		annotation.put("issueDetails",issueList.toString());
 		logger.debug("========AWSSupportAccessRole annotation {} :=========",annotation);
-		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	
 	
 	}

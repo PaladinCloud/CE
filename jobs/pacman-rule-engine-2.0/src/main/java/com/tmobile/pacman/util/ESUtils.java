@@ -35,7 +35,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 
 // TODO: Auto-generated Javadoc
 /**

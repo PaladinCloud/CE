@@ -9,10 +9,10 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +20,14 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-bigquery-table-encryption-with-cmks", desc = "Enable BigQuery Encryption with Customer-Managed Keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+@PacmanPolicy(key = "check-bigquery-table-encryption-with-cmks", desc = "Enable BigQuery Encryption with Customer-Managed Keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 
-public class TableKeyEncryptionRule extends BaseRule {
+public class TableKeyEncryptionRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(TableKeyEncryptionRule.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
         logger.debug("Executing bigquery dataset table encryption with customer managed keys rule");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
@@ -47,7 +47,7 @@ public class TableKeyEncryptionRule extends BaseRule {
         }
         logger.debug("ES search url for gcp bigquery datset table:  {}", esUrl);
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
-        MDC.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             Map<String, Object> mustFilter = new HashMap<>();
@@ -65,7 +65,7 @@ public class TableKeyEncryptionRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug("Bigquery dataset table encryption with cmks rule ended with failure. Annotation {} :", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
             } catch (Exception exception) {
@@ -73,7 +73,7 @@ public class TableKeyEncryptionRule extends BaseRule {
             }
         }
         logger.debug("Bigquery dataset table encryption with cmks rule ended with success.");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

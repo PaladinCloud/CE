@@ -14,10 +14,26 @@
  * the License.
  ******************************************************************************/
 /**
- *
- */
+Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+Purpose: Execution Request for a rule, rule will be expecting key/value pair parameters in param field
+Author :kkumar
+Modified Date: Jun 14, 2017
+
+**/
+package com.tmobile.pacman.commons.policy;
+
+// TODO: Auto-generated Javadoc
 /**
- * @author kkumar
+ * The Class RuleExecutionRequest.
  *
+ * @author  Kamal Kumar
+ * @version 1.0
+ * @since   05/06/2017
  */
-package com.tmobile.pacman.commons.rule;
+
+public class PolicyExecutionRequest {
+
+	/** The params. */
+	PolicyParams params;
+
+}

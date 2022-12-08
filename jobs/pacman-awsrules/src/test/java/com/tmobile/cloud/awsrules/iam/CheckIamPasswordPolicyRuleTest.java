@@ -46,7 +46,7 @@ import com.tmobile.cloud.awsrules.utils.IAMUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ PacmanUtils.class,IAMUtils.class})
@@ -86,7 +86,7 @@ public class CheckIamPasswordPolicyRuleTest {
         map.put("client", identityManagementClient);
         CheckIamPasswordPolicyRule spy = Mockito.spy(new CheckIamPasswordPolicyRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(identityManagementClient.getAccountPasswordPolicy()).thenReturn(result);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));

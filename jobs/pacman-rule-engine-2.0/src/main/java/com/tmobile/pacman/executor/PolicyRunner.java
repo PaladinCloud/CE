@@ -20,27 +20,27 @@ import java.util.List;
 import java.util.Map;
 
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Interface RuleRunner.
+ * The Interface PolicyRunner.
  */
-public interface RuleRunner {
+public interface PolicyRunner {
 
     /**
-     * Run rules.
+     * Run policy.
      *
      * @param resources the resources
-     * @param ruleParam the rule param
+     * @param policyParam the policy param
      * @param executionId the execution id
      * @return the list
      * @throws Exception the exception
      */
-    public List<RuleResult> runRules(List<Map<String, String>> resources, Map<String, String> ruleParam,
+    public List<PolicyResult> runPolicies(List<Map<String, String>> resources, Map<String, String> policyParam,
             String executionId) throws Exception;
-    default void populateAnnotationParams(RuleResult result,Map<String, String> resource, Map<String, String> ruleParam ){
-        String assetGroup=ruleParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
+    default void populateAnnotationParams(PolicyResult result,Map<String, String> resource, Map<String, String> policyParam ){
+        String assetGroup=policyParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
         switch (assetGroup.toUpperCase()){
             case "AWS":
                 result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanSdkConstants.ACCOUNT_ID));

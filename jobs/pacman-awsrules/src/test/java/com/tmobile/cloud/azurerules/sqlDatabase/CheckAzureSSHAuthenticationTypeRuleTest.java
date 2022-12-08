@@ -28,13 +28,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.azurerules.policies.CheckAzureSSHAuthenticationTypeRule;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import java.util.HashMap;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BaseRule.class,RulesElasticSearchRepositoryUtil.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class,RulesElasticSearchRepositoryUtil.class})
 public class CheckAzureSSHAuthenticationTypeRuleTest {
     @InjectMocks
     CheckAzureSSHAuthenticationTypeRule checkAzureSSHAuthenticationTypeRule;

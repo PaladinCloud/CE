@@ -14,13 +14,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-ecs-task-log-driver-in-use", desc = "checks for log driver is configured for the containers in ECS task definitions", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ECSTaskLogDriverInUseRule extends BaseRule {
+@PacmanPolicy(key = "check-for-ecs-task-log-driver-in-use", desc = "checks for log driver is configured for the containers in ECS task definitions", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ECSTaskLogDriverInUseRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(ECSTaskLogDriverInUseRule.class);
 	
@@ -45,29 +45,29 @@ public class ECSTaskLogDriverInUseRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========ECSTaskLogDriverInUseRule started=========");
 		
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		Optional.ofNullable(ruleParam)
 			.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY), param.get(PacmanRuleConstants.CATEGORY))))
 			.map(param -> {logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
 				throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 			});
-		RuleResult ruleResult = Optional.ofNullable(resourceAttributes)
+		PolicyResult ruleResult = Optional.ofNullable(resourceAttributes)
 				.filter(resource -> LOG_DRIVER_NONE.equalsIgnoreCase(resource.get(PacmanRuleConstants.ES_LOG_DRIVER_ATTRIBUTE)))
 				.map(resource -> buildFailureAnnotation(ruleParam))
-				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 		
 		logger.debug("========ECSTaskLogDriverInUseRule ended=========");
 		return ruleResult;
 		
 	}
 	
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam) {
+	private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -82,7 +82,7 @@ public class ECSTaskLogDriverInUseRule extends BaseRule {
 		issueList.add(issue);
 		annotation.put("issueDetails",issueList.toString());
 		logger.debug("========ECSTaskLogDriverInUseRule annotation {} :=========",annotation);
-		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	
 	
 	}

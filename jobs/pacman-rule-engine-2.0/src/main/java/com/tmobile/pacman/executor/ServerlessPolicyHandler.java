@@ -31,8 +31,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.common.exception.ServerlessRuleFailedException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -40,26 +40,26 @@ import com.tmobile.pacman.commons.rule.RuleResult;
  *
  * @author kkumar
  */
-public class ServerlessRuleHandler implements RuleHandler {
+public class ServerlessPolicyHandler implements PolicyHandler {
 
-    /** The rule params. */
-    Map<String, String> ruleParams;
+    /** The policy params. */
+    Map<String, String> policyParams;
 
     /** The resource. */
     Map<String, String> resource;
 
     /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(ServerlessRuleHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServerlessPolicyHandler.class);
 
     /** The http client. */
     HttpClient httpClient;
 
     /**
-     * Instantiates a new serverless rule handler.
+     * Instantiates a new serverless policy handler.
      *
      * @param httpClient the http client
      */
-    public ServerlessRuleHandler(HttpClient httpClient) {
+    public ServerlessPolicyHandler(HttpClient httpClient) {
         super();
         this.httpClient = httpClient;
     }
@@ -68,44 +68,44 @@ public class ServerlessRuleHandler implements RuleHandler {
      * @see com.tmobile.pacman.executor.RuleHandler#handleRule(java.util.Map, java.util.Map)
      */
     @Override
-    public RuleResult handleRule(Map<String, String> ruleParams, Map<String, String> resource) {
+    public PolicyResult handlePolicy(Map<String, String> policyParams, Map<String, String> resource) {
 
         Gson gson = new GsonBuilder().create();
         // get rule URI
-        String ruleUri = ruleParams.get(PacmanSdkConstants.RULE_URL_KEY);
-        // do a http post of RuleParams to the ruleUri and try to build a
-        // RuleResult object based on return value
+        String policyUri = policyParams.get(PacmanSdkConstants.POLICY_URL_KEY);
+        // do a http post of policyParams to the policyUri and try to build a
+        // PolicyResult object based on return value
         // like status 200 will be a pass
         Map<String, Map<String, String>> input = new HashMap<>();
-        input.put("ruleParam".intern(), ruleParams);
+        input.put("policyParam".intern(), policyParams);
         input.put("resource".intern(), resource);
         StringBuilder requestBody = new StringBuilder(gson.toJson(input));
         Map<String, String> headers = new HashMap<String, String>();
-        if (ruleParams.containsKey(PacmanSdkConstants.X_API_KEY)) {
-            headers.put(PacmanSdkConstants.X_API_KEY, ruleParams.get(PacmanSdkConstants.X_API_KEY));
+        if (policyParams.containsKey(PacmanSdkConstants.X_API_KEY)) {
+            headers.put(PacmanSdkConstants.X_API_KEY, policyParams.get(PacmanSdkConstants.X_API_KEY));
         }
         try {
-            doHttpPost(ruleUri, requestBody.toString(), headers);
-            RuleResult result = new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, "this check is just passed".intern());
+            doHttpPost(policyUri, requestBody.toString(), headers);
+            PolicyResult result = new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, "this check is just passed".intern());
             result.setResource(resource);// overwrite the resource as sent in
                                          // case it was overwritten
             return result;
         } catch (ServerlessRuleFailedException e) {
             Map<String, String> responseMap = gson.fromJson(e.getAnnotation(), Map.class);
-            Annotation annotation = Annotation.buildAnnotation(ruleParams, Annotation.Type.ISSUE);
+            Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
             annotation.putAll(responseMap);
-            RuleResult result = new RuleResult(PacmanSdkConstants.STATUS_FAILURE, "this check failed".intern(),
+            PolicyResult result = new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, "this check failed".intern(),
                     annotation);
             result.setResource(resource);// overwrite the resource as sent in
                                          // case it was overwritten
             return result;
 
         } catch (Exception e) {
-            Annotation annotation = Annotation.buildAnnotation(ruleParams, Annotation.Type.ISSUE);
-            annotation.put("reason".intern(), "rule was unable to evaluvate");
+            Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
+            annotation.put("reason".intern(), "policy was unable to evaluvate");
             annotation.put("errorMessage".intern(), e.getMessage());
-            logger.error("unable to execute serverless rule".intern(), e);
-            return new RuleResult(PacmanSdkConstants.STATUS_UNKNOWN, "unable to evaluvate compliance".intern(),
+            logger.error("unable to execute serverless policy".intern(), e);
+            return new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN, "unable to evaluvate compliance".intern(),
                     annotation);
         }
     }
@@ -173,13 +173,13 @@ public class ServerlessRuleHandler implements RuleHandler {
      * @see com.tmobile.pacman.executor.RuleHandler#handleRule()
      */
     @Override
-    public RuleResult handleRule() {
+    public PolicyResult handlePolicy() {
         // get rule URI
-        String ruleUri = getRuleParams().get(PacmanSdkConstants.RULE_URL_KEY);
+        String ruleUri = getRuleParams().get(PacmanSdkConstants.POLICY_URL_KEY);
         // do a http post of RuleParams to the ruleUri and try to build a
         // RuleResult object based on return value
         // like status 200 will be a pass
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, "this check is just passed");
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, "this check is just passed");
     }
 
     /**
@@ -188,7 +188,7 @@ public class ServerlessRuleHandler implements RuleHandler {
      * @return the rule params
      */
     public Map<String, String> getRuleParams() {
-        return ruleParams;
+        return policyParams;
     }
 
     /**
@@ -197,21 +197,21 @@ public class ServerlessRuleHandler implements RuleHandler {
      * @param ruleParams the rule params
      */
     public void setRuleParams(Map<String, String> ruleParams) {
-        this.ruleParams = ruleParams;
+        this.policyParams = ruleParams;
     }
 
     /* (non-Javadoc)
      * @see java.util.concurrent.Callable#call()
      */
     @Override
-    public RuleResult call() throws Exception {
-        return handleRule(ruleParams, resource);
+    public PolicyResult call() throws Exception {
+        return handlePolicy(policyParams, resource);
     }
 
     /**
      * Instantiates a new serverless rule handler.
      */
-    public ServerlessRuleHandler() {
+    public ServerlessPolicyHandler() {
 
         // httpClient = new HttpClient(new
         // MultiThreadedHttpConnectionManager());
@@ -224,10 +224,10 @@ public class ServerlessRuleHandler implements RuleHandler {
      * @param ruleParams the rule params
      * @param resource the resource
      */
-    public ServerlessRuleHandler(HttpClient httpClient, Map<String, String> ruleParams, Map<String, String> resource) {
+    public ServerlessPolicyHandler(HttpClient httpClient, Map<String, String> ruleParams, Map<String, String> resource) {
         super();
         this.httpClient = httpClient;
-        this.ruleParams = ruleParams;
+        this.policyParams = ruleParams;
         this.resource = resource;
     }
 

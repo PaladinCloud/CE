@@ -49,7 +49,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.config.ConfigManager;
 
 // TODO: Auto-generated Javadoc
@@ -88,7 +88,7 @@ public class ESUtilsTest {
 	public void postAuditTrail() throws ParseException, UnsupportedEncodingException {
 		List<Annotation> annotations = Lists.newArrayList();
 		Annotation annotation = new Annotation();
-        annotation.put(PacmanSdkConstants.RULE_ID, "ruleId123");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "ruleId123");
         annotation.put(PacmanSdkConstants.DOC_ID, "docId123");
 		annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, "sKey123");
 		annotation.put(PacmanSdkConstants.TARGET_TYPE, "target123");

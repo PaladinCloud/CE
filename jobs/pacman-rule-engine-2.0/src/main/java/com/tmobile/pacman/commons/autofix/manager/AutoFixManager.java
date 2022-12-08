@@ -119,7 +119,7 @@ public class AutoFixManager {
             Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
 
         List<Map<String, String>> existingIssues = null;
-        String ruleId = ruleParam.get(PacmanSdkConstants.RULE_ID);
+        String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         ResourceOwnerService ownerService = new ResourceOwnerService();
         NextStepManager nextStepManager = new NextStepManager();
         ResourceTaggingManager taggingManager = new ResourceTaggingManager();
@@ -157,7 +157,7 @@ public class AutoFixManager {
         String transactionId = null;
 
         MDC.put("executionId", executionId);
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         
         String type = "autofix";
         logger.info("autoFixmanager start");
@@ -216,7 +216,7 @@ public class AutoFixManager {
             serviceType = AWSService.valueOf(getTargetTypeAlias(targetType).toUpperCase());
             
             // create client
-            if(isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),ruleParam.get(PacmanSdkConstants.RULE_ID))){
+            if(isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),ruleParam.get(PacmanSdkConstants.POLICY_ID))){
             	clientMap = getAWSClient(getTargetTypeAlias(targetType), annotation,CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
             }else{
             	 logger.info("Account id is blacklisted {}" , annotation.get(PacmanSdkConstants.ACCOUNT_ID));
@@ -351,7 +351,7 @@ public class AutoFixManager {
 
                 if (AutoFixAction.AUTOFIX_ACTION_EMAIL == autoFixAction
                         && isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID), ruleId)) {
-                    long autofixExpiring=nextStepManager.getAutoFixExpirationTimeInHours(ruleParam.get(PacmanSdkConstants.RULE_ID),resourceId);
+                    long autofixExpiring=nextStepManager.getAutoFixExpirationTimeInHours(ruleParam.get(PacmanSdkConstants.POLICY_ID),resourceId);
                 	/*ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(Integer.parseInt(CommonUtils.getPropValue(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY
                             +"."+ ruleParam.get(PacmanSdkConstants.RULE_ID))));*/
                     ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(autofixExpiring);
@@ -763,9 +763,9 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
             throws Exception {
 
         String esUrl = ESUtils.getEsUrl();
-        String ruleId = ruleParam.get(PacmanSdkConstants.RULE_ID);
+        String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         String indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
-        String attributeToQuery = ESUtils.convertAttributetoKeyword(PacmanSdkConstants.RULE_ID);
+        String attributeToQuery = ESUtils.convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID);
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(attributeToQuery, ruleId);
         mustFilter.put("type.keyword", "issue");
@@ -814,7 +814,7 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
         Map<String, String> ruleParam = CommonUtils.createParamMap(args[0]);
         ExceptionManager exceptionManager = new ExceptionManagerImpl();
         Map<String, List<IssueException>> excemptedResourcesForRule = exceptionManager.getStickyExceptions(
-                ruleParam.get(PacmanSdkConstants.RULE_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+                ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
         Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
                 .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
        AutoFixManager autoFixManager = new AutoFixManager();

@@ -20,7 +20,7 @@ Author :kkumar
 Modified Date: Jun 14, 2017
 
 **/
-package com.tmobile.pacman.commons.rule;
+package com.tmobile.pacman.commons.policy;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -29,7 +29,7 @@ import java.util.concurrent.Callable;
 /**
  * The Interface Rule.
  */
-public interface Rule extends Callable<RuleResult> {
+public interface Policy extends Callable<PolicyResult> {
 
 	/**
 	 * Tests the resource based on ruleParam.
@@ -38,7 +38,7 @@ public interface Rule extends Callable<RuleResult> {
 	 * @param resourceAttributes TODO
 	 * @return RuleResult
 	 */
-	public RuleResult execute(final Map<String,String> ruleParam, Map<String, String> resourceAttributes);
+	public PolicyResult execute(final Map<String,String> ruleParam, Map<String, String> resourceAttributes);
 
 	/**
 	 * build and json string defining the purpose of the rule and how it works.

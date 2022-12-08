@@ -15,7 +15,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
@@ -29,11 +29,11 @@ public class CheckACMCertificateExpiredTest {
 	public void validACM() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "cloudsqlbackupruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "cloudsqlbackupruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		Map<String, String> resourceAttribute = getValidACMCertificate("acm1234");
-		RuleResult ruleResult = checkACMCertificateExpired.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = checkACMCertificateExpired.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 
@@ -41,11 +41,11 @@ public class CheckACMCertificateExpiredTest {
 	public void expiredACM() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "cloudsqlbackupruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "cloudsqlbackupruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		Map<String, String> resourceAttribute = getExpiredACMCertificate("acm56789");
-		RuleResult ruleResult = checkACMCertificateExpired.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = checkACMCertificateExpired.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 

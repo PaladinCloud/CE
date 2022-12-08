@@ -10,10 +10,10 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +21,12 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "enable-auto-repair-for-gke-nodes", desc = "Enable GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableNodeAutoRepair extends BaseRule {
+@PacmanPolicy(key = "enable-auto-repair-for-gke-nodes", desc = "Enable GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class EnableNodeAutoRepair extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(EnableNodeAutoRepair.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         Annotation annotation = null;
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
@@ -51,7 +51,7 @@ public class EnableNodeAutoRepair extends BaseRule {
         boolean isKeyEnabled = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
@@ -74,7 +74,7 @@ public class EnableNodeAutoRepair extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========rule ended with status failure {}", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
 
@@ -84,7 +84,7 @@ public class EnableNodeAutoRepair extends BaseRule {
         }
 
         logger.debug("======== ended with status true=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
     private boolean checkKeyEnabled(String vmEsURL, Map<String, Object> mustFilter,String key) throws Exception {
         logger.debug("========verifyports  started=========");

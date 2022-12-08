@@ -9,25 +9,25 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-@PacmanRule(key = "check-for-block-project-ssh-key", desc = "checks if instance-level SSH keys is enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class VMInstanceSSHKeySecurityFeatureRule extends BaseRule {
+@PacmanPolicy(key = "check-for-block-project-ssh-key", desc = "checks if instance-level SSH keys is enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class VMInstanceSSHKeySecurityFeatureRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(VMInstanceSSHKeySecurityFeatureRule.class);
 
     private static final String keyValue="block-project-ssh-keys";
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========VMInstanceSSHKeySecurityFeatureRule started=========");
         Annotation annotation = null;
 
@@ -51,7 +51,7 @@ public class VMInstanceSSHKeySecurityFeatureRule extends BaseRule {
         boolean isBlockProjectWideSSHEnable = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
@@ -74,7 +74,7 @@ public class VMInstanceSSHKeySecurityFeatureRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========VMInstanceSSHKeySecurityFeatureRule ended with an annotation {} : =========", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 
             } catch (Exception exception) {
@@ -83,7 +83,7 @@ public class VMInstanceSSHKeySecurityFeatureRule extends BaseRule {
         }
 
         logger.debug("========VMInstanceMigrateOnMaintainence ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

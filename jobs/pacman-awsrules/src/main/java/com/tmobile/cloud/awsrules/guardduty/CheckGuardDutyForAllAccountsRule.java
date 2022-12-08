@@ -39,13 +39,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-guard-duty-enabled-for-all-accounts", desc = "AWS Guard Duty service should be enabled on all regions of all AWS accounts", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckGuardDutyForAllAccountsRule extends BaseRule {
+@PacmanPolicy(key = "check-guard-duty-enabled-for-all-accounts", desc = "AWS Guard Duty service should be enabled on all regions of all AWS accounts", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckGuardDutyForAllAccountsRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckGuardDutyForAllAccountsRule.class);
 	/**
@@ -67,7 +67,7 @@ public class CheckGuardDutyForAllAccountsRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========CheckGuardDutyForAllAccountsRule started=========");
 		Map<String, String> temp = new HashMap<>();
 		temp.putAll(ruleParam);
@@ -82,7 +82,7 @@ public class CheckGuardDutyForAllAccountsRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		Gson gson = new Gson();
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList();
@@ -123,7 +123,7 @@ public class CheckGuardDutyForAllAccountsRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put("issueDetails",issueList.toString());
                 logger.debug("========CheckGuardDutyForAllAccountsRule ended with annotaion {} : =========",annotation);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
 			
 		} catch (UnableToCreateClientException e) {
@@ -131,7 +131,7 @@ public class CheckGuardDutyForAllAccountsRule extends BaseRule {
 			throw new InvalidInputException(e.toString());
 		}
 		logger.debug("========CheckGuardDutyForAllAccountsRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 

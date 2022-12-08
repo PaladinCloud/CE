@@ -62,6 +62,6 @@ def processJsonInput(event,context):
                  "params":json.dumps(event),
                  "jvmMemParams":os.getenv('JVM_HEAP_SIZE',"-Xms1024m -Xmx4g"),
                  "ruleEngineExecutableName":"rule-engine.jar",
-                 "entryPoint":"com.tmobile.pacman.executor.RuleExecutor"}
+                 "entryPoint":"com.tmobile.pacman.executor.PolicyExecutor"}
 
     return submit_to_batch(jobQueue,jobName,jobDefinition,containerOverrides,parameters)

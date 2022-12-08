@@ -19,7 +19,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
@@ -35,14 +35,14 @@ public class ElastiCacheInTransitAndAtRestEncryptionRuleTest {
 	public void elasticCacheWithEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "cloudsqlbackupruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "cloudsqlbackupruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY,PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY,PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put("engineType","redis");
 		ruleParam.put("engineVersion","3.2.6");
 
 		Map<String, String> resourceAttribute =  getResourceForEncyptedCache("ESCACHE1234");
-		RuleResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 	
@@ -50,13 +50,13 @@ public class ElastiCacheInTransitAndAtRestEncryptionRuleTest {
 	public void elasticCacheWithOutEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "cloudsqlbackupruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "cloudsqlbackupruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY,PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY,PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put("engineType","redis");
 		ruleParam.put("engineVersion","3.2.6");
 		Map<String, String> resourceAttribute =  getResourceForWithOutEncryption("ESCACHE1234");
-		RuleResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 	
@@ -64,13 +64,13 @@ public class ElastiCacheInTransitAndAtRestEncryptionRuleTest {
 	public void elasticCacheWithOutTransitEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "cloudsqlbackupruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "cloudsqlbackupruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY,PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY,PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put("engineType","redis");
 		ruleParam.put("engineVersion","3.2.6");
 		Map<String, String> resourceAttribute =  getResourceForWithOutTransitEncryption("ESCACHE1234");
-		RuleResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 	
@@ -78,13 +78,13 @@ public class ElastiCacheInTransitAndAtRestEncryptionRuleTest {
 	public void elasticCacheWithOutAtRestEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "cloudsqlbackupruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "cloudsqlbackupruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY,PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY,PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put("engineType","redis");
 		ruleParam.put("engineVersion","3.2.6");
 		Map<String, String> resourceAttribute =  getResourceForWithOutAtRestEncryption("ESCACHE1234");
-		RuleResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = elastiCacheInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 	

@@ -59,7 +59,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.amazonaws.services.ec2.AmazonEC2;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("org.apache.http.conn.ssl.*")

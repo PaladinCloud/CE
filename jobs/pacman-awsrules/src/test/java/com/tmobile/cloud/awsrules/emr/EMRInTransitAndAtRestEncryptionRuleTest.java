@@ -18,7 +18,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
@@ -32,11 +32,11 @@ public class EMRInTransitAndAtRestEncryptionRuleTest {
 	public void elasticCacheWithEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "emrInTransitAndAtRestEncryptionRule");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "emrInTransitAndAtRestEncryptionRule");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		Map<String, String> resourceAttribute = getResourceForEncyptedCache("EMR1234");
-		RuleResult ruleResult = emrInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = emrInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 
@@ -44,12 +44,12 @@ public class EMRInTransitAndAtRestEncryptionRuleTest {
 	public void elasticCacheWithOutEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "emrInTransitAndAtRestEncryptionRule");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "emrInTransitAndAtRestEncryptionRule");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 
 		Map<String, String> resourceAttribute = getResourceForWithOutEncryption("EMR1234");
-		RuleResult ruleResult = emrInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = emrInTransitAndAtRestEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 

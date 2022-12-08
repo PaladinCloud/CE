@@ -18,7 +18,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
@@ -32,11 +32,11 @@ public class ESNodetoNodeEncryptionRuleTest {
 	public void esNodeWithEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "esEncryptionAtRestRule");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "esEncryptionAtRestRule");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		Map<String, String> resourceAttribute = getResourceForEncypted("ES1234");
-		RuleResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 
@@ -44,12 +44,12 @@ public class ESNodetoNodeEncryptionRuleTest {
 	public void esNodeWithOutEncryption() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "esEncryptionAtRestRule");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "esEncryptionAtRestRule");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 
 		Map<String, String> resourceAttribute = getResourceForWithOutEncryption("ES1234");
-		RuleResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 	
@@ -57,12 +57,12 @@ public class ESNodetoNodeEncryptionRuleTest {
 	public void esNodeWithLowerVersion() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "esEncryptionAtRestRule");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "esEncryptionAtRestRule");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 
 		Map<String, String> resourceAttribute = getResourceWithLowerVersion("ES1234");
-		RuleResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = esNodetoNodeEncryptionRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 

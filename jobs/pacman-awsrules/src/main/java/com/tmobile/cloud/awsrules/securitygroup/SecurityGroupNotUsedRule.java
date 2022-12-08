@@ -37,13 +37,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-unused-security-group", desc = "checks for unused security groups", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class SecurityGroupNotUsedRule extends BaseRule {
+@PacmanPolicy(key = "check-for-unused-security-group", desc = "checks for unused security groups", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class SecurityGroupNotUsedRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(SecurityGroupNotUsedRule.class);
 	private static final String ES_NETWORK_INTERFACE_INDEX = "/aws/eni_secgroups/_search";
@@ -71,7 +71,7 @@ public class SecurityGroupNotUsedRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========SecurityGroupNotUsedRule started=========");
 		String groupId = null;
@@ -84,7 +84,7 @@ public class SecurityGroupNotUsedRule extends BaseRule {
 
 		String esUrl = ruleParam.get(PacmanRuleConstants.ES_URL_PARAM);
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
 		String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
 		esUrl = pacmanHost;
@@ -117,7 +117,7 @@ public class SecurityGroupNotUsedRule extends BaseRule {
 					annotation.put("issueDetails", issueList.toString());
 
 					logger.debug("========SecurityGroupNotUsedRule ended with an annotation : {}=========", annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 							annotation);
 				}
 			} catch (Exception e) {
@@ -128,7 +128,7 @@ public class SecurityGroupNotUsedRule extends BaseRule {
 
 		logger.debug("========SecurityGroupNotUsedRule ended=========");
 
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

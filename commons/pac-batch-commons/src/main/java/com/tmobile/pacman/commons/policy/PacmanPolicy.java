@@ -1,77 +1,65 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.tmobile.pacman.commons.rule;
-
-// TODO: Auto-generated Javadoc
 /**
- * The Class AnnotationCollectResult.
+  Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+  Purpose:
+  Author :kkumar
+  Modified Date: Jun 14, 2017
+
+**/
+package com.tmobile.pacman.commons.policy;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+// TODO: Auto-generated Javadoc
+
+/**
+ * The Interface PacmanRule.
  */
-public class AnnotationCollectResult {
-	
-	/** The status. */
-	Boolean status;
-	
-	/** The desc. */
-	String desc;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface PacmanPolicy {
 
 	/**
-	 * Instantiates a new annotation collect result.
+	 * Key.
 	 *
-	 * @param status the status
-	 * @param desc the desc
+	 * @return the string
 	 */
-	public AnnotationCollectResult(Boolean status, String desc) {
-		super();
-		this.status = status;
-		this.desc = desc;
-	}
+	String key() default "pacman-policy-";
 
 	/**
-	 * Gets the status.
+	 * Desc.
 	 *
-	 * @return the status
+	 * @return the string
 	 */
-	public Boolean getStatus() {
-		return status;
-	}
+	String desc();
 
 	/**
-	 * Sets the status.
+	 * Severity.
 	 *
-	 * @param status the new status
+	 * @return the string
 	 */
-	public void setStatus(Boolean status) {
-		this.status = status;
-	}
+	String severity();
 
 	/**
-	 * Gets the desc.
+	 * Category.
 	 *
-	 * @return the desc
+	 * @return the string
 	 */
-	public String getDesc() {
-		return desc;
-	}
-
-	/**
-	 * Sets the desc.
-	 *
-	 * @param desc the new desc
-	 */
-	public void setDesc(String desc) {
-		this.desc = desc;
-	}
+	String category();
 }

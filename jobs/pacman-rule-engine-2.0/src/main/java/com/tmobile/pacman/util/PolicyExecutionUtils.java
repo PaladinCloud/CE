@@ -22,33 +22,33 @@ import java.util.Map;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.Annotation.Type;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+import com.tmobile.pacman.commons.policy.Annotation.Type;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class RuleExecutionUtils.
  */
-public class RuleExecutionUtils {
+public class PolicyExecutionUtils {
 
     /**
      * If filter matches the current resource.
      *
-     * @param ruleParam the rule param
+     * @param policyParam the policy param
      * @param resource the resource
      * @return true, if successful
      */
-    public static boolean ifFilterMatchesTheCurrentResource(Map<String, String> ruleParam,
+    public static boolean ifFilterMatchesTheCurrentResource(Map<String, String> policyParam,
             Map<String, String> resource) {
 
-        String ruleParam_account = !Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.ACCOUNT_ID))
-                ? ruleParam.get(PacmanSdkConstants.ACCOUNT_ID) : resource.get(PacmanSdkConstants.ACCOUNT_ID);
-        String ruleParam_region = !Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.REGION))
-                ? ruleParam.get(PacmanSdkConstants.REGION) : resource.get(PacmanSdkConstants.REGION);
-        String ruleParam_resourceId = !Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.RESOURCE_ID))
-                ? ruleParam.get(PacmanSdkConstants.RESOURCE_ID) : resource.get(PacmanSdkConstants.RESOURCE_ID);
+        String ruleParam_account = !Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.ACCOUNT_ID))
+                ? policyParam.get(PacmanSdkConstants.ACCOUNT_ID) : resource.get(PacmanSdkConstants.ACCOUNT_ID);
+        String ruleParam_region = !Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.REGION))
+                ? policyParam.get(PacmanSdkConstants.REGION) : resource.get(PacmanSdkConstants.REGION);
+        String ruleParam_resourceId = !Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.RESOURCE_ID))
+                ? policyParam.get(PacmanSdkConstants.RESOURCE_ID) : resource.get(PacmanSdkConstants.RESOURCE_ID);
 
         String ruleString = new StringBuilder(ruleParam_account).append(ruleParam_region).append(ruleParam_resourceId)
                 .toString();
@@ -62,15 +62,15 @@ public class RuleExecutionUtils {
     }
 
     /**
-     * Gets the local rule param.
+     * Gets the local policy param.
      *
-     * @param ruleParam the rule param
+     * @param policyParam the policy param
      * @param resource the resource
-     * @return the local rule param
+     * @return the local policy param
      */
-    public static Map<String, String> getLocalRuleParam(Map<String, String> ruleParam, Map<String, String> resource) {
+    public static Map<String, String> getLocalPolicyParam(Map<String, String> policyParam, Map<String, String> resource) {
         Map<String, String> localRuleParam = new HashMap<>();
-        localRuleParam.putAll(ruleParam);
+        localRuleParam.putAll(policyParam);
         localRuleParam.put(PacmanSdkConstants.RESOURCE_ID, resource.get(PacmanSdkConstants.RESOURCE_ID));
         if (null != resource.get(PacmanSdkConstants.ACCOUNT_ID))
             localRuleParam.put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanSdkConstants.ACCOUNT_ID));
@@ -85,19 +85,19 @@ public class RuleExecutionUtils {
      * Gets the rule attribute.
      *
      * @param result the result
-     * @param ruleParam the rule param
-     * @param ruleAnnotation the rule annotation
+     * @param policyParam the policy param
+     * @param policyAnnotation the policy annotation
      * @param attribute the attribute
-     * @return the attribute value from ruleParam--ruleAnnotation--RuleResult
+     * @return the attribute value from policyParam--policyAnnotation--PolicyResult
      *         wherever found first, not_found otherwise
      */
-    public static String getRuleAttribute(RuleResult result, Map<String, String> ruleParam, PacmanRule ruleAnnotation,
+    public static String getPolicyAttribute(PolicyResult result, Map<String, String> policyParam, PacmanPolicy policyAnnotation,
             String attribute) {
-        if (ruleParam != null && ruleParam.containsKey(attribute)) {
-            return ruleParam.get(attribute);
+        if (policyParam != null && policyParam.containsKey(attribute)) {
+            return policyParam.get(attribute);
         }
-        if (ruleAnnotation != null) {
-            return ruleAnnotation.category();
+        if (policyAnnotation != null) {
+            return policyAnnotation.category();
         }
         return getValueFromResult(result, attribute);
     }
@@ -109,7 +109,7 @@ public class RuleExecutionUtils {
      * @param key the key
      * @return the value from result
      */
-    private static String getValueFromResult(final RuleResult result, final String key) {
+    private static String getValueFromResult(final PolicyResult result, final String key) {
         Annotation annotation = null;
         if (result != null) {
             annotation = result.getAnnotation();
@@ -131,23 +131,23 @@ public class RuleExecutionUtils {
      * @return the annotation
      */
     public static Annotation buildAnnotation(Map<String, String> ruleParam, Map<String, String> resource,
-            String executionId, Type annotationType, PacmanRule ruleAnnotation) {
+            String executionId, Type annotationType, PacmanPolicy ruleAnnotation) {
 
         Annotation annotation = Annotation.buildAnnotation(ruleParam, annotationType);
         annotation.put(PacmanSdkConstants.EXECUTION_ID, executionId);
         if (null != ruleAnnotation) {
-            annotation.put(PacmanSdkConstants.RULE_CATEGORY, ruleAnnotation.category());
-            annotation.put(PacmanSdkConstants.RULE_SEVERITY, ruleAnnotation.severity());
+            annotation.put(PacmanSdkConstants.POLICY_CATEGORY, ruleAnnotation.category());
+            annotation.put(PacmanSdkConstants.POLICY_SEVERITY, ruleAnnotation.severity());
         }
         if (null != ruleParam) {
             annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
             annotation.put(PacmanSdkConstants.TARGET_TYPE, ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-            annotation.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+            annotation.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
             if (ruleParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
                 annotation.put(PacmanSdkConstants.INVOCATION_ID, ruleParam.get(PacmanSdkConstants.INVOCATION_ID));
             }
-            if (ruleParam.containsKey(PacmanSdkConstants.RULE_SEVERITY)) {
-                annotation.put(PacmanSdkConstants.RULE_SEVERITY, ruleParam.get(PacmanSdkConstants.RULE_SEVERITY));
+            if (ruleParam.containsKey(PacmanSdkConstants.POLICY_SEVERITY)) {
+                annotation.put(PacmanSdkConstants.POLICY_SEVERITY, ruleParam.get(PacmanSdkConstants.POLICY_SEVERITY));
             }
         }
         if (null != resource) {

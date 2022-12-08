@@ -21,12 +21,12 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class })
 public class CloudTrailLogFileValidationRuleTest {
 
 	@InjectMocks
@@ -46,7 +46,7 @@ public class CloudTrailLogFileValidationRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 
-		RuleResult ruleResult = cloudTrailLogFileValidationRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = cloudTrailLogFileValidationRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 
@@ -64,7 +64,7 @@ public class CloudTrailLogFileValidationRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 
-		RuleResult ruleResult = cloudTrailLogFileValidationRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = cloudTrailLogFileValidationRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
 
@@ -93,7 +93,7 @@ public class CloudTrailLogFileValidationRuleTest {
 	private Map<String, String> getInputParamMap() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "S3BucketEncryption_version-1_S3BucketWithoutEncryption_s3");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "S3BucketEncryption_version-1_S3BucketWithoutEncryption_s3");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put(PacmanRuleConstants.ACCOUNTID, "123456789");

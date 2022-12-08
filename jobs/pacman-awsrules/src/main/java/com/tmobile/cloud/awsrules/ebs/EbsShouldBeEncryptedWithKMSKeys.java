@@ -37,13 +37,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-ebs-volume-should-be-encrypted-with-kms-keys", desc = "checks for the ebs volumes are necrypted using KMS customer managed keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class EbsShouldBeEncryptedWithKMSKeys extends BaseRule {
+@PacmanPolicy(key = "check-for-ebs-volume-should-be-encrypted-with-kms-keys", desc = "checks for the ebs volumes are necrypted using KMS customer managed keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EbsShouldBeEncryptedWithKMSKeys extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(EbsShouldBeEncryptedWithKMSKeys.class);
 	
@@ -75,7 +75,7 @@ public class EbsShouldBeEncryptedWithKMSKeys extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========EbsShouldBeEncryptedWithKMSKeys started=========");
 		String region = null;
@@ -97,7 +97,7 @@ public class EbsShouldBeEncryptedWithKMSKeys extends BaseRule {
 			esKmsUrl = formattedKmsUrl;
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 		List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
@@ -136,12 +136,12 @@ public class EbsShouldBeEncryptedWithKMSKeys extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.debug("========EbsShouldBeEncryptedWithKMSKeys ended with annotation {} :=========", annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 
 		}
 		logger.debug("========EbsShouldBeEncryptedWithKMSKeys ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

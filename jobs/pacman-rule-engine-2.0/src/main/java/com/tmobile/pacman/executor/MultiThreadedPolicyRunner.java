@@ -35,13 +35,13 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
-import com.tmobile.pacman.util.RuleExecutionUtils;
+import com.tmobile.pacman.util.PolicyExecutionUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -49,29 +49,29 @@ import com.tmobile.pacman.util.RuleExecutionUtils;
  *
  * @author kkumar Runs the rule on multiple threads
  */
-public class MultiThreadedRuleRunner implements RuleRunner {
+public class MultiThreadedPolicyRunner implements PolicyRunner {
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MultiThreadedRuleRunner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiThreadedPolicyRunner.class);
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.executor.RuleRunner#runRules(java.util.List, java.util.Map, java.lang.String)
      */
     @Override
-    public List<RuleResult> runRules(List<Map<String, String>> resources, Map<String, String> ruleParam,
+    public List<PolicyResult> runPolicies(List<Map<String, String>> resources, Map<String, String> policyParam,
             String executionId) throws Exception {
 
-        String ruleKey = ruleParam.get("ruleKey");
-        Class<?> ruleClass = null;
-        List<RuleResult> evaluations = new ArrayList<RuleResult>();
+        String policyKey = policyParam.get("policyKey");
+        Class<?> policyClass = null;
+        List<PolicyResult> evaluations = new ArrayList<PolicyResult>();
         ThreadFactoryBuilder namedThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(PacmanSdkConstants.THREAD_NAME_PREFIX + "-" + ruleKey)
-                .setUncaughtExceptionHandler(new RuleEngineUncaughtExceptionHandler());
+                .setNameFormat(PacmanSdkConstants.THREAD_NAME_PREFIX + "-" + policyKey)
+                .setUncaughtExceptionHandler(new PolicyEngineUncaughtExceptionHandler());
         Integer threadPoolSize = 0;
         try {
             // see if rule parameter preset to control number of threads
-            if (ruleParam.containsKey(PacmanSdkConstants.WORKER_THREAD_COUNT)) {
-                threadPoolSize = Integer.parseInt(ruleParam.get(PacmanSdkConstants.WORKER_THREAD_COUNT));
+            if (policyParam.containsKey(PacmanSdkConstants.WORKER_THREAD_COUNT)) {
+                threadPoolSize = Integer.parseInt(policyParam.get(PacmanSdkConstants.WORKER_THREAD_COUNT));
                 LOGGER.info(PacmanSdkConstants.WORKER_THREAD_COUNT + " found, setting thread pool size to "
                         + threadPoolSize);
             } else {
@@ -91,21 +91,21 @@ public class MultiThreadedRuleRunner implements RuleRunner {
 
         ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize, namedThreadFactory.build());
 
-        if (!PacmanSdkConstants.RULE_TYPE_SERVERLESS.equals(ruleParam.get(PacmanSdkConstants.RULE_TYPE))) {
+        if (!PacmanSdkConstants.POLICY_TYPE_SERVERLESS.equals(policyParam.get(PacmanSdkConstants.POLICY_TYPE))) {
             try {
-                ruleClass = ReflectionUtils.findAssociateClass(ruleKey);
+                policyClass = ReflectionUtils.findAssociateClass(policyKey);
             } catch (Exception e) {
-                LOGGER.error("Please check the rule class complies to implemetation contract, rule key=" + ruleKey, e);
+                LOGGER.error("Please check the rule class complies to implemetation contract, rule key=" + policyKey, e);
                 executor.shutdown();
                 throw e;
             }
         }
-        List<Future<RuleResult>> results = new ArrayList<Future<RuleResult>>();
+        List<Future<PolicyResult>> results = new ArrayList<Future<PolicyResult>>();
         LOGGER.info(
                 "----------------------------------------------------scan start------------------------------------------------------------------");
 
-        BaseRule rule = null;
-        PacmanRule ruleAnnotation = null;
+        BasePolicy policy = null;
+        PacmanPolicy policyAnnotation = null;
         HttpConnectionManagerParams connParam = new HttpConnectionManagerParams();
         connParam.setMaxTotalConnections(PacmanSdkConstants.MAX_HTTP_CON);
         MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
@@ -114,22 +114,22 @@ public class MultiThreadedRuleRunner implements RuleRunner {
         Boolean firstRun = Boolean.TRUE;
         for (Map<String, String> resource : resources) {
             try {
-                Map<String, String> localRuleParam = RuleExecutionUtils.getLocalRuleParam(ruleParam, resource);
+                Map<String, String> localRuleParam = PolicyExecutionUtils.getLocalPolicyParam(policyParam, resource);
                 LOGGER.debug("Resource-->: " + Joiner.on("#").withKeyValueSeparator("=").join(resource));
                 // RuleResult result =
                 // (RuleResult)executeMethod.invoke(ruleObject,
                 // Collections.unmodifiableMap(ruleParam),null); // let rule not
                 // allow modify input
-                if (PacmanSdkConstants.RULE_TYPE_SERVERLESS.equals(localRuleParam.get(PacmanSdkConstants.RULE_TYPE))) {
-                    results.add(executor.submit(new ServerlessRuleHandler(httpClient,
+                if (PacmanSdkConstants.POLICY_TYPE_SERVERLESS.equals(localRuleParam.get(PacmanSdkConstants.POLICY_TYPE))) {
+                    results.add(executor.submit(new ServerlessPolicyHandler(httpClient,
                             ImmutableMap.<String, String>builder().putAll(localRuleParam).build(),
                             ImmutableMap.<String, String>builder().putAll(resource).build())));
                 } else {
-                    rule = (BaseRule) ruleClass.newInstance();
-                    rule.setRuleParamMap(localRuleParam);
-                    rule.setResourceAttributeMap(ImmutableMap.<String, String>builder().putAll(resource).build());
-                    results.add(executor.submit(rule));
-                    ruleAnnotation = ruleClass.getAnnotation(PacmanRule.class);
+                    policy = (BasePolicy) policyClass.newInstance();
+                    policy.setRuleParamMap(localRuleParam);
+                    policy.setResourceAttributeMap(ImmutableMap.<String, String>builder().putAll(resource).build());
+                    results.add(executor.submit(policy));
+                    policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
                     // induce delay as configured in rule param
                     if (firstRun && localRuleParam.containsKey(PacmanSdkConstants.RESOURCE_INIT_DELAY)) {
                         try {
@@ -152,9 +152,9 @@ public class MultiThreadedRuleRunner implements RuleRunner {
             }
         }
         Map<String, String> resource = null;
-        RuleResult result = null;
+        PolicyResult result = null;
         Annotation annotation = null;
-        for (Future<RuleResult> future : results) {
+        for (Future<PolicyResult> future : results) {
             try {
                 result = future.get(PacmanSdkConstants.SCAN_TIME_OUT, TimeUnit.SECONDS);
                 resource = result.getResource();
@@ -180,20 +180,20 @@ public class MultiThreadedRuleRunner implements RuleRunner {
                 LOGGER.debug(
                         "non-compliant resource found" + resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
 
-                if (ruleParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
+                if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
                     result.getAnnotation().put(PacmanSdkConstants.INVOCATION_ID,
-                            ruleParam.get(PacmanSdkConstants.INVOCATION_ID));
+                            policyParam.get(PacmanSdkConstants.INVOCATION_ID));
                 }
                 result.getAnnotation().put(PacmanSdkConstants.RESOURCE_ID,
                         resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                populateAnnotationParams(result,resource,ruleParam);
+                populateAnnotationParams(result,resource,policyParam);
                 result.getAnnotation().put(PacmanSdkConstants.REGION, resource.get("region"));
-                result.getAnnotation().put(PacmanSdkConstants.RULE_CATEGORY, RuleExecutionUtils.getRuleAttribute(result,
-                        ruleParam, ruleAnnotation, PacmanSdkConstants.RULE_CATEGORY));
-                result.getAnnotation().put(PacmanSdkConstants.RULE_SEVERITY, RuleExecutionUtils.getRuleAttribute(result,
-                        ruleParam, ruleAnnotation, PacmanSdkConstants.RULE_SEVERITY));
+                result.getAnnotation().put(PacmanSdkConstants.POLICY_CATEGORY, PolicyExecutionUtils.getPolicyAttribute(result,
+                        policyParam, policyAnnotation, PacmanSdkConstants.POLICY_CATEGORY));
+                result.getAnnotation().put(PacmanSdkConstants.POLICY_SEVERITY, PolicyExecutionUtils.getPolicyAttribute(result,
+                        policyParam, policyAnnotation, PacmanSdkConstants.POLICY_SEVERITY));
                 result.getAnnotation().put(PacmanSdkConstants.TARGET_TYPE,
-                        ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+                        policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                 result.getAnnotation().put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                 result.getAnnotation().put(PacmanSdkConstants.EXECUTION_ID, executionId);
                 result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get("accountname"));
@@ -208,7 +208,7 @@ public class MultiThreadedRuleRunner implements RuleRunner {
 
             } else if (PacmanSdkConstants.STATUS_SUCCESS.equalsIgnoreCase(result.getStatus())) {
 
-                annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
                 annotation.put(PacmanSdkConstants.EXECUTION_ID, executionId);
                 annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc()); // this
                                                                                           // is
@@ -216,14 +216,14 @@ public class MultiThreadedRuleRunner implements RuleRunner {
                                                                                           // reason
                                                                                           // to
                                                                                           // close
-                if (null != ruleParam) {
+                if (null != policyParam) {
                     annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY,
-                            ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
-                    annotation.put(PacmanSdkConstants.TARGET_TYPE, ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-                    annotation.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
-                    if (ruleParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
+                            policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
+                    annotation.put(PacmanSdkConstants.TARGET_TYPE, policyParam.get(PacmanSdkConstants.TARGET_TYPE));
+                    annotation.put(PacmanSdkConstants.POLICY_ID, policyParam.get(PacmanSdkConstants.POLICY_ID));
+                    if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
                         annotation.put(PacmanSdkConstants.INVOCATION_ID,
-                                ruleParam.get(PacmanSdkConstants.INVOCATION_ID));
+                                policyParam.get(PacmanSdkConstants.INVOCATION_ID));
                     }
                 }
                 if (null != resource) {
@@ -248,7 +248,7 @@ public class MultiThreadedRuleRunner implements RuleRunner {
                 result.setAnnotation(annotation);
             } else {
                 // do nothing this is kind of unknown status
-                LOGGER.error("unknown annotation status returned by rule " + ruleParam.get(PacmanSdkConstants.RULE_ID)
+                LOGGER.error("unknown annotation status returned by rule " + policyParam.get(PacmanSdkConstants.POLICY_ID)
                         + " ignoring this result");
                 continue;
             }

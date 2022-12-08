@@ -46,10 +46,10 @@ import com.amazonaws.services.route53.model.ListHostedZonesResult;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
 public class CheckAwsRoute53DNSForAccountsRuleTest {
 
     @InjectMocks
@@ -88,7 +88,7 @@ public class CheckAwsRoute53DNSForAccountsRuleTest {
         map.put("client", route53Client);
         CheckAwsRoute53DNSForAccountsRule spy = Mockito.spy(new CheckAwsRoute53DNSForAccountsRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(route53Client.listHostedZones()).thenReturn(result);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));

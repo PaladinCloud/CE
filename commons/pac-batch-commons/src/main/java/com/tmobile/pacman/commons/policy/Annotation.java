@@ -21,7 +21,7 @@
 
 **/
 
-package com.tmobile.pacman.commons.rule;
+package com.tmobile.pacman.commons.policy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +69,7 @@ public class Annotation extends HashMap<String, String> {
 	 */
 	public static Annotation buildAnnotation(Map<String, String> ruleParam,Annotation.Type type){
 		Annotation annotation = new Annotation();
-		annotation.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+		//annotation.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
 		annotation.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		annotation.put(PacmanSdkConstants.POLICY_VERSION, ruleParam.get(PacmanSdkConstants.POLICY_VERSION));
 		annotation.put(PacmanSdkConstants.RESOURCE_ID, ruleParam.get(PacmanSdkConstants.RESOURCE_ID));

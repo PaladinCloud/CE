@@ -54,7 +54,7 @@ import com.tmobile.pacman.util.ProgramExitUtils;
 @PowerMockIgnore("javax.net.ssl.*")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ESUtils.class,ProgramExitUtils.class,ConfigManager.class})
-public class RuleExecutorTest {
+public class PolicyExecutorTest {
 
     
     /** The re. */
@@ -113,10 +113,10 @@ public class RuleExecutorTest {
         JsonObject input = new JsonObject();
         PowerMockito.mockStatic(CommonUtils.class);
         input.addProperty("ruleName", "test");
-        input.addProperty(PacmanSdkConstants.RULE_KEY, TEST_KEY);
+        input.addProperty(PacmanSdkConstants.POLICY_KEY, TEST_KEY);
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "aws");
         String[] args = {input.toString()};
-        RuleExecutor.main(args);   
+        PolicyExecutor.main(args);   
     }
     
     
@@ -172,8 +172,8 @@ public class RuleExecutorTest {
         
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "aws");
         String[] args = {input.toString()};
-        PowerMockito.mockStatic(RuleExecutor.class);
-        RuleExecutor.main(args);    
+        PowerMockito.mockStatic(PolicyExecutor.class);
+        PolicyExecutor.main(args);    
     }
     
     
@@ -195,8 +195,8 @@ public class RuleExecutorTest {
         input.addProperty("ruleName", "test");
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "");
         String[] args = {input.toString()};
-        PowerMockito.mockStatic(RuleExecutor.class);
-        RuleExecutor.main(args);    
+        PowerMockito.mockStatic(PolicyExecutor.class);
+        PolicyExecutor.main(args);    
     }
     
     
@@ -244,10 +244,10 @@ public class RuleExecutorTest {
         JsonObject input = new JsonObject();
         input.addProperty("ruleName", "test");
         input.addProperty(PacmanSdkConstants.RUN_ON_MULTI_THREAD_KEY, "true");
-        input.addProperty(PacmanSdkConstants.RULE_KEY, TEST_KEY);
+        input.addProperty(PacmanSdkConstants.POLICY_KEY, TEST_KEY);
         input.addProperty(PacmanSdkConstants.DATA_SOURCE_KEY, "aws");
         String[] args = {input.toString()};
-        RuleExecutor.main(args);   
+        PolicyExecutor.main(args);   
     }
     
    /* *//**

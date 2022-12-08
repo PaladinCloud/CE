@@ -47,10 +47,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
-import com.tmobile.pacman.commons.rule.Annotation.Type;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+import com.tmobile.pacman.commons.policy.Annotation.Type;
 
 
 // TODO: Auto-generated Javadoc
@@ -60,7 +60,7 @@ import com.tmobile.pacman.commons.rule.Annotation.Type;
 @PowerMockIgnore("org.apache.http.conn.ssl.*")
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ SSLContext.class })
-public class RuleExecutionUtilsTest {
+public class PolicyExecutionUtilsTest {
 
 	/**
 	 * Post audit trail.
@@ -74,7 +74,7 @@ public class RuleExecutionUtilsTest {
 		param.put(PacmanSdkConstants.REGION, "region123");
 		param.put(PacmanSdkConstants.RESOURCE_ID, "resou123");
 		param.put(PacmanSdkConstants.REGION, "region");
-		boolean response = RuleExecutionUtils.ifFilterMatchesTheCurrentResource(param, param);
+		boolean response = PolicyExecutionUtils.ifFilterMatchesTheCurrentResource(param, param);
 		assertTrue(response);
 	}
 
@@ -90,7 +90,7 @@ public class RuleExecutionUtilsTest {
 		param.put(PacmanSdkConstants.REGION, "region123");
 		param.put(PacmanSdkConstants.RESOURCE_ID, "resou123");
 		param.put(PacmanSdkConstants.REGION, "region");
-		Map<String, String> response = RuleExecutionUtils.getLocalRuleParam(param, param);
+		Map<String, String> response = PolicyExecutionUtils.getLocalPolicyParam(param, param);
 		assertNotNull(response);
 	}
 
@@ -106,11 +106,11 @@ public class RuleExecutionUtilsTest {
 		param.put(PacmanSdkConstants.ACCOUNT_ID, "acc123");
 		param.put(PacmanSdkConstants.APPLICATION_TAG_KEY, "acc123");
 		param.put(PacmanSdkConstants.INVOCATION_ID, "acc123");
-		param.put(PacmanSdkConstants.RULE_SEVERITY, "acc123");
+		param.put(PacmanSdkConstants.POLICY_SEVERITY, "acc123");
 		param.put(PacmanSdkConstants.REGION, "region123");
 		param.put(PacmanSdkConstants.RESOURCE_ID, "resou123");
 		param.put(PacmanSdkConstants.REGION, "region");
-		Map<String, String> response = RuleExecutionUtils.buildAnnotation(param, param, "executionId123",annotationType, getPacmanRule());
+		Map<String, String> response = PolicyExecutionUtils.buildAnnotation(param, param, "executionId123",annotationType, getPacmanRule());
 		assertNotNull(response);
 	}
 
@@ -129,20 +129,20 @@ public class RuleExecutionUtilsTest {
 		param.put(PacmanSdkConstants.RESOURCE_ID, "resou123");
 		param.put(PacmanSdkConstants.REGION, "region");
 		Annotation annotation = new Annotation();
-        annotation.put(PacmanSdkConstants.RULE_ID, "ruleId123");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "ruleId123");
         annotation.put(PacmanSdkConstants.DOC_ID, "docId123");
 		annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, "sKey123");
 		annotation.put(PacmanSdkConstants.TARGET_TYPE, "target123");
-		RuleResult result = new RuleResult();
+		PolicyResult result = new PolicyResult();
 		result.setAnnotation(annotation);
 		result.setDesc("desc");
 		result.setResource(param);
 		result.setStatus("status");
-		PacmanRule ruleAnnotation = getPacmanRule();
+		PacmanPolicy ruleAnnotation = getPacmanRule();
 
-		String response = RuleExecutionUtils.getRuleAttribute(result, param, ruleAnnotation, "attribute");
+		String response = PolicyExecutionUtils.getPolicyAttribute(result, param, ruleAnnotation, "attribute");
 		assertNotNull(response);
-		response = RuleExecutionUtils.getRuleAttribute(result, null, null, "attribute");
+		response = PolicyExecutionUtils.getPolicyAttribute(result, null, null, "attribute");
 		assertNull(response);
 	}
 
@@ -150,8 +150,8 @@ public class RuleExecutionUtilsTest {
 	 * Gets the pacman rule.
 	 *
 	 */
-	private PacmanRule getPacmanRule() {
-		return new PacmanRule() {
+	private PacmanPolicy getPacmanRule() {
+		return new PacmanPolicy() {
 
 			@Override
 			public Class<? extends java.lang.annotation.Annotation> annotationType() {

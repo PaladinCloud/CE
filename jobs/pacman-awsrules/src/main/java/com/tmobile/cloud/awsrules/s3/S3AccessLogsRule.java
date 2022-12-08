@@ -41,13 +41,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-s3-access-logs", desc = "This rule checks for private s3 has server access logs enabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class S3AccessLogsRule extends BaseRule {
+@PacmanPolicy(key = "check-for-s3-access-logs", desc = "This rule checks for private s3 has server access logs enabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class S3AccessLogsRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(S3AccessLogsRule.class);
 
 	/**
@@ -67,7 +67,7 @@ public class S3AccessLogsRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========S3AccessLogsRule started=========");
 		Annotation annotation = null;
 		String esS3PubAccessIssueUrl = null;
@@ -98,7 +98,7 @@ public class S3AccessLogsRule extends BaseRule {
 		}
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		if (!PacmanUtils.doesAllHaveValue(esS3PubAccessIssueUrl,s3PublicAccessRuleId,destinationBucketForAutoFix,accessLogsEnabledRegions,splitter)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -140,14 +140,14 @@ public class S3AccessLogsRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.debug("========S3AccessLogsRule ended with an annotation {} : =========",annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			throw new RuleExecutionFailedExeption(e.getMessage());
 		}
 		logger.debug("========S3AccessLogsRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

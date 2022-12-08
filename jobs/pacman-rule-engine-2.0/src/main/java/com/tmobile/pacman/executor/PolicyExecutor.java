@@ -26,6 +26,10 @@ import java.util.stream.Collectors;
 
 import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
 import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +41,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.autofix.manager.AutoFixManager;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
@@ -51,7 +52,7 @@ import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
 import com.tmobile.pacman.util.ProgramExitUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
-import com.tmobile.pacman.util.RuleExecutionUtils;
+import com.tmobile.pacman.util.PolicyExecutionUtils;
 
 
 // TODO: Auto-generated Javadoc
@@ -60,10 +61,10 @@ import com.tmobile.pacman.util.RuleExecutionUtils;
  *
  * @author kkumar
  */
-public class RuleExecutor {
+public class PolicyExecutor {
 
     /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(RuleExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(PolicyExecutor.class);
     
     /** The is resource filter exists. */
     private Boolean isResourceFilterExists = Boolean.FALSE;
@@ -102,7 +103,7 @@ public class RuleExecutor {
         }else
         {
                 try {   logger.info("input source detected as rule, will process rule now.");
-                        new RuleExecutor().run(args, executionId);
+                        new PolicyExecutor().run(args, executionId);
                 } catch (Exception e) {
                     logger.error("error while in run method for executionId ->" + executionId, e);
                 }
@@ -120,118 +121,118 @@ public class RuleExecutor {
      */
     private void run(String[] args, String executionId)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Map<String, String> ruleParam = new HashMap<String, String>();
-        String ruleParams = "";
+        Map<String, String> policyParam = new HashMap<String, String>();
+        String policyParams = "";
         Boolean errorWhileProcessing = Boolean.FALSE;
 
-        Map<String, Object> ruleEngineStats = new HashMap<>();
+        Map<String, Object> policyEngineStats = new HashMap<>();
         
         //this is elastic search type to put rule engine stats in  
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         if (args.length > 0) {
-            ruleParams = args[0];
-            ruleParam = CommonUtils.createParamMap(ruleParams);
-            ruleParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
-            if (Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
+            policyParams = args[0];
+            policyParam = CommonUtils.createParamMap(policyParams);
+            policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
+            if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
                 logger.error(
-                        "data source is missing, will not be able to figure out the target index to post the rule evaluvation, please check rule configuration");
+                        "data source is missing, will not be able to figure out the target index to post the policy evaluvation, please check rule configuration");
                 logger.error("exiting now..");
                 ProgramExitUtils.exitWithError();
             }
-            logger.debug("rule Param String " + ruleParams);
-            logger.debug("target Type :" + ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
-            logger.debug("rule Key : " + ruleParam.get("ruleKey"));
+            logger.debug("policy Param String " + policyParams);
+            logger.debug("target Type :" + policyParam.get(PacmanSdkConstants.TARGET_TYPE));
+            logger.debug("policy Key : " + policyParam.get("policyKey"));
         } else {
             logger.debug(
-                    "No arguments available for rule execution, unable to identify the rule due to missing arguments");
-            logger.debug("atlest rule key is required to identify the rule class");
+                    "No arguments available for policy execution, unable to identify the policy due to missing arguments");
+            logger.debug("atlest policy key is required to identify the policy class");
             logger.debug("returning now.");
             return;
         }
         try{
-            setLogLevel(ruleParam);
+            setLogLevel(policyParam);
         }catch(Exception e){
             logger.info("no log level found in params , setting to ERROR");
         }
-        setMappedDiagnosticContex(executionId, ruleParam.get(PacmanSdkConstants.RULE_ID));
+        setMappedDiagnosticContex(executionId, policyParam.get(PacmanSdkConstants.POLICY_ID));
         setUncaughtExceptionHandler();
         logger.debug("uncaught exception handler engaged.");
-        setShutDownHook(ruleEngineStats);
+        setShutDownHook(policyEngineStats);
         logger.debug("shutdown hook engaged.");
-        ruleEngineStats.put(PacmanSdkConstants.JOB_ID, JOB_ID);
-        ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_RUNNING);
-        ruleEngineStats.put(PacmanSdkConstants.EXECUTION_ID, executionId);
-        ruleEngineStats.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+        policyEngineStats.put(PacmanSdkConstants.JOB_ID, JOB_ID);
+        policyEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_RUNNING);
+        policyEngineStats.put(PacmanSdkConstants.EXECUTION_ID, executionId);
+        policyEngineStats.put(PacmanSdkConstants.POLICY_ID, policyParam.get(PacmanSdkConstants.POLICY_ID));
         long startTime = resetStartTime();
-        ruleEngineStats.put("startTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
+        policyEngineStats.put("startTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
         // publish the stats once to let ES know rule engine has started.
-        ESUtils.publishMetrics(ruleEngineStats,type);
-        ruleEngineStats.put("timeTakenToFindExecutable", CommonUtils.getElapseTimeSince(startTime));
+        ESUtils.publishMetrics(policyEngineStats,type);
+        policyEngineStats.put("timeTakenToFindExecutable", CommonUtils.getElapseTimeSince(startTime));
         // get the resources based on Type
         // List<Map<String, String>> resources =
         // getResources(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
         List<Map<String, String>> resources = new ArrayList<>();
         List<String> userFields = null;
-        if (!Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.ES_SOURCE_FIELDS_KEY))) {
+        if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.ES_SOURCE_FIELDS_KEY))) {
             userFields = Splitter.on("|").trimResults()
-                    .splitToList(ruleParam.get(PacmanSdkConstants.ES_SOURCE_FIELDS_KEY));
+                    .splitToList(policyParam.get(PacmanSdkConstants.ES_SOURCE_FIELDS_KEY));
         }
         String indexName = "".intern();
         startTime = resetStartTime();
 
         try {
-            indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
+            indexName = CommonUtils.getIndexNameFromRuleParam(policyParam);
             Map<String, String> filter = new HashMap<>();
-            if (!Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.ACCOUNT_ID)))
+            if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.ACCOUNT_ID)))
                 filter.put(ESUtils.createKeyword(PacmanSdkConstants.ACCOUNT_ID),
-                        ruleParam.get(PacmanSdkConstants.ACCOUNT_ID));
-            if (!Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.REGION)))
-                filter.put(ESUtils.createKeyword(PacmanSdkConstants.REGION), ruleParam.get(PacmanSdkConstants.REGION));
-            if (!Strings.isNullOrEmpty(ruleParam.get(PacmanSdkConstants.RESOURCE_ID)))
+                        policyParam.get(PacmanSdkConstants.ACCOUNT_ID));
+            if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.REGION)))
+                filter.put(ESUtils.createKeyword(PacmanSdkConstants.REGION), policyParam.get(PacmanSdkConstants.REGION));
+            if (!Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.RESOURCE_ID)))
                 filter.put(ESUtils.createKeyword(PacmanSdkConstants.RESOURCE_ID),
-                        ruleParam.get(PacmanSdkConstants.RESOURCE_ID));
+                        policyParam.get(PacmanSdkConstants.RESOURCE_ID));
 
             if (!filter.isEmpty()) {
                 logger.debug("found filters in rule config, resources will be filtered");
                 isResourceFilterExists = Boolean.TRUE;
-                ruleEngineStats.put("resource filter", filter);
+                policyEngineStats.put("resource filter", filter);
             }
-            resources = ESUtils.getResourcesFromEs(indexName, ruleParam.get(PacmanSdkConstants.TARGET_TYPE), filter,
+            resources = ESUtils.getResourcesFromEs(indexName, policyParam.get(PacmanSdkConstants.TARGET_TYPE), filter,
                     userFields);
             logger.debug("got resources for evaluvation, total resources = " + resources.size());
-            ruleEngineStats.put("timeTakenToFetchInventory", CommonUtils.getElapseTimeSince(startTime));
+            policyEngineStats.put("timeTakenToFetchInventory", CommonUtils.getElapseTimeSince(startTime));
             if(resources.isEmpty()){
                 logger.info("no resources to evaluvate exiting now");
                 ProgramExitUtils.exitSucessfully();
             }
         } catch (Exception e) {
             logger.error(
-                    "unable to get inventory for " + indexName + "--" + ruleParam.get(PacmanSdkConstants.TARGET_TYPE),
+                    "unable to get inventory for " + indexName + "--" + policyParam.get(PacmanSdkConstants.TARGET_TYPE),
                     e);
-            ruleEngineStats.put("errorMessage", "unable to fetch inventory");
-            ruleEngineStats.put("technicalErrorDetails", e.getMessage());
+            policyEngineStats.put("errorMessage", "unable to fetch inventory");
+            policyEngineStats.put("technicalErrorDetails", e.getMessage());
             ProgramExitUtils.exitWithError();
         }
 
         
         startTime = resetStartTime();
 
-        logger.info("total objects received for rule " + resources.size());
-        String ruleParamStr = Joiner.on("#").withKeyValueSeparator("=").join(ruleParam);
-        ruleEngineStats.put("timeTakenToGetResources", CommonUtils.getElapseTimeSince(startTime));
-        ruleEngineStats.put("totalResourcesForThisExecutionCycle", resources.size());
-        ruleEngineStats.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
-        ruleEngineStats.put("ruleParams", ruleParamStr);
+        logger.info("total objects received for policy " + resources.size());
+        String policyParamStr = Joiner.on("#").withKeyValueSeparator("=").join(policyParam);
+        policyEngineStats.put("timeTakenToGetResources", CommonUtils.getElapseTimeSince(startTime));
+        policyEngineStats.put("totalResourcesForThisExecutionCycle", resources.size());
+        policyEngineStats.put("policyId", policyParam.get(PacmanSdkConstants.POLICY_ID));
+        policyEngineStats.put("policyParams", policyParamStr);
         startTime = System.nanoTime();
         // loop through resources and call rule execute method
 
-        RuleRunner ruleRunner;
-        if ("true".equals(ruleParam.get(PacmanSdkConstants.RUN_ON_MULTI_THREAD_KEY))) {
-            ruleRunner = new MultiThreadedRuleRunner();
+        PolicyRunner policyRunner;
+        if ("true".equals(policyParam.get(PacmanSdkConstants.RUN_ON_MULTI_THREAD_KEY))) {
+            policyRunner = new MultiThreadedPolicyRunner();
         } else {
-            ruleRunner = new SingleThreadRuleRunner();
+            policyRunner = new SingleThreadPolicyRunner();
         }
 
         // collect all resource ids for a post execution check of how many
@@ -240,17 +241,17 @@ public class RuleExecutor {
         resources.stream().forEach(obj -> {
             resourceIdToResourceMap.put(obj.get(PacmanSdkConstants.DOC_ID), obj);
         });
-        List<RuleResult> evaluations = new ArrayList<>();
-        List<RuleResult> missingEvaluations = new ArrayList<>();
+        List<PolicyResult> evaluations = new ArrayList<>();
+        List<PolicyResult> missingEvaluations = new ArrayList<>();
 
         try {
-            evaluations = ruleRunner.runRules(resources, ruleParam, executionId);
-            ruleEngineStats.put("totalEvaluvationsFromRuleRunner", evaluations.size());
-            logger.debug("total evaluations received back from rule Runner" + evaluations.size());
+            evaluations = policyRunner.runPolicies(resources, policyParam, executionId);
+            policyEngineStats.put("totalEvaluvationsFromPolicyRunner", evaluations.size());
+            logger.debug("total evaluations received back from policy Runner" + evaluations.size());
         } catch (Exception e) {
             String msg = "error occured while executing";
             logger.error(msg, e);
-            ruleEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
+            policyEngineStats.put(msg, Strings.isNullOrEmpty(e.getMessage()) ? "" : e.getMessage());
             logger.error("exiting now..", e);
             ProgramExitUtils.exitWithError();
         }
@@ -263,14 +264,14 @@ public class RuleExecutor {
         // handle missing evaluation start
         // **************************************************************************************
         if (resources.size() != evaluations.size()) {
-            if(ruleParam.containsKey(PacmanSdkConstants.RULE_CONTACT))
+            if(policyParam.containsKey(PacmanSdkConstants.POLICY_CONTACT))
             {
-                String message = String.format("%s total resource -> %s , total results returned by rule-> %s",ruleParam.get(PacmanSdkConstants.RULE_ID), resources.size(),evaluations.size());
+                String message = String.format("%s total resource -> %s , total results returned by policy-> %s",policyParam.get(PacmanSdkConstants.POLICY_ID), resources.size(),evaluations.size());
                 //send  message about missing evaluations 
-                if(notifyRuleOwner(ruleParam.get(PacmanSdkConstants.RULE_CONTACT),message)){
-                    logger.trace(String.format("message sent to %s" ,ruleParam.get(PacmanSdkConstants.RULE_CONTACT)));
+                if(notifyPolicyOwner(policyParam.get(PacmanSdkConstants.POLICY_CONTACT),message)){
+                    logger.trace(String.format("message sent to %s" ,policyParam.get(PacmanSdkConstants.POLICY_CONTACT)));
                 }else{
-                    logger.error(String.format("unable to send message to %s" ,ruleParam.get(PacmanSdkConstants.RULE_CONTACT)));
+                    logger.error(String.format("unable to send message to %s" ,policyParam.get(PacmanSdkConstants.POLICY_CONTACT)));
                 }
             }
             
@@ -284,18 +285,18 @@ public class RuleExecutor {
             // create all missing evaluations as unknown / unable to execute
             // type annotations
             logger.debug("total potential missing evaluations" + resourceIdToResourceMap.size());
-            final Map<String, String> ruleParamCopy = ImmutableMap.<String, String>builder().putAll(ruleParam).build();
-            String ruleKey = ruleParam.get("ruleKey");
-            Class<?> ruleClass = null;
-            ruleClass = ReflectionUtils.findAssociateClass(ruleKey);
-            PacmanRule ruleAnnotation = ruleClass.getAnnotation(PacmanRule.class);
+            final Map<String, String> policyParamCopy = ImmutableMap.<String, String>builder().putAll(policyParam).build();
+            String policyKey = policyParam.get("policyKey");
+            Class<?> policyClass = null;
+            policyClass = ReflectionUtils.findAssociateClass(policyKey);
+            PacmanPolicy policyAnnotation = policyClass.getAnnotation(PacmanPolicy.class);
             if (resourceIdToResourceMap.size() > 0) {
                 resourceIdToResourceMap.values().forEach(obj -> {
-                    missingEvaluations.add(new RuleResult(PacmanSdkConstants.STATUS_UNKNOWN,
-                            PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE, RuleExecutionUtils.buildAnnotation(ruleParamCopy,
-                                    obj, executionId, Annotation.Type.ISSUE, ruleAnnotation)));
+                    missingEvaluations.add(new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN,
+                            PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE, PolicyExecutionUtils.buildAnnotation(policyParamCopy,
+                                    obj, executionId, Annotation.Type.ISSUE, policyAnnotation)));
                 });
-                ruleEngineStats.put("missingEvaluations", missingEvaluations.size());
+                policyEngineStats.put("missingEvaluations", missingEvaluations.size());
                 evaluations.addAll(missingEvaluations);
             }
         }
@@ -305,25 +306,25 @@ public class RuleExecutor {
         // ***********************************************************************************
 
         logger.info("Elapsed time in minutes for evaluation: " + CommonUtils.getElapseTimeSince(startTime));
-        ruleEngineStats.put("timeTakenToEvaluvate", CommonUtils.getElapseTimeSince(startTime));
+        policyEngineStats.put("timeTakenToEvaluvate", CommonUtils.getElapseTimeSince(startTime));
         startTime = System.nanoTime();
-        IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager(ruleParam.get(PacmanSdkConstants.ASSET_GROUP_KEY));
+        IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager(policyParam.get(PacmanSdkConstants.ASSET_GROUP_KEY));
         // process rule evaluations the annotations based on result
         try {
             if (evaluations.size() > 0) {
 
                 ExceptionManager exceptionManager = new ExceptionManagerImpl();
-                Map<String, List<IssueException>> exemptedResourcesForRule = exceptionManager.getStickyExceptions(
-                        ruleParam.get(PacmanSdkConstants.RULE_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+                Map<String, List<IssueException>> exemptedResourcesForPolicy = exceptionManager.getStickyExceptions(
+                        policyParam.get(PacmanSdkConstants.POLICY_ID), policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                 Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
-                        .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+                        .getIndividualExceptions(policyParam.get(PacmanSdkConstants.TARGET_TYPE));
 
-                ruleEngineStats.putAll(processRuleEvaluations(resources, evaluations, ruleParam,
-                        exemptedResourcesForRule, individuallyExcemptedIssues));
+                policyEngineStats.putAll(processPolicyEvaluations(resources, evaluations, policyParam,
+                        exemptedResourcesForPolicy, individuallyExcemptedIssues));
                 try {
-                    if (ruleParam.containsKey(PacmanSdkConstants.RULE_PARAM_AUTO_FIX_KEY_NAME) && Boolean
-                            .parseBoolean(ruleParam.get(PacmanSdkConstants.RULE_PARAM_AUTO_FIX_KEY_NAME)) == true) {
-                        ruleEngineStats.putAll(autoFixManager.performAutoFixs(ruleParam, exemptedResourcesForRule,
+                    if (policyParam.containsKey(PacmanSdkConstants.POLICY_PARAM_AUTO_FIX_KEY_NAME) && Boolean
+                            .parseBoolean(policyParam.get(PacmanSdkConstants.POLICY_PARAM_AUTO_FIX_KEY_NAME)) == true) {
+                        policyEngineStats.putAll(autoFixManager.performAutoFixs(policyParam, exemptedResourcesForPolicy,
                                 individuallyExcemptedIssues));
                     }
                 } catch (Exception e) {
@@ -334,16 +335,16 @@ public class RuleExecutor {
             }
         } catch (Exception e) {
             logger.error("error while processing evaluvations", e);
-            ruleEngineStats.put("error-while-processing-evaluvations", e.getLocalizedMessage());
+            policyEngineStats.put("error-while-processing-evaluvations", e.getLocalizedMessage());
             errorWhileProcessing = true;
         }
-        ruleEngineStats.put("timeTakenToProcessEvaluvations", CommonUtils.getElapseTimeSince(startTime));
+        policyEngineStats.put("timeTakenToProcessEvaluvations", CommonUtils.getElapseTimeSince(startTime));
         startTime = System.nanoTime();
-        ruleEngineStats.put("endTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
+        policyEngineStats.put("endTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
-        ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
+        policyEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
         try{
-                ESUtils.publishMetrics(ruleEngineStats,type);
+                ESUtils.publishMetrics(policyEngineStats,type);
         }catch(Exception e) {
             logger.error("unable to publish metrices",e);
         }
@@ -363,13 +364,13 @@ public class RuleExecutor {
     }
 
     /**
-     * Notify rule owner.
+     * Notify policy owner.
      *
      * @param user the user
      * @param message the message
      * @return true, if successful
      */
-    private boolean notifyRuleOwner(String user, String message) {
+    private boolean notifyPolicyOwner(String user, String message) {
         SlackMessageRelay messageRelay = new SlackMessageRelay();
         if(!Strings.isNullOrEmpty(user)){
             return messageRelay.sendMessage(user, message);
@@ -381,14 +382,14 @@ public class RuleExecutor {
      * Sets the mapped diagnostic contex.
      *
      * @param executionId the execution id
-     * @param ruleId the rule id
+     * @param policyId the policy id
      */
-    private void setMappedDiagnosticContex(String executionId, String ruleId) {
+    private void setMappedDiagnosticContex(String executionId, String policyId) {
         MDC.put(PacmanSdkConstants.EXECUTION_ID, executionId); // this is the
                                                                // logback Mapped
                                                                // Diagnostic
                                                                // Contex
-        MDC.put(PacmanSdkConstants.RULE_ID, ruleId); // this is the logback
+        MDC.put(PacmanSdkConstants.POLICY_ID, policyId); // this is the logback
                                                      // Mapped Diagnostic Contex
     }
 
@@ -416,15 +417,15 @@ public class RuleExecutor {
      *
      * @param resources the resources
      * @param evaluations the evaluations
-     * @param ruleParam the rule param
-     * @param exemptedResourcesForRule the exempted resources for rule
+     * @param policyParam the rule param
+     * @param exemptedResourcesForPolicy the exempted resources for rule
      * @param individuallyExcemptedIssues the individually excempted issues
      * @return the map
      * @throws Exception the exception
      */
-    private Map<String, Object> processRuleEvaluations(List<Map<String, String>> resources,
-            List<RuleResult> evaluations, Map<String, String> ruleParam,
-            Map<String, List<IssueException>> exemptedResourcesForRule,
+    private Map<String, Object> processPolicyEvaluations(List<Map<String, String>> resources,
+            List<PolicyResult> evaluations, Map<String, String> policyParam,
+            Map<String, List<IssueException>> exemptedResourcesForPolicy,
             Map<String, IssueException> individuallyExcemptedIssues) throws Exception {
 
         Map<String, Object> metrics = new HashMap();
@@ -436,18 +437,18 @@ public class RuleExecutor {
         long exemptionCounter = 0;
         try {
 
-            metrics.put("max-exemptible-resource-count", exemptedResourcesForRule.size());
+            metrics.put("max-exemptible-resource-count", exemptedResourcesForPolicy.size());
 
-            metrics.put("individual-exception-count-for-this-rule", individuallyExcemptedIssues.size());
+            metrics.put("individual-exception-count-for-this-policy", individuallyExcemptedIssues.size());
         } catch (Exception e) {
             logger.error("unable to fetch exceptions", e);
         }
         Status status;
         int issueFoundCounter = 0;
         //Pre populate the existing issues
-        annotationPublisher.populateExistingIssuesForType(ruleParam);
+        annotationPublisher.populateExistingIssuesForType(policyParam);
         
-        for (RuleResult result : evaluations) {
+        for (PolicyResult result : evaluations) {
             annotation = result.getAnnotation();
             if (PacmanSdkConstants.STATUS_SUCCESS.equals(result.getStatus())) {
                 annotation.put(PacmanSdkConstants.REASON_TO_CLOSE_KEY, result.getDesc());
@@ -456,7 +457,7 @@ public class RuleExecutor {
             } else { // publish the issue to ES
                 if (PacmanSdkConstants.STATUS_FAILURE.equals(result.getStatus())) {
 
-                    status = adjustStatus(PacmanSdkConstants.STATUS_OPEN, exemptedResourcesForRule,
+                    status = adjustStatus(PacmanSdkConstants.STATUS_OPEN, exemptedResourcesForPolicy,
                             individuallyExcemptedIssues, annotation);
                     annotation.put(PacmanSdkConstants.ISSUE_STATUS_KEY, status.getStatus());
 
@@ -474,7 +475,7 @@ public class RuleExecutor {
                             PacmanSdkConstants.STATUS_UNABLE_TO_DETERMINE);
                 }
 
-                annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
+                annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
                 // add created date if not an existing issue
                 if(!annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey().containsKey(CommonUtils.getUniqueAnnotationId(annotation))){
                     annotation.put(PacmanSdkConstants.CREATED_DATE, evalDate);
@@ -488,7 +489,7 @@ public class RuleExecutor {
 
         }
         metrics.put("totalExemptionAppliedForThisRun", exemptionCounter);
-        annotationPublisher.setRuleParam(ImmutableMap.<String, String>builder().putAll(ruleParam).build());
+        annotationPublisher.setRuleParam(ImmutableMap.<String, String>builder().putAll(policyParam).build());
         // annotation will contain the last annotation processed above
         
         if (!isResourceFilterExists) {
@@ -504,8 +505,8 @@ public class RuleExecutor {
         // already this will prevent actual issues to close
         else {
             annotationPublisher
-                    .setExistingResources(ESUtils.getResourcesFromEs(CommonUtils.getIndexNameFromRuleParam(ruleParam),
-                            ruleParam.get(PacmanSdkConstants.TARGET_TYPE), null, null));
+                    .setExistingResources(ESUtils.getResourcesFromEs(CommonUtils.getIndexNameFromRuleParam(policyParam),
+                            policyParam.get(PacmanSdkConstants.TARGET_TYPE), null, null));
         }
         annotationPublisher.publish();
         metrics.put("total-issues-found", issueFoundCounter);
@@ -522,15 +523,15 @@ public class RuleExecutor {
      * Adjust the status of issue based on exception.
      *
      * @param status the status
-     * @param excemptedResourcesForRule the excempted resources for rule
+     * @param excemptedResourcesForPolicy the excempted resources for policy
      * @param individuallyExcemptedIssues the individually excempted issues
      * @param annotation the annotation
      * @return the status
      */
-    private Status adjustStatus(String status, Map<String, List<IssueException>> excemptedResourcesForRule,
+    private Status adjustStatus(String status, Map<String, List<IssueException>> excemptedResourcesForPolicy,
             Map<String, IssueException> individuallyExcemptedIssues, Annotation annotation) {
 
-        List<IssueException> stickyExceptions = excemptedResourcesForRule
+        List<IssueException> stickyExceptions = excemptedResourcesForPolicy
                 .get(annotation.get(PacmanSdkConstants.RESOURCE_ID));
         IssueException exception;
         if (null != stickyExceptions) {
@@ -556,7 +557,7 @@ public class RuleExecutor {
      * sure the VM is terminated gracefully close all clients here.
      */
     private void setUncaughtExceptionHandler() {
-        Thread.currentThread().setUncaughtExceptionHandler(new RuleEngineUncaughtExceptionHandler());
+        Thread.currentThread().setUncaughtExceptionHandler(new PolicyEngineUncaughtExceptionHandler());
     }
 
     /**

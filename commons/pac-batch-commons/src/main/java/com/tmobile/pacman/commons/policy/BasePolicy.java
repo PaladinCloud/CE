@@ -21,7 +21,7 @@
 
 **/
 
-package com.tmobile.pacman.commons.rule;
+package com.tmobile.pacman.commons.policy;
 
 import java.util.Map;
 
@@ -40,11 +40,11 @@ import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
 /**
  * The Class BaseRule.
  */
-public abstract class BaseRule implements Rule {
+public abstract class BasePolicy implements Policy {
 
 
     /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(BaseRule.class);
+    private static final Logger logger = LoggerFactory.getLogger(BasePolicy.class);
 
     /** The rule param map. */
     transient Map<String, String> ruleParamMap;
@@ -64,7 +64,7 @@ public abstract class BaseRule implements Rule {
 	/**
 	 * Instantiates a new base rule.
 	 */
-	public BaseRule() {
+	public BasePolicy() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -74,7 +74,7 @@ public abstract class BaseRule implements Rule {
 	 * @param ruleParamMap the rule param map
 	 * @param resourceAttributeMap the resource attribute map
 	 */
-	public BaseRule(Map<String, String> ruleParamMap, Map<String, String> resourceAttributeMap) {
+	public BasePolicy(Map<String, String> ruleParamMap, Map<String, String> resourceAttributeMap) {
 		super();
 		this.ruleParamMap = ruleParamMap;
 		this.resourceAttributeMap = resourceAttributeMap;
@@ -112,9 +112,9 @@ public abstract class BaseRule implements Rule {
 	/* (non-Javadoc)
 	 * @see java.util.concurrent.Callable#call()
 	 */
-	public RuleResult call() throws Exception {
+	public PolicyResult call() throws Exception {
 		if(ruleParamMap!=null && resourceAttributeMap!=null){
-			RuleResult result = execute(ruleParamMap, resourceAttributeMap);
+			PolicyResult result = execute(ruleParamMap, resourceAttributeMap);
 			result.setResource(resourceAttributeMap);// in case rule has modified this , overwrite the resource as it was sent
 			return result;
 		}

@@ -14,13 +14,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-elasticache-clusters-encrypted", desc = "checks for Amazon ElastiCache Redis clusters enabled in-transit and at-rest encryption", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ElastiCacheInTransitAndAtRestEncryptionRule extends BaseRule {
+@PacmanPolicy(key = "check-for-elasticache-clusters-encrypted", desc = "checks for Amazon ElastiCache Redis clusters enabled in-transit and at-rest encryption", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ElastiCacheInTransitAndAtRestEncryptionRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(ElastiCacheInTransitAndAtRestEncryptionRule.class);
 	public static final String CLUSTER_ENGINE_TYPE = "engineType";
 	public static final String CLUSTER_ENGINE_VERSION = "engineVersion";
@@ -65,7 +65,7 @@ public class ElastiCacheInTransitAndAtRestEncryptionRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========ElastiCacheEncryptionRule started=========");
 		Annotation annotation = null;
 
@@ -75,7 +75,7 @@ public class ElastiCacheInTransitAndAtRestEncryptionRule extends BaseRule {
 		String clusterEngineVersion = ruleParam.get(CLUSTER_ENGINE_VERSION);
 
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
 		if (!PacmanUtils.doesAllHaveValue(severity, category, clusterEngineType, clusterEngineVersion)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -103,13 +103,13 @@ public class ElastiCacheInTransitAndAtRestEncryptionRule extends BaseRule {
 					issueList.add(issue);
 					annotation.put("issueDetails", issueList.toString());
 					logger.debug("========ElastiCacheEncryptionRule ended with annotation {} :=========", annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 							annotation);
 				}
 			}
 		}
 		logger.debug("========ElastiCacheEncryptionRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

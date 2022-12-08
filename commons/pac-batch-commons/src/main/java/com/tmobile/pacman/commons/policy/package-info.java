@@ -13,36 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-
-package com.tmobile.pacman.executor;
-
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import com.tmobile.pacman.commons.rule.RuleResult;
-
-// TODO: Auto-generated Javadoc
 /**
- * The Interface RuleHandler.
  *
- * @author kkumar
  */
-public interface RuleHandler extends Callable<RuleResult> {
-
-    /**
-     * Handle rule.
-     *
-     * @param ruleParams the rule params
-     * @param resource the resource
-     * @return the rule result
-     */
-    public RuleResult handleRule(Map<String, String> ruleParams, Map<String, String> resource);
-
-    /**
-     * Handle rule.
-     *
-     * @return the rule result
-     */
-    public RuleResult handleRule();
-
-}
+/**
+ * @author kkumar
+ *
+ */
+package com.tmobile.pacman.commons.policy;

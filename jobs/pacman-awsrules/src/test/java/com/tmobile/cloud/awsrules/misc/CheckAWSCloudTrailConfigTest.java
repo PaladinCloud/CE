@@ -46,10 +46,10 @@ import com.amazonaws.services.cloudtrail.model.Trail;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
 public class CheckAWSCloudTrailConfigTest {
 
     @InjectMocks
@@ -87,7 +87,7 @@ public class CheckAWSCloudTrailConfigTest {
         map.put("client", cloudTrailClient);
         CheckAWSCloudTrailConfig spy = Mockito.spy(new CheckAWSCloudTrailConfig());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(cloudTrailClient.describeTrails()).thenReturn(result);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));

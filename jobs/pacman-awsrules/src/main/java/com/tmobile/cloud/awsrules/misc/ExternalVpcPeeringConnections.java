@@ -32,13 +32,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-external-vpc-peering-connections", desc = "checks for external VPC peering connections", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ExternalVpcPeeringConnections extends BaseRule {
+@PacmanPolicy(key = "check-for-external-vpc-peering-connections", desc = "checks for external VPC peering connections", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ExternalVpcPeeringConnections extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(ExternalVpcPeeringConnections.class);
 
     /**
@@ -63,14 +63,14 @@ public class ExternalVpcPeeringConnections extends BaseRule {
      */
 
     @Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========EC2WithExternalVpcPeeringConnections started=========");
 		String accountEsURL = null;
 		Annotation annotation = null;
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		Set<String> accountIdSet = new HashSet<>();
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -109,7 +109,7 @@ public class ExternalVpcPeeringConnections extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.debug("========EC2WithExternalVpcPeeringConnections ended with an annotation {} : =========", annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 
 		} catch (Exception exception) {
@@ -117,7 +117,7 @@ public class ExternalVpcPeeringConnections extends BaseRule {
 			throw new RuleExecutionFailedExeption(exception.getMessage());
 		}
 		logger.debug("========EC2WithExternalVpcPeeringConnections ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
     @Override

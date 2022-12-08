@@ -120,9 +120,9 @@ public class MailUtils {
             }
             String policyUrl = getPolicyKnowledgeBasePathURL(ruleParam);
             String violationMessage = CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_VIOLATION_MESSAGE_PREFIX
-                    + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                    + ruleParam.get(PacmanSdkConstants.POLICY_ID));
             String postFixMessage = CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_FIX_MESSAGE_PREFIX
-                    + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                    + ruleParam.get(PacmanSdkConstants.POLICY_ID));
             if (!Strings.isNullOrEmpty(violationMessage)) {
                 Map<String, String> data = new HashMap<>();
                 data.put("RESOURCE_ID", resourceid);
@@ -132,8 +132,8 @@ public class MailUtils {
                 postFixMessage = StrSubstitutor.replace(postFixMessage, data);
             }
             String warning = CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_WARNING_MESSAGE_PREFIX
-                    + ruleParam.get(PacmanSdkConstants.RULE_ID));
-            Integer autoFixDealy = NextStepManager.getAutoFixDelay(ruleParam.get(PacmanSdkConstants.RULE_ID));
+                    + ruleParam.get(PacmanSdkConstants.POLICY_ID));
+            Integer autoFixDealy = NextStepManager.getAutoFixDelay(ruleParam.get(PacmanSdkConstants.POLICY_ID));
             if(autoFixDealy!=null){
                warning = warning.replace("{days}", "" + Math.toIntExact(autoFixDealy/24));
             }
@@ -157,15 +157,15 @@ public class MailUtils {
             if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_EMAIL && "Sandbox".equalsIgnoreCase(accountName)) {
                 templateName = "autofix-user-notification-info";
                 emailSubject = "(Sandbox) : "+ CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_WARNING_SUBJECT_PREFIX
-                        + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                        + ruleParam.get(PacmanSdkConstants.POLICY_ID));
             }else if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_EMAIL) {
                 templateName = "autofix-user-notification-info";
                 emailSubject = CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_WARNING_SUBJECT_PREFIX
-                        + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                        + ruleParam.get(PacmanSdkConstants.POLICY_ID));
             } else if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_FIX) {
                 templateName = "autofix-user-notification-action";
                 emailSubject = CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_FIX_SUBJECT_PREFIX
-                        + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                        + ruleParam.get(PacmanSdkConstants.POLICY_ID));
             } else if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_EMAIL_REMIND_EXCEPTION_EXPIRY) {
                 templateName = "autofix-user-notification-exception-expiry";
             } else if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_EXEMPTED) {
@@ -173,8 +173,8 @@ public class MailUtils {
                 emailSubject = CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_EXEMPTED_SUBJECT);
             }
             if((null!=CommonUtils.getPropValue("pacman.auto.fix.common.email.notifications."
-                        + ruleParam.get(PacmanSdkConstants.RULE_ID)))&&  CommonUtils.getPropValue("pacman.auto.fix.common.email.notifications."
-                                + ruleParam.get(PacmanSdkConstants.RULE_ID)).equals("commonTemplate") && autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_FIX ){
+                        + ruleParam.get(PacmanSdkConstants.POLICY_ID)))&&  CommonUtils.getPropValue("pacman.auto.fix.common.email.notifications."
+                                + ruleParam.get(PacmanSdkConstants.POLICY_ID)).equals("commonTemplate") && autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_FIX ){
             	return sendCommonFixNotification(addDetailsToLogTrans, ruleParam, resourceOwner, targetType);
             }else{
             return sendPlainTextMail(toRecipients, CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_FROM),
@@ -203,7 +203,7 @@ public class MailUtils {
              String emailCCList = CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_CC_KEY);
              toRecipients.addAll(Arrays.asList(emailCCList.split("\\s*,\\s*")));
              String  emailSubject = CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_FIX_SUBJECT_PREFIX
-                     + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                     + ruleParam.get(PacmanSdkConstants.POLICY_ID));
              Gson gson = new GsonBuilder().disableHtmlEscaping().create();
              if (toRecipients != null && toRecipients.size() > 0) {
                  logger.debug("sending email to-->");
@@ -240,7 +240,7 @@ public class MailUtils {
           templateEngine.setTemplateResolver(templateResolver);
           
           List<String> columnsList = Arrays.asList(CommonUtils.getPropValue(PacmanSdkConstants.PACMAN_MAIL_TEMPLATE_COLUMNS
-                  + ruleParam.get(PacmanSdkConstants.RULE_ID)).split("\\s*,\\s*"));
+                  + ruleParam.get(PacmanSdkConstants.POLICY_ID)).split("\\s*,\\s*"));
          
           Context context = new Context(); 
   
@@ -248,14 +248,14 @@ public class MailUtils {
           context.setVariable("resources", silentautoFixTrans);
           String policyUrl = getPolicyKnowledgeBasePathURL(ruleParam);
           String name =CommonUtils.getPropValue(PacmanSdkConstants.SEND_EMAIL_SILENT_FIX_ADMIN
-                  + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                  + ruleParam.get(PacmanSdkConstants.POLICY_ID));
           String banner =CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_BANNER);          
           
           if(StringUtils.isNullOrEmpty(name)){
         	 name = resourceOwner.getName(); 
           }
           String postFixMessage = CommonUtils.getPropValue(PacmanSdkConstants.EMAIL_FIX_MESSAGE_PREFIX
-                  + ruleParam.get(PacmanSdkConstants.RULE_ID));
+                  + ruleParam.get(PacmanSdkConstants.POLICY_ID));
           if(postFixMessage!=null) {
               Map<String,String> data=new HashMap<>();
               final String[] resourceid = {""};
@@ -275,7 +275,7 @@ public class MailUtils {
           StringWriter writer = new StringWriter();
           
         if(CommonUtils.getPropValue("pacman.auto.fix.common.email.notifications."
-                  + ruleParam.get(PacmanSdkConstants.RULE_ID)).equals("commonTemplate")){
+                  + ruleParam.get(PacmanSdkConstants.POLICY_ID)).equals("commonTemplate")){
           	templateEngine.process("/template/autofix-user-notification-action-common.html", context, writer);
       }else{
           	templateEngine.process("/template/autofix-silent-autodelete-usernotification-info.html", context, writer);
@@ -293,7 +293,7 @@ public class MailUtils {
       private static String getPolicyKnowledgeBasePathURL(Map<String,String> ruleParam){
     	  String policyUrl = CommonUtils.getPropValue(PacmanSdkConstants.POLICY_URL_PATH);
           Map<String, String> policyUrlMap = new HashMap<>();
-          policyUrlMap.put("RULE_ID", ruleParam.get(PacmanSdkConstants.RULE_ID));
+          policyUrlMap.put("RULE_ID", ruleParam.get(PacmanSdkConstants.POLICY_ID));
           policyUrl = StrSubstitutor.replace(policyUrl, policyUrlMap);
           return policyUrl;
       }

@@ -40,13 +40,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-acm-certificate-expiry", desc = "This Rule should look for the SSL(ACM) expiry with given Date Range", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class ACMCertificateExpiryRule extends BaseRule{
+@PacmanPolicy(key = "check-for-acm-certificate-expiry", desc = "This Rule should look for the SSL(ACM) expiry with given Date Range", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class ACMCertificateExpiryRule extends BasePolicy{
 
 
 	private static final Logger logger = LoggerFactory.getLogger(ACMCertificateExpiryRule.class);
@@ -70,7 +70,7 @@ public class ACMCertificateExpiryRule extends BaseRule{
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========ACMCertificateExpiryRule started=========");
 		Annotation annotation = null;
 		Date validTo = null;
@@ -81,7 +81,7 @@ public class ACMCertificateExpiryRule extends BaseRule{
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -107,13 +107,13 @@ public class ACMCertificateExpiryRule extends BaseRule{
 					issueList.add(issue);
 					annotation.put("issueDetails",issueList.toString());
 					logger.debug("========ACMCertificateExpiryRule ended with annotation {} : =========",annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			} else {
 				logger.info("SSL(ACM) validity not expired");
 			}
 		}
 		logger.debug("========ACMCertificateExpiryRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

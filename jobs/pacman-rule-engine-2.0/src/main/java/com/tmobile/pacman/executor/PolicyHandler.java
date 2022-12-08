@@ -16,33 +16,33 @@
 
 package com.tmobile.pacman.executor;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class UncaughtExceptionHandler.
+ * The Interface RuleHandler.
  *
  * @author kkumar
  */
-public class RuleEngineUncaughtExceptionHandler implements java.lang.Thread.UncaughtExceptionHandler {
+public interface PolicyHandler extends Callable<PolicyResult> {
 
-    /** The Constant logger. */
-    private static final Logger logger = LoggerFactory.getLogger(RuleEngineUncaughtExceptionHandler.class);
-
-    /* (non-Javadoc)
-     * @see java.lang.Thread.UncaughtExceptionHandler#uncaughtException(java.lang.Thread, java.lang.Throwable)
+    /**
+     * Handle policy.
+     *
+     * @param policyParams the policy params
+     * @param resource the resource
+     * @return the policy result
      */
-    @Override
-    public void uncaughtException(Thread t, Throwable e) {
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        String stacktrace = sw.toString();
-        logger.error(stacktrace);
+    public PolicyResult handlePolicy(Map<String, String> policyParams, Map<String, String> resource);
 
-    }
+    /**
+     * Handle policy.
+     *
+     * @return the policy result
+     */
+    public PolicyResult handlePolicy();
 
 }

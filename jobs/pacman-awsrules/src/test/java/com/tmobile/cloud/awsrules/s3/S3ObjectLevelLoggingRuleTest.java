@@ -3,8 +3,9 @@ package com.tmobile.cloud.awsrules.s3;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BaseRule.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class})
 public class S3ObjectLevelLoggingRuleTest {
 
     @InjectMocks
@@ -67,7 +68,7 @@ public class S3ObjectLevelLoggingRuleTest {
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 
-        RuleResult ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
     }
 
@@ -83,7 +84,7 @@ public class S3ObjectLevelLoggingRuleTest {
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 
-        RuleResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
     }
 
@@ -98,7 +99,7 @@ public class S3ObjectLevelLoggingRuleTest {
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 
-        RuleResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
         ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
@@ -123,7 +124,7 @@ public class S3ObjectLevelLoggingRuleTest {
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 
-        RuleResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
         ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
@@ -147,7 +148,7 @@ public class S3ObjectLevelLoggingRuleTest {
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
 
-        RuleResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
         ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
@@ -165,7 +166,7 @@ public class S3ObjectLevelLoggingRuleTest {
         String expectedForWrite = "Object-level logging for write events is enabled for S3 bucket";
         String expectedForRead = "Object-level logging for read events is enabled for S3 bucket";
 
-        RuleResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
+        PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expectedForWrite));
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
         ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
@@ -188,7 +189,7 @@ public class S3ObjectLevelLoggingRuleTest {
     private Map<String, String> getInputParamMap() {
         Map<String, String> ruleParam = new HashMap<>();
         ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-        ruleParam.put(PacmanSdkConstants.RULE_ID,
+        ruleParam.put(PacmanSdkConstants.POLICY_ID,
                 "test_version-1_CloudTrailTest_cloudtrail");
         ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
         ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);

@@ -11,20 +11,20 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-@PacmanRule(key = "set-notify-alerts-severity-to-high", desc = "Set notify alerts severity to high in MS defender", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class NotifyAlertsSeverityRule extends BaseRule {
+@PacmanPolicy(key = "set-notify-alerts-severity-to-high", desc = "Set notify alerts severity to high in MS defender", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class NotifyAlertsSeverityRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(com.tmobile.cloud.azurerules.Defender.AdditionalEmailAddressConfigureRule.class);
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing EmailAlertSettingsRule rule");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -59,14 +59,14 @@ public class NotifyAlertsSeverityRule extends BaseRule {
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug(
                         failureMsg);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         } catch (Exception e) {
             throw new RuleExecutionFailedExeption("unable to determine" + e);
         }
         logger.debug(successMSG);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

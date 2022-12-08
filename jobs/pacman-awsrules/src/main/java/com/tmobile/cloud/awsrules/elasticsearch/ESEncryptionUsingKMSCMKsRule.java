@@ -14,13 +14,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-es-encrypted-using-kms-cmks", desc = "checks for AWS ElasticSearch domains are encrypted with KMS Customer Master Keys.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ESEncryptionUsingKMSCMKsRule extends BaseRule {
+@PacmanPolicy(key = "check-es-encrypted-using-kms-cmks", desc = "checks for AWS ElasticSearch domains are encrypted with KMS Customer Master Keys.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ESEncryptionUsingKMSCMKsRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(ESEncryptionUsingKMSCMKsRule.class);
 
 	public static final String ES_PROP_ENCRYPTION_ENABLED = "encryptionenabled";
@@ -62,7 +62,7 @@ public class ESEncryptionUsingKMSCMKsRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========ESEncryptionUsingKMSCMKsRule started=========");
 		Annotation annotation = null;
 
@@ -70,7 +70,7 @@ public class ESEncryptionUsingKMSCMKsRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
 		if (!PacmanUtils.doesAllHaveValue(severity, category)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -100,13 +100,13 @@ public class ESEncryptionUsingKMSCMKsRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.debug("========ESEncryptionUsingKMSCMKsRule ended with annotation {} :=========", annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 						annotation);
 			}
 
 		}
 		logger.debug("========ESEncryptionUsingKMSCMKsRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

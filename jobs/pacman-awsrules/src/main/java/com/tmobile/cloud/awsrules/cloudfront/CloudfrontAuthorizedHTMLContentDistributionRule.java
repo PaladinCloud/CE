@@ -30,9 +30,9 @@ import org.slf4j.MDC;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Purpose: This rule checks for cloudfront resources serving HTML content
@@ -44,8 +44,8 @@ import com.tmobile.pacman.commons.rule.RuleResult;
  * 
  * Modified Date: April 22nd, 2019
  */
-@PacmanRule(key = "check-for-unauthorized-html-cloudfront-distribution", desc = "checks for unauthorized HTML cloudfront distribution", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CloudfrontAuthorizedHTMLContentDistributionRule extends BaseRule {
+@PacmanPolicy(key = "check-for-unauthorized-html-cloudfront-distribution", desc = "checks for unauthorized HTML cloudfront distribution", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CloudfrontAuthorizedHTMLContentDistributionRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(CloudfrontAuthorizedHTMLContentDistributionRule.class);
 
 	/**
@@ -71,12 +71,12 @@ public class CloudfrontAuthorizedHTMLContentDistributionRule extends BaseRule {
 	private final String INDEX_HTM = "index.htm";
 
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========CloudfrontAuthorizedHTMLContentDistributionRule started=========");
 		String cloudFrontResourceID = resourceAttributes.get(PacmanSdkConstants.RESOURCE_ID);
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		boolean isWebsiteHosted = false;
 		String domainName = resourceAttributes.get("domainName");
 		String rootObject = resourceAttributes.get("deafultRootObject");
@@ -97,7 +97,7 @@ public class CloudfrontAuthorizedHTMLContentDistributionRule extends BaseRule {
 						String description = "CloudFront instance: " + cloudFrontResourceID
 								+ " is unauthorized for html content distribution. Content hosted on url : " + url;
 						logger.debug(description);
-						return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+						return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 								PacmanUtils.createAnnotation("", ruleParam, description,
 										PacmanSdkConstants.SEV_HIGH, PacmanSdkConstants.SECURITY));
 					}
@@ -106,7 +106,7 @@ public class CloudfrontAuthorizedHTMLContentDistributionRule extends BaseRule {
 				}
 			}
 		}
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

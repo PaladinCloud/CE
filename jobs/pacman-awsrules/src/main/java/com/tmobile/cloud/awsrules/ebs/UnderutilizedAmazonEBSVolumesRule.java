@@ -31,13 +31,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-underutilized-EBS-Volumes", desc = "Checks for underutilized amazon EBS volumes", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class UnderutilizedAmazonEBSVolumesRule extends BaseRule {
+@PacmanPolicy(key = "check-for-underutilized-EBS-Volumes", desc = "Checks for underutilized amazon EBS volumes", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class UnderutilizedAmazonEBSVolumesRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(UnderutilizedAmazonEBSVolumesRule.class);
 	/**
@@ -62,7 +62,7 @@ public class UnderutilizedAmazonEBSVolumesRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		
 		logger.debug("========UnderutilizedAmazonEBSVolumesRule started=========");
 		Annotation annotation = null;
@@ -84,7 +84,7 @@ public class UnderutilizedAmazonEBSVolumesRule extends BaseRule {
 
         String desc=null;
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -117,11 +117,11 @@ public class UnderutilizedAmazonEBSVolumesRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails",issueList.toString());
 				logger.debug("========UnderutilizedAmazonEBSVolumesRule ended with annotation {} :=========",annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 			}
 		logger.debug("========UnderutilizedAmazonEBSVolumesRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

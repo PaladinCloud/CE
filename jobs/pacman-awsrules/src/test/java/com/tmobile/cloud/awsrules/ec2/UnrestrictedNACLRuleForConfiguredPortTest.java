@@ -24,12 +24,12 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class })
 public class UnrestrictedNACLRuleForConfiguredPortTest {
 
 	@InjectMocks
@@ -48,7 +48,7 @@ public class UnrestrictedNACLRuleForConfiguredPortTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		
-		RuleResult ruleResult = unrestrictedNACLRuleForConfiguredPort.execute(ruleParam,resourceAttribute);
+		PolicyResult ruleResult = unrestrictedNACLRuleForConfiguredPort.execute(ruleParam,resourceAttribute);
 		
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -68,7 +68,7 @@ public class UnrestrictedNACLRuleForConfiguredPortTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(false);
 		
-		RuleResult ruleResult = unrestrictedNACLRuleForConfiguredPort.execute(ruleParam,resourceAttribute);
+		PolicyResult ruleResult = unrestrictedNACLRuleForConfiguredPort.execute(ruleParam,resourceAttribute);
 		
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
@@ -113,7 +113,7 @@ public class UnrestrictedNACLRuleForConfiguredPortTest {
 	private Map<String, String> getInputParamMap() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "NaclPublicAccessPort_version-1_EC2WithPublicAccessForConfiguredPort3389_networkacl");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "NaclPublicAccessPort_version-1_EC2WithPublicAccessForConfiguredPort3389_networkacl");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put(PacmanRuleConstants.ACCOUNTID, "123456789");

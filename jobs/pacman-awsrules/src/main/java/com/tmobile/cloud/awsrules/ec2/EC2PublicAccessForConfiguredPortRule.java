@@ -33,13 +33,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-ec2-with-public-access-for-configured-port", desc = "checks for EC2 instance which has IP address and looks for any of SG group has CIDR IP to 0.0.0.0 for configured port", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class EC2PublicAccessForConfiguredPortRule extends BaseRule {
+@PacmanPolicy(key = "check-for-ec2-with-public-access-for-configured-port", desc = "checks for EC2 instance which has IP address and looks for any of SG group has CIDR IP to 0.0.0.0 for configured port", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EC2PublicAccessForConfiguredPortRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(EC2PublicAccessForConfiguredPortRule.class);
 
     /**
@@ -78,7 +78,7 @@ public class EC2PublicAccessForConfiguredPortRule extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========EC2PublicAccessForConfiguredPortRule started=========");
         Boolean isIgwExists = false;
         String ec2SgEsURL = null;
@@ -130,7 +130,7 @@ public class EC2PublicAccessForConfiguredPortRule extends BaseRule {
             logger.debug("========sgRulesUrl URL after concatination param {}  =========", sgRulesUrl);
 
             MDC.put("executionId", ruleParam.get("executionId"));
-            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
             List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
             LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
             if (!PacmanUtils.doesAllHaveValue(portToCheck, internetGateWay, severity, category, ec2SgEsURL, routetableAssociationsEsURL, routetableRoutesEsURL, routetableEsURL, sgRulesUrl, cidrIp)) {
@@ -164,7 +164,7 @@ public class EC2PublicAccessForConfiguredPortRule extends BaseRule {
                     }
                     Annotation annotation = createAnnotation(resourceAttributes, securityGroupsSet, ruleParam, issueList, issue, sgRulesUrl);
                     if (null != annotation) {
-                        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                     }
 
                 }
@@ -177,7 +177,7 @@ public class EC2PublicAccessForConfiguredPortRule extends BaseRule {
         }
 
         logger.debug("========EC2PublicAccessForConfiguredPortRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     @Override

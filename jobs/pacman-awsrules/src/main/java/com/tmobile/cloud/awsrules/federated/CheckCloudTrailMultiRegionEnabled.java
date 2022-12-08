@@ -36,13 +36,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-cloudtrail-multiRegion-enabled", desc = "This rule checks for AWS CloudTrail multi region enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class CheckCloudTrailMultiRegionEnabled extends BaseRule {
+@PacmanPolicy(key = "check-cloudtrail-multiRegion-enabled", desc = "This rule checks for AWS CloudTrail multi region enabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class CheckCloudTrailMultiRegionEnabled extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(CheckCloudTrailMultiRegionEnabled.class);
 
@@ -73,14 +73,14 @@ public class CheckCloudTrailMultiRegionEnabled extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
         logger.debug("========CheckAWSCloudTrailConfig started=========");
         Annotation annotation = null;
         String cloudTrailInput = ruleParam.get("inputCloudTrailName");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         
         List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -99,11 +99,11 @@ public class CheckCloudTrailMultiRegionEnabled extends BaseRule {
 				issue.put(PacmanRuleConstants.VIOLATION_REASON,	"Cloudtrail multiregion is not enabled!!");
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
-	    		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,annotation);
+	    		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,annotation);
         	}
 
         logger.debug("========CheckAWSCloudTrailConfig ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     public String getHelpText() {

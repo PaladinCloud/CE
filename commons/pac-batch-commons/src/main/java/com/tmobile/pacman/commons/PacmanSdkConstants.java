@@ -65,10 +65,8 @@ public interface PacmanSdkConstants {
 	String RESOURCE_ID = "_resourceid";
 
 	/** The rule id. */
-	String RULE_ID="ruleId";
-
-	/** The policy id. */
 	String POLICY_ID="policyId";
+
 
 	/** The policy version. */
 	String POLICY_VERSION="policyVersion";

@@ -123,11 +123,11 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The issue status key. */
     String ISSUE_STATUS_KEY = "issueStatus";
 
-    /** The rule category. */
-    String RULE_CATEGORY = "ruleCategory";
+    /** The policy category. */
+    String POLICY_CATEGORY = "policyCategory";
 
-    /** The rule severity. */
-    String RULE_SEVERITY = "severity";
+    /** The policy severity. */
+    String POLICY_SEVERITY = "severity";
 
     /** The updated success. */
     String UPDATED_SUCCESS = "Successfully Updated";
@@ -177,21 +177,21 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The execution id. */
     String EXECUTION_ID = "executionId";
 
-    /** The rule type serverless. */
-    String RULE_TYPE_SERVERLESS = "Serverless";
+    /** The policy type serverless. */
+    String POLICY_TYPE_SERVERLESS = "Serverless";
 
-    /** The rule type classic. */
-    String RULE_TYPE_CLASSIC = "classic";
+    /** The policy type classic. */
+    String POLICY_TYPE_CLASSIC = "classic";
 
-    /** The rule type. */
-    String RULE_TYPE = "ruleType";
+    /** The policy type. */
+    String POLICY_TYPE = "policyType";
 
-    /** The rule key. */
-    String RULE_KEY = "ruleKey";
+    /** The policy key. */
+    String POLICY_KEY = "policyKey";
 
 
-    /** The rule url key. */
-    String RULE_URL_KEY = "ruleRestUrl";
+    /** The policy url key. */
+    String POLICY_URL_KEY = "policyRestUrl";
 
     /** The es page size. */
     Integer ES_PAGE_SIZE = 10000;
@@ -212,7 +212,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     Long SCAN_TIME_OUT = 180L;
 
     /** The thread name prefix. */
-    String THREAD_NAME_PREFIX = "pacman-rule-execution-engine";
+    String THREAD_NAME_PREFIX = "pacman-policy-execution-engine";
 
     /** The es doc parent key. */
     String ES_DOC_PARENT_KEY = "_parent";
@@ -423,7 +423,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String ORPHAN_RESOURCE_OWNER_EMAIL = "pacman.auto.fix.orphan.resource.owner";
 
     /** The rule param auto fix key name. */
-    String RULE_PARAM_AUTO_FIX_KEY_NAME = "autofix";
+    String POLICY_PARAM_AUTO_FIX_KEY_NAME = "autofix";
 
     /** The send email from. */
     String SEND_EMAIL_FROM = "pacman.auto.fix.mail.from";
@@ -497,8 +497,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String TARGET_TYPE_ALIAS = "pacman.target.type.alias";
 
 
-    /** The rule contact. */
-    String RULE_CONTACT = "ruleOwner";
+    /** The policy contact. */
+    String POLICY_CONTACT = "policyOwner";
     
     /** The config credentials. */
     String CONFIG_CREDENTIALS = "CONFIG_CREDENTIALS";

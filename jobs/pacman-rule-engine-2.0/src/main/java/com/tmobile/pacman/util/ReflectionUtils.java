@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.tmobile.pacman.commons.autofix.PacmanFix;
-import com.tmobile.pacman.commons.rule.PacmanRule;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.reactors.PacReactor;
 import com.tmobile.pacman.reactors.ReactorShell;
 
@@ -46,49 +46,49 @@ public class ReflectionUtils {
     /**
      * Find associate class.
      *
-     * @param ruleKey the rule key
+     * @param policyKey the policy key
      * @return the class
      * @throws InstantiationException the instantiation exception
      * @throws IllegalAccessException the illegal access exception
      * @throws ClassNotFoundException the class not found exception
      */
-    public static Class<?> findAssociateClass(String ruleKey)
+    public static Class<?> findAssociateClass(String policyKey)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         Reflections reflections = new Reflections("com.tmobile");
-        Set<Class<?>> allRules = reflections.getTypesAnnotatedWith(PacmanRule.class);
-        for (Class<?> ruleClass : allRules) {
-            PacmanRule rule = ruleClass.getAnnotation(PacmanRule.class);
-            if (rule.key().equals(ruleKey)) {
-                return ruleClass;
+        Set<Class<?>> allPolicies = reflections.getTypesAnnotatedWith(PacmanPolicy.class);
+        for (Class<?> policyClass : allPolicies) {
+            PacmanPolicy policy = policyClass.getAnnotation(PacmanPolicy.class);
+            if (policy.key().equals(policyKey)) {
+                return policyClass;
             }
         }
         // if code reached here , this means no class found associated to this
         // key
-        throw new ClassNotFoundException("cannot find class associated to rule");
+        throw new ClassNotFoundException("cannot find class associated to policy");
     }
 
     /**
      * Find fix class.
      *
-     * @param ruleKey the rule key
+     * @param policyKey the policy key
      * @return the class
      * @throws InstantiationException the instantiation exception
      * @throws IllegalAccessException the illegal access exception
      * @throws ClassNotFoundException the class not found exception
      */
-    public static Class<?> findFixClass(String ruleKey)
+    public static Class<?> findFixClass(String policyKey)
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         Reflections reflections = new Reflections("com.tmobile");
-        Set<Class<?>> allRules = reflections.getTypesAnnotatedWith(PacmanFix.class);
-        for (Class<?> ruleClass : allRules) {
-            PacmanFix rule = ruleClass.getAnnotation(PacmanFix.class);
-            if (rule.key().equals(ruleKey)) {
-                return ruleClass;
+        Set<Class<?>> allPolicies = reflections.getTypesAnnotatedWith(PacmanFix.class);
+        for (Class<?> policyClass : allPolicies) {
+            PacmanFix policy = policyClass.getAnnotation(PacmanFix.class);
+            if (policy.key().equals(policyKey)) {
+                return policyClass;
             }
         }
         // if code reached here , this means no class found associated to this
         // key
-        throw new ClassNotFoundException("cannot find class associated to rule");
+        throw new ClassNotFoundException("cannot find class associated to policy");
     }
 
     /**

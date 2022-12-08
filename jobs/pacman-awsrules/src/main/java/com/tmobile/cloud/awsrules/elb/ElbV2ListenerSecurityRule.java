@@ -39,13 +39,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-secured-elb-v2-listener-protocols", desc = "checks for secured listener protocols are used by elbs", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class ElbV2ListenerSecurityRule extends BaseRule {
+@PacmanPolicy(key = "check-for-secured-elb-v2-listener-protocols", desc = "checks for secured listener protocols are used by elbs", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class ElbV2ListenerSecurityRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(ElbV2ListenerSecurityRule.class);
 
@@ -70,7 +70,7 @@ public class ElbV2ListenerSecurityRule extends BaseRule {
      *
      */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 
 		logger.debug("========ElbV2ListenerSecurityRule started=========");
 		Annotation annotation = null;
@@ -83,7 +83,7 @@ public class ElbV2ListenerSecurityRule extends BaseRule {
 		String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
 		
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		
 		if (!PacmanUtils.doesAllHaveValue(severity,category)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -114,7 +114,7 @@ public class ElbV2ListenerSecurityRule extends BaseRule {
 					issueList.add(issue);
 					annotation.put("issueDetails", issueList.toString());
 					logger.debug("========ElbV2ListenerSecurityRule ended with an annotation {} : =========", annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 				}
 			}
 
@@ -125,7 +125,7 @@ public class ElbV2ListenerSecurityRule extends BaseRule {
 		
 		
 		logger.debug("========ElbV2ListenerSecurityRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {
