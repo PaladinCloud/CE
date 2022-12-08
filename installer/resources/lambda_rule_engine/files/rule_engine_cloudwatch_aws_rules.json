@@ -3916,6 +3916,28 @@
     "category": "security"
   },
   {
+    "ruleId": "EksSgInboundTrafficValidation_version-1_SgInboundTrafficValidation_eks",
+    "ruleUUID": "aws_eks_sg_inbound_traffic_validation",
+    "policyId": "EksSgInboundTrafficValidation_version-1",
+    "ruleName": "All Inbound traffic should be disabled for EKS Cluster other than TCP port 443",
+    "targetType": "eks",
+    "assetGroup": "aws",
+    "alexaKeyword": "EksSgInboundTraffic",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-eks-inbound-traffic\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"EksSgInboundTrafficValidation_version-1_SgInboundTrafficValidation_eks\",\"autofix\":false,\"alexaKeyword\":\"EksSgInboundTraffic\",\"ruleRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"policyId\":\"EksSgInboundTrafficValidation_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_eks_sg_inbound_traffic_validation\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_eks_sg_inbound_traffic_validation",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable inbound traffic to EKS Cluster other than TCP port 443",
+    "createdDate": "2022-12-05",
+    "modifiedDate": "2022-12-05",
+    "severity": "high",
+    "category": "security"
+  },
+  {
     "ruleId": "RemoveRootUserAccessKey_version-1_RemoveRootUserAccessKey_account",
     "ruleUUID": "aws_remove_root_user_account_access_key",
     "policyId": "RemoveRootUserAccessKey_version-1",
