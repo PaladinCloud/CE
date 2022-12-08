@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.common.exception.ServerlessRuleFailedException;
+import com.tmobile.pacman.common.exception.ServerlessPolicyFailedException;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
@@ -90,7 +90,7 @@ public class ServerlessPolicyHandler implements PolicyHandler {
             result.setResource(resource);// overwrite the resource as sent in
                                          // case it was overwritten
             return result;
-        } catch (ServerlessRuleFailedException e) {
+        } catch (ServerlessPolicyFailedException e) {
             Map<String, String> responseMap = gson.fromJson(e.getAnnotation(), Map.class);
             Annotation annotation = Annotation.buildAnnotation(policyParams, Annotation.Type.ISSUE);
             annotation.putAll(responseMap);
@@ -117,10 +117,10 @@ public class ServerlessPolicyHandler implements PolicyHandler {
      * @param requestBody the request body
      * @param headers the headers
      * @return the integer
-     * @throws ServerlessRuleFailedException the serverless rule failed exception
+     * @throws ServerlessPolicyFailedException the serverless rule failed exception
      */
     private Integer doHttpPost(String url, String requestBody, Map<String, String> headers)
-            throws ServerlessRuleFailedException {
+            throws ServerlessPolicyFailedException {
 
         PostMethod httppost = null;
         Gson gson = new GsonBuilder().create();
@@ -156,7 +156,7 @@ public class ServerlessPolicyHandler implements PolicyHandler {
                 httppost.releaseConnection();
                 return responsecode;
             } else
-                throw new ServerlessRuleFailedException(httppost.getResponseBodyAsString(), responsecode);
+                throw new ServerlessPolicyFailedException(httppost.getResponseBodyAsString(), responsecode);
         } catch (org.apache.http.ParseException parseException) {
             logger.error("ParseException : " + parseException.getMessage());
         } catch (IOException ioException) {

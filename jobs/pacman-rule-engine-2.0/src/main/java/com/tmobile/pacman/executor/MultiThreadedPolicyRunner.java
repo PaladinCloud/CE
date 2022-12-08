@@ -85,8 +85,8 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
             LOGGER.info(e.getMessage());
             LOGGER.info("Env vaiable " + PacmanSdkConstants.ENV_PAC_RE_MAX_WORKERS
                     + " not found, setting default thread pool size to "
-                    + PacmanSdkConstants.MAX_RULE_EXECUTOR_THREADS);
-            threadPoolSize = PacmanSdkConstants.MAX_RULE_EXECUTOR_THREADS;
+                    + PacmanSdkConstants.MAX_POLICY_EXECUTOR_THREADS);
+            threadPoolSize = PacmanSdkConstants.MAX_POLICY_EXECUTOR_THREADS;
         }
 
         ExecutorService executor = Executors.newFixedThreadPool(threadPoolSize, namedThreadFactory.build());

@@ -20,7 +20,7 @@ package com.tmobile.pacman.common.exception;
 /**
  * The Class ServerlessRuleFailedException.
  */
-public class ServerlessRuleFailedException extends Exception {
+public class ServerlessPolicyFailedException extends Exception {
 
     /** The annotation. */
     String annotation;
@@ -34,7 +34,7 @@ public class ServerlessRuleFailedException extends Exception {
      * @param annotation the annotation
      * @param responsecode the responsecode
      */
-    public ServerlessRuleFailedException(String annotation, int responsecode) {
+    public ServerlessPolicyFailedException(String annotation, int responsecode) {
         this.annotation = annotation;
         this.responsecode = responsecode;
     }

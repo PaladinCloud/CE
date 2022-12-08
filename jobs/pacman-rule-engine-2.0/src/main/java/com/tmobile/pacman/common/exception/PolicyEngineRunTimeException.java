@@ -22,7 +22,7 @@ package com.tmobile.pacman.common.exception;
  *
  * @author kkumar
  */
-public class RuleEngineRunTimeException extends RuntimeException {
+public class PolicyEngineRunTimeException extends RuntimeException {
 
 
     /** The status code. */
@@ -37,7 +37,7 @@ public class RuleEngineRunTimeException extends RuntimeException {
      *
      * @param e the e
      */
-    public RuleEngineRunTimeException(Exception e) {
+    public PolicyEngineRunTimeException(Exception e) {
         super(e);
         this.statusCode=-1;
         this.msg=e.getMessage();
@@ -49,7 +49,7 @@ public class RuleEngineRunTimeException extends RuntimeException {
      * @param statusCode the status code
      * @param msg the msg
      */
-    public RuleEngineRunTimeException(int statusCode,String msg) {
+    public PolicyEngineRunTimeException(int statusCode,String msg) {
         this.statusCode=statusCode;
         this.msg=msg;
     }

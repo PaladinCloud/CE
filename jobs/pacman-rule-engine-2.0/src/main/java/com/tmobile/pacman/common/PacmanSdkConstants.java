@@ -259,14 +259,14 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The status unknown message. */
     String STATUS_UNKNOWN_MESSAGE = "unable to determine for this resource";
 
-    /** The max rule executor threads. */
-    Integer MAX_RULE_EXECUTOR_THREADS = 100;
+    /** The max policy executor threads. */
+    Integer MAX_POLICY_EXECUTOR_THREADS = 100;
 
     /** The worker thread count. */
     String WORKER_THREAD_COUNT = "workerThreadCount";
 
     /** The env pac re max workers. */
-    String ENV_PAC_RE_MAX_WORKERS = "PAC_RE_MAX_RULE_EXECUTORS";
+    String ENV_PAC_RE_MAX_WORKERS = "PAC_RE_MAX_POLICY_EXECUTORS";
 
     /** The error desc key. */
     String ERROR_DESC_KEY = "errorDesc";
@@ -308,7 +308,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String ASSET_GROUP_KEY = "assetGroup";
 
     /** The rule uuid key. */
-    String RULE_UUID_KEY = "ruleUUID";
+    String POLICY_UUID_KEY = "policyUUID";
 
     /** The invocation id. */
     String INVOCATION_ID = "invocationId";
@@ -422,7 +422,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The orphan resource owner email. */
     String ORPHAN_RESOURCE_OWNER_EMAIL = "pacman.auto.fix.orphan.resource.owner";
 
-    /** The rule param auto fix key name. */
+    /** The policy param auto fix key name. */
     String POLICY_PARAM_AUTO_FIX_KEY_NAME = "autofix";
 
     /** The send email from. */
@@ -442,13 +442,13 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String EMAIL_SERVICE_URL = "pacman.api.sendmail";
 
     /** The email violation message prefix. */
-    String EMAIL_VIOLATION_MESSAGE_PREFIX = "pacman.autofix.rule.violation.message.";
+    String EMAIL_VIOLATION_MESSAGE_PREFIX = "pacman.autofix.policy.violation.message.";
 
     /** The email warning message prefix. */
-    String EMAIL_WARNING_MESSAGE_PREFIX = "pacman.autofix.rule.warning.message.";
+    String EMAIL_WARNING_MESSAGE_PREFIX = "pacman.autofix.policy.warning.message.";
 
     /** The email fix message prefix. */
-    String EMAIL_FIX_MESSAGE_PREFIX = "pacman.autofix.rule.post.fix.message.";
+    String EMAIL_FIX_MESSAGE_PREFIX = "pacman.autofix.policy.post.fix.message.";
 
     /** The pac auto tag salt key. */
     String PAC_AUTO_TAG_SALT_KEY = "pacman.auto.fix.tag.salt";

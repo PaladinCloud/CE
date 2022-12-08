@@ -587,8 +587,8 @@ public class CommonUtils {
         JsonElement element = parser.parse(json);
         JsonObject obj = element.getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
-        if (obj.has(PacmanSdkConstants.RULE_UUID_KEY)) {
-            ruleUUID = obj.get(PacmanSdkConstants.RULE_UUID_KEY).getAsString();
+        if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+            ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
         }
         Map<String, String> toReturn = new HashMap<>();
         for (Map.Entry<String, JsonElement> entry : entries) {
