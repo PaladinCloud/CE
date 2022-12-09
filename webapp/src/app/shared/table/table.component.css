@@ -331,11 +331,13 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   background: var(--background-grey);
   padding: 0px 4px 0px 12px;
   border-radius: 4px;
+  font: var(--text-body-2);
 }
 
 .more-filters-wrapper{
   background: #F1F6FF;
   color: var(--primary-400);
-  padding: 4px 10px;
+  padding: 7px 4px;
   border-radius: 4px;
+  font: var(--text-body-2);
 }
