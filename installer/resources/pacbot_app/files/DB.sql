@@ -2311,7 +2311,6 @@ INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (9,'digitaldev
 
 /* UI Filter Options */
 
-INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (1,1,'Policy','policyId.keyword','/compliance/v1/filters/policies?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (2,1,'Rule','ruleId.keyword','/compliance/v1/filters/rules?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (3,1,'Region','region.keyword','/compliance/v1/filters/regions?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (4,1,'AccountName','accountid.keyword','/compliance/v1/filters/accounts?ag=aws');

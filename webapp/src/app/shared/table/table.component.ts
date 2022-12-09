@@ -275,11 +275,14 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   addFilter(){
-    let obj = {
-      keyDisplayValue: "",
-      filterValue: ""
-    };
-    this.filteredArray.push(obj);
+    // we are restricting user from adding multiple empty conditions
+    if(this.filteredArray.length > 0 && this.filteredArray[this.filteredArray.length-1].filterValue){
+      let obj = {
+        keyDisplayValue: "",
+        filterValue: ""
+      };
+      this.filteredArray.push(obj);
+    }
   }
 
   removeFilter(i){

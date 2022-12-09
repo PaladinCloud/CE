@@ -516,7 +516,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       const filterToBePassed = this.filterText;
       if(filterToBePassed){
         filterToBePassed.domain = this.selectedDomain;
-        if (!filterToBePassed.include_exempt) {
+        if (!filterToBePassed["issueStatus.keyword"] && !filterToBePassed.include_exempt) {
           filterToBePassed.include_exempt = "yes";
         }
       } 

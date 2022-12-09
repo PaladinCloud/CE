@@ -399,6 +399,10 @@ public class FilterServiceImpl implements FilterService, Constants {
             put("id", "open");
         }});
         listOfIssueStatus.add(new HashMap<String, Object>(){{
+            put("name", "closed");
+            put("id", "closed");
+        }});
+        listOfIssueStatus.add(new HashMap<String, Object>(){{
             put("name", "exempt");
             put("id", "exempted");
         }});

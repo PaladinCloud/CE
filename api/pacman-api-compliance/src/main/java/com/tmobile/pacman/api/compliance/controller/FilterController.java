@@ -271,7 +271,7 @@ public class FilterController implements Constants {
     }
 
     @GetMapping(value = "/v1/filters/issuestatus")
-    public ResponseEntity<Object> getListOfIssueStatus(@RequestParam(name = "ag", required = true) String assetGroup,
+    public ResponseEntity<Object> getListOfIssueStatus(@RequestParam(name = "ag", required = false) String assetGroup,
                                                       @RequestParam(name = "domain", required = false) String domain) {
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
