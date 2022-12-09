@@ -54,7 +54,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   allColumns: any = [];
   totalRows = 0;
   bucketNumber = 0;
-  paginatorSize = 100;
+  paginatorSize = 500;
   searchTxt = "";
   filterTypeOptions: any = [];
   filterTagOptions: any = {};
@@ -303,12 +303,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
         };
         dataArray.push(obj);
       }
-      const formattedFilters = dataArray
-      // .map(function (data) {
-      //   data.name =
-      //     refactoredService.getDisplayNameForAKey(data.name) || data.name;
-      //   return data;
-      // });
+      const formattedFilters = dataArray;
       let keyValue;
       for (let i = 0; i < formattedFilters.length; i++) {
         for(let j=0; j<this.filterTypeOptions.length; j++){

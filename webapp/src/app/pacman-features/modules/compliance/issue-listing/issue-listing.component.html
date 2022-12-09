@@ -31,7 +31,7 @@
             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
             (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'
             [showDownloadBtn]="showDownloadBtn" [showFilterBtn]="showFilterBtn" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-            [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded">
+            [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [doLocalSort]="false">
         </app-table>
     </div>
 </div>

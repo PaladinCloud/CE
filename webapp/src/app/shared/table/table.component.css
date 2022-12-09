@@ -337,7 +337,7 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
 .more-filters-wrapper{
   background: #F1F6FF;
   color: var(--primary-400);
-  padding: 7px 4px;
+  padding: 6px 4px;
   border-radius: 4px;
   font: var(--text-body-2);
 }

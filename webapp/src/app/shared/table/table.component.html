@@ -12,7 +12,7 @@
                 <div class="search-bar-wrapper flex flex-row gap-8" *ngIf="showSearchBar">
                     <img class="padding-12" src="/assets/icons/header-search.svg" matPrefix alt="" />
                     <div class="chips-container flex gap-8">
-                        <div class="chip-wrapper flex flex-align-center" *ngFor="let filter of getSplicedArray(filteredArray, 2); let i=index">
+                        <div class="chip-wrapper flex flex-align-center" *ngFor="let filter of chips; let i=index">
                             <div class="chip flex flex-align-center" *ngIf="i<2 && filter.filterValue">
                                 <div class="chip-content nowrap-ellipsis capitalize" [title]="filter.filterValue">{{filter.filterValue}}</div>
                                 <img (click)="removeFilter(i)" class="pointer padding-12" src="/assets/icons/x-icon.svg" alt="">
@@ -36,7 +36,7 @@
                             </mat-select>
                         </mat-form-field>
                     </div> -->
-                    <img class="pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
+                    <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
                     <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" *ngIf="showFilterBtn">
                         <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
                     </div>
