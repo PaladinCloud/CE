@@ -56,7 +56,9 @@ public class GCPFetchOrchestrator {
     public Map<String, Object> orchestrate() {
 
         try {
+            log.info("Before Fetching projects!!");
             List<ProjectVH> allProjects = fetchProjects();
+            log.info("After fetching projects");
             if (allProjects.isEmpty()) {
                 ErrorManageUtil.uploadError("all", "all", "all", "Error fetching projects Info ");
                 return ErrorManageUtil.formErrorCode();
@@ -94,9 +96,11 @@ public class GCPFetchOrchestrator {
             log.info("Entering getCloudResourceManager!!");
             CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager();
             for(String projectId:projectList){
-
+                log.info("Entering the loop!!");
                 CloudResourceManager.Projects.Get project = resource.projects().get(projectId);
+                log.info("Before execute");
                 Project p = project.execute();
+                log.info("After Execute!!");
                 log.info("Project Id: {}, Project Name: {}, Project number: {}"
                         ,p.getProjectId(),p.getName(),p.getProjectNumber());
                 ProjectVH projectVH=new ProjectVH();
