@@ -1,6 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.api.apikeys.v2.ApiKeysClient;
+import com.google.api.apikeys.v2.ApiTarget;
 import com.google.api.apikeys.v2.Key;
 import com.google.gson.Gson;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
@@ -21,7 +22,6 @@ public class APIKeysInventoryCollector {
     @Autowired
     GCPCredentialsProvider gcpCredentialsProvider;
     private static final Logger logger = LoggerFactory.getLogger(APIKeysInventoryCollector.class);
-    private Object value;
 
     public List<APIKeysVH> fetchApiKeys(ProjectVH projectVH) throws Exception {
         String parent = "projects/"+projectVH.getProjectId()+"/locations/global";
@@ -39,6 +39,15 @@ public class APIKeysInventoryCollector {
             HashMap<String, Object> restriction=new HashMap<>();
 
            if(! keys.getRestrictions().getAllFields().isEmpty()){
+
+               List<String>service=new ArrayList<>();
+               List<ApiTarget>apiTargets=keys.getRestrictions().getApiTargetsList();
+               for(ApiTarget apiTarget:apiTargets){
+                   service.add(apiTarget.getService());
+                   logger.info("apiKey{}",apiTarget.getService());
+               }
+               apiKeysVH.setApiTargetList(service);
+
                HashMap<String,Object>serverKeyRestrictions=new HashMap<>();
 
                keys.getRestrictions().getServerKeyRestrictions().getAllFields().forEach((fieldDescriptor, o) -> {
@@ -74,8 +83,6 @@ public class APIKeysInventoryCollector {
 
                });
                restriction.put("iosKeyRestrictions",iosKeyRestrictions);
-
-
 
            }
 
