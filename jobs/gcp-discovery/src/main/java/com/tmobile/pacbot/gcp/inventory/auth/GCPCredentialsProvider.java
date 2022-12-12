@@ -26,7 +26,6 @@ import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import io.grpc.LoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -61,6 +60,8 @@ public class GCPCredentialsProvider {
     private Iam iamService;
     private UrlMapsClient urlMap;
     private TargetHttpProxiesClient targetHttpProxiesClient;
+
+    private BackendServicesClient backendService;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -244,6 +245,15 @@ public class GCPCredentialsProvider {
             targetHttpProxiesClient=TargetHttpProxiesClient.create(targetHttpProxiesSettings);
         }
         return targetHttpProxiesClient;
+    }
+
+    public BackendServicesClient getBackendServiceClient() throws IOException {
+        if(backendService==null)
+        {
+           BackendServicesSettings backendServicesSettings= BackendServicesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            backendService=BackendServicesClient.create(backendServicesSettings);
+        }
+        return backendService;
     }
     // close the client in destroy method
     @PreDestroy

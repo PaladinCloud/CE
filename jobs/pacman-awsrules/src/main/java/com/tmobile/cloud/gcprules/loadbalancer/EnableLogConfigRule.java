@@ -2,7 +2,6 @@ package com.tmobile.cloud.gcprules.loadbalancer;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -21,9 +20,9 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "enable-https-for-loadbalancer", desc = "Enable https for load balancer", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class EnableHttpsRule extends BaseRule {
-    private static final Logger logger = LoggerFactory.getLogger(EnableHttpsRule.class);
+@PacmanRule(key = "enable-https-logging-for-backend-services", desc = "Enable HTTPS logging for Load Balancing Backend Services", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class EnableLogConfigRule  extends BaseRule {
+    private static final Logger logger = LoggerFactory.getLogger(EnableLogConfigRule.class);
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         Annotation annotation = null;
@@ -57,16 +56,16 @@ public class EnableHttpsRule extends BaseRule {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                isHTTPSEnabled = checkHTTPSEnabled(vmEsURL, mustFilter);
+                isHTTPSEnabled = checkLoggingEnabledForBackendServices(vmEsURL, mustFilter);
                 if (!isHTTPSEnabled) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
                     annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                    annotation.put(PacmanSdkConstants.DESCRIPTION, "Google Cloud Platform (GCP) load balancers should be configured to use valid SSL/TLS certificates in order to handle encrypted web traffic. SSL certificate resources contain SSL certificate information that the load balancer uses to terminate SSL/TLS when HTTPS clients connect to it");
+                    annotation.put(PacmanSdkConstants.DESCRIPTION, "Google Cloud Platform (GCP) load balancing backend services should be configured to log HTTPS traffic because log entries contain information useful for monitoring and debugging web traffic");
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
-                    issue.put(PacmanRuleConstants.VIOLATION_REASON,"HTTPS for Google Cloud Load Balancers was disabled" );
+                    issue.put(PacmanRuleConstants.VIOLATION_REASON,"Logging for Google Cloud Load Balancers backend services was disabled" );
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========rule ended with status failure {}", annotation);
@@ -85,33 +84,26 @@ public class EnableHttpsRule extends BaseRule {
 
     }
 
-    private boolean checkHTTPSEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
-        logger.debug("========checkHTTPSEnabled  started=========");
+    private boolean checkLoggingEnabledForBackendServices(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
+        logger.debug("========checkLoggingEnabledForBackendServices  started=========");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = false;
         if (hitsJsonArray.size() > 0) {
-            logger.debug("========checkHTTPSEnabled hit array=========");
-
+            logger.debug("========checkLoggingEnabledForBackendServices hit array=========");
             JsonObject loadBalancer = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", loadBalancer);
-            String urlMap=(loadBalancer.get("urlMap").getAsString()).concat("-target-proxy");
-            JsonArray targetHttpProxy=loadBalancer.getAsJsonArray("targetHttpProxy");
-            for(JsonElement targetHttpProx:targetHttpProxy)
-            {
-                if(targetHttpProx.getAsString().equals(urlMap)) {
+            boolean logConfigEnabled=loadBalancer.get("logConfigEnabled").getAsBoolean();
+                if(logConfigEnabled) {
                     validationResult = true;
-                    break;
                 }
-            }
         }
-
         return validationResult;
     }
 
     @Override
     public String getHelpText() {
-        return "Enable HTTPS for Google Cloud Load Balancers";
+        return "Enable HTTPS logging for Load Balancing Backend Services";
     }
 }
