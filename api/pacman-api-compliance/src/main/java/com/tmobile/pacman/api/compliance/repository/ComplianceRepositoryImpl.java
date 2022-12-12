@@ -353,11 +353,14 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), Constants.ISSUE);
 
-        issueStatus.add(OPEN);
+        if (null == filters.get("issueStatus.keyword")) {
+            issueStatus.add(OPEN);
+        }
+
         if (null != filters.get("include_exempt") && ("yes".equalsIgnoreCase(filters.get(INCLUDE_EXEMPT)))) {
             issueStatus.add(EXEMPTED);
         }
-        mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
+        if(issueStatus.size()>0) mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
         mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(RULEID), ruleIdOrder);
 
         try {
