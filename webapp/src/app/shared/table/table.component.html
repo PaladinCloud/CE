@@ -18,7 +18,7 @@
                                 <img (click)="removeFilter(i)" class="pointer padding-12" src="/assets/icons/x-icon.svg" alt="">
                             </div>
                         </div>
-                        <div [matMenuTriggerFor]="filterModal" class="more-filters-btn flex flex-align-center pointer" *ngIf="totalChips > 2">
+                        <div [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" class="more-filters-btn flex flex-align-center pointer" *ngIf="totalChips > 2">
                             <div class="more-filters-wrapper flex flex-align-center pointer">
                                 +{{ (totalChips - 2) }}
                             </div>
@@ -37,7 +37,7 @@
                         </mat-form-field>
                     </div> -->
                     <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
-                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" *ngIf="showFilterBtn">
+                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" *ngIf="showFilterBtn">
                         <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
                     </div>
                 <mat-menu #filterModal="matMenu">
@@ -47,7 +47,7 @@
                             <div class="title">Filters</div>
                             <div class="clear-all-btn" (click)="removeAllFilters()">Clear all</div>
                         </div>
-                        <div class="filters-container">
+                        <div class="filters-container" #filtersContainer>
                             <div class="filters-wrapper flex flex-col">
                             <div class="filter flex flex-row" *ngFor="let filter of filteredArray; let i=index">
                                 <app-dropdown [items]="filterTypeLabels"

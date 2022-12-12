@@ -58,6 +58,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
   @ViewChildren('customTable') customTable: any;
   @ViewChild("tableContainer") tableContainer: ElementRef;
+  @ViewChild("filtersContainer") filtersContainer: ElementRef;
 
   allSelected=true;
   screenWidth;
@@ -148,6 +149,14 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         }
       });
       this.changeDetectorRef.detectChanges();
+    }
+  }
+
+  scrollFilterModalToBottom(forceScroll?){
+    if(this.filtersContainer){
+      if(this.totalChips > 2 || forceScroll){
+        this.filtersContainer.nativeElement.scrollTop = this.filtersContainer.nativeElement.scrollHeight ;
+      }
     }
   }
 
@@ -283,6 +292,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         filterValue: ""
       };
       this.filteredArray.push(obj);
+      setTimeout(() => this.scrollFilterModalToBottom(true), 1);
   }
 
   removeFilter(i){
