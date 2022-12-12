@@ -112,7 +112,7 @@
   top: 120px; */
   min-height: 100px;
   min-width: 445px;
-  max-height: 200px;
+  max-height: 212px;
   background-color: var(--background-white);
   border: 1px solid var(--border-200);
   padding: 20px;
@@ -172,6 +172,7 @@
   overflow-y: scroll;
   min-height: 50px;
   max-height: 100px;
+  padding: 2px 0px;
 }
 
 .filters-container ::ng-deep .mat-form-field-infix{
