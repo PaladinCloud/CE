@@ -54,7 +54,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   allColumns: any = [];
   totalRows = 0;
   bucketNumber = 0;
-  paginatorSize = 500;
+  paginatorSize = 100;
   searchTxt = "";
   filterTypeOptions: any = [];
   filterTagOptions: any = {};
