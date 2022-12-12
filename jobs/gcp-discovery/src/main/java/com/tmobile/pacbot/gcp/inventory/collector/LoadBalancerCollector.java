@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.google.cloud.compute.v1.Backend;
+import com.google.cloud.compute.v1.BackendServiceLogConfig;
 import com.google.cloud.compute.v1.TargetHttpProxy;
 import com.google.cloud.compute.v1.UrlMap;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
@@ -34,6 +36,14 @@ public class LoadBalancerCollector {
                targetHttpProxyVH.add(targetHttpProxy.getName());
            }
            loadBalancerVH.setTargetHttpProxy(targetHttpProxyVH);
+           String backendServiceName=u.getDefaultService().substring(u.getDefaultService().lastIndexOf('/')+1);
+           try {
+               BackendServiceLogConfig backendServiceLogConfig = gcpCredentialsProvider.getBackendServiceClient().get(project.getProjectId(), backendServiceName).getLogConfig();
+               loadBalancerVH.setLogConfigEnabled(backendServiceLogConfig.getEnable());
+           }catch (Exception e)
+           {
+               loadBalancerVH.setLogConfigEnabled(true);
+           }
            loadBalancerVHList.add(loadBalancerVH);
        }
 

@@ -7,6 +7,16 @@ public class LoadBalancerVH extends GCPVH{
 
     List<String> targetHttpProxy;
 
+    boolean logConfigEnabled;
+
+    public boolean isLogConfigEnabled() {
+        return logConfigEnabled;
+    }
+
+    public void setLogConfigEnabled(boolean logConfigEnabled) {
+        this.logConfigEnabled = logConfigEnabled;
+    }
+
     public String getUrlMap() {
         return urlMap;
     }
