@@ -318,7 +318,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    */
   getFilterArray() {
     try {
-      const localFilters = []; // <<-- this filter is used to store data for filter
       // let labelsKey = Object.keys(this.labels);
       const filterObjKeys = Object.keys(this.filterText);
       const dataArray = [];
@@ -329,9 +328,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         };
         dataArray.push(obj);
       }
-
-      const filterValues = dataArray;
-      const refactoredService = this.refactorFieldsService;
       const formattedFilters = dataArray
       // .map(function (data) {
       //   data.name =
@@ -355,10 +351,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
             compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
           };
-          localFilters.push(eachObj);
+          this.filters.push(eachObj);
+          this.filters = [...this.filters];
         })
       }
-      this.filters = localFilters;      
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
