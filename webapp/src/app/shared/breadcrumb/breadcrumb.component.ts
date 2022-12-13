@@ -29,6 +29,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   @Input() breadcrumbArray: any;
   @Input() breadcrumbLinks: any;
+  @Input() breadcrumbQueryParams: any;
   @Input() breadcrumbPresent: any;
   @Input() asset: any;
   @Input() isCustomParentRoute: boolean;
@@ -49,6 +50,16 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeSubscriptions();
+  }
+
+  ngOnChanges(){
+    // remove taking breadcrumb array, links as input from all components.
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];        
+    if(breadcrumbInfo){
+      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+      this.breadcrumbQueryParams = breadcrumbInfo.map(item => item.queryParams);
+    }
   }
 
   initializeSubscriptions() {
@@ -75,8 +86,12 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
   navigateRespective(index): any {
     let pathArr = [this.breadcrumbLinks[index]];
-    this.workflowService.goToLevel(index)
-    this.router.navigate(pathArr, {queryParams: this.agAndDomain});
+    this.workflowService.goToLevel(index);
+    if(this.breadcrumbQueryParams){
+      this.router.navigate(pathArr, {queryParams: this.breadcrumbQueryParams[index]});
+    }else{
+      this.router.navigate(pathArr, {queryParams: this.agAndDomain});
+    }
   }
 
 }
