@@ -99,15 +99,24 @@ public class GCPFetchOrchestrator {
                 log.info("Entering the loop!!");
                 CloudResourceManager.Projects.Get project = resource.projects().get(projectId);
                 log.info("Before execute");
-                Project p = project.execute();
-                log.info("After Execute!!");
-                log.info("Project Id: {}, Project Name: {}, Project number: {}"
-                        ,p.getProjectId(),p.getName(),p.getProjectNumber());
-                ProjectVH projectVH=new ProjectVH();
-                projectVH.setProjectId(p.getProjectId());
-                projectVH.setProjectName(p.getName());
-                projectVH.setProjectNumber(p.getProjectNumber());
-                projectDetails.add(projectVH);
+
+                log.info("Value of the project is: {}", project.toString());
+                log.info("Value of the project is: {}", project.getHttpContent());
+                try{
+                    Project p = project.execute();
+                    log.info("After Execute!!");
+                    log.info("Project Id: {}, Project Name: {}, Project number: {}"
+                            ,p.getProjectId(),p.getName(),p.getProjectNumber());
+                    ProjectVH projectVH=new ProjectVH();
+                    projectVH.setProjectId(p.getProjectId());
+                    projectVH.setProjectName(p.getName());
+                    projectVH.setProjectNumber(p.getProjectNumber());
+                    projectDetails.add(projectVH);
+                } catch (Exception e){
+                    log.info("Exception while executing the project: {}" , e.getMessage());
+                    e.printStackTrace();
+                }
+
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
