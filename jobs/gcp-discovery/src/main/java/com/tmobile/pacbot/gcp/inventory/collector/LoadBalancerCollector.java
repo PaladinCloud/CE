@@ -1,9 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
-import com.google.cloud.compute.v1.Backend;
-import com.google.cloud.compute.v1.BackendServiceLogConfig;
-import com.google.cloud.compute.v1.TargetHttpProxy;
-import com.google.cloud.compute.v1.UrlMap;
+import com.google.cloud.compute.v1.*;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.vo.LoadBalancerVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
@@ -29,11 +26,11 @@ public class LoadBalancerCollector {
            logger.debug("URL map name: {} URL id :{}", u.getName(), u.getId());
            loadBalancerVH.setUrlMap(u.getName());
            loadBalancerVH.setId(String.valueOf(u.getId()));
-           Iterable<TargetHttpProxy> httpProxies = gcpCredentialsProvider.getTargetHttpProxiesClient().list(project.getProjectId()).iterateAll();
+           Iterable<TargetHttpsProxy> httpProxies = gcpCredentialsProvider.getTargetHttpProxiesClient().list(project.getProjectId()).iterateAll();
            List<String> targetHttpProxyVH = new ArrayList<>();
-           for (TargetHttpProxy targetHttpProxy : httpProxies) {
-               logger.debug("Target proxy :{} {}", targetHttpProxy.getName(), targetHttpProxy.getId());
-               targetHttpProxyVH.add(targetHttpProxy.getName());
+           for (TargetHttpsProxy targetHttpsProxy : httpProxies) {
+               logger.debug("Target proxy :{} {}", targetHttpsProxy.getName(), targetHttpsProxy.getId());
+               targetHttpProxyVH.add(targetHttpsProxy.getName());
            }
            loadBalancerVH.setTargetHttpProxy(targetHttpProxyVH);
            String backendServiceName=u.getDefaultService().substring(u.getDefaultService().lastIndexOf('/')+1);

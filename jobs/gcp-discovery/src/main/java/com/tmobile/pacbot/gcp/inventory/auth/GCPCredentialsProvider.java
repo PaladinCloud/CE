@@ -59,7 +59,7 @@ public class GCPCredentialsProvider {
     private CloudResourceManager cloudResourceManager;
     private Iam iamService;
     private UrlMapsClient urlMap;
-    private TargetHttpProxiesClient targetHttpProxiesClient;
+    private TargetHttpsProxiesClient targetHttpsProxiesClient;
 
     private BackendServicesClient backendService;
 
@@ -239,12 +239,12 @@ public class GCPCredentialsProvider {
         }
         return urlMap;
     }
-    public TargetHttpProxiesClient getTargetHttpProxiesClient() throws IOException {
-        if(targetHttpProxiesClient==null){
-            TargetHttpProxiesSettings targetHttpProxiesSettings=TargetHttpProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-            targetHttpProxiesClient=TargetHttpProxiesClient.create(targetHttpProxiesSettings);
+    public TargetHttpsProxiesClient getTargetHttpProxiesClient() throws IOException {
+        if(targetHttpsProxiesClient==null){
+            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
         }
-        return targetHttpProxiesClient;
+        return targetHttpsProxiesClient;
     }
 
     public BackendServicesClient getBackendServiceClient() throws IOException {
