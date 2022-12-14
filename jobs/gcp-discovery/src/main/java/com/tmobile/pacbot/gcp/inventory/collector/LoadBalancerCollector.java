@@ -1,12 +1,10 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
-import com.google.cloud.compute.v1.Backend;
-import com.google.cloud.compute.v1.BackendServiceLogConfig;
-import com.google.cloud.compute.v1.TargetHttpProxy;
-import com.google.cloud.compute.v1.UrlMap;
+import com.google.cloud.compute.v1.*;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.vo.LoadBalancerVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
+import com.tmobile.pacbot.gcp.inventory.vo.SslPolicyVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +27,41 @@ public class LoadBalancerCollector {
            logger.debug("URL map name: {} URL id :{}", u.getName(), u.getId());
            loadBalancerVH.setUrlMap(u.getName());
            loadBalancerVH.setId(String.valueOf(u.getId()));
-           Iterable<TargetHttpProxy> httpProxies = gcpCredentialsProvider.getTargetHttpProxiesClient().list(project.getProjectId()).iterateAll();
-           List<String> targetHttpProxyVH = new ArrayList<>();
-           for (TargetHttpProxy targetHttpProxy : httpProxies) {
-               logger.debug("Target proxy :{} {}", targetHttpProxy.getName(), targetHttpProxy.getId());
-               targetHttpProxyVH.add(targetHttpProxy.getName());
+
+           Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient().list(project.getProjectId()).iterateAll();
+           List<String> targetHttpsProxyVH = new ArrayList<>();
+           List<String> sslPolicyList=new ArrayList<>();
+           for (TargetHttpsProxy targetHttpsProxy : httpsProxies) {
+               logger.debug("Target proxy :{} {}", targetHttpsProxy.getName(), targetHttpsProxy.getId());
+              sslPolicyList.add(targetHttpsProxy.getSslPolicy());
+               targetHttpsProxyVH.add(targetHttpsProxy.getName());
            }
-           loadBalancerVH.setTargetHttpProxy(targetHttpProxyVH);
+           loadBalancerVH.setTargetHttpsProxy(targetHttpsProxyVH);
+
+           Iterable<TargetSslProxy> sslProxies=gcpCredentialsProvider.getTargetSslProxiesClient().list(project.getProjectId()).iterateAll();
+           for(TargetSslProxy targetSslProxy:sslProxies){
+               sslPolicyList.add(targetSslProxy.getSslPolicy());
+               targetSslProxy.getName();
+           }
+
+           List<SslPolicyVH>sslPolicyVHList=new ArrayList<>();
+
+           for(String ssl_Policy:sslPolicyList) {
+
+               SslPolicyVH sslPolicyVH = new SslPolicyVH();
+
+               Iterable<SslPolicy> sslPolicies = gcpCredentialsProvider.getSslPoliciesClient().list(ssl_Policy).iterateAll();
+               for (SslPolicy sslPolicy : sslPolicies) {
+                   sslPolicyVH.setMinTlsVersion(sslPolicy.getMinTlsVersion());
+                   sslPolicyVH.setProfile(sslPolicy.getProfile());
+                   sslPolicyVH.setEnabledFeatures(sslPolicy.getEnabledFeaturesList());
+
+                   sslPolicyVHList.add(sslPolicyVH);
+               }
+           }
+
+           loadBalancerVH.setSslPolicyList(sslPolicyVHList);
+
            String backendServiceName=u.getDefaultService().substring(u.getDefaultService().lastIndexOf('/')+1);
            try {
                BackendServiceLogConfig backendServiceLogConfig = gcpCredentialsProvider.getBackendServiceClient().get(project.getProjectId(), backendServiceName).getLogConfig();

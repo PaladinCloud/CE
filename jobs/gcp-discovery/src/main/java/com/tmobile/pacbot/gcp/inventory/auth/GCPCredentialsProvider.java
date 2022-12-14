@@ -62,6 +62,11 @@ public class GCPCredentialsProvider {
     private TargetHttpProxiesClient targetHttpProxiesClient;
 
     private BackendServicesClient backendService;
+    private TargetSslProxiesClient targetSslProxiesClient;
+
+    private TargetHttpsProxiesClient targetHttpsProxiesClient;
+
+    private SslPoliciesClient sslPoliciesClient;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -255,6 +260,30 @@ public class GCPCredentialsProvider {
         }
         return backendService;
     }
+    public TargetSslProxiesClient getTargetSslProxiesClient() throws IOException{
+        if(targetSslProxiesClient == null){
+            TargetSslProxiesSettings targetSslProxiesSettings=TargetSslProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetSslProxiesClient=TargetSslProxiesClient.create(targetSslProxiesSettings);
+        }
+        return targetSslProxiesClient;
+    }
+
+    public TargetHttpsProxiesClient getTargetHttpsProxiesClient() throws IOException{
+        if(targetHttpsProxiesClient == null){
+            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
+        }
+        return  targetHttpsProxiesClient;
+    }
+
+    public  SslPoliciesClient getSslPoliciesClient() throws  IOException{
+        if(sslPoliciesClient == null){
+            SslPoliciesSettings sslPoliciesSettings=SslPoliciesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            sslPoliciesClient=SslPoliciesClient.create(sslPoliciesSettings);
+        }
+        return sslPoliciesClient;
+    }
+
     // close the client in destroy method
     @PreDestroy
     public void destroy() {
