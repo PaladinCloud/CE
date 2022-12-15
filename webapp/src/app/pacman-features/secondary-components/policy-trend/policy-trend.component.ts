@@ -142,10 +142,10 @@ export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy, After
 
     ngOnChanges(changes: SimpleChanges) {
       try {
-        const ruleIdChange = changes['ruleID'];
-        if (ruleIdChange) {
-          const prevId = JSON.stringify(ruleIdChange.previousValue);
-          const currId = JSON.stringify(ruleIdChange.currentValue);
+        const policyIdChange = changes['ruleID'];
+        if (policyIdChange) {
+          const prevId = JSON.stringify(policyIdChange.previousValue);
+          const currId = JSON.stringify(policyIdChange.currentValue);
           if (prevId !== currId) {
               this.init();
           }

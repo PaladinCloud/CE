@@ -67,7 +67,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Title': 2, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {"PolicyName": "Title"};
-  fieldName: string = "ruleId.keyword";
+  fieldName: string = "policyId.keyword";
   fieldType: string = "number";
   selectedOrder: string = "asc";
   sortOrder: string[];
@@ -214,12 +214,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldName = "_resourceid.keyword";
       this.fieldType = "string";
     } else if (this.headerColName == "Category") {
-      this.fieldName = "ruleCategory.keyword";
+      this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
       this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
     } else if (this.headerColName == "Title") {
       this.fieldType = "number";
-      this.fieldName = "ruleId.keyword";
+      this.fieldName = "policyId.keyword";
     }
     this.updateComponent();
   }

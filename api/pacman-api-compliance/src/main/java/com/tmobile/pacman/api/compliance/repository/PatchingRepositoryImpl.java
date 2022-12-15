@@ -149,7 +149,7 @@ public class PatchingRepositoryImpl implements PatchingRepository, Constants {
         StringBuilder requestBody = new StringBuilder(
                 "{\"size\":\""
                         + size
-                        + "\",\"_source\":[\"_resourceid\",\"reason-to-close\"],\"sort\":[{\"closeddate\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"match\":{\"issueStatus.keyword\":\"closed\"}},{\"match\":{\"ruleId.keyword\":\""
+                        + "\",\"_source\":[\"_resourceid\",\"reason-to-close\"],\"sort\":[{\"closeddate\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"match\":{\"issueStatus.keyword\":\"closed\"}},{\"match\":{\"policyId.keyword\":\""
                         + EC2_KERNEL_COMPLIANCE_RULE
                         + "\"}},{\"exists\":{\"field\":\"reason-to-close\"}}],\"must_not\":[{\"match\":{\"reason-to-close.keyword\":\"Rule evaluation sucessfull\"}},{\"match\":{\"reason-to-close.keyword\":\"resource not found\"}}]}}}");
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/")

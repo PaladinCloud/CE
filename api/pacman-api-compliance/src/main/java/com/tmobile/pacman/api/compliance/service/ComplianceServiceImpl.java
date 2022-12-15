@@ -179,18 +179,18 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             // get severity distribution
             Map<String, Long> ruleSeverityDistribution = repository.getRulesDistribution(assetGroup, domain, rules,
                     SEVERITY);
-            logger.info("Compliance API >> Fetched ruleSeverityDistribution from repository: {}", ruleSeverityDistribution);
+            logger.info("Compliance API >> Fetched policySeverityDistribution from repository: {}", ruleSeverityDistribution);
             // get category distribution
             Map<String, Long> ruleCategoryDistribution = repository.getRulesDistribution(assetGroup, domain, rules,
                     POLICY_CATEGORY);
-            logger.info("Compliance API >> Fetched ruleCategoryDistribution from repository: {}", ruleCategoryDistribution);
+            logger.info("Compliance API >> Fetched policyCategoryDistribution from repository: {}", ruleCategoryDistribution);
             // get rule category distribution
             Map<String, Object> ruleCategoryPercentage = repository.getRuleCategoryPercentage(ruleCategoryDistribution,
                     totalIssues);
-            logger.info("Compliance API >> Fetched ruleCategoryPercentage from repository: {}", ruleCategoryPercentage);
+            logger.info("Compliance API >> Fetched policyCategoryPercentage from repository: {}", ruleCategoryPercentage);
             distribution.put("distribution_by_severity", ruleSeverityDistribution);
-            distribution.put("distribution_ruleCategory", ruleCategoryDistribution);
-            distribution.put("ruleCategory_percentage", ruleCategoryPercentage);
+            distribution.put("distribution_policyCategory", ruleCategoryDistribution);
+            distribution.put("policyCategory_percentage", ruleCategoryPercentage);
             distribution.put("total_issues", totalIssues);
             return distribution;
         } catch (DataException e) {

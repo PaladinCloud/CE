@@ -63,7 +63,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   seekdata = false;
   showLoader = true;
   allMonthDays = [];
-  ruleIds = [];
+  policyIds = [];
   allEnvironments = [];
   allRuleParamKeys = [];
   allEnvParamKeys = [];
@@ -98,7 +98,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   urlToRedirect = '';
   mandatory;
   activePolicy = [];
-  parametersInput = { ruleKey: '', ruleValue: '', envKey: '', envValue: '' };
+  parametersInput = { policyKey: '', ruleValue: '', envKey: '', envValue: '' };
   alexaKeywords = [];
   assetGroupNames = [];
   datasourceDetails = [];
@@ -280,13 +280,13 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     this.rulePolicyLoader = true;
     this.contentHidden = true;
     this.rulePolicyLoaderFailure = false;
-    const url = environment.ruleCategory.url;
-    const method = environment.ruleCategory.method;
+    const url = environment.policyCategory.url;
+    const method = environment.policyCategory.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
       const categories = [];
       for (let index = 0; index < reponse[0].length; index++) {
         const categoryDetail = reponse[0][index];
-        categories.push(categoryDetail.ruleCategory);
+        categories.push(categoryDetail.policyCategory);
       }
       this.ruleCategories = categories;
       this.showLoader = false;
@@ -330,11 +330,11 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     const newRuleModel = this.buildCreateRuleModel(form.value);
   }
 
-  isRuleIdAvailable(ruleIdKeyword) {
-    if (ruleIdKeyword.trim().length === 0) {
+  isRuleIdAvailable(policyIdKeyword) {
+    if (policyIdKeyword.trim().length === 0) {
       this.isRuleIdValid = -1;
     } else {
-      const isKeywordExits = this.ruleIds.findIndex(item => ruleIdKeyword.trim().toLowerCase() === item.trim().toLowerCase());
+      const isKeywordExits = this.policyIds.findIndex(item => policyIdKeyword.trim().toLowerCase() === item.trim().toLowerCase());
       if (isKeywordExits === -1) {
         this.isRuleIdValid = 1;
       } else {
@@ -350,14 +350,14 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     const url = environment.getAllRuleIds.url;
     const method = environment.getAllRuleIds.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
-      this.ruleIds = reponse[0];
+      this.policyIds = reponse[0];
       this.getRuleCategoryDetails();
     },
       error => {
         this.contentHidden = true;
         this.rulePolicyLoader = false;
         this.rulePolicyLoaderFailure = true;
-        this.ruleIds = [];
+        this.policyIds = [];
         this.errorMessage = 'apiResponseError';
         this.showLoader = false;
       });
@@ -370,8 +370,8 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   private buildCreateRuleModel(ruleForm) {
     const newRuleModel = Object();
     newRuleModel.assetGroup = this.selectedAssetGroup;
-    newRuleModel.ruleId = this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType;
-    newRuleModel.ruleId = newRuleModel.ruleId.replace(/\s/g, '-');
+    newRuleModel.policyId = this.selectedPolicyId + '_' + this.selectedRuleName + '_' + this.selectedTargetType;
+    newRuleModel.policyId = newRuleModel.policyId.replace(/\s/g, '-');
     newRuleModel.policyId = this.selectedPolicyId;
     newRuleModel.ruleName = this.selectedRuleName;
     newRuleModel.targetType = this.selectedTargetType;
@@ -382,7 +382,7 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
     newRuleModel.ruleType = ruleForm.ruleType;
     newRuleModel.isFileChanged = true;
     newRuleModel.dataSource = this.dataSourceName;
-    newRuleModel.ruleParams = this.buildRuleParams();
+    newRuleModel.policyParams = this.buildRuleParams();
     newRuleModel.isAutofixEnabled = this.isAutofixEnabled;
     newRuleModel.displayName = ruleForm.ruleDisplayName;
     newRuleModel.severity = this.selectedSeverity;
@@ -614,10 +614,10 @@ export class CreateRuleComponent implements OnInit, OnDestroy {
   }
 
   addRuleParameters(parametersInput: any, isEncrypted: any) {
-    if (parametersInput.ruleKey !== '' && parametersInput.ruleValue !== '') {
-      this.allRuleParams.push({ key: parametersInput.ruleKey.trim(), value: parametersInput.ruleValue.trim(), encrypt: isEncrypted.checked });
-      this.allRuleParamKeys.push(parametersInput.ruleKey.trim());
-      parametersInput.ruleKey = '';
+    if (parametersInput.policyKey !== '' && parametersInput.ruleValue !== '') {
+      this.allRuleParams.push({ key: parametersInput.policyKey.trim(), value: parametersInput.ruleValue.trim(), encrypt: isEncrypted.checked });
+      this.allRuleParamKeys.push(parametersInput.policyKey.trim());
+      parametersInput.policyKey = '';
       parametersInput.ruleValue = '';
       isEncrypted.checked = false;
     }

@@ -529,7 +529,7 @@ public class ComplianceController implements Constants {
     public ResponseEntity<Object> getPolicyDescription(@RequestParam("policyId") String ruleId) {
 
         if (Strings.isNullOrEmpty(ruleId)) {
-            return ResponseUtils.buildFailureResponse(new Exception("ruleId Mandatory"));
+            return ResponseUtils.buildFailureResponse(new Exception("policyId Mandatory"));
         }
         PolicyDescription response = null;
         try {

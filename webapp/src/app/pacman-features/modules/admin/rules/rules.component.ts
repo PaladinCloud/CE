@@ -426,7 +426,7 @@ export class RulesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            ruleId: row.row["Rule ID"].text,
+            policyId: row.row["Rule ID"].text,
           },
         });
       } catch (error) {
@@ -442,7 +442,7 @@ export class RulesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            ruleId: row.row["Rule ID"].text,
+            policyId: row.row["Rule ID"].text,
           },
         });
       } catch (error) {
@@ -458,7 +458,7 @@ export class RulesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            ruleId: row.row["Rule ID"].text,
+            policyId: row.row["Rule ID"].text,
             action: row.col,
           },
         });

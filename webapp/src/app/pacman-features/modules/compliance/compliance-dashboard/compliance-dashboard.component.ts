@@ -118,7 +118,7 @@ export class ComplianceDashboardComponent implements OnInit {
   breadcrumbArray = [];
   breadcrumbLinks = [];
   breadcrumbPresent = "Dashboard";
-  columnNamesMap = {name: "Title", failed: "Violations", provider: "Cloud", severity:"Severity",ruleCategory: "Category"}
+  columnNamesMap = {name: "Title", failed: "Violations", provider: "Cloud", severity:"Severity",policyCategory: "Category"}
   columnWidths = {"Title": 3, "Violations": 1, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -902,7 +902,7 @@ export class ComplianceDashboardComponent implements OnInit {
         ag: this.selectedAssetGroup,
         filter: {
           domain: this.selectedDomain,
-          "ruleCategory.keyword": this.ruleCatFilter,
+          "policyCategory.keyword": this.ruleCatFilter,
         },
         from: 0,
         searchtext: this.searchTxt,

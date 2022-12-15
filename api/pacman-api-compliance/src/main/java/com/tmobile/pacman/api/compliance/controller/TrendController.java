@@ -103,7 +103,7 @@ public class TrendController implements Constants {
      *            the to date
      * @param severity
      *            the severity
-     * @param ruleId
+     * @param policyId
      *            the rule id
      * @param policyId
      *            the policy id

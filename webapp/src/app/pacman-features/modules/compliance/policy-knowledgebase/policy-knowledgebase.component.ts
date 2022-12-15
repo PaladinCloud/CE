@@ -339,13 +339,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     if ( tileData.autoFixEnabled) {
       autofixEnabled = true;
     }
-    const ruleId = tileData["Rule ID"];
+    const policyId = tileData["Rule ID"];
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["searchValue"] = undefined;
       this.router.navigate(
-        ['pl', 'compliance', 'policy-knowledgebase-details', ruleId, autofixEnabled],
+        ['pl', 'compliance', 'policy-knowledgebase-details', policyId, autofixEnabled],
         { queryParams: updatedQueryParams,
           queryParamsHandling: 'merge' });
     } catch (error) {

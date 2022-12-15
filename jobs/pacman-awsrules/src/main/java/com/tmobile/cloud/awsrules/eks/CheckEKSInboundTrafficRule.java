@@ -7,10 +7,10 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -24,8 +24,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-@PacmanRule(key = "check-eks-inbound-traffic", desc = "This rule checks EKS inbound traffic disabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckEKSInboundTrafficRule extends BaseRule {
+@PacmanPolicy(key = "check-eks-inbound-traffic", desc = "This rule checks EKS inbound traffic disabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckEKSInboundTrafficRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(CheckEKSInboundTrafficRule.class);
 
@@ -33,7 +33,7 @@ public class CheckEKSInboundTrafficRule extends BaseRule {
     private static final String PORT = "443";
     private static final String TYPE = "inbound";
 
-    private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
@@ -45,7 +45,7 @@ public class CheckEKSInboundTrafficRule extends BaseRule {
         issueList.add(issue);
         annotation.put("issueDetails", issueList.toString());
         logger.debug("========CheckForEKSSecurityGroupInboundTraffic annotation {} :=========", annotation);
-        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
     }
 
     /**
@@ -58,13 +58,13 @@ public class CheckEKSInboundTrafficRule extends BaseRule {
      *
      * @param ruleParam          the rule param
      * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
-     * @return ruleResult
+     * @return PolicyResult
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========CheckForEKSSecurityGroupInboundTraffic started=========");
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("policyId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         if (MapUtils.isNotEmpty(ruleParam) && !PacmanUtils.doesAllHaveValue(ruleParam.get(PacmanRuleConstants.SEVERITY),
                 ruleParam.get(PacmanRuleConstants.CATEGORY), resourceAttributes.get(PacmanRuleConstants.ACCOUNTID))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -72,11 +72,11 @@ public class CheckEKSInboundTrafficRule extends BaseRule {
         }
         Optional<String> opt = Optional.ofNullable(resourceAttributes)
                 .map(this::checkValidation);
-        RuleResult ruleResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
+        PolicyResult PolicyResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
                 .map(param -> buildFailureAnnotation(param, opt.get()))
-                .orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+                .orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
         logger.debug("========CheckForEKSSecurityGroupInboundTraffic ended=========");
-        return ruleResult;
+        return PolicyResult;
     }
 
     @Override

@@ -11,21 +11,21 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "enable-cluster-monitoring-for-kubernetes", desc = "Enable azure AKS cluster monitoring", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableClusterMonitoring extends BaseRule {
+@PacmanPolicy(key = "enable-cluster-monitoring-for-kubernetes", desc = "Enable azure AKS cluster monitoring", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class EnableClusterMonitoring extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(EnableClusterMonitoring.class);
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing EnableClusterMonitoring..");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -58,12 +58,12 @@ public class EnableClusterMonitoring extends BaseRule {
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
                     issue.put(PacmanRuleConstants.VIOLATION_REASON,
-                            ruleParam.get(PacmanRuleConstants.RULE_ID) + failureMsg + " Violation Found!");
+                            ruleParam.get(PacmanSdkConstants.POLICY_ID) + failureMsg + " Violation Found!");
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug(
                             failureMsg);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
             } catch (Exception e) {
@@ -71,7 +71,7 @@ public class EnableClusterMonitoring extends BaseRule {
             }
         }
         logger.debug(successMSG);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

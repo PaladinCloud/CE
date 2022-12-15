@@ -135,7 +135,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         this.dataSubscriber.unsubscribe();
       }
       const queryParams = {
-        ruleId: this.ruleID,
+        policyId: this.ruleID,
       };
       const policyContentSliderUrl = environment.policyContentSlider.url;
       const policyContentSliderMethod = environment.policyContentSlider.method;
@@ -186,7 +186,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
     }
     this.policyDesc = [
-      { value: data.ruleCategory, key: "Category" },
+      { value: data.policyCategory, key: "Category" },
       { value: data.severity, key: "Severity" },
       { value: data.policyVersion, key: "PolicyVersion" },
     ];

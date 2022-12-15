@@ -252,7 +252,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
         try {
             JsonParser parser = new JsonParser();
             StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/fre-auto-fix-tran-log/_search");
-            StringBuilder requestBody = new StringBuilder("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\""+ACTION+"\":\"AUTOFIX_ACTION_FIX\"}}]}},\"aggs\":{\"RULEID\":{\"terms\":{\"field\":\"ruleId.keyword\",\"size\":10000},\"aggs\":{\"RESOURCEID\":{\"terms\":{\"field\":\"resourceId.keyword\",\"size\":"+getAutoFixActionCount()+"}}}}}}");
+            StringBuilder requestBody = new StringBuilder("{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\""+ACTION+"\":\"AUTOFIX_ACTION_FIX\"}}]}},\"aggs\":{\"POLICYID\":{\"terms\":{\"field\":\"policyId.keyword\",\"size\":10000},\"aggs\":{\"RESOURCEID\":{\"terms\":{\"field\":\"resourceId.keyword\",\"size\":"+getAutoFixActionCount()+"}}}}}}");
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());

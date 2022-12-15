@@ -375,7 +375,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            ruleId: row.row['Rule Id'].text
+            policyId: row.row['Rule Id'].text
           }
         });
       } catch (error) {
@@ -389,7 +389,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            ruleId: row.row['Rule Id'].text
+            policyId: row.row['Rule Id'].text
           }
         });
       } catch (error) {
@@ -403,7 +403,7 @@ export class RolesAllocationComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: 'merge',
           queryParams: {
-            ruleId: row.row['Rule Id'].text,
+            policyId: row.row['Rule Id'].text,
             action: row.col
           }
         });

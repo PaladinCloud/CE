@@ -67,7 +67,7 @@ export class EnableDisableRuleComponent implements OnInit, OnDestroy {
   filterText: any = {};
   errorValue: number = 0;
   urlID: String = '';
-  ruleId: String = '';
+  policyId: String = '';
 
 
   FullQueryParams: any;
@@ -135,7 +135,7 @@ export class EnableDisableRuleComponent implements OnInit, OnDestroy {
     this.ruleLoader = true;
     var url = environment.enableDisableRule.url;
     var method = environment.enableDisableRule.method;
-    this.adminService.executeHttpAction(url, method, {}, { ruleId: this.ruleId, action: this.action }).subscribe(reponse => {
+    this.adminService.executeHttpAction(url, method, {}, { policyId: this.policyId, action: this.action }).subscribe(reponse => {
       this.ruleLoader = false;
       this.isEnableDisableInvokeSuccess = true;
       this.invocationId = reponse[0].data;
@@ -178,7 +178,7 @@ export class EnableDisableRuleComponent implements OnInit, OnDestroy {
       if (currentQueryParams) {
 
         this.FullQueryParams = currentQueryParams;
-        this.ruleId = this.FullQueryParams.ruleId;
+        this.policyId = this.FullQueryParams.policyId;
         this.action = this.FullQueryParams.action.toLowerCase();
         if (this.action === 'enable' || this.action === 'disable') {
           if (this.action === 'enable') {

@@ -63,8 +63,8 @@ public class PolicyViolationDetails {
     /** The asset group. */
     String assetGroup;
 
-    /** The rule id. */
-    String ruleId;
+    /** The policy id. */
+    String policyId;
 
     /** The violation details. */
     List<Map<String, Object>> violationDetails;
@@ -105,7 +105,7 @@ public class PolicyViolationDetails {
         this.violationReason = violationReason;
         this.violationCreatedDate = violationCreatedDate;
         this.violationModifiedDate = violationModifiedDate;
-        this.ruleId = ruleId;
+        this.policyId = ruleId;
         this.violationDetails = violationDetails;
         this.assetGroup = assetGroup;
     }
@@ -133,8 +133,8 @@ public class PolicyViolationDetails {
      *
      * @return the rule id
      */
-    public String getRuleId() {
-        return ruleId;
+    public String getPolicyId() {
+        return policyId;
     }
 
     /**
@@ -142,8 +142,8 @@ public class PolicyViolationDetails {
      *
      * @param ruleId the new rule id
      */
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
     /**

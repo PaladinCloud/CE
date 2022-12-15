@@ -190,12 +190,12 @@ export class PolicyViolationDescComponent implements OnInit {
         );
         // window.open("/pl/assets/asset-list/"+resourceType+"/"+resourceId);
       } else if (destination === "policy knowledgebase details") {
-        const ruleId = encodeURIComponent(id1);
-        this.router.navigate(["../../../policy-knowledgebase-details", ruleId, "false"], {
+        const policyId = encodeURIComponent(id1);
+        this.router.navigate(["../../../policy-knowledgebase-details", policyId, "false"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
         });
-        // window.open("/pl/compliance/policy-knowledgebase-details/"+ruleId+"/false", "_blank");
+        // window.open("/pl/compliance/policy-knowledgebase-details/"+policyId+"/false", "_blank");
       }
     } catch (e) {
       this.logger.log("error", e);

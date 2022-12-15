@@ -20,9 +20,9 @@ export class ExceptionManagementService {
     const minDate = new Date();
 
     let policy;
-    if (input.ruleId && input.ruleName) {
+    if (input.policyId && input.ruleName) {
       policy = {
-        id: input.ruleId || '',
+        id: input.policyId || '',
         name: input.ruleName || ''
       };
     }

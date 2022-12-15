@@ -82,7 +82,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   isRuleUpdationSuccess: boolean = false;
   ruleLoader: boolean = false;
   ruleContentLoader: boolean = true;
-  ruleDetails: any = { ruleId: '', policyId: '', ruleName: '', assetGroup: '', dataSource: '', targetType: '' };
+  ruleDetails: any = { policyId: '', ruleName: '', assetGroup: '', dataSource: '', targetType: '' };
   ruleFrequency: any = []
   paginatorSize: number = 25;
   isLastPage: boolean;
@@ -97,7 +97,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   filters: any = [];
   searchCriteria: any;
   filterText: any = {};
-  ruleId = '';
+  policyId = '';
   errorValue: number = 0;
   showGenericMessage: boolean = false;
   dataTableDesc: String = '';
@@ -110,7 +110,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   allRuleParamKeys: any = [];
   allEnvParamKeys: any = [];
   activePolicy: any = [];
-  parametersInput: any = { ruleKey: '', ruleValue: '', envKey: '', envValue: '' };
+  parametersInput: any = { policyKey: '', ruleValue: '', envKey: '', envValue: '' };
   allAlexaKeywords: any = [];
   assetGroupNames: any = [];
   datasourceDetails: any = [];
@@ -261,13 +261,13 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   }
 
   getRuleCategoryDetails() {
-    const url = environment.ruleCategory.url;
-    const method = environment.ruleCategory.method;
+    const url = environment.policyCategory.url;
+    const method = environment.policyCategory.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
       const categories = [];
       for (let index = 0; index < reponse[0].length; index++) {
         const categoryDetail = reponse[0][index];
-        categories.push(categoryDetail.ruleCategory);
+        categories.push(categoryDetail.policyCategory);
       }
       this.ruleCategories = categories;
       this.showLoader = false;
@@ -302,7 +302,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   private buildAndUpdateRuleModel(ruleForm) {
     let newRuleModel = Object();
     newRuleModel.assetGroup = this.assetGroup[0].text;
-    newRuleModel.ruleId = this.FullQueryParams.ruleId;
+    newRuleModel.policyId = this.FullQueryParams.policyId;
     newRuleModel.alexaKeyword = this.alexaKeywords;
     newRuleModel.ruleFrequency = this.buildRuleFrequencyCronJob(this.selectedFrequency);
     newRuleModel.ruleExecutable = this.ruleJarFileName;
@@ -310,7 +310,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
     newRuleModel.ruleType = ruleForm.ruleType;
     newRuleModel.isFileChanged = this.isFileChanged;
     newRuleModel.displayName = ruleForm.ruleDisplayName;
-    newRuleModel.ruleParams = this.buildRuleParams();
+    newRuleModel.policyParams = this.buildRuleParams();
     newRuleModel.isAutofixEnabled = ruleForm.isAutofixEnabled;
     newRuleModel.severity = this.selectedSeverity;
     newRuleModel.category = this.selectedCategory;
@@ -508,44 +508,44 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   getRuleDetails() {
     let url = environment.getRuleById.url;
     let method = environment.getRuleById.method;
-    let ruleId: string = this.FullQueryParams.ruleId;
-    this.adminService.executeHttpAction(url, method, {}, { ruleId: ruleId }).subscribe(reponse => {
+    let policyId: string = this.FullQueryParams.policyId;
+    this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
       this.allRuleParamKeys = [];
       this.allEnvParamKeys = [];
       this.ruleDetails = reponse[0];
-      let ruleParams = Object();
+      let policyParams = Object();
       this.ruleDetails.dataSource = 'N/A';
       this.allEnvironments = [];
       this.allRuleParams = [];
       this.isAutofixEnabled = false;
       this.ruleDisplayName = this.ruleDetails.displayName;
-      ruleParams = JSON.parse(this.ruleDetails.ruleParams);
+      policyParams = JSON.parse(this.ruleDetails.policyParams);
 
-      if (ruleParams.hasOwnProperty('pac_ds')) {
-        this.ruleDetails.dataSource = ruleParams.pac_ds;
+      if (policyParams.hasOwnProperty('pac_ds')) {
+        this.ruleDetails.dataSource = policyParams.pac_ds;
       }
 
-      if (ruleParams.hasOwnProperty('environmentVariables')) {
-        this.allEnvironments = ruleParams.environmentVariables;
-        this.allEnvParamKeys = _.map(ruleParams.environmentVariables, 'key');
+      if (policyParams.hasOwnProperty('environmentVariables')) {
+        this.allEnvironments = policyParams.environmentVariables;
+        this.allEnvParamKeys = _.map(policyParams.environmentVariables, 'key');
       }
-      if (ruleParams.hasOwnProperty('params')) {
-        if (ruleParams.params instanceof Array) {
-          for (let i = ruleParams.params.length - 1; i >= 0; i -= 1) {
-            if (ruleParams.params[i].key == 'severity') {
-              this.selectedSeverity = ruleParams.params[i].value;
-              ruleParams.params.splice(i, 1);
-            } else if (ruleParams.params[i].key == 'ruleCategory') {
-              this.selectedCategory = ruleParams.params[i].value;
-              ruleParams.params.splice(i, 1);
+      if (policyParams.hasOwnProperty('params')) {
+        if (policyParams.params instanceof Array) {
+          for (let i = policyParams.params.length - 1; i >= 0; i -= 1) {
+            if (policyParams.params[i].key == 'severity') {
+              this.selectedSeverity = policyParams.params[i].value;
+              policyParams.params.splice(i, 1);
+            } else if (policyParams.params[i].key == 'policyCategory') {
+              this.selectedCategory = policyParams.params[i].value;
+              policyParams.params.splice(i, 1);
             }
           }
-          this.allRuleParams = ruleParams.params;
-          this.allRuleParamKeys = _.map(ruleParams.params, 'key');
+          this.allRuleParams = policyParams.params;
+          this.allRuleParamKeys = _.map(policyParams.params, 'key');
         }
       }
-      if (ruleParams.hasOwnProperty('autofix')) {
-        this.isAutofixEnabled = ruleParams.autofix;
+      if (policyParams.hasOwnProperty('autofix')) {
+        this.isAutofixEnabled = policyParams.autofix;
       }
 
       this.ruleType = this.ruleDetails.ruleType;
@@ -678,10 +678,10 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
   }
 
   addRuleParameters(parametersInput: any, isEncrypted: any) {
-    if (parametersInput.ruleKey !== '' && parametersInput.ruleValue !== '') {
-      this.allRuleParams.push({ key: parametersInput.ruleKey.trim(), value: parametersInput.ruleValue.trim(), isValueNew: true, encrypt: isEncrypted.checked });
-      this.allRuleParamKeys.push(parametersInput.ruleKey.trim());
-      parametersInput.ruleKey = '';
+    if (parametersInput.policyKey !== '' && parametersInput.ruleValue !== '') {
+      this.allRuleParams.push({ key: parametersInput.policyKey.trim(), value: parametersInput.ruleValue.trim(), isValueNew: true, encrypt: isEncrypted.checked });
+      this.allRuleParamKeys.push(parametersInput.policyKey.trim());
+      parametersInput.policyKey = '';
       parametersInput.ruleValue = '';
       isEncrypted.checked = false;
     }
@@ -778,7 +778,7 @@ export class UpdateRuleComponent implements OnInit, OnDestroy {
       if (currentQueryParams) {
 
         this.FullQueryParams = currentQueryParams;
-        this.ruleId = this.FullQueryParams.ruleId;
+        this.policyId = this.FullQueryParams.policyId;
         this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
         delete this.queryParamsWithoutFilter['filter'];
 

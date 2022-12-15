@@ -43,7 +43,7 @@
                                     Please Wait...
                                 </div>
                                 <div class="pacman-alert-message">
-                                    <span class="highlight-pink">{{ruleId}}</span> details is been loading...
+                                    <span class="highlight-pink">{{policyId}}</span> details is been loading...
                                 </div>
                             </div>
                             <div class="data-content" [hidden]="hideContent">
@@ -53,7 +53,7 @@
                                             <div class="input-box">
                                                 <label>Rule ID</label>
                                                 <ul class="read-only-text input-wrapper">
-                                                    {{ruleDetails.ruleId}}
+                                                    {{ruleDetails.policyId}}
                                                 </ul>
                                             </div>
                                             <div class="input-form">
@@ -305,14 +305,14 @@
                                             </div>
                                             <label>Rule Parameters
                                                 <span
-                                                    *ngIf="allRuleParamKeys.indexOf(parametersInput.ruleKey.trim())!=-1"
+                                                    *ngIf="allRuleParamKeys.indexOf(parametersInput.policyKey.trim())!=-1"
                                                     class="not-available">(Key already added)</span>
                                             </label>
                                             <div class="input-box">
                                                 <ul class="parameters input-wrapper">
                                                     <input type="text" autocomplete="off" class="inputarea-container"
                                                         placeholder="Enter Key" name="ruleParamKey"
-                                                        [(ngModel)]="parametersInput.ruleKey">
+                                                        [(ngModel)]="parametersInput.policyKey">
                                                 </ul>
                                                 <ul class="parameters input-wrapper">
                                                     <input type="text" autocomplete="off" class="inputarea-container"
@@ -326,7 +326,7 @@
                                                 </ul>
                                                 <ul class="parameters">
                                                     <button class="tmbutton bm20 ib"
-                                                        [disabled]="!(parametersInput.ruleKey&&parametersInput.ruleValue&&allRuleParamKeys.indexOf(parametersInput.ruleKey.trim())==-1)"
+                                                        [disabled]="!(parametersInput.policyKey&&parametersInput.ruleValue&&allRuleParamKeys.indexOf(parametersInput.policyKey.trim())==-1)"
                                                         (click)="addRuleParameters(parametersInput, isRuleParamEncrypted)"><i
                                                             class="fa fa-plus"></i> Add</button>
                                                 </ul>
@@ -358,12 +358,12 @@
                                                                 <div currentTable
                                                                     class="data-table-inner-content data-table-current">
                                                                     <div class="data-table-rows flex flex-around flex-align-center"
-                                                                        *ngFor="let ruleParams of allRuleParams; let ruleParamsIndex = index;">
+                                                                        *ngFor="let policyParams of allRuleParams; let policyParamsIndex = index;">
                                                                         <div
                                                                             class="row-cells1 row-cells table-cells flex flex-align-center">
                                                                             <div class="column-wrapper">
                                                                                 <div class='nowrap-ellipsis'>
-                                                                                    {{ruleParams.key}}
+                                                                                    {{policyParams.key}}
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -372,7 +372,7 @@
                                                                             <div class="column-wrapper">
                                                                                 <div class='nowrap-ellipsis'>
                                                                                     <span
-                                                                                        *ngIf="!ruleParams.encrypt; else elseBlock">{{ruleParams.value}}</span>
+                                                                                        *ngIf="!policyParams.encrypt; else elseBlock">{{policyParams.value}}</span>
                                                                                     <ng-template #elseBlock>
                                                                                         XXXX <span
                                                                                             class="highlight-pink">(Encrypted)</span>
@@ -386,7 +386,7 @@
                                                                             <div class="column-wrapper">
                                                                                 <div class='nowrap-ellipsis'>
                                                                                     <a
-                                                                                        (click)="removeRuleParameters(ruleParamsIndex)"><i
+                                                                                        (click)="removeRuleParameters(policyParamsIndex)"><i
                                                                                             class="highlight-pink fa fa-remove"></i></a>
                                                                                 </div>
                                                                             </div>
@@ -518,7 +518,7 @@
                                 Rule Updation Failed
                             </div>
                             <div class="pacman-alert-message">
-                                <span class="highlight-pink">{{ruleDetails.ruleId}}</span> has been failed to update !!!
+                                <span class="highlight-pink">{{ruleDetails.policyId}}</span> has been failed to update !!!
                             </div>
                             <div class="pacman-alert-button">
                                 <button class="submit-btn uppercase" type="button" (click)="closeErrorMessage()"><i
@@ -536,7 +536,7 @@
                                 Rule Updated
                             </div>
                             <div class="pacman-alert-message">
-                                <span class="highlight-pink">{{ruleDetails.ruleId}}</span> has been successfully updated
+                                <span class="highlight-pink">{{ruleDetails.policyId}}</span> has been successfully updated
                                 !!!
                             </div>
                             <div class="pacman-alert-button">
@@ -550,7 +550,7 @@
                                 Please Wait...
                             </div>
                             <div class="pacman-alert-message">
-                                <span class="highlight-pink">{{ruleDetails.ruleId}}</span> is been updating...
+                                <span class="highlight-pink">{{ruleDetails.policyId}}</span> is been updating...
                             </div>
                         </div>
                     </div>

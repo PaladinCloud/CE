@@ -10,10 +10,10 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +21,12 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "enforce-Separate-Service-Account-Duties-for-Users",desc = "Ensure That Separation of Duties Is Enforced While Assigning Service Account Related Roles to Users",severity = PacmanRuleConstants.HIGH,category = PacmanSdkConstants.SECURITY)
-public class EnforceSeparateUserDuties extends BaseRule {
+@PacmanPolicy(key = "enforce-Separate-Service-Account-Duties-for-Users",desc = "Ensure That Separation of Duties Is Enforced While Assigning Service Account Related Roles to Users",severity = PacmanRuleConstants.HIGH,category = PacmanSdkConstants.SECURITY)
+public class EnforceSeparateUserDuties extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(EnforceSeparateUserDuties.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========EnforceSeparateUserDuties rule started=========");
         Annotation annotation = null;
 
@@ -47,7 +47,7 @@ public class EnforceSeparateUserDuties extends BaseRule {
 
         boolean isSeparateDutiesAssigned = false;
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
@@ -70,7 +70,7 @@ public class EnforceSeparateUserDuties extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========Same Service Account Duties for Users{} : =========", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 
             } catch (Exception exception) {
@@ -79,7 +79,7 @@ public class EnforceSeparateUserDuties extends BaseRule {
         }
 
         logger.debug("========Separate Service Account Duties for Users=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
     private boolean checkforSeparateDuties(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);

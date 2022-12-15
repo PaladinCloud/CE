@@ -395,7 +395,7 @@ public class AssetListController {
             }
         }
         if (!filter.containsKey(AssetConstants.FILTER_POLICYID)) {
-            return ResponseUtils.buildFailureResponse(new Exception("ruleId is mandatory in filter"));
+            return ResponseUtils.buildFailureResponse(new Exception("policyId is mandatory in filter"));
         }
 
         List<Map<String, Object>> masterList;

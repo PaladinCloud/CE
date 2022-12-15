@@ -158,7 +158,7 @@ public class AssetCountController {
     public ResponseEntity<Object> getExemptedAssetsCount(@RequestParam("ag") String assetGroup) {
     Map<String, Object> response = new HashMap<>();
     if (!Util.isValidAssetGroup(assetGroup)) {
-        return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/ruleId is mandatory"));
+        return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/policyId is mandatory"));
     }
     
     Map<String, Long> countMap = assetService.getExemptedAssetsCount(assetGroup);

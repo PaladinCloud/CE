@@ -1220,7 +1220,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
                 .append(SEARCH);
         requestBody = new StringBuilder(
-                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
                         + ruleId + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}");
         if (!StringUtils.isEmpty(searchText)) {
             requestBody.append(",{\"match_phrase_prefix\":{\"_all\":\"" + searchText + "\"}}");
@@ -1334,7 +1334,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
             List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
-            String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+            String body = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
                     + ruleId + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
 
             // Added resourceType to the Query
@@ -1364,14 +1364,14 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
             if (StringUtils.isEmpty(searchText)) {
                 requestBody = new StringBuilder(
-                        "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                        "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
                                 + ruleId
                                 + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
                                 + application
                                 + "\"}}}],\"should\":[{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"exempted\"}}}],\"minimum_should_match\":1}},\"aggs\":{\"NAME\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}");
             } else {
                 requestBody = new StringBuilder(
-                        "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"ruleId.keyword\":{\"value\":\""
+                        "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
                                 + ruleId
                                 + "\"}}},{\"term\":{\"tags.Application.keyword\":{\"value\":\""
                                 + application
@@ -1504,7 +1504,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         Gson serializer = new GsonBuilder().create();
         String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
                 + CATEGORY_TAGGING + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
-        body = body + ",{\"term\":{\"ruleId.keyword\":{\"value\":\"" + ruleId + "\"}}}";
+        body = body + ",{\"term\":{\"policyId.keyword\":{\"value\":\"" + ruleId + "\"}}}";
 
         body = body + "]";
         if (!tagsList.isEmpty()) {
