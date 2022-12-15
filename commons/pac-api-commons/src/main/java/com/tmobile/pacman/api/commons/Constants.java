@@ -41,12 +41,12 @@ public interface Constants {
     String RECOMMENDATION = "RECOMMENDATION";
     String CLOSED = "closed";
     String OPEN = "open";
-    String RULE_CATEGORY = "ruleCategory";
+    String POLICY_CATEGORY = "policyCategory";
     String ISSUE_STATUS = "issueStatus";
     String INCLUDE_EXEMPT = "include_exempt";
     String SEVERITY = "severity";
     String NAME = "name";
-    String RULEID = "ruleId";
+    String COMPLIANCEPERCENT="compliance-percent";
     String POLICYID = "policyId";
     String OPEN_ISSUES = "openIssues";
     String EC2_MANDATORY_TAG_RULE = "ec2mandatorytags_version-1_ec2mandatorytags_ec2";
@@ -56,13 +56,13 @@ public interface Constants {
     String KEY = "key";
     String VALUE = "value";
     String PARAMS = "params";
-    String RULE_NAME = "ruleName";
-    String DISPLAY_NAME = "displayName";
+    String POLICY_NAME = "policyName";
+    String DISPLAY_NAME = "policyDisplayName";
     String ASSETS_SCANNED = "assetsScanned";
     String PASSED = "passed";
     String FAILED = "failed";
-    String RULE_DISPAY_NAME = "displayName";
-    String RULE_PARAMS = "ruleParams";
+    String POLICY_DISPAY_NAME = "policyDisplayName";
+    String POLICY_PARAMS = "policyParams";
     String TARGET_TYPE = "targetType";
     String RESOURCE_TYPE = "resourcetType";
     String POLICY_DESC = "policyDesc";
@@ -94,7 +94,7 @@ public interface Constants {
     String COMPLIANCE_PERCENTAGE = "compliance";
     String COMPLIANCE_PERCENT = "compliance_percent";
     String LAST_SCAN = "lastScan";
-    String TAGGING_POLICY = "TaggingRule_version-1";
+    String CATEGORY_TAGGING = "tagging";
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";
     String ACCOUNT_ID = "accountid";
@@ -104,7 +104,6 @@ public interface Constants {
     String TAGS_ENVIRONMENT = "tags.Environment";
     String DESC = "desc";
     String POLICY_DISPLAY_NAME = "PolicyName";
-    String RULE_DISPLAY_ID = "RuleId";
     String POLICY_DISPLAY_ID = "PolicyId";
     String ISSUE_ID = "IssueId";
     String RESOURCE_DISPLAY_ID = "ResourceId";
@@ -112,7 +111,7 @@ public interface Constants {
     String ENVIRONMENT = "Environment";
     String REGION_DISPALY_NAME = "Region";
     String SEVERITY_DISPALY_NAME = "Severity";
-    String RULECATEGORY_DISPALY_NAME = "RuleCategory";
+    String POLICYCATEGORY_DISPALY_NAME = "PolicyCategory";
     String ACCOUNT_DISPLAYI_D = "AccountId";
     String ACCOUNT_DISPALY_NAME = "AccountName";
     String CREATED_DISPLAY_DATE = "CreatedOn";
@@ -183,7 +182,7 @@ public interface Constants {
     String TOTAL_INSTANCES = "total_instances";
     String PATCHING_PERCENTAGE = "patching_percentage";
     String EC2 = "ec2";
-    String RULEID_KEYWORD = "ruleId.keyword";
+    String POLICYID_KEYWORD = "policyId.keyword";
     String POLICY_VERSION = "policyVersion";
     String COMPLIANTPERCENTAGE = "compliantPercentage";
     String TOTAL = "total";
@@ -322,7 +321,7 @@ public interface Constants {
     String AZURE_WINDOWS = "Windows";
     String CLOUD_KERNEL_COMPLIANCE_POLICY = "cloud-kernel-compliance_version-1";
     String RESOURCE_IDS = "resourceIds";
-    String RULE_IDS = "ruleIds";
+    String POLICY_IDS = "policyIds";
     String TOTAL_VIOLATIONS = "totalViolations";
     String CLOUD_QUALYS_POLICY = "Ec2InstanceScannedByQualys_version-1";
     String VIRTUALMACHINE_KERNEL_COMPLIANCE_RULE = "cloud-kernel-compliance_version-1_Virtualmachine-Kernel-Compliance-Rule_virtualmachine";

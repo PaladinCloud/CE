@@ -22,16 +22,16 @@ import com.tmobile.pacman.api.commons.exception.ServiceException;
 /**
  * The Interface RuleEngineService.
  */
-public interface RuleEngineService {
+public interface PolicyEngineService {
 
     /**
      * Run rule.
      *
-     * @param ruleId the rule id
-     * @param runTimeParams the run time params
+     * @param policyId the policy id
+     * @param runTimeParams the policy run time params
      * @throws ServiceException the service exception
      */
-    public void runRule(String ruleId, Map<String, String> runTimeParams)
+    public void runPolicy(String policyId, Map<String, String> runTimeParams)
             throws ServiceException;
 
     /**

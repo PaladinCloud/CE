@@ -137,11 +137,11 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
      */
     public List<Map<String, Object>> getRuleIdWithTargetTypeQuery(String targetType) throws DataException {
         try {
-            String ruleIdWithTargetTypeQuery = "SELECT ruleId, targetType FROM cf_RuleInstance WHERE STATUS = 'ENABLED'AND targetType IN ("
+            String ruleIdWithTargetTypeQuery = "SELECT policyId, targetType FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
                     + targetType + ")";
             return rdsepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
         } catch (Exception e) {
-            LOGGER.error("Error @ StatisticsRepositoryImpl/getRuleIdWithTargetTypeQuery ", e);
+            LOGGER.error("Error @ StatisticsRepositoryImpl/getPolicyIdWithTargetTypeQuery ", e);
             return new ArrayList<>();
         }
     }
@@ -216,10 +216,10 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
     public List<Map<String, Object>> getAutofixRulesFromDb() throws DataException{
         try {
                     
-            String query="SELECT * FROM cf_RuleInstance WHERE `status`='ENABLED' AND ruleParams LIKE '%\"autofix\":true%'";
+            String query="SELECT * FROM cf_PolicyTable WHERE `status`='ENABLED' AND policyParams LIKE '%\"autofix\":true%'";
             return rdsepository.getDataFromPacman(query);
         } catch (Exception e) {
-            LOGGER.error("Error @ StatisticsRepositoryImpl/ getAutofixRulesFromDb ", e);
+            LOGGER.error("Error @ StatisticsRepositoryImpl/ getAutofixPolicesFromDb ", e);
             return new ArrayList<>();
         }
     }
@@ -256,7 +256,7 @@ public class StatisticsRepositoryImpl implements StatisticsRepository, Constants
             String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
             JsonObject paramObj = parser.parse(responseDetails).getAsJsonObject();
             JsonObject aggsJson = (JsonObject) parser.parse(paramObj.get(AGGS).toString());
-            JsonArray outerBuckets = aggsJson.getAsJsonObject("RULEID").getAsJsonArray(BUCKETS);
+            JsonArray outerBuckets = aggsJson.getAsJsonObject("POICYID").getAsJsonArray(BUCKETS);
             Arrays.asList(outerBuckets);
             Gson googleJson = new Gson();
            return googleJson.fromJson(outerBuckets, ArrayList.class); 

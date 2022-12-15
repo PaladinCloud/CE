@@ -120,7 +120,7 @@ public class PatchingRepositoryImpl implements PatchingRepository, Constants {
     public List<Map<String, Object>> getIssueInfo(String assetGroup)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(RULEID),
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID),
                 EC2_KERNEL_COMPLIANCE_RULE);
 
         Map<String, Object> mustNotFilter = new HashMap<>();
@@ -345,7 +345,7 @@ try{
     public List<Map<String, Object>> getOnpremIssueInfo(String assetGroup)
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(RULEID),
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID),
                 ONPREM_KERNEL_COMPLIANCE_RULE);
         Map<String, Object> mustNotFilter = new HashMap<>();
         mustNotFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS),
@@ -468,7 +468,7 @@ try{
                 try{
                 if (EC2.equals(resourceType) && resourceType.equals(targettype.getType())) {
                     mustFilter.put(
-                            CommonUtils.convertAttributetoKeyword(RULEID),
+                            CommonUtils.convertAttributetoKeyword(POLICYID),
                             EC2_KERNEL_COMPLIANCE_RULE);
                     mustFilter.put(HAS_PARENT,
                             addParentConditionPatching(EC2));

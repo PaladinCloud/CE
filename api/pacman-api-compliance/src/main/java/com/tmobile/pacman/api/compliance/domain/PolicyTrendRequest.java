@@ -13,20 +13,31 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.compliance.service;
-
-import com.tmobile.pacman.api.compliance.repository.model.RuleInstance;
-
+package com.tmobile.pacman.api.compliance.domain;
 /**
- * The Interface RuleInstanceService.
+ * The Class PolicyTrendRequest.
  */
-public interface RuleInstanceService {
+public class PolicyTrendRequest extends CompliantTrendRequest {
+
+    /** The policyid. */
+    private String policyid;
 
     /**
-     * Gets the rule instance by rule id.
+     * Gets the policyid.
      *
-     * @param ruleId the rule id
-     * @return the rule instance by rule id
+     * @return the policyid
      */
-    public RuleInstance getRuleInstanceByRuleId(String ruleId);
+    public String getPolicyid() {
+        return policyid;
+    }
+
+    /**
+     * Sets the policyid.
+     *
+     * @param policyid the new policyid
+     */
+    public void setPolicyid(String policyid) {
+        this.policyid = policyid;
+    }
+
 }

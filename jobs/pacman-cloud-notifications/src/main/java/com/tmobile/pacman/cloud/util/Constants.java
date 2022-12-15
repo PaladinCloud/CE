@@ -98,7 +98,7 @@ public interface Constants {
 	String SECURITYHUB = "SecurityHub";
 	String RULESOURCE = "ruleSource";
 	String SECURITYhUB = "securityhub";
-	String RULEID = "ruleId";
+	String POLICYID = "policyId";
 	String ENTITYTYPE = "entityType";
 	String _ENTITYTPE = "_entitytype";
 	String AWSACCOUNTID = "AwsAccountId";
@@ -129,7 +129,7 @@ public interface Constants {
 	String SCOREDATA = "scoredata";
 	String RESPONSBILITY = "responsbility";
 	String GROUPTYPE = "groupType";
-	String POLICYID = "policyId";
+
 	
 	
 	

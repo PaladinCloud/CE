@@ -37,8 +37,8 @@ import com.tmobile.pacman.api.compliance.domain.ProjectionResponse;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithCount;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
-import com.tmobile.pacman.api.compliance.domain.RuleDetails;
-import com.tmobile.pacman.api.compliance.domain.RuleTrendRequest;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
+import com.tmobile.pacman.api.compliance.domain.PolicyTrendRequest;
 
 public class CommonTestUtil {
     public static ResponseWithCount getResponseWithCount() {
@@ -48,7 +48,7 @@ public class CommonTestUtil {
         responseMap.put("failed", 500);
         responseMap.put("assetsScanned", 1500);
         responseMap.put("compliance_percent", 25);
-        responseMap.put("ruleCategory", "tagging");
+        responseMap.put("policyCategory", "tagging");
         responseList.add(responseMap);
         ResponseWithCount responseWithCount = new ResponseWithCount(
                 responseList, 1000);
@@ -76,14 +76,14 @@ public class CommonTestUtil {
         commonMap.put("severity", "Severity");
         commonMap.put("issueId", "issueId");
         commonMap
-                .put("ruleId",
+                .put("policyId",
                         "PacMan_AmazonRDSIdleDBInstancesRule_version-1_AmazonRDSIdleDBInstancesRule_rdsdb");
         commonMap.put("_resourceid", "123");
         commonMap.put("targetType", "ec2");
         commonMap.put("issueStatus", "open");
 
         commonMap.put("severity", "low");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("issueReason", "dont know");
         commonMap.put("_source",new HashMap());
         commonMap.put("createdDate", "createdDate");
@@ -96,11 +96,11 @@ public class CommonTestUtil {
                         "[{violationReason=Amazon RDS idle DB instance found, check_id=Ti39halfu8, sources_verified=trusted advisor}]");
         commonMap.put("date", "2018-06-26");
         commonMap.put("noncompliant", 2114.0);
-        commonMap.put("ruleId", Constants.TAGGING_POLICY);
+        commonMap.put("policyId", Constants.CATEGORY_TAGGING);
         commonMap.put("overall", 73);
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("displayName", "displayName");
         return commonMap;
     }
@@ -139,8 +139,8 @@ public class CommonTestUtil {
     public static Map<String, String> getFilters() {
         Map<String, String> filter = new HashMap<>();
         filter.put("domain", "Infra & Platforms");
-        filter.put("ruleCategory.keyword", "security");
-        filter.put("ruleCategory", "security");
+        filter.put("policyCategory.keyword", "security");
+        filter.put("policyCategory", "security");
         filter.put("targetType.keyword", "ec2");
         return filter;
     }
@@ -149,7 +149,7 @@ public class CommonTestUtil {
         Map<String, String> filter = new HashMap<>();
         filter.put("domain", "domain");
         filter.put("issueId.keyword", "security");
-        filter.put("ruleId.keyword", Constants.TAGGING_POLICY);
+        filter.put("ruleId.keyword", Constants.CATEGORY_TAGGING);
         filter.put("targetType.keyword", "ec2");
         return filter;
     }
@@ -165,17 +165,17 @@ public class CommonTestUtil {
         return new CompliantTrendRequest();
     }
 
-    public static RuleTrendRequest getRuleTrendRequest() {
-        RuleTrendRequest ruleTrendRequest = new RuleTrendRequest();
+    public static PolicyTrendRequest getRuleTrendRequest() {
+        PolicyTrendRequest ruleTrendRequest = new PolicyTrendRequest();
         ruleTrendRequest.setAg("aws-all");
         ruleTrendRequest
-                .setRuleid("TaggingRule_version-1_Ec2TaggingRule_ec2");
+                .setPolicyid("TaggingRule_version-1_Ec2TaggingRule_ec2");
         ruleTrendRequest.setFilters(getFilters());
         return ruleTrendRequest;
     }
 
-    public static RuleTrendRequest getRuleTrendRequestEmpty() {
-        return new RuleTrendRequest();
+    public static PolicyTrendRequest getRuleTrendRequestEmpty() {
+        return new PolicyTrendRequest();
     }
 
     public static ResponseWithOrder getResponseWithOrder() {
@@ -185,7 +185,7 @@ public class CommonTestUtil {
         responseMap.put("failed", 500);
         responseMap.put("assetsScanned", 1500);
         responseMap.put("compliance_percent", 25);
-        responseMap.put("ruleCategory", "tagging");
+        responseMap.put("policyCategory", "tagging");
         responseList.add(responseMap);
         ResponseWithOrder responseWithOrder = new ResponseWithOrder();
         responseWithOrder.setTotal(1000);
@@ -200,7 +200,7 @@ public class CommonTestUtil {
         responseMap.put("failed", 500);
         responseMap.put("assetsScanned", 1500);
         responseMap.put("compliance_percent", 25);
-        responseMap.put("ruleCategory", "tagging");
+        responseMap.put("policyCategory", "tagging");
         responseList.add(responseMap);
         ProjectionResponse projectionResponse = new ProjectionResponse(
                 "onprem-vm", "onpremserver", 1000, 2018, 3, responseList);
@@ -214,7 +214,7 @@ public class CommonTestUtil {
         responseMap.put("failed", 500);
         responseMap.put("assetsScanned", 1500);
         responseMap.put("compliance_percent", 25);
-        responseMap.put("ruleCategory", "tagging");
+        responseMap.put("policyCategory", "tagging");
         responseList.add(responseMap);
         PatchingProgressResponse projectionResponse = new PatchingProgressResponse(
                 "onprem-vm", "onpremserver", 1000, 2018, 3, responseList);
@@ -281,10 +281,10 @@ public class CommonTestUtil {
         return new IssueAuditLogRequest();
     }
 
-    public static RuleDetails getRuleDetails() {
-        RuleDetails details = new RuleDetails();
-        details.setRuleId("TaggingRule_version-1_Ec2TaggingRule_ec2");
-        return new RuleDetails();
+    public static PolicyDetails getRuleDetails() {
+        PolicyDetails details = new PolicyDetails();
+        details.setPolicyId("TaggingRule_version-1_Ec2TaggingRule_ec2");
+        return new PolicyDetails();
     }
 
     public static IssueResponse getIssueResponse() {
@@ -344,7 +344,7 @@ public class CommonTestUtil {
         ruleMap.put("status", "open");
         ruleMap.put("auditdate", "2017-11-09T18:03:30.263Z");
         ruleMap.put("_auditdate", "2017-11-09");
-        ruleMap.put("ruleId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
+        ruleMap.put("policyId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
         return ruleMap;
     }
     
@@ -399,7 +399,7 @@ public class CommonTestUtil {
         innerMap.add("encrypt", gson.fromJson("false", JsonElement.class));
         innerMap.add("value",
                 gson.fromJson("costOptimization", JsonElement.class));
-        innerMap.add("key", gson.fromJson("ruleCategory", JsonElement.class));
+        innerMap.add("key", gson.fromJson("policyCategory", JsonElement.class));
         innerList.add(innerMap);
         Map<String, Object> distSeverirtMap = new HashMap<>();
         distSeverirtMap.put("assetGroup", "aws-all");
@@ -415,14 +415,14 @@ public class CommonTestUtil {
         commonMap.put("noncompliant", 2114.0);
         commonMap.put("total", 2123.0);
         commonMap.put("compliant", 9.0);
-        commonMap.put("ruleId", "abc_ruleId");
+        commonMap.put("policyId", "abc_ruleId");
         commonMap.put("severity", "high");
         commonMap.put("overall", 73);
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap
-                .put("ruleId",
+                .put("policyId",
                         "PacMan_AmazonRDSIdleDBInstancesRule_version-1_AmazonRDSIdleDBInstancesRule_rdsdb");
         commonMap.put("displayName",
                 "Amazon RDS DB instances should not be idle");
@@ -439,14 +439,14 @@ public class CommonTestUtil {
         commonMap.put("noncompliant", 2114.0);
         commonMap.put("total", 2123.0);
         commonMap.put("compliant", 9.0);
-        commonMap.put("ruleId", "abc_ruleId");
+        commonMap.put("policyId", "abc_ruleId");
         commonMap.put("severity", "high");
         commonMap.put("overall", 73);
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap
-                .put("ruleId",
+                .put("policyId",
                         "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Rule_ec2");
         commonMap.put("displayName", "Kernel compliance rule");
         commonMap.put("targetType", "rdsdb");
@@ -459,14 +459,14 @@ public class CommonTestUtil {
         commonMap.put("noncompliant", 2114.0);
         commonMap.put("total", 2123.0);
         commonMap.put("compliant", 9.0);
-        commonMap.put("ruleId", "abc_ruleId");
+        commonMap.put("policyId", "abc_ruleId");
         commonMap.put("severity", "high");
         commonMap.put("overall", 73);
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap
-                .put("ruleId",
+                .put("policyId",
                         "PacMan_onpremisekernelversion_version-1_onpremKernelVersionRule_onpremserver");
         commonMap
                 .put("displayName", "Onprem Kernel compliance rule");
@@ -483,13 +483,13 @@ public class CommonTestUtil {
         commonMap.put("noncompliant", 2114.0);
         commonMap.put("total", 2123.0);
         commonMap.put("compliant", 9.0);
-        commonMap.put("ruleId", "abc_ruleId");
+        commonMap.put("policyId", "abc_ruleId");
         commonMap.put("severity", "low");
         commonMap.put("overall", 73);
         commonMap.put("distribution_by_severity", distSeverirtMap);
         commonMap.put("total_issues", 1500);
-        commonMap.put("ruleCategory", "security");
-        commonMap.put("ruleId", Constants.TAGGING_POLICY);
+        commonMap.put("policyCategory", "security");
+        commonMap.put("policyId", Constants.CATEGORY_TAGGING);
         commonMap
                 .put("displayName", "Onprem Kernel compliance rule");
         commonMap.put("targetType", "ec2");

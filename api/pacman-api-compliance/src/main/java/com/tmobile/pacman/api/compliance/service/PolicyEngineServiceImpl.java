@@ -37,29 +37,29 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
-import com.tmobile.pacman.api.compliance.repository.PacRuleEngineAutofixActionsRepository;
-import com.tmobile.pacman.api.compliance.repository.model.PacRuleEngineAutofixActions;
-import com.tmobile.pacman.api.compliance.repository.model.RuleInstance;
+import com.tmobile.pacman.api.compliance.repository.PacPolicyEngineAutofixActionsRepository;
+import com.tmobile.pacman.api.compliance.repository.model.PacPolicyEngineAutofixActions;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 import com.tmobile.pacman.api.compliance.util.CommonUtil;
 
 /**
  * The Class RuleEngineServiceImpl.
  */
 @Service
-public class RuleEngineServiceImpl implements RuleEngineService, Constants {
+public class PolicyEngineServiceImpl implements PolicyEngineService, Constants {
     
     /** The log. */
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** The rule lambda function name. */
-    @Value("${rule-engine.invoke.url}")
-    private String ruleLambdaFunctionName;
+    /** The policy lambda function name. */
+    @Value("${policy-engine.invoke.url}")
+    private String policyLambdaFunctionName;
     
-    /** The rule aws access key. */
-    private String ruleAwsAccessKey = "pacman.rule.access.keyA";
+    /** The policy aws access key. */
+    private String policyAwsAccessKey = "pacman.policy.access.keyA";
     
-    /** The rule aws secret key. */
-    private String ruleAwsSecretKey = "pacman.rule.secret.keyA";
+    /** The policy aws secret key. */
+    private String policyAwsSecretKey = "pacman.policy.secret.keyA";
     
     /** The additional params. */
     private String additionalParams = "additionalParams";
@@ -68,23 +68,23 @@ public class RuleEngineServiceImpl implements RuleEngineService, Constants {
     @Autowired
     private SystemConfigurationService systemConfigService;
 
-    /** The rule instance service. */
+    /** The policy table service. */
     @Autowired
-    private RuleInstanceService ruleInstanceService;
+    private PolicyTableService policyTableService;
 
     /** The rule engine autofix repository. */
     @Autowired
-    private PacRuleEngineAutofixActionsRepository ruleEngineAutofixRepository;
+    private PacPolicyEngineAutofixActionsRepository policyEngineAutofixRepository;
 
     /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.service.RuleEngineService#runRule(java.lang.String, java.util.Map)
+     * @see com.tmobile.pacman.api.compliance.service.PolicyEngineService#runPolicy(java.lang.String, java.util.Map)
      */
     @Override
-    public void runRule(final String ruleId, Map<String, String> runTimeParams)
+    public void runPolicy(final String policyId, Map<String, String> runTimeParams)
             throws ServiceException {
-        Boolean isRuleInvocationSuccess = invokeRule(ruleId, runTimeParams);
-        if (!isRuleInvocationSuccess) {
-            throw new ServiceException("Rule Invocation Failed");
+        Boolean isPoicyInvocationSuccess = invokePolicy(policyId, runTimeParams);
+        if (!isPoicyInvocationSuccess) {
+            throw new ServiceException("Poilcy Invocation Failed");
         }
     }
 
@@ -98,7 +98,7 @@ public class RuleEngineServiceImpl implements RuleEngineService, Constants {
     	dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             List<String> lastActions = Lists.newArrayList();
-            List<PacRuleEngineAutofixActions> pacRuleEngineAutofixActions = ruleEngineAutofixRepository
+            List<PacPolicyEngineAutofixActions> pacRuleEngineAutofixActions = policyEngineAutofixRepository
                     .findLastActionByResourceId(resourceId);
             pacRuleEngineAutofixActions.forEach(autofixLastAction -> {
 			lastActions.add(dateFormatUTC.format(autofixLastAction.getLastActionTime()));
@@ -128,7 +128,7 @@ public class RuleEngineServiceImpl implements RuleEngineService, Constants {
             throws ServiceException {
     	SimpleDateFormat dateFormatUTC = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
     	dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
-        PacRuleEngineAutofixActions autofixActions = new PacRuleEngineAutofixActions();
+        PacPolicyEngineAutofixActions autofixActions = new PacPolicyEngineAutofixActions();
         autofixActions.setAction(action);
         autofixActions.setResourceId(resourceId);
         try {
@@ -136,37 +136,37 @@ public class RuleEngineServiceImpl implements RuleEngineService, Constants {
 		} catch (ParseException e) {
 			throw new ServiceException("error parsing date");
 		}
-        ruleEngineAutofixRepository.save(autofixActions);
+        policyEngineAutofixRepository.save(autofixActions);
     }
 
     /**
-     * Invoke rule.
+     * Invoke Policy.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param runTimeParams the run time params
      * @return true, if successful
      */
     @SuppressWarnings("unchecked")
-    private boolean invokeRule(final String ruleId,
+    private boolean invokePolicy(final String policyId,
             Map<String, String> runTimeParams) {
-        RuleInstance ruleInstance = ruleInstanceService
-                .getRuleInstanceByRuleId(ruleId);
-        String ruleParams = ruleInstance.getRuleParams();
-        Map<String, Object> ruleParamDetails = (Map<String, Object>) CommonUtil
-                .deSerializeToObject(ruleParams);
+        PolicyTable policyInstance = policyTableService
+                .getPolicyTableByPolicyId(policyId);
+        String policyParams = policyInstance.getPolicyParams();
+        Map<String, Object> policyParamDetails = (Map<String, Object>) CommonUtil
+                .deSerializeToObject(policyParams);
         if (runTimeParams != null) {
-            ruleParamDetails.put(additionalParams,
+            policyParamDetails.put(additionalParams,
                     formatAdditionalParameters(runTimeParams));
         }
-        ruleParams = CommonUtil.serializeToString(ruleParamDetails);
+        policyParams = CommonUtil.serializeToString(policyParamDetails);
         AWSLambdaAsyncClient awsLambdaClient = getAWSLambdaAsyncClient();
         InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(
-                ruleLambdaFunctionName).withPayload(
-                ByteBuffer.wrap(ruleParams.getBytes()));
+                policyLambdaFunctionName).withPayload(
+                ByteBuffer.wrap(policyParams.getBytes()));
         InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
         if (invokeResult.getStatusCode() == TWO_HUNDRED) {
             ByteBuffer responsePayload = invokeResult.getPayload();
-            log.error("Return Value :" + new String(responsePayload.array()));
+            log.debug("Return Value :" + new String(responsePayload.array()));
             return true;
         } else {
             log.error("Received a non-OK response from AWS: "
@@ -202,8 +202,8 @@ public class RuleEngineServiceImpl implements RuleEngineService, Constants {
     @SuppressWarnings("deprecation")
     public AWSLambdaAsyncClient getAWSLambdaAsyncClient() {
         BasicAWSCredentials creds = new BasicAWSCredentials(
-                systemConfigService.getConfigValue(ruleAwsAccessKey),
-                systemConfigService.getConfigValue(ruleAwsSecretKey));
+                systemConfigService.getConfigValue(policyAwsAccessKey),
+                systemConfigService.getConfigValue(policyAwsSecretKey));
         return new AWSLambdaAsyncClient(creds);
     }
 }

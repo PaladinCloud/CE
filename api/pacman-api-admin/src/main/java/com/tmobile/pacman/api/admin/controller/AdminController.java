@@ -63,10 +63,10 @@ public class AdminController {
 	private AdminService adminService;
 
 	/**
-     * API to enable disable rule or job
+     * API to enable disable policy or job
      * 
      * @author NKrishn3
-     * @param ruleId - valid rule or job Id
+     * @param policyId - valid policy or job Id
      * @param user - userId who performs the action
      * @param action - valid action (disable/ enable)
      * @return Success or Failure response

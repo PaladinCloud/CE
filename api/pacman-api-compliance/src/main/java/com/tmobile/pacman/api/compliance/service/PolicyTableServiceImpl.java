@@ -19,24 +19,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.compliance.repository.RuleInstanceRepository;
-import com.tmobile.pacman.api.compliance.repository.model.RuleInstance;
+import com.tmobile.pacman.api.compliance.repository.PolicyTableRepository;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 
 /**
  * The Class RuleInstanceServiceImpl.
  */
 @Service
-public class RuleInstanceServiceImpl implements RuleInstanceService, Constants {
+public class PolicyTableServiceImpl implements PolicyTableService, Constants {
     
-    /** The rule instance repository. */
+    /** The PolicyTable repository. */
     @Autowired
-    private RuleInstanceRepository ruleInstanceRepository;
+    private PolicyTableRepository policyTableRepository;
 
     /* (non-Javadoc)
-     * @see com.tmobile.pacman.api.compliance.service.RuleInstanceService#getRuleInstanceByRuleId(java.lang.String)
+     * @see com.tmobile.pacman.api.compliance.service.PolicyTableServiceImpl#getPolicyTableByPolicyId(java.lang.String)
      */
     @Override
-    public RuleInstance getRuleInstanceByRuleId(String ruleId) {
-        return ruleInstanceRepository.findRuleInstanceByRuleId(ruleId);
+    public PolicyTable getPolicyTableByPolicyId(String policyId) {
+        return policyTableRepository.findPoicyTableByPolicyId(policyId);
     }
 }

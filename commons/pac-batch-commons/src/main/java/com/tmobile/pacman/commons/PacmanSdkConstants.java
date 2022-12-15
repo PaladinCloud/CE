@@ -140,11 +140,11 @@ public interface PacmanSdkConstants {
 	/** The issue status key. */
 	String ISSUE_STATUS_KEY="issueStatus";
 
-	/** The rule category. */
-	String RULE_CATEGORY = "ruleCategory";
+	/** The policy category. */
+	String POLICY_CATEGORY = "policyCategory";
 
-	/** The rule severity. */
-	String RULE_SEVERITY="severity";
+	/** The policy severity. */
+	String POLICY_SEVERITY="severity";
 
 	/** The updated success. */
 	String UPDATED_SUCCESS = "Successfully Updated";

@@ -67,8 +67,8 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
     @Override
     public List<Map<String, Object>> fetchRuleDetails(String targetType) {
 
-        String query = "SELECT  ruleId ,displayName,ruleFrequency,ruleParams,policyId  FROM cf_RuleInstance where status ='ENABLED' and  targetType ='"
-                + targetType + "' order by ruleId";
+        String query = "SELECT  policyId ,policyDisplayName,policyFrequency,policyParams  FROM cf_PolicyTable where status ='ENABLED' and  targetType ='"
+                + targetType + "' order by policyId";
         return rdsepository.getDataFromPacman(query);
     }
 
@@ -93,7 +93,7 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
         
         mustTermsFilter.put("issueStatus", issueStatusList);
         
-        List<String> fields = Arrays.asList("_resourceid", DOCID, "ruleId",
+        List<String> fields = Arrays.asList("_resourceid", DOCID, "policyId",
                 "createdDate", "modifiedDate", "issueStatus");
         try {
             return elasticSearchRepository.getSortedDataFromES(ag, "issue_"

@@ -33,7 +33,7 @@ public final class AssetConstants {
     public static final String FILTER_TAGGED = "tagged";
     public static final String FILTER_EXEMPTED = "exempted";
     public static final String FILTER_TAGNAME = "tagName";
-    public static final String FILTER_RULEID = "ruleId";
+    public static final String FILTER_POLICYID = "policyId";
     public static final String FILTER_COMPLIANT = "compliant";
     public static final String FILTER_DOMAIN = "domain";
     public static final String TAG_NOT_FOUND = "Not Found";

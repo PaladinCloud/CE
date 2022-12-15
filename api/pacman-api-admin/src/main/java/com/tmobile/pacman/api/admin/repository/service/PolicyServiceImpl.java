@@ -480,7 +480,7 @@ public class PolicyServiceImpl implements PolicyService {
 			severity.put("value", policyDetails.getSeverity());
 			severity.put("encrypt", false);
 			Map<String, Object> category = new HashMap<>();
-			category.put("key", "ruleCategory");
+			category.put("key", "policyCategory");
 			category.put("value", policyDetails.getCategory());
 			category.put("encrypt", false);
 			List<Map<String, Object>> environmentVariables = (List<Map<String, Object>>) newJobParams.get("environmentVariables");

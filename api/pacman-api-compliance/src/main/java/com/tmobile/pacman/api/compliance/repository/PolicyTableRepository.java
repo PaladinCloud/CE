@@ -15,28 +15,23 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.repository;
 
-import java.util.List;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tmobile.pacman.api.compliance.repository.model.PacRuleEngineAutofixActions;
-import com.tmobile.pacman.api.compliance.repository.model.PacRuleEngineAutofixActionsIdentity;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 
 /**
- * The Interface PacRuleEngineAutofixActionsRepository.
+ * The Interface RuleInstanceRepository.
  */
 @Repository
-public interface PacRuleEngineAutofixActionsRepository
-        extends
-        CrudRepository<PacRuleEngineAutofixActions, PacRuleEngineAutofixActionsIdentity> {
+public interface PolicyTableRepository extends
+        CrudRepository<PolicyTable, String> {
 
     /**
-     * Find last action by resource id.
+     * Find PolicyTable by policy id.
      *
-     * @param resourceId the resource id
-     * @return the list
+     * @param policyId the policy id
+     * @return PolicyTable
      */
-    public List<PacRuleEngineAutofixActions> findLastActionByResourceId(
-            final String resourceId);
+    public PolicyTable findPoicyTableByPolicyId(final String policyId);
 }

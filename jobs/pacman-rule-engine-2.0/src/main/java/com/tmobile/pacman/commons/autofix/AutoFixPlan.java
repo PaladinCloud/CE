@@ -123,12 +123,12 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
         return planItems.get(index);
     }
 
-    public String getRuleId() {
+    public String getPolicyId() {
         return policyId;
     }
 
-    public void setRuleId(String ruleId) {
-        this.policyId = ruleId;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
     public String getIssueId() {

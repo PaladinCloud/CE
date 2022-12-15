@@ -40,47 +40,47 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
-import com.tmobile.pacman.api.compliance.service.RuleEngineService;
+import com.tmobile.pacman.api.compliance.service.PolicyEngineService;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 /**
- * The Class RuleEngineController.
+ * The Class PolicyEngineController.
  */
 @RestController
 @PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
-public class RuleEngineController {
+public class PolicyEngineController {
 
     /** The Constant LOGGER. */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RuleEngineController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyEngineController.class);
 
-    /** The rule engine service. */
+    /** The Policy engine service. */
     @Autowired
-    private RuleEngineService ruleEngineService;
+    private PolicyEngineService policyEngineService;
 
     /**
-     * Run rule.
+     * Run Policy.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param runTimeParams the run time params
      * @return the response entity
      */
-    @ApiOperation(httpMethod = "POST", value = "Invoke PacMan Rule")
-    @RequestMapping(path = "/v1/invoke-rule", method = RequestMethod.POST)
+    @ApiOperation(httpMethod = "POST", value = "Invoke PacMan Policy")
+    @RequestMapping(path = "/v1/invoke-policy", method = RequestMethod.POST)
     @ResponseBody
     
-    public ResponseEntity<Object> runRule(
-            @ApiParam(value = "Provide valid Rule Id", required = true) @RequestParam("ruleId") String ruleId,
-            @ApiParam(value = "Provide valid Rule Runtime Parameters") @RequestBody Map<String, String> runTimeParams) {
+    public ResponseEntity<Object> runPolicy(
+            @ApiParam(value = "Provide valid Policy Id", required = true) @RequestParam("policyId") String policyId,
+            @ApiParam(value = "Provide valid Policy Runtime Parameters") @RequestBody Map<String, String> runTimeParams) {
         try {
-            ruleEngineService.runRule(ruleId, runTimeParams);
+            policyEngineService.runPolicy(policyId, runTimeParams);
         } catch (Exception exception) {
             LOGGER.error(exception.toString());
             return ResponseUtils.buildFailureResponse(exception);
         }
         return ResponseUtils
-                .buildSucessResponse("Invoked Rule Successfully!!!");
+                .buildSucessResponse("Invoked Policy Successfully!!!");
     }
 
     /**
@@ -96,7 +96,7 @@ public class RuleEngineController {
     public ResponseEntity<Object> getLastAction(
             @ApiParam(value = "Provide valid Resource Id", required = true) @RequestParam("resourceId") String resourceId) {
         try {
-            Map<String, Object> lastAction = ruleEngineService
+            Map<String, Object> lastAction = policyEngineService
                     .getLastAction(resourceId);
             return new ResponseEntity<>(lastAction, HttpStatus.OK);
         } catch (Exception exception) {
@@ -134,7 +134,7 @@ public class RuleEngineController {
             @ApiParam(value = "Provide valid Resource Id", required = true) @RequestParam("resourceId") String resourceId,
             @ApiParam(value = "Provide a valid Action", required = true) @RequestParam("action") String action) {
         try {
-            ruleEngineService.postAction(resourceId, action);
+            policyEngineService.postAction(resourceId, action);
             return ResponseUtils
                     .buildSucessResponse("Successfully Created new Resource Action");
         } catch (Exception exception) {

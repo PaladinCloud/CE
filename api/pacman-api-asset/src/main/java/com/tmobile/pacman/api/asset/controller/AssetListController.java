@@ -386,7 +386,7 @@ public class AssetListController {
         }
 
         List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_RULEID,
+                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_POLICYID,
                 AssetConstants.FILTER_COMPLIANT);
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
@@ -394,7 +394,7 @@ public class AssetListController {
                         + StringUtils.join(acceptedFilterKeys, ", ")));
             }
         }
-        if (!filter.containsKey(AssetConstants.FILTER_RULEID)) {
+        if (!filter.containsKey(AssetConstants.FILTER_POLICYID)) {
             return ResponseUtils.buildFailureResponse(new Exception("ruleId is mandatory in filter"));
         }
 

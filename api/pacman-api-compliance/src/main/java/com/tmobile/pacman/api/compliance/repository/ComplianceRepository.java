@@ -30,7 +30,7 @@ import com.tmobile.pacman.api.compliance.domain.IssuesException;
 import com.tmobile.pacman.api.compliance.domain.KernelVersion;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
-import com.tmobile.pacman.api.compliance.domain.RuleDetails;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -243,7 +243,7 @@ public interface ComplianceRepository {
      * @param ruleDetails            the rule details
      * @return Boolean
      */
-    public Boolean closeIssuesByRule(RuleDetails ruleDetails);
+    public Boolean closeIssuesByRule(PolicyDetails ruleDetails);
 
     /**
      * Gets the total asset count for any target type.
@@ -258,13 +258,13 @@ public interface ComplianceRepository {
             String targetType);
 
     /**
-     * Gets the rule id with display name.
+     * Gets the policy id with display name.
      *
      * @param targetTypes the target types
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getRuleIdWithDisplayNameQuery(
+    public List<Map<String, Object>> getPolicyIdWithDisplayNameQuery(
             String targetTypes) throws DataException;
 
     /**
@@ -467,7 +467,7 @@ public interface ComplianceRepository {
      * @return List<Object>
      * @throws DataException the data exception
      */
-    public List<Object> getRuleIds(String targetType) throws DataException;
+    public List<Object> getPolicyIds(String targetType) throws DataException;
 
     /**
      * Gets the rule category weightage from DB.
@@ -528,7 +528,7 @@ public interface ComplianceRepository {
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getRuleIdWithDisplayNameWithRuleCategoryQuery(
+    public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
             String targetTypes, String ruleCategory) throws DataException;
 
   

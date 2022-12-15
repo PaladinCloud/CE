@@ -595,7 +595,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
 					.append("/").append(_SEARCH);
 			String body = "";
-			body = "{\"size\":10000,\"_source\":[\"docId\",\"planItems\",\"ruleId\",\"issueId\",\"resourceId\",\"resourceType\"]}";
+			body = "{\"size\":10000,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"]}";
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
 			try {
@@ -658,7 +658,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(ag).append("/").append(AUTOFIXTYPE)
 					.append("/").append(_SEARCH);
 			filter.entrySet().forEach(autofix->{
-				autoFixQuery = "{\"size\":1,\"_source\":[\"docId\",\"planItems\",\"ruleId\",\"issueId\",\"resourceId\",\"resourceType\"],\"query\":{\"match\":{\""
+				autoFixQuery = "{\"size\":1,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"],\"query\":{\"match\":{\""
 						+autofix.getKey()+".keyword"+"\":\""
 						+autofix.getValue()+"\"}}}";
 			});
@@ -684,7 +684,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 							autofixPlanDet.put("planItems", sources.get("planItems"));
 							autofixPlanDet.put("issueId", sources.get("issueId"));
 							autofixPlanDet.put("resourceId", sources.get("resourceId"));
-							autofixPlanDet.put("ruleId", sources.get("ruleId"));
+							autofixPlanDet.put("policyId", sources.get("policyId"));
 							autofixPlanDet.put("resourceType", sources.get("resourceType"));
 							List<Map<String, Object>> planitems = (List<Map<String, Object>>) sources.get("planItems");
 							planitems.get(0).entrySet().forEach(item -> {
@@ -706,15 +706,15 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 							
 							List<Map<String, Object>> ruleDetails = new ArrayList<Map<String, Object>>();
 					        try {
-					        	ruleDetails = rdsRepository.getDataFromPacman("SELECT displayName, policyId FROM cf_RuleInstance WHERE ruleId =\""+sources.get("ruleId")+"\"");
-					        	autofixPlanDet.put("ruleName", ruleDetails.get(0).get("displayName"));
+					        	ruleDetails = rdsRepository.getDataFromPacman("SELECT policyDisplayName, policyId FROM cf_PolicyTable WHERE policyId =\""+sources.get("policyId")+"\"");
+					        	autofixPlanDet.put("Name", ruleDetails.get(0).get("policyDisplayName"));
 					        } catch (Exception exception) {
 					            LOGGER.error("Error in getAutofixProjectionDetail for getting rule displayName " , exception);
 					        }
 					        try {
-					        	autofixPlanDet.put("ruleDescription", rdsRepository.queryForString("select policyDesc from cf_Policy WHERE policyId =\""+ruleDetails.get(0).get("policyId")+"\""));
+					        	autofixPlanDet.put("policyDescription", rdsRepository.queryForString("select policyDesc from cf_PolicyTable WHERE policyId =\""+ruleDetails.get(0).get("policyId")+"\""));
 					        } catch (Exception exception) {
-					            LOGGER.error("Error in getAutofixProjectionDetail for getting rule description " , exception);
+					            LOGGER.error("Error in getAutofixProjectionDetail for getting policy description " , exception);
 					        }
 						}	
 						}

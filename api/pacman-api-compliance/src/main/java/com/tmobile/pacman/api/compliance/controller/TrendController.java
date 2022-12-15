@@ -47,7 +47,7 @@ import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.DateUtils;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 import com.tmobile.pacman.api.compliance.domain.CompliantTrendRequest;
-import com.tmobile.pacman.api.compliance.domain.RuleTrendRequest;
+import com.tmobile.pacman.api.compliance.domain.PolicyTrendRequest;
 import com.tmobile.pacman.api.compliance.service.IssueTrendService;
 
 import io.swagger.annotations.ApiOperation;
@@ -128,13 +128,12 @@ public class TrendController implements Constants {
             @RequestParam(name = "frdt", required = false) String fromDate,
             @RequestParam(name = "todt", required = false) String toDate,
             @RequestParam(name = "severity", required = false) String severity,
-            @RequestParam(name = "ruleId", required = false) String ruleId,
             @RequestParam(name = "policyId", required = false) String policyId,
             @RequestParam(name = "app", required = false) String app,
             @RequestParam(name = "env", required = false) String env) {
         try {
             return ResponseUtils.buildSucessResponse(trendService.getTrendForIssues(assetGroup, fromDate, toDate,
-                    severity, ruleId, policyId, app, env));
+                    severity, policyId, app, env));
         } catch (ServiceException e) {
             if (null!=e.getCause() && e.getCause().toString().contains(NO_DATA_FOUND)) {
                 LOGGER.error("Exception in getPatchingDetails" , e.getMessage());
@@ -244,11 +243,11 @@ public class TrendController implements Constants {
      */
     
     @RequestMapping(path = "/v1/trend/compliancebyrule", method = RequestMethod.POST)
-    public ResponseEntity<Object> getRuleTrend(@RequestBody(required = true) RuleTrendRequest request) {
+    public ResponseEntity<Object> getRuleTrend(@RequestBody(required = true) PolicyTrendRequest request) {
 
         Map<String, Object> response = new HashMap<>();
         String assetGroup = request.getAg();
-        String ruleId = request.getRuleid();
+        String ruleId = request.getPolicyid();
 
         Date input = request.getFrom();
 
@@ -265,7 +264,7 @@ public class TrendController implements Constants {
         LocalDate toDate = LocalDate.now();
 
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(ruleId)) {
-            return ResponseUtils.buildFailureResponse(new Exception("assetGroup/ruleId is Mandatory"));
+            return ResponseUtils.buildFailureResponse(new Exception("assetGroup/policyid is Mandatory"));
         }
 
         try {

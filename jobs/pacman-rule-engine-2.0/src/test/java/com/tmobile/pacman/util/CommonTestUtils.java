@@ -87,7 +87,7 @@ public class CommonTestUtils {
         commonMap.put("executionId", "1234");
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "low");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("type", "Task");
         commonMap.put("accountid", "12345");
         commonMap.put("checkId", "1234567");
@@ -195,7 +195,7 @@ public class CommonTestUtils {
         commonMap.put("vpcid", "12");
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "low");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("accountid", "12345");
         commonMap.put("serviceEsURL", "url");
         commonMap.put("serviceAccountEsURL", "serviceAccountEsURL");
@@ -267,7 +267,7 @@ public class CommonTestUtils {
         commonMap.put("executionId", "1234");
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "low");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("type", "Task");
         commonMap.put("accountid", "12345");
         commonMap.put("checkId", "1234567");
@@ -398,7 +398,7 @@ public class CommonTestUtils {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "low");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("accountid", "12345");
         commonMap.put("serviceEsURL", "url");
         commonMap.put("serviceAccountEsURL", "serviceAccountEsURL");
@@ -772,7 +772,7 @@ public class CommonTestUtils {
         commonMap.put("executionId", "1234");
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "low");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("type", "Task");
         commonMap.put("accountid", "12345");
         commonMap.put("checkId", "1234567");

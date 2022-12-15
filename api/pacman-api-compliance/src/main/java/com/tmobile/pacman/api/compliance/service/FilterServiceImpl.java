@@ -188,15 +188,15 @@ public class FilterServiceImpl implements FilterService, Constants {
         List<Map<String, Object>> ruleIdsFromDb;
         try{
         ruleIdsFromDb = complianceRepository
-                .getRuleIdWithDisplayNameQuery(ttypes);
+                .getPolicyIdWithDisplayNameQuery(ttypes);
       }catch(DataException e){
           throw new ServiceException(e);
       }
         noDataFoundCheck(emptyAssetCount, ruleIdsFromDb);
         ruleIdsFromDb.parallelStream().forEach(policy -> {
             Map<String, Object> ruleMap = new HashMap<>();
-            String ruleId = policy.get(RULEID).toString();
-            String ruleName = policy.get(RULE_DISPAY_NAME).toString();
+            String ruleId = policy.get(POLICYID).toString();
+            String ruleName = policy.get(POLICY_DISPAY_NAME).toString();
 
             ruleMap.put(NAME, ruleName);
             ruleMap.put(ID, ruleId);

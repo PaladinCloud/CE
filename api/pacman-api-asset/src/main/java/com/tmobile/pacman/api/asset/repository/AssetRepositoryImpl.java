@@ -1195,7 +1195,8 @@ public class AssetRepositoryImpl implements AssetRepository {
         String ruleIdWithTargetTypeQuery = null;
 
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
+        // @ToDo need to work on tagging policy
+       // mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
         filter.entrySet()
@@ -1219,7 +1220,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         if (!Strings.isNullOrEmpty(targetType)) {
             sb = new StringBuilder();
             type = sb.append("'").append(targetType).append("'").toString();
-            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = '"+Constants.TAGGING_POLICY+"' AND A.targetType = "
+            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_PolicyTable A WHERE  A.status = 'ENABLED'  AND A.targetType = "
                     + type;
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             try {
@@ -1262,7 +1263,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             	 assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
             }
         } else {
-            ruleIdWithTargetTypeQuery = "SELECT  A.targetType FROM cf_RuleInstance A, cf_Policy B WHERE A.policyId = B.policyId AND A.status = 'ENABLED' AND B.policyId = '"+Constants.TAGGING_POLICY+"'";
+            ruleIdWithTargetTypeQuery = "SELECT  p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED'";
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             List<String> validTypes = ruleIdwithTargetType.stream()
                     .map(obj -> obj.get(Constants.TARGET_TYPE).toString()).collect(Collectors.toList());
@@ -1463,17 +1464,17 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.RULEID),
-                filter.get(AssetConstants.FILTER_RULEID));
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID),
+                filter.get(AssetConstants.FILTER_POLICYID));
         mustFilterAsset.put(Constants.LATEST, Constants.TRUE);
-        mustFilterAsset.put(Constants.RULEID,
-                filter.get(AssetConstants.FILTER_RULEID));
+        mustFilterAsset.put(Constants.POLICYID,
+                filter.get(AssetConstants.FILTER_POLICYID));
 
         filter.entrySet()
                 .stream()
                 .forEach(
                         entry -> {
-                            if (!(entry.getKey().equals(AssetConstants.FILTER_RULEID)
+                            if (!(entry.getKey().equals(AssetConstants.FILTER_POLICYID)
                                     || entry.getKey().equals(AssetConstants.FILTER_RES_TYPE) || entry.getKey().equals(
                                     AssetConstants.FILTER_COMPLIANT))) {
                                 if (entry.getKey().equals(AssetConstants.FILTER_APPLICATION)) {
@@ -1492,7 +1493,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     null, null, null, null);
             if (!nonCompliantAssets.isEmpty()) {
                 String policy = nonCompliantAssets.get(0).get("policyId").toString();
-                if (Constants.TAGGING_POLICY.equals(policy)) {
+                if (Constants.CATEGORY_TAGGING.contains(policy)) {
                     String[] tags = mandatoryTags.split(",");
                     nonCompliantAssets = nonCompliantAssets.stream().filter(issue -> {
                         boolean compliant = true;
@@ -1510,7 +1511,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                 List<String> nonCompliantresourceIds = nonCompliantAssets.parallelStream()
                         .map(obj -> obj.get(Constants.RESOURCEID).toString()).collect(Collectors.toList());
                 if (StringUtils.isEmpty(targetType)) {
-                    targetType = getTargetTypeByRuleId(assetGroup, filter.get(AssetConstants.FILTER_RULEID));
+                    targetType = getTargetTypeByRuleId(assetGroup, filter.get(AssetConstants.FILTER_POLICYID));
                 }
                 try {
                     fieldNames = getDisplayFieldsForTargetType(targetType);
@@ -1531,7 +1532,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                 }
             } else {
                 if (StringUtils.isEmpty(targetType)) {
-                    targetType = getTargetTypeByRuleId(assetGroup, filter.get(AssetConstants.FILTER_RULEID));
+                    targetType = getTargetTypeByRuleId(assetGroup, filter.get(AssetConstants.FILTER_POLICYID));
                 }
                 try {
                     fieldNames = getDisplayFieldsForTargetType(targetType);
@@ -1575,8 +1576,8 @@ public class AssetRepositoryImpl implements AssetRepository {
         
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         if (Constants.EC2.equals(type) || AssetConstants.ALL.equals(type)) {
-            if(mustFilter.containsKey(AssetConstants.FILTER_RULEID) && 
-                    ((mustFilter.get(AssetConstants.FILTER_RULEID).toString().equalsIgnoreCase(Constants.CLOUD_QUALYS_RULE) && qualysEnabled) || mustFilter.get(AssetConstants.FILTER_RULEID).toString().equalsIgnoreCase(Constants.SSM_AGENT_RULE))) {
+            if(mustFilter.containsKey(AssetConstants.FILTER_POLICYID) && 
+                    ((mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.CLOUD_QUALYS_RULE) && qualysEnabled) || mustFilter.get(AssetConstants.FILTER_POLICYID).toString().equalsIgnoreCase(Constants.SSM_AGENT_RULE))) {
                 return getLongRunningInstances(assetGroupName, type, fieldNames);
             } else {
                 shouldFilter.put(Constants.STATE_NAME, Constants.RUNNING);
@@ -1584,7 +1585,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                 shouldFilter.put(Constants.STATE_NAME, AssetConstants.STOPPING);
             }
         }
-        mustFilter.remove(AssetConstants.FILTER_RULEID);
+        mustFilter.remove(AssetConstants.FILTER_POLICYID);
         
         List<Map<String, Object>> assets = new ArrayList<>();
         try {
@@ -1790,7 +1791,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     private String getTargetTypeByRuleId(String assetGroup, String ruleId) {
 
-        LOGGER.info("Getting Target type for Rule id : " + ruleId);
+        LOGGER.info("Getting Target type for policy id : " + ruleId);
         List<String> targetTypes = getTargetTypesByAssetGroup(assetGroup, null, null).stream()
                 .map(obj -> obj.get(Constants.TYPE).toString()).collect(Collectors.toList());
         String ttypesTemp;
@@ -1803,11 +1804,11 @@ public class AssetRepositoryImpl implements AssetRepository {
                 ttypes = new StringBuilder().append(ttypes).append(",").append(ttypesTemp).toString();
             }
         }
-        String ruleIdWithTargetTypeQuery = "SELECT ruleId, targetType FROM cf_RuleInstance WHERE STATUS = 'ENABLED'AND targetType IN ("
+        String ruleIdWithTargetTypeQuery = "SELECT policyId, targetType FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
                 + ttypes + ")";
         List<Map<String, Object>> ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
         Map<String, String> ruleIdwithruleTargetTypeMap = ruleIdwithTargetType.stream().collect(
-                Collectors.toMap(s -> (String) s.get(Constants.RULEID), s -> (String) s.get(Constants.TARGET_TYPE)));
+                Collectors.toMap(s -> (String) s.get(Constants.POLICYID), s -> (String) s.get(Constants.TARGET_TYPE)));
 
         return ruleIdwithruleTargetTypeMap.get(ruleId);
     }
@@ -2356,7 +2357,8 @@ public class AssetRepositoryImpl implements AssetRepository {
 		Map<String, Object> matchMap = new HashMap<>();
 		Map<String, String> match = new HashMap<>();
 
-		mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.CLOUD_KERNEL_COMPLIANCE_POLICY);
+		//@ToDo need to working on policyid
+		//mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.CLOUD_KERNEL_COMPLIANCE_POLICY);
 
 		// Changes to include only latest resources
 
@@ -2467,7 +2469,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
         
         mustFilter
-                .put(CommonUtils.convertAttributetoKeyword(Constants.RULEID), Constants.ONPREM_KERNEL_COMPLIANCE_RULE);
+                .put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.ONPREM_KERNEL_COMPLIANCE_RULE);
         
         // Has Parent Query Start
         Map<String,Object> match = new HashMap<>();

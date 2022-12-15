@@ -268,7 +268,7 @@ public class AssetGroupStatsCollector implements Constants{
             List<String> domains = entry.getValue();
             List<Map<String, Object>> docList = new ArrayList<>();
             try {
-                docList = AssetGroupUtil.fetchRuleComplianceInfo(COMP_API_URL, ag, domains,getToken());
+                docList = AssetGroupUtil.fetchPolicyComplianceInfo(COMP_API_URL, ag, domains,getToken());
             } catch (Exception e) {
                 log.error("Exception in uploadAssetGroupRuleCompliance" , e);
                 Map<String,String> errorMap = new HashMap<>();
@@ -282,7 +282,7 @@ public class AssetGroupStatsCollector implements Constants{
             docList.parallelStream().forEach(doc -> {
                 doc.put("ag", ag);
                 doc.put("date", CURR_DATE);
-                doc.put("@id", Util.getUniqueID(ag + doc.get(DOMAIN) + doc.get("ruleId") + CURR_DATE));
+                doc.put("@id", Util.getUniqueID(ag + doc.get(DOMAIN) + doc.get("policyId") + CURR_DATE));
             });
             docs.addAll(docList);
         });

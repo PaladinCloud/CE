@@ -25,10 +25,10 @@ package com.tmobile.pacman.api.compliance.domain;
 /**
  * The Class RuleDetails.
  */
-public class RuleDetails {
+public class PolicyDetails {
 
     /** The rule id. */
-    private String ruleId;
+    private String policyId;
 
     /** The reason. */
     private String reason;
@@ -37,21 +37,21 @@ public class RuleDetails {
     private String userId;
 
     /**
-     * Gets the rule id.
+     * Gets the policy id.
      *
-     * @return the rule id
+     * @return the policy id
      */
-    public String getRuleId() {
-        return ruleId;
+    public String getPolicyId() {
+        return policyId;
     }
 
     /**
-     * Sets the rule id.
+     * Sets the policy id.
      *
-     * @param ruleId the new rule id
+     * @param policyId the new rule id
      */
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
     /**

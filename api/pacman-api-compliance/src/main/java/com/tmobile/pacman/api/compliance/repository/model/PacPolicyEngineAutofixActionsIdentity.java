@@ -20,9 +20,9 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 /**
- * The Class PacRuleEngineAutofixActionsIdentity.
+ * The Class PacPolicyEngineAutofixActionsIdentity.
  */
-public class PacRuleEngineAutofixActionsIdentity implements
+public class PacPolicyEngineAutofixActionsIdentity implements
         java.io.Serializable {
 
     /** The Constant serialVersionUID. */
@@ -88,10 +88,10 @@ public class PacRuleEngineAutofixActionsIdentity implements
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof PacRuleEngineAutofixActionsIdentity)) {
+        if (!(obj instanceof PacPolicyEngineAutofixActionsIdentity)) {
             return false;
         }
-        PacRuleEngineAutofixActionsIdentity that = (PacRuleEngineAutofixActionsIdentity) obj;
+        PacPolicyEngineAutofixActionsIdentity that = (PacPolicyEngineAutofixActionsIdentity) obj;
         return Objects.equals(getResourceId(), that.getResourceId())
                 && Objects
                         .equals(getLastActionTime(), that.getLastActionTime());

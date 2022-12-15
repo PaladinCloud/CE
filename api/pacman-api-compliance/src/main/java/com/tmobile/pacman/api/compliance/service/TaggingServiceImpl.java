@@ -184,7 +184,7 @@ public class TaggingServiceImpl implements TaggingService, Constants {
         List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
         List<Map<String, Object>> targetTypes;
         try {
-            targetTypes = repository.getRuleTargetTypesFromDbByPolicyId(TAGGING_POLICY);
+            targetTypes = repository.getRuleTargetTypesFromDbByPolicyId(CATEGORY_TAGGING);
         } catch (DataException e) {
             throw new ServiceException(e);
         }

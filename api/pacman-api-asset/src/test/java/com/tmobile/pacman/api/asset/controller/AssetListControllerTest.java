@@ -227,12 +227,12 @@ public class AssetListControllerTest {
         
         Map<String,String> filter = new HashMap<>();
         filter.put("filterKey", "filterValue");
-        filter.put("ruleId", "filterValue");
+        filter.put("policyId", "filterValue");
         request.setFilter(filter);
         ResponseEntity<Object> responseObj4 = controller.listScannedAssets(request,"domain");
         assertTrue(responseObj4.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
         
-        filter.remove("ruleId");
+        filter.remove("policyId");
         filter.put("resourceType", "filterValue");
         request.setFilter(filter);
         when(service.getListAssetsScanned(anyString(), anyObject())).thenReturn(aList);
@@ -241,7 +241,7 @@ public class AssetListControllerTest {
         assertTrue(responseObj5.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
         
         filter.clear();
-        filter.put("ruleId", "filterValue");
+        filter.put("policyId", "filterValue");
         request.setFilter(filter);
         when(service.getListAssetsScanned(anyString(), anyObject())).thenReturn(aList);
         ReflectionTestUtils.setField(controller, "assetService", service);

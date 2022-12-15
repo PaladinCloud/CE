@@ -13,25 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.tmobile.pacman.api.compliance.repository;
+package com.tmobile.pacman.api.compliance.service;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
-
-import com.tmobile.pacman.api.compliance.repository.model.RuleInstance;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 
 /**
- * The Interface RuleInstanceRepository.
+ * The Interface PolicyTableService.
  */
-@Repository
-public interface RuleInstanceRepository extends
-        CrudRepository<RuleInstance, String> {
+public interface PolicyTableService {
 
     /**
-     * Find rule instance by rule id.
+     * Gets the policy instance by policy id.
      *
-     * @param ruleId the rule id
-     * @return RuleInstance
+     * @param policyId the policy id
+     * @return the policy instance by policy id
      */
-    public RuleInstance findRuleInstanceByRuleId(final String ruleId);
+    public PolicyTable getPolicyTableByPolicyId(String policyId);
 }

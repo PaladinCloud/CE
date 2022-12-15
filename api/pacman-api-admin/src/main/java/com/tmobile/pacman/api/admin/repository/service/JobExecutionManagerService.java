@@ -87,7 +87,7 @@ public interface JobExecutionManagerService {
      * Service to enable disable job
      * 
      * @author NidhishKrishnan
-     * @param ruleId - valid job Id
+     * @param policyId - valid job Id
      * @param action - valid action (disable/ enable)
      * @param userId - userId who performs the action
      * @return Success or Failure response

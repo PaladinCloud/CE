@@ -59,8 +59,6 @@ public class PolicyViolationDetails {
     /** The violation modified date. */
     String violationModifiedDate;
 
-    /** The policy id. */
-    String policyId;
 
     /** The asset group. */
     String assetGroup;
@@ -93,7 +91,7 @@ public class PolicyViolationDetails {
             String severity, String ruleCategory, String resouceViolatedPolicy,
             String policyViolated, String policyDescription,
             String violationReason, String violationCreatedDate,
-            String violationModifiedDate, String policyId, String ruleId,
+            String violationModifiedDate, String ruleId,
             String assetGroup,
             List<Map<String, Object>> violationDetails) {
         super();
@@ -107,7 +105,6 @@ public class PolicyViolationDetails {
         this.violationReason = violationReason;
         this.violationCreatedDate = violationCreatedDate;
         this.violationModifiedDate = violationModifiedDate;
-        this.policyId = policyId;
         this.ruleId = ruleId;
         this.violationDetails = violationDetails;
         this.assetGroup = assetGroup;
@@ -336,24 +333,7 @@ public class PolicyViolationDetails {
         this.violationModifiedDate = violationModifiedDate;
     }
 
-    /**
-     * Gets the policy id.
-     *
-     * @return the policy id
-     */
-    public String getPolicyId() {
-        return policyId;
-    }
-
-    /**
-     * Sets the policy id.
-     *
-     * @param policyId the new policy id
-     */
-    public void setPolicyId(String policyId) {
-        this.policyId = policyId;
-    }
-
+ 
     /**
      * Gets the violation details.
      *

@@ -136,7 +136,7 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getTargetTypeForAG(anyString(), anyString()))
         .thenReturn(targetTypes);
         
-        when(complainceRepository.getRuleIdWithDisplayNameQuery(anyString()))
+        when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(complianceService.getRuleSevCatDetails(anyObject()))
@@ -159,7 +159,7 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getTargetTypeForAG(anyString(), anyString()))
         .thenReturn(targetTypes);
         
-        when(complainceRepository.getRuleIdWithDisplayNameQuery(anyString()))
+        when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(complianceService.getRuleSevCatDetails(anyObject()))

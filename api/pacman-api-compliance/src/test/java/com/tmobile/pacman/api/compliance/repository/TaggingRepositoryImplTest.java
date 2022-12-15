@@ -169,13 +169,13 @@ public class TaggingRepositoryImplTest {
         Map<String, Object> ruleParamMap = new HashMap<>();
         ruleParamMap.put("assetGroup", "aws");
         ruleParamMap.put("targetType", "ec2");
-        ruleParamMap.put("policyId", Constants.TAGGING_POLICY);
+        ruleParamMap.put("policyId", Constants.CATEGORY_TAGGING);
         ruleParams.add(ruleParamMap);
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(ruleParams);
-        response = taggingRepositoryImpl.getRuleParamsFromDbByPolicyId(Constants.TAGGING_POLICY);
+        response = taggingRepositoryImpl.getRuleParamsFromDbByPolicyId(Constants.CATEGORY_TAGGING);
         assertTrue(response.size() > 0);
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(ruleParams);
-        response = taggingRepositoryImpl.getRuleTargetTypesFromDbByPolicyId(Constants.TAGGING_POLICY);
+        response = taggingRepositoryImpl.getRuleTargetTypesFromDbByPolicyId(Constants.CATEGORY_TAGGING);
         assertTrue(response.size() > 0);
     }
 

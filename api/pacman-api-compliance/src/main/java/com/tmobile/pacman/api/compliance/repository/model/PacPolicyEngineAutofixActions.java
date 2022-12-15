@@ -24,13 +24,13 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 /**
- * The Class PacRuleEngineAutofixActions.
+ * The Class PacPolicyEngineAutofixActions.
  */
 @Entity
-@Table(name = "pac_rule_engine_autofix_actions", uniqueConstraints = @UniqueConstraint(columnNames = {
+@Table(name = "pac_policy_engine_autofix_actions", uniqueConstraints = @UniqueConstraint(columnNames = {
         "resourceId", "lastActionTime" }))
-@IdClass(PacRuleEngineAutofixActionsIdentity.class)
-public class PacRuleEngineAutofixActions {
+@IdClass(PacPolicyEngineAutofixActionsIdentity.class)
+public class PacPolicyEngineAutofixActions {
 
     /** The resource id. */
     @Id
@@ -47,7 +47,7 @@ public class PacRuleEngineAutofixActions {
     /**
      * Instantiates a new pac rule engine autofix actions.
      */
-    public PacRuleEngineAutofixActions() {
+    public PacPolicyEngineAutofixActions() {
     }
 
     /**

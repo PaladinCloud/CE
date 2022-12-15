@@ -32,7 +32,6 @@ public interface IssueTrendService {
      * @param fromDate the from date
      * @param toDate the to date
      * @param severity the severity
-     * @param ruleId the rule id
      * @param policyId the policy id
      * @param app the app
      * @param env the env
@@ -40,7 +39,7 @@ public interface IssueTrendService {
      * @throws ServiceException the service exception
      */
     public Map<String, Long> getTrendForIssues(String assetGroup,
-            String fromDate, String toDate, String severity, String ruleId,
+            String fromDate, String toDate, String severity,
             String policyId, String app, String env) throws ServiceException;
 
     /**
