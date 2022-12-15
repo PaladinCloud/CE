@@ -39,6 +39,18 @@ export const CONFIGURATIONS = {
       adConfig: {
         tenant: '', // Expected values: Value expected if 'AD_AUTHENTICATION' is true
         clientId: '' // Expected values: Value expected if 'AD_AUTHENTICATION' is true
+      },
+      cognitoConfig: {
+        sso_api_username: '5b68m1qai7uanmu3jb19tunpuq',
+        sso_api_pwd: 'ia6lp2l95m7il5s8ufabpjo4pjgbshu9jg3hgu67muc4rfoi7pu',
+        loginURL: 'https://testdevpaladincloud.auth.us-west-1.amazoncognito.com/login?' +
+          'client_id=5b68m1qai7uanmu3jb19tunpuq&response_type=code&scope=openid+profile&' +
+          'redirect_uri=http://localhost:4221/callback',
+        redirectURL: 'http://localhost:4221/callback',
+        cognitoTokenURL: 'https://testdevpaladincloud.auth.us-west-1.amazoncognito.com/oauth2/token',
+        logout: 'https://testdevpaladincloud.auth.us-west-1.amazoncognito.com/logout?' +
+          'client_id=5b68m1qai7uanmu3jb19tunpuq' +
+          'logout_uri=http://localhost:4221/home'
       }
     },
     pacmanIssue: {
