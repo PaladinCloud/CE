@@ -40,6 +40,18 @@ export const CONFIGURATIONS = {
         tenant: '', // Expected values: Value expected if 'AD_AUTHENTICATION' is true
         clientId: '' // Expected values: Value expected if 'AD_AUTHENTICATION' is true
       },
+    /*  cognitoConfig: {
+        sso_api_username: '',
+        sso_api_pwd: '',
+
+        loginURL: '',
+
+        redirectURL: '',
+
+        cognitoTokenURL: '',
+
+        logout: ''
+      }*/
       cognitoConfig: {
         sso_api_username: '5b68m1qai7uanmu3jb19tunpuq',
         sso_api_pwd: 'ia6lp2l95m7il5s8ufabpjo4pjgbshu9jg3hgu67muc4rfoi7pu',
