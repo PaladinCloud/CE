@@ -13,8 +13,6 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.compute.v1.*;
-import com.google.cloud.compute.v1.Zone;
-import com.google.cloud.compute.v1.*;
 import com.google.cloud.container.v1.ClusterManagerClient;
 import com.google.cloud.container.v1.ClusterManagerSettings;
 import com.google.cloud.dataproc.v1.ClusterControllerClient;
@@ -28,10 +26,6 @@ import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.container.v1.DNSConfig;
-import com.google.container.v1.DNSConfigOrBuilder;
-import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -64,6 +58,10 @@ public class GCPCredentialsProvider {
 
     private CloudResourceManager cloudResourceManager;
     private Iam iamService;
+    private UrlMapsClient urlMap;
+    private TargetHttpsProxiesClient targetHttpsProxiesClient;
+
+    private BackendServicesClient backendService;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -233,7 +231,30 @@ public class GCPCredentialsProvider {
        return  iamService;
     }
 
+    public UrlMapsClient getURLMap() throws IOException {
+        if(urlMap==null)
+        {
+           UrlMapsSettings urlMapsSettings= UrlMapsSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            urlMap=UrlMapsClient.create(urlMapsSettings);
+        }
+        return urlMap;
+    }
+    public TargetHttpsProxiesClient getTargetHttpProxiesClient() throws IOException {
+        if(targetHttpsProxiesClient==null){
+            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
+        }
+        return targetHttpsProxiesClient;
+    }
 
+    public BackendServicesClient getBackendServiceClient() throws IOException {
+        if(backendService==null)
+        {
+           BackendServicesSettings backendServicesSettings= BackendServicesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            backendService=BackendServicesClient.create(backendServicesSettings);
+        }
+        return backendService;
+    }
     // close the client in destroy method
     @PreDestroy
     public void destroy() {
