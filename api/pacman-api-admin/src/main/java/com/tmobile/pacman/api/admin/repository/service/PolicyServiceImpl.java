@@ -449,7 +449,7 @@ public class PolicyServiceImpl implements PolicyService {
 	
 	private boolean isPolicyTypeNotServerlessOrManaged(final String policyType) {
 		String policyTypeToCheck = policyType.replace(" ", StringUtils.EMPTY);
-		return (!policyTypeToCheck.equalsIgnoreCase(AdminConstants.SERVERLESS_RULE_TYPE) && !policyTypeToCheck.equalsIgnoreCase(AdminConstants.MANAGED_RULE_TYPE));
+		return (!policyTypeToCheck.equalsIgnoreCase(AdminConstants.SERVERLESS_RULE_TYPE) && !policyTypeToCheck.equalsIgnoreCase(AdminConstants.MANAGED_POLICY_TYPE));
 	}
 
 	private boolean createUpdatePolicyJartoS3Bucket(MultipartFile fileToUpload, String ruleUUID) {

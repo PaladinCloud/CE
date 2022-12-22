@@ -24,7 +24,7 @@ public final class AdminConstants {
 	}
 	
 	public static final String SERVERLESS_RULE_TYPE					= 	"Serverless";
-	public static final String MANAGED_RULE_TYPE					= 	"ManageRule";
+	public static final String MANAGED_POLICY_TYPE					= 	"ManagePolicy";
 	public static final String JAR_EXTENSION						= 	".jar";
 	public static final String JAR_FILE_MISSING						=	"Jar file is missing";
 	public static final String RESOURCE_ACCESS_DENIED				=	"You don't have sufficient privileges to access this resource";

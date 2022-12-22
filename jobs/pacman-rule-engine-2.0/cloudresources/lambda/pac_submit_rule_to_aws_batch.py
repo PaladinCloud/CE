@@ -43,7 +43,7 @@ def submit_to_batch(jobQueue,jobName,jobDefinition,containerOverrides,parameters
 ##
 def processJsonInput(event,context):
     # job name cannot be more then 128 characters for AWS batch
-    jobName =  event['ruleId'][0:123] + '-job'
+    jobName =  event['policyId'][0:123] + '-job'
 
     executableName = "pac-managed-rules"
 
@@ -55,13 +55,13 @@ def processJsonInput(event,context):
     if event.get('parameters'):
         parameters = event['parameters']
     else:
-         if('ruleType' in event and event['ruleType']=="Serverless"):
-            executableName = "rule-engine"
+         if('policyType' in event and event['policyType']=="Serverless"):
+            executableName = "policy-engine"
 
     parameters = {"executableName":executableName +".jar",
                  "params":json.dumps(event),
                  "jvmMemParams":os.getenv('JVM_HEAP_SIZE',"-Xms1024m -Xmx4g"),
-                 "ruleEngineExecutableName":"rule-engine.jar",
+                 "ruleEngineExecutableName":"policy-engine.jar",
                  "entryPoint":"com.tmobile.pacman.executor.PolicyExecutor"}
 
     return submit_to_batch(jobQueue,jobName,jobDefinition,containerOverrides,parameters)
