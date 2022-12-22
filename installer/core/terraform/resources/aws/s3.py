@@ -33,24 +33,18 @@ class S3Acl(TerraformResource):
         'acl' : {'required': True},
     }
 
-class AwsKmsKey(TerraformResource):
-    resource_instance_name = "aws_kms_key"
+class S3BucketPolicy(TerraformResource):
+    resource_instance_name = "aws_s3_bucket_policy"
     available_args = {
-        'description' : {'required': False},
-        'deletion_window_in_days ' : {'required': False}
+        'bucket' : {'required': True},
+        'policy' : {'required': True},
     }
 
 class AwsS3Encryption(TerraformResource):
     resource_instance_name = "aws_s3_bucket_server_side_encryption_configuration"
     available_args = {
         'bucket' : {'required': False},
-        'rule': {
-            'required': False,
-            'inline_args': {
-                'kms_master_key_id': {'required': False},
-                'sse_algorithm': {'required': False,}
-            }
-        },
+        'rule': {'required': False,},
     }
 
 class S3BucketObject(TerraformResource):

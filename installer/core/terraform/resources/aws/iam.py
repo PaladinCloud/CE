@@ -62,6 +62,7 @@ class IAMRolePolicyResource(TerraformResource):
         'path': {'required': False},
         'arn': {'required': False},
         'description': {'required': False},
+        'tags': {'required': False} 
     }
 
     description = Settings.RESOURCE_DESCRIPTION
