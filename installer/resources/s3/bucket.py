@@ -1,4 +1,4 @@
-from core.terraform.resources.aws.s3 import S3Bucket, S3Acl
+from core.terraform.resources.aws.s3 import S3Bucket, S3Acl, AwsKmsKey,AwsS3Encryption
 from core.terraform.resources.aws import iam
 from core.config import Settings
 from resources.iam.base_role import BaseRole
@@ -13,15 +13,29 @@ class BucketAcl(S3Acl):
     bucket = BucketStorage.get_output_attr('id')
     acl = "private"
 
+class KmsKey(AwsKmsKey):
+    description = "created for encrypting s3 object in paladinclouds3bucket"
+
+class BucketEncryption(AwsS3Encryption):
+    bucket = BucketStorage.get_output_attr('id')
+    kms_master_key_id = KmsKey.get_output_attr('id')
+    sse_algorithm = "aws:kms"
+
 class S3ResourcePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [
         {
             "effect": "Allow",
             "actions": ["s3:*"],
             "resources": [
-                BucketStorage.get_output_attr('arn') + "/*",  # Ex: "arn:aws:s3:::pacbot-data-us-east-1-12345/*",
-                BucketStorage.get_output_attr('arn')  # Ex: "arn:aws:s3:::pacbot-data-us-east-1-12345"
-            ]
+                BucketStorage.get_output_attr('arn') + "/*",  # Ex: "arn:aws:s3:::paladincloud-data-us-east-1-12345/*",
+                BucketStorage.get_output_attr('arn')  # Ex: "arn:aws:s3:::paladincloud-data-us-east-1-12345"
+            ],
+            "Condition": [{
+                    "Bool": {
+                        "aws:SecureTransport": "false"
+                    }
+            }],
+            "Principal": ["*"]
         }
     ]
 
