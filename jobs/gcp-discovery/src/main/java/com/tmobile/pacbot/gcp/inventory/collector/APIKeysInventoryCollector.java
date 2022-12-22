@@ -2,12 +2,11 @@ package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.api.apikeys.v2.ApiKeysClient;
 import com.google.api.apikeys.v2.ApiTarget;
+
 import com.google.api.apikeys.v2.Key;
-import com.google.gson.Gson;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.vo.APIKeysVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,8 @@ public class APIKeysInventoryCollector {
             apiKeysVH.setDisplayName(keys.getDisplayName());
             HashMap<String, Object> restriction=new HashMap<>();
 
-           if(! keys.getRestrictions().getAllFields().isEmpty()){
+           if(!keys.getRestrictions().getAllFields().isEmpty()){
+
 
                List<String>service=new ArrayList<>();
                List<ApiTarget>apiTargets=keys.getRestrictions().getApiTargetsList();
@@ -83,7 +83,6 @@ public class APIKeysInventoryCollector {
 
                });
                restriction.put("iosKeyRestrictions",iosKeyRestrictions);
-
            }
 
            apiKeysVH.setCreatedDate(new Date(keys.getCreateTime().getSeconds()*1000).toString());

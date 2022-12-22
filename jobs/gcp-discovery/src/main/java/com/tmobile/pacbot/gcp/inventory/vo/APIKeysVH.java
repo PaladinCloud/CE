@@ -12,6 +12,7 @@ public class APIKeysVH extends GCPVH{
     private HashMap<String,Object>restrictions;
     private List<String> apiTargetList;
 
+
     @Override
     public String getId() {
         return id;
@@ -53,6 +54,7 @@ public class APIKeysVH extends GCPVH{
     public void setRestrictions(HashMap<String, Object> restrictions) {
         this.restrictions = restrictions;
     }
+
     public List<String> getApiTargetList() {
         return apiTargetList;
     }

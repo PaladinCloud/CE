@@ -40,8 +40,8 @@
     "displayName": "VM Instances should be tagged with mandatory tags",
     "createdDate": "2022-06-16",
     "modifiedDate": "2022-06-16",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "GCP_Virtual_Machine_Disk_Encryption_CSEK_Rule",
@@ -345,7 +345,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/VPC_firewall_SQLSERVER_port_should_not_be_publicly_accessible",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deny Firewall public access to SQL port 1433",
+    "displayName": "Deny Public Access to SQL Port 1433",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
     "severity": "critical",
@@ -568,8 +568,8 @@
     "displayName": "PubSub topics should be tagged with mandatory tags",
     "createdDate": "2022-07-05",
     "modifiedDate": "2022-07-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_VpcFirewallTagging_vpcfirewall",
@@ -590,8 +590,8 @@
     "displayName": "VpcFirewall should be tagged with mandatory tags",
     "createdDate": "2022-07-05",
     "modifiedDate": "2022-07-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_CloudStorageTagging_cloudstorage",
@@ -609,11 +609,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/gcp_cloudstorage_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "CloudStorage should be tagged with mandatory tags",
+    "displayName": "Assign Mandatory Tags to CloudStorage",
     "createdDate": "2022-07-05",
     "modifiedDate": "2022-07-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_CloudSQLTagging_cloudsql",
@@ -634,8 +634,8 @@
     "displayName": "CloudSQL should be tagged with mandatory tags",
     "createdDate": "2022-07-05",
     "modifiedDate": "2022-07-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_BigqueryDatasetTagging_bigquerydataset",
@@ -653,11 +653,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/gcp_bigquerydataset_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "BigqueryDataset should be tagged with mandatory tags",
+    "displayName": "Assign Mandatory Tags to BigQueryDataset",
     "createdDate": "2022-07-05",
     "modifiedDate": "2022-07-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_BigqueryTableTagging_bigquerytable",
@@ -678,8 +678,8 @@
     "displayName": "BigqueryTable should be tagged with mandatory tags",
     "createdDate": "2022-07-05",
     "modifiedDate": "2022-07-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "GCP_DataProc_CMK_Encryption",
@@ -851,7 +851,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/GCP_sql_database_high_availability_rule",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Production Cloud SQL database instances should be configured for high availability",
+    "displayName": "Configure Production Cloud SQL Database Instances for High Availability",
     "createdDate": "2022-08-09",
     "modifiedDate": "2022-08-09",
     "severity": "high",
@@ -1115,7 +1115,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Legacy_Subnet_should_Not_Exist_in_a_Project",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deny legacy subnet mode for VPC",
+    "displayName": "Deny Legacy Subnet Mode for VPC",
     "createdDate": "2022-09-12",
     "modifiedDate": "2022-09-12",
     "severity": "medium",
@@ -1980,6 +1980,72 @@
     "category": "security"
   },
   {
+    "ruleId": "Enforce_Separate_Service_Account_Duties_for_Users",
+    "ruleUUID": "Enforce_Separate_Service_Account_Duties_for_Users",
+    "policyId": "Enforce_Separate_Service_Account_Duties_for_Users",
+    "ruleName": "Enforce Separate Service Account Duties for Users",
+    "targetType": "iamusers",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Enforce_Separate_Service_Account_Duties_for_Users",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-Separate-Service-Account-Duties-for-Users\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enforce_Separate_Service_Account_Duties_for_Users\",\"autofix\":false,\"alexaKeyword\":\"Enforce_Separate_Service_Account_Duties_for_Users\",\"ruleRestUrl\":\"\",\"targetType\":\"iamusers\",\"pac_ds\":\"gcp\",\"policyId\":\"Enforce_Separate_Service_Account_Duties_for_Users\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enforce_Separate_Service_Account_Duties_for_Users\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enforce_Separate_Service_Account_Duties_for_Users",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enforce Separate Service Account Duties for Users",
+    "createdDate": "2022-11-01",
+    "modifiedDate": "2022-11-01",
+    "severity": "low",
+    "category": "security"
+  },
+  {
+    "ruleId": "Enable_HTTPS_For_LoadBalancer",
+    "ruleUUID": "Enable_HTTPS_For_LoadBalancer",
+    "policyId": "Enable_HTTPS_For_LoadBalancer",
+    "ruleName": "Enable https for load balancer",
+    "targetType": "gcploadbalancer",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Enable_HTTPS_For_LoadBalancer",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-https-for-loadbalancer\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_HTTPS_For_LoadBalancer\",\"autofix\":false,\"alexaKeyword\":\"Enable_HTTPS_For_LoadBalancer\",\"ruleRestUrl\":\"\",\"targetType\":\"gcploadbalancer\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_HTTPS_For_LoadBalancer\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enable_HTTPS_For_LoadBalancer\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_HTTPS_For_LoadBalancer",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable HTTPS for Google Cloud Load Balancers",
+    "createdDate": "2022-12-08",
+    "modifiedDate": "2022-12-08",
+    "severity": "high",
+    "category": "security"
+  },
+  {
+    "ruleId": "Enable_Logging_For_BackendServices_LoadBalancer",
+    "ruleUUID": "Enable_Logging_For_BackendServices_LoadBalancer",
+    "policyId": "Enable_Logging_For_BackendServices_LoadBalancer",
+    "ruleName": "Enable logging for load balancer backend services",
+    "targetType": "gcploadbalancer",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Enable_Logging_For_BackendServices_LoadBalancer",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-https-logging-for-backend-services\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"autofix\":false,\"alexaKeyword\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"ruleRestUrl\":\"\",\"targetType\":\"gcploadbalancer\",\"pac_ds\":\"gcp\",\"policyId\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Logging_For_BackendServices_LoadBalancer",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Enable HTTPS logging for Load Balancing Backend Services",
+    "createdDate": "2022-12-08",
+    "modifiedDate": "2022-12-08",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Enable_API_Key_Application_Restrictions",
     "ruleUUID": "Enable_API_Key_Application_Restrictions",
     "policyId": "Enable_API_Key_Application_Restrictions",
@@ -1995,7 +2061,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_API_Key_Application_Restrictions",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Enable API Key Application Restrictions change to Configure Application Restrictions for Google Cloud API Key",
+    "displayName": "Configure Application Restrictions for Google Cloud API Key",
     "createdDate": "2022-11-29",
     "modifiedDate": "2022-11-29",
     "severity": "medium",

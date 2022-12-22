@@ -39,6 +39,10 @@
     border: 1px solid var(--border-200);
 }
 
+.table-header .search-bar-wrapper input{
+  min-width: 150px;
+}
+
 .table-header .header-left{
     height: 40px;
     max-width: 543px;
@@ -87,7 +91,7 @@
   border: 1px solid var(--border-200);
   padding: 4px 12px;
   cursor: pointer;
-  margin-left: 12px;
+  /* margin-left: 12px; */
   gap: 8px;
   align-items: center;
   font: var(--text-caption);
@@ -108,7 +112,7 @@
   top: 120px; */
   min-height: 100px;
   min-width: 445px;
-  max-height: 200px;
+  max-height: 212px;
   background-color: var(--background-white);
   border: 1px solid var(--border-200);
   padding: 20px;
@@ -129,7 +133,8 @@
 }
 
 .filter-modal-container .filters-wrapper .filter{
-  gap: 8px
+  gap: 8px;
+  align-items: center;
 }
 
 .filter-modal-container .filters-wrapper{
@@ -167,6 +172,20 @@
   overflow-y: scroll;
   min-height: 50px;
   max-height: 100px;
+  padding: 2px 0px;
+}
+
+.filters-container ::ng-deep .mat-form-field-infix{
+  padding: 8px 16px;
+  min-width: 150px;
+}
+
+.filters-container ::ng-deep .mat-form-field-label{
+  padding: 8px 16px;
+}
+
+.filters-container ::ng-deep .mat-select-arrow-wrapper{
+  align-self: baseline;
 }
 
 .table-header .search-in-columns{
@@ -188,10 +207,6 @@
 
 .table-header ::ng-deep .mat-form-field-underline {
     display: none;
-}
-
-.table-header .header-left .search-bar-wrapper img{
-    padding: 12px;
 }
 
 .add-remove-columns-wrapper ::ng-deep .mat-select-value,
@@ -310,4 +325,20 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   border: 1px solid var(--border-200);
   cursor: pointer;
   margin-left: auto;
+}
+
+.chip{
+  max-width: 100px;
+  background: var(--background-grey);
+  padding: 0px 4px 0px 12px;
+  border-radius: 4px;
+  font: var(--text-body-2);
+}
+
+.more-filters-wrapper{
+  background: #F1F6FF;
+  color: var(--primary-400);
+  padding: 6px 4px;
+  border-radius: 4px;
+  font: var(--text-body-2);
 }

@@ -1,26 +1,19 @@
 package com.tmobile.pacbot.gcp.inventory.auth;
 
-import com.google.api.Service;
 import com.google.api.apikeys.v2.ApiKeysClient;
 import com.google.api.apikeys.v2.ApiKeysSettings;
-import com.google.api.apikeys.v2.Key;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.api.gax.rpc.ClientContext;
-import com.google.api.gax.rpc.TransportChannelProvider;
 import com.google.api.services.cloudresourcemanager.CloudResourceManager;
 import com.google.api.services.cloudtasks.v2.CloudTasks;
 import com.google.api.services.iam.v1.Iam;
 import com.google.api.services.sqladmin.SQLAdmin;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.GcpLaunchStage;
 import com.google.cloud.bigquery.BigQueryOptions;
-import com.google.cloud.compute.v1.*;
-import com.google.cloud.compute.v1.Zone;
 import com.google.cloud.compute.v1.*;
 import com.google.cloud.container.v1.ClusterManagerClient;
 import com.google.cloud.container.v1.ClusterManagerSettings;
@@ -35,10 +28,6 @@ import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.container.v1.DNSConfig;
-import com.google.container.v1.DNSConfigOrBuilder;
-import com.google.protobuf.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -68,9 +57,11 @@ public class GCPCredentialsProvider {
     private ZonesClient zonesClient;
     private Dns dns;
     private NetworksClient networksClient;
-
     private CloudResourceManager cloudResourceManager;
     private Iam iamService;
+    private UrlMapsClient urlMap;
+    private TargetHttpsProxiesClient targetHttpsProxiesClient;
+    private BackendServicesClient backendService;
     private ApiKeysClient apiKeysClient;
 
 
@@ -251,13 +242,35 @@ public class GCPCredentialsProvider {
             ApiKeysSettings apiKeysSettings = ApiKeysSettings.newBuilder()
                     .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
              apiKeysClient=   ApiKeysClient.create(apiKeysSettings);
-             System.out.println("***** api client ******* ");
-
-
         }
         return apiKeysClient;
     }
 
+
+    public UrlMapsClient getURLMap() throws IOException {
+        if(urlMap==null)
+        {
+           UrlMapsSettings urlMapsSettings= UrlMapsSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            urlMap=UrlMapsClient.create(urlMapsSettings);
+        }
+        return urlMap;
+    }
+    public TargetHttpsProxiesClient getTargetHttpProxiesClient() throws IOException {
+        if(targetHttpsProxiesClient==null){
+            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
+        }
+        return targetHttpsProxiesClient;
+    }
+
+    public BackendServicesClient getBackendServiceClient() throws IOException {
+        if(backendService==null)
+        {
+           BackendServicesSettings backendServicesSettings= BackendServicesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            backendService=BackendServicesClient.create(backendServicesSettings);
+        }
+        return backendService;
+    }
 
     // close the client in destroy method
     @PreDestroy
