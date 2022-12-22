@@ -34,7 +34,7 @@ public class GKEClusterInventoryCollector {
     GCPlocationUtil gcPlocationUtil;
     private static final Logger logger = LoggerFactory.getLogger(GKEClusterInventoryCollector.class);
 
-    public List<GKEClusterVH> fetchGKEClusterInventory(ProjectVH project) throws IOException, GeneralSecurityException {
+    public List<GKEClusterVH> fetchGKEClusterInventory(ProjectVH project){
         List<GKEClusterVH> gkeClusterlist = new ArrayList<>();
         logger.info("### GKe cluster  collector ###########");
         try {
@@ -49,20 +49,18 @@ public class GKEClusterInventoryCollector {
             for (String region : regions) {
                 logger.info("### GKe cluster  clusterList  inside region {}", region);
                 ClusterManagerClient clusterManagerClient = gcpCredentialsProvider.getClusterManagerClient();
-                String parent="projects/"+project.getProjectId()+"/locations/"+region;
-                ListClustersResponse clusterList=null;
+                String parent = "projects/" + project.getProjectId() + "/locations/" + region;
+                ListClustersResponse clusterList = null;
                 try {
-                    clusterList=clusterManagerClient.listClusters(parent);
+                    clusterList = clusterManagerClient.listClusters(parent);
                     logger.info("cluster Size {}", clusterManagerClient.listClusters(parent).getClustersList());
 
-                }
-                catch (Exception e){
-                    logger.info("Exception {}",e.getMessage());
+                } catch (Exception e) {
+                    logger.info("Exception {}", e.getMessage());
 
                 }
 
-
-
+                if(clusterList!=null){
                 for (Cluster cluster : clusterList.getClustersList()) {
                     GKEClusterVH gkeClusterVH = new GKEClusterVH();
                     gkeClusterVH.setId(cluster.getId());
@@ -71,15 +69,15 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
                     gkeClusterVH.setIPAlias(cluster.getIpAllocationPolicy().getUseIpAliases());
                     gkeClusterVH.setCloudLogging(cluster.getLoggingService());
-                 gkeClusterVH.setCloudMonitoring(cluster.getMonitoringService());
-                   logger.info("monitoring services {} {}", cluster.getName(),cluster.getMonitoringService());                    if(cluster.getAddonsConfig()!=null && !cluster.getAddonsConfig().getAllFields().isEmpty()){
+                    gkeClusterVH.setCloudMonitoring(cluster.getMonitoringService());
+                    logger.info("monitoring services {} {}", cluster.getName(), cluster.getMonitoringService());
+                    if (cluster.getAddonsConfig() != null && !cluster.getAddonsConfig().getAllFields().isEmpty()) {
                         gkeClusterVH.setDisableKubernetesDashBoard(cluster.getAddonsConfig().getKubernetesDashboard().getDisabled());
                     }
-                    if(cluster.getPrivateClusterConfig()!=null){
+                    if (cluster.getPrivateClusterConfig() != null) {
                         gkeClusterVH.setEnablePrivateNodes(cluster.getPrivateClusterConfig().getEnablePrivateNodes());
                         gkeClusterVH.setEnablePrivateEndPoints(cluster.getPrivateClusterConfig().getEnablePrivateEndpoint());
-                    }
-                    else{
+                    } else {
                         gkeClusterVH.setEnablePrivateNodes(false);
                         gkeClusterVH.setEnablePrivateEndPoints(false);
                     }
@@ -88,14 +86,14 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setVersion(cluster.getCurrentMasterVersion());
                     gkeClusterVH.setRegion(cluster.getLocation());
 
-                    if (cluster.getMasterAuthorizedNetworksConfig() !=null && !cluster.getMasterAuthorizedNetworksConfig().getAllFields().isEmpty()) {
-                        logger.info("getMasterAuthorizedNetworksConfig {} ***********",cluster.getMasterAuthorizedNetworksConfig().toString());
+                    if (cluster.getMasterAuthorizedNetworksConfig() != null && !cluster.getMasterAuthorizedNetworksConfig().getAllFields().isEmpty()) {
+                        logger.info("getMasterAuthorizedNetworksConfig {} ***********", cluster.getMasterAuthorizedNetworksConfig());
                         HashMap<String, Object> masterAuthorizedNetworksConfigMap = new HashMap<>();
 
                         cluster.getMasterAuthorizedNetworksConfig().getAllFields().forEach((fieldDescriptor, o) -> {
-                            logger.info("field Descriptor {} {}",fieldDescriptor.getName(),o.toString());
-                        masterAuthorizedNetworksConfigMap.put(fieldDescriptor.getName(),o.toString());
-                        }
+                                    logger.info("field Descriptor {} {}", fieldDescriptor.getName(), o);
+                                    masterAuthorizedNetworksConfigMap.put(fieldDescriptor.getName(), o.toString());
+                                }
                         );
 
 
@@ -124,29 +122,31 @@ public class GKEClusterInventoryCollector {
                     List<NodePoolVH> nodePoolVHList = new ArrayList<>();
                     if (listNodePools != null) {
                         for (NodePool nodePool : listNodePools.getNodePoolsList()) {
-                        NodePoolVH nodePoolVH=new NodePoolVH();
+                            NodePoolVH nodePoolVH = new NodePoolVH();
                             nodePoolVH.setAutoUpgrade(nodePool.getManagement().getAutoUpgrade());
                             nodePoolVH.setAutoRepair(nodePool.getManagement().getAutoRepair());
-                        if(nodePool.getConfig().getBootDiskKmsKey()!=null){
-                            String bootDiskKmsKey=new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(),String.class);
-                            gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
+                            if (nodePool.getConfig().getBootDiskKmsKey() != null) {
+                                String bootDiskKmsKey = new Gson().fromJson(nodePool.getConfig().getBootDiskKmsKey(), String.class);
+                                gkeClusterVH.setBootDiskKmsKey(bootDiskKmsKey);
 
-                        }
-                        nodePoolVH.setEnableIntegrityMonitoring(nodePool.getConfig().getShieldedInstanceConfig().getEnableIntegrityMonitoring());
-                        nodePoolVH.setEnableSecureBoot(nodePool.getConfig().getShieldedInstanceConfig().getEnableSecureBoot());
+                            }
+                            nodePoolVH.setEnableIntegrityMonitoring(nodePool.getConfig().getShieldedInstanceConfig().getEnableIntegrityMonitoring());
+                            nodePoolVH.setEnableSecureBoot(nodePool.getConfig().getShieldedInstanceConfig().getEnableSecureBoot());
 
-                        nodePoolVHList.add(nodePoolVH);
+                            nodePoolVHList.add(nodePoolVH);
                         }
                     }
-                  gkeClusterVH.setNodePools(nodePoolVHList);
-                  gkeClusterVH.setEnableKubernetesAlpha(cluster.getEnableKubernetesAlpha());
-                  gkeClusterVH.setPassword(cluster.getMasterAuth().getPassword());
-                  gkeClusterVH.setUsername(cluster.getMasterAuth().getUsername());
+                    gkeClusterVH.setNodePools(nodePoolVHList);
+                    gkeClusterVH.setEnableKubernetesAlpha(cluster.getEnableKubernetesAlpha());
+                    gkeClusterVH.setPassword(cluster.getMasterAuth().getPassword());
+                    gkeClusterVH.setUsername(cluster.getMasterAuth().getUsername());
 
-                        gkeClusterlist.add(gkeClusterVH);
+                    gkeClusterlist.add(gkeClusterVH);
 
                 }
                 logger.debug("##########ending########-> {}", gkeClusterlist);
+            }
+
             }
         } catch (Exception e) {
             logger.debug(e.getMessage());
