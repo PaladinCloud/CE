@@ -168,7 +168,7 @@ class ReplaceSQLPlaceHolder(NullResource):
         src_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB.sql')
         copy2(src_file, self.dest_file)
         src_policy_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Policy.sql')
-        copy2(src_file, self.src_policy_file)
+        copy2(src_policy_file, self.policy_dest_file)
         if Settings.AUTHENTICATION_TYPE == "AZURE_AD":
             src_azure_ad_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Azure_AD.sql')
             copy2(src_azure_ad_file, self.azure_ad_dest_file)
