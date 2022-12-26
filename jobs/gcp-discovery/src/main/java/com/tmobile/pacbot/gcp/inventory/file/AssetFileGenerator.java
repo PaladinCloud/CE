@@ -78,7 +78,6 @@ public class AssetFileGenerator {
 	@Autowired
 	APIKeysInventoryCollector apiKeysInventoryCollector;
 
-
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -246,6 +245,7 @@ public class AssetFileGenerator {
 				}
 			});
 			executor.execute(() -> {
+
 				if (!(isTypeInScope("apikeys"))) {
 					return;
 				}

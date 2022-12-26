@@ -2046,6 +2046,28 @@
     "category": "security"
   },
   {
+    "ruleId": "Secure_SSL_Cipher_Suites",
+    "ruleUUID": "Secure_SSL_Cipher_Suites",
+    "policyId": "Secure_SSL_Cipher_Suites",
+    "ruleName": "Secure SSL Cipher Suites",
+    "targetType": "gcploadbalancer",
+    "assetGroup": "gcp",
+    "alexaKeyword": "Secure_SSL_Cipher_Suites",
+    "ruleParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-Insecure-SSL-Cipher-Suites\",\"key\":\"ruleKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"ruleOwner\"}],\"environmentVariables\":[],\"ruleId\":\"Secure_SSL_Cipher_Suites\",\"autofix\":false,\"alexaKeyword\":\"Secure_SSL_Cipher_Suites\",\"ruleRestUrl\":\"\",\"targetType\":\"gcploadbalancer\",\"pac_ds\":\"gcp\",\"policyId\":\"Secure_SSL_Cipher_Suites\",\"assetGroup\":\"gcp\",\"ruleUUID\":\"Secure_SSL_Cipher_Suites\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0/6 * * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Secure_SSL_Cipher_Suites",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Secure SSL Cipher Suites",
+    "createdDate": "2022-12-08",
+    "modifiedDate": "2022-12-08",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "ruleId": "Enable_API_Key_Application_Restrictions",
     "ruleUUID": "Enable_API_Key_Application_Restrictions",
     "policyId": "Enable_API_Key_Application_Restrictions",

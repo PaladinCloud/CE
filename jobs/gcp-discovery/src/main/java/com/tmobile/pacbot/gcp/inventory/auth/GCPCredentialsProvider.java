@@ -60,8 +60,15 @@ public class GCPCredentialsProvider {
     private CloudResourceManager cloudResourceManager;
     private Iam iamService;
     private UrlMapsClient urlMap;
-    private TargetHttpsProxiesClient targetHttpsProxiesClient;
+    private TargetHttpProxiesClient targetHttpProxiesClient;
+
     private BackendServicesClient backendService;
+    private TargetSslProxiesClient targetSslProxiesClient;
+
+    private TargetHttpsProxiesClient targetHttpsProxiesClient;
+
+    private SslPoliciesClient sslPoliciesClient;
+
     private ApiKeysClient apiKeysClient;
 
 
@@ -246,7 +253,6 @@ public class GCPCredentialsProvider {
         return apiKeysClient;
     }
 
-
     public UrlMapsClient getURLMap() throws IOException {
         if(urlMap==null)
         {
@@ -255,12 +261,13 @@ public class GCPCredentialsProvider {
         }
         return urlMap;
     }
-    public TargetHttpsProxiesClient getTargetHttpProxiesClient() throws IOException {
-        if(targetHttpsProxiesClient==null){
-            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-            targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
+
+    public TargetHttpProxiesClient getTargetHttpProxiesClient() throws IOException {
+        if (targetHttpProxiesClient == null) {
+            TargetHttpProxiesSettings targetHttpProxiesSettings = TargetHttpProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetHttpProxiesClient = TargetHttpProxiesClient.create(targetHttpProxiesSettings);
         }
-        return targetHttpsProxiesClient;
+        return targetHttpProxiesClient;
     }
 
     public BackendServicesClient getBackendServiceClient() throws IOException {
@@ -270,6 +277,30 @@ public class GCPCredentialsProvider {
             backendService=BackendServicesClient.create(backendServicesSettings);
         }
         return backendService;
+    }
+
+    public TargetSslProxiesClient getTargetSslProxiesClient() throws IOException{
+        if(targetSslProxiesClient == null){
+            TargetSslProxiesSettings targetSslProxiesSettings=TargetSslProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetSslProxiesClient=TargetSslProxiesClient.create(targetSslProxiesSettings);
+        }
+        return targetSslProxiesClient;
+    }
+
+    public TargetHttpsProxiesClient getTargetHttpsProxiesClient() throws IOException{
+        if(targetHttpsProxiesClient == null){
+            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
+        }
+        return  targetHttpsProxiesClient;
+    }
+
+    public  SslPoliciesClient getSslPoliciesClient() throws  IOException{
+        if(sslPoliciesClient == null){
+            SslPoliciesSettings sslPoliciesSettings=SslPoliciesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            sslPoliciesClient=SslPoliciesClient.create(sslPoliciesSettings);
+        }
+        return sslPoliciesClient;
     }
 
     // close the client in destroy method

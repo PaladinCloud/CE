@@ -152,7 +152,6 @@ public class FileManager {
     }
     public static void generateServiceAccountFiles(List<ServiceAccountVH> serviceAccountVHList){
         FileGenerator.generateJson(serviceAccountVHList, "gcp-serviceaccounts.data");
-
     }
 
     public static void generateCloudMySqlServerFiles(List<CloudSqlVH> cloudSqlVHList) {
@@ -162,6 +161,7 @@ public class FileManager {
     public static void generateCloudPostgresFiles(List<CloudSqlVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_postgres.data");
     }
+
     public static void generateIamUsers(List<IAMUserVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-iamusers.data");
     }

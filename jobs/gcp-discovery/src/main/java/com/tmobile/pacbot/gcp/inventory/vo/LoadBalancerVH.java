@@ -5,9 +5,11 @@ import java.util.List;
 public class LoadBalancerVH extends GCPVH{
     String urlMap;
 
-    List<String> targetHttpProxy;
+    List<String> targetHttpsProxy;
 
     boolean logConfigEnabled;
+
+    List<SslPolicyVH>sslPolicyList;
 
     public boolean isLogConfigEnabled() {
         return logConfigEnabled;
@@ -25,11 +27,20 @@ public class LoadBalancerVH extends GCPVH{
         this.urlMap = urlMap;
     }
 
-    public List<String> getTargetHttpProxy() {
-        return targetHttpProxy;
+
+    public List<String> getTargetHttpsProxy() {
+        return targetHttpsProxy;
     }
 
-    public void setTargetHttpProxy(List<String> targetHttpProxy) {
-        this.targetHttpProxy = targetHttpProxy;
+    public void setTargetHttpsProxy(List<String> targetHttpsProxy) {
+        this.targetHttpsProxy = targetHttpsProxy;
     }
+    public List<SslPolicyVH> getSslPolicyList() {
+        return sslPolicyList;
+    }
+
+    public void setSslPolicyList(List<SslPolicyVH> sslPolicyList) {
+        this.sslPolicyList = sslPolicyList;
+    }
+
 }
