@@ -232,7 +232,7 @@
     "ruleExecutable": "",
     "ruleRestUrl": "",
     "ruleType": "Manage Rule",
-    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_classic_elb_should_not_be_publicly_accessibleaws_classic_elb_should_not_be_publicly_accessible",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_classic_elb_should_not_be_publicly_accessible",
     "status": "ENABLED",
     "userId": "ASGC",
     "displayName": "Restrict Internet Access to Classic ELB",
