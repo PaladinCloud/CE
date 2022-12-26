@@ -15,11 +15,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_rds_instances_should_not_tbe_idle_state",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Amazon RDS DB instances should not be idle",
+    "displayName": "Delete AWS RDS DB instances running in idle mode",
     "createdDate": "2018-03-15",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "CheckGuardDutyIsEnabledForAllAccount_version-1_CheckGuardDutyIsEnabledForAllAccount_account",
@@ -40,8 +40,8 @@
     "displayName": "AWS Guard Duty service should be enabled on all regions of all AWS accounts",
     "createdDate": "2018-01-19",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser",
@@ -62,8 +62,8 @@
     "displayName": "IAM users should not be inactive for more than 90 days",
     "createdDate": "2018-02-13",
     "modifiedDate": "2018-02-13",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "EC2WithPublicAccessSSHPort22_version-2_EC2WithPublicAccessForConfiguredPort22_ec2",
@@ -84,8 +84,8 @@
     "displayName": "EC2 instances should not be publicly accessible on SSH port 22",
     "createdDate": "2017-08-23",
     "modifiedDate": "2018-11-09",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "EC2WithPublicIPAccess_version-1_Ec2WithPublicAccess_ec2",
@@ -106,8 +106,8 @@
     "displayName": "EC2 instances should not have any publicly accessible ports",
     "createdDate": "2017-08-18",
     "modifiedDate": "2018-12-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "EbsSnapShot_version-1_EbsSnapShot_snapshot",
@@ -128,8 +128,8 @@
     "displayName": "EBS snapshots should not be publicly accessible",
     "createdDate": "2017-08-16",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2",
@@ -150,8 +150,8 @@
     "displayName": "EC2 instances should not be in stopped state for more than 60 days",
     "createdDate": "2017-08-29",
     "modifiedDate": "2018-11-12",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2",
@@ -172,8 +172,8 @@
     "displayName": "EC2 instances should not be publicly accessible on port 80 ",
     "createdDate": "2017-09-06",
     "modifiedDate": "2018-09-28",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "ElasticSearchPublicAccess_version-1_ElasticSearchPublicAccessRule_elasticsearch",
@@ -194,8 +194,8 @@
     "displayName": "Elastic Search endpoint should not be open to internet",
     "createdDate": "2018-10-10",
     "modifiedDate": "2018-12-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "ElbWithPublicAccess_version-1_ApplicationElbWithPublicAccess_appelb",
@@ -216,8 +216,8 @@
     "displayName": "Application ELB should not be exposed to internet",
     "createdDate": "2018-10-11",
     "modifiedDate": "2018-12-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "ElbWithPublicAccess_version-1_ClassicElbWithPublicAccess_classicelb",
@@ -238,8 +238,8 @@
     "displayName": "ClassicELB should not be exposed to internet",
     "createdDate": "2018-10-12",
     "modifiedDate": "2018-12-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "GuardDutyFindingsExists_version-1_GuardDutyFindingsExists_ec2",
@@ -260,8 +260,8 @@
     "displayName": "EC2 instance should not have guard duty findings",
     "createdDate": "2018-02-12",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "IamAccessKeyRotatedInEvery90Days_version-1_IamAccessKeyRotatedInEvery90Days_iamuser",
@@ -282,8 +282,8 @@
     "displayName": "IAM accesskey must be rotated every 90 days",
     "createdDate": "2017-08-30",
     "modifiedDate": "2018-01-05",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "IamPasswordPolicy_version-1_IamPasswordPolicy_account",
@@ -304,8 +304,8 @@
     "displayName": "All AWS accounts should follow the IAM password policy",
     "createdDate": "2018-01-08",
     "modifiedDate": "2018-06-29",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "IdleLoadBalancerRule_version-1_IdleLoadbalancerRule_classicelb",
@@ -323,11 +323,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_classic_elb_should_not_be_in_idle_state",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Loadbalncer's should not be idle ",
+    "displayName": "Terminate/Delete Idle Load Balancers ",
     "createdDate": "2018-02-25",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "LambdaFunWithAdmin-OrIamPrivileges_version-1_LambdaFunWithAdminOrIamPrivileges_lambda",
@@ -348,8 +348,8 @@
     "displayName": "Lambda functions should not have administrative permissions",
     "createdDate": "2018-02-15",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonAdminAccountsWithIAMFullAccess_version-1_IAMAccessGrantForNonAdminAccountRule_iamrole",
@@ -370,8 +370,8 @@
     "displayName": "Non Admin IAM roles should not have full IAM access",
     "createdDate": "2017-08-31",
     "modifiedDate": "2018-02-09",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_ApiWithNonStandardRule_api",
@@ -392,8 +392,8 @@
     "displayName": "API resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_AppelbWithNonStandardRule_appelb",
@@ -414,8 +414,8 @@
     "displayName": "Appelb resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_DynamodbWithNonStandardRule_dynamodb",
@@ -436,8 +436,8 @@
     "displayName": "Dynamodb should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_EfsWithNonStandardRule_efs",
@@ -458,8 +458,8 @@
     "displayName": "Efs resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_ElasticacheWithNonStandardRule_elasticache",
@@ -480,8 +480,8 @@
     "displayName": "Elasticache resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_ElasticipWithNonStandardRule_elasticip",
@@ -502,8 +502,8 @@
     "displayName": "Elasticip resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_ElasticsearchWithNonStandardRule_elasticsearch",
@@ -524,8 +524,8 @@
     "displayName": "Elasticsearch resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_EmrWithNonStandardRule_emr",
@@ -546,8 +546,8 @@
     "displayName": "Emr resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_EniWithNonStandardRule_eni",
@@ -568,8 +568,8 @@
     "displayName": "Eni resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms",
@@ -587,11 +587,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_kms_should_not_be_there_in_non_standard_region",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "KMS resource should have standard region",
+    "displayName": "Assign Standard Region to KMS Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_RdsdbWithNonStandardRule_rdsdb",
@@ -612,8 +612,8 @@
     "displayName": "Rdsdb resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_RedshiftWithNonStandardRule_redshift",
@@ -634,8 +634,8 @@
     "displayName": "Redshift resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_VpcWithNonStandardRule_vpc",
@@ -656,8 +656,8 @@
     "displayName": "VPC resource should have standard region",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_AsgWithNonStandardRegion_asg",
@@ -678,8 +678,8 @@
     "displayName": "Asg should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_ClassicelbWithNonStandardRegion_classicelb",
@@ -700,8 +700,8 @@
     "displayName": "Classicelb should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_LambdaWithNonStandardRegion_lambda",
@@ -722,8 +722,8 @@
     "displayName": "Lambda should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_LaunchconfigWithNonStandardRegion_launchconfig",
@@ -744,8 +744,8 @@
     "displayName": "Launchconfig should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_RdsSnapshotWithNonStandardRegion_rdssnapshot",
@@ -766,8 +766,8 @@
     "displayName": "RDS Snapshot should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_ResourceWithNonStandardRule_ec2",
@@ -788,8 +788,8 @@
     "displayName": "EC2 instance should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_S3WithNonStandardRegion_s3",
@@ -807,11 +807,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_s3_should_not_be_there_in_non_standard_region",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "S3 should have standard region",
+    "displayName": "Assign Standard Region to S3",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_SgWithNonStandardRegion_sg",
@@ -832,8 +832,8 @@
     "displayName": "Security group should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_SnapshotWithNonStandardRegion_snapshot",
@@ -854,8 +854,8 @@
     "displayName": "Snapshot should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_SnstopicWithNonStandardRegion_snstopic",
@@ -876,8 +876,8 @@
     "displayName": "Snstopic should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_StackWithNonStandardRegion_stack",
@@ -898,8 +898,8 @@
     "displayName": "Stack should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_SubnetWithNonStandardRegion_subnet",
@@ -920,8 +920,8 @@
     "displayName": "Subnet should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "NonStandardRegionRule_version-1_version-1_VolumeWithNonStandardRegion_volume",
@@ -942,8 +942,8 @@
     "displayName": "EBS Volume should have standard region",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "RdsSnapshotWithPublicAccess_version-1_RdsSnapshotWithPublicAccess_rdssnapshot",
@@ -964,8 +964,8 @@
     "displayName": "RDS snapshot should not be publicly accessible",
     "createdDate": "2017-08-31",
     "modifiedDate": "2018-12-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "RedShiftPublicAccess_version-1_RedShiftPublicAccess_redshift",
@@ -986,8 +986,8 @@
     "displayName": "Redshift attached Security Group should not be publicly accessible",
     "createdDate": "2017-10-09",
     "modifiedDate": "2018-12-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "S3GlobalAccess_version-1_S3BucketShouldnotpubliclyaccessble_s3",
@@ -1008,8 +1008,8 @@
     "displayName": "Non Allowlisted S3 buckets should not be publicly accessible",
     "createdDate": "2018-10-09",
     "modifiedDate": "2018-12-03",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "SGWithAnywhereAccess_version-1_SgWithAnywhereAccess_sg",
@@ -1030,8 +1030,8 @@
     "displayName": "Unapproved security groups should not have inbound rule allowing 0.0.0.0/0 for any port.",
     "createdDate": "2017-08-11",
     "modifiedDate": "2018-11-08",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "SGWithAnywhereAccess_version-1_SgWithSshPort22OpenToInternetAccess_sg",
@@ -1052,8 +1052,8 @@
     "displayName": "Security group with SSH port 22 should not be open to the internet",
     "createdDate": "2018-10-01",
     "modifiedDate": "2018-11-02",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs",
@@ -1074,8 +1074,8 @@
     "displayName": "Non-Allow listed SQS resources should not be publicly accessible",
     "createdDate": "2018-11-10",
     "modifiedDate": "2018-11-14",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "ServiceLimitRule_version-1_ServiceLimitRule_account",
@@ -1096,8 +1096,8 @@
     "displayName": "AWS service limits should be upgraded to match growing needs",
     "createdDate": "2017-10-17",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "TaggingRule_version-1_AppelbTaggingRule_appelb",
@@ -1115,11 +1115,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_app_elb_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Application ELB  should be tagged with mandatory tags",
+    "displayName": "Assign Mandatory Tags to Application ELB",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_AsgTaggingRule_asg",
@@ -1140,8 +1140,8 @@
     "displayName": "Auto scaling groups should be tagged with mandatory tags ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_ClassicelbTaggingRule_classicelb",
@@ -1159,11 +1159,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_classic_elb_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Classic ELB should be tagged with mandatory tags",
+    "displayName": "Assign Mandatory Tags to Classic ELB",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_CloudfrontTaggingRule_cloudfront",
@@ -1181,11 +1181,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_cloudfront_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Cloudfront should be tagged with mandatory tags",
+    "displayName": "Assign Mandatory Tags to Cloudfront",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_DynamodbTaggingRule_dynamodb",
@@ -1203,11 +1203,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_dynamodb_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Dynamo db should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to Dynamo db",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_Ec2TaggingRule_ec2",
@@ -1228,8 +1228,8 @@
     "displayName": "EC2 instances should be tagged with mandatory tags ",
     "createdDate": "2017-11-02",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_EfsTaggingRule_efs",
@@ -1247,11 +1247,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_efs_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "EFS should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to AWS Elastic File System",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_ElasticacheTaggingRule_elasticache",
@@ -1269,11 +1269,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticache_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Elasticache should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to Elasticache",
     "createdDate": "2018-09-10",
     "modifiedDate": "2018-09-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_EmrTaggingRule_emr",
@@ -1291,11 +1291,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_emr_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "AWS EMR should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to AWS Elastic MapReduce",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_KmsTaggingRule_kms",
@@ -1316,8 +1316,8 @@
     "displayName": "AWS KMS should be tagged with mandatory tags ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_LambdaTaggingRule_lambda",
@@ -1338,8 +1338,8 @@
     "displayName": "Lambda functions should be tagged with mandatory tags ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_RdsdbTaggingRule_rdsdb",
@@ -1357,11 +1357,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_rdsdb_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "RDS database should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to RDS Database",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_RedshiftTaggingRule_redshift",
@@ -1379,11 +1379,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_redshift_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Redshift should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to Redshift",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_S3TaggingRule_s3",
@@ -1404,8 +1404,8 @@
     "displayName": "S3 should be tagged with mandatory tags",
     "createdDate": "2017-11-02",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_SgTaggingRule_sg",
@@ -1426,8 +1426,8 @@
     "displayName": "Security groups should be tagged with mandatory tags",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_SnapshotTaggingRule_snapshot",
@@ -1448,8 +1448,8 @@
     "displayName": "EBS snapshots should be tagged with mandatory tags ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_StackTaggingRule_stack",
@@ -1470,8 +1470,8 @@
     "displayName": "Cloud formation stacks should be tagged with mandatory tags",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_SubnetTaggingRule_subnet",
@@ -1492,8 +1492,8 @@
     "displayName": "Subnets should be tagged with mandatory tags  ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_VolumeTaggingRule_volume",
@@ -1514,8 +1514,8 @@
     "displayName": "EBS volumes should be tagged with mandatory tags ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_VpcTaggingRule_vpc",
@@ -1536,8 +1536,8 @@
     "displayName": "VPCs should be tagged with mandatory tags",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_version-1_ElasticSearchTaggingRule_elasticsearch",
@@ -1555,11 +1555,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticsearch_should_be_tagged_with_mandatory_tags",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Elastic search resources should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to Elastic Search Resources",
     "createdDate": "2018-08-29",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "tagging"
   },
   {
     "ruleId": "TaggingRule_version-1_ECSTaskDefinitionTaggingRule_ecstaskdefinition",
@@ -1624,8 +1624,8 @@
     "displayName": "Amazon EBS volumes should not be underutilized ",
     "createdDate": "2018-05-14",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift",
@@ -1643,11 +1643,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_redshift_clusters_should_not_be_under_utilized",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Amazon Redshift clusters should not be underutilized",
+    "displayName": "Check for Underutilized Amazon Redshift Clusters",
     "createdDate": "2018-03-14",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+   "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume",
@@ -1668,8 +1668,8 @@
     "displayName": "EBS volumes should not be in unused or untagged state",
     "createdDate": "2018-08-22",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "Unused-Security-group_version-1_UnusedSecurityGroup_sg",
@@ -1690,8 +1690,8 @@
     "displayName": "Security groups should not be in unused state",
     "createdDate": "2017-10-16",
     "modifiedDate": "2018-12-18",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb",
@@ -1712,8 +1712,8 @@
     "displayName": "Application ELB should not be in unused state",
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb",
@@ -1731,11 +1731,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_classic_elb_should_not_be_unused",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Classic ELB should not be in unused state",
+    "displayName": "Clean up Unused ELB",
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "UnusedEBSRule_version-1_UnusedEbsRule_volume",
@@ -1756,8 +1756,8 @@
     "displayName": "EBS volumes should not be in unused state",
     "createdDate": "2017-10-13",
     "modifiedDate": "2018-11-12",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip",
@@ -1778,8 +1778,8 @@
     "displayName": "Elastic Ip's should not be in unused state",
     "createdDate": "2018-02-01",
     "modifiedDate": "2018-09-19",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "VpcFlowLogsEnabled_version-1_VpcFlowLogsEnabled_vpc",
@@ -1800,8 +1800,8 @@
     "displayName": "VPC flowlogs should be enabled for all VPCs",
     "createdDate": "2017-08-11",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "ec2deperecatedinstancetype_version-1_ec2deprecatedinstancetype_ec2",
@@ -1819,11 +1819,11 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_ec2_instances_should_not_use_deprecates_instance_types",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deprecated EC2 instances types should not be used to launch instances",
+    "displayName": "Do Not Use Deprecated EC2 instances types to Launch Instances",
     "createdDate": "2017-08-11",
     "modifiedDate": "2018-08-31",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "rdsdb_version-1_RdsDbPublicAccess_rdsdb",
@@ -1844,8 +1844,8 @@
     "displayName": "RDS database endpoints should not be publicly accessible",
     "createdDate": "2017-10-09",
     "modifiedDate": "2018-12-10",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "ServiceAccountPrivilegesRule_version-1_UnapprovedServiceAccountAccess_iamuser",
@@ -1866,8 +1866,8 @@
     "displayName": "Service Account should not have listed privileges",
     "createdDate": "2019-04-26",
     "modifiedDate": "2019-04-26",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "Ec2WithPublicAccessPort8080_version-1_Ec2WithPublicAccessPort8080_ec2",
@@ -1888,8 +1888,8 @@
     "displayName": "EC2 instances should not be publicly accessible on port 8080",
     "createdDate": "2017-09-06",
     "modifiedDate": "2018-09-28",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "cloudfront-check-for-unauthorized-html_version-1_Cloudfront_Unauthorized_HTML_Content_cloudfront",
@@ -1910,8 +1910,8 @@
     "displayName": "Cloudfront should not have unauthorized html content",
     "createdDate": "2019-04-26",
     "modifiedDate": "2019-04-26",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "Ec2WithPublicAccessMySqlPort3306_version-1_Ec2WithPubAccMySqlPort3306_ec2",
@@ -1932,8 +1932,8 @@
     "displayName": "EC2 instances should not be publicly accessible on default MySQL port 3306",
     "createdDate": "2017-09-06",
     "modifiedDate": "2018-09-28",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "Ec2WithPublicAccessNetBIOSPort138_version-1_Ec2WithPubAccNetBIOS138_ec2",
@@ -1954,8 +1954,8 @@
     "displayName": "EC2 instances should not be publicly accessible on port 138",
     "createdDate": "2017-09-06",
     "modifiedDate": "2018-09-28",
-    "severity": null,
-    "category": null
+    "severity": "critical",
+    "category": "security"
   },
   {
     "ruleId": "EC2-RunInstance-iam-role-with-unapproved-access_version-1_ec2-runInstance-iam-role-with-unapproved-access_iamrole",
@@ -2039,7 +2039,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_iamuser_shouldnothave_corenetwork_privileges",
     "status": "ENABLED",
     "userId": "asgc",
-    "displayName": "Non-Allow listed IAM users should not have core networking privileges",
+    "displayName": "Restrict Core Networking Privileges to Non-Allow listed IAM Users ",
     "createdDate": "2019-02-12",
     "modifiedDate": "2019-02-23",
     "severity": "critical",
@@ -2215,7 +2215,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_acmcertificate_expiry",
     "status": "ENABLED",
     "userId": "asgc",
-    "displayName": "ACM certificate should not expire in mentioned days from current date",
+    "displayName": "Check the Expiry status of the ACM Certificate",
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
     "severity": "high",
@@ -2391,7 +2391,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_vpngateway_mandatory_tag_rule",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "VPNGateway resources should be tagged with mandatory tags ",
+    "displayName": "Assign Mandatory Tags to VPNGateway",
     "createdDate": "2019-09-13",
     "modifiedDate": "2019-09-13",
     "severity": "low",
@@ -2545,7 +2545,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_rds_unencrypted_public_access",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deny public access to RDS database",
+    "displayName": "Deny Public Access to RDS Database",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "critical",
@@ -2941,7 +2941,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_iam_user_should_have_single_access_key",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Use single access key for IAM user",
+    "displayName": "Use Single Access Key for IAM User",
     "createdDate": "2022-08-16",
     "modifiedDate": "2022-08-16",
     "severity": "medium",
@@ -3271,7 +3271,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_default_security_group_should_not_be_publicly_accessible",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Deny public access in Default Security Group",
+    "displayName": "Deny Public Access in Default Security Group",
     "createdDate": "2022-05-20",
     "modifiedDate": "2022-05-20",
     "severity": "critical",
@@ -3315,7 +3315,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_elasticache_redis_clusters_encryption",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Encrypt ElastiCache for Redis data",
+    "displayName": "Encrypt ElastiCache for Redis Data",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
@@ -3337,7 +3337,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_check_for_expired_acm_certificate",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Remove Expired ACM Certificates",
+    "displayName": "Delete Expired ACM Certificates",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
@@ -3381,7 +3381,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_enable_emr_clusters_encryption",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Enable EMR data encryption",
+    "displayName": "Enable EMR Data Encryption",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
@@ -3447,7 +3447,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticsearch_domain_node_to_node_encryption",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Encrypt OpenSearch data in transit",
+    "displayName": "Encrypt OpenSearch Data in Transit",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
@@ -3601,7 +3601,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_unauthorized_api",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for unauthorized API calls",
+    "displayName": "Configure Log Metric Filter and Alarm for Unauthorized API Calls",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3645,7 +3645,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_root_account_usage",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for usage of root account",
+    "displayName": "Configure Log Metric Filter and Alarm for Root Account Usage",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3667,7 +3667,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_iam_policy_changes",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for IAM policy changes",
+    "displayName": "Configure Log Metric Filter and Alarm for IAM Policy Changes",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3711,7 +3711,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_mc_auth_failures",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for AWS Management Console authentication failures",
+    "displayName": "Configure Log Metric Filter and Alarm for AWS Management Console Authentication Failures",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3799,7 +3799,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_sg_changes",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for security group changes",
+    "displayName": "Configure Log Metric Filter and Alarm for Security Group Changes",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3821,7 +3821,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_nacl_changes",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for changes to NACL",
+    "displayName": "Configure Log Metric Filter and Alarm for NACL Changes",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3865,7 +3865,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_root_table",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for route table changes",
+    "displayName": "Configure Log Metric Filter and Alarm for Route Table Changes",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3887,7 +3887,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_account_cloudwatch_alarm_for_vpc_changes",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure log metric filter and alarm for VPC changes",
+    "displayName": "Configure Log Metric Filter and Alarm for VPC Changes",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
@@ -3913,6 +3913,28 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
+    "category": "security"
+  },
+  {
+    "ruleId": "EksSgInboundTrafficValidation_version-1_SgInboundTrafficValidation_eks",
+    "ruleUUID": "aws_eks_sg_inbound_traffic_validation",
+    "policyId": "EksSgInboundTrafficValidation_version-1",
+    "ruleName": "All Inbound traffic should be disabled for EKS Cluster other than TCP port 443",
+    "targetType": "eks",
+    "assetGroup": "aws",
+    "alexaKeyword": "EksSgInboundTraffic",
+    "ruleParams": "{\"params\":[{\"key\":\"ruleKey\",\"value\":\"check-eks-inbound-traffic\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"ruleCategory\"}],\"environmentVariables\":[],\"ruleId\":\"EksSgInboundTrafficValidation_version-1_SgInboundTrafficValidation_eks\",\"autofix\":false,\"alexaKeyword\":\"EksSgInboundTraffic\",\"ruleRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"policyId\":\"EksSgInboundTrafficValidation_version-1\",\"assetGroup\":\"aws\",\"ruleUUID\":\"aws_eks_sg_inbound_traffic_validation\",\"ruleType\":\"ManageRule\"}",
+    "ruleFrequency": "0 0 1/1 * ? *",
+    "ruleExecutable": "",
+    "ruleRestUrl": "",
+    "ruleType": "ManageRule",
+    "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_eks_sg_inbound_traffic_validation",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "displayName": "Disable inbound traffic to EKS Cluster other than TCP port 443",
+    "createdDate": "2022-12-05",
+    "modifiedDate": "2022-12-05",
+    "severity": "high",
     "category": "security"
   },
   {

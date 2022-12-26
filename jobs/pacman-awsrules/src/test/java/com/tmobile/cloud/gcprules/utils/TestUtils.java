@@ -3198,4 +3198,71 @@ public class TestUtils {
         array.add(jsonObject);
         return array;
     }
+    public static JsonArray getHitJsonArrayForAPIKeyApplication() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-12-0813:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"projectName\":null,\"projectId\":null,\"name\":\"projects/344106022091/locations/global/keys/5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"displayName\":\"APIkey3\",\"createdDate\":\"Thu Dec 01 12:45:46 IST 2022\",\"restrictions\":{\"androidKeyRestrictions\":{},\"serverKeyRestrictions\":{},\"iosKeyRestrictions\":{},\"browserKeyRestrictions\":{\"allowed_referrers\":[\"http.example.com\"]}},\"discoverydate\":\"2022-12-0813:00:00+0530\",\"_resourceid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_docid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_entity\":\"true\",\"_entitytype\":\"apikeys\",\"firstdiscoveredon\":\"2022-12-0712:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-12-0808:00:00+0000\"}"                    ,
+                JsonElement.class));
+
+                JsonArray array = new JsonArray();
+               array.add(jsonObject);
+              return array;
+    }
+    public static JsonArray getHitJsonArrayIAMUserDuties() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-2217:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616_arun.kotratil@paladincloud.io\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"userId\":\"user:arun.kotratil@paladincloud.io\",\"email\":\"arun.kotratil@paladincloud.io\",\"roles\":[\"roles/editor\"],\"discoverydate\":\"2022-11-2217:00:00+0530\",\"_resourceid\":\"central-run-349616_arun.kotratil@paladincloud.io\",\"_docid\":\"central-run-349616_arun.kotratil@paladincloud.io\",\"_entity\":\"true\",\"_entitytype\":\"iamusers\",\"firstdiscoveredon\":\"2022-11-2214:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-11-2212:14:00+0000\"}"              ,
+                JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getFailuresonArrayForAPIKeyApplication() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-12-0813:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"projectName\":null,\"projectId\":null,\"name\":\"projects/344106022091/locations/global/keys/5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"displayName\":\"APIkey3\",\"createdDate\":\"Thu Dec 01 12:45:46 IST 2021\",\"restrictions\":{\"androidKeyRestrictions\":{},\"serverKeyRestrictions\":{},\"iosKeyRestrictions\":{},\"browserKeyRestrictions\":{\"allowed_referrers\":[\"*\",\"*.example.com\"]}},\"discoverydate\":\"2022-12-0813:00:00+0530\",\"_resourceid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_docid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_entity\":\"true\",\"_entitytype\":\"apikeys\",\"firstdiscoveredon\":\"2022-12-0712:00:00+0530\",\"latest\":true,\"_loaddate\":\"2021-12-0808:00:00+0000\"}"                ,
+        JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getFailureJsonArrayForIAMUserDuties() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-11-2214:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"central-run-349616_service-344106022091@gcp-sa-cloudkms.iam.gserviceaccount.com\",\"projectName\":\"PaladinCloud\",\"projectId\":\"central-run-349616\",\"userId\":\"serviceAccount:service-344106022091@gcp-sa-cloudkms.iam.gserviceaccount.com\",\"email\":\"service-344106022091@gcp-sa-cloudkms.iam.gserviceaccount.com\",\"roles\":[\"roles/iam.serviceAccountAdmin\",\"roles/iam.serviceAccountUser\"],\"discoverydate\":\"2022-11-2214:00:00+0530\"}"    ,
+                JsonElement.class));
+
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getHitJsonArrayForAPIKeyRestriction() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-12-0813:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"projectName\":null,\"projectId\":null,\"name\":\"projects/344106022091/locations/global/keys/5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"displayName\":\"APIkey3\",\"createdDate\":\"Thu Dec 01 12:45:46 IST 2022\",\"apiTargetList\":[\"bigquerymigration.googleapis.com\" , \"cloudasset.googleapis.com\"],\"restrictions\":{\"androidKeyRestrictions\":{},\"serverKeyRestrictions\":{},\"iosKeyRestrictions\":{},\"browserKeyRestrictions\":{\"allowed_referrers\":[\"http.example.com\"]}},\"discoverydate\":\"2022-12-0813:00:00+0530\",\"_resourceid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_docid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_entity\":\"true\",\"_entitytype\":\"apikeys\",\"firstdiscoveredon\":\"2022-12-0712:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-12-0808:00:00+0000\"}"                ,
+            JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
+
+    public static JsonArray getFailureJsonArrayForAPIKeyRestriction() {
+        Gson gson = new Gson();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("_source", gson.fromJson(
+                "{\"discoveryDate\":\"2022-12-0813:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"projectName\":null,\"projectId\":null,\"name\":\"projects/344106022091/locations/global/keys/5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"displayName\":\"APIkey3\",\"createdDate\":\"Thu Dec 01 12:45:46 IST 2021\",\"restrictions\":{},\"discoverydate\":\"2022-12-0813:00:00+0530\",\"_resourceid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_docid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_entity\":\"true\",\"_entitytype\":\"apikeys\",\"firstdiscoveredon\":\"2022-12-0712:00:00+0530\",\"latest\":true,\"_loaddate\":\"2021-12-0808:00:00+0000\"}"                ,
+
+        JsonElement.class));
+        JsonArray array = new JsonArray();
+        array.add(jsonObject);
+        return array;
+    }
 }

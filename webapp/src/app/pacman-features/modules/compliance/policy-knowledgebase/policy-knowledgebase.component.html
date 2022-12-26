@@ -36,7 +36,7 @@
                 [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
                 [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick()" [doLocalSearch]="doLocalSearch"
-                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded">
+                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [totalRows]="totalRows">
             </app-table>
         </div>
     </div>

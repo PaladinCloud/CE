@@ -7,13 +7,15 @@ VPC = {
 }
 
 
-# CUstom tags that can be defined by user
+# Custom tags that can be defined by user
 CUSTOM_RESOURCE_TAGS = {
     'Application': "PaladinCloud",
     'Environment': "Prod",
     'Created By': "customer-name"
 }
 
+#set the prefix for resources, needs changed if you run more than one instance of Paladin Coud
+RESOURCE_NAME_PREFIX = "paladincloud"
 
 # RDS Related Configurations
 # Possibble values db.m5.large, db.t3.large etc
@@ -30,7 +32,7 @@ ES_DEDICATED_MASTER_ENABLED = False
 ES_MASTER_NODE_COUNT = 1
 
 # ALB related configurations
-# False if ALB need to be public(internet facing) else True
+# False if ALB needs to be public (internet facing) else True
 MAKE_ALB_INTERNAL = True
 ALB_PROTOCOL = "HTTP"
 SSL_CERTIFICATE_ARN = ""  # Required only if ALB_PROTOCOL is defined as HTTPS
@@ -50,7 +52,7 @@ MAIL_SMTP_SSL_TEST_CONNECTION = "false"
 USER_EMAIL_ID = ""
 
 # System reads below data from user if not updated here
-# Value should be numeric 1 or 2 or 3. I. If kept like this input is read from
+# Value should be numeric 1 or 2 or 3 
 AWS_AUTH_MECHANISM = None
 # if AWS_AUTH_MECHANISM == 1
 AWS_ACCESS_KEY = ""
@@ -59,12 +61,12 @@ AWS_REGION = ""
 # If AWS_AUTH_MECHANISM == 2, AWS_ASSUME_ROLE_ARN is required
 AWS_ASSUME_ROLE_ARN = ""
 
-# This settings enable Vulnerability feature and servie
+# These settings enable the Vulnerability feature and service
 ENABLE_VULNERABILITY_FEATURE = False
 QUALYS_API_URL = ""  # Qualys API Url without trailing slash
 QUALYS_INFO = ""  # Base64 encoded user:password of qualys
 
-# Settings for enable AZURE  
+# Settings for enabling AZURE  
 ENABLE_AZURE = False
 # Tenants should be a list of dict containing tenantId, clientId and secretValue
 AZURE_TENANTS = [
@@ -79,13 +81,13 @@ AZURE_TENANTS = [
         'secretValue': "s222"
     },
 ]
-# Settings for enable GCP 
+# Settings for enabling GCP 
 ENABLE_GCP = False
 GCP_PROJECT_IDS = []
 GCP_CREDENTIALS = {}
 
 # Azure AD integration 
-AUTHENTICATION_TYPE = "DB"	# login type value any one of this "AZURE_AD or DB "
+AUTHENTICATION_TYPE = "DB"	# login type value should be any one of these "AZURE_AD or DB "
 AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
 AD_CLIENT_ID = "xxx-xxx-xxxx"  # AD Client ID
 AD_SECRET_KEY = "xxxxyyyyzzz"  # AD secret key

@@ -7,6 +7,28 @@ public class KubernetesClustersVH extends AzureVH{
 
     private Map<String, Object> properties;
 
+    public boolean isDashBoardEnabled() {
+        return isDashBoardEnabled;
+    }
+
+    public void setDashBoardEnabled(boolean dashBoardEnabled) {
+        isDashBoardEnabled = dashBoardEnabled;
+    }
+
+    private boolean isDashBoardEnabled;
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    private String version;
+
+
+
     public boolean isEnableRBAC() {
         return enableRBAC;
     }

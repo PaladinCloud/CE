@@ -27,6 +27,7 @@ public class LoadBalancerVH extends GCPVH{
         this.urlMap = urlMap;
     }
 
+
     public List<String> getTargetHttpsProxy() {
         return targetHttpsProxy;
     }
@@ -41,4 +42,5 @@ public class LoadBalancerVH extends GCPVH{
     public void setSslPolicyList(List<SslPolicyVH> sslPolicyList) {
         this.sslPolicyList = sslPolicyList;
     }
+
 }

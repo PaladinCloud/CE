@@ -9,8 +9,22 @@
         </div>
         <div class="table-column-modifier flex flex-row" *ngIf="showSearchBar || showAddRemoveCol">
             <div class="header-left flex flex-row">
-                <div class="search-bar-wrapper flex flex-row" *ngIf="showSearchBar">
-                    <img src="/assets/icons/header-search.svg" matPrefix alt="" />
+                <div class="search-bar-wrapper flex flex-row gap-8" *ngIf="showSearchBar">
+                    <img class="padding-12" src="/assets/icons/header-search.svg" matPrefix alt="" />
+                    <div class="chips-container flex gap-8">
+                        <div class="chip-wrapper flex flex-align-center" *ngFor="let filter of chips; let i=index">
+                            <div class="chip flex flex-align-center" *ngIf="i<2 && filter.filterValue">
+                                <div class="chip-content nowrap-ellipsis capitalize" [title]="filter.filterValue">{{filter.filterValue}}</div>
+                                <img (click)="removeFilter(i)" class="pointer padding-12" src="/assets/icons/x-icon.svg" alt="">
+                            </div>
+                        </div>
+                        <div [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" class="more-filters-btn flex flex-align-center pointer" *ngIf="totalChips > 2">
+                            <div class="more-filters-wrapper flex flex-align-center pointer">
+                                +{{ (totalChips - 2) }}
+                            </div>
+                        </div>
+                    </div>
+                    
                     <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)" placeholder="Search" />
                     <!-- <div class="search-in-columns" matSuffix>
                         <mat-form-field>
@@ -22,8 +36,8 @@
                             </mat-select>
                         </mat-form-field>
                     </div> -->
-                    <img class="pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
-                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" *ngIf="showFilterBtn">
+                    <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
+                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" *ngIf="showFilterBtn">
                         <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
                     </div>
                 <mat-menu #filterModal="matMenu">
@@ -33,7 +47,7 @@
                             <div class="title">Filters</div>
                             <div class="clear-all-btn" (click)="removeAllFilters()">Clear all</div>
                         </div>
-                        <div class="filters-container">
+                        <div class="filters-container" #filtersContainer>
                             <div class="filters-wrapper flex flex-col">
                             <div class="filter flex flex-row" *ngFor="let filter of filteredArray; let i=index">
                                 <app-dropdown [items]="filterTypeLabels"
@@ -62,8 +76,8 @@
                 </div>
             </div>
             <div class="table-count-info" style="margin-left: 20px;">
-                <span *ngIf="isDataLoading">Loading...</span>
-                <span *ngIf="!isDataLoading">{{this.dataSource.data.length}} Results</span>
+                <!-- <span *ngIf="isDataLoading">Loading...</span> -->
+                <span >{{totalRows}} Results</span>
             </div>
             <div class="header-right flex flex-row">
                 

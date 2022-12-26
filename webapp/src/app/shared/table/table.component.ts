@@ -34,6 +34,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() totalRows = 0;
   @Input() tableScrollTop;
   @Input() doLocalSearch = false; // should remove this once we get tiles data from backend.
+  @Input() doLocalSort = true;
   @Input() tableDataLoaded;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
@@ -57,6 +58,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @ViewChild('allColumnsSelected') private allColumnsSelected: MatOption;
   @ViewChildren('customTable') customTable: any;
   @ViewChild("tableContainer") tableContainer: ElementRef;
+  @ViewChild("filtersContainer") filtersContainer: ElementRef;
 
   allSelected=true;
   screenWidth;
@@ -68,6 +70,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   @Input() filteredArray = [];
   @Input() filterTypeOptions;
+  totalChips;
+  chips;
   
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
@@ -98,7 +102,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
           this.data.push(...data);
           this.mainDataSource = new MatTableDataSource(this.data);
           this.dataSource = new MatTableDataSource(this.data);
-          if(this.headerColName) this.customSort(this.headerColName, this.direction);
         }
     })
     }
@@ -118,16 +121,21 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(!this.doLocalSearch || (changes.data && changes.data.currentValue && changes.data.currentValue.length>0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
-      if(this.headerColName) this.customSort(this.headerColName, this.direction);
       // handles when pagesize is small and screen height is large
       // if(window.innerHeight>1800 && this.data.length>0){
       //   this.nextPageCalled.emit();
       //   this.isDataLoading = true;
       // }
-      for(let j=this.filteredArray.length; j<1; j++){
-        this.addFilter();
-      }
     }
+    this.filteredArray.forEach((item, i) => {
+      if(item.filterValue.length==0){
+        this.filteredArray.splice(i, 1);
+      }
+    })    
+    this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
+    this.chips.splice(2);
+    this.totalChips = this.filteredArray.length;
+    this.addFilter();
   }
 
   ngAfterViewInit(): void { 
@@ -141,6 +149,14 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         }
       });
       this.changeDetectorRef.detectChanges();
+    }
+  }
+
+  scrollFilterModalToBottom(forceScroll?){
+    if(this.filtersContainer){
+      if(this.totalChips > 2 || forceScroll){
+        this.filtersContainer.nativeElement.scrollTop = this.filtersContainer.nativeElement.scrollHeight ;
+      }
     }
   }
 
@@ -271,11 +287,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   addFilter(){
-    let obj = {
-      keyDisplayValue: "",
-      filterValue: ""
-    };
-    this.filteredArray.push(obj);
+      let obj = {
+        keyDisplayValue: "",
+        filterValue: ""
+      };
+      this.filteredArray.push(obj);
+      setTimeout(() => this.scrollFilterModalToBottom(true), 1);
   }
 
   removeFilter(i){
@@ -346,7 +363,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.tableErrorMessage = '';
       if(this.doLocalSearch){
         this.customSearch(searchTxt);
-        this.customSort(this.headerColName, this.direction);
       }
       this.searchCalledEventEmitter.emit(searchTxt);
     }
@@ -357,19 +373,20 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.searchCalledEventEmitter.emit(this.searchQuery);
   }
 
-  announceSortChange(sort) {
-    this.customSort(sort.active, sort.direction);
+  announceSortChange(sort:any) {
+    this.headerColName = sort.active;
+    this.direction = sort.direction;
+    if(this.doLocalSort){
+      this.customSort(this.headerColName, this.direction);
+    }
     this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
   }
 
-  customSort(columnName, direction){    
+    customSort(columnName, direction){    
     if (!columnName || direction === '') {
       // this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
-
-    this.headerColName = columnName;
-    this.direction = direction;
     const isAsc = this.direction=='asc';
 
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
@@ -393,14 +410,5 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   download(){
     this.downloadClicked.emit();
-  }
-
-  changeFilterType(filterType) {
-    this.selectedFilterType.emit(filterType);
-  }
-
-  changeFilterTags(filterName) {
-    this.selectedFilter.emit(filterName);
-    // this.trigger.closeMenu();
   }
 }

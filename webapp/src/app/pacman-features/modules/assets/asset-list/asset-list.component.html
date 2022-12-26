@@ -14,7 +14,7 @@
                         <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
                         [data]="tableData" [columnWidths]="columnWidths"
                         [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                        [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
+                        [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                         [imageDataMap]="tableImageDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
                         [searchQuery]="searchTxt" (nextPageCalled)="nextPg($event)" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
                         (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"

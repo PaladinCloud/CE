@@ -27,7 +27,7 @@ import { AssetGroupObservableService } from 'src/app/core/services/asset-group-o
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { PermissionGuardService } from 'src/app/core/services/permission-guard.service';
-import { TableStateService } from 'src/app/core/services/table-state-service.service';
+import { TableStateService } from 'src/app/core/services/table-state.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
