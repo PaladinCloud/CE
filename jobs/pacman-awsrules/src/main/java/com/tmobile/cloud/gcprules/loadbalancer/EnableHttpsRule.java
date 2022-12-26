@@ -97,10 +97,10 @@ public class EnableHttpsRule extends BaseRule {
 
             logger.debug("Validating the data item: {}", loadBalancer);
             String urlMap=(loadBalancer.get("urlMap").getAsString()).concat("-target-proxy");
-            JsonArray targetHttpProxy=loadBalancer.getAsJsonArray("targetHttpProxy");
-            for(JsonElement targetHttpProx:targetHttpProxy)
+            JsonArray targetHttpsProxy=loadBalancer.getAsJsonArray("targetHttpsProxy");
+            for(JsonElement targetHttpsProx:targetHttpsProxy)
             {
-                if(targetHttpProx.getAsString().equals(urlMap)) {
+                if(targetHttpsProx.getAsString().equals(urlMap)) {
                     validationResult = true;
                     break;
                 }
