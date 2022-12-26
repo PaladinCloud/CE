@@ -1,14 +1,17 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class APIKeysVH extends GCPVH{
 
-    String id;
-    String name;
-    String displayName;
-    String createdDate;
-    HashMap<String,Object>restrictions;
+    private String id;
+    private String name;
+    private String displayName;
+    private String createdDate;
+    private HashMap<String,Object>restrictions;
+    private List<String> apiTargetList;
+
 
     @Override
     public String getId() {
@@ -51,4 +54,13 @@ public class APIKeysVH extends GCPVH{
     public void setRestrictions(HashMap<String, Object> restrictions) {
         this.restrictions = restrictions;
     }
+
+    public List<String> getApiTargetList() {
+        return apiTargetList;
+    }
+
+    public void setApiTargetList(List<String> apiTargetList) {
+        this.apiTargetList = apiTargetList;
+    }
+
 }

@@ -165,7 +165,6 @@ public class FileManager {
     public static void generateIamUsers(List<IAMUserVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-iamusers.data");
     }
-
     public static void generateLoadBalancerFiles(List<LoadBalancerVH> fetchLoadBalancerInventory) {
         FileGenerator.generateJson(fetchLoadBalancerInventory, "gcp-gcploadbalancer.data");
     }

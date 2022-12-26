@@ -78,6 +78,7 @@ public class AssetFileGenerator {
 	@Autowired
 	APIKeysInventoryCollector apiKeysInventoryCollector;
 
+
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -254,6 +255,7 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+
 			executor.execute(() -> {
 				if (!(isTypeInScope("iamusers"))) {
 					return;
