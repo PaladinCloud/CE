@@ -1,4 +1,4 @@
-from core.terraform.resources.aws.s3 import S3Bucket, S3Acl
+from core.terraform.resources.aws.s3 import S3Bucket, S3Acl,AwsS3Encryption, S3BucketPolicy
 from core.terraform.resources.aws import iam
 from core.config import Settings
 from resources.iam.base_role import BaseRole
@@ -13,6 +13,16 @@ class BucketAcl(S3Acl):
     bucket = BucketStorage.get_output_attr('id')
     acl = "private"
 
+
+class BucketEncryption(AwsS3Encryption):
+    bucket = BucketStorage.get_output_attr('id')
+    rule = {
+        "apply_server_side_encryption_by_default" : {
+        "sse_algorithm" : "AES256"
+        }
+    }
+
+
 class S3ResourcePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [
         {
@@ -24,6 +34,35 @@ class S3ResourcePolicyDocument(iam.IAMPolicyDocumentData):
             ]
         }
     ]
+
+class S3BucketPolicyDocument(iam.IAMPolicyDocumentData):
+    statement = [
+        {
+            "effect": "Deny",
+            "actions": ["s3:*"],
+            "resources": [
+                BucketStorage.get_output_attr('arn')  # Ex: "arn:aws:s3:::paladincloud-data-us-east-1-12345"
+            ],
+            "condition": [
+                {
+                'test': "Bool",
+                'variable' : "aws:SecureTransport",
+                'values' : [False]
+            }
+            ],
+            'principals': [
+                {
+                    'type': "AWS",
+                    'identifiers': ["*"]
+                }
+            ]
+        }
+    ]
+
+
+class BucketPolicy(S3BucketPolicy):
+    bucket = BucketStorage.get_output_attr('id')
+    policy = S3BucketPolicyDocument.get_output_attr('json')
 
 
 class S3ResourcePolicy(iam.IAMRolePolicyResource):

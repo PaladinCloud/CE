@@ -64,8 +64,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-serviceaccounts.data", "[", false);
         FileGenerator.writeToFile("gcp-cloudsql_postgres.data", "[", false);
         FileGenerator.writeToFile("gcp-iamusers.data", "[", false);
-
-
+        FileGenerator.writeToFile("gcp-gcploadbalancer.data", "[", false);
+        FileGenerator.writeToFile("gcp-apikeys.data", "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -88,9 +88,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-serviceaccounts.data", "]", true);
         FileGenerator.writeToFile("gcp-cloudsql_postgres.data", "]", true);
         FileGenerator.writeToFile("gcp-iamusers.data", "]", true);
-
-
-
+        FileGenerator.writeToFile("gcp-gcploadbalancer.data", "]", true);
+        FileGenerator.writeToFile("gcp-apikeys.data", "]", true);
     }
 
     public static void generateVMFiles(List<VirtualMachineVH> vmMap) throws IOException {
@@ -153,7 +152,6 @@ public class FileManager {
     }
     public static void generateServiceAccountFiles(List<ServiceAccountVH> serviceAccountVHList){
         FileGenerator.generateJson(serviceAccountVHList, "gcp-serviceaccounts.data");
-
     }
 
     public static void generateCloudMySqlServerFiles(List<CloudSqlVH> cloudSqlVHList) {
@@ -163,7 +161,14 @@ public class FileManager {
     public static void generateCloudPostgresFiles(List<CloudSqlVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-cloudsql_postgres.data");
     }
+
     public static void generateIamUsers(List<IAMUserVH> cloudSqlVHList) {
         FileGenerator.generateJson(cloudSqlVHList, "gcp-iamusers.data");
+    }
+    public static void generateLoadBalancerFiles(List<LoadBalancerVH> fetchLoadBalancerInventory) {
+        FileGenerator.generateJson(fetchLoadBalancerInventory, "gcp-gcploadbalancer.data");
+    }
+    public static void generateApiKeysFiles(List<APIKeysVH>apiKeysVHList){
+        FileGenerator.generateJson(apiKeysVHList, "gcp-apikeys.data");
     }
 }

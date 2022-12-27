@@ -72,6 +72,12 @@ public class AssetFileGenerator {
 	@Autowired
 	IAMUserCollector iamUserCollector;
 
+	@Autowired
+	LoadBalancerCollector loadBalancerCollector;
+
+	@Autowired
+	APIKeysInventoryCollector apiKeysInventoryCollector;
+
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -239,6 +245,18 @@ public class AssetFileGenerator {
 				}
 			});
 			executor.execute(() -> {
+
+				if (!(isTypeInScope("apikeys"))) {
+					return;
+				}
+				try {
+					FileManager.generateApiKeysFiles(apiKeysInventoryCollector.fetchApiKeys(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
+			executor.execute(() -> {
 				if (!(isTypeInScope("iamusers"))) {
 					return;
 				}
@@ -248,6 +266,17 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("loadbalancer"))) {
+					return;
+				}
+				try {
+					FileManager.generateLoadBalancerFiles(loadBalancerCollector.fetchLoadBalancerInventory(project));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 			executor.shutdown();
 
 			while (!executor.isTerminated()) {

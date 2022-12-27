@@ -58,8 +58,12 @@ public class KubernetesServicesCollector {
 
                 if(kubernetesClusterObject!=null){
                     KubernetesClustersVH kubernetesClustersVH= new KubernetesClustersVH();
+                    kubernetesClustersVH.setVersion(kubernetesCluster.version().toString());
                     kubernetesClustersVH.setId(kubernetesCluster.id());
                     kubernetesClustersVH.setEnableRBAC(kubernetesCluster.enableRBAC());
+                    if(kubernetesCluster.addonProfiles().get("kubeDashboard")!=null) {
+                        kubernetesClustersVH.setDashBoardEnabled( kubernetesCluster.addonProfiles().get("kubeDashboard").enabled());
+                    }
                     kubernetesClustersVH.setSubscription(subscription.getSubscriptionId());
                     kubernetesClustersVH.setSubscriptionName(subscription.getSubscriptionName());
                     kubernetesClustersVH.setRegion(kubernetesClusterObject.get("location").getAsString());

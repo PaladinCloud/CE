@@ -33,6 +33,19 @@ class S3Acl(TerraformResource):
         'acl' : {'required': True},
     }
 
+class S3BucketPolicy(TerraformResource):
+    resource_instance_name = "aws_s3_bucket_policy"
+    available_args = {
+        'bucket' : {'required': True},
+        'policy' : {'required': True},
+    }
+
+class AwsS3Encryption(TerraformResource):
+    resource_instance_name = "aws_s3_bucket_server_side_encryption_configuration"
+    available_args = {
+        'bucket' : {'required': False},
+        'rule': {'required': False,},
+    }
 
 class S3BucketObject(TerraformResource):
     """

@@ -1,4 +1,4 @@
-package com.tmobile.cloud.gcprules.GKEClusterRule;
+package com.tmobile.cloud.gcprules.loadbalancer;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
@@ -10,20 +10,19 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-
-@PacmanPolicy(key = "enable-auto-repair-for-gke-nodes", desc = "Enable GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableNodeAutoRepair extends BasePolicy {
-    private static final Logger logger = LoggerFactory.getLogger(EnableNodeAutoRepair.class);
+@PacmanPolicy(key = "check-for-Insecure-SSL-Cipher-Suites", desc = "Google Cloud load balancer SSL policies use secure ciphers", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class InsecureSSLCipherSuites extends BasePolicy {
+    private static final Logger logger = LoggerFactory.getLogger(InsecureSSLCipherSuites.class);
 
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
@@ -34,9 +33,6 @@ public class EnableNodeAutoRepair extends BasePolicy {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String key= ruleParam.get(PacmanRuleConstants.NODE_POOL_KEY);
-        String violationReason=ruleParam.get(PacmanRuleConstants.VIOLATION_REASON);
-        String description=ruleParam.get(PacmanRuleConstants.DESCRIPTION);
         String vmEsURL = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
 
         if (Boolean.FALSE.equals(PacmanUtils.doesAllHaveValue(severity, category, vmEsURL))) {
@@ -45,10 +41,10 @@ public class EnableNodeAutoRepair extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_gkecluster/_search";
+            vmEsURL = vmEsURL + "/gcp_gcploadbalancer/_search";
         }
-        logger.debug("========gcp_gkecluster URL after concatenation param {}  =========", vmEsURL);
-        boolean isKeyEnabled = false;
+        logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", vmEsURL);
+        boolean isSSLCipherSecured = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
@@ -61,16 +57,16 @@ public class EnableNodeAutoRepair extends BasePolicy {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                isKeyEnabled = checkKeyEnabled(vmEsURL, mustFilter,key);
-                if (!isKeyEnabled) {
+                isSSLCipherSecured = checkSSLCipherSecured(vmEsURL, mustFilter);
+                if (!isSSLCipherSecured) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
                     annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                    annotation.put(PacmanSdkConstants.DESCRIPTION, description);
+                    annotation.put(PacmanSdkConstants.DESCRIPTION, "Check the Secure Socket Layer (SSL) policies associated with your HTTPS and SSL Proxy load balancers for any cipher suites that demonstrate vulnerabilities or have been considered insecure by recent exploits. ");
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
-                    issue.put(PacmanRuleConstants.VIOLATION_REASON, violationReason);
+                    issue.put(PacmanRuleConstants.VIOLATION_REASON," If Google Cloud load balancer SSL policies use insecure ciphers" );
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========rule ended with status failure {}", annotation);
@@ -79,32 +75,51 @@ public class EnableNodeAutoRepair extends BasePolicy {
                 }
 
             } catch (Exception exception) {
+                exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
 
         logger.debug("======== ended with status true=========");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
-    }
-    private boolean checkKeyEnabled(String vmEsURL, Map<String, Object> mustFilter,String key) throws Exception {
-        logger.debug("========verifyports  started=========");
-        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
-        boolean validationResult = true;
-        if (hitsJsonArray.size() > 0) {
-            logger.debug("========verifyports hit array=========");
 
-            JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+    }
+
+    private boolean checkSSLCipherSecured(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
+        logger.debug("========checkSSLCipherSecured  started=========");
+        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
+        boolean validationResult = false;
+        if (hitsJsonArray.size() > 0) {
+            logger.debug("========checkSSLCipherSecured hit array=========");
+
+            JsonObject loadBalancer = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", gkeCluster);
+            logger.debug("Validating the data item: {}", loadBalancer);
 
-            JsonArray nodePools = null;
-            if(gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS)!=null){
-                nodePools=gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS).getAsJsonArray();
-                for (JsonElement nodePool:nodePools){
-                    logger.info("auto repair{}",nodePool.getAsJsonObject());
-                    if(nodePool.getAsJsonObject().get(key)!=null && !nodePool.getAsJsonObject().get(key).getAsBoolean()){
-                        validationResult=false;
+            JsonArray sslPolicyList=loadBalancer.get("sslPolicyList").getAsJsonArray();
+            for(JsonElement sslPolicy :sslPolicyList){
+                String profile=sslPolicy.getAsJsonObject().get("profile").getAsString();
+                String minTlsVersion=sslPolicy.getAsJsonObject().get("minTlsVersion").getAsString();
+                if(profile.equalsIgnoreCase("MODERN") && minTlsVersion.equalsIgnoreCase("TLS_1_2")){
+                    validationResult=true;
+                }
+                else if(profile.equalsIgnoreCase("RESTRICTED")){
+                    validationResult=true;
+                }
+                else if(profile.equalsIgnoreCase("CUSTOM")){
+
+                    validationResult=true;
+
+                    JsonArray enabledFeatures=sslPolicy.getAsJsonObject().get("enabledFeatures").getAsJsonArray();
+
+                    for(JsonElement enabledFeature:enabledFeatures){
+                        String cipher=enabledFeature.getAsString();
+
+                        if(cipher.equalsIgnoreCase("TLS_RSA_WITH_AES_128_GCM_SHA256") || cipher.equalsIgnoreCase("TLS_RSA_WITH_AES_256_GCM_SHA384")  || cipher.equalsIgnoreCase("TLS_RSA_WITH_AES_128_CBC_SHA") || cipher.equalsIgnoreCase("TLS_RSA_WITH_AES_256_CBC_SHA") || cipher.equalsIgnoreCase("TLS_RSA_WITH_3DES_EDE_CBC_SHA") ){
+                            validationResult=false;
+                            break;
+                        }
                     }
                 }
             }
@@ -112,8 +127,9 @@ public class EnableNodeAutoRepair extends BasePolicy {
 
         return validationResult;
     }
+
     @Override
     public String getHelpText() {
-        return "This rule checks if auto-repair feature is enabled for GKE nodes.";
+        return "Google Cloud load balancer SSL policies use secure ciphers";
     }
 }

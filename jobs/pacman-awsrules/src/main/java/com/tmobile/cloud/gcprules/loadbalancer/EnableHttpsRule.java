@@ -1,4 +1,4 @@
-package com.tmobile.cloud.gcprules.GKEClusterRule;
+package com.tmobile.cloud.gcprules.loadbalancer;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
@@ -21,10 +21,9 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanPolicy(key = "enable-auto-repair-for-gke-nodes", desc = "Enable GKE nodes management properties", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class EnableNodeAutoRepair extends BasePolicy {
-    private static final Logger logger = LoggerFactory.getLogger(EnableNodeAutoRepair.class);
-
+@PacmanPolicy(key = "enable-https-for-loadbalancer", desc = "Enable https for load balancer", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EnableHttpsRule extends BasePolicy {
+    private static final Logger logger = LoggerFactory.getLogger(EnableHttpsRule.class);
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         Annotation annotation = null;
@@ -34,9 +33,6 @@ public class EnableNodeAutoRepair extends BasePolicy {
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
-        String key= ruleParam.get(PacmanRuleConstants.NODE_POOL_KEY);
-        String violationReason=ruleParam.get(PacmanRuleConstants.VIOLATION_REASON);
-        String description=ruleParam.get(PacmanRuleConstants.DESCRIPTION);
         String vmEsURL = CommonUtils.getEnvVariableValue(PacmanSdkConstants.ES_URI_ENV_VAR_NAME);
 
         if (Boolean.FALSE.equals(PacmanUtils.doesAllHaveValue(severity, category, vmEsURL))) {
@@ -45,10 +41,10 @@ public class EnableNodeAutoRepair extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_gkecluster/_search";
+            vmEsURL = vmEsURL + "/gcp_gcploadbalancer/_search";
         }
-        logger.debug("========gcp_gkecluster URL after concatenation param {}  =========", vmEsURL);
-        boolean isKeyEnabled = false;
+        logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", vmEsURL);
+        boolean isHTTPSEnabled = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
@@ -61,16 +57,16 @@ public class EnableNodeAutoRepair extends BasePolicy {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                isKeyEnabled = checkKeyEnabled(vmEsURL, mustFilter,key);
-                if (!isKeyEnabled) {
+                isHTTPSEnabled = checkHTTPSEnabled(vmEsURL, mustFilter);
+                if (!isHTTPSEnabled) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
                     annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-                    annotation.put(PacmanSdkConstants.DESCRIPTION, description);
+                    annotation.put(PacmanSdkConstants.DESCRIPTION, "Google Cloud Platform (GCP) load balancers should be configured to use valid SSL/TLS certificates in order to handle encrypted web traffic. SSL certificate resources contain SSL certificate information that the load balancer uses to terminate SSL/TLS when HTTPS clients connect to it");
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
-                    issue.put(PacmanRuleConstants.VIOLATION_REASON, violationReason);
+                    issue.put(PacmanRuleConstants.VIOLATION_REASON,"HTTPS for Google Cloud Load Balancers was disabled" );
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========rule ended with status failure {}", annotation);
@@ -79,41 +75,43 @@ public class EnableNodeAutoRepair extends BasePolicy {
                 }
 
             } catch (Exception exception) {
+                exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
 
         logger.debug("======== ended with status true=========");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
-    }
-    private boolean checkKeyEnabled(String vmEsURL, Map<String, Object> mustFilter,String key) throws Exception {
-        logger.debug("========verifyports  started=========");
-        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
-        boolean validationResult = true;
-        if (hitsJsonArray.size() > 0) {
-            logger.debug("========verifyports hit array=========");
 
-            JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+    }
+
+    private boolean checkHTTPSEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
+        logger.debug("========checkHTTPSEnabled  started=========");
+        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
+        boolean validationResult = false;
+        if (hitsJsonArray.size() > 0) {
+            logger.debug("========checkHTTPSEnabled hit array=========");
+
+            JsonObject loadBalancer = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", gkeCluster);
-
-            JsonArray nodePools = null;
-            if(gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS)!=null){
-                nodePools=gkeCluster.getAsJsonObject().get(PacmanRuleConstants.NODE_POOLS).getAsJsonArray();
-                for (JsonElement nodePool:nodePools){
-                    logger.info("auto repair{}",nodePool.getAsJsonObject());
-                    if(nodePool.getAsJsonObject().get(key)!=null && !nodePool.getAsJsonObject().get(key).getAsBoolean()){
-                        validationResult=false;
-                    }
+            logger.debug("Validating the data item: {}", loadBalancer);
+            String urlMap=(loadBalancer.get("urlMap").getAsString()).concat("-target-proxy");
+            JsonArray targetHttpsProxy=loadBalancer.getAsJsonArray("targetHttpsProxy");
+            for(JsonElement targetHttpsProx:targetHttpsProxy)
+            {
+                if(targetHttpsProx.getAsString().equals(urlMap)) {
+                    validationResult = true;
+                    break;
                 }
             }
         }
 
         return validationResult;
     }
+
     @Override
     public String getHelpText() {
-        return "This rule checks if auto-repair feature is enabled for GKE nodes.";
+        return "Enable HTTPS for Google Cloud Load Balancers";
     }
 }
