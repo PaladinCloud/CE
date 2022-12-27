@@ -3,12 +3,10 @@ package com.tmobile.cloud.azurerules.BlobContainer;
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
-import com.tmobile.cloud.azurerules.ActivityLog.ActivityLogRule;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -71,7 +69,6 @@ public class BlobContainerImmutableRule extends BaseRule {
                             annotation);
                 }
             } catch (Exception e) {
-                logger.error("unable to determine", e);
                 throw new RuleExecutionFailedExeption("unable to determine" + e);
             }
 
@@ -89,7 +86,7 @@ public class BlobContainerImmutableRule extends BaseRule {
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(), HashMultimap.create(), null, 0, new HashMap<>(), null, null);
-        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson.toString());
+        logger.debug("Data fetched from elastic search. Response JSON: {}", resultJson);
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
             logger.debug("hit content in result json: {}", hitsString);
@@ -98,13 +95,12 @@ public class BlobContainerImmutableRule extends BaseRule {
             if (hitsJsonArray.size() > 0) {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                logger.debug("Validating the data item: {}", jsonDataItem.toString());
+                logger.debug("Validating the data item: {}", jsonDataItem);
 
                 JsonObject propertiesMap = jsonDataItem.getAsJsonObject("propertiesMap");
                 boolean hasImmutabilityPolicy = propertiesMap.getAsJsonObject().get("hasImmutabilityPolicy").getAsBoolean();
-                boolean hasLegalHold = propertiesMap.getAsJsonObject().get("hasLegalHold").getAsBoolean();
 
-                if (hasImmutabilityPolicy && hasLegalHold) {
+                if (hasImmutabilityPolicy) {
                     validationResult = true;
                     logger.debug("Validating the SUCCESS data item: {}", propertiesMap);
                 }
