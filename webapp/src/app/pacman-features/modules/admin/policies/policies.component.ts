@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
@@ -24,6 +24,8 @@ import { RefactorFieldsService } from "./../../../../shared/services/refactor-fi
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
+import { TableStateService } from "src/app/core/services/table-state.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 
 @Component({
   selector: "app-admin-policies",
@@ -49,6 +51,63 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   seekdata: boolean = false;
   showLoader: boolean = true;
 
+  headerColName;
+  direction;
+  columnNamesMap = {"policyDisplayName": "Policy Name","targetType": "Asset",  "severity": "Severity", "category":"Category", "status": "Status"};
+  columnWidths = {"Policy Name": 2, "Asset": 1, "Severity": 0.5, "Category": 0.5, "Status": 1}
+  whiteListColumns;
+  isStatePreserved = false;
+  tableScrollTop = 0;
+  onScrollDataLoader: Subject<any> = new Subject<any>();
+  columnsSortFunctionMap = {
+    Severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+  }
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      cost:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+
   paginatorSize: number = 25;
   isLastPage: boolean;
   isFirstPage: boolean;
@@ -56,7 +115,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   pageNumber: number = 0;
 
   searchTxt: String = "";
-  dataTableData: any = [];
+  tableData: any = [];
   tableDataLoaded: boolean = false;
   filters: any = [];
   searchCriteria: any;
@@ -87,7 +146,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     private refactorFieldsService: RefactorFieldsService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private tableStateService: TableStateService
   ) {
     this.routerParam();
     this.updateComponent();
@@ -98,6 +158,33 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
+    const state = this.tableStateService.getState("issueListing") || {};
+    if(state){      
+      this.headerColName = state.headerColName || '';
+      this.direction = state.direction || '';
+      this.bucketNumber = state.bucketNumber || 0;
+      this.totalRows = state.totalRows || 0;
+      this.searchTxt = state?.searchTxt || '';
+      
+      this.tableDataLoaded = true;
+      
+      this.tableData = state?.data || [];
+      this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
+      this.tableScrollTop = state?.tableScrollTop;
+      
+      if(this.tableData && this.tableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
+    }
+
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+  }
+
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
   }
 
   dataMarshalling(dataToMarshall) {
@@ -118,13 +205,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     return fullPolicies;
   }
 
-  nextPage() {
+  nextPage(e) {
     try {
-      if (!this.isLastPage) {
         this.pageNumber++;
         this.showLoader = true;
-        this.getPolicyDetails();
-      }
+        this.getPolicyDetails(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -144,7 +229,37 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPolicyDetails() {
+  massageData(data){
+    const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
+    const newData = [];
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
+      let newObj = {};
+      KeysTobeChanged.forEach((element) => {
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        else {
+        elementnew =
+          refactoredService.getDisplayNameForAKey(
+            element.toLocaleLowerCase()
+          ) || element;
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
+      });
+      newData.push(newObj);
+    });
+    console.log("new data: ", newData);
+    
+    return newData;
+  }
+
+  getPolicyDetails(isNextPageCalled?) {
     var url = environment.policyDetails.url;
     var method = environment.policyDetails.method;
 
@@ -161,13 +276,18 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       (reponse) => {
         this.showLoader = false;
         if (reponse[0].content !== undefined) {
-          reponse[0].content = this.dataMarshalling(reponse[0].content);
+          // reponse[0].content = this.dataMarshalling(reponse[0].content);
           this.allPolicies = reponse[0].content;
           this.errorValue = 1;
           this.searchCriteria = undefined;
           var data = reponse[0];
           this.tableDataLoaded = true;
-          this.dataTableData = reponse[0].content;
+          let updatedResponse = this.massageData(reponse[0].content);
+          if(isNextPageCalled){
+            this.onScrollDataLoader.next(updatedResponse)
+          }else{
+            this.tableData = updatedResponse;
+          }
           this.dataLoaded = true;
           if (reponse[0].content.length == 0) {
             this.errorValue = -1;
@@ -194,8 +314,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             if (this.lastPaginator > this.totalRows) {
               this.lastPaginator = this.totalRows;
             }
-            let updatedResponse = this.massageData(data.content);
-            this.processData(updatedResponse);
+            // let updatedResponse = this.massageData(data.content);
+            // this.processData(updatedResponse);
           }
         }
       },
@@ -255,20 +375,24 @@ export class PoliciesComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
-    this.outerArr = [];
-    this.searchTxt = "";
-    this.currentBucket = [];
-    this.bucketNumber = 0;
-    this.firstPaginator = 1;
-    this.showLoader = false;
-    this.currentPointer = 0;
-    this.dataTableData = [];
-    this.tableDataLoaded = false;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
-    this.getPolicyDetails();
+    if(this.isStatePreserved){     
+      this.tableDataLoaded = true;
+      this.clearState();
+    }else{
+      this.tableDataLoaded = false;
+      this.bucketNumber = 0;
+      // this.tableData = [];
+      this.getPolicyDetails();
+    }
+  }
+
+  storeState(state){
+    this.tableStateService.setState("adminPolicies", state);    
+  }
+
+  clearState(){
+    this.tableStateService.clearState("adminPolicies");
+    this.isStatePreserved = false;
   }
 
   navigateBack() {
@@ -281,22 +405,22 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  massageData(data) {
-    let refactoredService = this.refactorFieldsService;
-    let newData = [];
-    let formattedFilters = data.map(function (data) {
-      let keysTobeChanged = Object.keys(data);
-      let newObj = {};
-      keysTobeChanged.forEach((element) => {
-        var elementnew =
-          refactoredService.getDisplayNameForAKey(element) || element;
-        newObj = Object.assign(newObj, { [elementnew]: data[element] });
-      });
-      newObj["Actions"] = "";
-      newData.push(newObj);
-    });
-    return newData;
-  }
+  // massageData(data) {
+  //   let refactoredService = this.refactorFieldsService;
+  //   let newData = [];
+  //   let formattedFilters = data.map(function (data) {
+  //     let keysTobeChanged = Object.keys(data);
+  //     let newObj = {};
+  //     keysTobeChanged.forEach((element) => {
+  //       var elementnew =
+  //         refactoredService.getDisplayNameForAKey(element) || element;
+  //       newObj = Object.assign(newObj, { [elementnew]: data[element] });
+  //     });
+  //     newObj["Actions"] = "";
+  //     newData.push(newObj);
+  //   });
+  //   return newData;
+  // }
 
   processData(data) {
     try {
@@ -390,6 +514,21 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(row) {
+    // store in this function    
+    // const row = event.rowSelected;
+    // const data = event.data;
+    // const state = {
+    //   totalRows: this.totalRows,
+    //   data: data,
+    //   headerColName: this.headerColName,
+    //   direction: this.direction,
+    //   whiteListColumns: this.whiteListColumns,
+    //   bucketNumber: this.bucketNumber,
+    //   searchTxt: this.searchTxt,
+    //   tableScrollTop: event.tableScrollTop
+    //   // filterText: this.filterText
+    // }
+    // this.storeState(state);
     if (row.col === "Actions") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
@@ -409,14 +548,14 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  searchCalled(search) {
-    this.searchTxt = search;
-  }
+  // searchCalled(search) {
+  //   this.searchTxt = search;
+  // }
 
-  callNewSearch() {
-    this.bucketNumber = 0;
-    this.currentBucket = [];
-    this.getPolicyDetails();
+  callNewSearch(search) {
+    this.searchTxt = search;
+    this.isStatePreserved = false;
+    this.updateComponent();  
   }
 
   ngOnDestroy() {
