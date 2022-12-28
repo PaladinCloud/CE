@@ -66,6 +66,7 @@ export const MAPPING = {
     'policyCategory': 'Category',
     'policycategory': 'Category',
     'policyId': 'Policy ID',
+    'policyid': 'Policy ID',
     'severity': 'Severity',
     'threadsafe': 'Threadsafe',
     'policyKey': 'Policy Key',

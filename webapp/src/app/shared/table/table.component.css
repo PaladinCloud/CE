@@ -274,8 +274,12 @@ th.mat-sort-header-sorted {
   color: black;
 }
 
+.row-title{
+  color: var(--primary-400);
+}
 
-tr.mat-row:hover{
+
+.row-hover:hover{
   background-color: var(--background-grey);
   cursor: pointer;
 }

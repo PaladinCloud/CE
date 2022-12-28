@@ -53,8 +53,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
   headerColName;
   direction;
-  columnNamesMap = {"policyDisplayName": "Policy Name","targetType": "Asset",  "severity": "Severity", "category":"Category", "status": "Status"};
-  columnWidths = {"Policy Name": 2, "Asset": 1, "Severity": 0.5, "Category": 0.5, "Status": 1}
+  columnNamesMap = {"policyDisplayName": "Title","targetType": "Asset",  "severity": "Severity", "category":"Category", "status": "Status"};
+  columnWidths = {"Title": 2.4, "Asset": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Actions": 0.8}
   whiteListColumns;
   isStatePreserved = false;
   tableScrollTop = 0;
@@ -234,7 +234,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
+      const KeysTobeChanged = Object.keys(row); 
+      console.log(KeysTobeChanged);
+           
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -252,6 +254,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         // change data value
         newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
+      newObj["Actions"] = "";
       newData.push(newObj);
     });
     console.log("new data: ", newData);
@@ -513,7 +516,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDetails(row) {
+  goToDetails(event) {
+    console.log("Event called!!: ", event);
+    
     // store in this function    
     // const row = event.rowSelected;
     // const data = event.data;
@@ -529,7 +534,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     //   // filterText: this.filterText
     // }
     // this.storeState(state);
-    if (row.col === "Actions") {
+    if (event.cell === "Edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -538,7 +543,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            policyId: row.row["Policy Id"].text,
+            policyId: event.rowSelected["Policy ID"],
           },
         });
       } catch (error) {

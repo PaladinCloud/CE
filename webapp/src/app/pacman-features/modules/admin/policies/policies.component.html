@@ -16,7 +16,7 @@
     <div class="floating-widgets-header flex flex-between admin-widgets-header">
         <h1>{{pageTitle}}</h1>
         <div class="flex relative z-index textarea-button">
-            <button class="submit-btn uppercase" type="button" (click)='goToCreatePolicy()'><i class="fa fa-plus"></i> Create Policy</button>
+            <button class="submit-btn" type="button" (click)='goToCreatePolicy()'> Create Policy</button>
         </div>
     </div>
     <div class="floating-widgets-container data-table-container">
@@ -28,13 +28,14 @@
                             [dataHead]="'All Policies'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' (previousPageCalled)='prevPage()'
                             (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
                         </app-data-table> -->
-                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
+                        <app-table style="height: 100%; width: 100%;" (cellSelectEventEmitter)="goToDetails($event)"
                             [data]="tableData" [columnWidths]="columnWidths" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                             [imageDataMap]="tableImageDataMap" (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" (nextPageCalled)="nextPage($event)" [tableErrorMessage]='errorMessage'
-                            [showSearchBar]="true" [showDownloadBtn]="false" [showAddRemoveCol]="false" [showFilterBtn]="false" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
-                            [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap">
+                            [showSearchBar]="true" [showMoreMenu]="false" [showDownloadBtn]="false" [showAddRemoveCol]="false" [showFilterBtn]="false" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
+                            [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap" [actionsList]="['Disable', 'Edit', 'Revoke']"
+                            [rowClickable]="false">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

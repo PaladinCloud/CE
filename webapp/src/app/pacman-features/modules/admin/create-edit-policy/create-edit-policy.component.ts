@@ -285,7 +285,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.breadcrumbPresent = 'Create Policy';
           this.policyVersion = 'version-1';
           this.isCreate = true;
-          this.getAllPolicyIds();
+          // this.getAllPolicyIds();
         }
         /**
          * The below code is added to get URLparameter and queryparameter

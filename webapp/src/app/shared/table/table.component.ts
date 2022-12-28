@@ -25,6 +25,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() showAddRemoveCol;
   @Input() showDownloadBtn;
   @Input() showFilterBtn;
+  @Input() showMoreMenu = true;
+  @Input() rowClickable = true;
+  @Input() actionsList = [];
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
@@ -37,6 +40,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() doLocalSort = true;
   @Input() tableDataLoaded;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
+  @Output() cellSelectEventEmitter = new EventEmitter();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
   @Output() whitelistColumnsChanged = new EventEmitter<any>();
@@ -75,7 +79,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
-    private windowExpansionService: WindowExpansionService) { 
+    private windowExpansionService: WindowExpansionService,
+) { 
       this.windowExpansionService.getExpansionStatus().subscribe((res) => {
         this.waitAndResizeTable();
       });
@@ -211,13 +216,18 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.getWidthFactor();
   }
 
-  goToDetails(row){
+  handleClick(row, cell?){
     let event = {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
-      data: this.data
+      data: this.data,
+      cell: cell
     }
-    this.rowSelectEventEmitter.emit(event);
+    if(this.rowClickable){
+      this.rowSelectEventEmitter.emit(event);
+    }else{
+      if(cell) this.cellSelectEventEmitter.emit(event);
+    }
   }
 
    optionClick() {
