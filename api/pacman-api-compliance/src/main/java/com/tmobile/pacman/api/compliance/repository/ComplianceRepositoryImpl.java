@@ -411,7 +411,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
             } else {
                 if (MapUtils.isNotEmpty(filters) || size > 0 || !Strings.isNullOrEmpty(searchText)) {
-                    if (sortFilters.get("fieldName").equals("ruleId.keyword")) {
+                    if (null!=sortFilters && sortFilters.get("fieldName").equals("ruleId.keyword")) {
                         sortFilters.put("sortOrder", ruleIdOrder);
                     }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
