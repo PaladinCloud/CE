@@ -2439,7 +2439,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             int i = 0;
             for (Map<String, Object> exceptionDetail : exceptionDetails) {
                 try {
-                    if (sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
+                    if (exceptionDetail.get("exceptionEndDate")!=null && sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
                         String dataSource = "aws_" + exceptionDetail.get(TARGET_TYPE);
                         String targetType = "issue_" + exceptionDetail.get(TARGET_TYPE) + "_exception";
                         String id = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));
