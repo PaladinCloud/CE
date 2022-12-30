@@ -25,8 +25,7 @@ class BaseEcsService:
     network_configuration_subnets = Settings.get('VPC')['SUBNETS']
     network_configuration_assign_public_ip = True
     load_balancer_container_port = 80
-
-    # propagate_tags = "SERVICE"  #The new ARN and resource ID format must be enabled to propagate tags
+    propagate_tags = "SERVICE"  #The new ARN and resource ID format must be enabled to propagate tags
 
 
 class NginxEcsService(BaseEcsService, ECSServiceResource):
@@ -126,3 +125,4 @@ class Jobscheduler(ECSServiceResource):
     network_configuration_subnets = Settings.get('VPC')['SUBNETS']
     network_configuration_assign_public_ip = True
     DEPENDS_ON = [APIDockerImageBuild, WaitConfigServiceToUp]
+    propagate_tags = "SERVICE" 

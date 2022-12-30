@@ -2758,6 +2758,8 @@ INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('vuln
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qualys_info','Base64 encoded user:password of qualys');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qualys_api_url','Qualys api url');
 
+-- delete configs containing http url
+DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
@@ -2778,7 +2780,6 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('formats.date','yyyy-MM-dd\'T\'HH:mm:ss.SSSZ','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('ldap.naming.context-factory','com.sun.jndi.ldap.LdapCtxFactory','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('ldap.naming.authentication','simple','application','prd','latest',NULL,NULL,NULL,NULL);
-DELETE from pac_config_properties where application = 'api' and cfkey in ('service.dns.name','service.url.compliance','service.url.asset','service.url.auth','service.url.admin') and profile = 'prd' and label = 'latest';
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('service.dns.name',concat(@PACMAN_HOST_NAME,''),'api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('service.url.compliance',concat(@PACMAN_HOST_NAME,'/api/compliance'),'api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('service.url.asset',concat(@PACMAN_HOST_NAME,'/api/asset'),'api','prd','latest',NULL,NULL,NULL,NULL);
