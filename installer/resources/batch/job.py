@@ -25,8 +25,8 @@ class SubmitAndRuleEngineJobDefinition(BatchJobDefinitionResource):
             "Ref::entryPoint"
         ],
         'image': RuleEngineEcrRepository.get_output_attr('repository_url'),
-        'memory': 3072,
-        'vcpus': 1,
+        'memory': Settings.get('BATCH_JOB_MEMORY', 3072),
+        'vcpus': Settings.get('BATCH_JOB_VCPU', 1),
         'environment': [
             {'name': "ES_HOST", 'value': ESDomain.get_http_url_with_port()},
             {'name': "BASE_AWS_ACCOUNT", 'value': AwsAccount.get_output_attr('account_id')},
