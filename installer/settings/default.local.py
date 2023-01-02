@@ -119,3 +119,9 @@ AWS_ACCOUNT_DETAILS = [
 #RDS username and password
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
+
+
+#BATCH CONFIGURATION 
+BATCH_JOB_MEMORY = 4096
+BATCH_JOB_VCPU = 2
+BATCH_INSTANCE_TYPE = "m5.xlarge"     #m4.xlarge,m5.xlarge & c5.xlarge (follow document before changing insatnce type in redeploy or upgrade )

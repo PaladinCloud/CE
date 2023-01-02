@@ -56,9 +56,9 @@ PROCESS_RESOURCES = {
     'pacbot_app.ecs_task_defintions': {'tags': ["deploy", "task-definitions", "infra"]},
     'pacbot_app.ecs_services': {'tags': ["deploy", "ecs-services", "infra"]},
     's3.bucket': {'tags': ["s3"]},
-    'batch.env': {'tags': ["deploy","batch"]},
-    'batch.ecr': {'tags': ["deploy","batch", "batch-ecr"]},
-    'batch.job': {'tags': ["deploy","batch", "infra", "batch-job"]},
+    'batch.env': {'tags': ["batch"]},
+    'batch.ecr': {'tags': ["batch", "batch-ecr"]},
+    'batch.job': {'tags': ["batch", "infra", "batch-job"]},
     'lambda_submit.s3_upload': {'tags': ["submit-job", "batch", "infra"]},
     'lambda_submit.function': {'tags': ["submit-job", "batch", "infra"]},
     'lambda_rule_engine.s3_upload': {'tags': ["rule-engine-job", "batch"]},
@@ -138,7 +138,7 @@ AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
 JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"
 
-CURRENT_RELEASE = "v1.5.1"
+CURRENT_RELEASE = "v1.5.2"
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 

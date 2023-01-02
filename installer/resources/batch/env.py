@@ -26,7 +26,6 @@ class RuleEngineBatchJobEnv(BatchComputeEnvironmentResource):
     env_type = "MANAGED"
     service_role = BatchRole.get_output_attr('arn')
     compute_resources_tags = get_all_resource_tags()
-
     DEPENDS_ON = [BatchIAMRolePolicyAttach]  # This is required otherwise policy would be dettached from Batchrole
 
     def pre_terraform_apply(self):
