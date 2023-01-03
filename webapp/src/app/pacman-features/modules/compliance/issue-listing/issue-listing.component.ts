@@ -490,6 +490,46 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
+  processData(data) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
+
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellObj = {
+            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
   getData(isNextPageCalled=false) {
     try {
       if (this.issueListingSubscription) {
@@ -539,10 +579,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 this.totalRows = data.total;
 
                 const updatedResponse = this.massageData(data.response);
+                const processData = this.processData(updatedResponse);
                 if(isNextPageCalled){
-                  this.onScrollDataLoader.next(updatedResponse)
+                  this.onScrollDataLoader.next(processData)
                 }else{
-                  this.tableData = updatedResponse;
+                  this.tableData = processData;
                 }
 
               }
@@ -615,7 +656,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       this.router
-          .navigate(["issue-details", row["Issue ID"]], {
+          .navigate(["issue-details", row["Issue ID"].valueText], {
             relativeTo: this.activatedRoute,
             queryParamsHandling: "merge",
           })

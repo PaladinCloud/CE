@@ -1,0 +1,20 @@
+<button *ngIf="buttonType=='default'" [disabled]="disabled" mat-button color="primary">
+    <div class="button-label">
+        <app-text classNames="body-2" [text]="label"></app-text>
+    </div>
+</button>
+<button *ngIf="buttonType=='flat'" [disabled]="disabled" mat-flat-button color="primary">
+    <div class="button-label">
+        <app-text classNames="body-2" [text]="label"></app-text>
+    </div>
+</button>
+<button *ngIf="buttonType=='stroked'" [disabled]="disabled" mat-stroked-button color="primary">
+    <div class="button-label">
+        <app-text classNames="body-2" [text]="label"></app-text>
+    </div>
+</button>
+<button *ngIf="buttonType=='raised'" [disabled]="disabled" mat-raised-button color="primary">
+    <div class="button-label">
+        <app-text classNames="body-2" [text]="label"></app-text>
+    </div>
+</button>

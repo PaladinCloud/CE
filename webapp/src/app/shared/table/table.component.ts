@@ -2,8 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
-import { Sort } from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
@@ -80,7 +79,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
     private windowExpansionService: WindowExpansionService,
-) { 
+    ) { 
       this.windowExpansionService.getExpansionStatus().subscribe((res) => {
         this.waitAndResizeTable();
       });
@@ -230,6 +229,18 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
+  handleAction(element, action){
+    let event = {
+      action: action,
+      // tableScrollTop : this.tableScrollTop,
+      rowSelected: element,
+      // data: this.data,
+      // cell: action
+    }
+    this.cellSelectEventEmitter.emit(event);
+    // if(action == "enable" || action == "disable") this.openDialog(element, action);
+  }
+
    optionClick() {
     this.whiteListColumns = [];
     let newStatus = true;
@@ -353,7 +364,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
       for(const i in columnsToSearchIN) {
         const col = columnsToSearchIN[i];
-        if(String(item[col]).toLowerCase().match(searchTxt)){
+        if(String(item[col].text).toLowerCase().match(searchTxt)){
           return true;
         }
       }
@@ -403,7 +414,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
-      return (a[this.headerColName]<b[this.headerColName]? -1: 1)*(isAsc ? 1 : -1);
+      return (a[this.headerColName].text<b[this.headerColName].text? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 

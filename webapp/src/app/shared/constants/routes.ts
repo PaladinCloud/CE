@@ -151,7 +151,7 @@ export const COMPLIANCE_ROUTES = [
     canActivate: [AuthGuardService],
   },
   {
-    path: "policy-knowledgebase-details/:ruleID/:autoFix",
+    path: "policy-knowledgebase-details/:policyID/:autoFix",
     component: PolicyKnowledgebaseDetailsComponent,
     data: {
       title: "Policy Details",

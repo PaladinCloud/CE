@@ -26,6 +26,10 @@ import { RouterUtilityService } from "../../../../shared/services/router-utility
 import { AdminService } from "../../../services/all-admin.service";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
+import { SnackbarComponent } from "src/app/shared/components/molecules/snackbar/snackbar.component";
 
 @Component({
   selector: "app-admin-policies",
@@ -61,8 +65,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
-      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ASeverity = a["Severity"].valueText??"default";
+      const BSeverity = b["Severity"].valueText??"default";
+      return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     }
   }
   tableImageDataMap = {
@@ -147,7 +154,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
-    private tableStateService: TableStateService
+    private tableStateService: TableStateService,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
   ) {
     this.routerParam();
     this.updateComponent();
@@ -178,31 +187,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         this.isStatePreserved = false;
       }
     }
-
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
   }
 
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-  }
-
-  dataMarshalling(dataToMarshall) {
-    let fullPolicies = [];
-    for (var index = 0; index < dataToMarshall.length; index++) {
-      let policyItem = {};
-      policyItem["createdDate"] = dataToMarshall[index][0];
-      policyItem["modifiedDate"] = dataToMarshall[index][1];
-      policyItem["resolution"] = dataToMarshall[index][2];
-      policyItem["policyDesc"] = dataToMarshall[index][3];
-      policyItem["policyId"] = dataToMarshall[index][4];
-      policyItem["policyUrl"] = dataToMarshall[index][5];
-      policyItem["policyVersion"] = dataToMarshall[index][6];
-      policyItem["policyName"] = dataToMarshall[index][7];
-      policyItem["numberOfRules"] = dataToMarshall[index][8];
-      fullPolicies.push(policyItem);
-    }
-    return fullPolicies;
   }
 
   nextPage(e) {
@@ -216,26 +205,12 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-        this.getPolicyDetails();
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
-
   massageData(data){
     const refactoredService = this.refactorFieldsService;
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
       const KeysTobeChanged = Object.keys(row); 
-      console.log(KeysTobeChanged);
            
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
@@ -257,8 +232,6 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       newObj["Actions"] = "";
       newData.push(newObj);
     });
-    console.log("new data: ", newData);
-    
     return newData;
   }
 
@@ -279,47 +252,20 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       (reponse) => {
         this.showLoader = false;
         if (reponse[0].content !== undefined) {
-          // reponse[0].content = this.dataMarshalling(reponse[0].content);
           this.allPolicies = reponse[0].content;
           this.errorValue = 1;
           this.searchCriteria = undefined;
           var data = reponse[0];
           this.tableDataLoaded = true;
           let updatedResponse = this.massageData(reponse[0].content);
+          let processedData = this.processData(updatedResponse)
           if(isNextPageCalled){
-            this.onScrollDataLoader.next(updatedResponse)
+            this.onScrollDataLoader.next(processedData)
           }else{
-            this.tableData = updatedResponse;
+            this.tableData = processedData;
           }
+          this.totalRows = data.totalElements;
           this.dataLoaded = true;
-          if (reponse[0].content.length == 0) {
-            this.errorValue = -1;
-            this.outerArr = [];
-            this.allColumns = [];
-          }
-
-          if (data.content.length > 0) {
-            this.isLastPage = data.last;
-            this.isFirstPage = data.first;
-            this.totalPages = data.totalPages;
-            this.pageNumber = data.number;
-
-            this.seekdata = false;
-
-            this.totalRows = data.totalElements;
-
-            this.firstPaginator = data.number * this.paginatorSize + 1;
-            this.lastPaginator =
-              data.number * this.paginatorSize + this.paginatorSize;
-
-            this.currentPointer = data.number;
-
-            if (this.lastPaginator > this.totalRows) {
-              this.lastPaginator = this.totalRows;
-            }
-            // let updatedResponse = this.massageData(data.content);
-            // this.processData(updatedResponse);
-          }
         }
       },
       (error) => {
@@ -408,97 +354,156 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  // massageData(data) {
-  //   let refactoredService = this.refactorFieldsService;
-  //   let newData = [];
-  //   let formattedFilters = data.map(function (data) {
-  //     let keysTobeChanged = Object.keys(data);
-  //     let newObj = {};
-  //     keysTobeChanged.forEach((element) => {
-  //       var elementnew =
-  //         refactoredService.getDisplayNameForAKey(element) || element;
-  //       newObj = Object.assign(newObj, { [elementnew]: data[element] });
-  //     });
-  //     newObj["Actions"] = "";
-  //     newData.push(newObj);
-  //   });
-  //   return newData;
-  // }
-
   processData(data) {
     try {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var blue = "#336cc9";
-      var green = "#26ba9d";
-      var red = "#f2425f";
-      var orange = "#ffb00d";
-      var yellow = "yellow";
-      this.outerArr = [];
-      var getData = data;
-
-      if (getData.length) {
-        var getCols = Object.keys(getData[0]);
-      } else {
-        this.seekdata = true;
-      }
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
 
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
-        for (var col = 0; col < getCols.length; col++) {
-          if (getCols[col].toLowerCase() == "actions") {
+        keynames.forEach(col => {
+          cellObj = {
+            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+            // chipVariant: "", // this value exists if isChip is true,
+            // menuItems: [], // add this if isMenuBtn
+          }
+          if (col.toLowerCase() == "actions") {
+            let dropDownItems: Array<String> = ["Edit"];
+            if (getData[row].Status.toLowerCase() === "enabled") {
+              dropDownItems.push("Disable");
+              // dropDownItems.push("Invoke");
+            } else {
+              dropDownItems.push("Enable");
+            }
             cellObj = {
-              link: true,
-              properties: {
-                "text-shadow": "0.33px 0",
-                color: "#0047bb",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              valText: "Edit",
-              imgLink: "",
-              text: "Edit",
-              statusProp: {
-                color: "#0047bb",
-              },
+              ...cellObj,
+              isMenuBtn: true,
+              menuItems: dropDownItems,
             };
-          } else {
+          } else if(col.toLowerCase() == "status"){
+            let variant;
+            if(getData[row]["Status"].toLowerCase() === "enabled"){
+              variant = "variant1"
+            }else{
+              variant = "variant2"
+            }
             cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
+              ...cellObj,
+              text: getData[row][col].toLowerCase(),
+              isChip: true,
+              chipVariant: variant,
             };
           }
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = "";
-        }
-        this.outerArr.push(innerArr);
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
       }
-      if (this.outerArr.length > getData.length) {
-        var halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
       }
-      this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = [
-        "Policy Id",
-        "Policy Name",
-        "Policy Description",
-        "Policy Version",
-        "No of Rules",
-        "Actions",
-      ];
+      return processedData;
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
+
+  enableDisableRuleOrJob(event) {
+    try {      
+      const url = environment.enableDisableRuleOrJob.url;
+      const method = environment.enableDisableRuleOrJob.method;
+      const params = {};
+      params['policyId'] = event.rowSelected["Policy ID"].text;
+      
+      params['action'] = event.action;
+
+      this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+        // event.rowSelected["Status"].text = event.action+"d";
+        event.rowSelected["Status"] = {
+          ...event.rowSelected["Status"],
+          text: event.action+"d",
+          titleText: event.action+"d",
+          chipVariant: event.action.toLowerCase()=="enable"?"variant1":"variant2",
+        }
+
+        let dropDownItems = ["Edit"];
+        if (event.rowSelected["Status"].text.toLowerCase() === "enabled") {
+          dropDownItems.push("Disable");
+          // dropDownItems.push("Invoke");
+        } else {
+          dropDownItems.push("Enable");
+        }
+        event.rowSelected["Actions"] = {
+          ...event.rowSelected["Actions"],
+          menuItems: dropDownItems,
+        }
+        const snackbarText = 'Policy "' +  event.rowSelected["Title"].text + '" ' + event.action + 'd successfully';
+        this.openSnackBar(snackbarText, "check-circle");
+        
+        // this.isEnableDisableInvokeSuccess = true;
+        // this.invocationId = reponse[0].data;
+      },
+        error => {
+          // this.isEnableDisableInvokeFailed = true;
+          // this.ruleLoader = false;
+        });
+    } catch (error) {
+      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+
+    
+  }
+
+  openDialog(event): void {
+    const action = event.action;
+    const element = event.rowSelected;
+    let title, message;
+    if(action=="Enable"){
+      title = "Enable Policy";
+    }else if(action=="Disable"){
+      title = "Disable Policy";
+    }
+    message = 'Are you really sure you want to disable "' + element["Title"].text + '".';
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: {title: title, message: message, yesButtonLabel: action, noButtonLabel: "Cancel"},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result=="yes"){
+        this.enableDisableRuleOrJob(event);
+      }
+    });
+  }
+
+  openSnackBar(message, iconSrc) {
+    this.snackBar.openFromComponent(SnackbarComponent, {
+      horizontalPosition: "right",
+      verticalPosition: "top",
+      data: {
+        message: message,
+        iconSrc: iconSrc,
+        variant: "variant1"
+      },
+      duration: 500 * 1000,
+    });
+    }
 
   goToCreatePolicy() {
     try {
@@ -517,7 +522,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    console.log("Event called!!: ", event);
+    const action = event.action.toLowerCase();
+    if(action =="enable" || action =="disable"){
+      this.openDialog(event);
+      return;
+    }
     
     // store in this function    
     // const row = event.rowSelected;
@@ -534,7 +543,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     //   // filterText: this.filterText
     // }
     // this.storeState(state);
-    if (event.cell === "Edit") {
+    if (action === "edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -543,7 +552,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            policyId: event.rowSelected["Policy ID"],
+            policyId: event.rowSelected["Policy ID"].text,
           },
         });
       } catch (error) {
