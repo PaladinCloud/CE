@@ -1,10 +1,14 @@
 <div class="dropdown-wrapper">
     <mat-form-field>
         <mat-label>{{placeholder}}</mat-label>
-        <mat-select disableOptionCentering (closed)="onClose()" (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption">
+        <mat-select [disabled]="isDisabled" disableOptionCentering (closed)="onClose()"
+            (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption">
             <mat-option *ngFor="let item of itemList" [value]="item">
                 {{item}}
             </mat-option>
         </mat-select>
     </mat-form-field>
+    <div *ngIf="requiredInfo" class="info-img">
+        <img src="../../../assets/icons/info-circle.svg">
+    </div>
 </div>

@@ -8,23 +8,23 @@ import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChange
 export class DropdownComponent implements OnInit, OnChanges {
 
   @Input() items = [];
+  @Input() isDisabled: boolean = false;
+  @Input() requiredInfo: boolean = false;
   @Input() placeholder: string;
   @Input() selectedItem: string;
-
   @Output() selected = new EventEmitter();
   @Output() closeEventEmitter = new EventEmitter();
 
   itemList = [];
-  selectedOption;
-
+  selectedOption: any;
   constructor() { }
 
-  onClose(){
+  onClose() {
     this.closeEventEmitter.emit();
   }
 
-  massageData(list: any, selectedOption: any) {    
-    if(list){
+  massageData(list: any, selectedOption: any) {
+    if (list) {
       this.itemList = [];
       if (list.length > 0 && typeof list[0] == 'object') {
         for (let i = 0; i < list.length; i++) {
