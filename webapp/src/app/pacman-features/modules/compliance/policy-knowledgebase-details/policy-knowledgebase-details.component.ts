@@ -14,6 +14,7 @@
 
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
+import * as _ from "lodash";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { environment } from "./../../../../../environments/environment";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -22,6 +23,7 @@ import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
+import { UtilsService } from "src/app/shared/services/utils.service";
 
 @Component({
   selector: "app-policy-knowledgebase-details",
@@ -40,10 +42,11 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   breadcrumbLinks: any = ["policy-knowledgebase"];
   breadcrumbPresent: any;
   selectedAssetGroup: string;
+  actionItems = ["Dsable", "Edit", "Remove"];
   subscriptionToAssetGroup: Subscription;
   public autoFix = false;
   public policyID: any = "";
-  public setPolicyIdObtained = false;
+  public setpolicyIdObtained = false;
   public dataComing = true;
   public showLoader = true;
   public durationParams: any;
@@ -53,7 +56,23 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   public errorMessage: any;
   public policyDesc: {};
   displayName: any = "";
-  ruleDescription: any = "";
+  policyParamList: Array<Array<String>>;
+  totalRows = 3;
+  tableScrollTop = true;
+  tableTitle = "Policy Parameters";
+  searchTxt = "";
+  columnWidths = { 'Key': 2, 'Value': 1 };
+  policyParams = [
+    {
+      "key": "policykey",
+      "value": "check-for-cloud-storage"
+    },
+    {
+      "key": "Metric Name",
+      "value": "cloud trial event"
+    }
+  ]
+  policyDescription: any = "";
   resolution: any = [];
   private routeSubscription: Subscription;
   urlToRedirect: any = "";
@@ -61,6 +80,23 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   private pageLevel = 0;
   public backButtonRequired;
   public resolutionUrl: string;
+  allpolicyParamKeys: any[];
+  allEnvParamKeys: any[];
+  allEnvironments: any[];
+  policyDetails: any;
+  allpolicyParams: any[];
+  isAutofixEnabled: boolean;
+  policyDisplayName: any;
+  selectedSeverity: any;
+  selectedCategory: any;
+  policyType: any;
+  assetGroup;
+  policyJarFileName: any;
+  policyRestUrl: any;
+  status: any;
+  assetType: string;
+  createdDate: any;
+  modifiedDate: any;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -70,7 +106,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     private autorefreshService: AutorefreshService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
-    private workflowService: WorkflowService
+    private workflowService: WorkflowService,
+    private utils: UtilsService
   ) {
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
@@ -86,12 +123,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.durationParams = this.autorefreshService.getDuration();
       this.durationParams = parseInt(this.durationParams, 10);
       this.autoRefresh = this.autorefreshService.autoRefresh;
-      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
-    if(breadcrumbInfo){
-      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
-      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
-    }
+      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
+      if (breadcrumbInfo) {
+        this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+        this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+      }
       this.breadcrumbPresent = "Policy Details ";
     } catch (error) {
       this.logger.log("error", error);
@@ -111,21 +148,21 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   /* Function to get Data */
   getData() {
     /* All functions to get data should go here */
-    this.getPolicyId();
+    this.getpolicyId();
     this.getProgressData();
   }
 
   /**
    * this funticn gets the policyid from the url
    */
-  getPolicyId() {
+  getpolicyId() {
     /*  TODO:Trinanjan Wrong way of doing it */
     this.routeSubscription = this.activatedRoute.params.subscribe((params) => {
       this.policyID = params["policyID"];
       this.autoFix = params["autoFix"] === "true";
     });
     if (this.policyID !== undefined) {
-      this.setPolicyIdObtained = true;
+      this.setpolicyIdObtained = true;
     }
   }
 
@@ -137,13 +174,13 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       const queryParams = {
         policyId: this.policyID,
       };
-      const policyContentSliderUrl = environment.policyContentSlider.url;
-      const policyContentSliderMethod = environment.policyContentSlider.method;
+      const getPolicyByIdUrl = environment.getPolicyById.url;
+      const getPolicyByIdMethod = environment.getPolicyById.method;
       try {
         this.dataSubscriber = this.commonResponseService
           .getData(
-            policyContentSliderUrl,
-            policyContentSliderMethod,
+            getPolicyByIdUrl,
+            getPolicyByIdMethod,
             {},
             queryParams
           )
@@ -153,22 +190,21 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
                 this.showLoader = false;
                 this.seekdata = false;
                 this.dataComing = true;
-                this.processData(response.response);
+                console.log(response, "response");
+
+                this.processData(response);
               } catch (e) {
                 this.errorMessage = this.errorHandling.handleJavascriptError(e);
-                this.logger.log("error", e);
                 this.getErrorValues();
               }
             },
             (error) => {
               this.errorMessage = error;
-              this.logger.log("error", error);
               this.getErrorValues();
             }
           );
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
         this.getErrorValues();
       }
     }
@@ -182,23 +218,93 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
 
   processData(data) {
     this.displayName = this.uppercasefirst(data.policyDisplayName);
-    this.ruleDescription = data.policyDesc;
+    this.policyDescription = data.policyDescription;
     this.resolutionUrl = data.resolutionUrl;
     this.resolution = data.resolution;
     if (this.resolutionUrl == null || this.resolutionUrl == "") {
       this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
     }
-    this.policyDesc = [
-      { value: data.policyCategory, key: "Category" },
-      { value: data.severity, key: "Severity" },
-      { value: data.policyVersion, key: "PolicyVersion" },
-    ];
+
+    this.allpolicyParamKeys = [];
+    this.allEnvParamKeys = [];
+    this.policyDetails = data;
+    let policyParams = Object();
+    this.policyDetails.dataSource = 'N/A';
+    this.allEnvironments = [];
+    this.allpolicyParams = [];
+    this.isAutofixEnabled = false;
+    this.policyDisplayName = this.uppercasefirst(this.policyDetails.policyDisplayName);
+    policyParams = JSON.parse(this.policyDetails.policyParams);
+    this.createdDate = this.utils.calculateDateAndTime(data.createdDate, true);
+    this.modifiedDate = this.utils.calculateDateAndTime(data.modifiedDate, true);
+
+    if (policyParams.hasOwnProperty('pac_ds')) {
+      this.policyDetails.dataSource = this.uppercasefirst(policyParams.pac_ds);
+    }
+
+    if (policyParams.hasOwnProperty('environmentVariables')) {
+      this.allEnvironments = policyParams.environmentVariables;
+      this.allEnvParamKeys = _.map(policyParams.environmentVariables, 'key');
+    }
+    if (policyParams.hasOwnProperty('params')) {
+      if (policyParams.params instanceof Array) {
+        for (let i = policyParams.params.length - 1; i >= 0; i -= 1) {
+          if (policyParams.params[i].key == 'severity') {
+            this.selectedSeverity = this.uppercasefirst(policyParams.params[i].value);
+            policyParams.params.splice(i, 1);
+          } else if (policyParams.params[i].key == 'policyCategory') {
+            this.selectedCategory = this.uppercasefirst(policyParams.params[i].value);
+            this.selectedCategory = policyParams.params[i].value == "Governance" ? "Operations" : this.selectedCategory;
+            policyParams.params.splice(i, 1);
+          } else if (policyParams.params[i].key == 'policyType') {
+            this.policyType = this.uppercasefirst(policyParams.params[i].value);
+          }
+        }
+        this.policyDescription = this.policyDetails.policyDesc;
+        this.allpolicyParams = policyParams.params;
+        this.allpolicyParamKeys = _.map(policyParams.params, 'key');
+
+        let i = 0;
+        // this.allpolicyParams.forEach(param => {
+        // if (param["value"]) {
+        //   console.log(param["key"], "key");
+        //   console.log(param["value"].toString(), "value");
+        // }
+        // this.policyParamList[i].push(param["key"]);
+        // this.policyParamList[i].push(param["value"] || "");
+        // })
+
+        // console.log(this.policyParamList, "this.allpolicyParams");
+        // console.log(this.allpolicyParamKeys, "this.allpolicyParamKeys");
+
+      }
+    }
+    if (policyParams.hasOwnProperty('autofix')) {
+      this.isAutofixEnabled = policyParams.autofix;
+    }
+    this.status = this.uppercasefirst(data.status);
+    this.assetType = this.uppercasefirst(this.policyDetails.targetType);
+
+    this.policyType = this.policyDetails.policyType;
+    if (this.policyDetails.assetGroup !== '') {
+      this.assetGroup = this.uppercasefirst(this.policyDetails.assetGroup);
+    }
+    if (this.policyType === 'Classic') {
+      this.policyJarFileName = this.policyDetails.policyExecutable;
+    } else if (this.policyType === 'Serverless') {
+      this.policyRestUrl = this.policyDetails.policyRestUrl;
+    }
+  }
+
+  callNewSearch(e: any) {
+    console.log(e);
+
   }
 
   /**
    * This function returns the first char as upper case
    */
-  uppercasefirst(value) {
+  uppercasefirst(value: any) {
     if (value === null) {
       return "Not assigned";
     }

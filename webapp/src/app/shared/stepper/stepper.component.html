@@ -1,0 +1,21 @@
+<div class="stepper-wrapper">
+    <div class="stepper-header-wrapper">
+        <ng-container *ngTemplateOutlet="stepsHeader"></ng-container>
+        <mat-stepper orientation="vertical" [linear]="false" [selectedIndex]="currentStepperIndex"
+            (selectionChange)="selectionChange($event)">
+            <ng-template matStepperIcon="edit">
+                <mat-icon>edit</mat-icon>
+            </ng-template>
+            <ng-template matStepperIcon="form">
+                <mat-icon>format_align_center</mat-icon>
+            </ng-template>
+            <ng-template matStepperIcon="last">
+                <mat-icon>done_all</mat-icon>
+            </ng-template>
+            <mat-step *ngFor="let data of stepperData" [stepControl]="data" state="form">
+                <ng-template matStepLabel>{{data.name}}</ng-template>
+            </mat-step>
+        </mat-stepper>
+    </div>
+    <ng-container class="stepper-content-wrapper" *ngTemplateOutlet="stepsContent"></ng-container>
+</div>

@@ -37,12 +37,10 @@ import { PatchingProjectionsComponent } from "../../pacman-features/modules/comp
 import { DigitalDevDashboardComponent } from "../../pacman-features/modules/compliance/digital-dev-dashboard/digital-dev-dashboard.component";
 import { PoliciesComponent } from "../../pacman-features/modules/admin/policies/policies.component";
 import { RulesComponent } from "../../pacman-features/modules/admin/rules/rules.component";
-import { CreateRuleComponent } from "../../pacman-features/modules/admin/create-rule/create-rule.component";
 import { CreateEditPolicyComponent } from "../../pacman-features/modules/admin/create-edit-policy/create-edit-policy.component";
 import { CreateJobExecutionManagerComponent } from "../../pacman-features/modules/admin/job-execution-manager/create-job-execution-manager/create-job-execution-manager.component";
 import { JobExecutionManagerComponent } from "../../pacman-features/modules/admin/job-execution-manager/job-execution-manager.component";
 import { AuthGuardService } from "../services/auth-guard.service";
-import { UpdateRuleComponent } from "../../pacman-features/modules/admin/update-rule/update-rule.component";
 import { InvokeRuleComponent } from "../../pacman-features/modules/admin/invoke-rule/invoke-rule.component";
 import { CreateAssetGroupsComponent } from "../../pacman-features/modules/admin/asset-groups/create-asset-groups/create-asset-groups.component";
 import { EnableDisableRuleComponent } from "../../pacman-features/modules/admin/enable-disable-rule/enable-disable-rule.component";
@@ -332,32 +330,6 @@ export const ADMIN_ROUTES = [
     component: RulesComponent,
     data: {
       title: "Rules",
-      roles: ["ROLE_ADMIN"],
-    },
-    // children: [
-    //   {
-    //     path: "create-rule",
-    //     component: CreateRuleComponent,
-    //     data: {
-    //       title: "Create Rule",
-    //       roles: ["ROLE_ADMIN"],
-    //     },
-    //   },
-    // ],
-  },
-  {
-    path: "rules/create-rule",
-    component: CreateRuleComponent,
-    data: {
-      title: "Create Rule",
-      roles: ["ROLE_ADMIN"],
-    },
-  },
-  {
-    path: "rules/update-rule",
-    component: UpdateRuleComponent,
-    data: {
-      title: "Update Rule",
       roles: ["ROLE_ADMIN"],
     },
   },

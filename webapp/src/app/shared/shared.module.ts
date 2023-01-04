@@ -111,10 +111,13 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatButtonModule } from "@angular/material/button";
 import { ChipComponent } from './components/atoms/chip/chip.component';
 import { TextComponent } from './components/atoms/text/text.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { StepperComponent } from "./stepper/stepper.component";
 
 @NgModule({
   imports: [
     MatButtonModule,
+    MatStepperModule,
     MatDialogModule,
     MatSnackBarModule,
     MatGridListModule,
@@ -198,10 +201,12 @@ import { TextComponent } from './components/atoms/text/text.component';
     CustomButtonComponent,
     ChipComponent,
     TextComponent,
+    StepperComponent,
   ],
   exports: [
     TextComponent,
     ChipComponent,
+    StepperComponent,
     CustomButtonComponent,
     DialogBoxComponent,
     SnackbarComponent,

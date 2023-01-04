@@ -12,63 +12,107 @@
  * limitations under the License.
  -->
 
- <div class="policy-knowledgebase-wrapper flex flex-between flex-col flex-start relative">
-  <div class="flex flex-col pk-header-wrapper">
-      <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding: 18px;">
-      <app-breadcrumb [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
-      </div>
-      <div class="floating-widgets-header flex flex-between">
-          <div>
-              <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg">
-              <h1 class="title-text" title = "{{pageTitle}}">{{pageTitle}}</h1>
-          </div>
-      </div>
-  </div>
-  <div class='policy-knowledgebase-content' *ngIf='dataComing && !showLoader'>
-      <div class='pk-top-content'>
-          <div class= "flex flex-between">
-                <div class='pk-top-header' title = "{{displayName}}">{{displayName}}</div>
-                <div *ngIf="autoFix" class="autoFix flex">
-                        <div><img src="../../../../../assets/icons/auto-fix-enabled.svg" class="img"></div>
-                        <div class="flex">
-                            Auto fix Enabled
-                        </div>
-                </div>
-          </div>
-          <div class="pk-top-desc-header" title = "{{Description}}">Description</div>
-          <div class="pk-top-desc-subheader" title = "{{ruleDescription}}">{{ruleDescription}}</div>
-          <div class="pk-category-wrapper">
-            <div class="pk-each-category-wrapper" *ngFor = "let data of policyDesc">
-                <div class="pk-each-category-left" title = "{{data.key}}">
-                        {{data.key}}
-                </div>
-                <div class="pk-each-category-right capitalize" title = "{{data.value}}" [class.critical-color]="data.value == 'critical'" [class.medium-color]="data.value == 'medium'" [class.low-color]="data.value == 'low'" [class.high-color]="data.value == 'high'">
-                        {{data.value}}
+ <div class="policy-knowledgebase-wrapper">
+    <div class="header">
+        <div class="header-text">
+            {{policyDisplayName}}
+        </div>
+        <app-dropdown [items]="actionItems" placeholder="Actions"></app-dropdown>
+    </div>
+    <div class="overview-wrapper">
+        <div class="column">
+            <div class="overview-tile">
+                <span class="tile-header">Cloud</span>
+                <div class="tile-content-wrapper">
+                    <!-- <img src="../../../../../assets/icons/{{assetGroup.toLowerCase()}}-color.svg"> -->
+                    <span class="tile-content">{{assetGroup}}</span>
                 </div>
             </div>
-          </div>
-       <a    href="{{resolutionUrl}}" target="_blank" rel="noopener noreferrer" > <div  class="pk-resolution-wrapper"> <h5 style="font-size:1em;color:var(--primary-500); font-weight: 600;">Learn more</h5> <img  style="height: 0.91em;margin-left: 0.5vw;margin-top: 0.1%;" src="../assets/icons/left-arrow.svg"> </div>    </a>    
-
-
-          
-        
-          <!-- <div class="pk-resolution-wrapper" *ngIf = "resolution.length > 0 ">
-            <div class="pk-resolution-header">Resolution</div>
-            <div class="pk-resolution-desc-wrapper">
-                <div class="pk-resolution-each-desc">
-                    To remediate this issue: 
+        </div>
+        <div class="column">
+            <div class="overview-tile">
+                <span class="tile-header">Asset Type</span>
+                <span class="tile-content">{{assetType}}</span>
+            </div>
+        </div>
+        <div class="column">
+            <div class="overview-tile">
+                <span class="tile-header">Category</span>
+                <div class="tile-content-wrapper">
+                    <img *ngIf="selectedCategory" src="../../../../../assets/icons/category-{{selectedCategory?.toLowerCase()}}.svg">
+                    <span class="tile-content">{{selectedCategory}}</span>
                 </div>
-                <div class="pk-resolution-each-desc" *ngFor = "let data of resolution; let i = index " title = "{{data}}">
-                    {{i+1}}) {{data}}
+            </div>
+        </div>
+        <div class="column">
+            <div class="overview-tile">
+                <span class="tile-header">Severity</span>
+                <div class="tile-content-wrapper">
+                    <img *ngIf="selectedSeverity" src="../../../../../assets/icons/violations-{{selectedSeverity.toLowerCase()}}-icon.svg">
+                    <span class="tile-content">{{selectedSeverity}}</span>
                 </div>
-              </div>
-          </div> -->
-      </div>
-  </div>
-  <article class='center error_handling' *ngIf='!dataComing'>
-    <div class="error_msg">
-        <app-error-message *ngIf='seekdata == true' [selectedValue]="errorMessage"></app-error-message>
+            </div>
+        </div>
+        <div class="column">
+            <div class="overview-tile">
+                <span class="tile-header capitalize">Status</span>
+                <span class="tile-content">{{status}}</span>
+            </div>
+        </div>
     </div>
-    </article>
-<div *ngIf='showLoader' class="loader"></div>
+    <div class="details-wrapper">
+        <div class="details-header">
+            <div class="details-header-text">
+                Policy Details
+            </div>
+        </div>
+        <div class="details-content-wrapper">
+            <div class="description-wrapper">
+                <span class="desc-header">Description</span>
+                <span class="desc">{{policyDescription}}</span>
+            </div>
+            <div class="attributes-wrapper">
+                <div class="row">
+                    <div class="attribute-wrapper">
+                        <span class="attribute-header">Type</span>
+                        <span class="attribute-value">{{policyType}}</span>
+                    </div>
+                    <div class="attribute-wrapper">
+                        <span class="attribute-header">Creation On</span>
+                        <span class="attribute-value">{{createdDate}}</span>
+                    </div>
+                    <div class="attribute-wrapper">
+                        <span class="attribute-header">Last Modified</span>
+                        <span class="attribute-value">{{modifiedDate}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="attribute-wrapper">
+                        <span class="attribute-header">Frequency</span>
+                        <span class="attribute-value">6 hours</span>
+                    </div>
+                    <div class="attribute-wrapper">
+                        <span class="attribute-header">Policy Url</span>
+                        <span class="attribute-value">No URL</span>
+                    </div>
+                    <div class="attribute-wrapper">
+                        <span class="attribute-header">Created By</span>
+                        <span class="attribute-value">No Name</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="details-footer">
+            <div class="details-footer-text">
+                Resolution
+            </div>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <!-- <app-table style="height: 100%; width: 100%;" [data]="policyParams" [tableTitle]="tableTitle" whiteListColumns=""
+            [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
+            [tableScrollTop]="tableScrollTop" [showDownloadBtn]="false" [totalRows]="totalRows">
+        </app-table> -->
+    </div>
 </div>

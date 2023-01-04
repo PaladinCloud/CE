@@ -1,0 +1,51 @@
+.stepper-content-wrapper{
+   display: flex;
+}
+
+.stepper-header-wrapper{
+    width: 40%;
+}
+
+.stepper-wrapper{
+    height: 100%;
+    display: flex;
+}
+
+::ng-deep .mat-step-header .mat-step-header-ripple{
+    display: none !important;
+}
+
+::ng-deep .mat-vertical-stepper-content{
+    height: auto !important;
+}
+
+::ng-deep .mat-step-header{
+    background: none !important;
+}
+
+.stepper{
+    width: 40%;
+}
+
+::ng-deep .mat-vertical-content-container{
+    margin-left: 8px !important;
+}
+
+::ng-deep .mat-step-icon{
+    height: 24px !important;
+    width: 24px !important;
+}
+
+::ng-deep .mat-vertical-stepper-header{
+    padding: 24px 0px;
+}
+
+::ng-deep .mat-step-icon-state-edit{
+    background-color: var(--primary-100) !important;
+}
+
+.stepper-wrapper .right-wrapper{
+    position: absolute;
+    top: 70px;
+    right: 48px;
+}
