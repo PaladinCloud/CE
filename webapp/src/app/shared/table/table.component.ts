@@ -391,6 +391,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   clearSearchText(){
     this.searchQuery = "";
+    if(this.tableErrorMessage == 'noSearchFound') this.tableErrorMessage = "";
+    if(this.doLocalSearch){
+      this.dataSource.data = this.mainDataSource.data;
+    }
     this.searchCalledEventEmitter.emit(this.searchQuery);
   }
 

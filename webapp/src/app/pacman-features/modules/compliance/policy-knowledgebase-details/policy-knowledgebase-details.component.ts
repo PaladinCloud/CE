@@ -61,7 +61,10 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   tableScrollTop = true;
   tableTitle = "Policy Parameters";
   searchTxt = "";
-  columnWidths = { 'Key': 2, 'Value': 1 };
+  columnWidths = { 'key': 2, 'value': 1 };
+  whiteListColumns;
+  tableErrorMessage = '';
+  tableDataLoaded = false;
   policyParams = [
     {
       "key": "policykey",
@@ -124,6 +127,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.durationParams = parseInt(this.durationParams, 10);
       this.autoRefresh = this.autorefreshService.autoRefresh;
       const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+      this.whiteListColumns = Object.keys(this.columnWidths);
 
       if (breadcrumbInfo) {
         this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
@@ -216,6 +220,44 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     this.seekdata = true;
   }
 
+  processForTableData(data) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
+
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellObj = {
+            text: getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
   processData(data) {
     this.displayName = this.uppercasefirst(data.policyDisplayName);
     this.policyDescription = data.policyDescription;
@@ -265,6 +307,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         this.allpolicyParamKeys = _.map(policyParams.params, 'key');
 
         let i = 0;
+        console.log("policyParams: ", this.policyParams);
+        this.policyParams = this.processForTableData(this.policyParams);
+        console.log("policyParams: ", this.policyParams);
+        this.tableDataLoaded = true;
+        this.totalRows = this.policyParams.length;
+        
         // this.allpolicyParams.forEach(param => {
         // if (param["value"]) {
         //   console.log(param["key"], "key");
@@ -297,8 +345,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
 
   callNewSearch(e: any) {
-    console.log(e);
-
+    this.searchTxt = e;
   }
 
   /**

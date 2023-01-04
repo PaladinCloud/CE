@@ -248,10 +248,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       queryParams["searchTerm"] = this.searchTxt;
     }
 
-    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
+    try{
+      this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
       (reponse) => {
         this.showLoader = false;
-        if (reponse[0].content !== undefined) {
+        if (reponse[0].content && reponse[0].content.length>0) {
           this.allPolicies = reponse[0].content;
           this.errorValue = 1;
           this.searchCriteria = undefined;
@@ -278,6 +279,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         this.showLoader = false;
       }
     );
+    }catch(e){
+      this.logger.log("error: ", e);
+    }
   }
 
   /*

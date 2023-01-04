@@ -110,9 +110,11 @@
         </div>
     </div>
     <div class="table-wrapper">
-        <!-- <app-table style="height: 100%; width: 100%;" [data]="policyParams" [tableTitle]="tableTitle" whiteListColumns=""
-            [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
-            [tableScrollTop]="tableScrollTop" [showDownloadBtn]="false" [totalRows]="totalRows">
-        </app-table> -->
+        <app-table style="height: 100%; width: 100%;"
+            [data]="policyParams" [columnWidths]="columnWidths" [tableErrorMessage]='tableErrorMessage' [tableDataLoaded]='tableDataLoaded'
+            [doLocalSearch]="true" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
+            [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="false">
+        </app-table>
     </div>
 </div>

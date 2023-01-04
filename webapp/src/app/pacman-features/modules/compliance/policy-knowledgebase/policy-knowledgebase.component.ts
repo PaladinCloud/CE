@@ -304,7 +304,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
           'All Policies': 0
         };
         for (let i = 0; i < getData.length; i++) {
-          this.typeObj[getData[i].Category] = 0;
+          this.typeObj[getData[i].Category.valueText] = 0;
         }
         this.typeObj[`critical`] = 0;
         this.typeObj[`high`] = 0;
@@ -315,15 +315,15 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         this.typeObj["security"]=0;
         this.typeObj["tagging"]=0;
         for (let i = 0; i < getData.length; i++) {
-          this.typeObj[getData[i].Severity] = 0;
+          this.typeObj[getData[i].Severity.valueText] = 0;
         }
         this.typeObj[`Auto Fix`] = 0;
         delete this.typeObj[''];
         for (let i = 0; i < getData.length; i++) {
           this.typeObj['All Policies']++;
-          this.typeObj[getData[i].Category.toLowerCase()]++;
-          this.typeObj[getData[i].Severity.toLowerCase()]++;
-          if (getData[i].autoFixEnabled === true) {
+          this.typeObj[getData[i].Category.valueText.toLowerCase()]++;
+          this.typeObj[getData[i].Severity.valueText.toLowerCase()]++;
+          if (getData[i].autoFixEnabled.valueText === true) {
             this.typeObj['Auto Fix']++;
           }
         }
@@ -392,6 +392,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             
             this.tableDataLoaded = true;
             this.tableData = this.processData(this.tableData);
+            this.getTilesData(this.tableData);
           } else {
             this.tableDataLoaded = true;
             this.errorMessage = 'noDataAvailable';

@@ -75,6 +75,7 @@ color: var(--primary-500);
 }
 
 .policy-knowledgebase-wrapper {
+  overflow: scroll;
   height: 100%;
   display: flex;
   flex-direction: column;
