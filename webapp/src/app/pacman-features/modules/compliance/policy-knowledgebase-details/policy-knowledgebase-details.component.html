@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
- <div class="policy-knowledgebase-wrapper">
+<div class="policy-knowledgebase-wrapper">
     <div class="header">
         <div class="header-text">
             {{policyDisplayName}}
@@ -24,7 +24,7 @@
             <div class="overview-tile">
                 <span class="tile-header">Cloud</span>
                 <div class="tile-content-wrapper">
-                    <!-- <img src="../../../../../assets/icons/{{assetGroup.toLowerCase()}}-color.svg"> -->
+                    <img *ngIf="assetGroup" src="../../../../../assets/icons/{{assetGroup.toLowerCase()}}-color.svg">
                     <span class="tile-content">{{assetGroup}}</span>
                 </div>
             </div>
@@ -39,7 +39,8 @@
             <div class="overview-tile">
                 <span class="tile-header">Category</span>
                 <div class="tile-content-wrapper">
-                    <img *ngIf="selectedCategory" src="../../../../../assets/icons/category-{{selectedCategory?.toLowerCase()}}.svg">
+                    <img *ngIf="selectedCategory"
+                        src="../../../../../assets/icons/category-{{selectedCategory?.toLowerCase()}}.svg">
                     <span class="tile-content">{{selectedCategory}}</span>
                 </div>
             </div>
@@ -48,7 +49,8 @@
             <div class="overview-tile">
                 <span class="tile-header">Severity</span>
                 <div class="tile-content-wrapper">
-                    <img *ngIf="selectedSeverity" src="../../../../../assets/icons/violations-{{selectedSeverity.toLowerCase()}}-icon.svg">
+                    <img *ngIf="selectedSeverity"
+                        src="../../../../../assets/icons/violations-{{selectedSeverity.toLowerCase()}}-icon.svg">
                     <span class="tile-content">{{selectedSeverity}}</span>
                 </div>
             </div>

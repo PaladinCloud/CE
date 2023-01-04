@@ -42,7 +42,7 @@ import { UploadFileService } from '../../../services/upload-file-service';
 })
 export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
-  policyType = ["Federated", "Serverless", "Manage Rule"];
+  policyType = ["Federated", "Serverless", "ManageRule"];
   selectedAssetType = "";
   resolutionUrl = "";
   isDisabled = true;
@@ -52,6 +52,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   policyLoader = false;
   pageTitle = 'Create Policy';
+  FormHeader = "Policy Details";
   ispolicyIdValid = -1;
   isCreate;
   allPolicies = [];
@@ -77,7 +78,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allpolicyParamKeys = [];
   allEnvParamKeys = [];
   allPolicyParams = Object();
-  paramsList = [[null,null]];
+  paramsList = [[null, null]];
   hideContent = false;
   ispolicyCreationFailed = false;
   ispolicyCreationSuccess = false;
@@ -152,6 +153,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   policyId: any;
   isPolicyIdValid: number;
   policyDetails: any;
+  resolution: any;
 
 
   constructor(
@@ -187,67 +189,26 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   selectedType(event: any) {
     this.selectedPolicyType = event;
+    if (this.selectedPolicyType == 'Customer') {
+      this.allPolicyIds
+    }
     if (event) {
       this.isDisabled = false;
     }
   }
 
-  createParameters(para: NgForm) {
-    this.buildCreatepolicyModel(para.value);
-  }
-
   pageCounter(clickedButton: string) {
     if (clickedButton == 'back') {
       this.currentStepperIndex--;
-      return;
-    }
-    this.currentStepperIndex++;
-  }
-  dataMarshalling(dataToMarshall) {
-    const fullPolicies = [];
-    for (let index = 0; index < dataToMarshall.length; index++) {
-      const policyItem = {};
-      policyItem['createdDate'] = dataToMarshall[index][0];
-      policyItem['modifiedDate'] = dataToMarshall[index][1];
-      policyItem['resolution'] = dataToMarshall[index][2];
-      policyItem['policyDesc'] = dataToMarshall[index][3];
-      policyItem['policyId'] = dataToMarshall[index][4];
-      policyItem['policyUrl'] = dataToMarshall[index][5];
-      policyItem['policyVersion'] = dataToMarshall[index][6];
-      policyItem['policyName'] = dataToMarshall[index][7];
-      policyItem['numberOfpolicys'] = dataToMarshall[index][8];
-      fullPolicies.push(policyItem);
-    }
-    return fullPolicies;
-  }
+    } else
+      this.currentStepperIndex++;
 
-  nextPage() {
-    try {
-      if (!this.isLastPage) {
-        this.pageNumber++;
-        this.showLoader = true;
-        // this.getPolicyDetails();
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+    if (this.currentStepperIndex == 0) {
+      this.FormHeader = "Policy Details";
+    } else {
+      this.FormHeader = "Policy Parameters";
     }
   }
-
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-        // this.getPolicyDetails();
-      }
-
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
 
   getDatasourceDetails() {
     this.policyPolicyLoader = true;
@@ -261,7 +222,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         fullDatasourceNames.push(reponse[0][index].dataSourceName);
       }
       this.datasourceDetails = fullDatasourceNames;
-      this.getAllAssetGroupNames();
     },
       error => {
         this.policyPolicyLoader = false;
@@ -283,14 +243,15 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       const categories = [];
       for (let index = 0; index < reponse[0].length; index++) {
         const categoryDetail = reponse[0][index];
-        // if (categoryDetail.policyCategory.toLowerCase() == "costoptimization") {
-        //   categoryDetail.policyCategory = "cost";
-        // }
-        // else if (categoryDetail.policyCategory.toLowerCase() == "governance") {
-        //   categoryDetail.policyCategory = "operations";
-        // }
+        if (categoryDetail.policyCategory.toLowerCase() == "costoptimization") {
+          categoryDetail.policyCategory = "cost";
+        }
+        else if (categoryDetail.policyCategory.toLowerCase() == "governance") {
+          categoryDetail.policyCategory = "operations";
+        }
         categories.push(categoryDetail.policyCategory);
       }
+      console.log(categories, "cat");
       this.policyCategories = categories;
       this.showLoader = false;
       this.contentHidden = false;
@@ -302,26 +263,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         this.contentHidden = true;
         this.policyPolicyLoaderFailure = true;
         this.policyCategories = [];
-        this.errorMessage = 'apiResponseError';
-        this.showLoader = false;
-      });
-  }
-
-  getAllAssetGroupNames() {
-    this.policyPolicyLoader = true;
-    this.contentHidden = true;
-    this.policyPolicyLoaderFailure = false;
-    const url = environment.assetGroupNames.url;
-    const method = environment.assetGroupNames.method;
-    this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
-      this.assetGroupNames = reponse[0];
-      this.getAllpolicyIds();
-    },
-      error => {
-        this.policyPolicyLoader = false;
-        this.contentHidden = true;
-        this.policyPolicyLoaderFailure = true;
-        this.assetGroupNames = [];
         this.errorMessage = 'apiResponseError';
         this.showLoader = false;
       });
@@ -355,7 +296,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     const method = environment.allPolicyIds.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
       this.policyIds = reponse[0];
-      this.getpolicyCategoryDetails();
     },
       error => {
         this.contentHidden = true;
@@ -367,28 +307,36 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSelectAssetGroup(selectedAssetGroup) {
-    this.selectedAssetGroup = selectedAssetGroup;
-  }
-
   private buildCreatepolicyModel(policyForm: any) {
     const PolicyModel = Object();
     PolicyModel.policyType = this.selectedPolicyType;
-    PolicyModel.policyName = policyForm.policyName;
+    PolicyModel.policyDisplayName = policyForm.policyName;
+    if (this.isPolicyIdValid) {
+      PolicyModel.policyName = this.policyId;
+    }
+    else {
+      PolicyModel.policyName = policyForm.policyName + '_' + this.selectedAssetGroup + '_' + this.selectedAssetType;
+      PolicyModel.policyName = PolicyModel.policyName.replace(/\s/g, '-');
+    }
+    PolicyModel.policyId = PolicyModel.policyName;
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
     PolicyModel.category = this.selectedCategory;
-    PolicyModel.description = policyForm.description;
+    PolicyModel.policyDesc = policyForm.description;
+    PolicyModel.resolution = policyForm.resolution;
+    PolicyModel.resolutionUrl = policyForm.resolutionUrl;
     PolicyModel.policyRestUrl = this.getpolicyRestUrl(policyForm);
     PolicyModel.assetGroup = this.selectedAssetGroup;
-    PolicyModel.policyId = policyForm.policyName + '_' + this.selectedAssetGroup + '_' + this.selectedTargetType;
-    PolicyModel.policyId = PolicyModel.policyId.replace(/\s/g, '-');
     PolicyModel.policyExecutable = this.policyJarFileName;
     PolicyModel.policyParams = this.buildpolicyParams();
-    PolicyModel.isFileChanged = true;
+    PolicyModel.isFileChanged = false;
 
-    const url = environment.createPolicy.url;
+    let url = environment.createPolicy.url;
     const method = environment.createPolicy.method;
+
+    if (this.isPolicyIdValid) {
+      url = environment.updatePolicy.url;
+    }
     if (policyForm.policyType === 'Classic') {
       this.currentFileUpload = this.selectedFiles.item(0);
     } else {
@@ -405,9 +353,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
+
+
   private buildpolicyParams() {
     const policyParms = Object();
-    policyParms.params = this.allPolicyParams;
+    policyParms.params = this.paramsList;
     policyParms.environmentVariables = this.allEnvironments;
     return JSON.stringify(policyParms);
   }
@@ -445,11 +395,12 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     const extension = this.policyJarFileName.substring(this.policyJarFileName.lastIndexOf('.') + 1);
     if (extension !== 'jar') {
       this.removeJarFileName();
+      console.log(this.selectedFiles.item(0), "here", this.policyJarFileName);
     }
   }
 
   removePolicyParameters(index: number): void {
-    if (this.paramsList[index][0] != "policyKey" && this,this.paramsList.length>1)
+    if (this.paramsList[index][0] != "policyKey" && this, this.paramsList.length > 1)
       this.paramsList.splice(index, 1);
     console.log(this.paramsList, "list");
   }
@@ -474,6 +425,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { dataSourceName: datasourceName }).subscribe(reponse => {
       this.showLoader = false;
       this.targetTypesNames = reponse[0];
+      console.log(this.targetTypesNames, "TTN");
     },
       error => {
         this.allPolicyIds = [];
@@ -501,9 +453,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  public onSelectDatasource(datasourceName: any): void {
-    this.dataSourceName = datasourceName;
-    this.getTargetTypeNamesByDatasourceName(datasourceName);
+  public onSelectAssetGroup(selectedAssetGroup: any): void {
+    this.selectedAssetGroup = selectedAssetGroup;
+    this.getTargetTypeNamesByDatasourceName(selectedAssetGroup);
   }
 
   addpolicyParameters(parametersInput: any, isEncrypted: any) {
@@ -533,6 +485,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   }
 
   getData() {
+    this.getpolicyCategoryDetails();
+    this.getDatasourceDetails();
     this.getAllPolicyIds();
   }
 
@@ -552,13 +506,12 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         this.policyId = this.queryParamsWithoutFilter.policyId;
         console.log(this.policyId, "getPolicyDetails");
         delete this.queryParamsWithoutFilter['filter'];
-        this.selectedAssetGroup = this.queryParamsWithoutFilter.ag;
+        this.dataSourceName = this.queryParamsWithoutFilter.ag;
         if (this.policyId) {
           this.pageTitle = 'Edit Policy';
           this.breadcrumbPresent = 'Edit Policy';
           this.isCreate = false;
           this.hideContent = true;
-          this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
           this.getpolicyCategoryDetails();
           this.isPolicyIdValid = 1;
           this.getPolicyDetails(this.policyId);
@@ -600,7 +553,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
    * This function get calls the keyword service before initializing
    * the filter array ,so that filter keynames are changed
    */
-
   getPolicyDetails(policyId: any) {
     let url = environment.getPolicyById.url;
     let method = environment.getPolicyById.method;
@@ -610,10 +562,12 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.policyId = this.policyDetails.policyId;
       this.selectedPolicyType = this.policyDetails.policyType;
       this.policyName = this.policyDetails.policyName;
+      this.selectedAssetGroup = this.policyDetails.assetGroup;
       this.selectedAssetType = this.policyDetails.targetType;
       this.selectedSeverity = this.policyDetails.severity;
       this.selectedCategory = this.policyDetails.category;
       this.description = this.policyDetails.policyDesc;
+      this.resolution = this.policyDetails.resolution;
       this.resolutionUrl = this.policyDetails.resolutionUrl;
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
       let currentParam = [];
@@ -632,6 +586,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         }
         currentParam = [];
       }
+      this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
       this.hideContent = false;
     },
       error => {
@@ -660,122 +615,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
     } catch (error) {
       this.logger.log('error', error);
-    }
-  }
-
-  massageData(data) {
-    const refactoredService = this.refactorFieldsService;
-    const newData = [];
-    const formattedFilters = data.map(function (datam) {
-      const keysTobeChanged = Object.keys(datam);
-      let newObj = {};
-      keysTobeChanged.forEach(element => {
-        const elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element
-          ) || element;
-        newObj = Object.assign(newObj, { [elementnew]: datam[element] });
-      });
-      newObj['Actions'] = '';
-      newData.push(newObj);
-    });
-    return newData;
-  }
-
-  processData(data) {
-    try {
-      let innerArr = {};
-      const totalVariablesObj = {};
-      let cellObj = {};
-      this.outerArr = [];
-      const getData = data;
-      let getCols;
-
-      if (getData.length) {
-        getCols = Object.keys(getData[0]);
-      } else {
-        this.seekdata = true;
-      }
-
-      for (let row = 0; row < getData.length; row++) {
-        innerArr = {};
-        for (let col = 0; col < getCols.length; col++) {
-          if (getCols[col].toLowerCase() === 'actions') {
-            cellObj = {
-              link: true,
-              properties: {
-                'text-shadow': '0.33px 0',
-                'color': '#0047bb'
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              valText: 'Edit',
-              imgLink: '',
-              text: 'Edit',
-              statusProp: {
-                'color': '#0047bb'
-              }
-            };
-          } else {
-            cellObj = {
-              link: '',
-              properties: {
-                color: ''
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: '',
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]]
-            };
-          }
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = '';
-        }
-        this.outerArr.push(innerArr);
-      }
-      if (this.outerArr.length > getData.length) {
-        const halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
-      }
-      this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = ['Policy Id', 'Policy Name', 'Policy Description', 'Policy Version', 'No of policys', 'Actions'];
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  goToCreatePolicy() {
-    try {
-      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-      this.router.navigate(['../create-edit-policy'], {
-        relativeTo: this.activatedRoute,
-        queryParamsHandling: 'merge',
-        queryParams: {
-        }
-      });
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  goToDetails(row) {
-    if (row.col === 'Actions') {
-      try {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.pageTitle);
-        this.router.navigate(['../create-edit-policy'], {
-          relativeTo: this.activatedRoute,
-          queryParamsHandling: 'merge',
-          queryParams: {
-            policyId: row.row['Policy Id'].text
-          }
-        });
-      } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log('error', error);
-      }
     }
   }
 

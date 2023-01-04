@@ -28,11 +28,37 @@
   min-width: 300px;
 }
 
+.form-wrapper{
+   overflow: auto;
+   padding-right: 24px;
+   height: calc(100% - 50px);
+}
+
 .right-wrapper{
-  width: 60%;
-  padding: 0px 24px;
-  overflow: scroll;
-  border-left: 2px solid var(--border-200);
+display: flex;
+flex-direction: column;
+width: 80%;
+padding-left:24px;
+overflow: scroll;
+border-left: 2px solid var(--border-200);
+gap: 24px;
+}
+
+.type-wrapper{
+  display: flex;
+  gap: 20px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.input-wrapper{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-wrapper ::ng-deep .mat-form-field-label{
+   padding: 5px 5px !important;
 }
 
 .button-wrapper{
@@ -72,18 +98,16 @@ flex-direction: column;
 gap: 16px;
 }
 
-.right-wrapper-header{
+.form-wrapper-header{
   font: var(--text-subtitle-1);
   color: var(--text-medium-emphasis);
 }
 
 .remove-icon{
+  display: none;
   width: 16px;
 }
 
-.step-wrapper{
-  height: calc(100% - 40px);
-}
 
 .details-wrapper{
   display: flex;
@@ -91,11 +115,6 @@ gap: 16px;
   gap: 24px;
   opacity: 60%;
   padding-top: 20px;
-}
-
-.type-wrapper{
-  padding: 24px 0px;
-  border-bottom: 2px solid var(--border-200);
 }
 
 .parameters-wrapper{
@@ -118,7 +137,6 @@ gap: 16px;
 }
 
 .header-wrapper{
-  padding-top: 24px;
   display: flex;
   flex-direction: row;
   width: 90%;
@@ -127,12 +145,21 @@ gap: 16px;
 }
 
 .image-wrapper{
-  display: none;  
+  display: flex;
+  align-items: center;
   gap: 10px;
 }
 
-.parameter-wrapper:hover .image-wrapper{
- display: flex;
+.parameter-wrapper:hover .remove-icon{
+display: flex
+}
+
+.rule-executable{
+  display: flex;
+justify-content: center;
+align-items: center;
+padding: 4px 24px;
+border: 1px solid var(--border-200);
 }
 
 .stepper{

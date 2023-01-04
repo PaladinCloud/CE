@@ -3,7 +3,7 @@
 }
 
 .stepper-header-wrapper{
-    width: 40%;
+    width: 20%;
 }
 
 .stepper-wrapper{
@@ -24,7 +24,7 @@
 }
 
 .stepper{
-    width: 40%;
+    width: 20%;
 }
 
 ::ng-deep .mat-vertical-content-container{

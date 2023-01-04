@@ -10,86 +10,119 @@
                     </div>
                 </ng-template>
                 <ng-template #stepsContent>
-                    <form class="right-wrapper" (ngSubmit)="createOrUpdatepolicy(policyForm)" #policyForm="ngForm">
-                        <div class="step-wrapper" [hidden]="currentStepperIndex>0">
-                            <span class="right-wrapper-header">Policy Details</span>
-                            <div class="type-wrapper">
-                                <app-dropdown [requiredInfo]="true" [items]="policyType" placeholder="Type"
-                                    [selectedItem]="selectedPolicyType" required name="policyType"
-                                    (selected)="selectedType($event)">
-                                </app-dropdown>
-                            </div>
-                            <div class="details-wrapper" [class.isEnabled]="!isDisabled">
-                                <mat-form-field appearance="outline">
-                                    <mat-label>Policy Name</mat-label>
-                                    <input matInput ngModel required name="policyName" [(ngModel)]="policyName"
-                                        [disabled]="isDisabled">
-                                    <div *ngIf="requiredInfo" class="info-img">
-                                        <img src="../../../assets/icons/info-circle.svg">
+                    <div class="right-wrapper">
+                        <span class="form-wrapper-header">{{FormHeader}}</span>
+                        <form class="form-wrapper" (ngSubmit)="createOrUpdatepolicy(policyForm)" #policyForm="ngForm">
+                            <div [hidden]="currentStepperIndex>0">
+                                <div class="type-wrapper">
+                                    <app-dropdown [requiredInfo]="true" [items]="policyType" placeholder="Type"
+                                        [selectedItem]="selectedPolicyType" required name="policyType"
+                                        (selected)="selectedType($event)">
+                                    </app-dropdown>
+                                    <div class="rule-executable" *ngIf="selectedPolicyType=='Federated'">
+                                        <div class="input-form">
+                                            <input type="file" id="selectJarFile" name="ruleJarFile"
+                                                placeholder="Upload Jar File" (change)="onJarFileChange($event)"
+                                                [(ngModel)]="ruleJarFile" required>
+                                        </div>
                                     </div>
-                                </mat-form-field>
-                                <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled" [items]="targetTypesNames"
-                                    placeholder="Asset Type" [selectedItem]="selectedAssetType" required
-                                    name="assetType" (selected)="onSelectAssetType($event)">
-                                </app-dropdown>
-                                <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled" [items]="policySeverities"
-                                    placeholder="Severity" [selectedItem]="selectedSeverity" required name="severity"
-                                    (selected)="onSelectSeverity($event)">
-                                </app-dropdown>
-                                <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled" [items]="policyCategories"
-                                    placeholder="Category" [selectedItem]="selectedCategory" required name="category"
-                                    (selected)="onSelectCategory($event)">
-                                </app-dropdown>
-                                <mat-form-field appearance="outline">
-                                    <mat-label>Description</mat-label>
-                                    <textarea matInput ngModel required name="description" [(ngModel)]="description"
-                                        [disabled]="isDisabled"></textarea>
-                                    <div *ngIf="requiredInfo" class="info-img">
-                                        <img src="../../../assets/icons/info-circle.svg">
+                                </div>
+                                <div class="details-wrapper" [class.isEnabled]="!isDisabled">
+                                    <div class="input-wrapper">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Policy Name</mat-label>
+                                            <input matInput ngModel required name="policyName" [(ngModel)]="policyName"
+                                                [disabled]="isDisabled">
+                                        </mat-form-field>
+                                        <div class="info-img">
+                                            <img src="../../../assets/icons/info-circle.svg">
+                                        </div>
                                     </div>
-                                </mat-form-field>
-                                <mat-form-field appearance="outline">
-                                    <mat-label>Resolution Link</mat-label>
-                                    <input matInput ngModel required name="resolutionUrl" [(ngModel)]="resolutionUrl"
-                                        [disabled]="isDisabled">
-                                    <div *ngIf="requiredInfo" class="info-img">
-                                        <img src="../../../assets/icons/info-circle.svg">
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
+                                        [items]="datasourceDetails" placeholder="DataSource"
+                                        [selectedItem]="selectedAssetGroup" required name="assetGroup"
+                                        (selected)="onSelectAssetGroup($event)">
+                                    </app-dropdown>
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
+                                        [items]="targetTypesNames" placeholder="Asset Type"
+                                        [selectedItem]="selectedAssetType" required name="assetType"
+                                        (selected)="onSelectAssetType($event)">
+                                    </app-dropdown>
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
+                                        [items]="policySeverities" placeholder="Severity"
+                                        [selectedItem]="selectedSeverity" required name="severity"
+                                        (selected)="onSelectSeverity($event)">
+                                    </app-dropdown>
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
+                                        [items]="policyCategories" placeholder="Category"
+                                        [selectedItem]="selectedCategory" required name="category"
+                                        (selected)="onSelectCategory($event)">
+                                    </app-dropdown>
+                                    <div class="input-wrapper">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Description</mat-label>
+                                            <textarea matInput ngModel required name="description"
+                                                [(ngModel)]="description" [disabled]="isDisabled"></textarea>
+                                        </mat-form-field>
+                                        <div class="info-img">
+                                            <img src="../../../assets/icons/info-circle.svg">
+                                        </div>
                                     </div>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                        <div class="step-wrapper" [hidden]="currentStepperIndex==0">
-                            <span class="right-wrapper-header">Policy Parameters</span>
-                            <div class="header-wrapper">
-                                <span class="params-header">Select Key</span>
-                                <span class="params-header">Enter Value</span>
-                            </div>
-                            <div class="parameters-wrapper">
-                                <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index">
-                                    <mat-form-field appearance="outline">
-                                        <input matInput required name="key-{{i}}" value="{{param[0]}}">
-                                    </mat-form-field>
-                                    <mat-form-field appearance="outline">
-                                        <input matInput required name="value-{{i}}" value="{{param[1]}}">
-                                    </mat-form-field>
-                                    <div class="image-wrapper">
-                                        <img class="add-icon" [class.isLastIndex]="paramsList.length == i+1"
-                                            src="../assets/icons/plus-circle.svg" (click)="addPolicyParameters()">
-                                        <img class="remove-icon" src="../assets/icons/x-icon.svg"
-                                            (click)="removePolicyParameters(i)">
+                                    <div class="input-wrapper">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Resolution</mat-label>
+                                            <input matInput ngModel required name="resolution" [(ngModel)]="resolution"
+                                                [disabled]="isDisabled">
+                                        </mat-form-field>
+                                        <div class="info-img">
+                                            <img src="../../../assets/icons/info-circle.svg">
+                                        </div>
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Resolution Link</mat-label>
+                                            <input matInput ngModel required name="resolutionUrl"
+                                                [(ngModel)]="resolutionUrl" [disabled]="isDisabled">
+                                        </mat-form-field>
+                                        <div class="info-img">
+                                            <img src="../../../assets/icons/info-circle.svg">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            <div [hidden]="currentStepperIndex==0">
+                                <div class="header-wrapper">
+                                    <span class="params-header">Select Key</span>
+                                    <span class="params-header">Enter Value</span>
+                                </div>
+                                <div class="parameters-wrapper">
+                                    <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index">
+                                        <mat-form-field appearance="outline">
+                                            <input matInput required name="key-{{i}}" value="{{param[0]}}">
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <input matInput required name="value-{{i}}" value="{{param[1]}}">
+                                        </mat-form-field>
+                                        <div class="image-wrapper">
+                                            <img class="add-icon" [class.isLastIndex]="paramsList.length == i+1"
+                                                src="../assets/icons/plus-circle.svg" (click)="addPolicyParameters()">
+                                            <img class="remove-icon" src="../assets/icons/x-icon.svg"
+                                                (click)="removePolicyParameters(i)">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                         <div class="button-wrapper">
                             <app-button [class.hide]="currentStepperIndex==0" (click)="pageCounter('back')">Back
                             </app-button>
                             <app-button [hidden]="currentStepperIndex>0" (click)="pageCounter('next')">
                                 Next</app-button>
-                            <app-button [class.hide]="currentStepperIndex==0" [disabled]="policyForm.form.invalid">
+                            <app-button [class.hide]="currentStepperIndex==0" [disabled]="policyForm.form.invalid"
+                                (click)="createOrUpdatepolicy(policyForm)">
                                 Validate</app-button>
                         </div>
-                    </form>
+                    </div>
                 </ng-template>
             </app-stepper>
         </div>
