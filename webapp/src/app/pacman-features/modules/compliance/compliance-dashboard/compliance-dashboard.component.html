@@ -30,7 +30,7 @@
                     [data]="complianceTableData" [columnWidths]="columnWidths" [tableErrorMessage]='tableErrorMessage' [tableDataLoaded]='tableDataLoaded'
                     [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                     [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
-                    [imageDataMap]="tableDataMap" [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
+                    [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
                     [searchQuery]="searchTxt" (downloadClicked)="handlePopClick()" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn">
                 </app-table>
             </mat-grid-tile>

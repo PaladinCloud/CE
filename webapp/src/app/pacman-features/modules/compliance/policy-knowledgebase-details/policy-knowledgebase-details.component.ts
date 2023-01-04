@@ -42,8 +42,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   selectedAssetGroup: string;
   subscriptionToAssetGroup: Subscription;
   public autoFix = false;
-  public ruleID: any = "";
-  public setRuleIdObtained = false;
+  public policyID: any = "";
+  public setPolicyIdObtained = false;
   public dataComing = true;
   public showLoader = true;
   public durationParams: any;
@@ -111,31 +111,31 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   /* Function to get Data */
   getData() {
     /* All functions to get data should go here */
-    this.getRuleId();
+    this.getPolicyId();
     this.getProgressData();
   }
 
   /**
-   * this funticn gets the ruleid from the url
+   * this funticn gets the policyid from the url
    */
-  getRuleId() {
+  getPolicyId() {
     /*  TODO:Trinanjan Wrong way of doing it */
     this.routeSubscription = this.activatedRoute.params.subscribe((params) => {
-      this.ruleID = params["ruleID"];
+      this.policyID = params["policyID"];
       this.autoFix = params["autoFix"] === "true";
     });
-    if (this.ruleID !== undefined) {
-      this.setRuleIdObtained = true;
+    if (this.policyID !== undefined) {
+      this.setPolicyIdObtained = true;
     }
   }
 
   getProgressData() {
-    if (this.ruleID !== undefined) {
+    if (this.policyID !== undefined) {
       if (this.dataSubscriber) {
         this.dataSubscriber.unsubscribe();
       }
       const queryParams = {
-        policyId: this.ruleID,
+        policyId: this.policyID,
       };
       const policyContentSliderUrl = environment.policyContentSlider.url;
       const policyContentSliderMethod = environment.policyContentSlider.method;
@@ -156,16 +156,19 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
                 this.processData(response.response);
               } catch (e) {
                 this.errorMessage = this.errorHandling.handleJavascriptError(e);
+                this.logger.log("error", e);
                 this.getErrorValues();
               }
             },
             (error) => {
               this.errorMessage = error;
+              this.logger.log("error", error);
               this.getErrorValues();
             }
           );
       } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
         this.getErrorValues();
       }
     }
@@ -178,8 +181,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
 
   processData(data) {
-    this.displayName = this.uppercasefirst(data.displayName);
-    this.ruleDescription = data.ruleDescription;
+    this.displayName = this.uppercasefirst(data.policyDisplayName);
+    this.ruleDescription = data.policyDesc;
     this.resolutionUrl = data.resolutionUrl;
     this.resolution = data.resolution;
     if (this.resolutionUrl == null || this.resolutionUrl == "") {

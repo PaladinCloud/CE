@@ -13,6 +13,7 @@
  */
 
 .policy-knowledgebase-wrapper {
+  overflow: scroll;
   height: 100%;
 }
 .policy-knowledgebase-content {

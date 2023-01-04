@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
@@ -24,6 +24,12 @@ import { RefactorFieldsService } from "./../../../../shared/services/refactor-fi
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
+import { TableStateService } from "src/app/core/services/table-state.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
+import { SnackbarComponent } from "src/app/shared/components/molecules/snackbar/snackbar.component";
 
 @Component({
   selector: "app-admin-policies",
@@ -49,6 +55,66 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   seekdata: boolean = false;
   showLoader: boolean = true;
 
+  headerColName;
+  direction;
+  columnNamesMap = {"policyDisplayName": "Title","targetType": "Asset",  "severity": "Severity", "category":"Category", "status": "Status"};
+  columnWidths = {"Title": 2.4, "Asset": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Actions": 0.8}
+  whiteListColumns;
+  isStatePreserved = false;
+  tableScrollTop = 0;
+  onScrollDataLoader: Subject<any> = new Subject<any>();
+  columnsSortFunctionMap = {
+    Severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ASeverity = a["Severity"].valueText??"default";
+      const BSeverity = b["Severity"].valueText??"default";
+      return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
+    }
+  }
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      cost:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+
   paginatorSize: number = 25;
   isLastPage: boolean;
   isFirstPage: boolean;
@@ -56,7 +122,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   pageNumber: number = 0;
 
   searchTxt: String = "";
-  dataTableData: any = [];
+  tableData: any = [];
   tableDataLoaded: boolean = false;
   filters: any = [];
   searchCriteria: any;
@@ -87,7 +153,10 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     private refactorFieldsService: RefactorFieldsService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private tableStateService: TableStateService,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
   ) {
     this.routerParam();
     this.updateComponent();
@@ -98,53 +167,75 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-  }
-
-  dataMarshalling(dataToMarshall) {
-    let fullPolicies = [];
-    for (var index = 0; index < dataToMarshall.length; index++) {
-      let policyItem = {};
-      policyItem["createdDate"] = dataToMarshall[index][0];
-      policyItem["modifiedDate"] = dataToMarshall[index][1];
-      policyItem["resolution"] = dataToMarshall[index][2];
-      policyItem["policyDesc"] = dataToMarshall[index][3];
-      policyItem["policyId"] = dataToMarshall[index][4];
-      policyItem["policyUrl"] = dataToMarshall[index][5];
-      policyItem["policyVersion"] = dataToMarshall[index][6];
-      policyItem["policyName"] = dataToMarshall[index][7];
-      policyItem["numberOfRules"] = dataToMarshall[index][8];
-      fullPolicies.push(policyItem);
+    const state = this.tableStateService.getState("issueListing") || {};
+    if(state){      
+      this.headerColName = state.headerColName || '';
+      this.direction = state.direction || '';
+      this.bucketNumber = state.bucketNumber || 0;
+      this.totalRows = state.totalRows || 0;
+      this.searchTxt = state?.searchTxt || '';
+      
+      this.tableDataLoaded = true;
+      
+      this.tableData = state?.data || [];
+      this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
+      this.tableScrollTop = state?.tableScrollTop;
+      
+      if(this.tableData && this.tableData.length>0){
+        this.isStatePreserved = true;
+      }else{
+        this.isStatePreserved = false;
+      }
     }
-    return fullPolicies;
   }
 
-  nextPage() {
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+  }
+
+  nextPage(e) {
     try {
-      if (!this.isLastPage) {
         this.pageNumber++;
         this.showLoader = true;
-        this.getPolicyDetails();
-      }
+        this.getPolicyDetails(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-        this.getPolicyDetails();
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
+  massageData(data){
+    const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
+    const newData = [];
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row); 
+           
+      let newObj = {};
+      KeysTobeChanged.forEach((element) => {
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        else {
+        elementnew =
+          refactoredService.getDisplayNameForAKey(
+            element.toLocaleLowerCase()
+          ) || element;
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
+      });
+      newObj["Actions"] = "";
+      newData.push(newObj);
+    });
+    return newData;
   }
 
-  getPolicyDetails() {
+  getPolicyDetails(isNextPageCalled?) {
     var url = environment.policyDetails.url;
     var method = environment.policyDetails.method;
 
@@ -157,46 +248,25 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       queryParams["searchTerm"] = this.searchTxt;
     }
 
-    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
+    try{
+      this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
       (reponse) => {
         this.showLoader = false;
-        if (reponse[0].content !== undefined) {
-          reponse[0].content = this.dataMarshalling(reponse[0].content);
+        if (reponse[0].content && reponse[0].content.length>0) {
           this.allPolicies = reponse[0].content;
           this.errorValue = 1;
           this.searchCriteria = undefined;
           var data = reponse[0];
           this.tableDataLoaded = true;
-          this.dataTableData = reponse[0].content;
+          let updatedResponse = this.massageData(reponse[0].content);
+          let processedData = this.processData(updatedResponse)
+          if(isNextPageCalled){
+            this.onScrollDataLoader.next(processedData)
+          }else{
+            this.tableData = processedData;
+          }
+          this.totalRows = data.totalElements;
           this.dataLoaded = true;
-          if (reponse[0].content.length == 0) {
-            this.errorValue = -1;
-            this.outerArr = [];
-            this.allColumns = [];
-          }
-
-          if (data.content.length > 0) {
-            this.isLastPage = data.last;
-            this.isFirstPage = data.first;
-            this.totalPages = data.totalPages;
-            this.pageNumber = data.number;
-
-            this.seekdata = false;
-
-            this.totalRows = data.totalElements;
-
-            this.firstPaginator = data.number * this.paginatorSize + 1;
-            this.lastPaginator =
-              data.number * this.paginatorSize + this.paginatorSize;
-
-            this.currentPointer = data.number;
-
-            if (this.lastPaginator > this.totalRows) {
-              this.lastPaginator = this.totalRows;
-            }
-            let updatedResponse = this.massageData(data.content);
-            this.processData(updatedResponse);
-          }
         }
       },
       (error) => {
@@ -209,6 +279,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         this.showLoader = false;
       }
     );
+    }catch(e){
+      this.logger.log("error: ", e);
+    }
   }
 
   /*
@@ -255,20 +328,24 @@ export class PoliciesComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
-    this.outerArr = [];
-    this.searchTxt = "";
-    this.currentBucket = [];
-    this.bucketNumber = 0;
-    this.firstPaginator = 1;
-    this.showLoader = false;
-    this.currentPointer = 0;
-    this.dataTableData = [];
-    this.tableDataLoaded = false;
-    this.dataLoaded = false;
-    this.seekdata = false;
-    this.errorValue = 0;
-    this.showGenericMessage = false;
-    this.getPolicyDetails();
+    if(this.isStatePreserved){     
+      this.tableDataLoaded = true;
+      this.clearState();
+    }else{
+      this.tableDataLoaded = false;
+      this.bucketNumber = 0;
+      // this.tableData = [];
+      this.getPolicyDetails();
+    }
+  }
+
+  storeState(state){
+    this.tableStateService.setState("adminPolicies", state);    
+  }
+
+  clearState(){
+    this.tableStateService.clearState("adminPolicies");
+    this.isStatePreserved = false;
   }
 
   navigateBack() {
@@ -281,97 +358,162 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  massageData(data) {
-    let refactoredService = this.refactorFieldsService;
-    let newData = [];
-    let formattedFilters = data.map(function (data) {
-      let keysTobeChanged = Object.keys(data);
-      let newObj = {};
-      keysTobeChanged.forEach((element) => {
-        var elementnew =
-          refactoredService.getDisplayNameForAKey(element) || element;
-        newObj = Object.assign(newObj, { [elementnew]: data[element] });
-      });
-      newObj["Actions"] = "";
-      newData.push(newObj);
-    });
-    return newData;
-  }
-
   processData(data) {
     try {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var blue = "#336cc9";
-      var green = "#26ba9d";
-      var red = "#f2425f";
-      var orange = "#ffb00d";
-      var yellow = "yellow";
-      this.outerArr = [];
-      var getData = data;
-
-      if (getData.length) {
-        var getCols = Object.keys(getData[0]);
-      } else {
-        this.seekdata = true;
-      }
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
 
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
-        for (var col = 0; col < getCols.length; col++) {
-          if (getCols[col].toLowerCase() == "actions") {
+        keynames.forEach(col => {
+          cellObj = {
+            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: false
+            // chipVariant: "", // this value exists if isChip is true,
+            // menuItems: [], // add this if isMenuBtn
+          }
+          if(col.toLowerCase()=="title"){
             cellObj = {
-              link: true,
-              properties: {
-                "text-shadow": "0.33px 0",
-                color: "#0047bb",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              valText: "Edit",
-              imgLink: "",
-              text: "Edit",
-              statusProp: {
-                color: "#0047bb",
-              },
-            };
-          } else {
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
+              ...cellObj,
+              link: true
             };
           }
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = "";
-        }
-        this.outerArr.push(innerArr);
+          else if (col.toLowerCase() == "actions") {
+            let dropDownItems: Array<String> = ["Edit"];
+            if (getData[row].Status.toLowerCase() === "enabled") {
+              dropDownItems.push("Disable");
+              // dropDownItems.push("Invoke");
+            } else {
+              dropDownItems.push("Enable");
+            }
+            cellObj = {
+              ...cellObj,
+              isMenuBtn: true,
+              menuItems: dropDownItems,
+            };
+          } else if(col.toLowerCase() == "status"){
+            let variant;
+            if(getData[row]["Status"].toLowerCase() === "enabled"){
+              variant = "variant1"
+            }else{
+              variant = "variant2"
+            }
+            cellObj = {
+              ...cellObj,
+              text: getData[row][col].toLowerCase(),
+              isChip: true,
+              chipVariant: variant,
+            };
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
       }
-      if (this.outerArr.length > getData.length) {
-        var halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
       }
-      this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = [
-        "Policy Id",
-        "Policy Name",
-        "Policy Description",
-        "Policy Version",
-        "No of Rules",
-        "Actions",
-      ];
+      return processedData;
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
+
+  enableDisableRuleOrJob(event) {
+    try {      
+      const url = environment.enableDisableRuleOrJob.url;
+      const method = environment.enableDisableRuleOrJob.method;
+      const params = {};
+      params['policyId'] = event.rowSelected["Policy ID"].text;
+      
+      params['action'] = event.action;
+
+      this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+        // event.rowSelected["Status"].text = event.action+"d";
+        event.rowSelected["Status"] = {
+          ...event.rowSelected["Status"],
+          text: event.action+"d",
+          titleText: event.action+"d",
+          chipVariant: event.action.toLowerCase()=="enable"?"variant1":"variant2",
+        }
+
+        let dropDownItems = ["Edit"];
+        if (event.rowSelected["Status"].text.toLowerCase() === "enabled") {
+          dropDownItems.push("Disable");
+          // dropDownItems.push("Invoke");
+        } else {
+          dropDownItems.push("Enable");
+        }
+        event.rowSelected["Actions"] = {
+          ...event.rowSelected["Actions"],
+          menuItems: dropDownItems,
+        }
+        const snackbarText = 'Policy "' +  event.rowSelected["Title"].text + '" ' + event.action + 'd successfully';
+        this.openSnackBar(snackbarText, "check-circle");
+        
+        // this.isEnableDisableInvokeSuccess = true;
+        // this.invocationId = reponse[0].data;
+      },
+        error => {
+          // this.isEnableDisableInvokeFailed = true;
+          // this.ruleLoader = false;
+        });
+    } catch (error) {
+      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+
+    
+  }
+
+  openDialog(event): void {
+    const action = event.action;
+    const element = event.rowSelected;
+    let title, message;
+    if(action=="Enable"){
+      title = "Enable Policy";
+    }else if(action=="Disable"){
+      title = "Disable Policy";
+    }
+    message = 'Are you really sure you want to disable "' + element["Title"].text + '".';
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: {title: title, message: message, yesButtonLabel: action, noButtonLabel: "Cancel"},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result=="yes"){
+        this.enableDisableRuleOrJob(event);
+      }
+    });
+  }
+
+  openSnackBar(message, iconSrc) {
+    this.snackBar.openFromComponent(SnackbarComponent, {
+      horizontalPosition: "right",
+      verticalPosition: "top",
+      data: {
+        message: message,
+        iconSrc: iconSrc,
+        variant: "variant1"
+      },
+      duration: 500 * 1000,
+    });
+    }
 
   goToCreatePolicy() {
     try {
@@ -389,9 +531,30 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDetails(row) {
-    if (row.col === "Actions") {
-      try {
+  goToDetails(event) {
+    const action = event?.action?.toLowerCase();
+    if(action =="enable" || action =="disable"){
+      this.openDialog(event);
+      return;
+    }
+    
+    // store in this function    
+    // const row = event.rowSelected;
+    // const data = event.data;
+    // const state = {
+    //   totalRows: this.totalRows,
+    //   data: data,
+    //   headerColName: this.headerColName,
+    //   direction: this.direction,
+    //   whiteListColumns: this.whiteListColumns,
+    //   bucketNumber: this.bucketNumber,
+    //   searchTxt: this.searchTxt,
+    //   tableScrollTop: event.tableScrollTop
+    //   // filterText: this.filterText
+    // }
+    // this.storeState(state);
+    try {
+    if (action && action === "edit") {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle
         );
@@ -399,24 +562,33 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            policyId: row.row["Policy Id"].text,
+            policyId: event.rowSelected["Policy ID"].text,
           },
         });
-      } catch (error) {
+      
+    }else{
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
+      this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event.rowSelected["Policy ID"].text], {
+        relativeTo: this.activatedRoute,
+        queryParamsHandling: "merge",
+      });
+    }
+    } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
       }
-    }
   }
 
-  searchCalled(search) {
+  // searchCalled(search) {
+  //   this.searchTxt = search;
+  // }
+
+  callNewSearch(search) {
     this.searchTxt = search;
-  }
-
-  callNewSearch() {
-    this.bucketNumber = 0;
-    this.currentBucket = [];
-    this.getPolicyDetails();
+    this.isStatePreserved = false;
+    this.updateComponent();  
   }
 
   ngOnDestroy() {

@@ -136,12 +136,6 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
           route: "/pl/admin/policies",
         },
         {
-          id: 16,
-          name: "Rules",
-          parent: "Admin",
-          route: "/pl/admin/rules",
-        },
-        {
           id: 17,
           name: "Job Execution Manager",
           parent: "Admin",

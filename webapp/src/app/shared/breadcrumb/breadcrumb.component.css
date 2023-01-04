@@ -31,4 +31,9 @@
 
 .breadcrumb-container{
 	cursor: pointer;
+	gap: 8px;
+}
+
+.listing-wrapper{
+	gap: 8px;
 }

@@ -2,8 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
-import { Sort } from '@angular/material/sort';
-import {MatTable, MatTableDataSource} from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
@@ -25,6 +24,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() showAddRemoveCol;
   @Input() showDownloadBtn;
   @Input() showFilterBtn;
+  @Input() showMoreMenu = true;
+  @Input() rowClickable = true;
+  @Input() actionsList = [];
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
@@ -37,6 +39,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() doLocalSort = true;
   @Input() tableDataLoaded;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
+  @Output() cellSelectEventEmitter = new EventEmitter();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
   @Output() whitelistColumnsChanged = new EventEmitter<any>();
@@ -75,7 +78,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
-    private windowExpansionService: WindowExpansionService) { 
+    private windowExpansionService: WindowExpansionService,
+    ) { 
       this.windowExpansionService.getExpansionStatus().subscribe((res) => {
         this.waitAndResizeTable();
       });
@@ -211,13 +215,30 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.getWidthFactor();
   }
 
-  goToDetails(row){
+  handleClick(row, cell?){
     let event = {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
-      data: this.data
+      data: this.data,
+      cell: cell
     }
-    this.rowSelectEventEmitter.emit(event);
+    if(this.rowClickable){
+      this.rowSelectEventEmitter.emit(event);
+    }else{
+      if(cell) this.cellSelectEventEmitter.emit(event);
+    }
+  }
+
+  handleAction(element, action){
+    let event = {
+      action: action,
+      // tableScrollTop : this.tableScrollTop,
+      rowSelected: element,
+      // data: this.data,
+      // cell: action
+    }
+    this.cellSelectEventEmitter.emit(event);
+    // if(action == "enable" || action == "disable") this.openDialog(element, action);
   }
 
    optionClick() {
@@ -343,7 +364,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
       for(const i in columnsToSearchIN) {
         const col = columnsToSearchIN[i];
-        if(String(item[col]).toLowerCase().match(searchTxt)){
+        if(String(item[col].text).toLowerCase().match(searchTxt)){
           return true;
         }
       }
@@ -370,6 +391,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   clearSearchText(){
     this.searchQuery = "";
+    if(this.tableErrorMessage == 'noSearchFound') this.tableErrorMessage = "";
+    if(this.doLocalSearch){
+      this.dataSource.data = this.mainDataSource.data;
+    }
     this.searchCalledEventEmitter.emit(this.searchQuery);
   }
 
@@ -393,7 +418,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
-      return (a[this.headerColName]<b[this.headerColName]? -1: 1)*(isAsc ? 1 : -1);
+      return (a[this.headerColName].text<b[this.headerColName].text? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 
