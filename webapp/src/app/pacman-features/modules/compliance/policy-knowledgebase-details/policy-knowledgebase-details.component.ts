@@ -24,6 +24,12 @@ import { ErrorHandlingService } from "../../../../shared/services/error-handling
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
 import { UtilsService } from "src/app/shared/services/utils.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
+import { SnackbarComponent } from "src/app/shared/components/molecules/snackbar/snackbar.component";
+import { AdminService } from "src/app/pacman-features/services/all-admin.service";
+import { PermissionGuardService } from "src/app/core/services/permission-guard.service";
 
 @Component({
   selector: "app-policy-knowledgebase-details",
@@ -34,6 +40,7 @@ import { UtilsService } from "src/app/shared/services/utils.service";
     ErrorHandlingService,
     CommonResponseService,
     AutorefreshService,
+    AdminService
   ],
 })
 export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
@@ -42,7 +49,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   breadcrumbLinks: any = ["policy-knowledgebase"];
   breadcrumbPresent: any;
   selectedAssetGroup: string;
-  actionItems = ["Dsable", "Edit", "Remove"];
+  actionItems = ["Disable", "Edit"]; // TODO: add "Remove"
   subscriptionToAssetGroup: Subscription;
   public autoFix = false;
   public policyID: any = "";
@@ -65,6 +72,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   whiteListColumns;
   tableErrorMessage = '';
   tableDataLoaded = false;
+  haveAdminPageAccess = false;
   policyParams = [
     {
       "key": "policykey",
@@ -110,7 +118,11 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    private adminService: AdminService,
+    private permissions: PermissionGuardService,
   ) {
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
@@ -123,6 +135,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
     try {
+      this.haveAdminPageAccess = this.permissions.checkAdminPermission();
       this.durationParams = this.autorefreshService.getDuration();
       this.durationParams = parseInt(this.durationParams, 10);
       this.autoRefresh = this.autorefreshService.autoRefresh;
@@ -342,6 +355,111 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     }
     value = value.toLocaleLowerCase();
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  openDialog(event): void {
+    const action = event;
+    let title, message;
+    if(action=="Enable"){
+      title = "Enable Policy";
+    }else if(action=="Disable"){
+      title = "Disable Policy";
+    }
+    message = 'Are you really sure you want to disable "' + this.policyDisplayName + '".';
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: {title: title, message: message, yesButtonLabel: action, noButtonLabel: "Cancel"},
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result=="yes"){
+        this.enableDisableRuleOrJob(event);
+      }
+    });
+  }
+
+  enableDisableRuleOrJob(event) {
+    if(!this.haveAdminPageAccess){
+      return;
+    }
+    try {      
+      const url = environment.enableDisableRuleOrJob.url;
+      const method = environment.enableDisableRuleOrJob.method;
+      const params = {};
+      params['policyId'] = this.policyID;
+      
+      params['action'] = event;
+
+      this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+        // change status 
+        this.status = event+'d';
+        // change actions list
+
+        let dropDownItems = ["Edit"];
+        if (this.status.toLowerCase() === "enabled") {
+          dropDownItems.push("Disable");
+        } else {
+          // dropDownItems.push("Invoke");
+          dropDownItems.push("Enable");
+        }
+        this.actionItems = dropDownItems;
+        
+        const snackbarText = 'Policy "' +  this.policyDisplayName + '" ' + this.status.toLowerCase() + ' successfully';
+        this.openSnackBar(snackbarText, "check-circle");
+      
+      },
+        error => {
+          this.logger.log("error", error);
+        });
+    } catch (error) {
+      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  openSnackBar(message, iconSrc) {
+    this.snackBar.openFromComponent(SnackbarComponent, {
+      horizontalPosition: "right",
+      verticalPosition: "top",
+      data: {
+        message: message,
+        iconSrc: iconSrc,
+        variant: "variant1"
+      },
+      duration: 500 * 1000,
+    });
+    }
+
+
+  goToDetails(event) {
+    console.log("event: ", event);
+    
+    const action = event?.toLowerCase();
+    // if(!this.haveAdminPageAccess){
+    //   return;
+    // }
+    if(action =="enable" || action =="disable"){
+      this.openDialog(event);
+      return;
+    }
+    
+    try {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
+    if (action && action === "edit") {
+        this.router.navigate(["/pl/admin/policies/create-edit-policy"], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: "merge",
+          queryParams: {
+            policyId: this.policyID,
+          },
+        });
+      
+    }
+    } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+      }
   }
 
   navigateBack() {

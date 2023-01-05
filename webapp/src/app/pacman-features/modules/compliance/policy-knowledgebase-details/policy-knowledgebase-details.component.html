@@ -20,7 +20,7 @@
         <div class="header-text">
             {{policyDisplayName}}
         </div>
-        <app-dropdown [items]="actionItems" placeholder="Actions"></app-dropdown>
+        <app-dropdown *ngIf="haveAdminPageAccess" (selected)="goToDetails($event)" [items]="actionItems" placeholder="Actions"></app-dropdown>
     </div>
     <div class="overview-wrapper">
         <div class="column">
