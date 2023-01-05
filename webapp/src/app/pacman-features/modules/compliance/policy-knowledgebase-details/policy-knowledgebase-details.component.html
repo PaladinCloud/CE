@@ -13,6 +13,9 @@
  -->
 
 <div class="policy-knowledgebase-wrapper">
+    <div *ngIf="backButtonRequired" class="breadcrumb-container">
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+     </div>
     <div class="header">
         <div class="header-text">
             {{policyDisplayName}}

@@ -554,10 +554,10 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     // }
     // this.storeState(state);
     try {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
     if (action && action === "edit") {
-        this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root, 0, this.pageTitle
-        );
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
@@ -567,10 +567,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         });
       
     }else{
-      this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root, 0, this.pageTitle
-      );
-      this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event.rowSelected["Policy ID"].text], {
+      const policyParams = event?.rowSelected["policyParams"];
+      const autoFixEnabled = JSON.parse(policyParams.text)["autofix"]??false;
+      this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event?.rowSelected["Policy ID"]?.text, autoFixEnabled], {
         relativeTo: this.activatedRoute,
         queryParamsHandling: "merge",
       });

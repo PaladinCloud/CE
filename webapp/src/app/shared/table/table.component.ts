@@ -415,7 +415,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     const isAsc = this.direction=='asc';
 
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
-      if(this.columnsSortFunctionMap[this.headerColName]){
+      if(this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
       return (a[this.headerColName].text<b[this.headerColName].text? -1: 1)*(isAsc ? 1 : -1);

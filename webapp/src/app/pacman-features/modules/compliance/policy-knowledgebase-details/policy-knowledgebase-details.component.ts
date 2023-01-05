@@ -194,7 +194,6 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
                 this.showLoader = false;
                 this.seekdata = false;
                 this.dataComing = true;
-                console.log(response, "response");
 
                 this.processData(response);
               } catch (e) {
@@ -307,23 +306,9 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         this.allpolicyParamKeys = _.map(policyParams.params, 'key');
 
         let i = 0;
-        console.log("policyParams: ", this.policyParams);
         this.policyParams = this.processForTableData(this.policyParams);
-        console.log("policyParams: ", this.policyParams);
         this.tableDataLoaded = true;
         this.totalRows = this.policyParams.length;
-        
-        // this.allpolicyParams.forEach(param => {
-        // if (param["value"]) {
-        //   console.log(param["key"], "key");
-        //   console.log(param["value"].toString(), "value");
-        // }
-        // this.policyParamList[i].push(param["key"]);
-        // this.policyParamList[i].push(param["value"] || "");
-        // })
-
-        // console.log(this.policyParamList, "this.allpolicyParams");
-        // console.log(this.allpolicyParamKeys, "this.allpolicyParamKeys");
 
       }
     }
