@@ -112,7 +112,10 @@
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
         <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
-                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false"> {{ column!='Actions' && column!='DetailsBtn'?column:'' }} </th>
+                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false">
+                    <span> {{ column!='Actions' && column!='DetailsBtn'?column:'' }} </span>
+                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='desc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
+                </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell *matCellDef="let element"> 
                     <div *ngIf="element[column] && element[column].isChip; else menuBtn" [title]="element[column].titleText">
                         <app-chip [variant]="element[column].chipVariant">
@@ -130,7 +133,7 @@
                         </div>
                     </ng-template>
                     <ng-template #textImageData>
-                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText==0); else noData" class="nowrap-ellipsis" [title]="element[column].titleText">
+                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText==0); else noData" (click)="handleClick(element, element[column])" class="nowrap-ellipsis" [class.pointer]="element[column].link" [title]="element[column].titleText">
                             <img *ngIf="element[column].imgSrc" style="vertical-align: text-bottom;" src="/assets/icons/{{element[column].imgSrc}}.svg"> 
                             <span [class.row-title]="column=='Title'" *ngIf="element[column].text || element[column].text==0">{{ element[column].text }} </span>
                         </div>

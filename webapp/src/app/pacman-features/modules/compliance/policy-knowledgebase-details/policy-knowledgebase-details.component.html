@@ -13,11 +13,14 @@
  -->
 
 <div class="policy-knowledgebase-wrapper">
+    <div *ngIf="backButtonRequired" class="breadcrumb-container">
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+     </div>
     <div class="header">
         <div class="header-text">
             {{policyDisplayName}}
         </div>
-        <app-dropdown [items]="actionItems" placeholder="Actions"></app-dropdown>
+        <app-dropdown *ngIf="haveAdminPageAccess" (selected)="goToDetails($event)" [items]="actionItems" placeholder="Actions"></app-dropdown>
     </div>
     <div class="overview-wrapper">
         <div class="column">

@@ -26,7 +26,7 @@
                                     </app-dropdown>
                                     <div class="policy-executable" *ngIf="selectedPolicyType=='Federated'">
                                         <div class="input-form">
-                                            <input type="file" id="selectJarFile" class="hide"
+                                            <input type="file" id="selectJarFile" class="hide" required
                                                 (change)="onJarFileChange($event)" name="policyJarFile"
                                                 [(ngModel)]="policyJarFile" *ngIf="policyJarFileName==''">
                                             <a class="tmbutton bm20 upload" (click)="openJarFileBrowser($event)">Upload
@@ -44,8 +44,7 @@
                                         <div class="input-wrapper">
                                             <mat-form-field appearance="outline">
                                                 <mat-label>Policy Url</mat-label>
-                                                <input matInput name="policyUrl" [(ngModel)]="policyUrl"
-                                                    readonly="{{readonly}}">
+                                                <input matInput name="policyUrl" [(ngModel)]="policyUrl" required>
                                             </mat-form-field>
                                             <div class="info-img">
                                                 <img src="../../../assets/icons/info-circle.svg">

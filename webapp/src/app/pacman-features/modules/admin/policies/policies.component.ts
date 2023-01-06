@@ -380,11 +380,17 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            link: ""
+            link: false
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
           }
-          if (col.toLowerCase() == "actions") {
+          if(col.toLowerCase()=="title"){
+            cellObj = {
+              ...cellObj,
+              link: true
+            };
+          }
+          else if (col.toLowerCase() == "actions") {
             let dropDownItems: Array<String> = ["Edit"];
             if (getData[row].Status.toLowerCase() === "enabled") {
               dropDownItems.push("Disable");
@@ -526,7 +532,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    const action = event.action.toLowerCase();
+    const action = event?.action?.toLowerCase();
     if(action =="enable" || action =="disable"){
       this.openDialog(event);
       return;
@@ -547,11 +553,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     //   // filterText: this.filterText
     // }
     // this.storeState(state);
-    if (action === "edit") {
-      try {
-        this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root, 0, this.pageTitle
-        );
+    try {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
+    if (action && action === "edit") {
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
@@ -559,11 +565,19 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             policyId: event.rowSelected["Policy ID"].text,
           },
         });
-      } catch (error) {
+      
+    }else{
+      const policyParams = event?.rowSelected["policyParams"];
+      const autoFixEnabled = JSON.parse(policyParams.text)["autofix"]??false;
+      this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event?.rowSelected["Policy ID"]?.text, autoFixEnabled], {
+        relativeTo: this.activatedRoute,
+        queryParamsHandling: "merge",
+      });
+    }
+    } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
       }
-    }
   }
 
   // searchCalled(search) {

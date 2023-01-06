@@ -288,6 +288,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Map<String, Object>> policyIdDetail = null;
         String assetGroup = request.getAg();
         Map<String, String> filters = request.getFilter();
+        Map<String, Object> sortFilters = request.getSortFilter();
         int size = request.getSize();
         int from = request.getFrom();
 
@@ -320,7 +321,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Map<String, Object>> policiesList = getPolicyIdWithDisplayNameQuery(targetTypes);
         List<Object> policies = getPolicyIds(targetTypes);
         List<Object> issueStatus = new ArrayList<>();
-
+        ArrayList<String> policyIdOrder = new ArrayList<>();
+        policiesList.forEach(policy -> policyIdOrder.add((String) policy.get(POLICYID)));
         Map<String, String> policyIdwithDisplayNameMap = policiesList.stream().collect(
                 Collectors.toMap(s -> (String) s.get(POLICYID), s -> (String) s.get(POLICY_DISPAY_NAME)));
         if (MapUtils.isNotEmpty(filters)) {
@@ -407,6 +409,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             } else {
                 if (MapUtils.isNotEmpty(filters) || size > 0 || !Strings.isNullOrEmpty(searchText)) {
 
+                    if (null!=sortFilters && sortFilters.get("fieldName").equals("policyId.keyword")) {
+
+                        sortFilters.put("sortOrder", policyIdOrder);
+                    }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
                             mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, null);
                     for (Map<String, Object> issueDetail : issueDetails) {
@@ -2437,7 +2443,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             int i = 0;
             for (Map<String, Object> exceptionDetail : exceptionDetails) {
                 try {
-                    if (sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
+                    if (exceptionDetail.get("exceptionEndDate")!=null && sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
                         String dataSource = "aws_" + exceptionDetail.get(TARGET_TYPE);
                         String targetType = "issue_" + exceptionDetail.get(TARGET_TYPE) + "_exception";
                         String id = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));

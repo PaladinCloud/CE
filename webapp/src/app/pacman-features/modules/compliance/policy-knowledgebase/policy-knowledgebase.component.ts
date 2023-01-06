@@ -136,6 +136,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tableData = state?.data || [];
       this.tableDataLoaded = true;
       this.tableScrollTop = state?.tableScrollTop;
+      this.totalRows = this.tableData.length;
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;

@@ -43,13 +43,9 @@ export const CONFIGURATIONS = {
     /*  cognitoConfig: {
         sso_api_username: '',
         sso_api_pwd: '',
-
         loginURL: '',
-
         redirectURL: '',
-
         cognitoTokenURL: '',
-
         logout: ''
       }*/
       cognitoConfig: {

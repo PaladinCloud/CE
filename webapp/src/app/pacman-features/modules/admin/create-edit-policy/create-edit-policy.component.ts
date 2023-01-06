@@ -350,7 +350,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   isValid(PolicyModel: Object) {
     for (const key in PolicyModel) {
-      if (PolicyModel[key].length == 0) {
+      if (PolicyModel[key]==null || PolicyModel[key].length == 0) {
         return false;
       }
     }
@@ -512,6 +512,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         this.FullQueryParams = currentQueryParams;
         this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
         this.policyId = this.queryParamsWithoutFilter.policyId;
+        console.log(this.policyId, "getPolicyDetails");
         delete this.queryParamsWithoutFilter['filter'];
         this.dataSourceName = this.queryParamsWithoutFilter.ag;
         if (this.policyId) {
@@ -521,6 +522,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.readonly = false;
           this.isCreate = false;
           this.hideContent = true;
+          this.getpolicyCategoryDetails();
           this.isPolicyIdValid = 1;
           this.getPolicyDetails(this.policyId);
         } else {
@@ -549,7 +551,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         if (this.FullQueryParams.mandatory) {
           this.mandatory = this.FullQueryParams.mandatory;
         }
-
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -637,6 +638,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
             this.policyLoader = false;
           });
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.clearAllLevels();
         this.router.navigate(['../'], {
           relativeTo: this.activatedRoute,
           queryParams: {
