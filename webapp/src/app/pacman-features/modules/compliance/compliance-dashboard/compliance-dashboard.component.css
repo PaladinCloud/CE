@@ -23,7 +23,6 @@
 }
 
 .container-3 ::ng-deep .mat-form-field-infix{
-  padding: 8px 16px;
   width: 150px;
 }
 

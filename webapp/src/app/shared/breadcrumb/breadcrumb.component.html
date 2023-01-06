@@ -12,12 +12,16 @@
  * limitations under the License.
  -->
 
- <section class="breadcrumb-wrapper">
+<section class="breadcrumb-wrapper">
 	<ul class="listing-wrapper flex">
 		<li class="breadcrumb-container flex flex-align-center" *ngFor="let data of breadcrumbArray; let i = index">
-			<div class="breadcrumb-text" (click)="navigateRespective(i)">{{data}}</div>
-			<div class="breadcrumb-slash"></div>
+			<div (click)="navigateRespective(i)">
+				<app-text [text]="data" [classNames]="breadcrumbLinks?'body-2 primary-500':'body-2 low-emphasis'"></app-text>
+			</div>
+			<img src="/assets/icons/Path.svg">
 		</li>
-		<li class="breadcrumb-present flex flex-align-center">{{breadcrumbPresent}}</li>
+		<li class="breadcrumb-present flex flex-align-center">
+			<app-text [text]="breadcrumbPresent" [classNames]="'body-2'"></app-text>
+		</li>
 	</ul>
 </section>

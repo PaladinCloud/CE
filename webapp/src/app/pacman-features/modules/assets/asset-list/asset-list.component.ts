@@ -90,8 +90,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
-      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ASeverity = a["Severity"].valueText??"default";
+      const BSeverity = b["Severity"].valueText??"default";
+      return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
   tableImageDataMap = {
@@ -499,6 +502,46 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
+  processData(data) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
+
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellObj = {
+            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
   getDataForAParticularTypeOfAssets(
     queryParams,
     assetListUrl,
@@ -527,10 +570,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
               this.totalRows = data.total;
              
               const updatedResponse = this.massageData(this.assetListData);
+              const processedData = this.processData(updatedResponse);
               if(isNextPageCalled){
-                  this.onScrollDataLoader.next(updatedResponse)
+                  this.onScrollDataLoader.next(processedData)
                 }else{
-                  this.tableData = updatedResponse;
+                  this.tableData = processedData;
                 }
               // this.processData(updatedResponse);
             }
@@ -594,8 +638,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       let resourceType;
-      if (row["Asset Type"]) {
-        resourceType = row["Asset Type"];
+      if (row["Asset Type"].valueText) {
+        resourceType = row["Asset Type"].valueText;
       }
 
       if (
@@ -606,7 +650,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       ) {
         resourceType = this.filterText.resourceType;
       }
-      const resourceID = encodeURIComponent(row["Resource ID"]);
+      const resourceID = encodeURIComponent(row["Resource ID"].valueText);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       // updatedQueryParams["searchValue"] = undefined;
       this.router.navigate([resourceType, resourceID], {

@@ -172,11 +172,10 @@
   overflow-y: scroll;
   min-height: 50px;
   max-height: 100px;
-  padding: 2px 0px;
+  padding: 12px 0px;
 }
 
 .filters-container ::ng-deep .mat-form-field-infix{
-  padding: 8px 16px;
   min-width: 150px;
 }
 
@@ -274,8 +273,12 @@ th.mat-sort-header-sorted {
   color: black;
 }
 
+.row-title{
+  color: var(--primary-400);
+}
 
-tr.mat-row:hover{
+
+.row-hover:hover{
   background-color: var(--background-grey);
   cursor: pointer;
 }
@@ -341,4 +344,16 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   padding: 6px 4px;
   border-radius: 4px;
   font: var(--text-body-2);
+}
+
+.table-wrapper ::ng-deep .mat-sort-header-arrow{
+  display: none;
+}
+
+.table-wrapper ::ng-deep .mat-sort-header-content{
+  gap: 11px;
+}
+
+.rotate-180{
+  transform: rotate(180deg);
 }

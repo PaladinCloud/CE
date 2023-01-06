@@ -550,11 +550,11 @@ export const environment = {
         url: '{{baseUrl}}/admin/job-execution-manager/update',
         method: 'POST'
     },
-    createRule: {
+    createPolicy: {
         url: '{{baseUrl}}/admin/policy/create',
         method: 'POST'
     },
-    getRuleById: {
+    getPolicyById: {
         url: '{{baseUrl}}/admin/policy/details-by-id',
         method: 'GET'
     },
@@ -594,25 +594,13 @@ export const environment = {
         url: '{{baseUrl}}/admin/job-execution-manager/create',
         method: 'POST'
     },
-    updateRule: {
-        url: '{{baseUrl}}/admin/policy/update',
-        method: 'POST'
-    },
     invokeRule: {
         url: '{{baseUrl}}/admin/policy/invoke',
-        method: 'POST'
-    },
-    createPolicy: {
-        url: '{{baseUrl}}/admin/policy/create',
         method: 'POST'
     },
     updatePolicy: {
         url: '{{baseUrl}}/admin/policy/update',
         method: 'POST'
-    },
-    getPolicyById: {
-        url: '{{baseUrl}}/admin/policy/details-by-id',
-        method: 'GET'
     },
     enableDisableRule: {
         url: '{{baseUrl}}/admin/policy/enable-disable',

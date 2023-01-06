@@ -1,28 +1,35 @@
 /*
  *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
+ * Licensed under the Apache License, Version 2.0 (the 'License'); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
+ *
+ * or in the 'license' file accompanying this file. This file is distributed on
+ * an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import { AdminService } from '../../../services/all-admin.service';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { environment } from './../../../../../environments/environment';
-import { NgForm } from '@angular/forms';
+
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
+import { LoggerService } from '../../../../shared/services/logger.service';
+import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
+
+
+import { RefactorFieldsService } from './../../../../shared/services/refactor-fields.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
-import { Router } from '@angular/router';
+import { AdminService } from '../../../services/all-admin.service';
+import { NgForm } from '@angular/forms';
+import { UploadFileService } from '../../../services/upload-file-service';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 
 @Component({
   selector: 'app-admin-create-edit-policy',
@@ -31,89 +38,139 @@ import { Router } from '@angular/router';
   providers: [
     LoggerService,
     ErrorHandlingService,
+    UploadFileService,
     AdminService
   ]
 })
-
 export class CreateEditPolicyComponent implements OnInit, OnDestroy {
-  @ViewChild('policyForm') policyForm: NgForm;
-  policyId: any;
-  isPolicyIdValid: any = -1;
-  policyUrl: any = '';
-  policyVersion: String;
-  policyName: any = '';
-  policyDesc: any = '';
-  policyResolution: any = '';
-  policyDetails: any;
-  loadingStatus: any;
-  pageTitle: String = 'Policies';
-  issueListingdata: any;
-  selectedAssetGroup: String;
-  breadcrumbArray: any = ['Policies'];
-  breadcrumbLinks: any = ['asset-dashboard'];
 
-  breadcrumbPresent: any;
-  outerArr: any = [];
-  filters: any = [];
-  successTitle: String = '';
-  failedTitle: String = '';
-  successSubTitle: String = '';
-  isPolicyCreationFailed: boolean = false;
-  isPolicyCreationSuccess: boolean = false;
-  ruleContentLoader: boolean = true;
-  policyLoader: boolean = false;
-  invocationId: String = '';
-  paginatorSize: number = 25;
-  isLastPage: boolean;
-  isFirstPage: boolean;
+  policyType = ["Federated", "Serverless", "ManageRule"];
+  selectedAssetType = "";
+  resolutionUrl = "";
+  isDisabled = true;
+  currentStepperIndex = 0;
+  description = "";
+  readonly = true;
+  policyLoader = false;
+  pageTitle = 'Create Policy';
+  FormHeader = "Policy Details";
+  ispolicyIdValid = -1;
+  isCreate;
+  allPolicies = [];
+  breadcrumbArray = ['policys'];
+  breadcrumbLinks = ['policys'];
+  breadcrumbPresent;
+  outerArr = [];
+  dataLoaded = false;
+  errorMessage;
+  showingArr = ['policyName', 'policyId', 'policyDesc'];
+  allColumns = [];
+  totalRows = 0;
+  currentBucket = [];
+  bucketNumber = 0;
+  firstPaginator = 1;
+  lastPaginator;
+  currentPointer = 0;
+  seekdata = false;
+  showLoader = true;
+  allMonthDays = [];
+  policyIds = [];
+  allEnvironments = [];
+  allpolicyParamKeys = [];
+  allEnvParamKeys = [];
+  allPolicyParams = Object();
+  paramsList = [[null, null]];
+  hideContent = false;
+  ispolicyCreationFailed = false;
+  ispolicyCreationSuccess = false;
+  policyPolicyLoader = false;
+  policyPolicyLoaderFailure = false;
+  policyDisplayName = '';
+
+  paginatorSize = 25;
+  isLastPage;
+  isFirstPage;
   totalPages: number;
-  pageNumber: number = 0;
-  showLoader: boolean = true;
-  errorMessage: any;
+  pageNumber = 0;
 
-  hideContent: boolean = false;
+  searchTxt = '';
+  dataTableData = [];
+  initVals = [];
+  tableDataLoaded = false;
+  filters = [];
+  searchCriteria;
+  filterText = {};
+  errorValue = 0;
+  showGenericMessage = false;
+  dataTableDesc = '';
+  urlID = '';
 
+  FullQueryParams;
+  queryParamsWithoutFilter;
+  urlToRedirect = '';
+  mandatory;
+  activePolicy = [];
+  parametersInput = { policyKey: '', policyValue: '', envKey: '', envValue: '' };
+  alexaKeywords = [];
+  assetGroupNames = [];
+  datasourceDetails = [];
+  targetTypesNames = [];
+  policyCategories = [];
+  policySeverities = ["critical", "high", "medium", "low"];
+  allPolicyIds = [];
+  policyJarFile;
+  currentFileUpload: File;
+  selectedFiles: FileList;
 
-  filterText: any = {};
-  errorValue: number = 0;
-  urlID: String = '';
-  isCreate: boolean = true;
+  selectedFrequency = '';
+  policyJarFileName = '';
+  selectedPolicyId = '';
+  contentHidden = true;
+  selectedpolicyName = '';
+  selectedTargetType = '';
+  isAutofixEnabled = false;
 
-  FullQueryParams: any;
-  queryParamsWithoutFilter: any;
-  urlToRedirect: any = '';
-  mandatory: any;
-
-  public labels: any;
-  private previousUrl: any = '';
+  public labels;
+  private previousUrl = '';
   private pageLevel = 0;
   public backButtonRequired;
   private routeSubscription: Subscription;
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
-  
-  isValidUrl = urlString=> {
-	  var urlPattern = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
-	  return urlPattern.test(urlString);
-	}
+  selectedCategory: any;
+  selectedSeverity: any;
+  selectedMonthId: number;
+  selectedDay: any;
+  selectedAssetGroup: any;
+  selectedMonths: any;
+  selectedDays: any;
+  selectedWeekName: any;
+  alexaKeyword: any;
+  dataSourceName: any;
+  policyFrequencyModeValue: any;
+  selectedPolicyType: any;
+  policyName = "";
+  policyId: any;
+  isPolicyIdValid: number;
+  policyDetails: any;
+  resolution: any;
+  isFileChanged: boolean = false;
+  policyUrl = "";
 
-  areAllFieldsValid = () => {
-    let retVal = true;
-    if(this.policyName.trim().length<5 || this.policyDesc.trim().length<15 || this.policyResolution.trim().length<15 || !this.isValidUrl(this.policyUrl)){
-      retVal = false;
-    }
-    return retVal;
-  }
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private router: Router,
     private utils: UtilsService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
+    private uploadService: UploadFileService,
+    private refactorFieldsService: RefactorFieldsService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    public dialog: MatDialog
   ) {
 
     this.routerParam();
@@ -122,171 +179,364 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
-    if(breadcrumbInfo){
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
+    if (breadcrumbInfo) {
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
-    this.breadcrumbPresent = 'Create Policy';
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
   }
 
-  nextPage() {
-    try {
-      if (!this.isLastPage) {
-        this.pageNumber++;
-        this.showLoader = true;
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
+  selectedType(event: any) {
+    this.selectedPolicyType = event;
+    if (this.selectedPolicyType == 'Customer') {
+      this.allPolicyIds
+    }
+    if (event) {
+      this.isDisabled = false;
+      this.readonly = false;
     }
   }
 
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-      }
+  pageCounter(clickedButton: string) {
+    if (clickedButton == 'back') {
+      this.currentStepperIndex--;
+    } else
+      this.currentStepperIndex++;
 
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log('error', error);
-    }
-  }
-
-  allpolicyId: any = [];
-  isPolicyIdAvailable(policyIdValidKeyword) {
-    if (policyIdValidKeyword.trim().length < 5) {
-      this.isPolicyIdValid = -1;
+    if (this.currentStepperIndex == 0) {
+      this.FormHeader = "Policy Details";
     } else {
-        policyIdValidKeyword = 'PacMan_'+policyIdValidKeyword+'_'+this.policyVersion;
-        let isKeywordExits = this.allpolicyId.findIndex(item => policyIdValidKeyword.trim().toLowerCase() === item.trim().toLowerCase());
-        if (isKeywordExits === -1) {
-          this.isPolicyIdValid = 1;
-        } else {
-          this.isPolicyIdValid = 0;
-        }
+      this.FormHeader = "Policy Parameters";
     }
   }
 
-  getAllPolicyIds() {
+  getDatasourceDetails() {
+    this.policyPolicyLoader = true;
+    this.contentHidden = true;
+    this.policyPolicyLoaderFailure = false;
+    const url = environment.datasourceDetails.url;
+    const method = environment.datasourceDetails.method;
+    this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+      const fullDatasourceNames = [];
+      for (let index = 0; index < reponse[0].length; index++) {
+        fullDatasourceNames.push(reponse[0][index].dataSourceName);
+      }
+      this.datasourceDetails = fullDatasourceNames;
+    },
+      error => {
+        this.policyPolicyLoader = false;
+        this.contentHidden = true;
+        this.policyPolicyLoaderFailure = true;
+        this.datasourceDetails = [];
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+      });
+  }
+
+  getpolicyCategoryDetails() {
+    this.policyPolicyLoader = true;
+    this.contentHidden = true;
+    this.policyPolicyLoaderFailure = false;
+    const url = environment.policyCategory.url;
+    const method = environment.policyCategory.method;
+    this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+      const categories = [];
+      for (let index = 0; index < reponse[0].length; index++) {
+        const categoryDetail = reponse[0][index];
+        if (categoryDetail.policyCategory.toLowerCase() == "costoptimization") {
+          categoryDetail.policyCategory = "cost";
+        }
+        else if (categoryDetail.policyCategory.toLowerCase() == "governance") {
+          categoryDetail.policyCategory = "operations";
+        }
+        categories.push(categoryDetail.policyCategory);
+      }
+      this.policyCategories = categories;
+      this.showLoader = false;
+      this.contentHidden = false;
+      this.policyPolicyLoaderFailure = false;
+      this.policyPolicyLoader = false;
+    },
+      error => {
+        this.policyPolicyLoader = false;
+        this.contentHidden = true;
+        this.policyPolicyLoaderFailure = true;
+        this.policyCategories = [];
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+      });
+  }
+
+  createOrUpdatepolicy(form: NgForm) {
     this.hideContent = true;
-    this.loadingStatus = 'Existing policies is been loading'
-    this.isPolicyCreationSuccess = false;
-    this.isPolicyCreationFailed = false;
     this.policyLoader = true;
+    this.buildCreatepolicyModel(form.value);
+  }
+
+  ispolicyIdAvailable(policyIdKeyword) {
+    if (policyIdKeyword.trim().length === 0) {
+      this.ispolicyIdValid = -1;
+    } else {
+      const isKeywordExits = this.policyIds.findIndex(item => policyIdKeyword.trim().toLowerCase() === item.trim().toLowerCase());
+      if (isKeywordExits === -1) {
+        this.ispolicyIdValid = 1;
+      } else {
+        this.ispolicyIdValid = 0;
+      }
+    }
+  }
+
+  getAllpolicyIds() {
+    this.policyPolicyLoader = true;
+    this.contentHidden = true;
+    this.policyPolicyLoaderFailure = false;
     const url = environment.allPolicyIds.url;
     const method = environment.allPolicyIds.method;
     this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
-      this.policyLoader = false;
-      this.hideContent = false;
-      this.allpolicyId =  reponse[0];
+      this.policyIds = reponse[0];
     },
       error => {
-        this.policyLoader = false;
-        this.failedTitle = 'Loading Failed !!';
-        this.isPolicyCreationFailed = true;
-      })
+        this.contentHidden = true;
+        this.policyPolicyLoader = false;
+        this.policyPolicyLoaderFailure = true;
+        this.policyIds = [];
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+      });
   }
 
-  createOrUpdatePolicy(policyForm: NgForm) {
-    let policyDetails = policyForm.form.value;
-    
-    let url: String = '';
-    let method: String = '';
-    let formData = Object();
-    if (this.isCreate) {
-      url = environment.createPolicy.url;
-      method = environment.createPolicy.method;
-      formData.policyId = 'PacMan_' + policyDetails.policyName + '_' + this.policyVersion;
-      this.policyId = formData.policyId;
-      formData.policyName = policyDetails.policyName;
-      formData.policyDesc = policyDetails.policyDesc;
-      formData.resolution = policyDetails.policyResolution;
-      formData.policyUrl = policyDetails.policyUrl;
-      formData.policyVersion = this.policyVersion;
-      formData.status = 'ENABLED';
-      this.loadingStatus = 'details is been creating'
-    } else {
-      url = environment.updatePolicy.url;
-      method = environment.updatePolicy.method;
-      formData.policyId = this.policyId
-      formData.policyDesc = policyDetails.policyDesc;
-      formData.resolution = policyDetails.policyResolution;
-      formData.policyUrl = policyDetails.policyUrl;
-      formData.policyVersion = this.policyVersion;
-      this.loadingStatus = 'details is been updating'
+  private buildCreatepolicyModel(policyForm: any) {
+    const PolicyModel = Object();
+    PolicyModel.policyType = this.selectedPolicyType;
+    if (this.isPolicyIdValid && policyForm.policyDisplayName == this.policyDisplayName) {
+      PolicyModel.policyDisplayName = this.policyDisplayName;
+      PolicyModel.policyId = this.policyId;
+      PolicyModel.policyName = this.policyName;
     }
+    else {
+      PolicyModel.policyDisplayName = policyForm.policyDisplayName;
+      PolicyModel.policyName = policyForm.policyDisplayName + '_' + this.selectedAssetGroup + '_' + this.selectedAssetType;
+      PolicyModel.policyName = PolicyModel.policyName.replace(/\s/g, '-');
+      PolicyModel.policyId = PolicyModel.policyName;
+    }
+    PolicyModel.targetType = this.selectedAssetType;
+    PolicyModel.severity = this.selectedSeverity;
+    PolicyModel.category = this.selectedCategory;
+    PolicyModel.policyDesc = policyForm.description;
+    PolicyModel.resolution = policyForm.resolution;
+    PolicyModel.resolutionUrl = policyForm.resolutionUrl;
+    PolicyModel.assetGroup = this.selectedAssetGroup;
+    if (this.policyJarFileName.length > 0)
+      PolicyModel.policyExecutable = this.policyJarFileName;
+    if (this.policyUrl.length > 0)
+      PolicyModel.policyRestUrl = this.policyUrl;
+    PolicyModel.policyParams = this.buildpolicyParams();
+    PolicyModel.isFileChanged = this.isFileChanged;
+    PolicyModel.policyFrequencyModeValue = "0 0 ? * MON *";
 
-    this.isPolicyCreationSuccess = false;
-    this.isPolicyCreationFailed = false;
-    this.policyLoader = true;
-    this.hideContent = true;
-    this.adminService.executeHttpAction(url, method, formData, {}).subscribe(reponse => {
-        if(this.isCreate) {
-          this.successTitle = 'Policy Created';
-          this.successSubTitle = 'created';
-        } else {
-          this.successTitle = 'Policy Updated';
-          this.successSubTitle = 'updated';
-        }
-        this.policyLoader = false;
-        this.isPolicyCreationSuccess = true;
-    },
-    error => {
-      this.policyLoader = false;
-      this.isPolicyCreationFailed = true;
-      if(this.isCreate) {
-        this.failedTitle = 'Creation Failed !!';
-      } else {
-        this.failedTitle = 'Updation Failed !!';
+    if (policyForm.policyType === 'Classic') {
+      this.currentFileUpload = this.selectedFiles.item(0);
+    } else {
+      this.currentFileUpload = new File([''], '');
+    }
+    console.log(PolicyModel, "PolicyModel");
+    const isFormValid = this.isValid(PolicyModel);
+    this.openDialog(PolicyModel, isFormValid);
+  }
+
+  isValid(PolicyModel: Object) {
+    for (const key in PolicyModel) {
+      if (PolicyModel[key]==null || PolicyModel[key].length == 0) {
+        return false;
       }
-    });
+    }
+    return true;
+  }
+
+
+  private buildpolicyParams() {
+    const policyParms = Object();
+    for (let i = 0; i < this.paramsList.length; i++) {
+      if (!this.paramsList[i][0] || !this.paramsList[i][1]) {
+        this.paramsList.splice(i, 1);
+      }
+    }
+    policyParms.params = this.paramsList;
+    policyParms.environmentVariables = this.allEnvironments;
+    return JSON.stringify(policyParms);
+  }
+
+  private getpolicyRestUrl(policyForm) {
+    const policyType = policyForm.policyType;
+    if (policyType === 'Serverless') {
+      return policyForm.resolutionUrl;
+    } else {
+      return '';
+    }
+  }
+
+  onSelectCategory(selectedCategory) {
+    this.selectedCategory = selectedCategory;
+  }
+
+  onSelectSeverity(selectedSeverity) {
+    this.selectedSeverity = selectedSeverity;
+  }
+
+
+  onSelectAssetType(selectedAssetType) {
+    this.selectedAssetType = selectedAssetType;
   }
 
   closeErrorMessage() {
-    this.policyLoader = false;
-    this.isPolicyCreationFailed = false;
+    this.ispolicyCreationFailed = false;
     this.hideContent = false;
   }
 
+  onJarFileChange(event) {
+    this.selectedFiles = event.target.files;
+    this.policyJarFileName = this.selectedFiles[0].name;
+    const extension = this.policyJarFileName.substring(this.policyJarFileName.lastIndexOf('.') + 1);
+    if (extension !== 'jar') {
+      this.removeJarFileName();
+    }
+    this.isFileChanged = true;
+  }
+
+  removePolicyParameters(index: number): void {
+    if (this.paramsList[index][0] != "policyKey" && this.paramsList.length > 1)
+      this.paramsList.splice(index, 1);
+    console.log(this.paramsList, "list");
+  }
+
+  addPolicyParameters() {
+    this.paramsList.push([null, null]);
+  }
+
+  removeJarFileName() {
+    this.policyJarFileName = '';
+    this.policyJarFile = '';
+    this.isFileChanged = true;
+  }
+
+  openJarFileBrowser(event) {
+    const element: HTMLElement = document.getElementById('selectJarFile') as HTMLElement;
+    element.click();
+  }
+
+  getTargetTypeNamesByDatasourceName(datasourceName) {
+    const url = environment.targetTypesByDatasource.url;
+    const method = environment.targetTypesByDatasource.method;
+    this.adminService.executeHttpAction(url, method, {}, { dataSourceName: datasourceName }).subscribe(reponse => {
+      this.showLoader = false;
+      this.targetTypesNames = reponse[0];
+    },
+      error => {
+        this.allPolicyIds = [];
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+      });
+  }
+
+  getAllPolicyIds() {
+    this.policyPolicyLoader = true;
+    this.contentHidden = true;
+    this.policyPolicyLoaderFailure = false;
+    const url = environment.allPolicyIds.url;
+    const method = environment.allPolicyIds.method;
+    this.adminService.executeHttpAction(url, method, {}, {}).subscribe(reponse => {
+      this.allPolicyIds = reponse[0];
+    },
+      error => {
+        this.contentHidden = true;
+        this.policyPolicyLoader = false;
+        this.policyPolicyLoaderFailure = true;
+        this.allPolicyIds = [];
+        this.errorMessage = 'apiResponseError';
+        this.showLoader = false;
+      });
+  }
+
+  public onSelectAssetGroup(selectedAssetGroup: any): void {
+    this.selectedAssetGroup = selectedAssetGroup;
+    this.getTargetTypeNamesByDatasourceName(selectedAssetGroup);
+  }
+
+  addpolicyParameters(parametersInput: any, isEncrypted: any) {
+    if (parametersInput.policyKey !== '' && parametersInput.policyValue !== '') {
+      this.allPolicyParams.push({ key: parametersInput.policyKey.trim(), value: parametersInput.policyValue.trim(), encrypt: isEncrypted.checked });
+      this.allpolicyParamKeys.push(parametersInput.policyKey.trim());
+      parametersInput.policyKey = '';
+      parametersInput.policyValue = '';
+      isEncrypted.checked = false;
+    }
+  }
+
+  selectedStepperIndex(event: any) {
+    this.currentStepperIndex = event;
+  }
+
+  onSelectPolicyId(policyId: any) {
+    this.selectedPolicyId = policyId;
+    this.ispolicyIdAvailable(this.selectedPolicyId + '_' + this.selectedpolicyName + '_' + this.selectedTargetType);
+  }
+  onSelectTargetType(targetType: any) {
+    this.selectedTargetType = targetType;
+    this.ispolicyIdAvailable(this.selectedPolicyId + '_' + this.selectedpolicyName + '_' + this.selectedTargetType);
+  }
+  onSelectFrequency(frequencyType: any) {
+    this.selectedFrequency = frequencyType;
+  }
+
   getData() {
-    //this.getAllPolicyIds();
+    this.getpolicyCategoryDetails();
+    this.getDatasourceDetails();
+    this.getAllPolicyIds();
   }
 
   /*
-    * This function gets the urlparameter and queryObj 
+    * This function gets the urlparameter and queryObj
     *based on that different apis are being hit with different queryparams
-    */
+  */
+
   routerParam() {
     try {
       // this.filterText saves the queryparam
-      let currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
+      const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
       if (currentQueryParams) {
 
         this.FullQueryParams = currentQueryParams;
         this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
         this.policyId = this.queryParamsWithoutFilter.policyId;
+        console.log(this.policyId, "getPolicyDetails");
         delete this.queryParamsWithoutFilter['filter'];
+        this.dataSourceName = this.queryParamsWithoutFilter.ag;
         if (this.policyId) {
           this.pageTitle = 'Edit Policy';
           this.breadcrumbPresent = 'Edit Policy';
+          this.isDisabled = false;
+          this.readonly = false;
           this.isCreate = false;
           this.hideContent = true;
+          this.getpolicyCategoryDetails();
           this.isPolicyIdValid = 1;
           this.getPolicyDetails(this.policyId);
         } else {
-          this.pageTitle = 'Create New Policy';
+          this.pageTitle = 'Create Policy';
           this.breadcrumbPresent = 'Create Policy';
-          this.policyVersion = 'version-1';
           this.isCreate = true;
           this.getAllPolicyIds();
         }
+
+        this.FullQueryParams = currentQueryParams;
+
+        this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
+        delete this.queryParamsWithoutFilter['filter'];
+
         /**
          * The below code is added to get URLparameter and queryparameter
          * when the page loads ,only then this function runs and hits the api with the
@@ -297,11 +547,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         );
 
         this.urlID = this.FullQueryParams.TypeAsset;
-        //check for mandatory filters.
+        // check for mandatory filters.
         if (this.FullQueryParams.mandatory) {
           this.mandatory = this.FullQueryParams.mandatory;
         }
-
       }
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -309,36 +558,110 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPolicyDetails(policyId) {
-    this.policyLoader = true;
-    let url = environment.getPolicyById.url;
-    let method = environment.getPolicyById.method;
-    this.loadingStatus = 'details is been loading'
-    this.adminService.executeHttpAction(url, method, {}, {policyId: policyId}).subscribe(reponse => {
-      this.policyLoader = false;
-      this.policyDetails = reponse[0];
-      this.policyId = this.policyDetails.policyId;
-      this.policyUrl = this.policyDetails.policyUrl;
-      this.policyVersion = this.policyDetails.policyVersion;
-      this.policyName = this.policyDetails.policyName;
-      this.policyDesc = this.policyDetails.policyDesc;
-      this.policyResolution = this.policyDetails.resolution;
-      this.hideContent = false;
-    },
-    error => {
-      this.policyLoader = false;
-    });
-  }
-
   /**
    * This function get calls the keyword service before initializing
    * the filter array ,so that filter keynames are changed
    */
+  getPolicyDetails(policyId: any) {
+    let url = environment.getPolicyById.url;
+    let method = environment.getPolicyById.method;
+
+    this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
+      this.policyDetails = reponse[0];
+      this.policyId = this.policyDetails.policyId;
+      this.selectedPolicyType = this.policyDetails.policyType;
+      this.policyName = this.policyDetails.policyName;
+      this.policyDisplayName = this.policyDetails.policyDisplayName;
+      this.selectedAssetGroup = this.policyDetails.assetGroup;
+      this.policyJarFileName = this.policyDetails.policyExecutable;
+      this.policyUrl = this.policyDetails.policyRestUrl;
+      this.selectedAssetType = this.policyDetails.targetType;
+      this.description = this.policyDetails.policyDesc;
+      this.resolution = this.policyDetails.resolution;
+      this.resolutionUrl = this.policyDetails.resolutionUrl;
+      this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
+      let currentParam = [];
+      this.paramsList = [];
+      for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
+        if (this.allPolicyParams[i]["key"] == 'severity') {
+          this.selectedSeverity = this.allPolicyParams[i]["value"];
+          this.allPolicyParams.splice(i, 1);
+        } else if (this.allPolicyParams[i]["key"] == 'policyCategory') {
+          if (this.allPolicyParams[i]["value"].toLowerCase() == "costoptimization") {
+            this.allPolicyParams[i]["value"] = "cost";
+          }
+          else if (this.allPolicyParams[i]["value"].toLowerCase() == "governance") {
+            this.allPolicyParams[i]["value"] = "operations";
+          }
+          this.selectedCategory = this.allPolicyParams[i]["value"];
+          this.allPolicyParams.splice(i, 1);
+        } else {
+          currentParam.push(this.allPolicyParams[i]["key"]);
+          currentParam.push(this.allPolicyParams[i]["value"]);
+          this.paramsList.push(currentParam);
+        }
+        currentParam = [];
+      }
+      if (this.paramsList.length == 0) {
+        this.paramsList.push([null, null]);
+      }
+      if (this.selectedPolicyType == "ManageRule") {
+        this.isDisabled = true;
+      }
+      this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
+      this.hideContent = false;
+    },
+      error => {
+      });
+  }
+
+  openDialog(PolicyModel: any, valid: boolean): void {
+    const title = valid ? "Policy Validated Successfully!" : "Policy Validation Failed!"
+    const message = valid ? "Policy " + this.policyDisplayName + " has been validated. Confirm to create policy or discard run" : "Please fill the missing policy details";
+    const yesButtonLabel = this.isCreate ? "Create" : "Update";
+    const noButtonLabel = valid ? "Discard" : "Close";
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: valid ? { title: title, message: message, yesButtonLabel: yesButtonLabel, noButtonLabel: noButtonLabel } : { title: title, message: message, noButtonLabel: noButtonLabel },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == "yes") {
+        const url = this.isPolicyIdValid ? environment.updatePolicy.url : environment.createPolicy.url;
+        const method = environment.createPolicy.method;
+        this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
+          this.policyLoader = false;
+          this.ispolicyCreationSuccess = true;
+        },
+          error => {
+            this.ispolicyCreationFailed = true;
+            this.policyLoader = false;
+          });
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.clearAllLevels();
+        this.router.navigate(['../'], {
+          relativeTo: this.activatedRoute,
+          queryParams: {
+          }
+        });
+      }
+    });
+  }
 
   updateComponent() {
     this.outerArr = [];
+    this.searchTxt = '';
+    this.currentBucket = [];
+    this.bucketNumber = 0;
+    this.firstPaginator = 1;
     this.showLoader = true;
+    this.currentPointer = 0;
+    this.dataTableData = [];
+    this.tableDataLoaded = false;
+    this.dataLoaded = false;
+    this.seekdata = false;
     this.errorValue = 0;
+    this.showGenericMessage = false;
     this.getData();
   }
 

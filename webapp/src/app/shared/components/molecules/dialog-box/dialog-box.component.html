@@ -1,0 +1,14 @@
+<div class="dialog-box">
+  <div mat-dialog-title class="title">
+    <app-text classNames="headline-6 high-emphasis" [text]="data.title"></app-text>
+  </div>
+  <div mat-dialog-content class="content">
+    <app-text classNames="body-2 low-emphasis" [text]="data.message"></app-text>
+  </div>
+  <div mat-dialog-actions class="flex gap-8">
+    <app-custom-button *ngIf="data.noButtonLabel" style="margin-left: auto" buttonType="stroked"
+      [label]="data.noButtonLabel" (click)="onNoClick()"></app-custom-button>
+    <app-custom-button *ngIf="data.yesButtonLabel" buttonType="flat" [label]="data.yesButtonLabel"
+      (click)="onYesClick()" [mat-dialog-close]="" cdkFocusInitial></app-custom-button>
+  </div>
+</div>

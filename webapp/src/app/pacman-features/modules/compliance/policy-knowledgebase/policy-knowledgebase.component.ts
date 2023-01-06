@@ -42,10 +42,55 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   columnNamesMap = {name: "Title"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
-      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ASeverity = a["Severity"].valueText??"default";
+      const BSeverity = b["Severity"].valueText??"default";
+      return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      cost:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
   state: any = {};
   whiteListColumns;
   displayedColumns;
@@ -91,6 +136,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tableData = state?.data || [];
       this.tableDataLoaded = true;
       this.tableScrollTop = state?.tableScrollTop;
+      this.totalRows = this.tableData.length;
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
@@ -201,7 +247,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   updateComponent() {
     if(this.isStatePreserved){
-      this.processData(this.tableData);
+      this.getTilesData(this.tableData);
       this.tableDataLoaded = true;
       this.clearState();
     }else{
@@ -212,40 +258,81 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   processData(data) {
-    try {
+    let processedData = [];
       const getData = data;
-      this.typeObj = {
-        'All Policies': 0
-      };
-      for (let i = 0; i < getData.length; i++) {
-        this.typeObj[getData[i].Category] = 0;
-      }
-      this.typeObj[`critical`] = 0;
-      this.typeObj[`high`] = 0;
-      this.typeObj[`medium`] = 0;
-      this.typeObj[`low`] = 0;
-      this.typeObj["cost"]=0;
-      this.typeObj["operations"]=0;
-      this.typeObj["security"]=0;
-      this.typeObj["tagging"]=0;
-      for (let i = 0; i < getData.length; i++) {
-        this.typeObj[getData[i].Severity] = 0;
-      }
-      this.typeObj[`Auto Fix`] = 0;
-      delete this.typeObj[''];
-      for (let i = 0; i < getData.length; i++) {
-        this.typeObj['All Policies']++;
-        this.typeObj[getData[i].Category.toLowerCase()]++;
-        this.typeObj[getData[i].Severity.toLowerCase()]++;
-        if (getData[i].autoFixEnabled === true) {
-          this.typeObj['Auto Fix']++;
-        }
-      }
+      try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      const keynames = Object.keys(getData[0]);
 
-      let typeArr = [];
-      typeArr = Object.keys(this.typeObj);
-      this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellObj = {
+            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+            // chipVariant: "", // this value exists if isChip is true,
+            // menuItems: [], // add this if isMenuBtn
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
     } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    return processedData;
+  }
+
+  getTilesData(getData){
+    try{
+      this.typeObj = {
+          'All Policies': 0
+        };
+        for (let i = 0; i < getData.length; i++) {
+          this.typeObj[getData[i].Category.valueText] = 0;
+        }
+        this.typeObj[`critical`] = 0;
+        this.typeObj[`high`] = 0;
+        this.typeObj[`medium`] = 0;
+        this.typeObj[`low`] = 0;
+        this.typeObj["cost"]=0;
+        this.typeObj["operations"]=0;
+        this.typeObj["security"]=0;
+        this.typeObj["tagging"]=0;
+        for (let i = 0; i < getData.length; i++) {
+          this.typeObj[getData[i].Severity.valueText] = 0;
+        }
+        this.typeObj[`Auto Fix`] = 0;
+        delete this.typeObj[''];
+        for (let i = 0; i < getData.length; i++) {
+          this.typeObj['All Policies']++;
+          this.typeObj[getData[i].Category.valueText.toLowerCase()]++;
+          this.typeObj[getData[i].Severity.valueText.toLowerCase()]++;
+          if (getData[i].autoFixEnabled.valueText === true) {
+            this.typeObj['Auto Fix']++;
+          }
+        }
+
+        let typeArr = [];
+        typeArr = Object.keys(this.typeObj);
+        this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
+      } catch (error) {
       this.logger.log('error', error);
     }
   }
@@ -305,7 +392,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             this.tableData = this.massageData(response.data.response);
             
             this.tableDataLoaded = true;
-            this.processData(this.tableData);
+            this.tableData = this.processData(this.tableData);
+            this.getTilesData(this.tableData);
           } else {
             this.tableDataLoaded = true;
             this.errorMessage = 'noDataAvailable';
@@ -339,7 +427,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     if ( tileData.autoFixEnabled) {
       autofixEnabled = true;
     }
-    const policyId = tileData["Rule ID"];
+    const policyId = tileData["Policy ID"].valueText;
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
