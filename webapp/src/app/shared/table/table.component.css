@@ -172,11 +172,10 @@
   overflow-y: scroll;
   min-height: 50px;
   max-height: 100px;
-  padding: 2px 0px;
+  padding: 12px 0px;
 }
 
 .filters-container ::ng-deep .mat-form-field-infix{
-  padding: 8px 16px;
   min-width: 150px;
 }
 

@@ -1,11 +1,15 @@
 <div class="page-layout">
+    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+    </div>
     <div class="page">
         <div class="stepper">
             <app-stepper [currentStepperIndex]="currentStepperIndex"
                 (selectedStepperIndex)="selectedStepperIndex($event)">
                 <ng-template #stepsHeader>
                     <div class="text-wrapper">
-                        <span class="title">Create Policy</span>
+                        <span class="title">{{pageTitle}}</span>
                         <span class="sub-text">Follow the steps below to create a policy for an asset type</span>
                     </div>
                 </ng-template>
@@ -16,53 +20,75 @@
                             <div [hidden]="currentStepperIndex>0">
                                 <div class="type-wrapper">
                                     <app-dropdown [requiredInfo]="true" [items]="policyType" placeholder="Type"
-                                        [selectedItem]="selectedPolicyType" required name="policyType"
+                                        [selectedItem]="selectedPolicyType" name="policyType"
+                                        [isDisabled]="selectedPolicyType=='ManageRule'"
                                         (selected)="selectedType($event)">
                                     </app-dropdown>
-                                    <div class="rule-executable" *ngIf="selectedPolicyType=='Federated'">
+                                    <div class="policy-executable" *ngIf="selectedPolicyType=='Federated'">
                                         <div class="input-form">
-                                            <input type="file" id="selectJarFile" name="ruleJarFile"
-                                                placeholder="Upload Jar File" (change)="onJarFileChange($event)"
-                                                [(ngModel)]="ruleJarFile" required>
+                                            <input type="file" id="selectJarFile" class="hide"
+                                                (change)="onJarFileChange($event)" name="policyJarFile"
+                                                [(ngModel)]="policyJarFile" *ngIf="policyJarFileName==''">
+                                            <a class="tmbutton bm20 upload" (click)="openJarFileBrowser($event)">Upload
+                                                JAR File</a>
+                                        </div>
+                                        <span class="notSelected" *ngIf="policyJarFileName==''">No File Choosen</span>
+                                        <div class="selected-file" *ngIf="policyJarFileName!=''">
+                                            <div class="fileName" title="{{policyJarFileName}}">{{policyJarFileName}}
+                                            </div>
+                                            <img class="delete-icon" width="12px" src="../assets/icons/x-icon.svg"
+                                                (click)="removeJarFileName()">
+                                        </div>
+                                    </div>
+                                    <div *ngIf="selectedPolicyType=='Serverless'">
+                                        <div class="input-wrapper">
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Policy Url</mat-label>
+                                                <input matInput name="policyUrl" [(ngModel)]="policyUrl"
+                                                    readonly="{{readonly}}">
+                                            </mat-form-field>
+                                            <div class="info-img">
+                                                <img src="../../../assets/icons/info-circle.svg">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="details-wrapper" [class.isEnabled]="!isDisabled">
+                                <div class="details-wrapper">
                                     <div class="input-wrapper">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Policy Name</mat-label>
-                                            <input matInput ngModel required name="policyName" [(ngModel)]="policyName"
-                                                [disabled]="isDisabled">
+                                            <input matInput name="policyDisplayName" [(ngModel)]="policyDisplayName"
+                                                readonly="{{readonly}}">
                                         </mat-form-field>
                                         <div class="info-img">
                                             <img src="../../../assets/icons/info-circle.svg">
                                         </div>
                                     </div>
-                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
-                                        [items]="datasourceDetails" placeholder="DataSource"
-                                        [selectedItem]="selectedAssetGroup" required name="assetGroup"
-                                        (selected)="onSelectAssetGroup($event)">
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled" [optionImage]="true"
+                                        [items]="datasourceDetails" placeholder="Asset Group"
+                                        [selectedItem]="selectedAssetGroup" name="assetGroup"
+                                        (selected)="onSelectAssetGroup($event)" [class.isEnabled]="!isDisabled">
                                     </app-dropdown>
                                     <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
                                         [items]="targetTypesNames" placeholder="Asset Type"
-                                        [selectedItem]="selectedAssetType" required name="assetType"
-                                        (selected)="onSelectAssetType($event)">
+                                        [selectedItem]="selectedAssetType" name="assetType"
+                                        (selected)="onSelectAssetType($event)" [class.isEnabled]="!isDisabled">
                                     </app-dropdown>
-                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled" [optionImage]="true"
                                         [items]="policySeverities" placeholder="Severity"
-                                        [selectedItem]="selectedSeverity" required name="severity"
-                                        (selected)="onSelectSeverity($event)">
+                                        [selectedItem]="selectedSeverity" name="severity"
+                                        (selected)="onSelectSeverity($event)" [class.isEnabled]="!isDisabled">
                                     </app-dropdown>
-                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled"
+                                    <app-dropdown [requiredInfo]="true" [isDisabled]="isDisabled" [optionImage]="true"
                                         [items]="policyCategories" placeholder="Category"
-                                        [selectedItem]="selectedCategory" required name="category"
-                                        (selected)="onSelectCategory($event)">
+                                        [selectedItem]="selectedCategory" name="category"
+                                        (selected)="onSelectCategory($event)" [class.isEnabled]="!isDisabled">
                                     </app-dropdown>
                                     <div class="input-wrapper">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Description</mat-label>
-                                            <textarea matInput ngModel required name="description"
-                                                [(ngModel)]="description" [disabled]="isDisabled"></textarea>
+                                            <textarea matInput name="description" [(ngModel)]="description"
+                                                readonly="{{readonly}}"></textarea>
                                         </mat-form-field>
                                         <div class="info-img">
                                             <img src="../../../assets/icons/info-circle.svg">
@@ -71,8 +97,8 @@
                                     <div class="input-wrapper">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Resolution</mat-label>
-                                            <input matInput ngModel required name="resolution" [(ngModel)]="resolution"
-                                                [disabled]="isDisabled">
+                                            <input matInput name="resolution" [(ngModel)]="resolution"
+                                                readonly="{{readonly}}">
                                         </mat-form-field>
                                         <div class="info-img">
                                             <img src="../../../assets/icons/info-circle.svg">
@@ -81,8 +107,8 @@
                                     <div class="input-wrapper">
                                         <mat-form-field appearance="outline">
                                             <mat-label>Resolution Link</mat-label>
-                                            <input matInput ngModel required name="resolutionUrl"
-                                                [(ngModel)]="resolutionUrl" [disabled]="isDisabled">
+                                            <input matInput name="resolutionUrl" [(ngModel)]="resolutionUrl"
+                                                readonly="{{readonly}}">
                                         </mat-form-field>
                                         <div class="info-img">
                                             <img src="../../../assets/icons/info-circle.svg">
@@ -98,10 +124,10 @@
                                 <div class="parameters-wrapper">
                                     <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index">
                                         <mat-form-field appearance="outline">
-                                            <input matInput required name="key-{{i}}" value="{{param[0]}}">
+                                            <input matInput name="key-{{i}}" required [(ngModel)]="param[0]">
                                         </mat-form-field>
                                         <mat-form-field appearance="outline">
-                                            <input matInput required name="value-{{i}}" value="{{param[1]}}">
+                                            <input matInput name="value-{{i}}" required [(ngModel)]="param[1]">
                                         </mat-form-field>
                                         <div class="image-wrapper">
                                             <img class="add-icon" [class.isLastIndex]="paramsList.length == i+1"

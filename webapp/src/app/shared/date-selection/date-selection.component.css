@@ -7,7 +7,6 @@
 
 .custom-selection-content-wrapper ::ng-deep .mat-form-field-infix{
   width: 100px !important;
-  padding: 5px 15px !important;
 }
 
 .custom-selection-content-wrapper ::ng-deep .mat-card{

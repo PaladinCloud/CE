@@ -33,7 +33,7 @@
 
 
 ::ng-deep .mat-form-field-label-wrapper{
-  width: 90% !important;
+  width: calc(100% - 30px) !important;
 }
 
 ::ng-deep .mat-select-arrow{
@@ -45,7 +45,7 @@ width: 14px !important;
 }
 
 ::ng-deep .mat-form-field-label{
-  padding: 3px 4px !important;
+  padding: 3px 8px !important;
   margin-left: 12px;
   background: var(--background-white);
   color: var(--text-low-emphasis);
@@ -56,3 +56,14 @@ width: 14px !important;
   font: var(--text-body-2);
   padding: 0px 12px;
 }
+
+img{
+  height: 20px;
+  width: 20px;
+}
+
+.optionImage{
+  display: flex !important;
+  gap: 10px;
+}
+

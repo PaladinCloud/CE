@@ -30,7 +30,7 @@
 
 .form-wrapper{
    overflow: auto;
-   padding-right: 24px;
+   padding: 24px 24px 0px 0px;
    height: calc(100% - 50px);
 }
 
@@ -41,14 +41,14 @@ width: 80%;
 padding-left:24px;
 overflow: scroll;
 border-left: 2px solid var(--border-200);
-gap: 24px;
 }
 
 .type-wrapper{
   display: flex;
   gap: 20px;
-  width: 90%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 600px;
+  align-items: center;
 }
 
 .input-wrapper{
@@ -62,6 +62,7 @@ gap: 24px;
 }
 
 .button-wrapper{
+  padding-top: 24px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -167,11 +168,13 @@ border: 1px solid var(--border-200);
 }
 
 .add-icon{
-  display: none;
+  pointer-events: none;
+  opacity: 0;
 }
 
 .isLastIndex{
-  display: flex;
+  pointer-events: all;
+  opacity: 1;
 }
 
 .params-header{
@@ -201,4 +204,53 @@ border: 1px solid var(--border-200);
 input{
   font: var(--text-body-1);
   color: var(--text-high-emphasis);
+}
+
+.right-wrapper ::ng-deep .mat-select-trigger{
+  height: 30px !important;
+}
+
+.details-wrapper ::ng-deep .mat-form-field{
+  width: 100% !important;
+}
+
+.hide{
+  display: none;
+}
+
+.policy-executable{
+  display: flex;
+  gap: 12px;
+  border: 1px solid var(--border-200);
+  align-items: center;
+  padding: 4px 24px;
+}
+
+.input-form{
+  font: var(--text-body-2);
+  color: var(--primary-400);
+  padding: 4px 8px;
+  min-width: 127px;
+  border: 1px solid var(--primary-400);
+  border-radius: 4px;
+}
+
+.notSelected{
+  font: var(--text-body-1);
+  color: var(--text-low-emphasis);
+}
+
+.fileName{
+  font: var(--text-body-2);
+  color: var(--text-high-emphasis);
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected-file{
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
