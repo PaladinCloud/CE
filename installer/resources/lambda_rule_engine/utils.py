@@ -26,7 +26,7 @@ def get_rule_engine_cloudwatch_rules_aws_var():
         #     continue
         if variable_dict_input[index]['ruleUUID'] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
             continue
-        batch = int(index % 20)
+        batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
             'ruleId': variable_dict_input[index]['ruleUUID'],
             'ruleParams': variable_dict_input[index]['ruleParams'],
@@ -67,7 +67,7 @@ def get_rule_engine_cloudwatch_rules_azure_var():
             continue
         # elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
         #     continue
-        batch = int(index % 20)
+        batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
             'ruleId': variable_dict_input[index]['ruleUUID'],
             'ruleParams': variable_dict_input[index]['ruleParams'],
@@ -108,7 +108,7 @@ def get_rule_engine_cloudwatch_rules_gcp_var():
         #     continue
         if not need_to_enable_gcp():
             continue
-        batch = int(index % 20)
+        batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
             'ruleId': variable_dict_input[index]['ruleUUID'],
             'ruleParams': variable_dict_input[index]['ruleParams'],
