@@ -32,12 +32,15 @@ public class LoadBalancerCollector {
            Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient().list(project.getProjectId()).iterateAll();
            List<String> targetHttpsProxyVH = new ArrayList<>();
            List<String> sslPolicyList=new ArrayList<>();
+           List<Boolean> quicEnabledList = new ArrayList<>();
            for (TargetHttpsProxy targetHttpsProxy : httpsProxies) {
                logger.debug("Target proxy :{} {}", targetHttpsProxy.getName(), targetHttpsProxy.getId());
-              sslPolicyList.add(targetHttpsProxy.getSslPolicy());
+               sslPolicyList.add(targetHttpsProxy.getSslPolicy());
                targetHttpsProxyVH.add(targetHttpsProxy.getName());
+               quicEnabledList.add(targetHttpsProxy.hasQuicOverride());
            }
            loadBalancerVH.setTargetHttpsProxy(targetHttpsProxyVH);
+           loadBalancerVH.setQuicNegotiation(quicEnabledList);
 
            Iterable<TargetSslProxy> sslProxies=gcpCredentialsProvider.getTargetSslProxiesClient().list(project.getProjectId()).iterateAll();
            for(TargetSslProxy targetSslProxy:sslProxies){
