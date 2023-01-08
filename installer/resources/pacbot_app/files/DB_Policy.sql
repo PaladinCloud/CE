@@ -35,6 +35,10 @@ CHANGE COLUMN `ruleId` `policyId` VARCHAR(200) NULL DEFAULT NULL ;
 ALTER TABLE `pacmandata`.`pac_v2_ruleCategory_weightage` 
 CHANGE COLUMN `ruleCategory` `policyCategory` VARCHAR(50) NOT NULL ;
 
+ALTER TABLE `pacmandata`.`pac_v2_ruleCategory_weightage` 
+RENAME TO  `pacmandata`.`cf_PolicyCategoryWeightage` ;
+
+
 
 /* Delete rule record */
 delete from pac_v2_ui_options where optionName = 'Rule';
