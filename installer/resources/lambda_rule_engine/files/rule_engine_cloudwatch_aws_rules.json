@@ -2336,7 +2336,7 @@
     "policyDisplayName": "Deny Security Group public access on Memcached port 11211",
     "createdDate": "2022-05-19",
     "modifiedDate": "2022-05-19",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -2816,7 +2816,7 @@
     "policyDisplayName": "Enable Envelope Encryption for EKS Kubernetes Secrets",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -2996,7 +2996,7 @@
     "policyDisplayName": "Enable CloudTrail Global Services",
     "createdDate": "2022-05-11",
     "modifiedDate": "2022-05-11",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -3036,7 +3036,7 @@
     "policyDisplayName": "Delete Expired ACM Certificates",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "medium",
     "category": "security"
   },
   {
@@ -3056,7 +3056,7 @@
     "policyDisplayName": "Deny Security Group public access on Redis port 6379",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -3136,7 +3136,7 @@
     "policyDisplayName": "Encrypt OpenSearch Data in Transit",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3173,7 +3173,7 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticsearch_domain_encryption_using_cmk_kms_keys",
     "status": "ENABLED",
     "userId": "ASGC",
-    "policyDisplayName": "Use KMS CMK to encrypt OpenSearch",
+    "policyDisplayName": "Use Customer Managed Key to encrypt OpenSearch data at rest",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
