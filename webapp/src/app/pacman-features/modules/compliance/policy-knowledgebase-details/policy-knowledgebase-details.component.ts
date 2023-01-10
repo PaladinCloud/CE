@@ -27,9 +27,9 @@ import { UtilsService } from "src/app/shared/services/utils.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from "@angular/material/dialog";
 import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
-import { SnackbarComponent } from "src/app/shared/components/molecules/snackbar/snackbar.component";
 import { AdminService } from "src/app/pacman-features/services/all-admin.service";
 import { PermissionGuardService } from "src/app/core/services/permission-guard.service";
+import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
 
 @Component({
   selector: "app-policy-knowledgebase-details",
@@ -123,6 +123,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private adminService: AdminService,
     private permissions: PermissionGuardService,
+    private notificationObservableService: NotificationObservableService,
   ) {
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
@@ -417,16 +418,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
 
   openSnackBar(message, iconSrc) {
-    this.snackBar.openFromComponent(SnackbarComponent, {
-      horizontalPosition: "right",
-      verticalPosition: "top",
-      data: {
-        message: message,
-        iconSrc: iconSrc,
-        variant: "variant1"
-      },
-      duration: 500 * 1000,
-    });
+    this.notificationObservableService.postMessage(message, 3*1000, "variant1", iconSrc);
   }
 
 
