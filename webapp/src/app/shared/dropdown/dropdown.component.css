@@ -25,11 +25,6 @@
   padding: 0px !important;
 }
 
-::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
-  width: auto !important;
-  font: var(--text-body-1);
-  color: var(--text-low-emphasis);
-}
 
 
 ::ng-deep .mat-form-field-label-wrapper{
@@ -44,11 +39,12 @@ height: 8px !important;
 width: 14px !important;
 }
 
-::ng-deep .mat-form-field-label{
-  padding: 3px 8px !important;
-  margin-left: 12px;
-  background: var(--background-white);
-  color: var(--text-low-emphasis);
+::ng-deep .mat-form-field-type-mat-select .mat-form-field-label{
+  padding: 3px 12px;
+}
+
+::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+   display: none !important;
 }
 
 .dropdown-wrapper ::ng-deep .mat-select{

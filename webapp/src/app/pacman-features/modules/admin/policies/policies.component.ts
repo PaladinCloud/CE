@@ -155,10 +155,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     private tableStateService: TableStateService,
     private notificationObservableService: NotificationObservableService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) { }
 
   ngOnInit() {
+    this.notificationObservableService.getMessage();
     this.urlToRedirect = this.router.routerState.snapshot.url;
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel

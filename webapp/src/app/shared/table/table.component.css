@@ -179,10 +179,6 @@
   min-width: 150px;
 }
 
-.filters-container ::ng-deep .mat-form-field-label{
-  padding: 8px 16px;
-}
-
 .filters-container ::ng-deep .mat-select-arrow-wrapper{
   align-self: baseline;
 }

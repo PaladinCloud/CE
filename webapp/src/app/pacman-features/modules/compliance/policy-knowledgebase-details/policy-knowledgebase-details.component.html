@@ -14,13 +14,15 @@
 
 <div class="policy-knowledgebase-wrapper">
     <div *ngIf="backButtonRequired" class="breadcrumb-container">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
-     </div>
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+    </div>
     <div class="header">
         <div class="header-text">
             {{policyDisplayName}}
         </div>
-        <app-dropdown *ngIf="haveAdminPageAccess" (selected)="goToDetails($event)" [items]="actionItems" placeholder="Actions"></app-dropdown>
+        <app-dropdown *ngIf="haveAdminPageAccess" (selected)="goToDetails($event)" [items]="actionItems"
+            placeholder="Actions"></app-dropdown>
     </div>
     <div class="overview-wrapper">
         <div class="column">
@@ -28,14 +30,14 @@
                 <span class="tile-header">Cloud</span>
                 <div class="tile-content-wrapper">
                     <img *ngIf="assetGroup" src="../../../../../assets/icons/{{assetGroup.toLowerCase()}}-color.svg">
-                    <span class="tile-content">{{assetGroup}}</span>
+                    <span class="tile-content" title="{{assetGroup}}">{{assetGroup}}</span>
                 </div>
             </div>
         </div>
         <div class="column">
             <div class="overview-tile">
                 <span class="tile-header">Asset Type</span>
-                <span class="tile-content">{{assetType}}</span>
+                <span class="tile-content" title="{{assetType}}">{{assetType}}</span>
             </div>
         </div>
         <div class="column">
@@ -44,7 +46,7 @@
                 <div class="tile-content-wrapper">
                     <img *ngIf="selectedCategory"
                         src="../../../../../assets/icons/category-{{selectedCategory?.toLowerCase()}}.svg">
-                    <span class="tile-content">{{selectedCategory}}</span>
+                    <span class="tile-content" title="{{selectedCategory}}">{{selectedCategory}}</span>
                 </div>
             </div>
         </div>
@@ -54,14 +56,16 @@
                 <div class="tile-content-wrapper">
                     <img *ngIf="selectedSeverity"
                         src="../../../../../assets/icons/violations-{{selectedSeverity.toLowerCase()}}-icon.svg">
-                    <span class="tile-content">{{selectedSeverity}}</span>
+                    <span class="tile-content" title="{{selectedSeverity}}">{{selectedSeverity}}</span>
                 </div>
             </div>
         </div>
         <div class="column">
             <div class="overview-tile">
                 <span class="tile-header capitalize">Status</span>
-                <span class="tile-content">{{status}}</span>
+                <app-chip [variant]="'variant3'">
+                    <span class="chip-content" title="{{status}}">{{status}}</span>
+                </app-chip>
             </div>
         </div>
     </div>
@@ -96,30 +100,37 @@
                         <span class="attribute-header">Frequency</span>
                         <span class="attribute-value">6 hours</span>
                     </div>
-                    <div class="attribute-wrapper">
+                    <div class="attribute-wrapper" *ngIf="policyType=='Federated'">
+                        <span class="attribute-header">Jar File</span>
+                        <span class="attribute-value color-txt">{{policyJarFileName}}</span>
+                    </div>
+                    <div class="attribute-wrapper" *ngIf="policyType=='Serverless'">
                         <span class="attribute-header">Policy Url</span>
-                        <span class="attribute-value">No URL</span>
+                        <a target="_blank" href="{{policyRestUrl}}">
+                            <span class="attribute-value color-txt">{{policyRestUrl}}</span>
+                        </a>
                     </div>
                     <div class="attribute-wrapper">
                         <span class="attribute-header">Created By</span>
-                        <span class="attribute-value">No Name</span>
+                        <span class="attribute-value">{{userId}}</span>
                     </div>
                 </div>
 
             </div>
         </div>
         <div class="details-footer">
-            <div class="details-footer-text">
-                Resolution
-            </div>
+            <a class="details-footer-text" target="_blank" href="{{resolutionUrl}}">
+                <span>Resolution</span>
+                <img id="right-arrow-icon" src="../../../../../assets/icons/right-arrow-icon.svg">
+            </a>
         </div>
     </div>
     <div class="table-wrapper">
-        <app-table style="height: 100%; width: 100%;"
-            [data]="policyParams" [columnWidths]="columnWidths" [tableErrorMessage]='tableErrorMessage' [tableDataLoaded]='tableDataLoaded'
-            [doLocalSearch]="true" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
-            [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
-            [searchQuery]="searchTxt" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="false">
+        <app-table style="height: 100%; width: 100%;" [data]="paramsList" [columnWidths]="columnWidths"
+            [tableErrorMessage]='tableErrorMessage' [tableDataLoaded]='tableDataLoaded' [doLocalSearch]="true"
+            [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
+            (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
+            [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="false">
         </app-table>
     </div>
 </div>

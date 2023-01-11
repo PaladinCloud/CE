@@ -64,7 +64,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   public policyDesc: {};
   displayName: any = "";
   policyParamList: Array<Array<String>>;
-  totalRows = 3;
+  totalRows = 0;
+  userId = "";
   tableScrollTop = true;
   tableTitle = "Policy Parameters";
   searchTxt = "";
@@ -102,12 +103,13 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   selectedCategory: any;
   policyType: any;
   assetGroup;
-  policyJarFileName: any;
+  policyJarFileName = "";
   policyRestUrl: any;
   status: any;
   assetType: string;
   createdDate: any;
   modifiedDate: any;
+  paramsList = [];
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -290,8 +292,13 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     this.isAutofixEnabled = false;
     this.policyDisplayName = this.uppercasefirst(this.policyDetails.policyDisplayName);
     policyParams = JSON.parse(this.policyDetails.policyParams);
+
     this.createdDate = this.utils.calculateDateAndTime(data.createdDate, true);
     this.modifiedDate = this.utils.calculateDateAndTime(data.modifiedDate, true);
+
+    this.selectedCategory = data.category == "Governance" ? "Operations" : data.policyCategory;
+    this.selectedSeverity = data.severity;
+    this.userId = data.userId;
 
     if (policyParams.hasOwnProperty('pac_ds')) {
       this.policyDetails.dataSource = this.uppercasefirst(policyParams.pac_ds);
@@ -301,28 +308,35 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.allEnvironments = policyParams.environmentVariables;
       this.allEnvParamKeys = _.map(policyParams.environmentVariables, 'key');
     }
+
     if (policyParams.hasOwnProperty('params')) {
       if (policyParams.params instanceof Array) {
         for (let i = policyParams.params.length - 1; i >= 0; i -= 1) {
           if (policyParams.params[i].key == 'severity') {
             this.selectedSeverity = this.uppercasefirst(policyParams.params[i].value);
             policyParams.params.splice(i, 1);
+            continue;
           } else if (policyParams.params[i].key == 'policyCategory') {
             this.selectedCategory = this.uppercasefirst(policyParams.params[i].value);
             this.selectedCategory = policyParams.params[i].value == "Governance" ? "Operations" : this.selectedCategory;
             policyParams.params.splice(i, 1);
+            continue;
           } else if (policyParams.params[i].key == 'policyType') {
             this.policyType = this.uppercasefirst(policyParams.params[i].value);
           }
+          this.paramsList.push({
+            "key": policyParams.params[i].key,
+            "value": policyParams.params[i].value
+          })
         }
         this.policyDescription = this.policyDetails.policyDesc;
         this.allpolicyParams = policyParams.params;
         this.allpolicyParamKeys = _.map(policyParams.params, 'key');
 
         let i = 0;
-        this.policyParams = this.processForTableData(this.policyParams);
+        this.paramsList = this.processForTableData(this.paramsList);
         this.tableDataLoaded = true;
-        this.totalRows = this.policyParams.length;
+        this.totalRows = this.paramsList.length;
 
       }
     }
@@ -336,7 +350,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     if (this.policyDetails.assetGroup !== '') {
       this.assetGroup = this.uppercasefirst(this.policyDetails.assetGroup);
     }
-    if (this.policyType === 'Classic') {
+    if (this.policyType === 'Federated') {
       this.policyJarFileName = this.policyDetails.policyExecutable;
     } else if (this.policyType === 'Serverless') {
       this.policyRestUrl = this.policyDetails.policyRestUrl;
@@ -418,7 +432,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
 
   openSnackBar(message, iconSrc) {
-    this.notificationObservableService.postMessage(message, 3*1000, "variant1", iconSrc);
+    this.notificationObservableService.postMessage(message, 3 * 1000, "variant1", iconSrc);
   }
 
 

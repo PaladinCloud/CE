@@ -30,6 +30,7 @@ import { NgForm } from '@angular/forms';
 import { UploadFileService } from '../../../services/upload-file-service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
+import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
 
 @Component({
   selector: 'app-admin-create-edit-policy',
@@ -44,7 +45,7 @@ import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-b
 })
 export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
-  policyType = ["Federated", "Serverless", "ManageRule"];
+  policyType = ["Federated", "Serverless", "Customer"];
   selectedAssetType = "";
   resolutionUrl = "";
   isDisabled = true;
@@ -79,7 +80,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allpolicyParamKeys = [];
   allEnvParamKeys = [];
   allPolicyParams = Object();
-  paramsList = [[null, null]];
+  paramsList = [{
+    "key": "",
+    "value": ""
+  }];
   hideContent = false;
   ispolicyCreationFailed = false;
   ispolicyCreationSuccess = false;
@@ -148,13 +152,13 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   selectedWeekName: any;
   alexaKeyword: any;
   dataSourceName: any;
-  policyFrequencyModeValue: any;
+  policyFrequency: any;
   selectedPolicyType: any;
   policyName = "";
   policyId: any;
   isPolicyIdValid: number;
   policyDetails: any;
-  resolution: any;
+  resolution = "";
   isFileChanged: boolean = false;
   policyUrl = "";
 
@@ -166,7 +170,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private uploadService: UploadFileService,
-    private refactorFieldsService: RefactorFieldsService,
+    private notificationObservableService: NotificationObservableService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
@@ -193,7 +197,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   selectedType(event: any) {
     this.selectedPolicyType = event;
     if (this.selectedPolicyType == 'Customer') {
-      this.allPolicyIds
+      this.getAllPolicyIds();
     }
     if (event) {
       this.isDisabled = false;
@@ -330,15 +334,13 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.resolution = policyForm.resolution;
     PolicyModel.resolutionUrl = policyForm.resolutionUrl;
     PolicyModel.assetGroup = this.selectedAssetGroup;
-    if (this.policyJarFileName.length > 0)
-      PolicyModel.policyExecutable = this.policyJarFileName;
-    if (this.policyUrl.length > 0)
-      PolicyModel.policyRestUrl = this.policyUrl;
+    PolicyModel.policyExecutable = this.policyJarFileName;
+    PolicyModel.policyRestUrl = this.policyUrl;
     PolicyModel.policyParams = this.buildpolicyParams();
     PolicyModel.isFileChanged = this.isFileChanged;
-    PolicyModel.policyFrequencyModeValue = "0 0 ? * MON *";
+    PolicyModel.policyFrequency = "0 0 ? * MON *";
 
-    if (policyForm.policyType === 'Classic') {
+    if (this.isFileChanged && this.selectedPolicyType === 'Federated') {
       this.currentFileUpload = this.selectedFiles.item(0);
     } else {
       this.currentFileUpload = new File([''], '');
@@ -348,12 +350,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.openDialog(PolicyModel, isFormValid);
   }
 
-  isValid(PolicyModel: Object) {
-    for (const key in PolicyModel) {
-      if (PolicyModel[key]==null || PolicyModel[key].length == 0) {
-        return false;
-      }
-    }
+  isValid(PolicyModel: any) {
     return true;
   }
 
@@ -361,7 +358,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   private buildpolicyParams() {
     const policyParms = Object();
     for (let i = 0; i < this.paramsList.length; i++) {
-      if (!this.paramsList[i][0] || !this.paramsList[i][1]) {
+      if (!this.paramsList[i].key || !this.paramsList[i].value) {
         this.paramsList.splice(i, 1);
       }
     }
@@ -408,13 +405,15 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   }
 
   removePolicyParameters(index: number): void {
-    if (this.paramsList[index][0] != "policyKey" && this.paramsList.length > 1)
+    if (this.paramsList[index].key != "policyKey" && this.paramsList.length > 1)
       this.paramsList.splice(index, 1);
-    console.log(this.paramsList, "list");
   }
 
   addPolicyParameters() {
-    this.paramsList.push([null, null]);
+    this.paramsList.push({
+      "key": "",
+      "value": ""
+    });
   }
 
   removeJarFileName() {
@@ -482,11 +481,12 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   onSelectPolicyId(policyId: any) {
     this.selectedPolicyId = policyId;
-    this.ispolicyIdAvailable(this.selectedPolicyId + '_' + this.selectedpolicyName + '_' + this.selectedTargetType);
+    this.getPolicyDetails(policyId);
+    this.ispolicyIdAvailable(this.selectedPolicyId + '_' + this.selectedpolicyName + '_' + this.selectedAssetType);
   }
   onSelectTargetType(targetType: any) {
     this.selectedTargetType = targetType;
-    this.ispolicyIdAvailable(this.selectedPolicyId + '_' + this.selectedpolicyName + '_' + this.selectedTargetType);
+    this.ispolicyIdAvailable(this.selectedPolicyId + '_' + this.selectedpolicyName + '_' + this.selectedAssetType);
   }
   onSelectFrequency(frequencyType: any) {
     this.selectedFrequency = frequencyType;
@@ -512,7 +512,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         this.FullQueryParams = currentQueryParams;
         this.queryParamsWithoutFilter = JSON.parse(JSON.stringify(this.FullQueryParams));
         this.policyId = this.queryParamsWithoutFilter.policyId;
-        console.log(this.policyId, "getPolicyDetails");
         delete this.queryParamsWithoutFilter['filter'];
         this.dataSourceName = this.queryParamsWithoutFilter.ag;
         if (this.policyId) {
@@ -568,10 +567,15 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
     this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
       this.policyDetails = reponse[0];
+      this.selectedPolicyId = this.policyDetails.policyId;
+      this.selectedSeverity = this.policyDetails.severity;
+      this.selectedCategory = this.policyDetails.category;
       this.policyId = this.policyDetails.policyId;
-      this.selectedPolicyType = this.policyDetails.policyType;
+      if (!this.isCreate) {
+        this.policyDisplayName = this.policyDetails.policyDisplayName;
+        this.selectedPolicyType = this.policyDetails.policyType;
+      }
       this.policyName = this.policyDetails.policyName;
-      this.policyDisplayName = this.policyDetails.policyDisplayName;
       this.selectedAssetGroup = this.policyDetails.assetGroup;
       this.policyJarFileName = this.policyDetails.policyExecutable;
       this.policyUrl = this.policyDetails.policyRestUrl;
@@ -580,7 +584,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.resolution = this.policyDetails.resolution;
       this.resolutionUrl = this.policyDetails.resolutionUrl;
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
-      let currentParam = [];
       this.paramsList = [];
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
         if (this.allPolicyParams[i]["key"] == 'severity') {
@@ -596,16 +599,21 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.selectedCategory = this.allPolicyParams[i]["value"];
           this.allPolicyParams.splice(i, 1);
         } else {
-          currentParam.push(this.allPolicyParams[i]["key"]);
-          currentParam.push(this.allPolicyParams[i]["value"]);
-          this.paramsList.push(currentParam);
+          this.paramsList.push(
+            {
+              "key": this.allPolicyParams[i]["key"],
+              "value": this.allPolicyParams[i]["value"]
+            }
+          )
         }
-        currentParam = [];
       }
       if (this.paramsList.length == 0) {
-        this.paramsList.push([null, null]);
+        this.paramsList.push({
+          "key": "",
+          "value": ""
+        });
       }
-      if (this.selectedPolicyType == "ManageRule") {
+      if (this.selectedPolicyType == "Customer") {
         this.isDisabled = true;
       }
       this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
@@ -632,11 +640,13 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
           this.policyLoader = false;
           this.ispolicyCreationSuccess = true;
+          this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + (this.isCreate ? " created" : " updated") + " successfully!!", 500, "variant1", "green-info-circle");
         },
           error => {
             this.ispolicyCreationFailed = true;
             this.policyLoader = false;
           });
+
         this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
         this.workflowService.clearAllLevels();
         this.router.navigate(['../'], {
