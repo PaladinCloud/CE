@@ -29,7 +29,7 @@ public class EnableQuicProtocolRule extends BaseRule {
 
     @Override
     public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        Annotation annotation = null;
+        Annotation annotation;
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
 
@@ -47,7 +47,7 @@ public class EnableQuicProtocolRule extends BaseRule {
             vmEsURL = vmEsURL + "/gcp_gcploadbalancer/_search";
         }
         logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", vmEsURL);
-        boolean isQuicEnabled = false;
+        boolean isQuicEnabled;
 
         MDC.put("executionId", ruleParam.get("executionId"));
         MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));

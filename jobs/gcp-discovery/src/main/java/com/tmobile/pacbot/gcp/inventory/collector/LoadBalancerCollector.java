@@ -28,16 +28,22 @@ public class LoadBalancerCollector {
            logger.debug("URL map name: {} URL id :{}", u.getName(), u.getId());
            loadBalancerVH.setUrlMap(u.getName());
            loadBalancerVH.setId(String.valueOf(u.getId()));
+           loadBalancerVH.setProjectName(project.getProjectName());
+           loadBalancerVH.setProjectId(project.getProjectId());
+           loadBalancerVH.setRegion(project.getRegion());
 
            Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient().list(project.getProjectId()).iterateAll();
            List<String> targetHttpsProxyVH = new ArrayList<>();
            List<String> sslPolicyList=new ArrayList<>();
            List<Boolean> quicEnabledList = new ArrayList<>();
+
            for (TargetHttpsProxy targetHttpsProxy : httpsProxies) {
                logger.debug("Target proxy :{} {}", targetHttpsProxy.getName(), targetHttpsProxy.getId());
                sslPolicyList.add(targetHttpsProxy.getSslPolicy());
                targetHttpsProxyVH.add(targetHttpsProxy.getName());
-               quicEnabledList.add(targetHttpsProxy.hasQuicOverride());
+               if(targetHttpsProxy.hasQuicOverride()){
+                   quicEnabledList.add(targetHttpsProxy.getQuicOverride().equals("ENABLE"));
+               }
            }
            loadBalancerVH.setTargetHttpsProxy(targetHttpsProxyVH);
            loadBalancerVH.setQuicNegotiation(quicEnabledList);

@@ -2149,7 +2149,7 @@
     "ruleArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Quic_Protocol_For_Load_Balancer",
     "status": "ENABLED",
     "userId": "ASGC",
-    "displayName": "Configure API Restriction for API Keys",
+    "displayName": "Configure gcp load balancer https target proxy with quic protocol",
     "createdDate": "2022-11-29",
     "modifiedDate": "2022-11-29",
     "severity": "medium",
