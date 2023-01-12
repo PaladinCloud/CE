@@ -1021,7 +1021,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getRuleIdDetails(java.lang.String)
      */
     public List<Map<String, Object>> getRuleIdDetails(String ruleId) throws DataException {
-        String ruleIdWithDisplayquery = "SELECT ruleId, displayName,targetType,ruleParams FROM cf_RuleInstance WHERE STATUS = 'ENABLED' AND ruleId IN ("
+        String ruleIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,policyParams FROM cf_PolicyTable WHERE STATUS = 'ENABLED' AND policyId IN ("
                 + ruleId + ")";
         try {
             return rdsepository.getDataFromPacman(ruleIdWithDisplayquery);
@@ -1289,7 +1289,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getTargetTypeByRuleId(java.lang.String)
      */
     public List<Map<String, Object>> getTargetTypeByRuleId(String ruleId) {
-        String ruleIdWithTargetTypeQuery = "SELECT rule.targetType FROM cf_RuleInstance rule LEFT JOIN cf_Policy policy ON rule.policyId = policy.policyId WHERE rule.status = 'ENABLED' AND rule.ruleId ='"
+        String ruleIdWithTargetTypeQuery = "SELECT policy.targetType FROM cf_PolicyTable policy  WHERE policy.status = 'ENABLED' AND policy.policyId ='"
                 + ruleId + "'";
         return rdsepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
     }

@@ -48,10 +48,17 @@ INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) 
 /* Delete rule record */
 delete from pac_v2_ui_options where optionName = 'Rule';
 
-UPDATE pac_config_properties SET cfkey = 'policy-engine.invoke.url' where cfkey  ='rule-engine.invoke.url';
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`)
+ VALUES ('policy-engine.invoke.url','submitRuleExecutionJob','compliance-service','prd','latest',NULL,NULL,NULL,NULL);
+
+
 
 /* update policytable */
 update cf_PolicyTable set policyDisplayname = policyname where policyDisplayName is null;
+
+DROP TABLE IF EXISTS cf_RuleInstance;
+DROP TABLE IF EXISTS cf_Policy;
+DROP TABLE IF EXISTS pac_v2_ruleCategory_weightage;
 
 
 

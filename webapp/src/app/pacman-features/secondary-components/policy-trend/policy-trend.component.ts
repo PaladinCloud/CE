@@ -111,7 +111,7 @@ export class PolicyTrendComponent implements OnInit, OnChanges, OnDestroy, After
             'domain': this.selectedDomain
           },
           'from': fromDay,
-          'ruleid': this.ruleID,
+          'policyid': this.ruleID,
       };
 
       this.issuesSubscription = this.policyTrendService.getData([], payload).subscribe(
