@@ -577,7 +577,9 @@ public class AssetRepositoryImpl implements AssetRepository {
             // Ending must/bool/query
             request.append("]}}");
             request.append(",\"aggs\":{\"apps\":{\"terms\":{\"field\":\"tags.Application.keyword\",\"size\":1000},\"aggs\":{\"envs\":{\"terms\":{\"field\":\"tags.Environment.keyword\",\"size\":1000}}}}}}"); // Aggs
-        } // part
+        } else {
+        	request.append("]}}}"); // part
+        }
 
         String responseJson = "";
         try {
