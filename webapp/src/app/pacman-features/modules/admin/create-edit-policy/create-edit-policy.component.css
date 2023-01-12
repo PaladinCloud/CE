@@ -30,7 +30,7 @@
 
 .form-wrapper{
    overflow: auto;
-   padding: 24px 24px 0px 0px;
+   padding: 24px 24px 24px 0px;
    height: calc(100% - 50px);
 }
 
@@ -56,9 +56,52 @@ border-left: 2px solid var(--border-200);
   align-items: center;
   gap: 12px;
 }
-
 .input-wrapper ::ng-deep .mat-form-field-label{
    padding: 5px 5px !important;
+}
+
+.right-wrapper ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
+  width: auto !important;
+  padding: 3px 8px !important;
+  font: var(--text-body-1);
+  color: var(--text-low-emphasis);
+  display: block !important;
+}
+
+.right-wrapper ::ng-deep .mat-form-field-label{
+  padding: 7px 8px !important;
+  background: var(--background-white);
+  color: var(--text-low-emphasis);
+}
+
+.dropdown ::ng-deep .mat-form-field-label{
+  margin-left: 8px !important;
+}
+
+.button-wrapper .button {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 16px;
+  font: var(--text-body-2);
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
+
+.next-btn,.validate-btn{
+  color: white;
+  background: var(--primary-400);
+}
+
+.back-btn{
+  color: var(--primary-400);
+  border: none;
+  background-color: var(--background-white);
+}
+
+.button .disabled{
+   color: var(--background-grey);
 }
 
 .button-wrapper{

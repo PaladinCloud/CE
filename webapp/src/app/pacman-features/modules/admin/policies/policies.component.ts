@@ -26,10 +26,9 @@ import { RouterUtilityService } from "../../../../shared/services/router-utility
 import { AdminService } from "../../../services/all-admin.service";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from "@angular/material/dialog";
 import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
-import { SnackbarComponent } from "src/app/shared/components/molecules/snackbar/snackbar.component";
+import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
 
 @Component({
   selector: "app-admin-policies",
@@ -155,19 +154,17 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
     private tableStateService: TableStateService,
-    private snackBar: MatSnackBar,
-    public dialog: MatDialog
-  ) {
-    this.routerParam();
-    this.updateComponent();
-  }
+    private notificationObservableService: NotificationObservableService,
+    public dialog: MatDialog,
+  ) { }
 
   ngOnInit() {
+    this.notificationObservableService.getMessage();
     this.urlToRedirect = this.router.routerState.snapshot.url;
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    const state = this.tableStateService.getState("issueListing") || {};
+    const state = this.tableStateService.getState("adminPolicies") || {};
     if(state){      
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
@@ -187,6 +184,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         this.isStatePreserved = false;
       }
     }
+    this.routerParam();
+    this.updateComponent();
   }
 
   handleHeaderColNameSelection(event){
@@ -328,7 +327,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
-    if(this.isStatePreserved){     
+    if(this.isStatePreserved){   
       this.tableDataLoaded = true;
       this.clearState();
     }else{
@@ -503,16 +502,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   openSnackBar(message, iconSrc) {
-    this.snackBar.openFromComponent(SnackbarComponent, {
-      horizontalPosition: "right",
-      verticalPosition: "top",
-      data: {
-        message: message,
-        iconSrc: iconSrc,
-        variant: "variant1"
-      },
-      duration: 500 * 1000,
-    });
+    this.notificationObservableService.postMessage(message, 3*1000, "variant1", iconSrc);
     }
 
   goToCreatePolicy() {
@@ -539,20 +529,20 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
     
     // store in this function    
-    // const row = event.rowSelected;
-    // const data = event.data;
-    // const state = {
-    //   totalRows: this.totalRows,
-    //   data: data,
-    //   headerColName: this.headerColName,
-    //   direction: this.direction,
-    //   whiteListColumns: this.whiteListColumns,
-    //   bucketNumber: this.bucketNumber,
-    //   searchTxt: this.searchTxt,
-    //   tableScrollTop: event.tableScrollTop
-    //   // filterText: this.filterText
-    // }
-    // this.storeState(state);
+    const row = event.rowSelected;
+    const data = event.data;
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      bucketNumber: this.bucketNumber,
+      searchTxt: this.searchTxt,
+      tableScrollTop: event.tableScrollTop
+      // filterText: this.filterText
+    }
+    this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle

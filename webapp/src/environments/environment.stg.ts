@@ -563,7 +563,7 @@ export const environment = {
         method: 'GET'
     },
     allPolicyIds: {
-        url: '{{baseUrl}}/admin/policy/list-ids',
+        url: '{{baseUrl}}/admin/policy/policy-ids',
         method: 'GET'
     },
     ruleDetails: {

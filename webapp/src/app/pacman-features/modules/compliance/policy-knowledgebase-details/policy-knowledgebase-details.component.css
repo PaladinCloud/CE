@@ -27,16 +27,16 @@
 .overview-wrapper{
   display: flex;
   width: 100%;
-  height: 81px;
-  border-radius: 4px;
-  border-right: 1px solid var(--border-200);
+  border-radius: 8px;
+  border: 1px solid var(--border-200);
+  border-right: none;
   background-color: var(--background-white);
 }
 
 .overview-tile{
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 2px;
   padding: 12px 0px 12px 24px;    
 }
 
@@ -53,25 +53,63 @@
 .tile-content{
   font: var(--text-headline-5);
   color: var(--text-high-emphasis);
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.header ::ng-deep  mat-form-field{
+  background: var(--primary-400) ;
+  border: 1px solid var(--primary-400);
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-select-arrow{
+  background-image: url("../../../../../assets/icons/white-arrow.svg") !important;
 }
 
 .details-wrapper{
-  min-height: 362px;
-  height: 65%;
+  border: 1px solid var(--border-200);
+  border-radius: 8px;
   background-color: white;
 }
 
 .details-header-text{
 padding: 20px 0px 20px 24px;
-border: 2px solid var(--border-100);
 font: var(--text-body-2);
-color: var(--primary-500);
+color: var(--text-high-emphasis);
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-label{
+    font: var(--text-body-2) !important;
+    color: white !important;
+    padding: 0px 12px !important ;
+    display: flex;
+    align-items: center !important;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-infix{
+  width: 112px !important;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-appearance-legacy{
+  padding: 0px !important;
+}
+
+.color-txt{
+  color: var(--primary-400) !important;
 }
 
 .details-footer-text{
   padding: 20px 0px 20px 24px;
   font: var(--text-body-2);
-  color: var(--text-high-emphasis);
+  color: var(--primary-500);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+#right-arrow-icon{
+  width: 12px;
+  height: 12px;
 }
 
 .policy-knowledgebase-wrapper {
@@ -94,11 +132,13 @@ display: flex;
 flex-direction: column;
 height: calc(100% - 117px);
 border-bottom: 2px solid var(--border-100);
+border-top: 2px solid var(--border-100);
 gap: 32px;
 }
 
 .tile-content-wrapper{
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -136,7 +176,6 @@ gap: 20px;
 
 .row{
   display: flex;
-  gap: 20px;
   width: 100%;
 }
 
