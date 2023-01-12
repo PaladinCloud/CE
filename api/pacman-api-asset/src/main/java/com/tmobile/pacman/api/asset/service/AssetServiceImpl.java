@@ -33,6 +33,8 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.tmobile.pacman.api.asset.auth.CredentialProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.ParseException;
 import org.slf4j.Logger;
@@ -59,6 +61,14 @@ import com.tmobile.pacman.api.commons.exception.NoDataFoundException;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 
 /**
  * Implemented class for AssetService and all its method
@@ -82,6 +92,12 @@ public class AssetServiceImpl implements AssetService {
 
     @Value("${cloudinsights.corp-password}")
     String svcCorpPassword;
+
+    @Value("${auth.active}")
+    private String activeAuth;
+
+    @Autowired
+    private CredentialProvider credentialProvider;
 
     @Override
     public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
@@ -267,6 +283,11 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Boolean saveOrUpdateAssetGroup(final DefaultUserAssetGroup defaultUserAssetGroup) {
+        if(activeAuth.equalsIgnoreCase("cognito")){
+            //update default AG in cognito
+            updateDefaultAssetGroup(defaultUserAssetGroup.getUserId(),defaultUserAssetGroup.getDefaultAssetGroup());
+            LOGGER.info("Default asset group in cognito updated to {}",defaultUserAssetGroup.getDefaultAssetGroup());
+        }
         int response = repository.saveOrUpdateAssetGroup(defaultUserAssetGroup);
         return response > 0 ? true : false;
     }
@@ -1138,5 +1159,30 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to) {
         return repository.getAssetCountTrend(assetGroup, type, from, to);
+    }
+
+    public void updateDefaultAssetGroup(String userName, String assetGroupValue) {
+
+        String region = System.getenv("REGION");
+        String poolId = System.getenv("USERPOOL_ID");
+
+        LOGGER.info("Updating default asset group value ");
+
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+        Region reg=Region.of(region);
+        CognitoIdentityProviderClient client = CognitoIdentityProviderClient.builder()
+                .region(reg).credentialsProvider(StaticCredentialsProvider
+                        .create(AwsSessionCredentials
+                                .create(credentials.getAWSAccessKeyId(), credentials.getAWSSecretKey(), credentials.getSessionToken()))).build();
+
+        try {
+            AdminUpdateUserAttributesResponse response = client.adminUpdateUserAttributes
+                    (AdminUpdateUserAttributesRequest.builder().userPoolId(poolId).username(userName)
+                            .userAttributes(AttributeType.builder().name("custom:defaultAssetGroup")
+                                    .value(assetGroupValue).build()).build());
+            LOGGER.info("Update response :{}",response.toString());
+        } catch (Exception e) {
+            LOGGER.error("Error in updating user default asset group",e);
+        }
     }
 }

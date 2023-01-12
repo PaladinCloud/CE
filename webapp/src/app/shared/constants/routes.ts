@@ -75,10 +75,11 @@ export const COMPLIANCE_ROUTES = [
   {
     path: "compliance-dashboard",
     component: ComplianceDashboardComponent,
+    canActivate: [AuthGuardService],
     data: {
       title: "Overview",
+
     },
-    canActivate: [AuthGuardService],
   },
   {
     path: "issue-listing",
@@ -323,7 +324,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Policies",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["policy-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "rules",
@@ -331,7 +334,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Rules",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["rule-severity-management", "rule-admin", "rules-security", "rules-technical-admin"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "rules/invoke-rule",
@@ -339,7 +344,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Invoke Rule",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["rule-admin"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "policies/create-edit-policy",
@@ -347,7 +354,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Edit Policy",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["policy-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "job-execution-manager",
@@ -355,7 +364,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Job Execution Manager",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["job-execution-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "job-execution-manager/create-job-execution-manager",
@@ -363,7 +374,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Job Execution Manager",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["job-execution-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "asset-groups/create-asset-groups",
@@ -371,7 +384,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Asset Groups",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["asset-group-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "asset-groups",
@@ -379,7 +394,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Asset Groups",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["asset-group-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService],
   },
   {
     path: "asset-groups/delete-asset-groups",
@@ -387,7 +404,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Delete Asset Groups",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["asset-group-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService],
   },
   {
     path: "roles",
@@ -395,7 +414,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Roles",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["user-management"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "roles/create-update-roles",
@@ -403,7 +424,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Update Roles",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["user-management"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "roles/roles-allocation",
@@ -411,7 +434,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "User Roles Allocation",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["user-management"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "sticky-exceptions",
@@ -419,7 +444,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Sticky Exceptions",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["exemption-management"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "sticky-exceptions/create-sticky-exceptions",
@@ -427,7 +454,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Sticky Exceptions",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["exemption-management"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "sticky-exceptions/delete-sticky-exceptions",
@@ -435,7 +464,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Delete Sticky Exceptions",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["exemption-management"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "rules/enable-disable-rule",
@@ -443,7 +474,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Enable Disable Rule",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["rules-security", "rules-technical-admin"],
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "domains",
@@ -451,7 +484,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Domains",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["domain-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "domains/create-update-domain",
@@ -459,7 +494,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Update Domain",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["domain-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "target-types",
@@ -467,7 +504,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Target Types",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["target-type-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "target-types/create-update-target-type",
@@ -475,7 +514,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Create Update Target Type",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["target-type-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "job-execution-manager/update-job-execution-manager",
@@ -483,7 +524,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Update Job Execution Manager",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["job-execution-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "roles/config-users",
@@ -491,7 +534,9 @@ export const ADMIN_ROUTES = [
     data: {
       title: "Config Users",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["user-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   /*{
         path: 'account-management',
@@ -540,7 +585,9 @@ export const ADMIN_ROUTES = [
       title: "Configuration Management",
       roles: ["ROLE_ADMIN"],
       pageLevel: 0,
+      capabilities: ["configuration-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
     path: "system-management",
@@ -548,6 +595,8 @@ export const ADMIN_ROUTES = [
     data: {
       title: "System Management",
       roles: ["ROLE_ADMIN"],
+      capabilities: ["system-management"]
     },
+    canActivate: [AuthGuardService, PermissionGuardService]
   },
 ];

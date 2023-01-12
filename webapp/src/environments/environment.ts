@@ -901,5 +901,9 @@ export const environment = {
     vulnerabilityGraphSummary: {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/summarybyassets',
         method: 'GET'
+    },
+    roleMappingUrl: {
+        url: '{{baseUrl}}/admin/rolemapping',
+        method: 'GET'
     }
 };

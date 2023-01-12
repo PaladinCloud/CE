@@ -49,7 +49,7 @@ import io.swagger.annotations.ApiParam;
  * The Class PolicyEngineController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class PolicyEngineController {
 
     /** The Constant LOGGER. */

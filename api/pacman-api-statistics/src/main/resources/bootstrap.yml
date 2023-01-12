@@ -17,4 +17,7 @@ spring:
 security: 
   oauth2:
     resource:
-      user-info-uri: ${PACMAN_HOST_NAME}/api/auth/user
+      jwk:
+        key-set-uri: https://cognito-idp.${AWS_USERPOOL_REGION}.amazonaws.com/${USERPOOL_ID}/.well-known/jwks.json
+      client:
+        clientId: ${CLIENT_ID}

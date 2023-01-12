@@ -17,7 +17,9 @@ package com.tmobile.pacman.api.auth.config;
 
 import javax.sql.DataSource;
 
+import com.tmobile.pacman.api.commons.config.CognitoAccessTokenConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,9 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
 import com.tmobile.pacman.api.auth.services.CustomUserDetailsService;
+import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
+
+import java.util.Collections;
 
 /**
  * @author 	NidhishKrishnan
@@ -52,6 +57,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private ResourceServerProperties resource;
     
     @Bean
     public JdbcClientDetailsService clientDetailsService() {
@@ -64,8 +72,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
  	}
 
     @Bean
-    public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
+    public TokenStore jwkTokenStore() {
+        return new JwkTokenStore(
+                Collections.singletonList(resource.getJwk().getKeySetUri()),
+                new CognitoAccessTokenConverter(),
+                null);
     }
 
     @Bean
@@ -95,7 +106,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.approvalStore(approvalStore())
                 .authorizationCodeServices(authorizationCodeServices())
-                .tokenStore(tokenStore())
+                .tokenStore(jwkTokenStore())
                 .tokenEnhancer(tokenEnhancer())
                 .userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager);

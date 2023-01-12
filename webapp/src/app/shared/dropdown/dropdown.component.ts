@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { DataCacheService } from "../../core/services/data-cache.service";
 
 @Component({
   selector: 'app-dropdown',
@@ -13,6 +14,7 @@ export class DropdownComponent implements OnInit, OnChanges {
   @Input() optionImage = false;
   @Input() requiredInfo: boolean = false;
   @Input() placeholder: string;
+  @Input() isAccessAllowed: boolean = true;
   @Input() selectedItem: string;
   @Output() selected = new EventEmitter();
   @Output() closeEventEmitter = new EventEmitter();

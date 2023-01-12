@@ -33,6 +33,8 @@ import { TreeNode } from "@circlon/angular-tree-component";
 import { NavigationEnd, Router } from "@angular/router";
 import { CommonResponseService } from "src/app/shared/services/common-response.service";
 import { environment } from "src/environments/environment";
+import * as _ from 'lodash';
+
 
 @Component({
   selector: "app-contextual-menu",
@@ -57,7 +59,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       id: 2,
       name: "Violations",
       image: "violations-icon",
-      route: "/pl/compliance/issue-listing",
+      route: "/pl/compliance/issue-listing"
     },
     {
       id: 3,
@@ -134,54 +136,64 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
           name: "Policies",
           parent: "Admin",
           route: "/pl/admin/policies",
+          permissions: ["policy-management"]
+
         },
         {
           id: 17,
           name: "Job Execution Manager",
           parent: "Admin",
           route: "/pl/admin/job-execution-manager",
+          permissions: ["job-execution-management"]
         },
         {
           id: 18,
           name: "Domains",
           parent: "Admin",
           route: "/pl/admin/domains",
+          permissions: ["domain-management"]
         },
         {
           id: 19,
           name: "Asset Types",
           parent: "Admin",
           route: "/pl/admin/target-types",
+          permissions: ["target-type-management"]
         },
         {
           id: 20,
           name: "Asset Groups",
           parent: "Admin",
           route: "/pl/admin/asset-groups",
+          permissions: ["asset-group-management"]
         },
         {
           id: 21,
           name: "Sticky Exceptions",
           parent: "Admin",
           route: "/pl/admin/sticky-exceptions",
+          permissions: ["exemption-management"]
         },
         {
           id: 22,
           name: "Roles",
           parent: "Admin",
           route: "/pl/admin/roles",
+          permissions: ["user-management"]
         },
         {
           id: 23,
           name: "Configuration Management",
           parent: "Admin",
           route: "/pl/admin/config-management",
+          permissions: ["configuration-management"]
         },
         {
           id: 24,
           name: "System Management",
           parent: "Admin",
           route: "/pl/admin/system-management",
+          permissions: ["system-management"]
         },
       ],
     },
@@ -215,7 +227,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     const queryParam = {
       "cfkey": "current-release"
     }
-    this.commonResponseService.getData(url, urlMethod,"",queryParam).subscribe(
+    this.commonResponseService.getData(url, urlMethod, "", queryParam).subscribe(
       response => {
         this.current_version = response[0].value.substring(1);
       }
@@ -251,6 +263,22 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     const currNodes = this.getCurrentNodesFromRoute(currentRoute);
     this.currentNodeId = currNodes[0];
     this.currentParentId = currNodes[1];
+  }
+
+  hasRequiredPermission(node) {
+    if (node.data.name === 'Admin') {
+      const isAdmin = this.dataCacheService.isAdminCapability();
+      return isAdmin;
+    }
+    const roleCapabilities = this.dataCacheService.getRoleCapabilities();
+    if (node.data === undefined || node.data.permissions === undefined || node.data.permissions.length == 0) {
+      //default permission, no specific role capability is required
+      return true;
+    } else {
+      const isAccessible = node.data.permissions.some(role => roleCapabilities.includes(role));
+      //console.log('Component is accessible?', isAccessible)
+      return isAccessible;
+    }
   }
 
   getCurrentNodesFromRoute(currentRoute) {

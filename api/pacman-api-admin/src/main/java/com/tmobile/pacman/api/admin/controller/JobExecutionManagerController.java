@@ -47,7 +47,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Api(value = "/job-execution-manager", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'job-execution-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/job-execution-manager")
 public class JobExecutionManagerController {
 	

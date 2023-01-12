@@ -13,14 +13,15 @@
  */
 
 
-import {throwError as observableThrowError,  Observable } from 'rxjs';
+import { throwError as observableThrowError, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 import { HttpService } from '../../shared/services/http-response.service';
 import { DataCacheService } from './data-cache.service';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from '../../shared/services/logger.service';
-import {AuthSessionStorageService} from './auth-session-storage.service';
+import { AuthSessionStorageService } from './auth-session-storage.service';
+import { CONFIGURATIONS } from './../../../config/configurations';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
@@ -30,33 +31,15 @@ export class OnPremAuthenticationService {
     private dataStore: DataCacheService,
     private loggerService: LoggerService,
     private authSessionStorageService: AuthSessionStorageService
-  ) {}
+  ) { }
 
   handleError(error: any): Observable<any> {
     return observableThrowError(error.message || error);
   }
 
   logout() {
-    const logoutUrl = environment.logout.url;
-    const logoutMethod = environment.logout.method;
-
-    const logoutObserver = this.httpService
-      .getHttpResponse(logoutUrl, logoutMethod, {}, {})
-      .pipe(map(response => {
-        return response;
-      }))
-      .pipe(catchError(error => this.handleError(error)));
-
-    logoutObserver.subscribe(
-      response => {
-        this.loggerService.log('info', 'Logged out successfully');
-        window.location.replace('/home'); // Reloading the page, to reset the observable sujects
-      },
-      error => {
-        this.loggerService.log('error', error);
-        window.location.replace('/home'); // Reloading the page, to reset the observable sujects
-      }
-    );
+    const logoutUrl = CONFIGURATIONS.optional.auth.cognitoConfig.logout;
+    window.location.href = logoutUrl;
   }
 
   formatUsernameWithoutDomain(username) {
@@ -73,7 +56,7 @@ export class OnPremAuthenticationService {
 
   /* Deprecated: this function is not being used anymore */
   getRedirectUrl() {
-     return this.dataStore.getRedirectUrl();
+    return this.dataStore.getRedirectUrl();
   }
 
   massageAndStoreUserDetails(userDetails) {

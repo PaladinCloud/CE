@@ -44,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
  * The Class ProjectionController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class ProjectionController implements Constants {
 
     /** The logger. */

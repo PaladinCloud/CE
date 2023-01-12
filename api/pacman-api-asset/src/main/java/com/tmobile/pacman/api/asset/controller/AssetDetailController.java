@@ -55,7 +55,7 @@ import io.swagger.annotations.ApiOperation;
  * The controller layer for Asset Details which has methods to return asset details.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 @CrossOrigin
 public class AssetDetailController {
 

@@ -85,7 +85,11 @@ public class HttpUtil {
             CloseableHttpClient httpClient = getHttpClient();
             if(httpClient!=null){
                 HttpPost httppost = new HttpPost(url);
-                httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+                if(requestBody==null || requestBody.isEmpty()){
+                    httppost.setHeader("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
+                }else {
+                    httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+                }
                 if(!Strings.isNullOrEmpty(token)){
                     httppost.addHeader("Authorization", tokeType+" "+token);
                 }

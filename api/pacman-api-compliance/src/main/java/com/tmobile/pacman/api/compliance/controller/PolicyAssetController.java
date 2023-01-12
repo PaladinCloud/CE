@@ -43,7 +43,7 @@ import com.tmobile.pacman.api.compliance.util.CommonUtil;
  * The Class PolicyAssetController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 @CrossOrigin
 public class PolicyAssetController {
     

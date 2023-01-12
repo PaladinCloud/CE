@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Api(value = "/target-types", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'asset-group-management','target-type-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/target-types")
 public class TargetTypesController {
 	
