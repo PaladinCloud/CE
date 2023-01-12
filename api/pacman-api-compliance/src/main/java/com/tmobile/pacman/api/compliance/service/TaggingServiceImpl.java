@@ -41,7 +41,7 @@ import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithCount;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.repository.ComplianceRepository;
 import com.tmobile.pacman.api.compliance.repository.TaggingRepository;
 
@@ -173,18 +173,18 @@ public class TaggingServiceImpl implements TaggingService, Constants {
     /* (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.service.TaggingService#getUntaggingByTargetTypes(com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest)
      */
-    public List<Map<String, Object>> getUntaggingByTargetTypes(UntaggedTargetTypeRequest request)
+    public List<Map<String, Object>> getNonCompliancebyCategoryofTargetType(SummaryByTargetTypeRequest request)
             throws ServiceException {
         long assetCount ;
-        long untaggedCount ;
-        long taggedCount ;
+        long nonComplianceCount ;
+        long complianceCount ;
         double compliancePercentage;
         String type;
 
-        List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
+        
         List<Map<String, Object>> targetTypes;
         try {
-            targetTypes = repository.getRuleTargetTypesFromDbByPolicyId(CATEGORY_TAGGING);
+            targetTypes = repository.getRuleTargetTypesFromDbByPolicyId(request.getCategory());
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -196,7 +196,12 @@ public class TaggingServiceImpl implements TaggingService, Constants {
 
         List<Map<String, Object>> unTagsList = new ArrayList<>();
         Map<String, Long> assetCountByTypes = complainceRepository.getTotalAssetCount(request.getAg(), null,null,null);
-        Map<String, Long> untaggedCountMap = getUntaggedTargetTypeIssues(request, tagsList);
+        List<String> tagsList =  new ArrayList<>();
+        if(CATEGORY_TAGGING.equals( request.getCategory())) {
+        	tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
+        }
+        
+        Map<String, Long> nonComplicanceCountMap = getCategoryWiseTargetTypeIssue(request, tagsList);
         // process records to format the response
         for (Map<String, Object> targetType : targetTypes) {
             type = targetType.get(TARGET_TYPE).toString();
@@ -209,17 +214,17 @@ public class TaggingServiceImpl implements TaggingService, Constants {
             assetCount = (null != assetCountByTypes.get(type)) ? Long.parseLong(assetCountByTypes.get(type).toString())
                     : 0l;
             if (assetCount > 0) {
-                untaggedCount = getUntaggedAsset(untaggedCountMap, type);
-                if (untaggedCount > assetCount) {
-                    untaggedCount = assetCount;
+                nonComplianceCount = getUntaggedAsset(nonComplicanceCountMap, type);
+                if (nonComplianceCount > assetCount) {
+                    nonComplianceCount = assetCount;
                 }
-                taggedCount = assetCount - untaggedCount;
-                compliancePercentage = (double) (taggedCount * INT_HUNDRED) / assetCount;
+                complianceCount = assetCount - nonComplianceCount;
+                compliancePercentage = (double) (complianceCount * INT_HUNDRED) / assetCount;
                 compliancePercentage = Math.floor(compliancePercentage);
 
                 data.put("name", type);
-                data.put("untagged", untaggedCount);
-                data.put("tagged", taggedCount);
+                data.put("compliance", nonComplianceCount);
+                data.put("nonCompliance", complianceCount);
                 data.put("assetCount", assetCount);
                 data.put(COMP_PERCENTAGE, compliancePercentage);
                 unTagsList.add(data);
@@ -344,13 +349,43 @@ public class TaggingServiceImpl implements TaggingService, Constants {
      * @return the untagged target type issues
      * @throws ServiceException the service exception
      */
-    private Map<String, Long> getUntaggedTargetTypeIssues(UntaggedTargetTypeRequest request, List<String> tagsList)
+    private Map<String, Long> getCategoryWiseTargetTypeIssue(SummaryByTargetTypeRequest request, List<String> tagsList)
             throws ServiceException {
         JsonParser parser = new JsonParser();
         Map<String, Long> untaggedCountMap = new HashMap<>();
         String responseDetails;
         try {
-            responseDetails = repository.getUntaggedTargetTypeIssues(request, tagsList);
+            responseDetails = repository.getCategoryWiseTargetTypeIssue(request, tagsList);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+        JsonObject aggs = (JsonObject) responseJson.get(AGGREGATIONS);
+        JsonObject name = (JsonObject) aggs.get("NAME");
+        JsonArray buckets = name.get(BUCKETS).getAsJsonArray();
+        // convert Json Array to Map object
+        for (JsonElement bucket : buckets) {
+            untaggedCountMap.put(bucket.getAsJsonObject().get("key").getAsString(),
+                    bucket.getAsJsonObject().get(DOC_COUNT).getAsLong());
+        }
+        return untaggedCountMap;
+    }
+    
+    /**
+     * Gets the untagged target type issues.
+     *
+     * @param request the request
+     * @param tagsList the tags list
+     * @return the untagged target type issues
+     * @throws ServiceException the service exception
+     */
+    private Map<String, Long> getCategoryWiseTargetTypeIssues(SummaryByTargetTypeRequest request, List<String> tagsList)
+            throws ServiceException {
+        JsonParser parser = new JsonParser();
+        Map<String, Long> untaggedCountMap = new HashMap<>();
+        String responseDetails;
+        try {
+            responseDetails = repository.getCategoryWiseTargetTypeIssue(request, tagsList);
         } catch (DataException e) {
             throw new ServiceException(e);
         }

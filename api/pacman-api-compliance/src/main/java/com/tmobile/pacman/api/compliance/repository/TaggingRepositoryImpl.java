@@ -42,7 +42,7 @@ import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
 
 /**
@@ -209,15 +209,15 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
     /* (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.repository.TaggingRepository#getUntaggedTargetTypeIssues(com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest, java.util.List)
      */
-    public String getUntaggedTargetTypeIssues(
-            UntaggedTargetTypeRequest request, List<String> tagsList)
+    public String getCategoryWiseTargetTypeIssue(
+            SummaryByTargetTypeRequest request, List<String> tagsList)
             throws DataException {
         String assetGroup = request.getAg();
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/")
                 .append(assetGroup).append("/").append(SEARCH);
         StringBuilder requestBody = null;
         String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyCategory.keyword\":{\"value\":\""
-                + CATEGORY_TAGGING
+                + request.getCategory()
                 + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}]";
 
         if (!tagsList.isEmpty()) {

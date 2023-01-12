@@ -27,13 +27,15 @@ import java.util.Map;
 /**
  * The Class UntaggedTargetTypeRequest.
  */
-public class UntaggedTargetTypeRequest {
+public class SummaryByTargetTypeRequest {
 
     /** The filter. */
     private Map<String, String> filter;
 
     /** The ag. */
     private String ag;
+    
+    private String category;
 
     /**
      * Gets the filter.
@@ -71,4 +73,13 @@ public class UntaggedTargetTypeRequest {
         this.ag = ag;
     }
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+    
 }

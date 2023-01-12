@@ -131,6 +131,7 @@ public interface Constants {
     String DOMAIN_NAME = "domainName";
     String ENV = "environment";
     String ASSET_MANDATORY = "Asset group is mandatory";
+    String ASSET_CATEGORY_MANDATORY = "Asset group and Category is mandatory";
     String ASSET_GROUP_DOMAIN = "Asset group/Domain is mandatory";
     int TWO_HUNDRED = 200;
     Double HUNDRED = 100.00;

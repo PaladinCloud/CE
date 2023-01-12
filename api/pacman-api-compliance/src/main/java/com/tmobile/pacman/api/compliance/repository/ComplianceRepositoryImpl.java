@@ -1724,7 +1724,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      */
     public Map<String, Object> getRuleCategoryWeightagefromDB(String domain) throws DataException {
         Map<String, Object> weightage = null;
-        String query = "SELECT * FROM pac_v2_ruleCategory_weightage WHERE domain ='" + domain + "'";
+        String query = "SELECT * FROM cf_PolicyCategoryWeightage WHERE domain ='" + domain + "'";
         List<Map<String, Object>> ruleCatWeightageList = rdsepository.getDataFromPacman(query);
         if (!ruleCatWeightageList.isEmpty()) {
             weightage = ruleCatWeightageList.parallelStream().collect(
