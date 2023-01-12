@@ -15,7 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @PacmanPolicy(key = "check-security-hub-exists", desc = "This rule checks if security hub enabled for account", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class CheckSecurityHubEnabledRule extends BasePolicy {
@@ -65,7 +72,7 @@ public class CheckSecurityHubEnabledRule extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
         try {
-            List<String> regions = Arrays.asList((regionParam).split(","));
+            String[] regions = regionParam.split(",");
             String esEndPoint = pacmanHost + SECURITY_HUB_URL;
             Map<String, Object> mustFilter = new HashMap<>();
             HashMultimap<String, Object> shouldFilter = HashMultimap.create();
@@ -76,8 +83,8 @@ public class CheckSecurityHubEnabledRule extends BasePolicy {
                 Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
                         shouldFilter, mustTermsFilter, "_resourceid", null);
                 if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-                    return "AWS Security Hub is not enabled in region:" + region + " from the list of regions"
-                            + regions + ",accountId:" + accountId;
+                    return "AWS Security Hub is not enabled in region:" + region + " from the list of regions "
+                            + regionParam + " for accountId:" + accountId;
                 }
             }
         } catch (Exception ex) {
