@@ -149,7 +149,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
         },
         {
           id: 19,
-          name: "Target Types",
+          name: "Asset Types",
           parent: "Admin",
           route: "/pl/admin/target-types",
         },

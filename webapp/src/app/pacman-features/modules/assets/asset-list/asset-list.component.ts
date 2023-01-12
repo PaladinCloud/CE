@@ -1,17 +1,3 @@
-/*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
@@ -295,7 +281,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
   getFilterArray() {
     try {
-      const localFilters = []; // <<-- this filter is used to store data for filter
       // let labelsKey = Object.keys(this.labels);
       const filterObjKeys = Object.keys(this.filterText);
       const dataArray = [];
@@ -307,21 +292,13 @@ export class AssetListComponent implements OnInit, OnDestroy {
         dataArray.push(obj);
       }
       const formattedFilters = dataArray;
-      let keyValue;
       for (let i = 0; i < formattedFilters.length; i++) {
-        for(let j=0; j<this.filterTypeOptions.length; j++){
-          if(formattedFilters[i].name.trim().toLowerCase()==this.filterTypeOptions[j].optionValue.trim().toLowerCase()){
-            keyValue = this.filterTypeOptions[j].optionName;
-            break;
-          }
-        }
-        // let keyValue = _.find(this.filterTypeOptions, {
-        //   optionValue: formattedFilters[i].name,
-        // })["optionName"];
         
-        // this.changeFilterType(keyValue);
-        this.changeFilterType(keyValue).subscribe(filterTagOptions => {          
-            let filterValue = _.find(filterTagOptions, {
+        let keyValue = _.find(this.filterTypeOptions, {
+          optionValue: formattedFilters[i].name,
+        })["optionName"];
+        this.changeFilterType(keyValue).then(() => {
+            let filterValue = _.find(this.filterTagOptions[keyValue], {
               id: this.filterText[filterObjKeys[i]],
             })["name"];
           const eachObj = {
@@ -332,10 +309,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
             filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
             compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
           };
-          localFilters.push(eachObj);
+          this.filters.push(eachObj);
+          this.filters = [...this.filters];
         })
       }
-      this.filters = localFilters;
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -744,6 +721,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
     // this.getUpdatedUrl();
   }
 
+  trimStringsInArrayOfObjs(arrayOfObj){
+    arrayOfObj.forEach(element => {
+      let keys = Object.keys(element);
+      keys.forEach(key => {
+        element[key] = element[key].trim();
+      })
+    });
+  }
+
   /**
    * This function get calls the keyword service before initializing
    * the filter array ,so that filter keynames are changed
@@ -767,8 +753,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
           environment.issueFilter.method
         )
         .subscribe((response) => {
-          this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
+          this.trimStringsInArrayOfObjs(this.filterTypeOptions);
+          this.filterTypeLabels = _.map(this.filterTypeOptions, "optionName");
 
           this.routerParam();
           // this.deleteFilters();
@@ -782,8 +769,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
-    var subject = new Subject<any>();
-    try {
+    return new Promise((resolve) => {
+      try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
@@ -802,20 +789,23 @@ export class AssetListComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTagOptions[value] = response[0].response;
           this.filterTagLabels[value] = _.map(response[0].response, "name");
-          // if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
-          subject.next(this.filterTagOptions[value]);
+          this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
+          resolve(this.filterTagOptions[value]);
         });
       }
-      
+
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    return subject.asObservable();
+    });
   }
 
   changeFilterTags(event) {
     let value = event.filterValue;
+    this.currentFilterType =  _.find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });
     try {
       if (this.currentFilterType) {
         const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
@@ -862,7 +852,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     updatedQueryParams = {
       filter: this.filterText.filter,
-      searchValue: this.searchTxt
     }
 
 
@@ -878,7 +867,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
     });
   }
-
   navigateToCreate() {
     this.router.navigateByUrl("../assets/asset-list/create-account");
   }

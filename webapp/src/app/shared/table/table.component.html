@@ -114,7 +114,7 @@
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
                 <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false">
                     <span> {{ column!='Actions' && column!='DetailsBtn'?column:'' }} </span>
-                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='desc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
+                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
                 </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell *matCellDef="let element"> 
                     <div *ngIf="element[column] && element[column].isChip; else menuBtn" [title]="element[column].titleText">

@@ -45,8 +45,8 @@
                 <span class="tile-header">Category</span>
                 <div class="tile-content-wrapper">
                     <img *ngIf="selectedCategory"
-                        src="../../../../../assets/icons/category-{{selectedCategory?.toLowerCase()}}.svg">
-                    <span class="tile-content" title="{{selectedCategory}}">{{selectedCategory}}</span>
+                        src="../../../../../assets/icons/category-{{(selectedCategory=='Governance'?'Operations':selectedCategory)?.toLowerCase()}}.svg">
+                    <span class="tile-content" title="{{selectedCategory=='Governance'?'Operations':selectedCategory}}">{{selectedCategory=='Governance'?'Operations':selectedCategory}}</span>
                 </div>
             </div>
         </div>

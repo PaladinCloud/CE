@@ -344,6 +344,14 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.isAutofixEnabled = policyParams.autofix;
     }
     this.status = this.uppercasefirst(data.status);
+    let dropDownItems = ["Edit"];
+    if (this.status.toLowerCase() === "enabled") {
+      dropDownItems.push("Disable");
+    } else {
+      // dropDownItems.push("Invoke");
+      dropDownItems.push("Enable");
+    }
+    this.actionItems = dropDownItems;
     this.assetType = this.uppercasefirst(this.policyDetails.targetType);
 
     this.policyType = this.policyDetails.policyType;

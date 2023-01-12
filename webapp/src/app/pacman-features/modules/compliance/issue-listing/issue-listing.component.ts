@@ -328,19 +328,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         };
         dataArray.push(obj);
       }
-      const formattedFilters = dataArray
-      // .map(function (data) {
-      //   data.name =
-      //     refactoredService.getDisplayNameForAKey(data.name) || data.name;
-      //   return data;
-      // });
+      const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
+        
         let keyValue = _.find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
-        // this.changeFilterType(keyValue);
-        this.changeFilterType(keyValue).subscribe(filterTagOptions => {
-            let filterValue = _.find(filterTagOptions, {
+        this.changeFilterType(keyValue).then(() => {
+            let filterValue = _.find(this.filterTagOptions[keyValue], {
               id: this.filterText[filterObjKeys[i]],
             })["name"];
           const eachObj = {
@@ -398,8 +393,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
-    var subject = new Subject<any>();
-    this.filterErrorMessage = '';
+    return new Promise((resolve) => {
+      this.filterErrorMessage = '';
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
@@ -421,7 +416,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTagLabels[value] = _.map(response[0].response, "name");
           this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
-          subject.next(this.filterTagOptions[value]);
+          resolve(this.filterTagOptions[value]);
         });
       }
     } catch (error) {
@@ -429,7 +424,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    return subject.asObservable();
+    }); 
   }
 
   changeFilterTags(event) {    

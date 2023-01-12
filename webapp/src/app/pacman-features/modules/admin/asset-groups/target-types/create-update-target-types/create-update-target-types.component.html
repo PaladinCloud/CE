@@ -33,7 +33,7 @@
                         <div class="sub-head ">
                             <div class="flex flex-between flex-align-center ">
                                 <div class="sub-head-title capitalize flex flex-align-center after-load ">
-                                    <div class="header-text ">Target Type Details</div>
+                                    <div class="header-text ">Asset Type Details</div>
                                 </div>
                             </div>
                         </div>
@@ -61,14 +61,14 @@
                                             <div class="input-box">
                                                 <label>Display Name *</label>
                                                 <ul class="input-wrapper">
-                                                    <input type="text" name="displayName" class="inputarea-container" [(ngModel)]="targetTypes.displayName" placeholder="Enter Target Type Display Name" autocomplete="off">
+                                                    <input type="text" name="displayName" class="inputarea-container" [(ngModel)]="targetTypes.displayName" placeholder="Enter Asset Type Display Name" autocomplete="off">
                                                 </ul>
                                                 <div class="validation-error-message" *ngIf="targetTypes.displayName.trim().length<5">Please enter min 5 characters</div>
                                             </div>
                                             <div class="bm10 input-box">
                                                 <label>Description *</label>
                                                 <ul>
-                                                    <textarea name="description" class="textarea-container " [(ngModel)]="targetTypes.desc" placeholder="Enter Target Type Description"></textarea>
+                                                    <textarea name="description" class="textarea-container " [(ngModel)]="targetTypes.desc" placeholder="Enter Asset Type Description"></textarea>
                                                 </ul>
                                                 <div class="validation-error-message" *ngIf="targetTypes.desc.trim().length<15">Please enter min 15 characters</div>
                                             </div>
@@ -85,17 +85,17 @@
                                             </div>
 
                                              <div class="input-box" *ngIf="isCreate">
-                                                <label>Target Type Name *</label>
+                                                <label>Asset Type Name *</label>
                                                 <ul class="input-wrapper">
                                                     <input type="text" name="type" class="inputarea-container"
                                                         [(ngModel)]="targetTypes.name"
-                                                        placeholder="Enter Target Type Name" autocomplete="off">
+                                                        placeholder="Enter Asset Type Name" autocomplete="off">
                                                 </ul>
                                                 <div class="validation-error-message" *ngIf="targetTypes.name.trim().length<5">Please enter min 5 characters</div>
                                             </div>
 
                                             <div class="input-box" *ngIf="!isCreate">
-                                                <label>Target Type Name *</label>
+                                                <label>Asset Type Name *</label>
                                                 <div class="text-value">{{targetTypes.name}}</div>
                                             </div>
 											 
@@ -104,7 +104,7 @@
                                                 <ul>
                                                     <textarea name="description" class="textarea-container "
                                                         [(ngModel)]="targetTypes.config"
-                                                        placeholder="Enter Target Type Config"></textarea>
+                                                        placeholder="Enter Asset Type Config"></textarea>
                                                 </ul>
                                                 <div class="validation-error-message" *ngIf="targetTypes.config.trim().length<15">Please enter min 15 characters</div>
                                             </div>
@@ -159,7 +159,7 @@
                                 {{successTitle}}
                             </div>
                             <div class="pacman-alert-message">
-                                Target Type <span class="highlight-pink">{{selectedTargetTypeName}}</span> has been
+                                Asset Type <span class="highlight-pink">{{selectedTargetTypeName}}</span> has been
                                 successfully <span *ngIf="isCreate">created</span><span *ngIf="!isCreate">updated</span>
                                 !!!
                             </div>
