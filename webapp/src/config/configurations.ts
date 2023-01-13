@@ -20,10 +20,10 @@ export const CONFIGURATIONS = {
   required: {
     APP_NAME: 'Paladin Cloud',
     domains: {
-      PROD_BASE_URL: 'https://policy.paladintechs.tk/api', // Expected values: domain where the API is deployed, ex: http://beta.pacbot.com/api
-      STG_BASE_URL: 'https://policy.paladintechs.tk/api', // Expected values: domain where the API is deployed, ex: http://stgbeta.pacbot.com/api
-      DEV_BASE_URL: 'https://policy.paladintechs.tk/api', // Expected values: domain where the API is deployed, ex: http://devbeta.pacbot.com/api
-      CLOUD_BASE_URL: 'https://policy.paladintechs.tk/api', // Expected values: domain where the API is deployed
+      PROD_BASE_URL: '', // Expected values: domain where the API is deployed, ex: http://beta.pacbot.com/api
+      STG_BASE_URL: '', // Expected values: domain where the API is deployed, ex: http://stgbeta.pacbot.com/api
+      DEV_BASE_URL: '', // Expected values: domain where the API is deployed, ex: http://devbeta.pacbot.com/api
+      CLOUD_BASE_URL: '', // Expected values: domain where the API is deployed
     },
     featureModules: {
       COMPLIANCE_MODULE: true, // Expected values: true || false
@@ -39,26 +39,6 @@ export const CONFIGURATIONS = {
       adConfig: {
         tenant: '', // Expected values: Value expected if 'AD_AUTHENTICATION' is true
         clientId: '' // Expected values: Value expected if 'AD_AUTHENTICATION' is true
-      },
-    /*  cognitoConfig: {
-        sso_api_username: '',
-        sso_api_pwd: '',
-        loginURL: '',
-        redirectURL: '',
-        cognitoTokenURL: '',
-        logout: ''
-      }*/
-      cognitoConfig: {
-        sso_api_username: '5b68m1qai7uanmu3jb19tunpuq',
-        sso_api_pwd: 'ia6lp2l95m7il5s8ufabpjo4pjgbshu9jg3hgu67muc4rfoi7pu',
-        loginURL: 'https://testdevpaladincloud.auth.us-west-1.amazoncognito.com/login?' +
-          'client_id=5b68m1qai7uanmu3jb19tunpuq&response_type=code&scope=openid+profile&' +
-          'redirect_uri=http://localhost:4221/callback',
-        redirectURL: 'http://localhost:4221/callback',
-        cognitoTokenURL: 'https://testdevpaladincloud.auth.us-west-1.amazoncognito.com/oauth2/token',
-        logout: 'https://testdevpaladincloud.auth.us-west-1.amazoncognito.com/logout?' +
-          'client_id=5b68m1qai7uanmu3jb19tunpuq' +
-          'logout_uri=http://localhost:4221/home'
       }
     },
     pacmanIssue: {
