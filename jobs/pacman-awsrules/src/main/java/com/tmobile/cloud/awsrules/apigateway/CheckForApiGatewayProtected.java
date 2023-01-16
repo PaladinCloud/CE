@@ -40,13 +40,13 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-api-gateway-protected", desc = "checks entirely for API gateway is protected or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckForApiGatewayProtected extends BaseRule {
+@PacmanPolicy(key = "check-for-api-gateway-protected", desc = "checks entirely for API gateway is protected or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckForApiGatewayProtected extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(CheckForApiGatewayProtected.class);
     String apiMethodsDes = null;
@@ -85,7 +85,7 @@ public class CheckForApiGatewayProtected extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
         logger.debug("========CheckForApiGatewayProtected started=========");
 
@@ -101,7 +101,7 @@ public class CheckForApiGatewayProtected extends BaseRule {
 
         MDC.put("executionId", ruleParam.get("executionId"));
         // this is the logback Mapped Diagnostic Contex
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
         // this is the logback Mapped Diagnostic Contex
 
         Gson gson = new Gson();
@@ -170,7 +170,7 @@ public class CheckForApiGatewayProtected extends BaseRule {
         }
         if (annotation == null) {
             logger.debug("========CheckForApiGatewayProtected ended=========");
-            return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+            return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                     PacmanRuleConstants.SUCCESS_MESSAGE);
         } else {
             annotation.put("APIMethods", apiMethodsDes);
@@ -187,7 +187,7 @@ public class CheckForApiGatewayProtected extends BaseRule {
 
             apiMethodsDes = null; // clear api description
             logger.debug("========CheckForApiGatewayProtected ended with annotation : {}=========",annotation);
-            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                     PacmanRuleConstants.FAILURE_MESSAGE, annotation);
         }
     }

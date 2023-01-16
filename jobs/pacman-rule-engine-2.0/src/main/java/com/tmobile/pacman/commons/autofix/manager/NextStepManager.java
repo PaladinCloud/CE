@@ -83,7 +83,7 @@ public class NextStepManager {
             AWSService serviceType) {
 
         
-        String ruleId = ruleParam.get(PacmanSdkConstants.RULE_ID);
+        String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         
         try {
             

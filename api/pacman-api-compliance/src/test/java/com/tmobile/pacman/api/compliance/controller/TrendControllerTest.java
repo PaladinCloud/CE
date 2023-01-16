@@ -50,13 +50,13 @@ public class TrendControllerTest {
     
     @Test
     public void getTrendForIssuesTest() throws Exception {
-        when(issueTrendService.getTrendForIssues(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getMapLong());
-        assertThat(trendController.getTrendForIssues("ag","fromDate","toDate","severity","ruleId","policyId","app","env"), is(notNullValue()));
-        assertThat(trendController.getTrendForIssues("", "", "", "", "", "", "", ""), is(notNullValue()));
+        when(issueTrendService.getTrendForIssues(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getMapLong());
+        assertThat(trendController.getTrendForIssues("ag","fromDate","toDate","severity","policyId","app","env"), is(notNullValue()));
+        assertThat(trendController.getTrendForIssues("", "", "", "", "",  "", ""), is(notNullValue()));
         
-        when(issueTrendService.getTrendForIssues(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenThrow(new ServiceException());
+        when(issueTrendService.getTrendForIssues(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenThrow(new ServiceException());
        // when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = trendController.getTrendForIssues("ag","fromDate","toDate","severity","ruleId","policyId","app","env");
+        ResponseEntity<Object> responseObj = trendController.getTrendForIssues("ag","fromDate","toDate","severity","policyId","app","env");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
@@ -67,7 +67,7 @@ public class TrendControllerTest {
     
     @Test
     public void getTrendFromCache_WithParamTest() throws Exception {
-        ResponseEntity<Object> responseObj = trendController.getTrendFromCache("ag","fromDate","toDate","severity","ruleId");
+        ResponseEntity<Object> responseObj = trendController.getTrendFromCache("ag","fromDate","toDate","severity","policyId");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     

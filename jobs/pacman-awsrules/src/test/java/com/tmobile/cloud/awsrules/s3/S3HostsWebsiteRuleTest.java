@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Purpose: This test checks for s3 bucket containing web-site configuration.
@@ -46,8 +46,8 @@ public class S3HostsWebsiteRuleTest {
 		resourceAttributes.put(PacmanSdkConstants.RESOURCE_ID, "test-resource-id");
 		resourceAttributes.put(PacmanRuleConstants.WEB_SITE_CONFIGURATION, "true");
 		ruleParam.put("executionId", "test");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "rule-id");
-		RuleResult ruleResult = s3HostsWebsiteRule.execute(ruleParam, resourceAttributes);
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "rule-id");
+		PolicyResult ruleResult = s3HostsWebsiteRule.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_FAILURE));
 
 	}
@@ -60,8 +60,8 @@ public class S3HostsWebsiteRuleTest {
 		resourceAttributes.put(PacmanSdkConstants.RESOURCE_ID, "test-resource-id");
 		resourceAttributes.put(PacmanRuleConstants.WEB_SITE_CONFIGURATION, "false");
 		ruleParam.put("executionId", "test");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "rule-id");
-		RuleResult ruleResult = s3HostsWebsiteRule.execute(ruleParam, resourceAttributes);
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "rule-id");
+		PolicyResult ruleResult = s3HostsWebsiteRule.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_SUCCESS));
 
 	}

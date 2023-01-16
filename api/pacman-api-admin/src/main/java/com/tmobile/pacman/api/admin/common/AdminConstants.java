@@ -24,7 +24,7 @@ public final class AdminConstants {
 	}
 	
 	public static final String SERVERLESS_RULE_TYPE					= 	"Serverless";
-	public static final String MANAGED_RULE_TYPE					= 	"ManageRule";
+	public static final String MANAGED_POLICY_TYPE					= 	"ManagePolicy";
 	public static final String JAR_EXTENSION						= 	".jar";
 	public static final String JAR_FILE_MISSING						=	"Jar file is missing";
 	public static final String RESOURCE_ACCESS_DENIED				=	"You don't have sufficient privileges to access this resource";
@@ -36,10 +36,10 @@ public final class AdminConstants {
 	
 	public static final String DATE_FORMAT 							= 	"MM/dd/yyyy HH:mm";
 	
-	public static final String RULE_CREATION_SUCCESS				=	"Rule has been successfully created";
-	public static final String RULE_DISABLE_ENABLE_SUCCESS			=	"Rule has been successfully %s !!";
-	public static final String RULE_ID_EXITS 						= 	"Rule id %s already exists!!";
-	public static final String RULE_ID_NOT_EXITS 					= 	"Rule id %s does not exists!!";
+	public static final String POLICY_CREATION_SUCCESS				=	"Policy has been successfully created";
+	public static final String POLICY_DISABLE_ENABLE_SUCCESS		=	"Policy has been successfully %s !!";
+	public static final String POLICY_ID_EXITS 						= 	"Policy id %s already exists!!";
+	public static final String POLICY_ID_NOT_EXITS 					= 	"Policy id %s does not exists!!";
 	public static final String JOB_DISABLE_ENABLE_SUCCESS           =   "Job has been successfully %s !!";
 
 	public static final String JOB_CREATION_SUCCESS					=	"Job has been successfully created";
@@ -97,7 +97,7 @@ public final class AdminConstants {
 	public static final Integer TEMPORARY_CREDS_VALID_SECONDS 		=   3600;
 	public static final String DEFAULT_SESSION_NAME 				=   "PAC_GET_ADMIN_DATA_SESSION";
 	
-	public static final String JOBID_OR_RULEID_NOT_EMPTY            =   "Both Job Id or Rule Id cannot be blank";
+	public static final String JOBID_OR_POLICYID_NOT_EMPTY            =   "Both Job Id or Policy Id cannot be blank";
     public static final String DELETE_RULE_TARGET_FAILED            =   "Failed in deleting the lambda target from rule";
     
 	public static final String ES_EXCEPTION_INDEX					= 	"/exceptions";

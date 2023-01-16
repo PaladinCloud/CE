@@ -129,7 +129,7 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
 
             const payload = {
                 'ag': this.selectedAssetGroup,
-                'filter': { 'ruleId.keyword': this.ruleID, 'domain': this.selectedDomain},
+                'filter': { 'policyId.keyword': this.ruleID, 'domain': this.selectedDomain},
                 'from': 0,
                 'searchtext': '',
                 'size': 0
@@ -263,22 +263,22 @@ export class PolicySummaryComponent implements OnInit, OnDestroy {
             const apiTarget = {'TypeAsset' : 'scanned'};
 
                 if ( event[localObjKeys[1]].toLowerCase() === 'assets scanned' ) {
-                    const eachParams = {'ruleId': this.ruleID};
+                    const eachParams = {'policyId': this.ruleID};
                       let newParams = this.utils.makeFilterObj(eachParams);
                       newParams = Object.assign(newParams, apiTarget);
-                      newParams['mandatory'] = 'ruleId';
+                      newParams['mandatory'] = 'policyId';
                         this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
                 } else if ( event[localObjKeys[1]].toLowerCase() === 'passed' ) {
-                    const eachParams = {'ruleId': this.ruleID , 'compliant' : true};
+                    const eachParams = {'policyId': this.ruleID , 'compliant' : true};
                       let newParams = this.utils.makeFilterObj(eachParams);
                       newParams = Object.assign(newParams, apiTarget);
-                      newParams['mandatory'] = 'ruleId';
+                      newParams['mandatory'] = 'policyId';
                         this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
                 } else if ( event[localObjKeys[1]].toLowerCase() === 'failed' ) {
-                        const eachParams = {'ruleId': this.ruleID , 'compliant' : false};
+                        const eachParams = {'policyId': this.ruleID , 'compliant' : false};
                         let newParams = this.utils.makeFilterObj(eachParams);
                         newParams = Object.assign(newParams, apiTarget);
-                        newParams['mandatory'] = 'ruleId';
+                        newParams['mandatory'] = 'policyId';
                         this.router.navigate(['../../../', 'assets', 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
                 }
         } catch (error) {

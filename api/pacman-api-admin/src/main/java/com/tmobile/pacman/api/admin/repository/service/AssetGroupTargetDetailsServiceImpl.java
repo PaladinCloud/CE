@@ -24,9 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.tmobile.pacman.api.admin.domain.RuleProjection;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
+import com.tmobile.pacman.api.admin.domain.PolicyProjection;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyViewDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.AssetGroupTargetDetailsRepository;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
@@ -46,27 +46,27 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 	private AssetGroupService assetGroupService;
 
 	@Autowired
-	private RuleService ruleService;
+	private PolicyService policyService;
 
 	@Override
-	public List<TargetTypeRuleDetails> getTargetTypesByAssetGroupName(String assetGroupName) {
+	public List<TargetTypePolicyDetails> getTargetTypesByAssetGroupName(String assetGroupName) {
 		AssetGroupDetails assetGroupDetails = assetGroupService.findByGroupName(assetGroupName);
 		List<AssetGroupTargetDetails> allAssetGroupTargetDetails = assetGroupTargetDetailsRepository.findByGroupId(assetGroupDetails.getGroupId());
-		List<TargetTypeRuleDetails> allStudentsDetails = allAssetGroupTargetDetails.parallelStream().map(fetchTargetTypeRuleDetails).collect(Collectors.toList());
+		List<TargetTypePolicyDetails> allStudentsDetails = allAssetGroupTargetDetails.parallelStream().map(fetchTargetTypeRuleDetails).collect(Collectors.toList());
 		return allStudentsDetails;
 	}
 
-	Function<AssetGroupTargetDetails, TargetTypeRuleDetails> fetchTargetTypeRuleDetails = assetGroupTargetDetail -> {
-		TargetTypeRuleDetails targetTypeRuleDetails = new TargetTypeRuleDetails();
+	Function<AssetGroupTargetDetails, TargetTypePolicyDetails> fetchTargetTypeRuleDetails = assetGroupTargetDetail -> {
+		TargetTypePolicyDetails targetTypeRuleDetails = new TargetTypePolicyDetails();
 		targetTypeRuleDetails.setTargetName(assetGroupTargetDetail.getTargetType());
-		List<RuleProjection> allRules = ruleService.getAllRulesByTargetTypeName(assetGroupTargetDetail.getTargetType());
-		targetTypeRuleDetails.setAllRules(allRules);
-		targetTypeRuleDetails.setRules(Lists.newArrayList());
+		List<PolicyProjection> allPolicies = policyService.getAllPoliciesByTargetTypeName(assetGroupTargetDetail.getTargetType());
+		targetTypeRuleDetails.setAllPolicies(allPolicies);
+		targetTypeRuleDetails.setPolicies(Lists.newArrayList());
 		return targetTypeRuleDetails;
 	};
 
 	@Override
-	public List<TargetTypeRuleViewDetails> getTargetTypesByAssetGroupIdAndTargetTypeNotIn(String assetGroupName, Set<String> targetTypeNames) throws PacManException {
+	public List<TargetTypePolicyViewDetails> getTargetTypesByAssetGroupIdAndTargetTypeNotIn(String assetGroupName, Set<String> targetTypeNames) throws PacManException {
 		AssetGroupDetails assetGroupDetails = assetGroupService.findByGroupName(assetGroupName);
 		List<AssetGroupTargetDetails> allAssetGroupTargetDetails = Lists.newArrayList();
 		if (assetGroupDetails != null) {
@@ -75,19 +75,19 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 			} else {
 				allAssetGroupTargetDetails = assetGroupTargetDetailsRepository.findByGroupIdAndTargetTypeNotIn(assetGroupDetails.getGroupId(), targetTypeNames);
 			}
-			List<TargetTypeRuleViewDetails> allStudentsDetails = allAssetGroupTargetDetails.parallelStream().map(fetchStickyExceptionTargetTypeRuleDetails).collect(Collectors.toList());
+			List<TargetTypePolicyViewDetails> allStudentsDetails = allAssetGroupTargetDetails.parallelStream().map(fetchStickyExceptionTargetTypeRuleDetails).collect(Collectors.toList());
 			return allStudentsDetails;
 		} else {
 			throw new PacManException("Asset Group does not exits");
 		}
 	}
 	
-	Function<AssetGroupTargetDetails, TargetTypeRuleViewDetails> fetchStickyExceptionTargetTypeRuleDetails = assetGroupTargetDetail -> {
-		TargetTypeRuleViewDetails targetTypeRuleDetails = new TargetTypeRuleViewDetails();
+	Function<AssetGroupTargetDetails, TargetTypePolicyViewDetails> fetchStickyExceptionTargetTypeRuleDetails = assetGroupTargetDetail -> {
+		TargetTypePolicyViewDetails targetTypeRuleDetails = new TargetTypePolicyViewDetails();
 		targetTypeRuleDetails.setTargetName(assetGroupTargetDetail.getTargetType());
-		List<RuleProjection> allRules = ruleService.getAllRulesByTargetTypeName(assetGroupTargetDetail.getTargetType());
-		targetTypeRuleDetails.setAllRules(allRules);
-		targetTypeRuleDetails.setRules(Lists.newArrayList());
+		List<PolicyProjection> allPolicies = policyService.getAllPoliciesByTargetTypeName(assetGroupTargetDetail.getTargetType());
+		targetTypeRuleDetails.setAllPolicies(allPolicies);
+		targetTypeRuleDetails.setPolicies(Lists.newArrayList());
 		return targetTypeRuleDetails;
 	};
 }

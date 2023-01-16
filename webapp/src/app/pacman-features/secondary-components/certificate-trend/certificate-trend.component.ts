@@ -87,7 +87,6 @@ export class CertificateTrendComponent implements OnInit, OnDestroy {
       const payload = {
           'ag': this.selectedAssetGroup,
           'frdt': fromDay,
-          'ruleId': 'PacMan_certificate-expiry-policy_version-1_certificates-expiry-next-30days_cert',
           'app': '',
           'env': '',
           'policyId': ''

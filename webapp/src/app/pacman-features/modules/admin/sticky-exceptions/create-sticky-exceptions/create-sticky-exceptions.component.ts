@@ -226,14 +226,14 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.searchAttribute();
   }
   selectedIndex: number = -1;
-  selectedAllRules: Array<string> = [];
+  selectedallPolicies: Array<string> = [];
 
   openAttributeConfigure(attributeDetail, index) {
     this.attributeValue = '';
     this.attributeName = [];
     this.state = 'open';
     this.menuState = 'in';
-    this.selectedAllRules = attributeDetail.allRules;
+    this.selectedallPolicies = attributeDetail.allPolicies;
     this.selectedRules = attributeDetail.rules;
     this.selectedIndex = index;
 
@@ -242,12 +242,12 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   addAttributes(attributeName, attributeValue) {
-    let ruleDetails = _.find(this.allAttributeDetails[this.selectedIndex].allRules, { text: attributeName });
-    this.allAttributeDetails[this.selectedIndex].rules.push(ruleDetails);
-    let itemIndex = this.allAttributeDetails[this.selectedIndex].allRules.indexOf(ruleDetails);
+    let ruleDetails = _.find(this.allAttributeDetails[this.selectedIndex].allPolicies, { text: attributeName });
+    this.allAttributeDetails[this.selectedIndex].policies.push(ruleDetails);
+    let itemIndex = this.allAttributeDetails[this.selectedIndex].allPolicies.indexOf(ruleDetails);
     if (itemIndex !== -1) {
-      this.allAttributeDetails[this.selectedIndex].allRules.splice(itemIndex, 1);
-      this.selectedAllRules = this.allAttributeDetails[this.selectedIndex].allRules;
+      this.allAttributeDetails[this.selectedIndex].allPolicies.splice(itemIndex, 1);
+      this.selectedallPolicies = this.allAttributeDetails[this.selectedIndex].allPolicies;
     }
     this.attributeValue = '';
     this.attributeName = [];
@@ -255,10 +255,10 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   deleteAttributes(attributeName, itemIndex) {
     let ruleDetails = this.allAttributeDetails[this.selectedIndex].rules[itemIndex];
-    this.allAttributeDetails[this.selectedIndex].rules.splice(itemIndex, 1);
+    this.allAttributeDetails[this.selectedIndex].policies.splice(itemIndex, 1);
     if (itemIndex !== -1) {
-      this.allAttributeDetails[this.selectedIndex].allRules.push(ruleDetails);
-      this.selectedAllRules = this.allAttributeDetails[this.selectedIndex].allRules;
+      this.allAttributeDetails[this.selectedIndex].allPolicies.push(ruleDetails);
+      this.selectedallPolicies = this.allAttributeDetails[this.selectedIndex].allPolicies;
     }
   }
 
@@ -383,7 +383,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.showLoader = false;
       if (reponse.length > 0) {
         reponse[0].sort(function (a, b) {
-          return b.rules.length - a.rules.length;
+          return b.policies.length - a.policies.length;
         });
         reponse[0] = _.orderBy(reponse[0], ['added'], ['desc']);
         this.allAttributeDetails = reponse[0];
@@ -595,7 +595,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     });
 
     this.allAttributeDetails.sort(function (a, b) {
-      return b.rules.length - a.rules.length;
+      return b.policies.length - a.policies.length;
     });
     this.allAttributeDetails = _.orderBy(this.allAttributeDetails, ['added'], ['desc']);
   }

@@ -26,6 +26,9 @@ import { ThemeObservableService } from "../core/services/theme-observable.servic
 import { WorkflowService } from "../core/services/workflow.service";
 import { PermissionGuardService } from "../core/services/permission-guard.service";
 import { WindowExpansionService } from "../core/services/window-expansion.service";
+import { SnackbarComponent } from "../shared/components/molecules/snackbar/snackbar.component";
+import { NotificationObservableService } from "../shared/services/notification-observable.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 declare var Offline: any;
 
@@ -43,6 +46,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   showPacLoader: any = [];
   public haveAdminPageAccess = false;
 
+  private notificationObservableServiceSubscription: Subscription;
   private themeSubscription: Subscription;
   private activatedRouteSubscription: Subscription;
   private downloadSubscription: Subscription;
@@ -101,7 +105,9 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private downloadService: DownloadService,
     private domainTypeObservableService: DomainTypeObservableService,
     private themeObservableService: ThemeObservableService,
-    private windowExpansionService: WindowExpansionService
+    private windowExpansionService: WindowExpansionService,
+    private notificationObservableService: NotificationObservableService,
+    private snackBar: MatSnackBar,
   ) {
     if (this.pageReloadInterval) {
       this.reloadTimeout = this.setReloadTimeOut(this.pageReloadInterval);
@@ -136,6 +142,19 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         },
         this
       );
+
+      this.notificationObservableServiceSubscription = this.notificationObservableService.getMessage().subscribe(data => {
+        this.snackBar.openFromComponent(SnackbarComponent, {
+          horizontalPosition: "right",
+          verticalPosition: "top",
+          data: {
+            message: data.msg,
+            iconSrc: data.image,
+            variant: data.category
+          },
+          duration: data.duration,
+        });
+      })
 
       this.downloadSubscription = this.downloadService
         .getDownloadStatus()
@@ -284,6 +303,7 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     try {
       this.activatedRouteSubscription.unsubscribe();
+      this.notificationObservableServiceSubscription.unsubscribe();
     } catch (error) {
       this.logger.log("error", error);
     }

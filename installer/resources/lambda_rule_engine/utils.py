@@ -24,12 +24,12 @@ def get_rule_engine_cloudwatch_rules_aws_var():
         #     continue
         # elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
         #     continue
-        if variable_dict_input[index]['ruleUUID'] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
+        if variable_dict_input[index]['policyUUID'] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
             continue
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
-            'ruleId': variable_dict_input[index]['ruleUUID'],
-            'ruleParams': variable_dict_input[index]['ruleParams'],
+            'policyId': variable_dict_input[index]['policyUUID'],
+            'policyParams': variable_dict_input[index]['policyParams'],
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],
@@ -69,8 +69,8 @@ def get_rule_engine_cloudwatch_rules_azure_var():
         #     continue
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
-            'ruleId': variable_dict_input[index]['ruleUUID'],
-            'ruleParams': variable_dict_input[index]['ruleParams'],
+            'policyId': variable_dict_input[index]['policyUUID'],
+            'policyParams': variable_dict_input[index]['policyParams'],
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],
@@ -110,8 +110,8 @@ def get_rule_engine_cloudwatch_rules_gcp_var():
             continue
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
-            'ruleId': variable_dict_input[index]['ruleUUID'],
-            'ruleParams': variable_dict_input[index]['ruleParams'],
+            'policyId': variable_dict_input[index]['policyUUID'],
+            'policyParams': variable_dict_input[index]['policyParams'],
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],

@@ -447,7 +447,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       }
     } else {
       this.yLogAxis = true;
-      this.y = d3Scale.scaleLog().range([this.height, 0]);
+      this.y = d3Scale.scaleLinear().range([this.height, 0]);
 
       this.y.domain([
         this.axisMinValue?0.8*this.axisMinValue:1,
@@ -459,7 +459,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       ]);
     }
     this.x2 = d3Scale.scaleTime().range([0, this.timeLineWidth]);
-    this.y2 = d3Scale.scaleLog().range([this.height2, 0]);
+    this.y2 = d3Scale.scaleLinear().range([this.height2, 0]);
 
     // To get the starting and ending dates within which data value is > 0
     this.getDataRangePoints();

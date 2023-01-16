@@ -43,7 +43,7 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
     private static final long serialVersionUID = 1L;
     private List<PlanItem> planItems;
     private String planId;
-    private String ruleId;
+    private String policyId;
     private String issueId;
     private String resourceId;
     private String docId; // system wide unique id of the resource
@@ -66,14 +66,14 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
     /**
      * 
      * @param planId
-     * @param ruleId
+     * @param policyId
      * @param issueId
      * @param resourceId
      */
-    public AutoFixPlan(String ruleId, String issueId, String resourceId,String docId,String resourceType) {
+    public AutoFixPlan(String policyId, String issueId, String resourceId,String docId,String resourceType) {
         this();
         this.planId = issueId;
-        this.ruleId = ruleId;
+        this.policyId = policyId;
         this.issueId = issueId;
         this.resourceId = resourceId;
         this.docId=docId;
@@ -123,12 +123,12 @@ public class AutoFixPlan implements Serializable , PropertyChangeListener  {
         return planItems.get(index);
     }
 
-    public String getRuleId() {
-        return ruleId;
+    public String getPolicyId() {
+        return policyId;
     }
 
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
+    public void setPolicyId(String policyId) {
+        this.policyId = policyId;
     }
 
     public String getIssueId() {

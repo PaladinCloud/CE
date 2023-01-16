@@ -82,7 +82,7 @@ try{
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(CommonUtils.convertAttributetoKeyword("ag"), assetGroup);
         if ("issuecompliance".equals(trendCategory)) {
-            mustFilter.put(CommonUtils.convertAttributetoKeyword("ruleId"),
+            mustFilter.put(CommonUtils.convertAttributetoKeyword("policyId"),
                     ruleId);
         }
 

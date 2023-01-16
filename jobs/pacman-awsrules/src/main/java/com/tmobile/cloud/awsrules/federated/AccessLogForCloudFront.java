@@ -35,13 +35,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-access-log-for-cloudfront", desc = "checks for access log for cloudfront and s3 bucket name ", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class AccessLogForCloudFront extends BaseRule {
+@PacmanPolicy(key = "check-access-log-for-cloudfront", desc = "checks for access log for cloudfront and s3 bucket name ", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class AccessLogForCloudFront extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccessLogForCloudFront.class);
 
@@ -64,7 +64,7 @@ public class AccessLogForCloudFront extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========AccessLogForCloudfront started=========");
 		String accessLogBucketName = resourceAttributes.get("bucketname");
 		String accessLogEnabled = resourceAttributes.get("accesslogenabled");
@@ -74,7 +74,7 @@ public class AccessLogForCloudFront extends BaseRule {
 		String loggingTags = resourceAttributes.get("tags.logging");
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		if (!PacmanUtils.doesAllHaveValue(severity, category,ruleParamBucketKey)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -88,7 +88,7 @@ public class AccessLogForCloudFront extends BaseRule {
 				if (accessLogBucketName != null && accessLogBucketName.equalsIgnoreCase(ruleParamBucketKey)
 						&& "true".equalsIgnoreCase(accessLogEnabled)) {
 					logger.info("Access log for Cloud front is available in bucket {}", accessLogBucketName);
-					return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+					return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 				} else {
 					annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
 					annotation.put(PacmanSdkConstants.DESCRIPTION,"Access log is not enabled!!");
@@ -99,10 +99,10 @@ public class AccessLogForCloudFront extends BaseRule {
 					issue.put(PacmanRuleConstants.VIOLATION_REASON, "Access log is not enabled and not attached to any bucket ");
 					issueList.add(issue);
 					annotation.put("issueDetails",issueList.toString());
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
 				}
 			} 
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

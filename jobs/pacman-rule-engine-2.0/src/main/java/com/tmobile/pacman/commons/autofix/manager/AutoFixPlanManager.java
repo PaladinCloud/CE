@@ -78,7 +78,7 @@ public class AutoFixPlanManager{
     
     /**
      * 
-     * @param ruleId
+     * @param policyId
      * @param issueId
      * @param resourceId : id of the resource as specified in cloud
      * @param docId id of the resource as specified in pacbot es index
@@ -87,9 +87,9 @@ public class AutoFixPlanManager{
      * @param waitTimeBeforeAutoFix
      * @return
      */
-    public AutoFixPlan createPlan(String ruleId, String issueId, String resourceId,String docId, String resourceType,int numberOfNotificatons, int waitTimeBeforeAutoFix)
+    public AutoFixPlan createPlan(String policyId, String issueId, String resourceId,String docId, String resourceType,int numberOfNotificatons, int waitTimeBeforeAutoFix)
     {
-        AutoFixPlan autoFixPlan = createTransientPlan(ruleId,  issueId,  resourceId,docId,resourceType,numberOfNotificatons, waitTimeBeforeAutoFix);
+        AutoFixPlan autoFixPlan = createTransientPlan(policyId,  issueId,  resourceId,docId,resourceType,numberOfNotificatons, waitTimeBeforeAutoFix);
         return autoFixPlan;
     }
     
@@ -100,9 +100,9 @@ public class AutoFixPlanManager{
      * @param waitTimeBeforeAutoFix
      * @return AutoFixPlan
      */
-    public AutoFixPlan createTransientPlan(String ruleId, String issueId, String resourceId,String docId,String resourceType,int numberOfNotificatons, int waitTimeBeforeAutoFix)
+    public AutoFixPlan createTransientPlan(String policyId, String issueId, String resourceId,String docId,String resourceType,int numberOfNotificatons, int waitTimeBeforeAutoFix)
     {
-        AutoFixPlan autoFixPlan = new AutoFixPlan(ruleId, issueId, resourceId,docId,resourceType);
+        AutoFixPlan autoFixPlan = new AutoFixPlan(policyId, issueId, resourceId,docId,resourceType);
         IntStream.range(0, numberOfNotificatons).forEach(
                 index->{
                     autoFixPlan.addPlanItem(new PlanItem(index,AutoFixAction.AUTOFIX_ACTION_EMAIL,new DateTime().plusHours(index*(waitTimeBeforeAutoFix/numberOfNotificatons)).toDateTimeISO().toString(),Status.SCHEDULED));

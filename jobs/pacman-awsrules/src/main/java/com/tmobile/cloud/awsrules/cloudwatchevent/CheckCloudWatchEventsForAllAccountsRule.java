@@ -40,13 +40,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-cloudwatch-event-rule", desc = "All Cloud watch events from all accounts should be sent to designated event bus", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class CheckCloudWatchEventsForAllAccountsRule extends BaseRule {
+@PacmanPolicy(key = "check-cloudwatch-event-rule", desc = "All Cloud watch events from all accounts should be sent to designated event bus", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class CheckCloudWatchEventsForAllAccountsRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckCloudWatchEventsForAllAccountsRule.class);
 
@@ -67,7 +67,7 @@ public class CheckCloudWatchEventsForAllAccountsRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========CheckCloudWatchEventsForAllAccountsRule started=========");
 		Map<String, String> temp = new HashMap<>();
 		temp.putAll(ruleParam);
@@ -86,7 +86,7 @@ public class CheckCloudWatchEventsForAllAccountsRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		Gson gson = new Gson();
 		List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
@@ -134,7 +134,7 @@ public class CheckCloudWatchEventsForAllAccountsRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.debug("========CheckCloudWatchEventsForAllAccountsRule ended with annotation : {}=========",annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 		} catch (UnableToCreateClientException e) {
 			logger.error("unable to get client for following input", e);
@@ -142,7 +142,7 @@ public class CheckCloudWatchEventsForAllAccountsRule extends BaseRule {
 		}
 
 		logger.debug("========CheckCloudWatchEventsForAllAccountsRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

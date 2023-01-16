@@ -39,16 +39,16 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * The Class ResourceScannedByQualysRule.
  */
-@PacmanRule(key = "check-for-resource-scanned-by-qualys", desc = "checks for Ec2 instance or VM scanned by qualys,if not found then its an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class ResourceScannedByQualysRule extends BaseRule {
+@PacmanPolicy(key = "check-for-resource-scanned-by-qualys", desc = "checks for Ec2 instance or VM scanned by qualys,if not found then its an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class ResourceScannedByQualysRule extends BasePolicy {
 
 	/** The Constant logger. */
 	private static final Logger logger = LoggerFactory.getLogger(ResourceScannedByQualysRule.class);
@@ -70,7 +70,7 @@ public class ResourceScannedByQualysRule extends BaseRule {
 	 * @return the rule result
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========ResourceScannedByQualysRule started=========");
 		Annotation annotation = null;
 		String instanceId = null;
@@ -91,7 +91,7 @@ public class ResourceScannedByQualysRule extends BaseRule {
         }
         
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex		
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex		
 		
 		if (!PacmanUtils.doesAllHaveValue(severity,category,qualysApi,target,discoveredDaysRange)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -126,13 +126,13 @@ public class ResourceScannedByQualysRule extends BaseRule {
 				annotation.put("issueDetails", issueList.toString());
 				
 				logger.debug("========ResourceScannedByQualysRule ended with annotation {} : =========" ,annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 		}
 		}
 		
 		logger.debug("========ResourceScannedByQualysRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	/* (non-Javadoc)

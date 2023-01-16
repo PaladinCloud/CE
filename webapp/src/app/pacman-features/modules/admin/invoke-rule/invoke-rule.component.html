@@ -40,7 +40,7 @@
                                 <div class="formcontainerwrapper">
 
                                     <div class="formctn">
-                                        <h5 class="invoke-title">Provide additional Rule parameters to invoke rule : <span class="highlight-pink">{{ruleId}}</span></h5>
+                                        <h5 class="invoke-title">Provide additional Rule parameters to invoke rule : <span class="highlight-pink">{{policyId}}</span></h5>
                                         <label>Rule Parameters (Optional)</label>
                                         <div class="input-box">
                                             <ul class="parameters input-wrapper">
@@ -82,18 +82,18 @@
                                                     <div class="data-table-content">
                                                         <div class='data-table-inner-wrap relative'>
                                                             <div currentTable class="data-table-inner-content data-table-current">
-                                                                <div class="data-table-rows flex flex-around flex-align-center" *ngFor="let ruleParams of allOptionalRuleParams;let ruleIndex = index">
+                                                                <div class="data-table-rows flex flex-around flex-align-center" *ngFor="let policyParams of allOptionalRuleParams;let ruleIndex = index">
                                                                     <div class="row-cells1 row-cells table-cells flex flex-align-center">
                                                                         <div class="column-wrapper">
                                                                             <div class='nowrap-ellipsis'>
-                                                                                {{ruleParams.key}}
+                                                                                {{policyParams.key}}
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row-cells2 row-cells table-cells flex flex-align-center">
                                                                         <div class="column-wrapper">
                                                                             <div class='nowrap-ellipsis'>
-                                                                                <span *ngIf="!ruleParams.encrypt; else elseBlock">{{ruleParams.value}}</span>
+                                                                                <span *ngIf="!policyParams.encrypt; else elseBlock">{{policyParams.value}}</span>
                                                                                 <ng-template #elseBlock>
                                                                                     XXXX <span class="highlight-pink">(Encrypted)</span>
                                                                                 </ng-template>
@@ -155,7 +155,7 @@
                                 Rule Invoked
                             </div>
                             <div class="pacman-alert-message">
-                                <span class="highlight-pink">{{ruleId}}</span> has been successfully invoked !!!
+                                <span class="highlight-pink">{{policyId}}</span> has been successfully invoked !!!
                                 <div>Your Invocation ID is: <span class="highlight-pink"><b class="invocationId">{{invocationId}}</b></span></div>
                             </div>
                             <div class="pacman-alert-button">
@@ -168,7 +168,7 @@
                                 Please Wait...
                             </div>
                             <div class="pacman-alert-message">
-                                <span class="highlight-pink">{{ruleId}}</span> rule is been invoking...
+                                <span class="highlight-pink">{{policyId}}</span> rule is been invoking...
                             </div>
                         </div>
                     </div>

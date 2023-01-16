@@ -39,8 +39,7 @@ public class PolicyScanInfo {
     /** The scan history. */
     private List<ScanResult> scanHistory;
     
-    /** The rule id. */
-    private String ruleId;
+
     
     /** The policy id. */
     private String policyId;
@@ -135,24 +134,7 @@ public class PolicyScanInfo {
         this.scanHistory = scanHistory;
     }
 
-    /**
-     * Gets the rule id.
-     *
-     * @return the rule id
-     */
-    public String getRuleId() {
-        return ruleId;
-    }
-
-    /**
-     * Sets the rule id.
-     *
-     * @param ruleId the new rule id
-     */
-    public void setRuleId(String ruleId) {
-        this.ruleId = ruleId;
-    }
-
+ 
     /**
      * Gets the issue id.
      *

@@ -30,13 +30,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-unowned-adgroups", desc = "Checks for unowned Ad groups", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class UnownedAdGroupsRule extends BaseRule {
+@PacmanPolicy(key = "check-for-unowned-adgroups", desc = "Checks for unowned Ad groups", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class UnownedAdGroupsRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(UnownedAdGroupsRule.class);
@@ -71,7 +71,7 @@ public class UnownedAdGroupsRule extends BaseRule {
      *
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========UnownedAdGroupsRule started=========");
@@ -91,7 +91,7 @@ public class UnownedAdGroupsRule extends BaseRule {
 
         MDC.put("executionId", ruleParam.get("executionId")); 
         // this is the logback Mapped Diagnostic Contex
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
         // this is the logback Mapped Diagnostic Contex
 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
@@ -128,12 +128,12 @@ public class UnownedAdGroupsRule extends BaseRule {
                 logger.debug(
                         "========UnownedAdGroupsRule ended with annotation : {}=========",
                         annotation);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                         PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
         }
         logger.debug("========UnownedAdGroupsRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

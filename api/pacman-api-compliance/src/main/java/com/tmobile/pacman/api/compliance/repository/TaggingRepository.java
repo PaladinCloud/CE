@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 
 /**
  * The Interface TaggingRepository.
@@ -88,8 +88,8 @@ public interface TaggingRepository {
      * @return String
      * @throws DataException the data exception
      */
-    public String getUntaggedTargetTypeIssues(
-            UntaggedTargetTypeRequest request, List<String> tagsList)
+    public String getCategoryWiseTargetTypeIssue(
+            SummaryByTargetTypeRequest request, List<String> tagsList)
             throws DataException;
 
     /**

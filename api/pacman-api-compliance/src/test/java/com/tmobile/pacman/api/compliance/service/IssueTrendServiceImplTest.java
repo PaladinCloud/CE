@@ -36,7 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import com.tmobile.pacman.api.compliance.domain.Request;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.repository.ComplianceRepository;
 import com.tmobile.pacman.api.compliance.repository.TrendRepository;
 import com.tmobile.pacman.api.compliance.util.CommonTestUtil;
@@ -58,7 +58,7 @@ public class IssueTrendServiceImplTest {
     
     Request request = new Request();
     
-    UntaggedTargetTypeRequest untaggedTargetTypeRequest = new UntaggedTargetTypeRequest();
+    SummaryByTargetTypeRequest untaggedTargetTypeRequest = new SummaryByTargetTypeRequest();
 
     @Mock
     private ElasticSearchRepository elasticSearchRepository;
@@ -136,7 +136,7 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getTargetTypeForAG(anyString(), anyString()))
         .thenReturn(targetTypes);
         
-        when(complainceRepository.getRuleIdWithDisplayNameQuery(anyString()))
+        when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(complianceService.getRuleSevCatDetails(anyObject()))
@@ -159,7 +159,7 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getTargetTypeForAG(anyString(), anyString()))
         .thenReturn(targetTypes);
         
-        when(complainceRepository.getRuleIdWithDisplayNameQuery(anyString()))
+        when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(complianceService.getRuleSevCatDetails(anyObject()))

@@ -68,7 +68,7 @@ public class RecommendedActionController {
      * Gets the trend for issues.
      *
      * @param targetType the target type
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param dataSource the data source
      * @return the trend for issues
      */
@@ -77,11 +77,11 @@ public class RecommendedActionController {
     @RequestMapping(path = "/v1/recommendations/actions", method = RequestMethod.GET)
     public ResponseEntity<Object> getTrendForIssues(
             @RequestParam("targetType") String targetType,
-            @RequestParam("ruleId") String ruleId,
+            @RequestParam("policyId") String policyId,
             @RequestParam(name = "dataSource", required = false) String dataSource) {
         try {
             return ResponseUtils.buildSucessResponse(recommendedActionService
-                    .getRecommendedActions(dataSource, targetType, ruleId));
+                    .getRecommendedActions(dataSource, targetType, policyId));
         } catch (Exception e) {
             LOGGER.error("error fetching recommended actions", e);
             return ResponseUtils.buildFailureResponse(e);

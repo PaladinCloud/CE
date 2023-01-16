@@ -65,10 +65,8 @@ public interface PacmanSdkConstants {
 	String RESOURCE_ID = "_resourceid";
 
 	/** The rule id. */
-	String RULE_ID="ruleId";
-
-	/** The policy id. */
 	String POLICY_ID="policyId";
+
 
 	/** The policy version. */
 	String POLICY_VERSION="policyVersion";
@@ -142,11 +140,11 @@ public interface PacmanSdkConstants {
 	/** The issue status key. */
 	String ISSUE_STATUS_KEY="issueStatus";
 
-	/** The rule category. */
-	String RULE_CATEGORY = "ruleCategory";
+	/** The policy category. */
+	String POLICY_CATEGORY = "policyCategory";
 
-	/** The rule severity. */
-	String RULE_SEVERITY="severity";
+	/** The policy severity. */
+	String POLICY_SEVERITY="severity";
 
 	/** The updated success. */
 	String UPDATED_SUCCESS = "Successfully Updated";

@@ -41,13 +41,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-aws-config-enabled", desc = "Checks for AWS Config enabled for given AWS account and region", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class CheckAWSConfigEnabled extends BaseRule {
+@PacmanPolicy(key = "check-aws-config-enabled", desc = "Checks for AWS Config enabled for given AWS account and region", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class CheckAWSConfigEnabled extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckAWSConfigEnabled.class);
 
@@ -70,7 +70,7 @@ public class CheckAWSConfigEnabled extends BaseRule {
 	 */
 
 
-	public RuleResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 
 		logger.debug("========CheckAWSConfigEnabled started=========");
 		Map<String, Object> map = null;
@@ -80,7 +80,7 @@ public class CheckAWSConfigEnabled extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -106,7 +106,7 @@ public class CheckAWSConfigEnabled extends BaseRule {
                 issueList.add(issue);
                 annotation.put("issueDetails",issueList.toString());
                 logger.debug("========CheckAWSConfigEnabled ended with annotation {} :=========",annotation);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             } else {
                 logger.info("AWS Config enabled");
             }
@@ -116,7 +116,7 @@ public class CheckAWSConfigEnabled extends BaseRule {
 		}
 
 		logger.debug("========CheckAWSConfigEnabled ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

@@ -185,6 +185,7 @@ public class AssetGroupUtil {
         return compInfo;
     }
 
+
     /**
      * Fetch rule compliance info.
      *
@@ -197,7 +198,7 @@ public class AssetGroupUtil {
      * @return the list
      * @throws Exception 
      */
-    public static List<Map<String, Object>> fetchRuleComplianceInfo(String compapiuri, String ag,
+    public static List<Map<String, Object>> fetchPolicyComplianceInfo(String compapiuri, String ag,
             List<String> domains ,String token) throws Exception {
 
         List<Map<String, Object>> ruleInfoList = new ArrayList<>();
@@ -213,17 +214,19 @@ public class AssetGroupUtil {
                     ruleinfoJson = _ruleinfo.getAsJsonObject();
                     ruleInfo = new HashMap<>();
                     ruleInfo.put(DOMAIN, domain);
-                    ruleInfo.put("ruleId", ruleinfoJson.get("ruleId").getAsString());
+                    ruleInfo.put("policyId", ruleinfoJson.get("policyId").getAsString());
                     ruleInfo.put("compliance_percent", ruleinfoJson.get("compliance_percent").getAsDouble());
                     ruleInfo.put(TOTAL, ruleinfoJson.get("assetsScanned").getAsLong());
                     ruleInfo.put(COMPLIANT, ruleinfoJson.get("passed").getAsLong());
                     ruleInfo.put(NON_COMPLIANT, ruleinfoJson.get("failed").getAsLong());
                     ruleInfo.put("contribution_percent", ruleinfoJson.get("contribution_percent").getAsDouble());
+                    ruleInfo.put("severity",ruleinfoJson.get("severity").getAsString());
+                    ruleInfo.put("policyCategory",ruleinfoJson.get("policyCategory").getAsString());
                     ruleInfoList.add(ruleInfo);
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error retrieving Rule Compliance Info" , e);
+            LOGGER.error("Error retrieving Policy Compliance Info" , e);
             throw e;
         }
         return ruleInfoList;
@@ -342,7 +345,7 @@ public class AssetGroupUtil {
                 issuesInfo.put(DOMAIN, domain);
                 issuesInfo.put(TOTAL, distributionObj.get("total_issues").getAsLong());
                 JsonObject distributionSeverity = distributionObj.get("distribution_by_severity").getAsJsonObject();
-                JsonObject distributionCategory = distributionObj.get("distribution_ruleCategory").getAsJsonObject();
+                JsonObject distributionCategory = distributionObj.get("distribution_policyCategory").getAsJsonObject();
 
                 Set<String> severityKeys = distributionSeverity.keySet();
                 for (String severityKey : severityKeys) {

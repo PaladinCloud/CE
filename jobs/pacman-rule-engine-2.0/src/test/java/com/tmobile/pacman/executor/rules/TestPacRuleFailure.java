@@ -19,10 +19,10 @@ package com.tmobile.pacman.executor.rules;
 import java.util.Map;
 
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -31,16 +31,16 @@ import com.tmobile.pacman.commons.rule.RuleResult;
  * @author kkumar
  */
 
-@PacmanRule(key="test_key_fail",category="security",desc="test rule",severity="high")
-public class TestPacRuleFailure extends BaseRule{
+@PacmanPolicy(key="test_key_fail",category="security",desc="test rule",severity="high")
+public class TestPacRuleFailure extends BasePolicy{
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.commons.rule.Rule#execute(java.util.Map, java.util.Map)
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         // TODO Auto-generated method stub
-        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, "test result",getAnnotation(ruleParam));
+        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, "test result",getAnnotation(ruleParam));
     }
 
     /**

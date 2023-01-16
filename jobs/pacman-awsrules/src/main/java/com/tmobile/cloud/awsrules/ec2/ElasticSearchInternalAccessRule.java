@@ -45,13 +45,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-es-internal-access", desc = "This rule check for the EC2 private IP adress accessble with PORT 9200 to the public", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ElasticSearchInternalAccessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-es-internal-access", desc = "This rule check for the EC2 private IP adress accessble with PORT 9200 to the public", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ElasticSearchInternalAccessRule extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(ElasticSearchInternalAccessRule.class);
 
@@ -85,7 +85,7 @@ public class ElasticSearchInternalAccessRule extends BaseRule {
      *
      */
 
-    public RuleResult execute(final Map<String, String> ruleParam,
+    public PolicyResult execute(final Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
         logger.debug("========ElasticSearchInternalAccessRule started=========");
         String privateIPAddress = resourceAttributes
@@ -96,7 +96,7 @@ public class ElasticSearchInternalAccessRule extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -141,7 +141,7 @@ public class ElasticSearchInternalAccessRule extends BaseRule {
                     annotation.put("issueDetails", issueList.toString());
 
                     logger.debug("========ElasticSearchInternalAccessRule ended with an annotation {} :=========", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                             PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
             } catch (Exception mue) {
@@ -161,7 +161,7 @@ public class ElasticSearchInternalAccessRule extends BaseRule {
 
         }
         logger.debug("========ElasticSearchInternalAccessRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

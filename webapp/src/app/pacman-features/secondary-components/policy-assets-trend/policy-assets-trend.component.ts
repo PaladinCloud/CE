@@ -110,7 +110,7 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy,
               'domain': this.selectedDomain
           },
           'from': fromDay,
-          'ruleid': this.ruleID,
+          'policyid': this.ruleID,
       };
 
       this.issuesSubscription = this.policyTrendService.getData([], issuesQueryParameters).subscribe(
@@ -141,10 +141,10 @@ export class PolicyAssetsTrendComponent implements OnInit, OnChanges, OnDestroy,
 
     ngOnChanges(changes: SimpleChanges) {
       try {
-        const ruleIdChange = changes['ruleID'];
-        if (ruleIdChange) {
-          const prevId = JSON.stringify(ruleIdChange.previousValue);
-          const currId = JSON.stringify(ruleIdChange.currentValue);
+        const policyIdChange = changes['ruleID'];
+        if (policyIdChange) {
+          const prevId = JSON.stringify(policyIdChange.previousValue);
+          const currId = JSON.stringify(policyIdChange.currentValue);
           if (prevId !== currId) {
             this.init();
           }

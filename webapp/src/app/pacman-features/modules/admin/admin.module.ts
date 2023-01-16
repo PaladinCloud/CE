@@ -18,11 +18,9 @@ import { SharedModule } from "../../../shared/shared.module";
 import { PoliciesComponent } from "./policies/policies.component";
 import { AdminRoutingModule } from "./admin-routing.module";
 import { RulesComponent } from "./rules/rules.component";
-import { CreateRuleComponent } from "./create-rule/create-rule.component";
 import { CreateEditPolicyComponent } from "./create-edit-policy/create-edit-policy.component";
 import { CreateJobExecutionManagerComponent } from "./job-execution-manager/create-job-execution-manager/create-job-execution-manager.component";
 import { JobExecutionManagerComponent } from "./job-execution-manager/job-execution-manager.component";
-import { UpdateRuleComponent } from "./update-rule/update-rule.component";
 import { InvokeRuleComponent } from "./invoke-rule/invoke-rule.component";
 import { CreateAssetGroupsComponent } from "./asset-groups/create-asset-groups/create-asset-groups.component";
 import { EnableDisableRuleComponent } from "./enable-disable-rule/enable-disable-rule.component";
@@ -63,8 +61,6 @@ import { MatInputModule } from "@angular/material/input";
   declarations: [
     PoliciesComponent,
     RulesComponent,
-    CreateRuleComponent,
-    UpdateRuleComponent,
     InvokeRuleComponent,
     CreateEditPolicyComponent,
     JobExecutionManagerComponent,

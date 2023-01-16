@@ -172,7 +172,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
-        filter: { "ruleId.keyword": this.ruleID, domain: this.selectedDomain },
+        filter: { "policyId.keyword": this.ruleID, domain: this.selectedDomain },
         from: 0,
         searchtext: this.searchTxt,
         size: this.totalRows,
@@ -199,7 +199,7 @@ export class AllPolicyViolationsComponent implements OnInit, OnDestroy {
     if (this.ruleID !== undefined) {
       const payload = {
         ag: this.selectedAssetGroup,
-        filter: { "ruleId.keyword": this.ruleID, domain: this.selectedDomain },
+        filter: { "policyId.keyword": this.ruleID, domain: this.selectedDomain },
         from: this.bucketNumber * this.paginatorSize,
         searchtext: this.searchTxt,
         size: this.paginatorSize,

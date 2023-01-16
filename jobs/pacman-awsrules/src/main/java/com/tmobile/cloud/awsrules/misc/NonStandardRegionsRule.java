@@ -35,13 +35,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-non-standard-region-rule", desc = "checks for the resource which has non standard region", severity = PacmanSdkConstants.SEV_HIGH,category=PacmanSdkConstants.GOVERNANCE)
-public class NonStandardRegionsRule extends BaseRule {
+@PacmanPolicy(key = "check-for-non-standard-region-rule", desc = "checks for the resource which has non standard region", severity = PacmanSdkConstants.SEV_HIGH,category=PacmanSdkConstants.GOVERNANCE)
+public class NonStandardRegionsRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(NonStandardRegionsRule.class);
 
@@ -66,7 +66,7 @@ public class NonStandardRegionsRule extends BaseRule {
 	 * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
 	 *
 	 */
-    public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
         logger.debug("========NonStandardRegionsRule started=========");
         
@@ -79,7 +79,7 @@ public class NonStandardRegionsRule extends BaseRule {
         String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
 
         if (!PacmanUtils.doesAllHaveValue(standardRegions, tagsSplitter, severity, category)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -110,12 +110,12 @@ public class NonStandardRegionsRule extends BaseRule {
             issueList.add(issue);
             annotation.put(PacmanRuleConstants.ISSUE_DETAILS,issueList.toString());
             logger.debug("========NonStandardRegionsRule ended with an annotation {} : =========",annotation);
-            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
         } else {
             logger.info(targetType, " has standard region");
         }
         logger.debug("========NonStandardRegionsRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     public String getHelpText() {

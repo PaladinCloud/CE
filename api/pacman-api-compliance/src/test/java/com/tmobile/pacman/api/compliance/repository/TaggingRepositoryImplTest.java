@@ -57,7 +57,7 @@ import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ PacHttpUtils.class, EntityUtils.class, Response.class, RestClient.class })
@@ -123,19 +123,19 @@ public class TaggingRepositoryImplTest {
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
         ReflectionTestUtils.setField(taggingRepositoryImpl, "esUrl", "dummyEsURL");
-        UntaggedTargetTypeRequest request = new UntaggedTargetTypeRequest();
+        SummaryByTargetTypeRequest request = new SummaryByTargetTypeRequest();
         request.setAg("aws-all");
         List<String> tagList = new ArrayList<>();
         tagList.add("tag1");
         tagList.add("tag2");
-        assertThat(taggingRepositoryImpl.getUntaggedTargetTypeIssues(request, tagList), is(notNullValue()));
+        assertThat(taggingRepositoryImpl.getCategoryWiseTargetTypeIssue(request, tagList), is(notNullValue()));
         tagList = new ArrayList<>();
         // check Tags list empty scenario
-        assertThat(taggingRepositoryImpl.getUntaggedTargetTypeIssues(request, tagList), is(notNullValue()));
+        assertThat(taggingRepositoryImpl.getCategoryWiseTargetTypeIssue(request, tagList), is(notNullValue()));
         // check throws DataException
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenThrow(new DataException());
         List<String> tagListfinal = new ArrayList<>();
-        assertThatThrownBy(() -> taggingRepositoryImpl.getUntaggedTargetTypeIssues(request, tagListfinal))
+        assertThatThrownBy(() -> taggingRepositoryImpl.getCategoryWiseTargetTypeIssue(request, tagListfinal))
                 .isInstanceOf(DataException.class);
 
     }
@@ -169,13 +169,13 @@ public class TaggingRepositoryImplTest {
         Map<String, Object> ruleParamMap = new HashMap<>();
         ruleParamMap.put("assetGroup", "aws");
         ruleParamMap.put("targetType", "ec2");
-        ruleParamMap.put("policyId", Constants.TAGGING_POLICY);
+        ruleParamMap.put("policyId", Constants.CATEGORY_TAGGING);
         ruleParams.add(ruleParamMap);
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(ruleParams);
-        response = taggingRepositoryImpl.getRuleParamsFromDbByPolicyId(Constants.TAGGING_POLICY);
+        response = taggingRepositoryImpl.getRuleParamsFromDbByPolicyId(Constants.CATEGORY_TAGGING);
         assertTrue(response.size() > 0);
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(ruleParams);
-        response = taggingRepositoryImpl.getRuleTargetTypesFromDbByPolicyId(Constants.TAGGING_POLICY);
+        response = taggingRepositoryImpl.getRuleTargetTypesFromDbByPolicyId(Constants.CATEGORY_TAGGING);
         assertTrue(response.size() > 0);
     }
 

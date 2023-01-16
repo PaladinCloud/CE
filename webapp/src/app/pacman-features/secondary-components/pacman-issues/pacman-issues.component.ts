@@ -225,7 +225,7 @@ export class PacmanIssuesComponent implements OnInit, OnDestroy {
    navigateToKey(key) {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
       if (this.routeTo !== undefined) {
-        const eachParams = {'ruleCategory.keyword': key, 'include_exempt': 'no'};
+        const eachParams = {'policyCategory.keyword': key, 'include_exempt': 'no'};
         const newParams = this.utils.makeFilterObj(eachParams);
         this.router.navigate(['../', this.routeTo], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
       }

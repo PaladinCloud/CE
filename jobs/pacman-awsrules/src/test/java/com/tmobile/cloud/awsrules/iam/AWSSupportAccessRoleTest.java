@@ -34,12 +34,12 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class, IAMUtils.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class })
 public class AWSSupportAccessRoleTest {
 
 	@InjectMocks
@@ -68,14 +68,14 @@ public class AWSSupportAccessRoleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		AWSSupportAccessRole spy = Mockito.spy(new AWSSupportAccessRole());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAwsManagedPolicyArnByName(anyString(),anyObject())).thenReturn("arn:aws:iam::aws:policy/AWSSupportAccess");
 		when(IAMUtils.getSupportRoleByPolicyArn(anyString(),anyObject())).thenReturn(mockRoleIds());
 		when(PacmanUtils.getAssumedRolePolicies(anySetOf(String.class),anyString())).thenReturn(mockAssumedPolicies());
 		when(IAMUtils.isSupportRoleAssumedByUserOrGroup(anySetOf(String.class), anyObject())).thenReturn(false);
 
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -95,14 +95,14 @@ public class AWSSupportAccessRoleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		AWSSupportAccessRole spy = Mockito.spy(new AWSSupportAccessRole());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAwsManagedPolicyArnByName(anyString(),anyObject())).thenReturn("arn:aws:iam::aws:policy/AWSSupportAccess");
 		when(IAMUtils.getSupportRoleByPolicyArn(anyString(),anyObject())).thenReturn(mockRoleIds());
 		when(PacmanUtils.getAssumedRolePolicies(anySetOf(String.class),anyString())).thenReturn(mockAssumedPolicies());
 		when(IAMUtils.isSupportRoleAssumedByUserOrGroup(anySetOf(String.class), anyObject())).thenReturn(true);
 
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
@@ -138,7 +138,7 @@ public class AWSSupportAccessRoleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		AWSSupportAccessRole spy = Mockito.spy(new AWSSupportAccessRole());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAwsManagedPolicyArnByName(anyString(),anyObject())).thenReturn("arn:aws:iam::aws:policy/AWSSupportAccess");
 		when(IAMUtils.getSupportRoleByPolicyArn(anyString(),anyObject())).thenThrow(new RuleExecutionFailedExeption());
@@ -162,12 +162,12 @@ public class AWSSupportAccessRoleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		AWSSupportAccessRole spy = Mockito.spy(new AWSSupportAccessRole());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAwsManagedPolicyArnByName(anyString(),anyObject())).thenReturn("arn:aws:iam::aws:policy/AWSSupportAccess");
 		when(IAMUtils.getSupportRoleByPolicyArn(anyString(),anyObject())).thenReturn(null);
 
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -180,7 +180,7 @@ public class AWSSupportAccessRoleTest {
 	private Map<String, String> getInputParamMap() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "AWS_Support_Access_Role_version-1_Support_Access_account");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "AWS_Support_Access_Role_version-1_Support_Access_account");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_MEDIUM);
 		ruleParam.put(PacmanRuleConstants.ACCOUNTID, "3465697853542");

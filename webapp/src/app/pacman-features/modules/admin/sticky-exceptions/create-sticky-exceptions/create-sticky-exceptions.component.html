@@ -156,7 +156,7 @@
                                                 [ngClass]="attributeDetail.added? 'added-target-types':''">
                                                 <h1>{{attributeDetail.targetName}}</h1>
                                                 <div class="attrspacer"></div>
-                                                <h3 class="added">{{attributeDetail.rules.length}}</h3>
+                                                <h3 class="added">{{attributeDetail.policies.length}}</h3>
                                                 <h2 class="text">Rules added</h2>
                                                 <div class="btnctn"><button class="attrbutton"
                                                         (click)="openAttributeConfigure(attributeDetail, idx)">CONFIG</button>
@@ -275,7 +275,7 @@
                                                 <div class="input-box">
                                                     <ul class="parameters rules">
                                                         <label>Select Rule Name :</label>
-                                                        <app-dropdown [items]="selectedAllRules"
+                                                        <app-dropdown [items]="selectedallPolicies"
                                                             [selectedItem]="attributeName"
                                                             (selected)="onSelectRuleName($event)"
                                                             [placeholder]="'Select Rule Name Required'">

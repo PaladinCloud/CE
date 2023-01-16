@@ -68,7 +68,7 @@ export class EnableDisableRuleJobComponent implements OnInit, OnDestroy {
   filterText: any = {};
   errorValue= 0;
   urlID = '';
-  ruleId = '';
+  policyId = '';
   jobId = '';
 
   FullQueryParams: any;
@@ -138,7 +138,7 @@ export class EnableDisableRuleJobComponent implements OnInit, OnDestroy {
     const method = environment.enableDisableRuleOrJob.method;
     const params = {};
     if (this.isRule) {
-      params['ruleId'] = this.ruleId;
+      params['policyId'] = this.policyId;
     } else {
       params['jobId'] = this.jobId;
     }
@@ -179,7 +179,7 @@ export class EnableDisableRuleJobComponent implements OnInit, OnDestroy {
     if (isRule) {
       this.breadcrumbArray = ['Rules'];
       this.breadcrumbLinks = [ 'rules'];
-      this.ruleOrJobId = this.ruleId;
+      this.ruleOrJobId = this.policyId;
     } else {
       this.breadcrumbArray = ['Job Execution Manager'];
       this.breadcrumbLinks = [ 'job-execution-manager'];
@@ -204,11 +204,11 @@ export class EnableDisableRuleJobComponent implements OnInit, OnDestroy {
       if (currentQueryParams) {
 
         this.FullQueryParams = currentQueryParams;
-        this.ruleId = this.FullQueryParams.ruleId;
+        this.policyId = this.FullQueryParams.policyId;
         this.jobId = this.FullQueryParams.jobId;
         this.action = this.FullQueryParams.action.toLowerCase();
         if (this.action === 'enable' || this.action === 'disable') {
-          this.isRule = this.ruleId !== undefined;
+          this.isRule = this.policyId !== undefined;
           this.buildRuleOrJobInfo(this.action, this.isRule);
         } else {
           this.navigateBack();

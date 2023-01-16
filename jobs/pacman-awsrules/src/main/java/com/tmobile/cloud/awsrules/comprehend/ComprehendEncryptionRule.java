@@ -37,13 +37,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-comprehend-job-results-encryption", desc = "checks for aws comprehend analysis job results are encrypted", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ComprehendEncryptionRule extends BaseRule {
+@PacmanPolicy(key = "check-for-comprehend-job-results-encryption", desc = "checks for aws comprehend analysis job results are encrypted", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ComprehendEncryptionRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(ComprehendEncryptionRule.class);
     public static final String SSE_STATUS_ENABLED = "ENABLED";
@@ -67,12 +67,12 @@ public class ComprehendEncryptionRule extends BaseRule {
      *
      */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========ComprehendEncryptionRule started=========");
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		Optional.ofNullable(ruleParam)
 				.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY), param.get(PacmanRuleConstants.CATEGORY))))
@@ -80,16 +80,16 @@ public class ComprehendEncryptionRule extends BaseRule {
 					throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
 					});
 
-		RuleResult ruleResult = Optional.ofNullable(resourceAttributes)
+		PolicyResult ruleResult = Optional.ofNullable(resourceAttributes)
 				.filter(resource -> StringUtils.isNullOrEmpty(resource.get(PacmanRuleConstants.ES_KMS_KEY_ID_ATTRIBUTE)))
 				.map(resource -> buildFailureAnnotation(ruleParam))
-				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 		
 		logger.debug("========ComprehendEncryptionRule ended=========");
 		return ruleResult;
 	}
 
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam) {
+	private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -105,7 +105,7 @@ public class ComprehendEncryptionRule extends BaseRule {
 		issueList.add(issue);
 		annotation.put("issueDetails", issueList.toString());
 		logger.debug("========ComprehendEncryptionRule annotation {} :=========", annotation);
-		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	}
 
 	public String getHelpText() {

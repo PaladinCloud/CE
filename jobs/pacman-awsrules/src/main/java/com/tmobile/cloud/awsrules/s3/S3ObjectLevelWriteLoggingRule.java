@@ -6,10 +6,11 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -24,8 +25,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-@PacmanRule(key = "check-s3-object-level-write-logging-rule", desc = "This rule checks object level logging for s3 buckets", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class S3ObjectLevelWriteLoggingRule extends BaseRule {
+@PacmanPolicy(key = "check-s3-object-level-write-logging-rule", desc = "This rule checks object level logging for s3 buckets", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(S3ObjectLevelWriteLoggingRule.class);
 
@@ -48,12 +49,12 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
      * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
      */
     @Override
-    public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
         logger.debug("========CheckForS3ObjectLevelWriteLogging started=========");
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (MapUtils.isNotEmpty(ruleParam) && !PacmanUtils.doesAllHaveValue(ruleParam.get(PacmanRuleConstants.SEVERITY),
                 ruleParam.get(PacmanRuleConstants.CATEGORY))) {
@@ -63,9 +64,9 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
 
         Optional<String> opt = Optional.ofNullable(resourceAttributes).map(this::checkValidation);
 
-        RuleResult ruleResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
+        PolicyResult ruleResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
                 .map(param -> buildFailureAnnotation(param, opt.get()))
-                .orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+                .orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
         logger.debug("========CheckForS3ObjectLevelWriteLogging ended=========");
         return ruleResult;
@@ -137,7 +138,7 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
         return description;
     }
 
-    private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
 
         Annotation annotation = null;
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -152,7 +153,7 @@ public class S3ObjectLevelWriteLoggingRule extends BaseRule {
         issueList.add(issue);
         annotation.put("issueDetails", issueList.toString());
         logger.debug("========CheckForS3ObjectLevelWriteLogging annotation {} :=========", annotation);
-        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 
     }
 

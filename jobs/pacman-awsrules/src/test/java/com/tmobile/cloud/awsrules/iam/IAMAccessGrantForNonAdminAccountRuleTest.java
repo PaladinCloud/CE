@@ -53,7 +53,7 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.IAMUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({URLDecoder.class, PacmanUtils.class,IAMUtils.class})
@@ -144,7 +144,7 @@ public class IAMAccessGrantForNonAdminAccountRuleTest {
         map.put("client", identityManagementClient);
         IAMAccessGrantForNonAdminAccountRule spy = Mockito.spy(new IAMAccessGrantForNonAdminAccountRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(identityManagementClient.getPolicy(anyObject())).thenReturn(policyResult);
         when(identityManagementClient.listAttachedRolePolicies(anyObject())).thenReturn(result);

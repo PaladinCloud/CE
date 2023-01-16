@@ -26,7 +26,7 @@ public class StickyExceptionResponse {
 	private String exceptionReason;
 	private String expiryDate;
 	private String dataSource;
-	private List<TargetTypeRuleViewDetails> targetTypes;
+	private List<TargetTypePolicyViewDetails> targetTypes;
 
 	public String getExceptionName() {
 		return exceptionName;
@@ -52,11 +52,11 @@ public class StickyExceptionResponse {
 		this.expiryDate = expiryDate;
 	}
 
-	public List<TargetTypeRuleViewDetails> getTargetTypes() {
+	public List<TargetTypePolicyViewDetails> getTargetTypes() {
 		return targetTypes;
 	}
 
-	public void setTargetTypes(List<TargetTypeRuleViewDetails> targetTypes) {
+	public void setTargetTypes(List<TargetTypePolicyViewDetails> targetTypes) {
 		this.targetTypes = targetTypes;
 	}
 

@@ -707,7 +707,7 @@ public class AssetRepositoryTest {
 
         Map<String, Object> asset1 = new HashMap<>();
         asset1.put("_resourceid", "a1");
-        asset1.put("policyId", Constants.TAGGING_POLICY);
+        asset1.put("policyId", Constants.CATEGORY_TAGGING);
         asset1.put("Environment", "Not Found");
 
         Map<String, Object> asset2 = new HashMap<>();
@@ -722,7 +722,7 @@ public class AssetRepositoryTest {
         Map<String, Object> ttypeMap1 = new HashMap<>();
         ttypeMap1.put("targetType", "ec2");
         ttypeMap1.put("type", "ec2");
-        ttypeMap1.put("ruleId", "r1");
+        ttypeMap1.put("policyId", "r1");
         Map<String, Object> ttypeMap2 = new HashMap<>();
         ttypeMap2.put("type", "onpremserver");
         List<Map<String, Object>> ttypeList = new ArrayList<>();
@@ -1086,7 +1086,7 @@ public class AssetRepositoryTest {
         Map<String, Object> ttypeMap1 = new HashMap<>();
         ttypeMap1.put("targetType", "ec2");
         ttypeMap1.put("type", "ec2");
-        ttypeMap1.put("ruleId", "r1");
+        ttypeMap1.put("policyId", "r1");
         tTypeList.add(ttypeMap1);
 
         when(pacmanRdsRepository.getDataFromPacman(anyString())).thenReturn(tTypeList);
@@ -1101,7 +1101,7 @@ public class AssetRepositoryTest {
         Map<String, Object> ttypeMap1 = new HashMap<>();
         ttypeMap1.put("targetType", "ec2");
         ttypeMap1.put("type", "ec2");
-        ttypeMap1.put("ruleId", "r1");
+        ttypeMap1.put("policyId", "r1");
         tTypeList.add(ttypeMap1);
 
         when(pacmanRdsRepository.getDataFromPacman(anyString())).thenReturn(tTypeList);

@@ -26,9 +26,9 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Purpose: This rule checks for s3 bucket containing web-site configuration.
@@ -37,8 +37,8 @@ import com.tmobile.pacman.commons.rule.RuleResult;
  * Modified Date: April 11th, 2019
  * 
  */
-@PacmanRule(key = "check-for-s3-hosting-website", desc = "checks for S3 Buckets Hosting Website", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class S3HostsWebsiteRule extends BaseRule {
+@PacmanPolicy(key = "check-for-s3-hosting-website", desc = "checks for S3 Buckets Hosting Website", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class S3HostsWebsiteRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(S3HostsWebsiteRule.class);
 
 	/**
@@ -52,21 +52,21 @@ public class S3HostsWebsiteRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========S3HostsWebsiteRule started=========");
 		String s3BucketName = resourceAttributes.get(PacmanSdkConstants.RESOURCE_ID);
 		String websiteConfiguration = resourceAttributes.get(PacmanRuleConstants.WEB_SITE_CONFIGURATION);
 		String description = "S3 bucket " + s3BucketName+ " has website configuration for hosting website or redirecting requests from S3";
 		
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		if(!StringUtils.isEmpty(websiteConfiguration)){
 		if ("true".equalsIgnoreCase(websiteConfiguration)) {
 			logger.info("Found S3 Bucket With Resource Id: [{}] Which Hosts Website",resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
-			return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createS3Annotation(ruleParam, description));
+			return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createS3Annotation(ruleParam, description));
 		} else {
 			logger.info(s3BucketName, "This Bucket Doesn't Host Website.");
-			return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+			return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 		}
 		}else{
 			 logger.error("website configuration attribute is not available for {}", s3BucketName);

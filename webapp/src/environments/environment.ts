@@ -106,7 +106,7 @@ export const environment = {
         method: 'POST'
     },
     entity: {
-        url: '{{baseUrl}}/compliance/v1/ruleParams',
+        url: '{{baseUrl}}/compliance/v1/policyParams',
         method: 'GET'
     },
     resourceDetails: {
@@ -550,12 +550,12 @@ export const environment = {
         url: '{{baseUrl}}/admin/job-execution-manager/update',
         method: 'POST'
     },
-    createRule: {
-        url: '{{baseUrl}}/admin/rule/create',
+    createPolicy: {
+        url: '{{baseUrl}}/admin/policy/create',
         method: 'POST'
     },
-    getRuleById: {
-        url: '{{baseUrl}}/admin/rule/details-by-id',
+    getPolicyById: {
+        url: '{{baseUrl}}/admin/policy/details-by-id',
         method: 'GET'
     },
     policyDetails: {
@@ -563,11 +563,11 @@ export const environment = {
         method: 'GET'
     },
     allPolicyIds: {
-        url: '{{baseUrl}}/admin/policy/list-ids',
+        url: '{{baseUrl}}/admin/policy/policy-ids',
         method: 'GET'
     },
     ruleDetails: {
-        url: '{{baseUrl}}/admin/rule/list',
+        url: '{{baseUrl}}/admin/policy/list',
         method: 'GET'
     },
     targetTypesByDatasource: {
@@ -583,7 +583,7 @@ export const environment = {
         method: 'GET'
     },
     allAlexaKeywords: {
-        url: '{{baseUrl}}/admin/rule/alexa-keywords',
+        url: '{{baseUrl}}/admin/policy/alexa-keywords',
         method: 'GET'
     },
     allJobSchedulerList: {
@@ -594,28 +594,16 @@ export const environment = {
         url: '{{baseUrl}}/admin/job-execution-manager/create',
         method: 'POST'
     },
-    updateRule: {
-        url: '{{baseUrl}}/admin/rule/update',
-        method: 'POST'
-    },
     invokeRule: {
-        url: '{{baseUrl}}/admin/rule/invoke',
-        method: 'POST'
-    },
-    createPolicy: {
-        url: '{{baseUrl}}/admin/policy/create',
+        url: '{{baseUrl}}/admin/policy/invoke',
         method: 'POST'
     },
     updatePolicy: {
         url: '{{baseUrl}}/admin/policy/update',
         method: 'POST'
     },
-    getPolicyById: {
-        url: '{{baseUrl}}/admin/policy/details-by-id',
-        method: 'GET'
-    },
     enableDisableRule: {
-        url: '{{baseUrl}}/admin/rule/enable-disable',
+        url: '{{baseUrl}}/admin/policy/enable-disable',
         method: 'POST'
     },
     assetGroups: {
@@ -727,7 +715,7 @@ export const environment = {
         method: 'GET'
     },
     getAllRuleIds: {
-        url: '{{baseUrl}}/admin/rule/rule-ids',
+        url: '{{baseUrl}}/admin/policy/policy-ids',
         method: 'GET'
     },
     assetGroupDetailsById: {
@@ -842,8 +830,8 @@ export const environment = {
         url: '{{baseUrl}}/admin/users/list',
         method: 'GET'
     },
-    ruleCategory : {
-        url: '{{baseUrl}}/admin/rule/categories',
+    policyCategory : {
+        url: '{{baseUrl}}/admin/policy/categories',
         method: 'GET'
     },
     systemOperations: {

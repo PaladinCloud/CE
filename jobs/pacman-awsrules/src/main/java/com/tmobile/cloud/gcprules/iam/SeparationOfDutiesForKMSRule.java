@@ -10,21 +10,21 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-@PacmanRule(key = "enforce-separation-of-duties-for-kms", desc = "Enforce Separation of Duties While Assigning KMS Related Roles to Users", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class SeparationOfDutiesForKMSRule extends BaseRule {
+@PacmanPolicy(key = "enforce-separation-of-duties-for-kms", desc = "Enforce Separation of Duties While Assigning KMS Related Roles to Users", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class SeparationOfDutiesForKMSRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(SeparationOfDutiesForKMSRule.class);
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("executing SeparationOfDutiesForKMSRule....");
         Annotation annotation = null;
 
@@ -45,7 +45,7 @@ public class SeparationOfDutiesForKMSRule extends BaseRule {
         boolean isKMSSeparated = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             Map<String, Object> mustFilter = new HashMap<>();
@@ -65,7 +65,7 @@ public class SeparationOfDutiesForKMSRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========SeparationOfDutiesForKMSRule ended with an annotation {} : =========", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
 
@@ -74,7 +74,7 @@ public class SeparationOfDutiesForKMSRule extends BaseRule {
             }
         }
         logger.debug("success::SeparationOfDutiesForKMSRule");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

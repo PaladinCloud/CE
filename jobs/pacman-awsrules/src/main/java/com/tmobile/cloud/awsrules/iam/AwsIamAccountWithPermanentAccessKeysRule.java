@@ -35,13 +35,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-aws-iam-account-with-permanent-access-keys", desc = "checks entirely for No AWS IAM accounts except service accounts should have permanent access keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class AwsIamAccountWithPermanentAccessKeysRule extends BaseRule {
+@PacmanPolicy(key = "check-for-aws-iam-account-with-permanent-access-keys", desc = "checks entirely for No AWS IAM accounts except service accounts should have permanent access keys", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class AwsIamAccountWithPermanentAccessKeysRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(AwsIamAccountWithPermanentAccessKeysRule.class);
@@ -73,7 +73,7 @@ public class AwsIamAccountWithPermanentAccessKeysRule extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
         logger.debug("========AwsIamAccountWithPermanentAccessKeysRule started=========");
         Map<String, String> ruleParamIam = new HashMap<>();
@@ -92,7 +92,7 @@ public class AwsIamAccountWithPermanentAccessKeysRule extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -136,7 +136,7 @@ public class AwsIamAccountWithPermanentAccessKeysRule extends BaseRule {
                         logger.debug(
                                 "========AwsIamAccountWithPermanentAccessKeysRule ended with annotation {} :=========",
                                 annotation);
-                        return new RuleResult(
+                        return new PolicyResult(
                                 PacmanSdkConstants.STATUS_FAILURE,
                                 PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                     } else {
@@ -157,7 +157,7 @@ public class AwsIamAccountWithPermanentAccessKeysRule extends BaseRule {
             throw new InvalidInputException(e.toString());
         }
         logger.debug("========AwsIamAccountWithPermanentAccessKeysRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }

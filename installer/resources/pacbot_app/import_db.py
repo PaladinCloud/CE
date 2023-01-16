@@ -25,6 +25,7 @@ import json
 class ReplaceSQLPlaceHolder(NullResource):
     dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_With_Values.sql')
     azure_ad_dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Azure_AD_With_Values.sql')
+    policy_dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Policy_With_Values.sql')
     triggers = {'version': "1.1"}
 
     DEPENDS_ON = [MySQLDatabase, ESDomain]
@@ -135,6 +136,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_AZURE_CREDENTIALS': azure_credentails,
                         'ENV_GCP_CREDENTIALS': gcp_credentials,
                         'SQL_FILE_PATH_AD': self.azure_ad_dest_file,
+                        'SQL_FILE_PATH_POLICY': self.policy_dest_file,
                         'AUTHENTICATION_TYPE' : Settings.get('AUTHENTICATION_TYPE',""),
                         'ENV_AD_TENANT_ID' : Settings.get('AD_TENANT_ID',""),
                         'ENV_AD_CLIENT_ID' : Settings.get('AD_CLIENT_ID',""),
@@ -165,6 +167,8 @@ class ReplaceSQLPlaceHolder(NullResource):
     def pre_generate_terraform(self):
         src_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB.sql')
         copy2(src_file, self.dest_file)
+        src_policy_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Policy.sql')
+        copy2(src_policy_file, self.policy_dest_file)
         if Settings.AUTHENTICATION_TYPE == "AZURE_AD":
             src_azure_ad_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Azure_AD.sql')
             copy2(src_azure_ad_file, self.azure_ad_dest_file)
@@ -184,6 +188,12 @@ class ImportDbSql(NullResource):
                 'local-exec': {
                     'command': "mysql -u %s --password=%s -h %s < %s" % (
                     db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.dest_file)
+                }
+            },
+             {
+                'local-exec': {
+                    'command': "mysql -u %s --password=%s -h %s < %s" % (
+                    db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.policy_dest_file)
                 }
             }
 

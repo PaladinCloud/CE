@@ -107,7 +107,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
      */
     @Override
     public Map<String, Long> getTrendForIssues(String assetGroup,
-            String fromDate, String toDate, String severity, String ruleId,
+            String fromDate, String toDate, String severity,
             String policyId, String app, String env) throws ServiceException {
         Assert.hasLength(assetGroup, "assetGroup cannot be null or empty");
 
@@ -122,9 +122,6 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             mustFilter.put("policyId.keyword", policyId);
         }
 
-        if (!Strings.isNullOrEmpty(ruleId)) {
-            mustFilter.put("ruleId.keyword", ruleId);
-        }
         if (!Strings.isNullOrEmpty(app)) {
             mustFilter.put("tags.Application.keyword", app);
         }
@@ -168,7 +165,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         if (!Strings.isNullOrEmpty(ttypes)) {
             try {
                 ruleDetails = complianceRepository
-                        .getRuleIdWithDisplayNameQuery(ttypes);
+                        .getPolicyIdWithDisplayNameQuery(ttypes);
             } catch (DataException e) {
               throw new ServiceException(e);
             }
@@ -184,8 +181,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         
         Map<String, Object> ruleCatDetails = ruleSevCatDetails.parallelStream()
                 .collect(
-                        Collectors.toMap(c -> c.get(RULEID).toString(),
-                                c -> c.get(RULE_CATEGORY),
+                        Collectors.toMap(c -> c.get(POLICYID).toString(),
+                                c -> c.get(POLICY_CATEGORY),
                                 (oldvalue, newValue) -> newValue));
         ruleCatDetails.entrySet().parallelStream()
                 .forEach(entry -> ruleCat.add(entry.getValue().toString()));
@@ -333,7 +330,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                 Request request = new Request();
                 request.setAg(ag);
                 Map<String, String> filters = new HashMap<>();
-                filters.put("ruleId.keyword", ruleId);
+                filters.put("policyId.keyword", ruleId);
                 filters.put("domain", domain);
                 request.setFilter(filters);
                 ResponseWithOrder responseWithOrder = complianceService
@@ -761,7 +758,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         if (!Strings.isNullOrEmpty(ttypes)) {
             try{
             ruleDetails = complianceRepository
-                    .getRuleIdWithDisplayNameQuery(ttypes);
+                    .getPolicyIdWithDisplayNameQuery(ttypes);
             }catch(DataException e){
                 throw new ServiceException(e);
             }
@@ -774,7 +771,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         
         Map<String, Object> ruleSevDetails = ruleSevCatDetails.parallelStream()
                 .collect(
-                        Collectors.toMap(r -> r.get(RULEID).toString(),
+                        Collectors.toMap(r -> r.get(POLICYID).toString(),
                                 r -> r.get(SEVERITY),
                                 (oldvalue, newValue) -> newValue));
         ruleSevDetails.entrySet().parallelStream()

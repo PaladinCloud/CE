@@ -36,13 +36,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-cloudtrail-global-services-enabled", desc = "This rule checks for AWS CloudTrail global services enabled", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CloudTrailGlobalServicesRule extends BaseRule {
+@PacmanPolicy(key = "check-cloudtrail-global-services-enabled", desc = "This rule checks for AWS CloudTrail global services enabled", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CloudTrailGlobalServicesRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(CloudTrailGlobalServicesRule.class);
 
@@ -73,13 +73,13 @@ public class CloudTrailGlobalServicesRule extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
         logger.debug("========CloudTrailGlobalServicesRule started=========");
         Annotation annotation = null;
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         
         String isGlobalServicesEventEnabled = resourceAttributes.get(PacmanRuleConstants.INCLUDE_GLOBAL_SERVICE_EVENTS);
         
@@ -98,11 +98,11 @@ public class CloudTrailGlobalServicesRule extends BaseRule {
 			issue.put(PacmanRuleConstants.VIOLATION_REASON, "Cloudtrail global service event is not enabled!!");
 			issueList.add(issue);
 			annotation.put("issueDetails", issueList.toString());
-			return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+			return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 		}
 
         logger.debug("========CloudTrailGlobalServicesRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     public String getHelpText() {

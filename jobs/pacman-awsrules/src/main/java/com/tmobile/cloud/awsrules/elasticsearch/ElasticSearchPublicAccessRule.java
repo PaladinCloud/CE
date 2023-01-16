@@ -46,13 +46,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-elastic-search-public-access", desc = "This rule check for es which is exposed to public", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ElasticSearchPublicAccessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-elastic-search-public-access", desc = "This rule check for es which is exposed to public", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ElasticSearchPublicAccessRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(ElasticSearchPublicAccessRule.class);
 
 	/**
@@ -85,7 +85,7 @@ public class ElasticSearchPublicAccessRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========ElasticSearchPublicAccessRule started=========");
 		 JsonParser jsonParser = new JsonParser();
 		 Set<String> routeTableIdSet = new HashSet<>();
@@ -128,7 +128,7 @@ public class ElasticSearchPublicAccessRule extends BaseRule {
 		
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		if (!PacmanUtils.doesAllHaveValue(cidrIpv6,internetGateWay, severity, category, routetableAssociationsEsURL, routetableRoutesEsURL, routetableEsURL, sgRulesUrl, cidrIp)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -148,11 +148,11 @@ public class ElasticSearchPublicAccessRule extends BaseRule {
 							annotation = PacmanUtils.createAnnotation(null, ruleParam, description, severity, category);
 							if(null!=annotation){
 							annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID, resourceAttributes.get("domainname"));
-							return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
+							return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
 							}
 						} else {
 							logger.debug("========ElasticSearchPublicAccessRule ended=========");
-							return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+							return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 						}
 
 					}
@@ -192,7 +192,7 @@ public class ElasticSearchPublicAccessRule extends BaseRule {
 					if (null != annotation) {
 						annotation.put("endpoint", endPoint);
 						annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID, resourceAttributes.get("domainname"));
-						return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+						return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 					}
 				}
 			}
@@ -202,7 +202,7 @@ public class ElasticSearchPublicAccessRule extends BaseRule {
             throw new RuleExecutionFailedExeption(e.getMessage());
         }
 		logger.debug("========ElasticSearchPublicAccessRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

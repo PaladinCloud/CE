@@ -6,10 +6,10 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -22,8 +22,8 @@ import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import java.util.*;
 
 
-@PacmanRule(key = "check-encryption-enabled-with-customer-managed-keys-for-Azure_VM_disks", desc = "Use customer-managed keys for Microsoft Azure virtual machine (VM) disk volumes encryption.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class BYOKDiskVolumeRule extends BaseRule {
+@PacmanPolicy(key = "check-encryption-enabled-with-customer-managed-keys-for-Azure_VM_disks", desc = "Use customer-managed keys for Microsoft Azure virtual machine (VM) disk volumes encryption.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class BYOKDiskVolumeRule extends BasePolicy {
 
 
     private static final Logger logger = LoggerFactory.getLogger(BYOKDiskVolumeRule.class);
@@ -33,7 +33,7 @@ public class BYOKDiskVolumeRule extends BaseRule {
     public static  final   String keyurl="keyUrl";
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
         logger.info("Executing Encryption with customer-managed keys for App-Tier disk volumes");
 
@@ -79,12 +79,12 @@ public class BYOKDiskVolumeRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug("  The disk volumes attached to the selected Microsoft Azure virtual machine are encrypted using a service-managed key .Rule completed with FAILURE isValid flag {} : ", isValid);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
         logger.debug(" The disk volumes attached to the selected Microsoft Azure virtual machine are encrypted using a customer-managed key (BYOK) to encrypt the disk volumes attached to the selected Microsoft Azure virtual machine.Rule completed with SUCCESS. isValid flag: {}", isValid);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean checkIsCustomerManagedKeyAttached(String esUrl, Map<String, Object> mustFilter) throws Exception{

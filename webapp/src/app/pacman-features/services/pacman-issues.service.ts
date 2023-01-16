@@ -72,7 +72,7 @@ export class PacmanIssuesService {
 
     massageData(data): any {
         this.keys = Object.keys(data[`distribution`].distribution_by_severity);
-        this.percent_keys = Object.keys(data[`distribution`].ruleCategory_percentage);
+        this.percent_keys = Object.keys(data[`distribution`].policyCategory_percentage);
         this.length = this.keys.length;
         this.criticalValue = undefined;
         this.highValue = undefined;
@@ -119,11 +119,11 @@ export class PacmanIssuesService {
         this.totalIssues = data[`distribution`].total_issues;
         this.valuePercent = (this.criticalValue / this.totalIssues) * 100;
         const catArr = [];
-        for (let i = 0; i < Object.keys(data[`distribution`].ruleCategory_percentage).length; i++) {
+        for (let i = 0; i < Object.keys(data[`distribution`].policyCategory_percentage).length; i++) {
             const catObj = {};
-            catObj[Object.keys(data[`distribution`].ruleCategory_percentage)[i]] =
-                data[`distribution`].ruleCategory_percentage[
-                Object.keys(data[`distribution`].ruleCategory_percentage)[i]
+            catObj[Object.keys(data[`distribution`].policyCategory_percentage)[i]] =
+                data[`distribution`].policyCategory_percentage[
+                Object.keys(data[`distribution`].policyCategory_percentage)[i]
                 ];
             catArr.push(catObj);
         }

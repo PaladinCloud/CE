@@ -76,7 +76,7 @@ public class ComplianceServiceImplTest {
     public void getResourceDetailsTest() throws Exception {
 
         Map<String, Object> ruleMap = new HashMap<>();
-        ruleMap.put("ruleId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
+        ruleMap.put("policyId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
 
         List<Map<String, Object>> ruleList = new ArrayList<>();
         ruleList.add(ruleMap);
@@ -99,7 +99,7 @@ public class ComplianceServiceImplTest {
     public void getRecommendationsTest() throws Exception {
 
         Map<String, Object> ruleMap = new HashMap<>();
-        ruleMap.put("ruleId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
+        ruleMap.put("policyId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
 
         List<Map<String, Object>> ruleList = new ArrayList<>();
         ruleList.add(ruleMap);
@@ -151,7 +151,7 @@ public class ComplianceServiceImplTest {
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
                         anyString())).thenReturn(issueCount);
-        when(complianceRepository.getRuleIds(anyString())).thenReturn(
+        when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
         when(
                 complianceRepository.getRulesDistribution(anyString(),
@@ -303,7 +303,7 @@ public class ComplianceServiceImplTest {
 
         when(
                 complianceRepository
-                        .getRuleIdWithDisplayNameWithRuleCategoryQuery(
+                        .getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
                                 anyString(), anyString())).thenReturn(
                 CommonTestUtil.getMapList());
         when(complianceRepository.getRulesLastScanDate()).thenReturn(
@@ -526,7 +526,7 @@ public class ComplianceServiceImplTest {
 
         when(complianceRepository.getTargetTypeForAG(anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getTargetTypes());
-        when(complianceRepository.getRuleIds(anyString())).thenReturn(
+        when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
         when(complianceRepository.getRuleCategoryWeightagefromDB(anyString()))
                 .thenReturn(CommonTestUtil.getMapObject());
@@ -543,7 +543,7 @@ public class ComplianceServiceImplTest {
 
         when(complianceRepository.getTargetTypeForAG(anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getTargetTypes());
-        when(complianceRepository.getRuleIds(anyString())).thenReturn(
+        when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
 
         when(complianceRepository.getRuleCategoryWeightagefromDB(anyString()))

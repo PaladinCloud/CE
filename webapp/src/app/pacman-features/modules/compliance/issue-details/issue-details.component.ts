@@ -451,21 +451,21 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     this.issueTopblocks.push(obj);
                   }
 
-                  if (this.issueBlocks.ruleCategory !== undefined) {
+                  if (this.issueBlocks.policyCategory !== undefined) {
                     let obj;
                     if (
-                      this.issueBlocks.ruleCategory === 'governance' ||
-                      this.issueBlocks.ruleCategory === 'Governance'
+                      this.issueBlocks.policyCategory === 'governance' ||
+                      this.issueBlocks.policyCategory === 'Governance'
                     ) {
                       obj = {
                         header: 'Rule Category',
-                        footer: this.issueBlocks.ruleCategory,
+                        footer: this.issueBlocks.policyCategory,
                         img: '../assets/icons/Governance.svg'
                       };
                     } else {
                       obj = {
                         header: 'Rule Category',
-                        footer: this.issueBlocks.ruleCategory,
+                        footer: this.issueBlocks.policyCategory,
                         img: '../assets/icons/Security.svg'
                       };
                     }
@@ -539,7 +539,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   //     if (this.issueBlocks) {
   //       queryparams = {
   //         targetType: this.issueBlocks.resourceType,
-  //         ruleId: this.issueBlocks.policyId
+  //         policyId: this.issueBlocks.policyId
   //       };
   //     }
 
@@ -1088,20 +1088,20 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         this.issueTopblocks.push(obj);
       }
 
-      if (this.issueBlocks.ruleCategory !== undefined) {
+      if (this.issueBlocks.policyCategory !== undefined) {
         if (
-          this.issueBlocks.ruleCategory === 'governance' ||
-          this.issueBlocks.ruleCategory === 'Governance'
+          this.issueBlocks.policyCategory === 'governance' ||
+          this.issueBlocks.policyCategory === 'Governance'
         ) {
           obj = {
             header: 'Rule Category',
-            footer: this.issueBlocks.ruleCategory,
+            footer: this.issueBlocks.policyCategory,
             img: '../assets/icons/Governance.svg'
           };
         } else {
           obj = {
             header: 'Rule Category',
-            footer: this.issueBlocks.ruleCategory,
+            footer: this.issueBlocks.policyCategory,
             img: '../assets/icons/Security.svg'
           };
         }
@@ -1176,7 +1176,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
       const resourceType = encodeURIComponent(encodeURIComponent(this.issueBlocks.resourceType));
       const assetGroup = encodeURIComponent(encodeURIComponent(this.selectedAssetGroup));
       const domainName = encodeURIComponent(encodeURIComponent(this.selectedDomain));
-      const ruleID = encodeURIComponent(encodeURIComponent(this.issueBlocks.ruleId));
+      const ruleID = encodeURIComponent(encodeURIComponent(this.issueBlocks.policyId));
       const payload = {
         attachmentUrl: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL + '/html.handlebars',
         from: this.fromEmailID,
@@ -1190,8 +1190,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
           severityFooter: this.issueBlocks.severity,
           targetTypeName: 'Target Type',
           targetTypeFooter: this.issueBlocks.resourceType,
-          ruleCategoryName: 'Rule Category',
-          ruleCategoryFooter: this.issueBlocks.ruleCategory,
+          policyCategoryName: 'Rule Category',
+          policyCategoryFooter: this.issueBlocks.policyCategory,
           policyViolated: this.issueBlocks.policyViolated,
           policyDescription: this.issueBlocks.policyDescription,
           violationReason: this.issueBlocks.violationReason,

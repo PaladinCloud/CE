@@ -5,7 +5,7 @@ export class ExceptionInput {
         resourceType: string;
         disablePolicy: Boolean;
     };
-    ruleId: string;
+    policyId: string;
     ruleName: string;
     expiringIn: any;
     exceptionReason: string;

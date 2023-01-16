@@ -60,7 +60,7 @@ public class AzureAutofixManager implements IAutofixManger{
         Map<String, String> ruleParam = CommonUtils.createParamMap(args[0]);
         ExceptionManager exceptionManager = new ExceptionManagerImpl();
         Map<String, List<IssueException>> excemptedResourcesForRule = exceptionManager.getStickyExceptions(
-                ruleParam.get(PacmanSdkConstants.RULE_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
+                ruleParam.get(PacmanSdkConstants.POLICY_ID), ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
         Map<String, IssueException> individuallyExcemptedIssues = exceptionManager
                 .getIndividualExceptions(ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
         IAutofixManger autoFixManager = AutoFixManagerFactory.getAutofixManager("azure");

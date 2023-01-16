@@ -43,13 +43,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-rds-db-public-access", desc = "This rule checks for RDS DB is publicaly accessble, if yes then it creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class RDSDBPublicAcessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-rds-db-public-access", desc = "This rule checks for RDS DB is publicaly accessble, if yes then it creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class RDSDBPublicAcessRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedShiftPublicAccessRule.class);
 	/**
@@ -85,7 +85,7 @@ public class RDSDBPublicAcessRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========RDSDBPublicAcessRule started=========");Annotation annotation = null;
 		String subnet = null;
 		String routetableAssociationsEsURL = null;
@@ -117,7 +117,7 @@ public class RDSDBPublicAcessRule extends BaseRule {
 		
 		String description ="RdsDb has publicly accessible ports" + endPointPort;
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
 		logger.debug("========pacmanHost {}  =========", pacmanHost);
@@ -189,7 +189,7 @@ public class RDSDBPublicAcessRule extends BaseRule {
 					annotation = PacmanUtils.setAnnotation(openPortsMap, ruleParam,subnet,description, issue);
 					if (null != annotation) {
 						annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID, dbInstanceIdentifier);
-						return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+						return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 					}
 				}
 			}
@@ -198,7 +198,7 @@ public class RDSDBPublicAcessRule extends BaseRule {
 			throw new RuleExecutionFailedExeption(exception.getMessage());
 		}
 		logger.debug("========RDSDBPublicAcessRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 		
 	}
 

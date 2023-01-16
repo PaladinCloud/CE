@@ -37,12 +37,12 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-missing-mandatory-tags", desc = "checks services for missing mandatory tags", severity = PacmanSdkConstants.SEV_HIGH,category=PacmanSdkConstants.GOVERNANCE)
-public class TaggingRule extends BaseRule {
+@PacmanPolicy(key = "check-for-missing-mandatory-tags", desc = "checks services for missing mandatory tags", severity = PacmanSdkConstants.SEV_HIGH,category=PacmanSdkConstants.GOVERNANCE)
+public class TaggingRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(TaggingRule.class);
 
@@ -67,7 +67,7 @@ public class TaggingRule extends BaseRule {
 	 * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
 	 *
 	 */
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========TaggingRule started=========");
 		Set<String> missingTags = new HashSet<>();
@@ -80,7 +80,7 @@ public class TaggingRule extends BaseRule {
 		String targetType = ruleParam.get(PacmanRuleConstants.TARGET_TYPE);
 
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
 
 		if (!PacmanUtils.doesAllHaveValue(mandatoryTags,tagsSplitter,severity,category,targetType)) {
@@ -105,13 +105,13 @@ public class TaggingRule extends BaseRule {
 		missingTagsStr = Joiner.on(", ").join(missingTags);
 		if (!missingTags.isEmpty()) {
 			String description = "Missed tags for "+targetType+" are "+ missingTagsStr;
-			return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createAnnotaion(ruleParam, missingTagsStr, mandatoryTagsList, description,severity,category,targetType));
+			return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createAnnotaion(ruleParam, missingTagsStr, mandatoryTagsList, description,severity,category,targetType));
 
 		} else {
 			logger.info(targetType ," ", entityId , " has all manadatory tags");
 		}
 		logger.debug("========TaggingRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

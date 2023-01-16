@@ -39,7 +39,7 @@
                                 {{pageTitle}}
                             </div>
                             <div class="pacman-alert-message">
-                                Are you sure to <span class="lowercase">{{pageTitle}}</span> - <span class="highlight-pink">{{ruleId}}</span>
+                                Are you sure to <span class="lowercase">{{pageTitle}}</span> - <span class="highlight-pink">{{policyId}}</span>
                             </div>
                             <div class="pacman-alert-button">
                                 <button class="submit-btn uppercase" type="button" (click)="enableDisableRule()"><i class="fa fa-check"></i> {{action}}</button>
@@ -71,7 +71,7 @@
                                 <ng-template #elseBlock>
                                     disabling
                                 </ng-template>
-                                rule - <span class="highlight-pink">{{ruleId}}</span>
+                                rule - <span class="highlight-pink">{{policyId}}</span>
                             </div>
                             <div class="pacman-alert-button">
                                 <button class="submit-btn uppercase" type="button" (click)="closeErrorMessage()"><i class="fa fa-arrow-left"></i>  BACK</button>
@@ -93,7 +93,7 @@
                                 </ng-template>
                             </div>
                             <div class="pacman-alert-message">
-                                Rule <span class="highlight-pink">{{ruleId}}</span> has been successfully
+                                Rule <span class="highlight-pink">{{policyId}}</span> has been successfully
                                 <span *ngIf="action=='enable'; else elseBlock1">
                                     enabled
                                 </span>
@@ -116,7 +116,7 @@
                                 </span>
                                 <ng-template #elseBlock>
                                     Disabling
-                                </ng-template> rule - <span class="highlight-pink">{{ruleId}}</span> is under progress ...
+                                </ng-template> rule - <span class="highlight-pink">{{policyId}}</span> is under progress ...
                             </div>
                         </div>
                     </div>

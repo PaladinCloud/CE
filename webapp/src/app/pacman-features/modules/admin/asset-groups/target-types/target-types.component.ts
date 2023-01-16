@@ -25,6 +25,7 @@ import { WorkflowService } from "../../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../../services/all-admin.service";
 import { UploadFileService } from "../../../../services/upload-file-service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 
 @Component({
   selector: "app-admin-target-types",
@@ -38,7 +39,8 @@ import { UploadFileService } from "../../../../services/upload-file-service";
   ],
 })
 export class TargetTypesComponent implements OnInit, OnDestroy {
-  pageTitle: String = "Target Types";
+  pageTitle: String = "Asset Types";
+  columnNamesMap = {"targetName": "Asset Name", "displayName": "Display Name", "targetDesc": "Asset Desc", "targetConfig": "Asset Config"}
   allDomains: any = [];
 
   breadcrumbArray: any = ["Admin"];
@@ -104,7 +106,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    this.breadcrumbPresent = "Target Types";
+    this.breadcrumbPresent = "Asset Types";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
@@ -272,16 +274,28 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
     }
   }
 
-  massageData(data) {
-    let refactoredService = this.refactorFieldsService;
-    let newData = [];
-    let formattedFilters = data.map(function (data) {
-      let keysTobeChanged = Object.keys(data);
+  massageData(data){
+    const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
+    const newData = [];
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
       let newObj = {};
-      keysTobeChanged.forEach((element) => {
-        var elementnew =
-          refactoredService.getDisplayNameForAKey(element) || element;
-        newObj = Object.assign(newObj, { [elementnew]: data[element] });
+      KeysTobeChanged.forEach((element) => {
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        else {
+        elementnew =
+          refactoredService.getDisplayNameForAKey(
+            element.toLocaleLowerCase()
+          ) || element;
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
       });
       newObj["Actions"] = "";
       newData.push(newObj);
@@ -366,10 +380,10 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
       }
       this.allColumns = Object.keys(totalVariablesObj);
       this.allColumns = [
-        "Target Name",
+        "Asset Name",
       	"Display Name",
-        "Target Desc",
-        "Target Config",
+        "Asset Desc",
+        "Asset Config",
         "Domain",
         "Category",
         "Endpoint",
@@ -407,7 +421,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            targetTypeName: row.row["Target Name"].text,
+            targetTypeName: row.row["Asset Name"].text,
           },
         });
       } catch (error) {

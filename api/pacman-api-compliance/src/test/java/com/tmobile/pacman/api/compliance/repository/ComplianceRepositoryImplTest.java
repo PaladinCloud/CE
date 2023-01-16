@@ -59,7 +59,7 @@ import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
 import com.tmobile.pacman.api.compliance.domain.IssueResponse;
 import com.tmobile.pacman.api.compliance.domain.IssuesException;
 import com.tmobile.pacman.api.compliance.domain.KernelVersion;
-import com.tmobile.pacman.api.compliance.domain.RuleDetails;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 import com.tmobile.pacman.api.compliance.util.CommonTestUtil;
 
@@ -104,13 +104,13 @@ public class ComplianceRepositoryImplTest implements Constants {
         issueDetailMap.put(ES_DOC_ID_KEY, "678");
         issueDetails.add(issueDetailMap);
 
-        RuleDetails ruleDetails = new RuleDetails();
-        ruleDetails.setRuleId("Kernel Compliance Rule");
+        PolicyDetails ruleDetails = new PolicyDetails();
+        ruleDetails.setPolicyId("Kernel Compliance Rule");
         ruleDetails.setReason("kernel Version Non-Compliant");
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(issueDetails);
-        when(complianceRepositoryImpl.getOpenIssueDetails(ruleDetails.getRuleId())).thenReturn(issueDetails);
+        when(complianceRepositoryImpl.getOpenIssueDetails(ruleDetails.getPolicyId())).thenReturn(issueDetails);
         complianceRepositoryImpl.closeIssuesByRule(ruleDetails);
 
     }
@@ -133,13 +133,13 @@ public class ComplianceRepositoryImplTest implements Constants {
         IssueResponse issueReason = new IssueResponse();
         issueReason.setExceptionReason("exempted");
         issueReason.setIssueId("1234");
-        RuleDetails ruleDetails = new RuleDetails();
-        ruleDetails.setRuleId("Kernel Compliance Rule");
+        PolicyDetails ruleDetails = new PolicyDetails();
+        ruleDetails.setPolicyId("Kernel Compliance Rule");
         ruleDetails.setReason("kernel Version Non-Compliant");
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(issueDetails);
-        when(complianceRepositoryImpl.getOpenIssueDetails(ruleDetails.getRuleId())).thenReturn(issueDetails);
+        when(complianceRepositoryImpl.getOpenIssueDetails(ruleDetails.getPolicyId())).thenReturn(issueDetails);
         complianceRepositoryImpl.exemptAndUpdateIssueDetails(issueReason);
 
     }
@@ -161,8 +161,8 @@ public class ComplianceRepositoryImplTest implements Constants {
         IssueResponse issueReason = new IssueResponse();
         issueReason.setExceptionReason("exempted");
         issueReason.setIssueId("1234");
-        RuleDetails ruleDetails = new RuleDetails();
-        ruleDetails.setRuleId("Kernel Compliance Rule");
+        PolicyDetails ruleDetails = new PolicyDetails();
+        ruleDetails.setPolicyId("Kernel Compliance Rule");
         ruleDetails.setReason("kernel Version Non-Compliant");
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
@@ -202,7 +202,7 @@ public class ComplianceRepositoryImplTest implements Constants {
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
         complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", "tagging-rule", "app1");
         complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", "tagging-rule", null);
-        complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", TAGGING_POLICY, null);
+        complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", CATEGORY_TAGGING, null);
         complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", EC2_KERNEL_COMPLIANCE_RULE, null);
 
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenThrow(new RuntimeException());

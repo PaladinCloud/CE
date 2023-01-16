@@ -21,11 +21,11 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.azurerules.NSGRule.PublicAccessforConfiguredPort;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class })
 public class PublicAccessforConfiguredPortTest {
         @InjectMocks
         PublicAccessforConfiguredPort postgreeSecurityRule;

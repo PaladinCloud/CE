@@ -43,11 +43,11 @@ import com.amazonaws.services.elasticsearch.model.ElasticsearchDomainStatus;
 import com.amazonaws.services.elasticsearch.model.VPCDerivedInfo;
 import com.tmobile.pacman.autofix.publicaccess.PublicAccessAutoFix;
 import com.tmobile.pacman.commons.autofix.BaseFix;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.util.CommonTestUtils;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PublicAccessAutoFix.class,BaseRule.class})
+@PrepareForTest({ PublicAccessAutoFix.class,BasePolicy.class})
 public class ElasticSearchPublicAccessAutoFixTest {
 
     @InjectMocks

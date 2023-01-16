@@ -26,9 +26,9 @@ public interface AssetGroupExceptionProjections {
 
 	public String getTargetType();
 
-	public String getRuleName();
+	public String getPolicyName();
 
-	public String getRuleId();
+	public String getPolicyId();
 
 	public String getExpiryDate();
 

@@ -37,12 +37,12 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class, IAMUtils.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class })
 public class RootAccountHardwareMFACheckTest {
 
 	@InjectMocks
@@ -70,14 +70,14 @@ public class RootAccountHardwareMFACheckTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		RootAccountHardwareMFACheck spy = Mockito.spy(new RootAccountHardwareMFACheck());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(amazonIdentityManagementClient.getAccountSummary(anyObject())).thenReturn(mockSummary());
 		
 		ListVirtualMFADevicesRequest listMfaRequest = new ListVirtualMFADevicesRequest();
 		when(amazonIdentityManagementClient.listVirtualMFADevices(listMfaRequest.withAssignmentStatus(AssignmentStatusType.Assigned))).thenReturn(mockMFAList());
 		
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -98,14 +98,14 @@ public class RootAccountHardwareMFACheckTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		RootAccountHardwareMFACheck spy = Mockito.spy(new RootAccountHardwareMFACheck());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(amazonIdentityManagementClient.getAccountSummary(anyObject())).thenReturn(mockSummary());
 		
 		ListVirtualMFADevicesRequest listMfaRequest = new ListVirtualMFADevicesRequest();
 		when(amazonIdentityManagementClient.listVirtualMFADevices(listMfaRequest.withAssignmentStatus(AssignmentStatusType.Assigned))).thenReturn(null);
 		
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
@@ -140,7 +140,7 @@ public class RootAccountHardwareMFACheckTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		RootAccountHardwareMFACheck spy = Mockito.spy(new RootAccountHardwareMFACheck());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(amazonIdentityManagementClient.getAccountSummary(anyObject())).thenThrow(new RuleExecutionFailedExeption());
 		assertThatThrownBy(() -> spy.execute(ruleParam, resourceAttribute)).isInstanceOf(RuleExecutionFailedExeption.class);
@@ -155,7 +155,7 @@ public class RootAccountHardwareMFACheckTest {
 	private Map<String, String> getInputParamMap() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "AWS_rootaccount_hardware_MFA_version-1_enable_harware_mfa_account");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "AWS_rootaccount_hardware_MFA_version-1_enable_harware_mfa_account");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_MEDIUM);
 		ruleParam.put(PacmanRuleConstants.ACCOUNTID, "123456789");

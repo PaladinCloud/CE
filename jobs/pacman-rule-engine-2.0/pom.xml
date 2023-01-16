@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.paladincloud</groupId>
-	<artifactId>rule-engine</artifactId>
+	<artifactId>policy-engine</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>pacman-rule-engine</name>
-	<description>Core Rule Engine </description>
+	<name>pacman-policy-engine</name>
+	<description>Core Policy Engine </description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<artifact.name>rule-engine</artifact.name>
+		<artifact.name>policy-engine</artifact.name>
 	</properties>
 
 	<repositories>

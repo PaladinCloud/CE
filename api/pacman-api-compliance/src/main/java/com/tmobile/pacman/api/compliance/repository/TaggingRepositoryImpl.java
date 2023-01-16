@@ -42,7 +42,7 @@ import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
 
 /**
@@ -120,7 +120,7 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/")
                 .append(assetGroup).append("/").append(SEARCH);
         StringBuilder requestBody = new StringBuilder(
-                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\"TaggingRule_version-1\"}}}");
+                "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyCategory.keyword\":{\"value\":\"tagging\"}}}");
         if (!Strings.isNullOrEmpty(searchText)) {
             requestBody.append("," + "{\"match_phrase_prefix\":{\"_all\":\""
                     + searchText + "\"" + "}}");
@@ -159,8 +159,8 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
      */
     public List<Map<String, Object>> getRuleParamsFromDbByPolicyId(
             String policyId) throws DataException {
-        String ruleIdQuery = "SELECT rule.ruleParams FROM cf_RuleInstance rule LEFT JOIN cf_Policy policy ON rule.policyId = policy.policyId WHERE rule.status = 'ENABLED' AND policy.policyId ='"
-                + policyId + "' GROUP BY rule.policyId";
+        String ruleIdQuery = "SELECT policyParams FROM cf_PolicyTable   WHERE rule.status = 'ENABLED' AND policyId ='"
+                + policyId + "' GROUP BY policyId";
         return rdsepository.getDataFromPacman(ruleIdQuery);
     }
 
@@ -179,8 +179,9 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
             mandatoryTagsList.add(mandatoryTag);
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
-        mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID),
-                TAGGING_POLICY);
+        // @ToDo
+ //       mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID),
+ //               TAGGING_POLICY);
         matchPhrasePrefix.put(MISSING_TAGS, mandatoryTagsList);
         shouldFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS),
                 OPEN);
@@ -200,23 +201,23 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
      */
     public List<Map<String, Object>> getRuleTargetTypesFromDbByPolicyId(
             String policyId) throws DataException {
-        String ruleIdQuery = "SELECT rule.targetType FROM cf_RuleInstance rule LEFT JOIN cf_Policy policy ON rule.policyId = policy.policyId WHERE rule.status = 'ENABLED' AND policy.policyId ='"
+        String categoryTaggingQuery = "SELECT targetType FROM cf_PolicyTable WHERE status = 'ENABLED' AND category ='"
                 + policyId + "'";
-        return rdsepository.getDataFromPacman(ruleIdQuery);
+        return rdsepository.getDataFromPacman(categoryTaggingQuery);
     }
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.repository.TaggingRepository#getUntaggedTargetTypeIssues(com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest, java.util.List)
      */
-    public String getUntaggedTargetTypeIssues(
-            UntaggedTargetTypeRequest request, List<String> tagsList)
+    public String getCategoryWiseTargetTypeIssue(
+            SummaryByTargetTypeRequest request, List<String> tagsList)
             throws DataException {
         String assetGroup = request.getAg();
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/")
                 .append(assetGroup).append("/").append(SEARCH);
         StringBuilder requestBody = null;
-        String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
-                + TAGGING_POLICY
+        String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyCategory.keyword\":{\"value\":\""
+                + request.getCategory()
                 + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}]";
 
         if (!tagsList.isEmpty()) {

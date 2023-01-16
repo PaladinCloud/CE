@@ -58,7 +58,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -232,7 +232,7 @@ public class CommonUtils {
 		 * @return the unique annotation id
 		 */
 		public static String getUniqueAnnotationId(Annotation annotation){
-			String documentId = annotation.get(PacmanSdkConstants.PARENT_ID) +  annotation.get(PacmanSdkConstants.RULE_ID);
+			String documentId = annotation.get(PacmanSdkConstants.PARENT_ID) +  annotation.get(PacmanSdkConstants.POLICY_ID);
 			return getUniqueIdForString(documentId);
 		}
 

@@ -105,7 +105,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   requestNewException() {
     this.inputToException["disablePolicy"] = true;
     const data = {
-      ruleId: this.autofixData.ruleId,
+      policyId: this.autofixData.policyId,
       ruleName: this.autofixData.ruleName,
       expiringIn: 0,
       exceptionReason: "",

@@ -20,6 +20,8 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,8 +30,11 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,8 +61,9 @@ import com.tmobile.pacman.api.compliance.domain.ResourceTypeResponse;
 import com.tmobile.pacman.api.compliance.domain.ResponseData;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.RevokeIssuesException;
-import com.tmobile.pacman.api.compliance.domain.RuleDetails;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
+import com.tmobile.pacman.api.compliance.service.PolicyTableService;
 
 /**
  * The Class ComplianceController.
@@ -66,9 +72,15 @@ import com.tmobile.pacman.api.compliance.service.ComplianceService;
 @PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
 public class ComplianceController implements Constants {
 
+	/** The Constant logger. */
+	private static final Logger log = LoggerFactory.getLogger(ComplianceController.class);
     /** The compliance service. */
     @Autowired
     private ComplianceService complianceService;
+    
+    /** The policy table service. */
+    @Autowired
+    private PolicyTableService policyTableService;
 
     /**
      * Gets the issues details.Request expects asssetGroup and domain as
@@ -118,7 +130,7 @@ public class ComplianceController implements Constants {
     
     @RequestMapping(path = "/v1/issues/count", method = RequestMethod.GET)
     public ResponseEntity<Object> getIssuesCount(@RequestParam("ag") String assetGroup,
-            @RequestParam("domain") String domain, @RequestParam(name = "ruleId", required = false) String ruleId) {
+            @RequestParam("domain") String domain, @RequestParam(name = "policyId", required = false) String ruleId) {
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(domain)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
@@ -351,11 +363,11 @@ public class ComplianceController implements Constants {
      * @return ResponseEntity
      */
     @ApiOperation(httpMethod = "PUT", value = "Close Issues by Rule Details")
-    @RequestMapping(path = "/v1/issues/close-by-rule-id", method = RequestMethod.PUT)
+    @RequestMapping(path = "/v1/issues/close-by-policy-id", method = RequestMethod.PUT)
     @ResponseBody
     
     public ResponseEntity<Object> closeIssues(
-            @ApiParam(value = "Provide valid Rule Details ", required = true) @RequestBody(required = true) RuleDetails ruleDetails) {
+            @ApiParam(value = "Provide valid Rule Details ", required = true) @RequestBody(required = true) PolicyDetails ruleDetails) {
         Map<String, Object> response = complianceService.closeIssuesByRule(ruleDetails);
         if (Integer.parseInt(response.get("status").toString()) == TWO_HUNDRED) {
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -468,7 +480,7 @@ public class ComplianceController implements Constants {
     // @Cacheable(cacheNames="compliance",unless="#result.status==200")
     
     public ResponseEntity<Object> getPolicydetailsbyApplication(@RequestParam("ag") String assetGroup,
-            @RequestParam("ruleId") String ruleId,
+            @RequestParam("policyId") String ruleId,
             @RequestParam(name = "searchText", required = false) String searchText) {
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(ruleId)) {
             return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/ruleId is mandatory"));
@@ -500,7 +512,7 @@ public class ComplianceController implements Constants {
     @RequestMapping(path = "/v1/policydetailsbyenvironment", method = RequestMethod.GET)
     
     public ResponseEntity<Object> getpolicydetailsbyEnvironment(@RequestParam("ag") String assetGroup,
-            @RequestParam("application") String application, @RequestParam("ruleId") String ruleId,
+            @RequestParam("application") String application, @RequestParam("policyId") String ruleId,
             @RequestParam(name = "searchText", required = false) String searchText) {
 
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(application) || Strings.isNullOrEmpty(ruleId)) {
@@ -526,10 +538,10 @@ public class ComplianceController implements Constants {
 
     @RequestMapping(path = "/v1/policydescription", method = RequestMethod.GET)
     
-    public ResponseEntity<Object> getPolicyDescription(@RequestParam("ruleId") String ruleId) {
+    public ResponseEntity<Object> getPolicyDescription(@RequestParam("policyId") String ruleId) {
 
         if (Strings.isNullOrEmpty(ruleId)) {
-            return ResponseUtils.buildFailureResponse(new Exception("ruleId Mandatory"));
+            return ResponseUtils.buildFailureResponse(new Exception("policyId Mandatory"));
         }
         PolicyDescription response = null;
         try {
@@ -540,6 +552,9 @@ public class ComplianceController implements Constants {
         }
         return ResponseUtils.buildSucessResponse(response);
     }
+    
+	
+
 
     /**
      * API returns the kernel version of the given instanceId if it is
@@ -738,4 +753,23 @@ public class ComplianceController implements Constants {
             return ResponseUtils.buildFailureResponse(exception);
         }
     }
+    
+    /**
+     * API to get policy by id
+     *
+     * @author 
+     * @param policyId - valid policy Id
+     * @return Policies details
+     */
+	@ApiOperation(httpMethod = "GET", value = "API to get policy by id",  produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/v1/policy-details-by-id", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getPoliciesById(
+			@ApiParam(value = "provide valid policy id", required = true) @RequestParam(defaultValue = "", name = "policyId", required = true) String policyId) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyId(policyId));
+		} catch (Exception exception) {
+			log.error("Unexpected error occurred!!", exception);
+			return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+		}
+	} 
 }

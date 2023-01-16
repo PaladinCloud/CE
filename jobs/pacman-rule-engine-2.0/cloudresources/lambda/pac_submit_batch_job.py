@@ -34,7 +34,7 @@ def processJsonInput(event,context):
     parameters = {"executableName":executableName,
                  "params":json.dumps(event),
                  "jvmMemParams":os.getenv('JVM_HEAP_SIZE',"-Xms1024m -Xmx4g"),
-                 "ruleEngineExecutableName":"rule-engine.jar",
+                 "ruleEngineExecutableName":"policy-engine.jar",
                  "entryPoint":"com.tmobile.pacman.executor.JobExecutor"}
 
     return submit_to_batch(jobQueue,jobName,jobDefinition,containerOverrides,parameters)

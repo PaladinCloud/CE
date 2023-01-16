@@ -34,7 +34,7 @@ public @interface PacmanFix {
      *
      * @return the string
      */
-    String key() default "pacman-rule-";
+    String key() default "pacman-policy-";
 
     /**
      * Desc.

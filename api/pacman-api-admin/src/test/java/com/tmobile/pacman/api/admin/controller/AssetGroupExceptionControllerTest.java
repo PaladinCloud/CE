@@ -53,8 +53,8 @@ import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionProjections;
 import com.tmobile.pacman.api.admin.domain.CreateAssetGroupExceptionDetailsRequest;
 import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupExceptionRequest;
 import com.tmobile.pacman.api.admin.domain.StickyExceptionResponse;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyViewDetails;
 import com.tmobile.pacman.api.admin.repository.service.AssetGroupExceptionService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -189,11 +189,11 @@ public class AssetGroupExceptionControllerTest
 	}
 
 	private StickyExceptionResponse getStickyExceptionResponseResponse() {
-		List<TargetTypeRuleViewDetails> allTargetTypeRuleViewDetails = Lists.newArrayList();
-		TargetTypeRuleViewDetails targetTypeRuleViewDetails = new TargetTypeRuleViewDetails();
+		List<TargetTypePolicyViewDetails> allTargetTypeRuleViewDetails = Lists.newArrayList();
+		TargetTypePolicyViewDetails targetTypeRuleViewDetails = new TargetTypePolicyViewDetails();
 		targetTypeRuleViewDetails.setAdded(false);
-		targetTypeRuleViewDetails.setAllRules("[]");
-		targetTypeRuleViewDetails.setRules("[]");
+		targetTypeRuleViewDetails.setAllPolicies("[]");
+		targetTypeRuleViewDetails.setPolicies("[]");
 		targetTypeRuleViewDetails.setTargetName("targetName123");
 		allTargetTypeRuleViewDetails.add(targetTypeRuleViewDetails);
 		StickyExceptionResponse stickyExceptionResponse = new StickyExceptionResponse();
@@ -206,10 +206,10 @@ public class AssetGroupExceptionControllerTest
 	}
 	
 	private CreateAssetGroupExceptionDetailsRequest getCreateAssetGroupExceptionDetailsRequest() {
-		List<TargetTypeRuleDetails> allTargetTypeRuleDetails = Lists.newArrayList();
-		TargetTypeRuleDetails targetTypeRuleDetails = new TargetTypeRuleDetails();
-		targetTypeRuleDetails.setAllRules("[]");
-		targetTypeRuleDetails.setRules(Lists.newArrayList());
+		List<TargetTypePolicyDetails> allTargetTypeRuleDetails = Lists.newArrayList();
+		TargetTypePolicyDetails targetTypeRuleDetails = new TargetTypePolicyDetails();
+		targetTypeRuleDetails.setAllPolicies("[]");
+		targetTypeRuleDetails.setPolicies(Lists.newArrayList());
 		targetTypeRuleDetails.setTargetName("targetName123");
 		allTargetTypeRuleDetails.add(targetTypeRuleDetails);
 		
@@ -232,13 +232,13 @@ public class AssetGroupExceptionControllerTest
 			}
 
 			@Override
-			public String getRuleName() {
-				return "RuleName123";
+			public String getPolicyName() {
+				return "PolicyName123";
 			}
 
 			@Override
-			public String getRuleId() {
-				return "RuleId123";
+			public String getPolicyId() {
+				return "PolicyId123";
 			}
 
 			@Override

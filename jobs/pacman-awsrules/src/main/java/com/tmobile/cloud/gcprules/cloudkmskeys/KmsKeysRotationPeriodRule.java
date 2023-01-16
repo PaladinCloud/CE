@@ -9,10 +9,10 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,15 +20,15 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-kms-key-rotation-period", desc = "Check for kms encryption keys are rotated within a period of 90 days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class KmsKeysRotationPeriodRule extends BaseRule {
+@PacmanPolicy(key = "check-kms-key-rotation-period", desc = "Check for kms encryption keys are rotated within a period of 90 days", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class KmsKeysRotationPeriodRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(KmsKeysRotationPeriodRule.class);
 
     public static final long convertIntoDays=86400;
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
         logger.debug("Executing rotation period rule for cloud KMS keys");
         Annotation annotation = null;
@@ -50,7 +50,7 @@ public class KmsKeysRotationPeriodRule extends BaseRule {
         logger.debug("ES search url for gcp cloud kms key:  {}", esUrl);
         boolean rotationPeriodFlag = false;
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
-        MDC.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             Map<String, Object> mustFilter = new HashMap<>();
@@ -69,7 +69,7 @@ public class KmsKeysRotationPeriodRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug("Cloud Kms Key rotation period is greater than  90 days  Annotation {} :", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
             } catch (Exception exception) {
@@ -77,7 +77,7 @@ public class KmsKeysRotationPeriodRule extends BaseRule {
             }
         }
         logger.debug("Cloud Kms Key rotation period is within 90 days ");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

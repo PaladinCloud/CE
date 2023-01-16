@@ -25,13 +25,13 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-hardware-MFA-root-account", desc = "Checks if root acount has hardware MFA configured", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class RootAccountHardwareMFACheck extends BaseRule {
+@PacmanPolicy(key = "check-for-hardware-MFA-root-account", desc = "Checks if root acount has hardware MFA configured", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class RootAccountHardwareMFACheck extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(RootAccountHardwareMFACheck.class);
 
@@ -55,12 +55,12 @@ public class RootAccountHardwareMFACheck extends BaseRule {
 	 */
 
 	@Override
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
 		logger.debug("========RootAccountHardwareMFACheck started=========");
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		
 		Optional.ofNullable(ruleParam)
 				.filter(param -> (!PacmanUtils.doesAllHaveValue(param.get(PacmanRuleConstants.SEVERITY),
@@ -73,10 +73,10 @@ public class RootAccountHardwareMFACheck extends BaseRule {
 		Optional<String> opt = Optional.ofNullable(resourceAttributes)
 				.map(resource -> checkValidation(ruleParam, resource));
 		
-		RuleResult ruleResult = Optional.ofNullable(ruleParam)
+		PolicyResult ruleResult = Optional.ofNullable(ruleParam)
 				.filter(param -> opt.isPresent())
 				.map(param -> buildFailureAnnotation(param, opt.get()))
-				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
 
 		logger.debug("========RootAccountHardwareMFACheck ended=========");
@@ -135,7 +135,7 @@ public class RootAccountHardwareMFACheck extends BaseRule {
 		return description;
 	}
 
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+	private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
 		
 		Annotation annotation = null;
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -150,7 +150,7 @@ public class RootAccountHardwareMFACheck extends BaseRule {
 		issueList.add(issue);
 		annotation.put("issueDetails",issueList.toString());
 		logger.debug("========RootAccountHardwareMFACheck annotation {} :=========",annotation);
-		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	
 	
 	}

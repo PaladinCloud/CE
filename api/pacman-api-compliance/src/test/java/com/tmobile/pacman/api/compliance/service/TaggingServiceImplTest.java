@@ -46,7 +46,7 @@ import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import com.tmobile.pacman.api.compliance.domain.Request;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.repository.ComplianceRepository;
 import com.tmobile.pacman.api.compliance.repository.TaggingRepository;
 
@@ -64,7 +64,7 @@ public class TaggingServiceImplTest {
 
     Request request = new Request();
     
-    UntaggedTargetTypeRequest untaggedTargetTypeRequest = new UntaggedTargetTypeRequest();
+    SummaryByTargetTypeRequest untaggedTargetTypeRequest = new SummaryByTargetTypeRequest();
 
     @Mock
     private ElasticSearchRepository elasticSearchRepository;
@@ -174,18 +174,18 @@ public class TaggingServiceImplTest {
         when(complainceRepository.getTotalAssetCount(anyString(), anyString(),anyString(),anyString()))
                 .thenReturn(assetCountMap);
  
-        when(repository.getUntaggedTargetTypeIssues(anyObject(), anyObject()))
+        when(repository.getCategoryWiseTargetTypeIssue(anyObject(), anyObject()))
                 .thenReturn(response);
 
         assertThat(
                 taggingServiceImpl
-                        .getUntaggingByTargetTypes(untaggedTargetTypeRequest),
+                        .getNonCompliancebyCategoryofTargetType(untaggedTargetTypeRequest),
                 is(notNullValue()));
         //test service Exception when it throws DataException
         when(repository.getRuleTargetTypesFromDbByPolicyId(anyString()))
         .thenThrow(new DataException());
   
-        assertThatThrownBy(() -> taggingServiceImpl.getUntaggingByTargetTypes(untaggedTargetTypeRequest))
+        assertThatThrownBy(() -> taggingServiceImpl.getNonCompliancebyCategoryofTargetType(untaggedTargetTypeRequest))
         .isInstanceOf(ServiceException.class);
 
       
@@ -199,7 +199,7 @@ public class TaggingServiceImplTest {
         ReflectionTestUtils.setField(taggingServiceImpl, "mandatoryTags",
                 "Application,Environment");
         assertThatThrownBy(() -> taggingServiceImpl
-                .getUntaggingByTargetTypes(untaggedTargetTypeRequest))
+                .getNonCompliancebyCategoryofTargetType(untaggedTargetTypeRequest))
         .isInstanceOf(ServiceException.class);
     }
 

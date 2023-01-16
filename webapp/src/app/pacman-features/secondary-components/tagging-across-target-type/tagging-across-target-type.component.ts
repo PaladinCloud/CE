@@ -80,7 +80,8 @@ export class TaggingAcrossTargetTypeComponent implements OnInit , OnDestroy {
       this.setloading();
       const payload = {
         ag: this.selectedAssetGroup,
-        filter: {}
+        filter: {},
+		        category:'tagging'
       };
       const url = environment.taggingSummaryByTargetType.url;
       const method = environment.taggingSummaryByTargetType.method;

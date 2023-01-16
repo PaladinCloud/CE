@@ -63,14 +63,14 @@ public class AssetGroupStatsCollectorTest {
         List<Map<String, Object>> ruleInfoList = new ArrayList<>();
         Map<String,Object> ruleInfo = new HashMap<>();
         ruleInfo.put("domain", "infra");
-        ruleInfo.put("ruleId", "testruleid1");
+        ruleInfo.put("policyId", "testruleid1");
         ruleInfo.put("compliance_percent", 55);
         ruleInfo.put("total", 1345l);
         ruleInfo.put("compliant", 1000l);
         ruleInfo.put("noncompliant",  345l);
         ruleInfo.put("contribution_percent", 66);
         ruleInfoList.add(ruleInfo);
-        when(AssetGroupUtil.fetchRuleComplianceInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(ruleInfoList);
+        when(AssetGroupUtil.fetchPolicyComplianceInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(ruleInfoList);
         
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);
@@ -98,7 +98,7 @@ public class AssetGroupStatsCollectorTest {
         complnInfo.put("governance", 83);
         complnInfo.put("overall",  74);
         ruleInfoList.add(complnInfo);
-        when(AssetGroupUtil.fetchRuleComplianceInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(ruleInfoList);
+        when(AssetGroupUtil.fetchPolicyComplianceInfo(anyString(),anyString(),anyList(),anyString())).thenReturn(ruleInfoList);
         
         PowerMockito.mockStatic(ESManager.class);
         doNothing().when(ESManager.class);

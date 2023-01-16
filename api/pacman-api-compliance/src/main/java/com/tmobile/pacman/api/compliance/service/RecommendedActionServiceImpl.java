@@ -75,7 +75,7 @@ public class RecommendedActionServiceImpl implements RecommendedActionService,
      */
     @Override
     public List<Map<String, Object>> getRecommendedActions(String dataSource,
-            String targetType, String ruleId) throws ServiceException {
+            String targetType, String policyId) throws ServiceException {
 
         Map<String, Object> mustFilter = new HashMap<>();
         if (!Strings.isNullOrEmpty(dataSource)) {
@@ -84,11 +84,11 @@ public class RecommendedActionServiceImpl implements RecommendedActionService,
         if (Strings.isNullOrEmpty(targetType)) {
             throw new ServiceException("target type cannot be empty");
         }
-        if (Strings.isNullOrEmpty(ruleId)) {
+        if (Strings.isNullOrEmpty(policyId)) {
             throw new ServiceException("ruleId cannot be empty");
         }
         mustFilter.put("actsOn.keyword", targetType);
-        mustFilter.put("ruleId.keyword", ruleId);
+        mustFilter.put("policyId.keyword", policyId);
         try{
         return elasticSearchRepository.getSortedDataFromES(INDEX_RECOMMENDED_ACTIONS,
                 TYPE_RECOMMENDED_ACTIONS, mustFilter, null, null, null, null,null);

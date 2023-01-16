@@ -23,13 +23,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "remove-root-user-account-access-key", desc = "Checks if the the root user account access key is removed.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class RemoveRootUserAccountAccessKey extends BaseRule{
+@PacmanPolicy(key = "remove-root-user-account-access-key", desc = "Checks if the the root user account access key is removed.", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class RemoveRootUserAccountAccessKey extends BasePolicy{
 	
 	private static final Logger logger = LoggerFactory.getLogger(RemoveRootUserAccountAccessKey.class);
 
@@ -52,11 +52,11 @@ public class RemoveRootUserAccountAccessKey extends BaseRule{
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========CheckForRootUserAccountAccessKey started=========");
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 
 		if (MapUtils.isNotEmpty(ruleParam) && !PacmanUtils.doesAllHaveValue(ruleParam.get(PacmanRuleConstants.SEVERITY),
@@ -74,9 +74,9 @@ public class RemoveRootUserAccountAccessKey extends BaseRule{
 		
 		Optional<String> opt = Optional.ofNullable(response.getSummaryMap())
 				.map(resource -> checkValidation(resource));
-		RuleResult ruleResult = Optional.ofNullable(ruleParam).filter(param -> opt.isPresent())
+		PolicyResult ruleResult = Optional.ofNullable(ruleParam).filter(param -> opt.isPresent())
 				.map(param -> buildFailureAnnotation(param, opt.get()))
-				.orElse(new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
+				.orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
 
 		logger.debug("========CheckForRootUserAccountAccessKey ended=========");
 		return ruleResult;
@@ -121,7 +121,7 @@ public class RemoveRootUserAccountAccessKey extends BaseRule{
 		return description;
 	}
 	
-	private static RuleResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+	private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 		List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
 		Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
@@ -133,7 +133,7 @@ public class RemoveRootUserAccountAccessKey extends BaseRule{
 		issueList.add(issue);
 		annotation.put("issueDetails", issueList.toString());
 		logger.debug("========RemoveRootUserAccountAccessKey annotation {} :=========", annotation);
-		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 	}
 
 	@Override

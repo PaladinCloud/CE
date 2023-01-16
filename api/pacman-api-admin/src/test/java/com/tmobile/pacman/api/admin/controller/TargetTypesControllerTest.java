@@ -57,7 +57,7 @@ import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.AttributeValuesRequest;
 import com.tmobile.pacman.api.admin.domain.CreateUpdateTargetTypeDetailsRequest;
 import com.tmobile.pacman.api.admin.domain.TargetTypeAttribute;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
 import com.tmobile.pacman.api.admin.domain.TargetTypesProjections;
 import com.tmobile.pacman.api.admin.repository.model.TargetTypes;
 import com.tmobile.pacman.api.admin.repository.service.AssetGroupTargetDetailsService;
@@ -141,11 +141,11 @@ public class TargetTypesControllerTest {
 
 	@Test
 	public void getTargetTypesByAssetGroupNameTest() throws Exception {
-		TargetTypeRuleDetails targetTypeRuleDetails = new TargetTypeRuleDetails();
+		TargetTypePolicyDetails targetTypeRuleDetails = new TargetTypePolicyDetails();
 		targetTypeRuleDetails.setTargetName("targetNameTest1");
-		targetTypeRuleDetails.setRules(Lists.newArrayList());
-		targetTypeRuleDetails.setAllRules(Lists.newArrayList());
-		List<TargetTypeRuleDetails> allTargetTypeRuleDetails = Lists.newArrayList();
+		targetTypeRuleDetails.setPolicies(Lists.newArrayList());
+		targetTypeRuleDetails.setAllPolicies(Lists.newArrayList());
+		List<TargetTypePolicyDetails> allTargetTypeRuleDetails = Lists.newArrayList();
 		allTargetTypeRuleDetails.add(targetTypeRuleDetails);
 		when(assetGroupTargetDetailsService.getTargetTypesByAssetGroupName(eq(StringUtils.EMPTY)))
 				.thenReturn(allTargetTypeRuleDetails);

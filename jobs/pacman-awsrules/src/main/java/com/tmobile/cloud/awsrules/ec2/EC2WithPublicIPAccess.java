@@ -33,13 +33,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-ec2-public-access", desc = "checks for EC2 instance which has IP address and looks for any of SG group has CIDR IP to 0.0.0.0", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class EC2WithPublicIPAccess extends BaseRule {
+@PacmanPolicy(key = "check-for-ec2-public-access", desc = "checks for EC2 instance which has IP address and looks for any of SG group has CIDR IP to 0.0.0.0", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class EC2WithPublicIPAccess extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(EC2WithPublicIPAccess.class);
 
     /**
@@ -80,7 +80,7 @@ public class EC2WithPublicIPAccess extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========EC2WithPublicIPAccess started=========");
         Annotation annotation = null;
         String ec2SgEsURL = null;
@@ -127,7 +127,7 @@ public class EC2WithPublicIPAccess extends BaseRule {
             String vpcid = resourceAttributes.get("vpcid");
 
             MDC.put("executionId", ruleParam.get("executionId")); 
-            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
 
             List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
             LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -180,7 +180,7 @@ public class EC2WithPublicIPAccess extends BaseRule {
                         issueList.add(issue);
                         annotation.put("issueDetails", issueList.toString());
                         logger.debug("========EC2WithPublicIPAccess ended with an annotation {} : =========",annotation);
-                        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                     }
                 
             }
@@ -190,7 +190,7 @@ public class EC2WithPublicIPAccess extends BaseRule {
             }
         }
         logger.debug("========EC2WithPublicIPAccess ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
        }
 

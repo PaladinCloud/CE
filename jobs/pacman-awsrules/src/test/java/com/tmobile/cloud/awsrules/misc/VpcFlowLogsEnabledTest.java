@@ -46,10 +46,10 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanEc2Utils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class,PacmanEc2Utils.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class,PacmanEc2Utils.class})
 public class VpcFlowLogsEnabledTest {
 
     @InjectMocks
@@ -81,7 +81,7 @@ public class VpcFlowLogsEnabledTest {
         map.put("client", ec2Client);
         VpcFlowLogsEnabled spy = Mockito.spy(new VpcFlowLogsEnabled());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         mockStatic(PacmanEc2Utils.class);
         when(PacmanEc2Utils.getFlowLogs(anyObject(),anyObject())).thenReturn(flowLogs);

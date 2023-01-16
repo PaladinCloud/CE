@@ -39,13 +39,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-onprem-scanned-by-qualys", desc = "checks for onprem scanned by qualys,if not found then its an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class OnpremScannedByQualysRule extends BaseRule {
+@PacmanPolicy(key = "check-for-onprem-scanned-by-qualys", desc = "checks for onprem scanned by qualys,if not found then its an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class OnpremScannedByQualysRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(OnpremScannedByQualysRule.class);
 
@@ -70,7 +70,7 @@ public class OnpremScannedByQualysRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========OnpremScannedByQualysRule started=========");
 		Annotation annotation = null;
 		String resourceid = null;
@@ -87,7 +87,7 @@ public class OnpremScannedByQualysRule extends BaseRule {
         }
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex	
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex	
 		
 		List<LinkedHashMap<String,Object>> issueList = new ArrayList<>();
 		LinkedHashMap<String,Object> issue = new LinkedHashMap<>();
@@ -120,12 +120,12 @@ public class OnpremScannedByQualysRule extends BaseRule {
 					issueList.add(issue);
 					annotation.put("issueDetails", issueList.toString());
 					logger.debug("========OnpremScannedByQualysRule ended with annotation {} : =========",annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 				}
 		}
 		
 		logger.debug("========OnpremScannedByQualysRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

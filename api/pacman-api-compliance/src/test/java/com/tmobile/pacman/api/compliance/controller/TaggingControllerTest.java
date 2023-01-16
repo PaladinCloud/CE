@@ -34,7 +34,7 @@ import org.springframework.http.ResponseEntity;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 import com.tmobile.pacman.api.compliance.domain.Request;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.service.ComplianceServiceImpl;
 import com.tmobile.pacman.api.compliance.service.TaggingService;
 import com.tmobile.pacman.api.compliance.util.CommonTestUtil;
@@ -80,13 +80,13 @@ public class TaggingControllerTest {
     
     @Test
     public void untaggingByTargetTypesTest() throws Exception {
-        UntaggedTargetTypeRequest request = new UntaggedTargetTypeRequest();
+        SummaryByTargetTypeRequest request = new SummaryByTargetTypeRequest();
         request.setAg("aws-all");
-        when(taggingService.getUntaggingByTargetTypes(anyObject())).thenReturn(CommonTestUtil.getListMapObject());
+        when(taggingService.getNonCompliancebyCategoryofTargetType(anyObject())).thenReturn(CommonTestUtil.getListMapObject());
         assertThat(taggingController.untaggingByTargetTypes(request), is(notNullValue()));
-        assertThat(taggingController.untaggingByTargetTypes(new UntaggedTargetTypeRequest()), is(notNullValue()));
+        assertThat(taggingController.untaggingByTargetTypes(new SummaryByTargetTypeRequest()), is(notNullValue()));
         
-        when(taggingService.getUntaggingByTargetTypes(anyObject())).thenThrow(new ServiceException());
+        when(taggingService.getNonCompliancebyCategoryofTargetType(anyObject())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = taggingController.untaggingByTargetTypes(request);
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);

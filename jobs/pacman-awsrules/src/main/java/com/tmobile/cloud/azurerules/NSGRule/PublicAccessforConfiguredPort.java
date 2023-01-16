@@ -1,15 +1,11 @@
 package com.tmobile.cloud.azurerules.NSGRule;
 
 import java.util.Map;
-
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.PacmanRule;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -20,7 +16,10 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
@@ -30,13 +29,13 @@ import com.google.gson.JsonParser;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 
-@PacmanRule(key = "check-for-azure-nsg-rule", desc = "Deny unrestricted Access to Azure Resources", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class PublicAccessforConfiguredPort extends BaseRule {
+@PacmanPolicy(key = "check-for-azure-nsg-rule", desc = "Deny unrestricted Access to Azure Resources", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class PublicAccessforConfiguredPort extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(PublicAccessforConfiguredPort.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing Azure Security rule");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -85,14 +84,14 @@ public class PublicAccessforConfiguredPort extends BaseRule {
                 logger.debug(
                         "has restricted  Access for the  port :{} Rule completed with FAILURE isValid flag {} : ",
                         port, isValid);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
         logger.debug("has unrestricted for port :{} Rule completed with Success isValid flag {}",
                 port, isValid);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean validatePostgresqlServerAccess(String esUrl, Map<String, Object> mustFilter, String[] validatePort,
