@@ -69,7 +69,7 @@ public class ElasticSearchManager {
     public static void createIndex(String index) {
     	String indexName = "/"+index;
         if (!indexExists(indexName)) {
-            String payLoad = "{\"settings\": { \"index.mapping.ignore_malformed\": true }}";
+            String payLoad = "{\"settings\": { \"number_of_shards\" : 1,\"number_of_replicas\" : 1,\"index.mapping.ignore_malformed\": true }}";
             try {
                 invokeAPI("PUT", indexName, payLoad);
             } catch (IOException e) {

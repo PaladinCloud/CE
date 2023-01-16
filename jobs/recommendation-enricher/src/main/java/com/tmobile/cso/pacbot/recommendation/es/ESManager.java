@@ -516,7 +516,7 @@ public class ESManager implements Constants {
      */
     public static void createIndex(String indexName, List<Map<String, String>> errorList) {
         if (!indexExists(indexName)) {
-            String payLoad = "{\"settings\": { \"index.mapping.ignore_malformed\": true }}";
+            String payLoad = "{\"settings\": { \"number_of_shards\" : 1,\"number_of_replicas\" : 1,\"index.mapping.ignore_malformed\": true }}";
             try {
                 invokeAPI("PUT", indexName, payLoad);
             } catch (IOException e) {
