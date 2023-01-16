@@ -104,6 +104,8 @@ import com.tmobile.pacman.commons.policy.Annotation;
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
 
+    private static final String DATA_RESOURCE_VALUE = "arn:aws:s3";
+
     private PacmanUtils() {
 
     }
@@ -3979,6 +3981,29 @@ public class PacmanUtils {
 		return policyEvaluationResultsMap;
 	}
 
+    public static boolean isValidateReadWriteType(Set<String> readWriteTypeSet, List<String> READ_WRITE_TYPES) {
+        if (!readWriteTypeSet.isEmpty()) {
+            for (String readWriteType : readWriteTypeSet) {
+                if (READ_WRITE_TYPES.contains(readWriteType)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static List<String> getValidResourceValue(Set<String> resourceValueSet, String bucketName) {
+        List<String> valueList = new ArrayList<>();
+        for (String resourceValue : resourceValueSet) {
+            for (String value : resourceValue.split(",")) {
+                if (value.equalsIgnoreCase(DATA_RESOURCE_VALUE) ||
+                        (value.equalsIgnoreCase(DATA_RESOURCE_VALUE + ":::" + bucketName + "/"))) {
+                    valueList.add(resourceValue);
+                }
+            }
+        }
+        return valueList;
+    }
 
 
 }
