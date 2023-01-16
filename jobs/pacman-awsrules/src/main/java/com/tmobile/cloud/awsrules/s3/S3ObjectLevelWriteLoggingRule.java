@@ -33,6 +33,7 @@ public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
     private static final String CLOUD_TRAIL_URL = "/aws/cloudtrail/_search";
     private static final String CLOUD_TRAIL_EVENT_SELECTOR_URL = "/aws/cloudtrail_eventselector/_search";
     private static final String DATA_RESOURCE_TYPE = "AWS::S3::Object";
+    private static final List<String> READ_WRITE_TYPES = Arrays.asList("All", "WriteOnly");
 
     /**
      * The method will get triggered from Rule Engine with following parameters
@@ -81,11 +82,10 @@ public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
      */
     private String checkValidation(Map<String, String> resourceAttributes) {
 
-        String description = null;
         String bucketName = resourceAttributes.get(PacmanRuleConstants.NAME);
         String accountId = resourceAttributes.get(PacmanRuleConstants.ACCOUNTID);
         String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
-        List<String> readWriteTypes = Arrays.asList("All", "WriteOnly");
+
         if (!PacmanUtils.doesAllHaveValue(pacmanHost, accountId, bucketName)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -96,46 +96,60 @@ public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanRuleConstants.ACCOUNTID, accountId);
             mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_TYPE, DATA_RESOURCE_TYPE);
-            mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_VALUE, "arn:aws:s3:::" + bucketName + "/");
             HashMultimap<String, Object> shouldFilter = HashMultimap.create();
             Map<String, Object> mustTermsFilter = new HashMap<>();
 
-            Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, "trailarn", null);
-            Set<String> typeResultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, "readwritetype", null);
+            Set<String> resourceValueSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
+                    shouldFilter, mustTermsFilter, PacmanRuleConstants.DATA_RESOURCE_VALUE, null);
 
-            if (Objects.isNull(resultSet) || resultSet.isEmpty() || Objects.isNull(typeResultSet)
-                    || typeResultSet.isEmpty()) {
+            if (Objects.isNull(resourceValueSet) || resourceValueSet.isEmpty()) {
                 return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
                         + " for s3 bucket: " + bucketName;
             }
-            String trailFromSearch = resultSet.iterator().next();
-            String readTypeFromSearch = typeResultSet.iterator().next();
-            if (!readWriteTypes.contains(readTypeFromSearch)) {
-                return "CloudTrail log with matching conditions does not exists," +
-                        "readwritetype: " + readTypeFromSearch + ",accountId: " + accountId
-                        + " for s3 bucket: " + bucketName;
+            List<String> resourceValues = PacmanUtils.getValidResourceValue(resourceValueSet, bucketName);
+            if (resourceValues.isEmpty()) {
+                return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
+                        + " for s3 bucket: " + bucketName + " and resourceValue is not matching";
             }
-
-            esEndPoint = pacmanHost + CLOUD_TRAIL_URL;
-            mustFilter = new HashMap<>();
-            mustFilter.put(PacmanRuleConstants.MULTI_REGION_TRAIL, "true");
-            mustFilter.put(PacmanRuleConstants.TRAIL_ARN, trailFromSearch);
-            resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, "trailarn", null);
-            if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
-                        + ",accountId: " + accountId + " for s3 bucket: " + bucketName;
+            for (String resourceValue : resourceValues) {
+                mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_VALUE, resourceValue);
+                Set<String> readWriteTypeSet = PacmanUtils
+                        .getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
+                                shouldFilter, mustTermsFilter, "readwritetype", null);
+                if (Objects.isNull(readWriteTypeSet) || readWriteTypeSet.isEmpty()) {
+                    return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
+                            + " for s3 bucket: " + bucketName + " and readwritetype is not matching";
+                }
+                if (!PacmanUtils.isValidateReadWriteType(readWriteTypeSet, READ_WRITE_TYPES)) {
+                    return "CloudTrail log with matching conditions does not exists," +
+                            "readwritetype: " + String.join(",", readWriteTypeSet) + ",accountId: " + accountId
+                            + " for s3 bucket: " + bucketName;
+                }
+                Set<String> trailArnSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
+                        shouldFilter, mustTermsFilter, "trailarn", null);
+                if (Objects.isNull(trailArnSet) || trailArnSet.isEmpty()) {
+                    return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
+                            + " for s3 bucket: " + bucketName;
+                }
+                for (String trailFromSearch : trailArnSet) {
+                    esEndPoint = pacmanHost + CLOUD_TRAIL_URL;
+                    mustFilter = new HashMap<>();
+                    mustFilter.put(PacmanRuleConstants.MULTI_REGION_TRAIL, "true");
+                    mustFilter.put(PacmanRuleConstants.TRAIL_ARN, trailFromSearch);
+                    Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
+                            shouldFilter, mustTermsFilter, "trailarn", null);
+                    if (!(Objects.isNull(resultSet) || resultSet.isEmpty())) {
+                        return null;
+                    }
+                }
             }
-
+            return "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
+                    + ",accountId: " + accountId + " for s3 bucket: " + bucketName;
 
         } catch (Exception ex) {
             logger.error("Object-level logging for write events is not enabled for S3 bucket" + ex.getMessage(), ex);
-            description = "Object-level logging for write events is enabled for S3 bucket";
+            return "Object-level logging for write events is enabled for S3 bucket";
         }
-
-        return description;
     }
 
     private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
