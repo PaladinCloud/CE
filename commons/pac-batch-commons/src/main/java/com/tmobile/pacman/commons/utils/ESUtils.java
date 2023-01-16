@@ -172,7 +172,8 @@ public class ESUtils {
 	 */
 	public static void createIndex(String url, String indexName) throws Exception {
 		String esUrl = new StringBuilder(url).append("/").append(indexName).toString();
-		CommonUtils.doHttpPut(esUrl, null);
+		String payLoad = "{\"settings\": {  \"number_of_shards\" : 1,\"number_of_replicas\" : 1 }}";
+		CommonUtils.doHttpPut(esUrl, payLoad);
 	}
 
 	/**

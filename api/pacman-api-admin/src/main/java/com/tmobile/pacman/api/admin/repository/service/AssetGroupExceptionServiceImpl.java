@@ -321,7 +321,8 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	
 	private void createIndex(String indexName) {
 		if (!indexExists(indexName)) {
-			invokeAPI("PUT", indexName, null);
+			String payLoad = "{\"settings\": {  \"number_of_shards\" : 1,\"number_of_replicas\" : 1 }}";
+			invokeAPI("PUT", indexName, payLoad);
 		}
 	}
 	
