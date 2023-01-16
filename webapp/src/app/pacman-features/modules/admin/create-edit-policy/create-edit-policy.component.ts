@@ -45,7 +45,7 @@ import { NotificationObservableService } from 'src/app/shared/services/notificat
 })
 export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
-  policyType = ["Federated", "Serverless", "Customer"];
+  policyTypeList = ["Federated", "Serverless"];
   selectedAssetType = "";
   resolutionUrl = "";
   isDisabled = true;
@@ -66,6 +66,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   errorMessage;
   showingArr = ['policyName', 'policyId', 'policyDesc'];
   allColumns = [];
+  submitBtn = "Create";
   totalRows = 0;
   currentBucket = [];
   bucketNumber = 0;
@@ -82,7 +83,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allPolicyParams = Object();
   paramsList = [{
     "key": "",
-    "value": ""
+    "value": "",
+    "isEdit": false,
+    "isMandatory": false
   }];
   hideContent = false;
   ispolicyCreationFailed = false;
@@ -133,6 +136,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   selectedpolicyName = '';
   selectedTargetType = '';
   isAutofixEnabled = false;
+  isRequired = true;
 
   public labels;
   private previousUrl = '';
@@ -161,6 +165,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   resolution = "";
   isFileChanged: boolean = false;
   policyUrl = "";
+  isManagePolicy: boolean = false;
 
 
   constructor(
@@ -196,9 +201,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
   selectedType(event: any) {
     this.selectedPolicyType = event;
-    if (this.selectedPolicyType == 'Customer') {
-      this.getAllPolicyIds();
-    }
     if (event) {
       this.isDisabled = false;
       this.readonly = false;
@@ -275,9 +277,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  createOrUpdatepolicy(form: NgForm) {
+  onSubmit(form: NgForm) {
     this.hideContent = true;
     this.policyLoader = true;
+    console.log(form.value, "Form");
     this.buildCreatepolicyModel(form.value);
   }
 
@@ -346,12 +349,39 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.currentFileUpload = new File([''], '');
     }
     console.log(PolicyModel, "PolicyModel");
-    const isFormValid = this.isValid(PolicyModel);
-    this.openDialog(PolicyModel, isFormValid);
+    if (this.selectedPolicyType == "Federated") {
+      const isFormValid = this.isValid(PolicyModel);
+      this.openDialog(PolicyModel, isFormValid);
+    }
+    else {
+      this.createOrUpdatepolicy(PolicyModel);
+    }
   }
 
   isValid(PolicyModel: any) {
     return true;
+  }
+
+  createOrUpdatepolicy(PolicyModel: any) {
+    const url = this.isPolicyIdValid ? environment.updatePolicy.url : environment.createPolicy.url;
+    const method = environment.createPolicy.method;
+    this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
+      this.policyLoader = false;
+      this.ispolicyCreationSuccess = true;
+      this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + (this.isCreate ? " created" : " updated") + " successfully!!", 500, "variant1", "green-info-circle");
+    },
+      error => {
+        this.ispolicyCreationFailed = true;
+        this.policyLoader = false;
+      });
+
+    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+    this.workflowService.clearAllLevels();
+    this.router.navigate(['../'], {
+      relativeTo: this.activatedRoute,
+      queryParams: {
+      }
+    });
   }
 
 
@@ -405,14 +435,16 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   }
 
   removePolicyParameters(index: number): void {
-    if (this.paramsList[index].key != "policyKey" && this.paramsList.length > 1)
+    if (this.paramsList[index].key != "policyKey")
       this.paramsList.splice(index, 1);
   }
 
   addPolicyParameters() {
     this.paramsList.push({
       "key": "",
-      "value": ""
+      "value": "",
+      "isEdit": true,
+      "isMandatory": false
     });
   }
 
@@ -515,6 +547,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         delete this.queryParamsWithoutFilter['filter'];
         this.dataSourceName = this.queryParamsWithoutFilter.ag;
         if (this.policyId) {
+          this.policyTypeList.push("ManagePolicy");
+          this.submitBtn = "Update";
           this.pageTitle = 'Edit Policy';
           this.breadcrumbPresent = 'Edit Policy';
           this.isDisabled = false;
@@ -574,6 +608,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       if (!this.isCreate) {
         this.policyDisplayName = this.policyDetails.policyDisplayName;
         this.selectedPolicyType = this.policyDetails.policyType;
+        if (this.selectedPolicyType == "ManagePolicy") {
+          this.isManagePolicy = true;
+        }
       }
       this.policyName = this.policyDetails.policyName;
       this.selectedAssetGroup = this.policyDetails.assetGroup;
@@ -602,7 +639,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.paramsList.push(
             {
               "key": this.allPolicyParams[i]["key"],
-              "value": this.allPolicyParams[i]["value"]
+              "value": this.allPolicyParams[i]["value"],
+              "isEdit": this.allPolicyParams[i]["isEdit"] ? this.allPolicyParams[i]["isEdit"] : false,
+              "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false
             }
           )
         }
@@ -610,12 +649,14 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       if (this.paramsList.length == 0) {
         this.paramsList.push({
           "key": "",
-          "value": ""
+          "value": "",
+          "isEdit": false,
+          "isMandatory": false
         });
       }
-      if (this.selectedPolicyType == "Customer") {
-        this.isDisabled = true;
-      }
+      // if (this.selectedPolicyType == "ManagePolicy") {
+      //   this.isDisabled = true;
+      // }
       this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
       this.hideContent = false;
     },
@@ -635,25 +676,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result == "yes") {
-        const url = this.isPolicyIdValid ? environment.updatePolicy.url : environment.createPolicy.url;
-        const method = environment.createPolicy.method;
-        this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
-          this.policyLoader = false;
-          this.ispolicyCreationSuccess = true;
-          this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + (this.isCreate ? " created" : " updated") + " successfully!!", 500, "variant1", "green-info-circle");
-        },
-          error => {
-            this.ispolicyCreationFailed = true;
-            this.policyLoader = false;
-          });
-
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-        this.workflowService.clearAllLevels();
-        this.router.navigate(['../'], {
-          relativeTo: this.activatedRoute,
-          queryParams: {
-          }
-        });
+        this.createOrUpdatepolicy(PolicyModel);
       }
     });
   }

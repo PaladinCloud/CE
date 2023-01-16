@@ -100,14 +100,16 @@ border-left: 2px solid var(--border-200);
   background-color: var(--background-white);
 }
 
-.button .disabled{
-   color: var(--background-grey);
+.disabled{
+   background-color: #c0c0c0;
+   color: black;
+   box-shadow: none;
 }
 
 .button-wrapper{
   padding-top: 24px;
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   justify-content: space-between;
 }
 
@@ -157,9 +159,20 @@ gap: 16px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  opacity: 60%;
+  opacity: 100%;
   padding-top: 20px;
 }
+
+.isDisabled{
+  pointer-events: none;
+  opacity: 40%; 
+}
+
+.isEnabled{
+  pointer-events: all;
+  opacity: 100%;
+}
+
 
 .parameters-wrapper{
   display: flex;
@@ -224,10 +237,6 @@ border: 1px solid var(--border-200);
    width: 40%;
    font: var(--text-body-2);
    color: var(--text-high-emphasis);
-}
-
-.isEnabled{
-   opacity: 100%;
 }
 
 .details-wrapper,.parameter-wrapper ::ng-deep .mat-form-field-wrapper{

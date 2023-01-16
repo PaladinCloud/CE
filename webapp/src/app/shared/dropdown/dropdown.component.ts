@@ -8,6 +8,7 @@ import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChange
 export class DropdownComponent implements OnInit, OnChanges {
 
   @Input() items = [];
+  @Input() required = false;
   @Input() isDisabled: boolean = false;
   @Input() optionImage = false;
   @Input() requiredInfo: boolean = false;

@@ -20,6 +20,8 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,8 +30,11 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.collections.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,6 +63,7 @@ import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.RevokeIssuesException;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
+import com.tmobile.pacman.api.compliance.service.PolicyTableService;
 
 /**
  * The Class ComplianceController.
@@ -66,9 +72,15 @@ import com.tmobile.pacman.api.compliance.service.ComplianceService;
 @PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
 public class ComplianceController implements Constants {
 
+	/** The Constant logger. */
+	private static final Logger log = LoggerFactory.getLogger(ComplianceController.class);
     /** The compliance service. */
     @Autowired
     private ComplianceService complianceService;
+    
+    /** The policy table service. */
+    @Autowired
+    private PolicyTableService policyTableService;
 
     /**
      * Gets the issues details.Request expects asssetGroup and domain as
@@ -540,6 +552,9 @@ public class ComplianceController implements Constants {
         }
         return ResponseUtils.buildSucessResponse(response);
     }
+    
+	
+
 
     /**
      * API returns the kernel version of the given instanceId if it is
@@ -738,4 +753,23 @@ public class ComplianceController implements Constants {
             return ResponseUtils.buildFailureResponse(exception);
         }
     }
+    
+    /**
+     * API to get policy by id
+     *
+     * @author 
+     * @param policyId - valid policy Id
+     * @return Policies details
+     */
+	@ApiOperation(httpMethod = "GET", value = "API to get policy by id",  produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/v1/policy-details-by-id", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getPoliciesById(
+			@ApiParam(value = "provide valid policy id", required = true) @RequestParam(defaultValue = "", name = "policyId", required = true) String policyId) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyId(policyId));
+		} catch (Exception exception) {
+			log.error("Unexpected error occurred!!", exception);
+			return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+		}
+	} 
 }
