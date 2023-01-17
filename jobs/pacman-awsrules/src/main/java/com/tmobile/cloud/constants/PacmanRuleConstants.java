@@ -573,6 +573,7 @@ public class PacmanRuleConstants {
     public static final String ENDPOINT_PUBLIC_ACCESS = "endpointpublicaccess";
     public static final String ENDPOINT_PRIVATE_ACCESS = "endpointprivateaccess";
     public static final String PUBLIC_ACCESS_CIDRS = "publicaccesscidrs";
+    public static final String PUBLIC_VALUE = "publicvalue";
     public static final String CLUSTER_LOGGING_ENABLED = "clusterloggingenabled";
     public static final String CLUSTER_NAME = "clustername";
     public static final String CLUSTER_SECURITY_GROUP_ID = "clustersecuritygroupid";
