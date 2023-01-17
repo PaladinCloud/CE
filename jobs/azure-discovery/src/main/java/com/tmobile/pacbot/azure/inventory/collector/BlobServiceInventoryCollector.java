@@ -5,7 +5,6 @@ import com.microsoft.azure.PagedList;
 import com.microsoft.azure.management.Azure;
 import com.microsoft.azure.management.storage.StorageAccount;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
-import com.tmobile.pacbot.azure.inventory.vo.BlobContainerVH;
 import com.tmobile.pacbot.azure.inventory.vo.BlobServiceVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
@@ -18,7 +17,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class BlobServiceInventoryCollector {
@@ -46,6 +44,9 @@ public class BlobServiceInventoryCollector {
                     BlobServiceVH blobServiceVH = new BlobServiceVH();
                     blobServiceVH.setSubscription(subscription.getSubscriptionId());
                     blobServiceVH.setSubscriptionName(subscription.getSubscriptionName());
+                    blobServiceVH.setResourceGroupName(storageAccount.resourceGroupName());
+                    blobServiceVH.setRegion(storageAccount.regionName());
+                    blobServiceVH.setTags(storageAccount.tags());
                     JsonObject blobObject = blobObjectElement.getAsJsonObject();
                     JsonObject properties = blobObject.getAsJsonObject("properties");
                     log.debug("Properties data{}",properties);

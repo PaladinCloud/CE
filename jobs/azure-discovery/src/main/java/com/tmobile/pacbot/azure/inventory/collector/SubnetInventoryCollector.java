@@ -22,7 +22,6 @@ import com.microsoft.azure.management.network.Network;
 import com.tmobile.pacbot.azure.inventory.auth.AzureCredentialProvider;
 import com.tmobile.pacbot.azure.inventory.vo.SubnetVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
-import com.tmobile.pacman.commons.azure.clients.AzureCredentialManager;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
 @Component
@@ -54,6 +53,10 @@ public class SubnetInventoryCollector {
 					JsonObject subnetObject = subnetElement.getAsJsonObject();
 					JsonObject properties = subnetObject.getAsJsonObject("properties");
 					subnetVH.setId(subnetObject.get("id").getAsString());
+					String id =subnetVH.getId();
+					int beginningIndex=subnetVH.getId().indexOf("resourceGroups")+15;
+					String resourceGroupName=(subnetVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+					subnetVH.setResourceGroupName(resourceGroupName);
 					subnetVH.setName(subnetObject.get("name").getAsString());
 					subnetVH.setType(subnetObject.get("type").getAsString());
 					subnetVH.setEtag(subnetObject.get("etag").getAsString());
