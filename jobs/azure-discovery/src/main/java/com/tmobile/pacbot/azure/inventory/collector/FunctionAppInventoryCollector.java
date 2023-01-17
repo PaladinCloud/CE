@@ -28,11 +28,14 @@ public class FunctionAppInventoryCollector {
         for(FunctionApp functionApp:functionApps){
             FunctionAppVH functionAppVH=new FunctionAppVH();
             functionAppVH.setId(functionApp.id());
-            functionAppVH.setSubscription(subscription.getSubscription());
-            functionAppVH.setResourceGroupName(subscription.getResourceGroupName());
+            functionAppVH.setSubscription(subscription.toString());
+            functionAppVH.setSubscriptionName(subscription.getSubscriptionName());
+            functionAppVH.setResourceGroupName(functionApp.resourceGroupName());
             functionAppVH.setClientCertEnabled(functionApp.clientCertEnabled());
-            functionAppList.add(functionAppVH);
             functionAppVH.setRegion(functionApp.regionName());
+            functionAppVH.setTags(functionApp.tags());
+            functionAppList.add(functionAppVH);
+
         }
         return functionAppList;
 

@@ -1,5 +1,6 @@
 package com.tmobile.pacbot.azure.inventory.collector;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -41,6 +43,12 @@ public class MySQLFlexibleInventoryCollector {
             JsonArray serverNames=responseObj.getAsJsonArray("value");
             for (int i=0;i<serverNames.size();i++) {
                 MySQLFlexibleVH mySQLFlexibleVH=new MySQLFlexibleVH();
+                JsonObject tags = serverNames.get(i).getAsJsonObject().get("tags").getAsJsonObject();
+                if (tags != null) {
+                    HashMap<String, String> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
+                    mySQLFlexibleVH.setTags(tagsMap);
+                }
+                mySQLFlexibleVH.setRegion(serverNames.get(i).getAsJsonObject().get("location").getAsString());
                 String serverName=serverNames.get(i).getAsJsonObject().get("name").getAsString();
                 String id=serverNames.get(i).getAsJsonObject().get("id").getAsString();
                 int beginningIndex=id.indexOf("resourceGroups")+15;
@@ -71,6 +79,7 @@ public class MySQLFlexibleInventoryCollector {
                         mySQLFlexibleVH.setResourceGroupName(resourceGroupName);
                         mySQLFlexibleVH.setId(id);
                         mySQLFlexibleVH.setSubscriptionName(subscription.getSubscriptionName());
+                        mySQLFlexibleVH.setSubscription(subscription.toString());
                         break;
                     }
                 }

@@ -48,6 +48,10 @@ public class BatchAccountInventoryCollector {
 					batchAccountVH.setSubscription(subscription.getSubscriptionId());
 					batchAccountVH.setSubscriptionName(subscription.getSubscriptionName());
 					batchAccountVH.setId(batchAccountObject.get("id").getAsString());
+					String id =batchAccountVH.getId();
+					int beginningIndex=id.indexOf("resourceGroups")+15;
+					String resourceGroupName=(batchAccountVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+					batchAccountVH.setResourceGroupName(resourceGroupName);
 					batchAccountVH.setLocation(batchAccountObject.get("location").getAsString());
 					batchAccountVH.setRegion(batchAccountObject.get("location").getAsString());
 					batchAccountVH.setName(batchAccountObject.get("name").getAsString());

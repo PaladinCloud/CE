@@ -3,6 +3,7 @@ package com.tmobile.pacbot.azure.inventory.vo;
 import com.microsoft.azure.management.appservice.FtpsState;
 
 
+import java.util.Map;
 import java.util.Set;
 
 public class WebAppVH extends AzureVH {
@@ -17,6 +18,16 @@ public class WebAppVH extends AzureVH {
     private boolean clientCertEnabled;
 
     private String systemAssignedManagedServiceIdentityPrincipalId;
+
+    private Map<String, String> tags;
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
     public String getSystemAssignedManagedServiceIdentityPrincipalId() {
         return systemAssignedManagedServiceIdentityPrincipalId;

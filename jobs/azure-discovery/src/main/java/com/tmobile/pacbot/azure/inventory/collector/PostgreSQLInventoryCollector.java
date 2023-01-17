@@ -52,6 +52,16 @@ public class PostgreSQLInventoryCollector {
 				postgreSQLServerVH.setRegion(postgreSQLServerObject.get("location").getAsString());
 				postgreSQLServerVH.setName(postgreSQLServerObject.get("name").getAsString());
 				postgreSQLServerVH.setType(postgreSQLServerObject.get("type").getAsString());
+				JsonObject tags=postgreSQLServerObject.get("tags").getAsJsonObject();
+				if (tags != null) {
+					HashMap<String, String> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
+					postgreSQLServerVH.setTags(tagsMap);
+				}
+				String id =postgreSQLServerVH.getId();
+				int beginningIndex=id.indexOf("resourceGroups")+15;
+				String resourceGroupName=(postgreSQLServerVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+				log.debug("Resource group name: {}",resourceGroupName);
+				postgreSQLServerVH.setResourceGroupName(resourceGroupName);
 				if (sku!=null) {
 					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
 					postgreSQLServerVH.setSkuMap(skuMap);

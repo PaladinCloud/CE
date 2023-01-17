@@ -45,11 +45,22 @@ public class DatabricksInventoryCollector {
 				JsonObject properties = databricksObject.getAsJsonObject("properties");
 				JsonObject sku = databricksObject.getAsJsonObject("sku");
 				databricksVH.setId(databricksObject.get("id").getAsString());
+				String id =databricksVH.getId();
+				int beginningIndex=id.indexOf("resourceGroups")+15;
+				String resourceGroupName=(databricksVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+				log.debug("Resource group name: {}",resourceGroupName);
+				databricksVH.setResourceGroupName(resourceGroupName);
 				databricksVH.setLocation(databricksObject.get("location").getAsString());
+				databricksVH.setRegion(databricksObject.get("location").getAsString());
 				databricksVH.setName(databricksObject.get("name").getAsString());
 				databricksVH.setType(databricksObject.get("type").getAsString());
 				databricksVH.setSubscription(subscription.getSubscriptionId());
 				databricksVH.setSubscriptionName(subscription.getSubscriptionName());
+				JsonObject tags = properties.getAsJsonObject("parameters").getAsJsonObject("resourceTags");
+				if (tags != null) {
+					HashMap<String, Object> tagsMap = new Gson().fromJson(tags.get("value").toString(), HashMap.class);
+					databricksVH.setTags(tagsMap);
+				}
 				if (sku!=null) {
 					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
 					databricksVH.setSkuMap(skuMap);
