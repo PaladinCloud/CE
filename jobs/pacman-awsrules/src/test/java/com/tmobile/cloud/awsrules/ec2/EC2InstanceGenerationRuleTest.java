@@ -35,7 +35,6 @@ public class EC2InstanceGenerationRuleTest {
     @Before
     public void setup() {
         mockStatic(PacmanUtils.class);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
         ruleParam = getInputParamMap();
         resourceAttribute = getValidResourceData();
@@ -50,8 +49,29 @@ public class EC2InstanceGenerationRuleTest {
 
     @Test
     public void executePreviousGenerationTest() throws Exception {
-        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "t1.micro");
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "t1.test");
         PolicyResult policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "i2.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "m1.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "m2.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "c1.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "hs1.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "g2.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
+        resourceAttribute.put(PacmanRuleConstants.INSTANCE_TYPE, "test.test");
+        policyResult = checkEC2InstanceGenerationRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, policyResult.getStatus());
     }
 
@@ -70,12 +90,13 @@ public class EC2InstanceGenerationRuleTest {
     private Map<String, String> getInputParamMap() {
         Map<String, String> ruleParam = new HashMap<>();
         ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-        ruleParam.put(PacmanSdkConstants.POLICY_ID,
-                "test_version-1_Ami_test");
+        ruleParam.put(PacmanSdkConstants.POLICY_ID, "test_version-1_test");
         ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
         ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
         ruleParam.put(PacmanRuleConstants.ACCOUNTID, "123456789");
         ruleParam.put(PacmanRuleConstants.REGIONS, "test");
+        ruleParam.put(PacmanRuleConstants.OLD_VERSIONS, "t1.test,i2.test,m1.test,c1.test,m2.test,hs1.test,g2.test," +
+                "test.test");
         return ruleParam;
     }
 

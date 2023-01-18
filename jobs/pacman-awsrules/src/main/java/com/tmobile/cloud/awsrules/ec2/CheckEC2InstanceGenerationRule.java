@@ -26,6 +26,9 @@ public class CheckEC2InstanceGenerationRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(CheckEC2InstanceGenerationRule.class);
 
+    private static final String RETURN_STATEMENT = "This is a Previous generation EC2 instance %s and it can be " +
+            "upgraded to %s";
+
     private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
@@ -64,7 +67,7 @@ public class CheckEC2InstanceGenerationRule extends BasePolicy {
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
         Optional<String> opt = Optional.ofNullable(resourceAttributes)
-                .map(this::checkValidation);
+                .map(resource -> checkValidation(resource, ruleParam));
         PolicyResult ruleResult = Optional.of(ruleParam).filter(param -> opt.isPresent())
                 .map(param -> buildFailureAnnotation(param, opt.get()))
                 .orElse(new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE));
@@ -77,58 +80,43 @@ public class CheckEC2InstanceGenerationRule extends BasePolicy {
         return "Checks for EC2 Instance generation is latest or not";
     }
 
-    private String checkValidation(Map<String, String> resource) {
+    private String checkValidation(Map<String, String> resource, Map<String, String> ruleParam) {
+        String accountId = resource.get(PacmanRuleConstants.ACCOUNTID);
         String instanceGenerationType = resource.get(PacmanRuleConstants.INSTANCE_TYPE);
-        if (Objects.isNull(instanceGenerationType) || instanceGenerationType.isEmpty()) {
-            return "Failed to check the instanceGenerationType " + instanceGenerationType;
+        String oldVersions = ruleParam.get(PacmanRuleConstants.OLD_VERSIONS);
+        if (Objects.isNull(instanceGenerationType) || instanceGenerationType.isEmpty() ||
+                Objects.isNull(oldVersions) || oldVersions.isEmpty() ||
+                Objects.isNull(accountId) || accountId.isEmpty()) {
+            return "Failed to check the instanceGenerationType " + instanceGenerationType + " with olderVersions "
+                    + oldVersions + " for accountId " + accountId;
         }
 
-        if (Arrays.stream(PreviousGenerationInstanceTypes.values()).anyMatch(type ->
-                type.label.equalsIgnoreCase(instanceGenerationType))) {
-            return "EC2 instance has a Previous generation " + instanceGenerationType;
+        if (Arrays.stream(oldVersions.split(",")).anyMatch(type ->
+                type.equalsIgnoreCase(instanceGenerationType))) {
+            switch (instanceGenerationType.split("\\.")[0].toUpperCase()) {
+                case "T1":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "T2");
+                case "M1":
+                case "M3":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "M5");
+                case "C1":
+                case "C3":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "C5");
+                case "I2":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "I3");
+                case "M2":
+                case "CR1":
+                case "R3":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "R4");
+                case "HS1":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "D2");
+                case "G2":
+                    return String.format(RETURN_STATEMENT, instanceGenerationType, "G3");
+
+                default:
+                    return "EC2 instance has a Previous generation " + instanceGenerationType;
+            }
         }
         return null;
-    }
-
-    private enum PreviousGenerationInstanceTypes {
-        M1SMALL("m1.small"),
-        M1MEDIUM("m1.medium"),
-        M1LARGE("m1.large"),
-        M1XLARGE("m1.xlarge"),
-        M3MEDIUM("m3.medium"),
-        M3LARGE("m3.large"),
-        M3XLARGE("m3.xlarge"),
-        M32XLARGE("m3.2xlarge"),
-        C1MEDIUM("c1.medium"),
-        C1XLARGE("c1.xlarge"),
-        C28XLARGE("c2.8xlarge"),
-        C3LARGE("c3.large"),
-        C3XLARGE("c3.xlarge"),
-        C32XLARGE("c3.2xlarge"),
-        C34XLARGE("c3.4xlarge"),
-        C38XLARGE("c3.8xlarge"),
-        G22XLARGE("g2.2xlarge*"),
-        G28XLARGE("g2.8xlarge**"),
-        M2XLARGE("m2.xlarge"),
-        M22XLARGE("m2.2xlarge"),
-        M24XLARGE("m2.4xlarge"),
-        CR18XLARGE("cr1.8xlarge"),
-        R3LARGE("r3.large"),
-        R3XLARGE("r3.xlarge"),
-        R32XLARGE("r3.2xlarge"),
-        R34XLARGE("r3.4xlarge"),
-        R38XLARGE("r3.8xlarge"),
-        I2XLARGE("i2.xlarge"),
-        I22XLARGE("i2.2xlarge"),
-        I24XLARGE("i2.4xlarge"),
-        I28XLARGE("i2.8xlarge"),
-        HS18XLARGE("hs1.8xlarge"),
-        T1MICRO("t1.micro");
-
-        public final String label;
-
-        PreviousGenerationInstanceTypes(String label) {
-            this.label = label;
-        }
     }
 }

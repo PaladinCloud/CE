@@ -95,7 +95,9 @@ public class CheckUnusedAMIRule extends BasePolicy {
             esCloudTrailPubAccessUrl = pacmanHost + esCloudTrailPubAccessUrl;
         }
 
-        if (!PacmanUtils.doesAllHaveValue(esCloudTrailPubAccessUrl, accountId, imageId, publicValue)) {
+        if (Objects.isNull(esCloudTrailPubAccessUrl) || Objects.isNull(imageId) || imageId.isEmpty() ||
+                Objects.isNull(publicValue) || publicValue.isEmpty() || Objects.isNull(accountId) ||
+                accountId.isEmpty()) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
