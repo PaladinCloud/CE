@@ -93,7 +93,7 @@ public class IngressSettingRule extends BasePolicy {
             logger.debug("Data retrieved from ES: {}", sourceData);
             String ingressSetting  = sourceData.getAsJsonObject().get("ingressSetting").getAsString();
 
-            if(!org.springframework.util.StringUtils.isEmpty(ingressSetting) && ingressSetting.equals("ALLOW_ALL")){
+            if(!StringUtils.isNullOrEmpty(ingressSetting) && ingressSetting.equals("ALLOW_ALL")){
                 validationResult = false;
             }
             logger.debug("Validating the data item: {}", sourceData);
