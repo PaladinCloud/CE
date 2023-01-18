@@ -100,7 +100,7 @@ public class VpnConnectorRule extends BasePolicy {
                 vpcConnector = "";
             }
 
-            if(org.springframework.util.StringUtils.isEmpty(vpcConnector)){
+            if(!StringUtils.isNullOrEmpty(vpcConnector)){
                 validationResult = false;
             }
             logger.debug("Validating the data item: {}", sourceData);
