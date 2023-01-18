@@ -41,7 +41,6 @@ public class CheckUnusedAMIRuleTest {
     public void setup() {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(true);
         ruleParam = getInputParamMap();
         resourceAttribute = getValidResourceData();
@@ -94,7 +93,7 @@ public class CheckUnusedAMIRuleTest {
         Map<String, String> ruleParam = new HashMap<>();
         ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
         ruleParam.put(PacmanSdkConstants.POLICY_ID,
-                "test_version-1_Ami_test");
+                "test_version-1_test");
         ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
         ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);
         ruleParam.put(PacmanRuleConstants.ACCOUNTID, "123456789");
