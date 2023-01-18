@@ -47,6 +47,7 @@ public class IAMUserCollector {
                                 iamUserVH.setEmail(member.split(":")[1]);
                                 iamUserVH.setProjectId(project.getProjectId());
                                 iamUserVH.setProjectName(project.getProjectName());
+                                iamUserVH.setRegion(project.getRegion());
                                 iamUserVH.setId(project.getProjectId()+"_"+member.split(":")[1]);
                                 HashSet<String> roles = new HashSet<>();
                                 roles.add(binding.getRole());

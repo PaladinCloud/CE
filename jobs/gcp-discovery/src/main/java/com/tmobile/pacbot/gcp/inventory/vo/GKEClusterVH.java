@@ -2,11 +2,13 @@ package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GKEClusterVH extends GCPVH {
     private Map<String, Object> masterAuthorizedNetworksConfig;
     private String bootDiskKmsKey;
     private String keyName;
+    private String name;
     private String username;
     private String password;
     private List<NodePoolVH> nodePools;
@@ -17,6 +19,37 @@ public class GKEClusterVH extends GCPVH {
     private  boolean legacyAuthorization;
     private String version;
     private boolean disableKubernetesDashBoard;
+
+    private Map<String, String> tags;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GKEClusterVH that = (GKEClusterVH) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
     public boolean isDisableKubernetesDashBoard() {
         return disableKubernetesDashBoard;

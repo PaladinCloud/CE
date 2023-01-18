@@ -28,7 +28,9 @@ public class LoadBalancerCollector {
            logger.debug("URL map name: {} URL id :{}", u.getName(), u.getId());
            loadBalancerVH.setUrlMap(u.getName());
            loadBalancerVH.setId(String.valueOf(u.getId()));
-
+           loadBalancerVH.setProjectId(project.getProjectId());
+           loadBalancerVH.setProjectName(project.getProjectName());
+           loadBalancerVH.setRegion(u.getRegion());
            Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient().list(project.getProjectId()).iterateAll();
            List<String> targetHttpsProxyVH = new ArrayList<>();
            List<String> sslPolicyList=new ArrayList<>();
@@ -46,12 +48,9 @@ public class LoadBalancerCollector {
            }
 
            List<SslPolicyVH>sslPolicyVHList=new ArrayList<>();
-
-
-               SslPolicyVH sslPolicyVH = new SslPolicyVH();
-
                Iterable<SslPolicy> sslPolicies = gcpCredentialsProvider.getSslPoliciesClient().list(project.getProjectId()).iterateAll();
                for (SslPolicy sslPolicy : sslPolicies) {
+                   SslPolicyVH sslPolicyVH = new SslPolicyVH();
                    sslPolicyVH.setMinTlsVersion(sslPolicy.getMinTlsVersion());
                    sslPolicyVH.setProfile(sslPolicy.getProfile());
                    sslPolicyVH.setEnabledFeatures(sslPolicy.getEnabledFeaturesList());

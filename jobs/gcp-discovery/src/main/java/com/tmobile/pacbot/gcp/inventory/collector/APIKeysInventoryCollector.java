@@ -35,6 +35,9 @@ public class APIKeysInventoryCollector {
             apiKeysVH.setId(keys.getUid());
             apiKeysVH.setName(keys.getName());
             apiKeysVH.setDisplayName(keys.getDisplayName());
+            apiKeysVH.setRegion("global");
+            apiKeysVH.setProjectId(projectVH.getProjectId());
+            apiKeysVH.setProjectName(projectVH.getProjectName());
             HashMap<String, Object> restriction=new HashMap<>();
 
            if(!keys.getRestrictions().getAllFields().isEmpty()){

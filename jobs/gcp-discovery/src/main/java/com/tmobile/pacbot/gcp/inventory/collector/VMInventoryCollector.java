@@ -165,6 +165,7 @@ public class VMInventoryCollector {
         // convert AttachedDisk into VMDiskVH
         disksList.forEach(disk -> {
             VMDiskVH diskVH = new VMDiskVH();
+            diskVH.setProjectId(vm.getProjectId());
             diskVH.setId(String.valueOf(disk.getIndex()));
             diskVH.setName(disk.getDeviceName());
             diskVH.setSizeInGB(disk.getDiskSizeGb());
