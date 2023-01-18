@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.util.CommonUtils;
 import com.tmobile.pacman.util.ESUtils;
 
@@ -79,8 +79,8 @@ public class AnnotationPublisher {
     /** The resources. */
     private List<Map<String, String>> resources;
     
-    /** The rule param. */
-    private ImmutableMap<String, String> ruleParam;
+    /** The policy param. */
+    private ImmutableMap<String, String> policyParam;
 
     /**
      * Instantiates a new annotation publisher.
@@ -137,10 +137,10 @@ public class AnnotationPublisher {
     public void populateExistingIssuesForType(Map<String, String> ruleParam) throws Exception {
 
         String esUrl = ESUtils.getEsUrl();
-        String ruleId = ruleParam.get(PacmanSdkConstants.RULE_ID);
+        String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         String indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
         Map<String, Object> mustFilter = new HashMap<>();
-        String attributeToQuery = ESUtils.convertAttributetoKeyword(PacmanSdkConstants.RULE_ID); //actual attribute will be  tokenized hence querying on keyword
+        String attributeToQuery = ESUtils.convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID); //actual attribute will be  tokenized hence querying on keyword
         mustFilter.put(attributeToQuery, ruleId);
         List<String> fields = new ArrayList<String>();
         Map<String, Object> mustNotFilter = new HashMap<>();
@@ -415,8 +415,8 @@ public class AnnotationPublisher {
      */
     private String buildIssueKey(Map<String, String> resource) {
         String parentId = resource.get(ID);
-        String ruleId = getRuleParam().get(PacmanSdkConstants.RULE_ID);
-        return CommonUtils.getUniqueAnnotationId(parentId, ruleId);
+        String policyId = getRuleParam().get(PacmanSdkConstants.POLICY_ID);
+        return CommonUtils.getUniqueAnnotationId(parentId, policyId);
     }
 
     /**
@@ -490,7 +490,7 @@ public class AnnotationPublisher {
      * @param ruleParam the rule param
      */
     public void setRuleParam(ImmutableMap<String, String> ruleParam) {
-        this.ruleParam = ruleParam;
+        this.policyParam = ruleParam;
 
     }
 
@@ -500,7 +500,7 @@ public class AnnotationPublisher {
      * @return the rule param
      */
     public ImmutableMap<String, String> getRuleParam() {
-        return ruleParam;
+        return policyParam;
     }
 
 }

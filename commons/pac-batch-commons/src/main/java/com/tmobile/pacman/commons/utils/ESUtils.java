@@ -36,7 +36,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -172,7 +172,8 @@ public class ESUtils {
 	 */
 	public static void createIndex(String url, String indexName) throws Exception {
 		String esUrl = new StringBuilder(url).append("/").append(indexName).toString();
-		CommonUtils.doHttpPut(esUrl, null);
+		String payLoad = "{\"settings\": {  \"number_of_shards\" : 1,\"number_of_replicas\" : 1 }}";
+		CommonUtils.doHttpPut(esUrl, payLoad);
 	}
 
 	/**

@@ -87,7 +87,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.autofix.manager.AuthManager;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.config.ConfigManager;
 
 // TODO: Auto-generated Javadoc
@@ -497,7 +497,7 @@ public class CommonUtils {
      */
     public static String getUniqueAnnotationId(Annotation annotation) {
         return getUniqueAnnotationId(annotation.get(PacmanSdkConstants.DOC_ID),
-                annotation.get(PacmanSdkConstants.RULE_ID));
+                annotation.get(PacmanSdkConstants.POLICY_ID));
     }
 
     /**
@@ -587,8 +587,8 @@ public class CommonUtils {
         JsonElement element = parser.parse(json);
         JsonObject obj = element.getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
-        if (obj.has(PacmanSdkConstants.RULE_UUID_KEY)) {
-            ruleUUID = obj.get(PacmanSdkConstants.RULE_UUID_KEY).getAsString();
+        if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+            ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
         }
         Map<String, String> toReturn = new HashMap<>();
         for (Map.Entry<String, JsonElement> entry : entries) {

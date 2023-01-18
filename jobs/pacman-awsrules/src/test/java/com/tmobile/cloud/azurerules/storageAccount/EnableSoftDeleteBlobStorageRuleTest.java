@@ -9,7 +9,8 @@ import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.azurerules.StorageAccount.EnableSoftDeleteBlobStorageRule;
 import com.tmobile.cloud.azurerules.StorageAccount.EnableTrustedMSServices;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class, RulesElasticSearchRepositoryUtil.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class })
 public class EnableSoftDeleteBlobStorageRuleTest {
 
     @InjectMocks

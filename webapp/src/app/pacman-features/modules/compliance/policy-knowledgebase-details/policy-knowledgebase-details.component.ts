@@ -14,6 +14,7 @@
 
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
+import * as _ from "lodash";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { environment } from "./../../../../../environments/environment";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -22,6 +23,13 @@ import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
+import { UtilsService } from "src/app/shared/services/utils.service";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
+import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
+import { AdminService } from "src/app/pacman-features/services/all-admin.service";
+import { PermissionGuardService } from "src/app/core/services/permission-guard.service";
+import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
 
 @Component({
   selector: "app-policy-knowledgebase-details",
@@ -32,6 +40,7 @@ import { CommonResponseService } from "../../../../shared/services/common-respon
     ErrorHandlingService,
     CommonResponseService,
     AutorefreshService,
+    AdminService
   ],
 })
 export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
@@ -40,10 +49,11 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   breadcrumbLinks: any = ["policy-knowledgebase"];
   breadcrumbPresent: any;
   selectedAssetGroup: string;
+  actionItems = ["Disable", "Edit"]; // TODO: add "Remove"
   subscriptionToAssetGroup: Subscription;
   public autoFix = false;
-  public ruleID: any = "";
-  public setRuleIdObtained = false;
+  public policyID: any = "";
+  public setpolicyIdObtained = false;
   public dataComing = true;
   public showLoader = true;
   public durationParams: any;
@@ -53,7 +63,28 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   public errorMessage: any;
   public policyDesc: {};
   displayName: any = "";
-  ruleDescription: any = "";
+  policyParamList: Array<Array<String>>;
+  totalRows = 0;
+  userId = "";
+  tableScrollTop = true;
+  tableTitle = "Policy Parameters";
+  searchTxt = "";
+  columnWidths = { 'key': 2, 'value': 1 };
+  whiteListColumns;
+  tableErrorMessage = '';
+  tableDataLoaded = false;
+  haveAdminPageAccess = false;
+  policyParams = [
+    {
+      "key": "policykey",
+      "value": "check-for-cloud-storage"
+    },
+    {
+      "key": "Metric Name",
+      "value": "cloud trial event"
+    }
+  ]
+  policyDescription: any = "";
   resolution: any = [];
   private routeSubscription: Subscription;
   urlToRedirect: any = "";
@@ -61,6 +92,24 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   private pageLevel = 0;
   public backButtonRequired;
   public resolutionUrl: string;
+  allpolicyParamKeys: any[];
+  allEnvParamKeys: any[];
+  allEnvironments: any[];
+  policyDetails: any;
+  allpolicyParams: any[];
+  isAutofixEnabled: boolean;
+  policyDisplayName: any;
+  selectedSeverity: any;
+  selectedCategory: any;
+  policyType: any;
+  assetGroup;
+  policyJarFileName = "";
+  policyRestUrl: any;
+  status: any;
+  assetType: string;
+  createdDate: any;
+  modifiedDate: any;
+  paramsList = [];
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -70,7 +119,13 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     private autorefreshService: AutorefreshService,
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
-    private workflowService: WorkflowService
+    private workflowService: WorkflowService,
+    private utils: UtilsService,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    private adminService: AdminService,
+    private permissions: PermissionGuardService,
+    private notificationObservableService: NotificationObservableService,
   ) {
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
@@ -83,15 +138,17 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
     try {
+      this.haveAdminPageAccess = this.permissions.checkAdminPermission();
       this.durationParams = this.autorefreshService.getDuration();
       this.durationParams = parseInt(this.durationParams, 10);
       this.autoRefresh = this.autorefreshService.autoRefresh;
-      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
-    if(breadcrumbInfo){
-      this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
-      this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
-    }
+      const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+      this.whiteListColumns = Object.keys(this.columnWidths);
+
+      if (breadcrumbInfo) {
+        this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
+        this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
+      }
       this.breadcrumbPresent = "Policy Details ";
     } catch (error) {
       this.logger.log("error", error);
@@ -111,39 +168,39 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   /* Function to get Data */
   getData() {
     /* All functions to get data should go here */
-    this.getRuleId();
+    this.getpolicyId();
     this.getProgressData();
   }
 
   /**
-   * this funticn gets the ruleid from the url
+   * this funticn gets the policyid from the url
    */
-  getRuleId() {
+  getpolicyId() {
     /*  TODO:Trinanjan Wrong way of doing it */
     this.routeSubscription = this.activatedRoute.params.subscribe((params) => {
-      this.ruleID = params["ruleID"];
+      this.policyID = params["policyID"];
       this.autoFix = params["autoFix"] === "true";
     });
-    if (this.ruleID !== undefined) {
-      this.setRuleIdObtained = true;
+    if (this.policyID !== undefined) {
+      this.setpolicyIdObtained = true;
     }
   }
 
   getProgressData() {
-    if (this.ruleID !== undefined) {
+    if (this.policyID !== undefined) {
       if (this.dataSubscriber) {
         this.dataSubscriber.unsubscribe();
       }
       const queryParams = {
-        ruleId: this.ruleID,
+        policyId: this.policyID,
       };
-      const policyContentSliderUrl = environment.policyContentSlider.url;
-      const policyContentSliderMethod = environment.policyContentSlider.method;
+      const getPolicyByIdUrl = environment.getPolicyById.url;
+      const getPolicyByIdMethod = environment.getPolicyById.method;
       try {
         this.dataSubscriber = this.commonResponseService
           .getData(
-            policyContentSliderUrl,
-            policyContentSliderMethod,
+            getPolicyByIdUrl,
+            getPolicyByIdMethod,
             {},
             queryParams
           )
@@ -153,7 +210,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
                 this.showLoader = false;
                 this.seekdata = false;
                 this.dataComing = true;
-                this.processData(response.response);
+
+                this.processData(response);
               } catch (e) {
                 this.errorMessage = this.errorHandling.handleJavascriptError(e);
                 this.getErrorValues();
@@ -177,30 +235,243 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     this.seekdata = true;
   }
 
+  processForTableData(data) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;
+      const keynames = Object.keys(getData[0]);
+
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellObj = {
+            text: getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
   processData(data) {
-    this.displayName = this.uppercasefirst(data.displayName);
-    this.ruleDescription = data.ruleDescription;
+    this.displayName = this.uppercasefirst(data.policyDisplayName);
+    this.policyDescription = data.policyDescription;
     this.resolutionUrl = data.resolutionUrl;
     this.resolution = data.resolution;
     if (this.resolutionUrl == null || this.resolutionUrl == "") {
       this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
     }
-    this.policyDesc = [
-      { value: data.ruleCategory, key: "Category" },
-      { value: data.severity, key: "Severity" },
-      { value: data.policyVersion, key: "PolicyVersion" },
-    ];
+
+    this.allpolicyParamKeys = [];
+    this.allEnvParamKeys = [];
+    this.policyDetails = data;
+    let policyParams = Object();
+    this.policyDetails.dataSource = 'N/A';
+    this.allEnvironments = [];
+    this.allpolicyParams = [];
+    this.isAutofixEnabled = false;
+    this.policyDisplayName = this.uppercasefirst(this.policyDetails.policyDisplayName);
+    policyParams = JSON.parse(this.policyDetails.policyParams);
+
+    this.createdDate = this.utils.calculateDateAndTime(data.createdDate, true);
+    this.modifiedDate = this.utils.calculateDateAndTime(data.modifiedDate, true);
+
+    this.selectedCategory = data.category == "Governance" ? "Operations" : data.policyCategory;
+    this.selectedSeverity = data.severity;
+    this.userId = data.userId;
+
+    if (policyParams.hasOwnProperty('pac_ds')) {
+      this.policyDetails.dataSource = this.uppercasefirst(policyParams.pac_ds);
+    }
+
+    if (policyParams.hasOwnProperty('environmentVariables')) {
+      this.allEnvironments = policyParams.environmentVariables;
+      this.allEnvParamKeys = _.map(policyParams.environmentVariables, 'key');
+    }
+
+    if (policyParams.hasOwnProperty('params')) {
+      if (policyParams.params instanceof Array) {
+        for (let i = policyParams.params.length - 1; i >= 0; i -= 1) {
+          if (policyParams.params[i].key == 'severity') {
+            this.selectedSeverity = this.uppercasefirst(policyParams.params[i].value);
+            policyParams.params.splice(i, 1);
+            continue;
+          } else if (policyParams.params[i].key == 'policyCategory') {
+            this.selectedCategory = this.uppercasefirst(policyParams.params[i].value);
+            this.selectedCategory = policyParams.params[i].value == "Governance" ? "Operations" : this.selectedCategory;
+            policyParams.params.splice(i, 1);
+            continue;
+          } else if (policyParams.params[i].key == 'policyType') {
+            this.policyType = this.uppercasefirst(policyParams.params[i].value);
+          }
+          this.paramsList.push({
+            "key": policyParams.params[i].key,
+            "value": policyParams.params[i].value
+          })
+        }
+        this.policyDescription = this.policyDetails.policyDesc;
+        this.allpolicyParams = policyParams.params;
+        this.allpolicyParamKeys = _.map(policyParams.params, 'key');
+
+        let i = 0;
+        this.paramsList = this.processForTableData(this.paramsList);
+        this.tableDataLoaded = true;
+        this.totalRows = this.paramsList.length;
+
+      }
+    }
+    if (policyParams.hasOwnProperty('autofix')) {
+      this.isAutofixEnabled = policyParams.autofix;
+    }
+    this.status = this.uppercasefirst(data.status);
+    let dropDownItems = ["Edit"];
+    if (this.status.toLowerCase() === "enabled") {
+      dropDownItems.push("Disable");
+    } else {
+      // dropDownItems.push("Invoke");
+      dropDownItems.push("Enable");
+    }
+    this.actionItems = dropDownItems;
+    this.assetType = this.uppercasefirst(this.policyDetails.targetType);
+
+    this.policyType = this.policyDetails.policyType;
+    if (this.policyDetails.assetGroup !== '') {
+      this.assetGroup = this.uppercasefirst(this.policyDetails.assetGroup);
+    }
+    if (this.policyType === 'Federated') {
+      this.policyJarFileName = this.policyDetails.policyExecutable;
+    } else if (this.policyType === 'Serverless') {
+      this.policyRestUrl = this.policyDetails.policyRestUrl;
+    }
+  }
+
+  callNewSearch(e: any) {
+    this.searchTxt = e;
   }
 
   /**
    * This function returns the first char as upper case
    */
-  uppercasefirst(value) {
+  uppercasefirst(value: any) {
     if (value === null) {
       return "Not assigned";
     }
     value = value.toLocaleLowerCase();
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  openDialog(event): void {
+    const action = event;
+    let title, message;
+    if (action == "Enable") {
+      title = "Enable Policy";
+    } else if (action == "Disable") {
+      title = "Disable Policy";
+    }
+    message = 'Are you really sure you want to disable "' + this.policyDisplayName + '".';
+    const dialogRef = this.dialog.open(DialogBoxComponent, {
+      width: '500px',
+      data: { title: title, message: message, yesButtonLabel: action, noButtonLabel: "Cancel" },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == "yes") {
+        this.enableDisableRuleOrJob(event);
+      }
+    });
+  }
+
+  enableDisableRuleOrJob(event) {
+    if (!this.haveAdminPageAccess) {
+      return;
+    }
+    try {
+      const url = environment.enableDisableRuleOrJob.url;
+      const method = environment.enableDisableRuleOrJob.method;
+      const params = {};
+      params['policyId'] = this.policyID;
+
+      params['action'] = event;
+
+      this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+        // change status 
+        this.status = event + 'd';
+        // change actions list
+
+        let dropDownItems = ["Edit"];
+        if (this.status.toLowerCase() === "enabled") {
+          dropDownItems.push("Disable");
+        } else {
+          // dropDownItems.push("Invoke");
+          dropDownItems.push("Enable");
+        }
+        this.actionItems = dropDownItems;
+
+        const snackbarText = 'Policy "' + this.policyDisplayName + '" ' + this.status.toLowerCase() + ' successfully';
+        this.openSnackBar(snackbarText, "check-circle");
+
+      },
+        error => {
+          this.logger.log("error", error);
+        });
+    } catch (error) {
+      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  openSnackBar(message, iconSrc) {
+    this.notificationObservableService.postMessage(message, 3 * 1000, "variant1", iconSrc);
+  }
+
+
+  goToDetails(event) {
+    const action = event?.toLowerCase();
+    // if(!this.haveAdminPageAccess){
+    //   return;
+    // }
+    if (action == "enable" || action == "disable") {
+      this.openDialog(event);
+      return;
+    }
+
+    try {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
+      if (action && action === "edit") {
+        this.router.navigate(["/pl/admin/policies/create-edit-policy"], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: "merge",
+          queryParams: {
+            policyId: this.policyID,
+          },
+        });
+
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
   }
 
   navigateBack() {

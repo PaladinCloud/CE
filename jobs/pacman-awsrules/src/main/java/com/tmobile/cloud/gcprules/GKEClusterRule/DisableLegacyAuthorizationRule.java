@@ -10,24 +10,24 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.MDC;
-import com.tmobile.pacman.commons.rule.BaseRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-legacy-authorization-disabled", desc = "Legacy Authorization should be disabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class DisableLegacyAuthorizationRule extends BaseRule {
+@PacmanPolicy(key = "check-legacy-authorization-disabled", desc = "Legacy Authorization should be disabled", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class DisableLegacyAuthorizationRule extends BasePolicy {
 
     private static final Logger logger= LoggerFactory.getLogger(DisableLegacyAuthorizationRule.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         Annotation annotation = null;
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
@@ -48,7 +48,7 @@ public class DisableLegacyAuthorizationRule extends BaseRule {
         boolean isLegacyAuthorizationDisabled = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
@@ -71,7 +71,7 @@ public class DisableLegacyAuthorizationRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========GKE Cluster ended with an annotation {} : =========", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
 
@@ -81,7 +81,7 @@ public class DisableLegacyAuthorizationRule extends BaseRule {
         }
 
         logger.debug("========KKEClusterwithPubliAccess ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean checkLegacyAuthorization(String vmEsURL, Map<String, Object> mustFilter) throws Exception {

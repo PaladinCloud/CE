@@ -46,13 +46,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-accesskeys-rotated-in-every-90-days", desc = "checks for accesskeys which are not rotated in past 90 days from current day", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class AccessKeyRotatedRule extends BaseRule {
+@PacmanPolicy(key = "check-for-accesskeys-rotated-in-every-90-days", desc = "checks for accesskeys which are not rotated in past 90 days from current day", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class AccessKeyRotatedRule extends BasePolicy {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AccessKeyRotatedRule.class);
 	
@@ -74,7 +74,7 @@ public class AccessKeyRotatedRule extends BaseRule {
 	 *
 	 */
 	
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========AccessKeyRotatedRule started=========");
 		Map<String, String> temp = new HashMap<>();
 		temp.putAll(ruleParam);
@@ -89,7 +89,7 @@ public class AccessKeyRotatedRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -122,7 +122,7 @@ public class AccessKeyRotatedRule extends BaseRule {
 		                issueList.add(issue);
 		                annotation.put("issueDetails",issueList.toString());
 		                logger.debug("========AccessKeyRotatedRule ended with annotation {} :=========",annotation);
-		                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
+		                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE,annotation);
 		            }else{
 		                logger.info(userName,"Access key is already rotated for username ");
 		            }
@@ -135,7 +135,7 @@ public class AccessKeyRotatedRule extends BaseRule {
 		}	
 		
 		logger.debug("========AccessKeyRotatedRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 	
     @Override

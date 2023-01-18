@@ -9,22 +9,22 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.*;
-@PacmanRule(key = "check-if-sql-db-is-highly-available", desc = "Configure sql db instances for high availability", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.OPERATIONS)
-public class SQLWithHighAvailabilityRule extends BaseRule {
+@PacmanPolicy(key = "check-if-sql-db-is-highly-available", desc = "Configure sql db instances for high availability", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.OPERATIONS)
+public class SQLWithHighAvailabilityRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(SQLWithHighAvailabilityRule.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("Executing SQLWithHighAvailabilityRule rule");
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -43,7 +43,7 @@ public class SQLWithHighAvailabilityRule extends BaseRule {
         }
         logger.debug("ES search url for gcp cloudsql dataset table:  {}", esUrl);
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
-        MDC.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             Map<String, Object> mustFilter = new HashMap<>();
@@ -61,7 +61,7 @@ public class SQLWithHighAvailabilityRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug("SQLWithHighAvailabilityRule rule ended with failure. Annotation {} :", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
             } catch (Exception exception) {
@@ -69,7 +69,7 @@ public class SQLWithHighAvailabilityRule extends BaseRule {
             }
         }
         logger.debug("SQLWithHighAvailabilityRule rule ended with success.");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

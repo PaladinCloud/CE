@@ -26,12 +26,12 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class })
 public class LogMetricFilterAndAlarmRuleTest {
 
 	@InjectMocks
@@ -68,7 +68,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_ALARM_URL), any(),
 				any(), any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
 
@@ -93,7 +93,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		String expected = "Invalid value for filter, filter: " + filterName;
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -119,7 +119,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		String expected = "Cloudwatch alarm not found";
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -145,7 +145,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 		String expected = "CloudTrail log with matching conditions does not exists, isMultiRegionTrail: true"
 				+ ", isLogging: true, accountId: " + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -177,7 +177,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 				+ ruleParam.get(PacmanRuleConstants.METRIC_NAMESPACE) + ", filtername: " + filterName + ", accountId: "
 				+ resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -207,7 +207,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 		String expected = "Cloudwatch logs with matching filter patterns does not exists, filtername: " 
 				+ filterName + ", accountId: " + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -241,7 +241,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 				+ ruleParam.get(PacmanRuleConstants.METRIC_NAMESPACE) + ", accountId: "
 				+ resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
-		RuleResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -271,7 +271,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 	private Map<String, String> getInputParamMap(String filterName) {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID,
+		ruleParam.put(PacmanSdkConstants.POLICY_ID,
 				"CloudTrailEncryption_version-1_CloudTrailWithoutEncryption_cloudtrail");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_HIGH);

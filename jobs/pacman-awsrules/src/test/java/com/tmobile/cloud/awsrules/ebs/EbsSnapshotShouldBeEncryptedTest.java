@@ -36,7 +36,7 @@ public class EbsSnapshotShouldBeEncryptedTest {
         mockStatic(PacmanUtils.class);
         Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "ruleid");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "ruleid");
 		ruleParam.put(PacmanRuleConstants.CATEGORY,PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY,PacmanSdkConstants.SEV_HIGH);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(

@@ -34,13 +34,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-aws-route53-DNS-For-accounts", desc = "Route 53 service is allowed to be used only in designated account. No other accounts should be using Route 53 service. Since Route 53 service is critical service for every application, a controlled environment is required for smooth operations. Also in order stop domain proliferation and enforce best practices, this service  is limited only to these two accounts", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckAwsRoute53DNSForAccountsRule extends BaseRule {
+@PacmanPolicy(key = "check-for-aws-route53-DNS-For-accounts", desc = "Route 53 service is allowed to be used only in designated account. No other accounts should be using Route 53 service. Since Route 53 service is critical service for every application, a controlled environment is required for smooth operations. Also in order stop domain proliferation and enforce best practices, this service  is limited only to these two accounts", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckAwsRoute53DNSForAccountsRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(CheckAwsRoute53DNSForAccountsRule.class);
 
 	/**
@@ -67,7 +67,7 @@ public class CheckAwsRoute53DNSForAccountsRule extends BaseRule {
 	 */
 
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========CheckAwsRoute53DNSForAccountsRule started=========");
 		Map<String, String> temp = new HashMap<>();
 		temp.putAll(ruleParam);
@@ -85,7 +85,7 @@ public class CheckAwsRoute53DNSForAccountsRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId")); 
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
 		
 		Gson gson = new Gson();
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
@@ -122,7 +122,7 @@ public class CheckAwsRoute53DNSForAccountsRule extends BaseRule {
                         issueList.add(issue);
                         annotation.put("issueDetails",issueList.toString());
                         
-                        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                     }
 				} catch (UnableToCreateClientException e) {
 					logger.error("unable to get client for following input", e);
@@ -131,7 +131,7 @@ public class CheckAwsRoute53DNSForAccountsRule extends BaseRule {
 
 			}
 
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

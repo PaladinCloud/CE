@@ -41,7 +41,7 @@ import com.tmobile.pacman.api.compliance.domain.ResponseDTO;
 import com.tmobile.pacman.api.compliance.domain.ResponseData;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithCount;
 import com.tmobile.pacman.api.compliance.domain.TaggingResponse;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
 import com.tmobile.pacman.api.compliance.service.TaggingService;
 
@@ -127,7 +127,7 @@ public class TaggingController implements Constants {
     
     @RequestMapping(path = "/v1/tagging/summarybytargettype", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<Object> untaggingByTargetTypes(@RequestBody UntaggedTargetTypeRequest request) {
+    public ResponseEntity<Object> untaggingByTargetTypes(@RequestBody SummaryByTargetTypeRequest request) {
         String assetGroup = request.getAg();
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
@@ -135,7 +135,40 @@ public class TaggingController implements Constants {
         ResponseData response = null;
 
         try {
-            response = new ResponseData(taggingService.getUntaggingByTargetTypes(request));
+            response = new ResponseData(taggingService.getNonCompliancebyCategoryofTargetType(request));
+
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+    
+    /**
+     * Get un-tagged assets compliance  by target type.Request expects assetGroup as
+     * mandatory.If API receives assetGroup as request parameter, it gives the
+     * list of target types with
+     * un-tagged/tagged/complaincePercentage/name/assetCount. If API receives
+     * assetGroup and targetType as request parameter, it gives
+     * un-tagged/tagged/complaincePercentage/name/assetCount for that target
+     * type
+     *
+     * @param request
+     *            the request
+     * @return ResponseEntity .
+     */
+    
+    @RequestMapping(path = "/v1/summarybytargettype", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<Object> categoryByTargetTypesSummary(@RequestBody SummaryByTargetTypeRequest request) {
+        String assetGroup = request.getAg();
+        String category = request.getCategory();
+        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(category)) {
+            return ResponseUtils.buildFailureResponse(new Exception(ASSET_CATEGORY_MANDATORY));
+        }
+        ResponseData response = null;
+
+        try {
+            response = new ResponseData(taggingService.getNonCompliancebyCategoryofTargetType(request));
 
         } catch (ServiceException e) {
             return complianceService.formatException(e);

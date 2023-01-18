@@ -46,10 +46,10 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
 public class CheckIamIdentityProviderWithADFSRuleTest {
 
     @InjectMocks
@@ -74,7 +74,7 @@ public class CheckIamIdentityProviderWithADFSRuleTest {
         map.put("client", identityManagementClient);
         CheckIamIdentityProviderWithADFSRule spy = Mockito.spy(new CheckIamIdentityProviderWithADFSRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         
         when(identityManagementClient.getSAMLProvider(anyObject())).thenReturn(keysResult);

@@ -103,9 +103,23 @@ import { MatSortModule } from "@angular/material/sort";
 import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zoom-graph.component";
 import { DateSelection } from "./date-selection/date-selection.component";
 import { MatCardModule } from "@angular/material/card";
+import { DialogBoxComponent } from './components/molecules/dialog-box/dialog-box.component';
+import { SnackbarComponent } from './components/molecules/snackbar/snackbar.component';
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { CustomButtonComponent } from './components/molecules/custom-button/custom-button.component';
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatButtonModule } from "@angular/material/button";
+import { ChipComponent } from './components/atoms/chip/chip.component';
+import { TextComponent } from './components/atoms/text/text.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { StepperComponent } from "./stepper/stepper.component";
 
 @NgModule({
   imports: [
+    MatButtonModule,
+    MatStepperModule,
+    MatDialogModule,
+    MatSnackBarModule,
     MatGridListModule,
     MatCardModule,
     MatSelectModule,
@@ -182,8 +196,20 @@ import { MatCardModule } from "@angular/material/card";
     InputModalComponent,
     BackNavigationComponent,
     TableListComponent,
+    DialogBoxComponent,
+    SnackbarComponent,
+    CustomButtonComponent,
+    ChipComponent,
+    TextComponent,
+    StepperComponent,
   ],
   exports: [
+    TextComponent,
+    ChipComponent,
+    StepperComponent,
+    CustomButtonComponent,
+    DialogBoxComponent,
+    SnackbarComponent,
     MultilineZoomGraphComponent,
     TableComponent,
     DateSelection,

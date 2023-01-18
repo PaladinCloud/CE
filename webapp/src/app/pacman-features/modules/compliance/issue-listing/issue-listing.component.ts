@@ -67,7 +67,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Title': 2, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {"PolicyName": "Title"};
-  fieldName: string = "ruleId.keyword";
+  fieldName: string = "policyId.keyword";
   fieldType: string = "number";
   selectedOrder: string = "asc";
   sortOrder: string[];
@@ -214,12 +214,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldName = "_resourceid.keyword";
       this.fieldType = "string";
     } else if (this.headerColName == "Category") {
-      this.fieldName = "ruleCategory.keyword";
+      this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
       this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
     } else if (this.headerColName == "Title") {
       this.fieldType = "number";
-      this.fieldName = "ruleId.keyword";
+      this.fieldName = "policyId.keyword";
     }
     this.updateComponent();
   }
@@ -328,19 +328,14 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         };
         dataArray.push(obj);
       }
-      const formattedFilters = dataArray
-      // .map(function (data) {
-      //   data.name =
-      //     refactoredService.getDisplayNameForAKey(data.name) || data.name;
-      //   return data;
-      // });
+      const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
+        
         let keyValue = _.find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
-        // this.changeFilterType(keyValue);
-        this.changeFilterType(keyValue).subscribe(filterTagOptions => {
-            let filterValue = _.find(filterTagOptions, {
+        this.changeFilterType(keyValue).then(() => {
+            let filterValue = _.find(this.filterTagOptions[keyValue], {
               id: this.filterText[filterObjKeys[i]],
             })["name"];
           const eachObj = {
@@ -398,8 +393,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   changeFilterType(value) {
-    var subject = new Subject<any>();
-    this.filterErrorMessage = '';
+    return new Promise((resolve) => {
+      this.filterErrorMessage = '';
     try {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
@@ -421,7 +416,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTagLabels[value] = _.map(response[0].response, "name");
           this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
-          subject.next(this.filterTagOptions[value]);
+          resolve(this.filterTagOptions[value]);
         });
       }
     } catch (error) {
@@ -429,7 +424,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    return subject.asObservable();
+    }); 
   }
 
   changeFilterTags(event) {    
@@ -490,6 +485,46 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
+  processData(data) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
+
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellObj = {
+            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
+            titleText: getData[row][col], // text to show on hover
+            valueText: getData[row][col],
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            link: ""
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
+      }
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
   getData(isNextPageCalled=false) {
     try {
       if (this.issueListingSubscription) {
@@ -539,10 +574,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 this.totalRows = data.total;
 
                 const updatedResponse = this.massageData(data.response);
+                const processData = this.processData(updatedResponse);
                 if(isNextPageCalled){
-                  this.onScrollDataLoader.next(updatedResponse)
+                  this.onScrollDataLoader.next(processData)
                 }else{
-                  this.tableData = updatedResponse;
+                  this.tableData = processData;
                 }
 
               }
@@ -615,7 +651,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       this.router
-          .navigate(["issue-details", row["Issue ID"]], {
+          .navigate(["issue-details", row["Issue ID"].valueText], {
             relativeTo: this.activatedRoute,
             queryParamsHandling: "merge",
           })

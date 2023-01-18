@@ -37,7 +37,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Purpose: This test checks for cloudfront resources serving HTML content
@@ -89,9 +89,9 @@ public class CloudfrontAuthorizedHTMLContentDistributionRuleTest {
 		resourceAttributes.put("enabled", "false");
 
 		ruleParam.put("executionId", "test-execution-id");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "test-rule-id");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "test-rule-id");
 
-		RuleResult ruleResult = cloudfrontAuthorizedHTMLContentDistributionRule.execute(ruleParam, resourceAttributes);
+		PolicyResult ruleResult = cloudfrontAuthorizedHTMLContentDistributionRule.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_SUCCESS));
 
 	}
@@ -110,9 +110,9 @@ public class CloudfrontAuthorizedHTMLContentDistributionRuleTest {
 		resourceAttributes.put("enabled", "true");
 
 		ruleParam.put("executionId", "test-execution-id");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "test-rule-id");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "test-rule-id");
 
-		RuleResult ruleResult = cloudfrontAuthorizedHTMLContentDistributionRule.execute(ruleParam, resourceAttributes);
+		PolicyResult ruleResult = cloudfrontAuthorizedHTMLContentDistributionRule.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_SUCCESS));
 
 	}
@@ -130,9 +130,9 @@ public class CloudfrontAuthorizedHTMLContentDistributionRuleTest {
 		resourceAttributes.put("enabled", "true");
 
 		ruleParam.put("executionId", "test-execution-id");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "test-rule-id");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "test-rule-id");
 
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttributes);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_FAILURE));
 
 	}

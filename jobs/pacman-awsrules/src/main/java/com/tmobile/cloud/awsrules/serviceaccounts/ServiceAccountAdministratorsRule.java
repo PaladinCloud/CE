@@ -31,13 +31,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-service-account-admin", desc = "Checks for any service account in a r_win_*_admin or r_rhel_*_admin group must have a valid exception on file (Description must contain “RP” and “FND” strings)", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class ServiceAccountAdministratorsRule extends BaseRule {
+@PacmanPolicy(key = "check-for-service-account-admin", desc = "Checks for any service account in a r_win_*_admin or r_rhel_*_admin group must have a valid exception on file (Description must contain “RP” and “FND” strings)", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class ServiceAccountAdministratorsRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(ServiceAccountAdministratorsRule.class);
@@ -69,7 +69,7 @@ public class ServiceAccountAdministratorsRule extends BaseRule {
      *
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========ServiceAccountAdministratorsRule started=========");
@@ -81,7 +81,7 @@ public class ServiceAccountAdministratorsRule extends BaseRule {
         String serviceAccountEsURL = null;
         Boolean isServiceAccountValidException = false;
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -152,7 +152,7 @@ public class ServiceAccountAdministratorsRule extends BaseRule {
                             logger.debug(
                                     "========ServiceAccountAdministratorsRule ended with an annotation : {}=========",
                                     annotation);
-                            return new RuleResult(
+                            return new PolicyResult(
                                     PacmanSdkConstants.STATUS_FAILURE,
                                     PacmanRuleConstants.FAILURE_MESSAGE,
                                     annotation);
@@ -163,7 +163,7 @@ public class ServiceAccountAdministratorsRule extends BaseRule {
 
         }
         logger.debug("========ServiceAccountAdministratorsRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

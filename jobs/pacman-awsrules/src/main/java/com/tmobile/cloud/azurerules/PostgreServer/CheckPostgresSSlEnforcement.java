@@ -6,10 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
@@ -24,18 +20,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Possible network Just In Time (JIT) access will be monitored by Azure
  * Security Center as recommendations
  */
 
-@PacmanRule(key = "check-for-azure-postgree-ssl-enforcement", desc = "Azure policy  to check postgree ssl enforcement", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckPostgresSSlEnforcement extends BaseRule {
+@PacmanPolicy(key = "check-for-azure-postgree-ssl-enforcement", desc = "Azure policy  to check postgree ssl enforcement", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckPostgresSSlEnforcement extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(CheckPostgresSSlEnforcement.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 
         logger.debug("======== Azure Policy PostgresSSlEnforcement  Evaluation Rule started =========");
 
@@ -81,14 +81,14 @@ public class CheckPostgresSSlEnforcement extends BaseRule {
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug(
                         "encryption in transit using SSL is not enabled for the selected Microsoft Azure PostgreSQL database server");
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
         }
 
         logger.debug(
                 "encryption in transit using SSL is  enabled for the selected Microsoft Azure PostgreSQL database server");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

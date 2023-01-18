@@ -9,10 +9,10 @@ import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +20,12 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanRule(key = "check-for-vminstance-migrate-on-maintenance", desc = "checks if virtual machine instance will be migrated on maintenance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.OPERATIONS)
-public class VMInstanceMigrateOnMaintainence extends BaseRule {
+@PacmanPolicy(key = "check-for-vminstance-migrate-on-maintenance", desc = "checks if virtual machine instance will be migrated on maintenance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.OPERATIONS)
+public class VMInstanceMigrateOnMaintainence extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(VMInstanceMigrateOnMaintainence.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========VMInstanceMigrateOnMaintainence started=========");
         Annotation annotation = null;
 
@@ -49,7 +49,7 @@ public class VMInstanceMigrateOnMaintainence extends BaseRule {
         boolean isVmMigrateonMaintenance = false;
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
@@ -72,7 +72,7 @@ public class VMInstanceMigrateOnMaintainence extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========VMInstanceMigrateOnMaintainence ended with an annotation {} : =========", annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 
             } catch (Exception exception) {
@@ -81,7 +81,7 @@ public class VMInstanceMigrateOnMaintainence extends BaseRule {
         }
 
         logger.debug("========VMInstanceMigrateOnMaintainence ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

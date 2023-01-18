@@ -82,7 +82,7 @@
             <div class="header-right flex flex-row">
                 
                 
-                <div class="more-wrapper">
+                <div *ngIf="showMoreMenu" class="more-wrapper">
                     <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
                         <button *ngIf="showDownloadBtn" class="download-btn" mat-menu-item (click)="download()">
@@ -112,19 +112,41 @@
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
         <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
-                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" mat-header-cell *matHeaderCellDef mat-sort-header> {{ column }} </th>
+                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false">
+                    <span> {{ column!='Actions' && column!='DetailsBtn'?column:'' }} </span>
+                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
+                </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell *matCellDef="let element"> 
-                    <div class="nowrap-ellipsis" *ngIf="element[column] || element[column]==0">
-                        <img *ngIf="imageDataMap[element[column]] && imageDataMap[element[column]]['image']" style="vertical-align: text-bottom;" src="/assets/icons/{{imageDataMap[element[column]].image}}.svg" [title]="element[column]"> 
-                    <span  *ngIf="!imageDataMap[element[column]] || !imageDataMap[element[column]].imageOnly" [title]="element[column]=='NR'?'No Resources':element[column]">{{ element[column] }} </span>
+                    <div *ngIf="element[column] && element[column].isChip; else menuBtn" [title]="element[column].titleText">
+                        <app-chip [variant]="element[column].chipVariant">
+                            {{ element[column].text }}
+                        </app-chip> 
                     </div>
-                    <div class="nowrap-ellipsis" *ngIf="!element[column] && element[column]!=0">
-                        <span>No Data</span>
-                    </div>
+                    <ng-template #menuBtn>
+                        <div *ngIf="element[column] && element[column].isMenuBtn; else textImageData" style="text-align: center;">
+                            <img class="pointer" width="20px" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
+                            <mat-menu #actionMenu="matMenu">
+                                <button (click)="handleAction(element, action)" style="min-width: 156px;" *ngFor="let action of element[column].menuItems" mat-menu-item>
+                                    <span >{{ action }}</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </ng-template>
+                    <ng-template #textImageData>
+                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText==0); else noData" (click)="handleClick(element, element[column])" class="nowrap-ellipsis" [class.pointer]="element[column].link" [title]="element[column].titleText">
+                            <img *ngIf="element[column].imgSrc" style="vertical-align: text-bottom;" src="/assets/icons/{{element[column].imgSrc}}.svg"> 
+                            <span [class.row-title]="column=='Title'" *ngIf="element[column].text || element[column].text==0">{{ element[column].text }} </span>
+                        </div>
+                    </ng-template>
+                    <ng-template #noData>
+                        <div class="nowrap-ellipsis">
+                            <span>No Data</span>
+                        </div>
+                    </ng-template>
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
-            <tr (click)="goToDetails(row)" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
+            <tr (click)="handleClick(row)" [class.row-hover]="rowClickable" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
         </table>
     </div>
     </div>

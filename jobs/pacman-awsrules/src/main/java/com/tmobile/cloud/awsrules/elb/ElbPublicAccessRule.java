@@ -42,13 +42,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-elb-public-access", desc = "This rule checks for application/classic elb which is exposed to public", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class ElbPublicAccessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-elb-public-access", desc = "This rule checks for application/classic elb which is exposed to public", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class ElbPublicAccessRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(ElbPublicAccessRule.class);
 
 	/**
@@ -84,7 +84,7 @@ public class ElbPublicAccessRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========ElbPublicAccessRule started=========");
 		Annotation annotation = null;
 		String subnet = null;
@@ -131,7 +131,7 @@ public class ElbPublicAccessRule extends BaseRule {
 		}
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		if (!PacmanUtils.doesAllHaveValue(cidrIpv6,internetGateWay, severity, category, elbSgUrl,routetableAssociationsEsURL, routetableRoutesEsURL, routetableEsURL, sgRulesUrl, cidrIp)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -185,7 +185,7 @@ public class ElbPublicAccessRule extends BaseRule {
 							annotation.put(PacmanRuleConstants.TYPE_OF_ELB,elbType);
 							annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID, resourceAttributes.get("loadbalancerarn"));
 						}
-						return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+						return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 					}
 				}
 			}
@@ -194,7 +194,7 @@ public class ElbPublicAccessRule extends BaseRule {
 			throw new RuleExecutionFailedExeption(e.getMessage());
 		}
 		logger.debug("========ElbPublicAccessRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

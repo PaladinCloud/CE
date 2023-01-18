@@ -44,7 +44,7 @@
         "
       ></app-back-navigation>
     </div>
-    <!-- <div *ngIf='autofix && autofixData && autofixData.ruleId' class = "model-title flex flex-align-center" (click) = "requestNewException(); showExceptionalModal = true">
+    <!-- <div *ngIf='autofix && autofixData && autofixData.policyId' class = "model-title flex flex-align-center" (click) = "requestNewException(); showExceptionalModal = true">
          <div>Request Exception</div>
          <div class = " flex flex-align-center">
              <img class="arrow-modal" src="../assets/icons/left-arrow.svg" style="height: 1em;">
@@ -227,7 +227,7 @@
               </div>
               <div
                 class="desc-wrapper"
-                *ngIf="autofixData && autofixData.ruleId"
+                *ngIf="autofixData && autofixData.policyId"
               >
                 <div class="text-header">Policy ID</div>
                 <div class="flex flex-align-center each-cell-list-row">
@@ -236,16 +236,16 @@
                       goToLinkDetails(
                         'compliance',
                         'policy-details',
-                        autofixData.ruleId
+                        autofixData.policyId
                       )
                     "
                     class="text-description highlight-link link"
                   >
-                    {{ autofixData.ruleId }}
+                    {{ autofixData.policyId }}
                   </div>
                   <app-copy-element
                     class="copy-object flex flex-align-center"
-                    [CopyElement]="autofixData.ruleId"
+                    [CopyElement]="autofixData.policyId"
                     [iconSize]="'10px'"
                   ></app-copy-element>
                 </div>

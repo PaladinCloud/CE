@@ -34,12 +34,12 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-unused-classic-elb", desc = "checks for unused classic elb which are not associated with any instance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class UnusedClassicElbRule extends BaseRule {
+@PacmanPolicy(key = "check-for-unused-classic-elb", desc = "checks for unused classic elb which are not associated with any instance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class UnusedClassicElbRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(UnusedClassicElbRule.class);
 
@@ -64,7 +64,7 @@ public class UnusedClassicElbRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========UnusedClassicElbRule started=========");
 		String classicLoadBalncerId = null;
 		String region = null;
@@ -74,7 +74,7 @@ public class UnusedClassicElbRule extends BaseRule {
 		String classicElbUrl = null;
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		String formattedUrl = PacmanUtils.formatUrl(ruleParam,PacmanRuleConstants.ES_CLASSIC_ELB_WITH_INSTANCE_URL);
         
@@ -99,11 +99,11 @@ public class UnusedClassicElbRule extends BaseRule {
 			}
 			if (!isClassicElbWithEc2Exists) {
 				String description = "Unused Classic ELB found!!";
-	            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createELBAnnotation("Classic",ruleParam, description,severity,category));
+	            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, PacmanUtils.createELBAnnotation("Classic",ruleParam, description,severity,category));
 			}
 		}
 		logger.debug("========UnusedClassicElbRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

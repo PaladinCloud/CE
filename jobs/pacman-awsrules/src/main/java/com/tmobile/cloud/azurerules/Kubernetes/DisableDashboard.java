@@ -11,21 +11,21 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "Disable-kubernetes-DashBoard", desc = "Disable kubernetes DashBoard", severity = PacmanSdkConstants.SEV_LOW, category = PacmanSdkConstants.SECURITY)
-public class DisableDashboard extends BaseRule {
+@PacmanPolicy(key = "Disable-kubernetes-DashBoard", desc = "Disable kubernetes DashBoard", severity = PacmanSdkConstants.SEV_LOW, category = PacmanSdkConstants.SECURITY)
+public class DisableDashboard extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(DisableDashboard.class);
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing DisableDashboard..");
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -56,12 +56,12 @@ public class DisableDashboard extends BaseRule {
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
                     issue.put(PacmanRuleConstants.VIOLATION_REASON,
-                            ruleParam.get(PacmanRuleConstants.RULE_ID)  + " Violation Found!");
+                            ruleParam.get(PacmanSdkConstants.POLICY_ID)  + " Violation Found!");
                     issueList.add(issue);
                     annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug(
                             "Kubernetes Dashboard Enabled");
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
             } catch (Exception e) {
@@ -69,7 +69,7 @@ public class DisableDashboard extends BaseRule {
             }
         }
         logger.debug("Kubernetes Dashboard Disabled");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
     }
 

@@ -151,7 +151,7 @@ export class PolicyAcrossApplicationComponent implements OnInit, OnDestroy {
     if (this.ruleID !== undefined) {
       const queryParams = {
         'ag': this.selectedAssetGroup,
-        'ruleId' : this.ruleID,
+        'policyId' : this.ruleID,
         'domain': this.selectedDomain
     };
 
@@ -219,7 +219,7 @@ export class PolicyAcrossApplicationComponent implements OnInit, OnDestroy {
       const queryParams = {
         'ag': this.selectedAssetGroup,
         'application' : this.applicationName,
-        'ruleId' : this.ruleID,
+        'policyId' : this.ruleID,
         'domain': this.selectedDomain
     };
 
@@ -312,7 +312,7 @@ export class PolicyAcrossApplicationComponent implements OnInit, OnDestroy {
       const localObjKeys = Object.keys(event);
       const currentApp = event[localObjKeys[0]];
       const colName = event[localObjKeys[1]];
-      const eachParams = {'ruleId': this.ruleID, 'application': currentApp};
+      const eachParams = {'policyId': this.ruleID, 'application': currentApp};
         if (colName.toLowerCase() === 'non-compliant asset') {
           eachParams['compliant'] = false;
         }
@@ -321,7 +321,7 @@ export class PolicyAcrossApplicationComponent implements OnInit, OnDestroy {
         }
         let newParams = this.utils.makeFilterObj(eachParams);
         newParams = Object.assign(newParams, apiTarget);
-        newParams['mandatory'] = 'ruleId';
+        newParams['mandatory'] = 'policyId';
         this.router.navigate(['../../../', 'assets', 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -336,7 +336,7 @@ export class PolicyAcrossApplicationComponent implements OnInit, OnDestroy {
       const localObjKeys = Object.keys(event);
       const currentApp = event[localObjKeys[0]];
       const colName = event[localObjKeys[1]];
-      const eachParams = {'ruleId': this.ruleID, 'environment': currentApp};
+      const eachParams = {'policyId': this.ruleID, 'environment': currentApp};
       if (colName.toLowerCase() === 'non-compliant asset') {
         eachParams['compliant'] = false;
       }
@@ -345,7 +345,7 @@ export class PolicyAcrossApplicationComponent implements OnInit, OnDestroy {
       }
       let newParams = this.utils.makeFilterObj(eachParams);
       newParams = Object.assign(newParams, apiTarget);
-      newParams['mandatory'] = 'ruleId';
+      newParams['mandatory'] = 'policyId';
       this.router.navigate(['../../../', 'assets' , 'asset-list'], {relativeTo: this.activatedRoute, queryParams: newParams, queryParamsHandling: 'merge'});
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);

@@ -100,7 +100,7 @@ public class CertificateRepository implements Constants {
                 + TEN_THOUSAND
                 + "},"
                 + "\"aggs\":{\"certs\":{\"children\":{\"type\":\"issue_cert\"},\"aggs\":{\"openfilter\":{\"filter\":{\"term\":{\"issueStatus\":\"open\"}},"
-                + "\"aggs\":{\"rules\":{\"terms\":{\"field\":\"ruleId.keyword\",\"size\":10}}}}}}}}}}";
+                + "\"aggs\":{\"polices\":{\"terms\":{\"field\":\"policyId.keyword\",\"size\":10}}}}}}}}}}";
 
         String responseJson = "";
         try {
@@ -200,12 +200,12 @@ public class CertificateRepository implements Constants {
             if (filter.containsKey(EXP_IN)) {
                 if (filter.get(EXP_IN).equals(THIRTY)) {
                     requestBody
-                            .append(",{\"has_child\":{\"type\":\"issue_cert\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"issueStatus.keyword\":\"open\"}},{\"term\":{\"type.keyword\":\"issue\"}},{\"match\":{\"ruleId.keyword\":\"");
+                            .append(",{\"has_child\":{\"type\":\"issue_cert\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"issueStatus.keyword\":\"open\"}},{\"term\":{\"type.keyword\":\"issue\"}},{\"match\":{\"policyId.keyword\":\"");
                     requestBody.append(SSL_CERT_30_DAYS_EXP_RULE);
                     requestBody.append("\"}}]}}}}");
                 } else if (filter.get(EXP_IN).equals(FOURTYFIVE)) {
                     requestBody
-                            .append(",{\"has_child\":{\"type\":\"issue_cert\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"issueStatus.keyword\":\"open\"}},{\"term\":{\"type.keyword\":\"issue\"}},{\"match\":{\"ruleId.keyword\":\"");
+                            .append(",{\"has_child\":{\"type\":\"issue_cert\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"issueStatus.keyword\":\"open\"}},{\"term\":{\"type.keyword\":\"issue\"}},{\"match\":{\"policyId.keyword\":\"");
                     requestBody.append(SSL_CERT_45_DAYS_EXP_RULE);
                     requestBody.append("\"}}]}}}}");
                 }
@@ -317,7 +317,7 @@ public class CertificateRepository implements Constants {
                 assetGroup);
         urlToQuery.append(CERT_SEARCH);
         String requestBody = "{\"size\":0,\"aggs\":{\"certs\":{\"children\":{\"type\":\"issue_cert\"},\"aggs\":{\"openfilter\":{\"filter\":{\"term\":{\"issueStatus\":\"open\"}},"
-                + "\"aggs\":{\"rules\":{\"terms\":{\"field\":\"ruleId.keyword\",\"size\":10}}}}}}}}";
+                + "\"aggs\":{\"policies\":{\"terms\":{\"field\":\"policyId.keyword\",\"size\":10}}}}}}}}";
 
         String responseJson = "";
         try {
@@ -336,7 +336,7 @@ public class CertificateRepository implements Constants {
         try {
             JsonArray rules = aggsJson.getAsJsonObject()
                     .getAsJsonObject("certs").getAsJsonObject("openfilter")
-                    .getAsJsonObject("rules").getAsJsonArray(BUCKETS);
+                    .getAsJsonObject("policies").getAsJsonArray(BUCKETS);
             if (rules.size() > 0) {
                 for (int j = 0; j < rules.size(); j++) {
                     if (SSL_CERT_45_DAYS_EXP_RULE.equals(rules.get(j)

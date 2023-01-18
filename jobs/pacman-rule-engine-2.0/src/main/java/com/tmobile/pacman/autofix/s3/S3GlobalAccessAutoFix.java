@@ -35,7 +35,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.common.exception.AutoFixException;
-import com.tmobile.pacman.common.exception.RuleEngineRunTimeException;
+import com.tmobile.pacman.common.exception.PolicyEngineRunTimeException;
 import com.tmobile.pacman.commons.autofix.BaseFix;
 import com.tmobile.pacman.commons.autofix.FixResult;
 import com.tmobile.pacman.commons.autofix.PacmanFix;
@@ -134,7 +134,7 @@ public class S3GlobalAccessAutoFix extends BaseFix {
 
         } catch (AmazonS3Exception s3Exception) {
             LOGGER.error(String.format("AmazonS3Exception in revokeACLPublicPermission: %s", s3Exception.getMessage()));
-            throw new RuleEngineRunTimeException(s3Exception);
+            throw new PolicyEngineRunTimeException(s3Exception);
         }
     }
 

@@ -39,13 +39,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-MFA-RootUser", desc = "checks for MFA for Root User", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class RootUserMFACheck extends BaseRule {
+@PacmanPolicy(key = "check-for-MFA-RootUser", desc = "checks for MFA for Root User", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class RootUserMFACheck extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(RootUserMFACheck.class);
 
@@ -67,7 +67,7 @@ public class RootUserMFACheck extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========CheckMFAforRootUser started=========");
 		Annotation annotation = null;
 		Map<String, String> temp = new HashMap<>();
@@ -78,7 +78,7 @@ public class RootUserMFACheck extends BaseRule {
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		if (!PacmanUtils.doesAllHaveValue(severity, category,roleIdentifyingString)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -111,11 +111,11 @@ public class RootUserMFACheck extends BaseRule {
 				issue.put(PacmanRuleConstants.VIOLATION_REASON, "MFA for Root User is not Enabled");
 				issueList.add(issue);
 				annotation.put("issueDetails",issueList.toString());
-        		return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,annotation);
+        		return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,annotation);
         	}
         }
 		logger.debug("========CheckMFAforRootUser ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

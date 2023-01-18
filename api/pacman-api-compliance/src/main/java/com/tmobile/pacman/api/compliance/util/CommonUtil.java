@@ -78,14 +78,14 @@ public class CommonUtil implements Constants {
     /**
      * Gets the rule severity from parms.
      *
-     * @param ruleParamjson the rule paramjson
+     * @param policyParamjson the rule paramjson
      * @return the rule severity from parms
      */
-    public static String getRuleSeverityFromParms(String ruleParamjson) {
+    public static String getPolicySeverityFromParms(String policyParamjson) {
         JsonParser parser = new JsonParser();
 
-        JsonObject ruleParamsJson = (JsonObject) parser.parse(ruleParamjson);
-        JsonArray params = ruleParamsJson.get("params").getAsJsonArray();
+        JsonObject policyParamsJson = (JsonObject) parser.parse(policyParamjson);
+        JsonArray params = policyParamsJson.get("params").getAsJsonArray();
 
         for (JsonElement param : params) {
             JsonObject pramObj = (JsonObject) param;

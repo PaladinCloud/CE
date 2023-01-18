@@ -48,7 +48,7 @@ import com.tmobile.cloud.awsrules.utils.IAMUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ PacmanUtils.class,IAMUtils.class})
@@ -93,7 +93,7 @@ public class AwsIamAccountWithPermanentAccessKeysRuleTest {
         map.put("client", identityManagementClient);
         AwsIamAccountWithPermanentAccessKeysRule spy = Mockito.spy(new AwsIamAccountWithPermanentAccessKeysRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         mockStatic(IAMUtils.class);
         when(IAMUtils.getAccessKeyInformationForUser(anyString(),anyObject())).thenReturn(accessKeyMetadatas);

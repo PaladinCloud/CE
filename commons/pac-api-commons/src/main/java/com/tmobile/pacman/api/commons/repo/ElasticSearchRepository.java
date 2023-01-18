@@ -301,7 +301,7 @@ public class ElasticSearchRepository implements Constants {
 
 		String urlToScroll = new StringBuilder(esUrl).append(FORWARD_SLASH).append(_SEARCH).append("/scroll")
 				.toString();
-
+		System.out.print(request);
 		for (int index = 0; index <= ((from + size) / ES_PAGE_SIZE); index++) {
 			String responseDetails = null;
 			try {

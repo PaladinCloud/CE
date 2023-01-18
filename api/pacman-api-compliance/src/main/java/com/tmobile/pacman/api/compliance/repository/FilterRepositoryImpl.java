@@ -75,8 +75,8 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
      */
     public List<Map<String, Object>> getPoliciesFromDB(String targetTypes)
             throws DataException {
-        String ruleIdQuery = "SELECT rule.policyId,policy.policyName FROM cf_RuleInstance rule LEFT JOIN cf_Policy policy ON rule.policyId = policy.policyId WHERE rule.status = 'ENABLED' AND targetType IN ("
-                + targetTypes + ") GROUP BY rule.policyId";
+        String ruleIdQuery = "SELECT policyId,policyName FROM cf_PolicyTable  WHERE status = 'ENABLED' AND targetType IN ("
+                + targetTypes + ") GROUP BY policyId";
         return rdsepository.getDataFromPacman(ruleIdQuery);
     }
 
@@ -174,7 +174,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
-        String aggsFilter = CommonUtils.convertAttributetoKeyword("ruleCategory");
+        String aggsFilter = CommonUtils.convertAttributetoKeyword("policyCategory");
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
                     assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
@@ -194,7 +194,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
     public Map<String, Long> getRulesFromES(String assetGroup) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
-        String aggsFilter = CommonUtils.convertAttributetoKeyword(RULEID);
+        String aggsFilter = CommonUtils.convertAttributetoKeyword(POLICYID);
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
                     assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,

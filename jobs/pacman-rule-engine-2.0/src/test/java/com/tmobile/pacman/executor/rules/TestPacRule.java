@@ -19,9 +19,9 @@ package com.tmobile.pacman.executor.rules;
 import java.util.Map;
 
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -30,16 +30,16 @@ import com.tmobile.pacman.commons.rule.RuleResult;
  * @author kkumar
  */
 
-@PacmanRule(key="test_key",category="security",desc="test rule",severity="high")
-public class TestPacRule extends BaseRule{
+@PacmanPolicy(key="test_key",category="security",desc="test rule",severity="high")
+public class TestPacRule extends BasePolicy{
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.commons.rule.Rule#execute(java.util.Map, java.util.Map)
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         // TODO Auto-generated method stub
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, "test result");
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, "test result");
     }
 
     /* (non-Javadoc)

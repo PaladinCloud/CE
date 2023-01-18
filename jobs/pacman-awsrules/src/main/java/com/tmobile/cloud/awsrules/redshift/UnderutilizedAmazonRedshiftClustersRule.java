@@ -31,13 +31,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-under-utilized-amazon-redshift-clusters", desc = "Checks for under utilized amazon redshift clusters", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class UnderutilizedAmazonRedshiftClustersRule extends BaseRule {
+@PacmanPolicy(key = "check-for-under-utilized-amazon-redshift-clusters", desc = "Checks for under utilized amazon redshift clusters", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class UnderutilizedAmazonRedshiftClustersRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(UnderutilizedAmazonRedshiftClustersRule.class);
@@ -74,7 +74,7 @@ public class UnderutilizedAmazonRedshiftClustersRule extends BaseRule {
      *
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========UnderutilizedAmazonRedshiftClustersRule started=========");
@@ -100,7 +100,7 @@ public class UnderutilizedAmazonRedshiftClustersRule extends BaseRule {
                                                               // logback Mapped
                                                               // Diagnostic
                                                               // Contex
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is
                                                                       // the
                                                                       // logback
                                                                       // Mapped
@@ -154,12 +154,12 @@ public class UnderutilizedAmazonRedshiftClustersRule extends BaseRule {
                 issueList.add(issue);
                 annotation.put("issueDetails", issueList.toString());
                 logger.debug("========UnderutilizedAmazonRedshiftClustersRule ended with an annotation {} :=========",annotation);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                         PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
         }
         logger.debug("========UnderutilizedAmazonRedshiftClustersRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

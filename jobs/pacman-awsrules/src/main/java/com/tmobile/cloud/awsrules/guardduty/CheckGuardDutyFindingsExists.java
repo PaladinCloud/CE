@@ -36,13 +36,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-guard-duty-findings-exists", desc = "checks guard duty findings exists for a given instance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class CheckGuardDutyFindingsExists extends BaseRule {
+@PacmanPolicy(key = "check-guard-duty-findings-exists", desc = "checks guard duty findings exists for a given instance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class CheckGuardDutyFindingsExists extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(CheckGuardDutyFindingsExists.class);
@@ -77,7 +77,7 @@ public class CheckGuardDutyFindingsExists extends BaseRule {
      *
      */
 
-    public RuleResult execute(final Map<String, String> ruleParam,
+    public PolicyResult execute(final Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========CheckGuardDutyFindingsExists started=========");
@@ -95,7 +95,7 @@ public class CheckGuardDutyFindingsExists extends BaseRule {
         }
 
         MDC.put("executionId", ruleParam.get("executionId")); 
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
@@ -124,14 +124,14 @@ public class CheckGuardDutyFindingsExists extends BaseRule {
                 issueList.add(issue);
                 annotation.put("issueDetails", issueList.toString());
                 logger.debug("========CheckGuardDutyFindingsExists ended with annotation {} :=========",annotation);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                         PacmanRuleConstants.FAILURE_MESSAGE, annotation);
             }
         }
 
         logger.debug("========CheckGuardDutyFindingsExists ended=========");
 
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

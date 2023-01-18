@@ -49,10 +49,10 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
 public class CheckForApiGatewayProtectedTest {
 
     @InjectMocks
@@ -99,7 +99,7 @@ public class CheckForApiGatewayProtectedTest {
         map.put("client", apiGatewayClient);
         CheckForApiGatewayProtected spy = Mockito.spy(new CheckForApiGatewayProtected());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(apiGatewayClient.getResources(anyObject())).thenReturn(resourceResult);
 

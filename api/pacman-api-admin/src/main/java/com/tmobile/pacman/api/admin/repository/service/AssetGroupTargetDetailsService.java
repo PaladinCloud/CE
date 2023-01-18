@@ -18,8 +18,8 @@ package com.tmobile.pacman.api.admin.repository.service;
 import java.util.List;
 import java.util.Set;
 
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyViewDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 
 /**
@@ -34,7 +34,7 @@ public interface AssetGroupTargetDetailsService {
      * @param assetGroupName - valid assetGroup name.
      * @return All TargetType rule details
      */
-	public List<TargetTypeRuleDetails> getTargetTypesByAssetGroupName(String assetGroupName);
+	public List<TargetTypePolicyDetails> getTargetTypesByAssetGroupName(String assetGroupName);
 
 	/**
      * Service to get target types by assetGroup Id and target type not in list
@@ -45,5 +45,5 @@ public interface AssetGroupTargetDetailsService {
      * @return All TargetType rule details
      * @throws PacManException
      */
-	public List<TargetTypeRuleViewDetails> getTargetTypesByAssetGroupIdAndTargetTypeNotIn(String assetGroupName, Set<String> targetTypeNames) throws PacManException;
+	public List<TargetTypePolicyViewDetails> getTargetTypesByAssetGroupIdAndTargetTypeNotIn(String assetGroupName, Set<String> targetTypeNames) throws PacManException;
 }

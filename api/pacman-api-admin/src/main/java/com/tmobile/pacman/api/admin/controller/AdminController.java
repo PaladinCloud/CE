@@ -15,7 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.controller;
 
-import static com.tmobile.pacman.api.admin.common.AdminConstants.JOBID_OR_RULEID_NOT_EMPTY;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.JOBID_OR_POLICYID_NOT_EMPTY;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.security.Principal;
@@ -33,10 +33,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.tmobile.pacman.api.admin.domain.Response;
 import com.tmobile.pacman.api.admin.repository.service.AdminService;
 import com.tmobile.pacman.api.admin.repository.service.JobExecutionManagerService;
-import com.tmobile.pacman.api.admin.repository.service.RuleService;
+import com.tmobile.pacman.api.admin.repository.service.PolicyService;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
 
 import io.swagger.annotations.Api;
@@ -50,10 +51,10 @@ import io.swagger.annotations.ApiParam;
 public class AdminController {
 
 	/** The Constant logger. */
-	private static final Logger log = LoggerFactory.getLogger(RuleController.class);
+	private static final Logger log = LoggerFactory.getLogger(PolicyController.class);
 	
 	@Autowired
-    private RuleService ruleService;
+    private PolicyService ruleService;
 	
 	@Autowired
     private JobExecutionManagerService jobService;
@@ -62,28 +63,28 @@ public class AdminController {
 	private AdminService adminService;
 
 	/**
-     * API to enable disable rule or job
+     * API to enable disable policy or job
      * 
      * @author NKrishn3
-     * @param ruleId - valid rule or job Id
+     * @param policyId - valid policy or job Id
      * @param user - userId who performs the action
      * @param action - valid action (disable/ enable)
      * @return Success or Failure response
      */
-	@ApiOperation(httpMethod = "POST", value = "API to enable disable rule or job", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(httpMethod = "POST", value = "API to enable disable Policy or job", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@RequestMapping(path = "/enable-disable", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> enableDisableRuleOrJob(@AuthenticationPrincipal Principal user,
-			@ApiParam(value = "provide valid rule id", required = false) @RequestParam(name = "ruleId", required = false) String ruleId,
+			@ApiParam(value = "provide valid policy id", required = false) @RequestParam(name = "policyId", required = false) String policyId,
 			@ApiParam(value = "provide valid job id", required = false) @RequestParam(name = "jobId", required = false) String jobId,
 			@ApiParam(value = "provide valid action", required = true) @RequestParam(name = "action", required = true) String action) {
 		try {
 			
-			if (!StringUtils.isBlank(ruleId)) {
-				return ResponseUtils.buildSucessResponse(ruleService.enableDisableRule(ruleId, action, user.getName()));
+			if (!StringUtils.isBlank(policyId)) {
+				return ResponseUtils.buildSucessResponse(ruleService.enableDisablePolicy(policyId, action, user.getName()));
 			} else if (!StringUtils.isBlank(jobId)) {
 				return ResponseUtils.buildSucessResponse(jobService.enableDisableJob(jobId, action, user.getName()));
 			} else {
-				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), JOBID_OR_RULEID_NOT_EMPTY);
+				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), JOBID_OR_POLICYID_NOT_EMPTY);
 			}
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);

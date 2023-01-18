@@ -104,7 +104,7 @@ export class PolicyContentSliderComponent implements OnInit, OnDestroy {
     getProgressData() {
         if (this.ruleID !== undefined) {
             const queryParams = {
-                'ruleId': this.ruleID
+                'policyId': this.ruleID
         };
 
         if (this.dataSubscriber) {

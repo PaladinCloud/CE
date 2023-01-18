@@ -23,7 +23,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Purpose: This test checks for cloudfront cdn exposing content without
@@ -48,9 +48,9 @@ public class CloudfrontAuthorizedContentDistributionRuleTest {
 		resourceAttributes.put(PacmanSdkConstants.RESOURCE_ID, "test-resource-id");
 
 		ruleParam.put("executionId", "test-execution-Id");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "test-rule-Id");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "test-rule-Id");
 
-		RuleResult ruleResult = cloudfrontAuthorizedContentDistributionRule.execute(ruleParam, resourceAttributes);
+		PolicyResult ruleResult = cloudfrontAuthorizedContentDistributionRule.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_FAILURE));
 	}
 }

@@ -38,7 +38,7 @@ import { AdminService } from '../../../../../services/all-admin.service';
 })
 export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
   pageTitle: String = '';
-  breadcrumbArray: any = ['Target Types'];
+  breadcrumbArray: any = ['Asset Types'];
   breadcrumbLinks: any = ['target-types'];
   breadcrumbPresent: any;
   outerArr: any = [];
@@ -166,7 +166,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
      dataSource: targetTypes.dataSource[0].text
     }
     this.adminService.executeHttpAction(url, method, targetTypeDetails, {}).subscribe(reponse => {
-      this.successTitle = 'Target type Created';
+      this.successTitle = 'Asset type Created';
       this.isTargetTypeCreationUpdationSuccess = true;
       this.targetTypeLoader = false;
       this.targetTypes = {
@@ -205,7 +205,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
       dataSource: targetTypes.dataSource[0].text
     }
     this.adminService.executeHttpAction(url, method, targetTypeDetails, {}).subscribe(reponse => {
-      this.successTitle = 'Target type Updated';
+      this.successTitle = 'Asset type Updated';
       this.isTargetTypeCreationUpdationSuccess = true;
       this.targetTypeLoader = false;
       this.targetTypes = {
@@ -262,13 +262,13 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         this.targetTypeName = this.queryParamsWithoutFilter.targetTypeName;
         delete this.queryParamsWithoutFilter['filter'];
         if (this.targetTypeName) {
-          this.pageTitle = 'Edit Target Type';
-          this.breadcrumbPresent = 'Edit Target Type';
+          this.pageTitle = 'Edit Asset Type';
+          this.breadcrumbPresent = 'Edit Asset Type';
           this.isCreate = false;
           this.getDomainAndCategoryDetails();
         } else {
-          this.pageTitle = 'Create New Target Type';
-          this.breadcrumbPresent = 'Create Target Type';
+          this.pageTitle = 'Create New Asset Type';
+          this.breadcrumbPresent = 'Create Asset Type';
           this.isCreate = true;
           this.getDomainAndCategoryDetails();
         }
@@ -370,7 +370,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
     this.hideContent = true;
     this.targetTypeLoader = true;
     this.loadingContent = 'loading';
-    this.highlightName = 'Target Type details'
+    this.highlightName = 'Asset Type details'
     this.isTargetTypeCreationUpdationFailed = false;
     this.isTargetTypeCreationUpdationSuccess = false;
     let url = environment.getTargetTypesByName.url;
@@ -394,7 +394,7 @@ export class CreateUpdateTargetTypesComponent implements OnInit, OnDestroy {
         this.showLoader = false;
         this.failedTitle = 'Loading Failed'
         this.loadingContent = 'Loading';
-        this.highlightName = 'Target Type details'
+        this.highlightName = 'Asset Type details'
         this.isTargetTypeCreationUpdationFailed = true;
         this.targetTypeLoader = false;
       })

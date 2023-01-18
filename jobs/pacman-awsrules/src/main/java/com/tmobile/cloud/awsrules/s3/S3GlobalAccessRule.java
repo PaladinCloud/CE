@@ -41,12 +41,12 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-s3-global-access", desc = "checks entirely for S3 Buckets With Global Access Permission", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class S3GlobalAccessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-s3-global-access", desc = "checks entirely for S3 Buckets With Global Access Permission", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class S3GlobalAccessRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(S3GlobalAccessRule.class);
 
     /**
@@ -74,7 +74,7 @@ public class S3GlobalAccessRule extends BaseRule {
      *
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("========S3GlobalAccessRule started=========");
         Map<String, Object> map = null;
         AmazonS3Client awsS3Client = null;
@@ -103,7 +103,7 @@ public class S3GlobalAccessRule extends BaseRule {
         List<String> sourcesverified = new ArrayList<>();
         LinkedHashMap<String, Object> accessLevels = new LinkedHashMap<>();
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         /* check rule received all required values for rule execution */
         if (!PacmanUtils.doesAllHaveValue(severity, category, checkEsUrl)) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -129,7 +129,7 @@ public class S3GlobalAccessRule extends BaseRule {
 					
 					if (accessBlockConfiguration.getBlockPublicAcls() && accessBlockConfiguration.getIgnorePublicAcls() && accessBlockConfiguration.getBlockPublicPolicy() && accessBlockConfiguration.getRestrictPublicBuckets()) {
 						logger.debug(s3BucketName,"This Bucket is not publicly accessible");
-						return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+						return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 					}
 					if(accessBlockConfiguration.getBlockPublicAcls() || accessBlockConfiguration.getIgnorePublicAcls()){
 						isRequiredAclCheck = false;
@@ -141,7 +141,7 @@ public class S3GlobalAccessRule extends BaseRule {
 				} catch (Exception e) {
 					if(e.getMessage().contains("Access Denied")){
 						logger.debug(s3BucketName,"This Bucket is not publicly accessable");
-						return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+						return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 					}
 					logger.debug("no PublicAccessBlockConfiguration found, proceeding with ACL, policy and trusted advisor check {}",e);
 				}
@@ -161,7 +161,7 @@ public class S3GlobalAccessRule extends BaseRule {
             sourcesverified.add("ACL");
             accessLevels.put("ACL", PacmanRuleConstants.PUBLIC);
             accessLevels.put("permisssions", permissions.toString());
-            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                     PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
                             PacmanRuleConstants.GLOBAL_ACCESS, sourcesverified, accessLevels,
                             resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
@@ -178,7 +178,7 @@ public class S3GlobalAccessRule extends BaseRule {
             sourcesverified.add("BucketPolicy");
             accessLevels.put("Bucket Policy", PacmanRuleConstants.PUBLIC);
             accessLevels.put("permisssions",  String.join(",", sourcesverified));
-            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                     PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
                             PacmanRuleConstants.GLOBAL_ACCESS, sourcesverified, accessLevels,
                             resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
@@ -210,7 +210,7 @@ public class S3GlobalAccessRule extends BaseRule {
                 }
                 if(aclFound ||bucketPolicyFound){
                 sourcesverified.add("Trusted advisor");
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         PacmanUtils.createS3Annotation(ruleParam, description, severity, category,
                                 PacmanRuleConstants.READ_ACCESS, sourcesverified, accessLevels,
                                 resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID)));
@@ -219,7 +219,7 @@ public class S3GlobalAccessRule extends BaseRule {
         
         }
         logger.info(s3BucketName, "This Bucket is not publicly accessable");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     /*

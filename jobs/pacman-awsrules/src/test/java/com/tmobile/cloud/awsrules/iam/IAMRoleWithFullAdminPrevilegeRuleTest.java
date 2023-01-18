@@ -38,12 +38,12 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BaseRule.class, IAMUtils.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class })
 public class IAMRoleWithFullAdminPrevilegeRuleTest {
 
 	@InjectMocks
@@ -73,13 +73,13 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		IAMRoleWithFullAdminPrevilegeRule spy = Mockito.spy(new IAMRoleWithFullAdminPrevilegeRule());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(mockAttachedRolePolicies());
 		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenReturn(mockCustomerMgedPolicyArns());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -100,13 +100,13 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		IAMRoleWithFullAdminPrevilegeRule spy = Mockito.spy(new IAMRoleWithFullAdminPrevilegeRule());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(mockAttachedRolePolicies());
 		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenReturn(mockCustomerMgedPolicyArns());
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(false);
 		
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
 	}
@@ -146,7 +146,7 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		map.put("client", amazonIdentityManagementClient);
 		IAMRoleWithFullAdminPrevilegeRule spy = Mockito.spy(new IAMRoleWithFullAdminPrevilegeRule());
 
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(mockAttachedRolePolicies());
 		when(PacmanUtils.getIamCustManagedPolicyByName(anySetOf(String.class),anyString())).thenThrow(new RuleExecutionFailedExeption());
@@ -171,12 +171,12 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("client", amazonIdentityManagementClient);
 		IAMRoleWithFullAdminPrevilegeRule spy = Mockito.spy(new IAMRoleWithFullAdminPrevilegeRule());
-		Mockito.doReturn(map).when((BaseRule) spy).getClientFor(anyObject(), anyString(), anyObject());
+		Mockito.doReturn(map).when((BasePolicy) spy).getClientFor(anyObject(), anyString(), anyObject());
 		
 		when(IAMUtils.getAttachedPolicyOfIAMRole(anyString(),anyObject())).thenReturn(new ArrayList<>());
 		when(IAMUtils.isInlineRolePolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 
-		RuleResult ruleResult = spy.execute(ruleParam, resourceAttribute);
+		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
@@ -189,7 +189,7 @@ public class IAMRoleWithFullAdminPrevilegeRuleTest {
 	private Map<String, String> getInputParamMap() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
-		ruleParam.put(PacmanSdkConstants.RULE_ID, "AWS_IAM_Role_Full_Admin_Privilege_version-1_Admin_Previlege_iamrole");
+		ruleParam.put(PacmanSdkConstants.POLICY_ID, "AWS_IAM_Role_Full_Admin_Privilege_version-1_Admin_Previlege_iamrole");
 		ruleParam.put(PacmanRuleConstants.CATEGORY, PacmanSdkConstants.SECURITY);
 		ruleParam.put(PacmanRuleConstants.SEVERITY, PacmanSdkConstants.SEV_MEDIUM);
 		ruleParam.put(PacmanRuleConstants.ACCOUNTID, "123456789");

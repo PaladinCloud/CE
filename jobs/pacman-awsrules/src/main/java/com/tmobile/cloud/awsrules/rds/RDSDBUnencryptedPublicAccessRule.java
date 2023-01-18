@@ -36,13 +36,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-rds-db-unencrypted-public-access", desc = "This rule checks for RDS DB is unencrypted and publicly accessible, if yes then it creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class RDSDBUnencryptedPublicAccessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-rds-db-unencrypted-public-access", desc = "This rule checks for RDS DB is unencrypted and publicly accessible, if yes then it creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class RDSDBUnencryptedPublicAccessRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(RDSDBUnencryptedPublicAccessRule.class);
 	/**
@@ -62,7 +62,7 @@ public class RDSDBUnencryptedPublicAccessRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========RDSDBUnencryptedPublicAccessRule started=========");
 		
 		Annotation annotation = null;
@@ -76,7 +76,7 @@ public class RDSDBUnencryptedPublicAccessRule extends BaseRule {
 		String description = "Unencrypted rds db instance with publicly accessible ports found !!";
 		
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 
 		if (!PacmanUtils.doesAllHaveValue(severity, category )) {
@@ -96,12 +96,12 @@ public class RDSDBUnencryptedPublicAccessRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails", issueList.toString());
 				logger.info(description);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 						annotation);
 			}
 		}
 		logger.debug("========RDSDBUnencryptedPublicAccessRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

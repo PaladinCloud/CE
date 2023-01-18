@@ -31,13 +31,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-low-utilization-amazon-ec2-instance", desc = "Checks for low utilization amazon ec2 instance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class LowUtilizationAmazonEC2InstancesRule extends BaseRule {
+@PacmanPolicy(key = "check-for-low-utilization-amazon-ec2-instance", desc = "Checks for low utilization amazon ec2 instance", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class LowUtilizationAmazonEC2InstancesRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(LowUtilizationAmazonEC2InstancesRule.class);
 	/**
@@ -62,7 +62,7 @@ public class LowUtilizationAmazonEC2InstancesRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		
 		logger.debug("========LowUtilizationAmazonEC2InstancesRule started=========");
 		Annotation annotation = null;
@@ -86,7 +86,7 @@ public class LowUtilizationAmazonEC2InstancesRule extends BaseRule {
 		logger.debug("========service URL after concatination param {}  =========",serviceEsURL);
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -120,11 +120,11 @@ public class LowUtilizationAmazonEC2InstancesRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put("issueDetails",issueList.toString());
 				logger.debug("========LowUtilizationAmazonEC2InstancesRule ended with an annotation {} : =========",annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 			}
 		logger.debug("========LowUtilizationAmazonEC2InstancesRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

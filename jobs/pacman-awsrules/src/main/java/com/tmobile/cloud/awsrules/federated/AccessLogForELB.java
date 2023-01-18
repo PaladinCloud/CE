@@ -32,12 +32,12 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-access-log-for-elb", desc = "checks for access log for application/classic elb and s3 bucket name for access log", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class AccessLogForELB extends BaseRule {
+@PacmanPolicy(key = "check-for-access-log-for-elb", desc = "checks for access log for application/classic elb and s3 bucket name for access log", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class AccessLogForELB extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccessLogForELB.class);
 
@@ -59,7 +59,7 @@ public class AccessLogForELB extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 
 		logger.debug("========AccessLogForELB started=========");
 		String accessLog = resourceAttributes.get("accesslog");
@@ -71,7 +71,7 @@ public class AccessLogForELB extends BaseRule {
 		String loggingTags = resourceAttributes.get("tags.logging");
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		if (!PacmanUtils.doesAllHaveValue(severity, category,ruleParamBucketKey)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -82,14 +82,14 @@ public class AccessLogForELB extends BaseRule {
 				if (accessLogBucketName != null && accessLogBucketName.equalsIgnoreCase(ruleParamBucketKey)
 						&& "true".equalsIgnoreCase(accessLog)) {
 					logger.info("Access log for {} is available in bucket {}", entityType,accessLogBucketName);
-					return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+					return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 				} else {
 					description += "is not available in S3 bucket";
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 							PacmanUtils.createELBAnnotation(entityType, ruleParam, description, severity, category));
 				}
 			} 
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

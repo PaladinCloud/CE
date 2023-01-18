@@ -28,7 +28,7 @@ import java.util.Map;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithCount;
-import com.tmobile.pacman.api.compliance.domain.UntaggedTargetTypeRequest;
+import com.tmobile.pacman.api.compliance.domain.SummaryByTargetTypeRequest;
 
 /**
  * The Interface TaggingService.
@@ -62,8 +62,8 @@ public interface TaggingService {
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getUntaggingByTargetTypes(
-            UntaggedTargetTypeRequest request) throws ServiceException;
+    public List<Map<String, Object>> getNonCompliancebyCategoryofTargetType(
+            SummaryByTargetTypeRequest request) throws ServiceException;
 
     /**
      * If method receives assetGroup as request parameter, it gives

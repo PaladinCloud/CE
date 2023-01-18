@@ -44,13 +44,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-lambda-throttle-invocation-count", desc = "This Rule check for Lambda Throttle Invocation for the given interval, if the count exceeds target size then creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class LambdaFunctionThrottleInvocationsRule extends BaseRule {
+@PacmanPolicy(key = "check-for-lambda-throttle-invocation-count", desc = "This Rule check for Lambda Throttle Invocation for the given interval, if the count exceeds target size then creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class LambdaFunctionThrottleInvocationsRule extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(LambdaFunctionThrottleInvocationsRule.class);
 
@@ -86,7 +86,7 @@ public class LambdaFunctionThrottleInvocationsRule extends BaseRule {
      */
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========LambdaFunctionThrottleInvocationsRule started=========");
@@ -107,7 +107,7 @@ public class LambdaFunctionThrottleInvocationsRule extends BaseRule {
             String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
             MDC.put("executionId", ruleParam.get("executionId"));
-            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+            MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
             List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
             LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -153,7 +153,7 @@ public class LambdaFunctionThrottleInvocationsRule extends BaseRule {
                     issueList.add(issue);
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("========LambdaFunctionThrottleInvocationsRule ended with an annotation {} :=========",annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                             PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
 
@@ -163,7 +163,7 @@ public class LambdaFunctionThrottleInvocationsRule extends BaseRule {
             }
         }
         logger.debug("========LambdaFunctionThrottleInvocationsRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

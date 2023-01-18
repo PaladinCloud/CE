@@ -44,13 +44,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-kernel-compliance", desc = "checks whether kernel version of instance is compliant or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class KernelComplianceRule extends BaseRule {
+@PacmanPolicy(key = "check-kernel-compliance", desc = "checks whether kernel version of instance is compliant or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class KernelComplianceRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(KernelComplianceRule.class);
     Map<String, Boolean> kernelMap = new HashMap<>();
     String kernelversion;
@@ -110,7 +110,7 @@ public class KernelComplianceRule extends BaseRule {
 	 */
 
     @Override
-    public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.debug("==KernelComplianceRule started===");
         String userName = "username";
         String sshPd = "pwd";
@@ -161,7 +161,7 @@ public class KernelComplianceRule extends BaseRule {
 		logger.debug("==kernelVersionByInstanceIdUrl URL {}==", kernelVersionByInstanceIdUrl);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         StringBuilder description = new StringBuilder();
         List<String> sourcesverified = new ArrayList<>();
         LinkedHashMap<String, Object> kernelVersionFromSource = new LinkedHashMap<>();
@@ -240,9 +240,9 @@ public class KernelComplianceRule extends BaseRule {
                         issueList.add(issue);
                         annotation.put("issueDetails", issueList.toString());
                         logger.debug("==KernelComplianceRule ended with annotation : {}===",annotation);
-                        return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                     } else {
-                        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, complianceMap.toString());
+                        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, complianceMap.toString());
                     }
                 } else {
                     logger.info("target kernel criteria not maintained");
@@ -257,7 +257,7 @@ public class KernelComplianceRule extends BaseRule {
 
                     annotation.put("issueDetails", issueList.toString());
                     logger.debug("==KernelComplianceRule ended with annotation : {}===",annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
             } else {
                 logger.info(resourceAttributes.get(PacmanRuleConstants.INSTANCEID)+ " stopped/windows instance");
@@ -265,7 +265,7 @@ public class KernelComplianceRule extends BaseRule {
 
         }
         logger.debug("==KernelComplianceRule ended===");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     @Override

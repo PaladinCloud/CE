@@ -44,13 +44,13 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-unprotected-mongodb-access", desc = "Check whether MongoDB is publicly accessible via Internet through port 27017", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class UnProtectedMongoDBAccess extends BaseRule {
+@PacmanPolicy(key = "check-for-unprotected-mongodb-access", desc = "Check whether MongoDB is publicly accessible via Internet through port 27017", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class UnProtectedMongoDBAccess extends BasePolicy {
     private static final Logger logger = LoggerFactory
             .getLogger(UnProtectedMongoDBAccess.class);
 
@@ -84,7 +84,7 @@ public class UnProtectedMongoDBAccess extends BaseRule {
      *
      */
 
-    public RuleResult execute(final Map<String, String> ruleParam,
+    public PolicyResult execute(final Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========UnProtetcedMongoDBAccess started=========");
@@ -96,7 +96,7 @@ public class UnProtectedMongoDBAccess extends BaseRule {
         String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
@@ -139,7 +139,7 @@ public class UnProtectedMongoDBAccess extends BaseRule {
                     logger.debug(
                             "========UnProtetcedMongoDBAccess ended with an annotation {} : =========",
                             annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                             PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
             } catch (Exception mue) {
@@ -150,7 +150,7 @@ public class UnProtectedMongoDBAccess extends BaseRule {
             logger.info("Private IP/port value is null");
         }
         logger.debug("========UnProtetcedMongoDBAccess ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

@@ -47,10 +47,10 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
 public class LambdaFunctionInvocationCountRuleTest {
 
     @InjectMocks
@@ -88,7 +88,7 @@ public class LambdaFunctionInvocationCountRuleTest {
         map.put("client", cloudWatchClient);
         LambdaFunctionInvocationCountRule spy = Mockito.spy(new LambdaFunctionInvocationCountRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(cloudWatchClient.getMetricStatistics(anyObject())).thenReturn(result);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));

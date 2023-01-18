@@ -44,7 +44,7 @@ public class ExceptionManagerImpl implements ExceptionManager {
     private static String TYPE_FOR_STICKY_EXCEPTIONS = "sticky_exceptions";
 
     /** The rule id attribute name. */
-    private static String RULE_ID_ATTRIBUTE_NAME = "targetTypes.rules.ruleId.keyword";
+    private static String POLICY_ID_ATTRIBUTE_NAME = "targetTypes.policies.policyId.keyword";
 
     /** The resource type attribute name. */
     private static String RESOURCE_TYPE_ATTRIBUTE_NAME = "targetTypes.name.keyword";
@@ -99,15 +99,15 @@ public class ExceptionManagerImpl implements ExceptionManager {
     /**
      * returns map of resourceId and corresponding exception.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param resourceType the resource type
      * @return the sticky exceptions
      * @throws Exception the exception
      */
     @Override
-    public Map<String, List<IssueException>> getStickyExceptions(String ruleId, String resourceType) throws Exception {
+    public Map<String, List<IssueException>> getStickyExceptions(String policyId, String resourceType) throws Exception {
         Map<String, Object> mustFilter = new HashMap<>();
-        mustFilter.put(RULE_ID_ATTRIBUTE_NAME, ruleId);
+        mustFilter.put(POLICY_ID_ATTRIBUTE_NAME, policyId);
         mustFilter.put(RESOURCE_TYPE_ATTRIBUTE_NAME, resourceType);
         Map<String, Object> rangeMap = new HashMap<String, Object>();
         rangeMap.put("gte", "now");

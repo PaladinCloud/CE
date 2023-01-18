@@ -21,6 +21,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.EXCEPTION_DELET
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -53,11 +54,11 @@ import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionDetailsForES;
 import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionDetailsRequest;
 import com.tmobile.pacman.api.admin.domain.AssetGroupExceptionProjections;
 import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupExceptionRequest;
-import com.tmobile.pacman.api.admin.domain.RuleDetails;
-import com.tmobile.pacman.api.admin.domain.RuleProjection;
+import com.tmobile.pacman.api.admin.domain.PolicyDetails;
+import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.domain.StickyExceptionResponse;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypeRuleViewDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.TargetTypePolicyViewDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.AssetGroupExceptionRepository;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupException;
@@ -81,7 +82,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	private AssetGroupExceptionRepository assetGroupExceptionRepository;
 
 	@Autowired
-	private RuleService ruleService;
+	private PolicyService policyService;
 	
 	private static RestClient restClient;
 	
@@ -98,15 +99,15 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 		Set<String> selectedTargetTypes = Sets.newHashSet();
 		StickyExceptionResponse stickyExceptionResponse = new StickyExceptionResponse();
 		List<AssetGroupExceptionProjections> allAssetGroupExceptions = assetGroupExceptionRepository.findAllAssetGroupExceptions(exceptionName, dataSource);
-		List<TargetTypeRuleViewDetails> allTargetTypeRuleDetails = Lists.newArrayList();
-		List<String> ruleIdList = Lists.newArrayList();
-		TargetTypeRuleViewDetails targetTypeRuleDetails = new TargetTypeRuleViewDetails();
+		List<TargetTypePolicyViewDetails> allTargetTypePolicyDetails = Lists.newArrayList();
+		List<String> policyIdList = new ArrayList<String>();
+		TargetTypePolicyViewDetails targetTypeRuleDetails = new TargetTypePolicyViewDetails();
 		int exceptionSize = allAssetGroupExceptions.size();
 		for (int index = 0; index<exceptionSize; index++) {
 			AssetGroupExceptionProjections assetGroupException = allAssetGroupExceptions.get(index);
 			String targetType = assetGroupException.getTargetType();
-			if(StringUtils.isNotBlank(assetGroupException.getRuleId())) {
-				ruleIdList.add(assetGroupException.getRuleId());
+			if(StringUtils.isNotBlank(assetGroupException.getPolicyId())) {
+				policyIdList.add(assetGroupException.getPolicyId());
 			}
 
 			if(StringUtils.isNotBlank(targetType)) {
@@ -115,14 +116,14 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 				targetTypeRuleDetails.setAdded(true);
 				if(isNotLast(index, exceptionSize)) {
 					if(!allAssetGroupExceptions.get(1+index).getTargetType().equals(targetType)){
-						allTargetTypeRuleDetails.add(getTargetTypeRuleDetails(ruleIdList, targetTypeRuleDetails, targetType));
-						ruleIdList.clear();
-						targetTypeRuleDetails = new TargetTypeRuleViewDetails();
+						allTargetTypePolicyDetails.add(getTargetTypeRuleDetails(policyIdList, targetTypeRuleDetails, targetType));
+						policyIdList.clear();
+						targetTypeRuleDetails = new TargetTypePolicyViewDetails();
 					}
 				} else {
-					allTargetTypeRuleDetails.add(getTargetTypeRuleDetails(ruleIdList, targetTypeRuleDetails, targetType));
-					ruleIdList.clear();
-					targetTypeRuleDetails = new TargetTypeRuleViewDetails();
+					allTargetTypePolicyDetails.add(getTargetTypeRuleDetails(policyIdList, targetTypeRuleDetails, targetType));
+					policyIdList.clear();
+					targetTypeRuleDetails = new TargetTypePolicyViewDetails();
 				}
 			}
 		}
@@ -135,20 +136,20 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 		Set<String> allSelectedTargetTypes = Sets.newHashSet();
 		allSelectedTargetTypes.addAll(selectedTargetTypes);
 		
-		List<TargetTypeRuleViewDetails> remainingTargetTypeDetails = assetGroupTargetDetailsService.getTargetTypesByAssetGroupIdAndTargetTypeNotIn(allAssetGroupExceptions.get(0).getAssetGroup(), allSelectedTargetTypes);
-		allTargetTypeRuleDetails.addAll(remainingTargetTypeDetails);
+		List<TargetTypePolicyViewDetails> remainingTargetTypeDetails = assetGroupTargetDetailsService.getTargetTypesByAssetGroupIdAndTargetTypeNotIn(allAssetGroupExceptions.get(0).getAssetGroup(), allSelectedTargetTypes);
+		allTargetTypePolicyDetails.addAll(remainingTargetTypeDetails);
 		
-		stickyExceptionResponse.setTargetTypes(allTargetTypeRuleDetails);
+		stickyExceptionResponse.setTargetTypes(allTargetTypePolicyDetails);
 		stickyExceptionResponse.setGroupName(allAssetGroupExceptions.get(0).getAssetGroup());
 		return stickyExceptionResponse;
 	}
 
-	private TargetTypeRuleViewDetails getTargetTypeRuleDetails(List<String> ruleIdList, TargetTypeRuleViewDetails targetTypeRuleDetails, String targetType) {
+	private TargetTypePolicyViewDetails getTargetTypeRuleDetails(List<String> policyIdList, TargetTypePolicyViewDetails targetTypeRuleDetails, String targetType) {
 		if(StringUtils.isNotBlank(targetType)) {
-			List<RuleProjection> allRules = ruleService.getAllRulesByTargetTypeAndNotInRuleIdList(targetType, ruleIdList);
-			List<RuleProjection> rules = ruleService.getAllRulesByTargetTypeAndRuleIdList(targetType, ruleIdList);
-			targetTypeRuleDetails.setAllRules(allRules);
-			targetTypeRuleDetails.setRules(rules);
+			List<PolicyProjection> allPolicies = policyService.getAllPoliciesByTargetTypeAndNotInPolicyIdList(targetType, policyIdList);
+			List<PolicyProjection> policies = policyService.getAllPoliciesByTargetTypeAndPolicyIdList(targetType, policyIdList);
+			targetTypeRuleDetails.setAllPolicies(allPolicies);
+			targetTypeRuleDetails.setPolicies(policies);
 		}
 		return targetTypeRuleDetails;
 	}
@@ -159,17 +160,17 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 
 	@Override
 	public String createAssetGroupExceptions(final AssetGroupExceptionDetailsRequest assetGroupExceptionDetails, final String userId) throws PacManException {
-		List<String> ruleIds = Lists.newArrayList();
+		List<String> policyIds = Lists.newArrayList();
 		try {
-			List<TargetTypeRuleDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
+			List<TargetTypePolicyDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
 			deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetails.getExceptionName().trim(), assetGroupExceptionDetails.getAssetGroup().trim()), userId);	
 			if (updateExceptionToES(assetGroupExceptionDetails)) {
 				try {
 					boolean haveNoRules = true;
 					List<AssetGroupException> allAssetGroupExceptions = Lists.newArrayList();
 					for (int targetIndex = 0; targetIndex < targetTypes.size(); targetIndex++) {
-						List<RuleDetails> rules = targetTypes.get(targetIndex).getRules();
-						for (int ruleIndex = 0; ruleIndex < rules.size(); ruleIndex++) {
+						List<PolicyDetails> policies = targetTypes.get(targetIndex).getPolicies();
+						for (int policyIndex = 0; policyIndex < policies.size(); policyIndex++) {
 							AssetGroupException assetGroupException = new AssetGroupException();
 							assetGroupException.setGroupName(assetGroupExceptionDetails.getAssetGroup().trim());
 							assetGroupException.setTargetType(targetTypes.get(targetIndex).getTargetName().trim());
@@ -177,9 +178,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 							assetGroupException.setExceptionName(assetGroupExceptionDetails.getExceptionName().trim());
 							assetGroupException.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
 							assetGroupException.setExpiryDate(AdminUtils.getFormatedDate("dd/MM/yyyy", assetGroupExceptionDetails.getExpiryDate()));
-							assetGroupException.setRuleId(rules.get(ruleIndex).getId().trim());
-							assetGroupException.setRuleName(rules.get(ruleIndex).getText().trim());
-							ruleIds.add(rules.get(ruleIndex).getId().trim());
+							assetGroupException.setPolicyId(policies.get(policyIndex).getId().trim());
+							assetGroupException.setPolicyName(policies.get(policyIndex).getText().trim());
+							policyIds.add(policies.get(policyIndex).getId().trim());
 							allAssetGroupExceptions.add(assetGroupException);
 							haveNoRules = false;
 						}
@@ -193,14 +194,14 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 						assetGroupException.setExceptionName(assetGroupExceptionDetails.getExceptionName().trim());
 						assetGroupException.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
 						assetGroupException.setExpiryDate(AdminUtils.getFormatedDate("dd/MM/yyyy", assetGroupExceptionDetails.getExpiryDate()));
-						assetGroupException.setRuleId(StringUtils.EMPTY);
-						assetGroupException.setRuleName(StringUtils.EMPTY);
+						assetGroupException.setPolicyId(StringUtils.EMPTY);
+						assetGroupException.setPolicyName(StringUtils.EMPTY);
 						allAssetGroupExceptions.add(assetGroupException);
 					}
 
 					assetGroupExceptionRepository.saveAll(allAssetGroupExceptions);
 					if(targetTypes.size()!=0 && !haveNoRules) {
-						invokeAllRules(ruleIds);
+						invokeAllPolices(policyIds);
 					}
 					return CONFIG_STICKY_EXCEPTION_SUCCESS;
 				} catch (Exception e) {
@@ -216,9 +217,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 		}
 	}
 
-	private void invokeAllRules(List<String> ruleIds) {
+	private void invokeAllPolices(List<String> policyIds) {
 		try {	
-			ruleService.invokeAllRules(ruleIds);
+			policyService.invokeAllPolicies(policyIds);
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 		}
@@ -280,22 +281,22 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 			exceptionDetailsForES.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
 
 			List<Object> targetTypesForES = Lists.newArrayList(); 
-			List<TargetTypeRuleDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
+			List<TargetTypePolicyDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
 			for (int targetIndex = 0; targetIndex < targetTypes.size(); targetIndex++) {
-				if(targetTypes.get(targetIndex).getRules().isEmpty()) {
+				if(targetTypes.get(targetIndex).getPolicies().isEmpty()) {
 					continue;
 				} else {
 					Map<String, Object> targetTypeForES = Maps.newHashMap();
 					targetTypeForES.put("name", targetTypes.get(targetIndex).getTargetName());
-					List<RuleDetails> rules = targetTypes.get(targetIndex).getRules();
-					List<Map<String, String>> rulesForES = Lists.newArrayList();
-					for (int ruleIndex = 0; ruleIndex < rules.size(); ruleIndex++) {
-						Map<String, String> ruleForES = Maps.newHashMap();
-						ruleForES.put("ruleName", rules.get(ruleIndex).getText());
-						ruleForES.put("ruleId", rules.get(ruleIndex).getId());
-						rulesForES.add(ruleForES);
+					List<PolicyDetails> policies = targetTypes.get(targetIndex).getPolicies();
+					List<Map<String, String>> policiesForES = Lists.newArrayList();
+					for (int policyIndex = 0; policyIndex < policies.size(); policyIndex++) {
+						Map<String, String> policyForES = Maps.newHashMap();
+						policyForES.put("policyName", policies.get(policyIndex).getText());
+						policyForES.put("policyId", policies.get(policyIndex).getId());
+						policiesForES.add(policyForES);
 					}
-					targetTypeForES.put("rules", rulesForES);
+					targetTypeForES.put("policies", policiesForES);
 					targetTypesForES.add(targetTypeForES);
 				}
 			}
@@ -320,7 +321,8 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	
 	private void createIndex(String indexName) {
 		if (!indexExists(indexName)) {
-			invokeAPI("PUT", indexName, null);
+			String payLoad = "{\"settings\": {  \"number_of_shards\" : 1,\"number_of_replicas\" : 1 }}";
+			invokeAPI("PUT", indexName, payLoad);
 		}
 	}
 	

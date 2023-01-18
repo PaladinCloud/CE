@@ -99,7 +99,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
@@ -2103,7 +2103,7 @@ public class PacmanUtils {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         Map<String, Object> mustTermsFilter = new HashMap<>();
         mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.ISSUE_STATUS_KEY), PacmanSdkConstants.STATUS_OPEN);
-        mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RULE_ID), ruleId);
+        mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID), ruleId);
         mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RESOURCE_ID), instanceId);
 
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2PortUrl, mustFilter,
@@ -2319,7 +2319,7 @@ public class PacmanUtils {
         mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.ISSUE_STATUS_KEY), PacmanSdkConstants.STATUS_OPEN);
         mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.TYPE), PacmanRuleConstants.ISSUE);
         mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.ACCOUNT_ID), accountid);
-        mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RULE_ID), ruleId);
+        mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID), ruleId);
         mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RESOURCE_ID), resourceId);
 
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(url, mustFilter, mustNotFilter,
@@ -3866,7 +3866,7 @@ public class PacmanUtils {
 					PacmanRuleConstants.STATUS_EXEMPTED);
 		}
 
-		mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RULE_ID), ruleId);
+		mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID), ruleId);
 		mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RESOURCE_ID), instanceId);
 
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2PortUrl, mustFilter,

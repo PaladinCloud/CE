@@ -31,13 +31,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-amazon-EC2-reserved-instance-lease-expiration", desc = "Checks for Amazon EC2 Reserved Instances that are scheduled to expire within the next 30 days or have expired in the preceding 30 days", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class AmazonEC2ReservedInstanceLeaseExpirationRule extends BaseRule {
+@PacmanPolicy(key = "check-for-amazon-EC2-reserved-instance-lease-expiration", desc = "Checks for Amazon EC2 Reserved Instances that are scheduled to expire within the next 30 days or have expired in the preceding 30 days", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class AmazonEC2ReservedInstanceLeaseExpirationRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(AmazonEC2ReservedInstanceLeaseExpirationRule.class);
 	/**
@@ -62,7 +62,7 @@ public class AmazonEC2ReservedInstanceLeaseExpirationRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		
 		logger.debug("========AmazonEC2ReservedInstanceLeaseExpirationRule started=========");
 		Annotation annotation = null;
@@ -76,7 +76,7 @@ public class AmazonEC2ReservedInstanceLeaseExpirationRule extends BaseRule {
 		String serviceEsURL = ruleParam.get(PacmanRuleConstants.ES_CHECK_SERVICE_SEARCH_URL_PARAM);
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -119,11 +119,11 @@ public class AmazonEC2ReservedInstanceLeaseExpirationRule extends BaseRule {
 				annotation.put("issueDetails",issueList.toString());
 				
 				logger.debug("========AmazonEC2ReservedInstanceLeaseExpirationRule ended with an annotation {} : =========", annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 			}
 			}
 		logger.debug("========AmazonEC2ReservedInstanceLeaseExpirationRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

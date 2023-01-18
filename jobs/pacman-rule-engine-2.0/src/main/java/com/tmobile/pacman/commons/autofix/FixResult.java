@@ -19,7 +19,7 @@ package com.tmobile.pacman.commons.autofix;
 import java.util.Map;
 
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 
 // TODO: Auto-generated Javadoc
 /**

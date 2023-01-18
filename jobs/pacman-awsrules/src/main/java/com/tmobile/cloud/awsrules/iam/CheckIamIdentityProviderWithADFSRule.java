@@ -37,13 +37,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-iam-identity-provider-with-ADFS", desc = "At least one CORP ADFS identity provider should be configured on all AWS accounts", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class CheckIamIdentityProviderWithADFSRule extends BaseRule {
+@PacmanPolicy(key = "check-iam-identity-provider-with-ADFS", desc = "At least one CORP ADFS identity provider should be configured on all AWS accounts", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class CheckIamIdentityProviderWithADFSRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(CheckIamIdentityProviderWithADFSRule.class);
@@ -74,7 +74,7 @@ public class CheckIamIdentityProviderWithADFSRule extends BaseRule {
      *
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========CheckIamIdentityProviderWithADFSRule started=========");
@@ -94,7 +94,7 @@ public class CheckIamIdentityProviderWithADFSRule extends BaseRule {
                 .get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
 
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
@@ -138,12 +138,12 @@ public class CheckIamIdentityProviderWithADFSRule extends BaseRule {
             logger.debug(
                     "========CheckIamIdentityProviderWithADFSRule ended with an annotation {} : =========",
                     annotation);
-            return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                     PacmanRuleConstants.FAILURE_MESSAGE, annotation);   
         }
 
         logger.debug("========CheckIamIdentityProviderWithADFSRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

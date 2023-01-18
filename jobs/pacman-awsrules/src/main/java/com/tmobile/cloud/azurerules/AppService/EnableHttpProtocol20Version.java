@@ -12,24 +12,24 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-@PacmanRule(key = "check-for-webapp-Http-protocal-latest-vesion", desc = "denable Http2.0  azure webapp", severity = PacmanSdkConstants.SEV_LOW, category = PacmanSdkConstants.SECURITY)
-public class EnableHttpProtocol20Version extends BaseRule {
+@PacmanPolicy(key = "check-for-webapp-Http-protocal-latest-vesion", desc = "denable Http2.0  azure webapp", severity = PacmanSdkConstants.SEV_LOW, category = PacmanSdkConstants.SECURITY)
+public class EnableHttpProtocol20Version extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(EnableHttpProtocol20Version.class);
 
     @Override
-    public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+    public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
         logger.info("Executing rule to ensure Http protocol version 2.0 was Enabled.");
 
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -77,15 +77,15 @@ public class EnableHttpProtocol20Version extends BaseRule {
                 annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                 logger.debug("HTTP protocol 2.0  version for webapp was disabled with FAILURE isValid flag {} : ",
                         isValid);
-                return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                         annotation);
             }
             logger.debug("HTTP protocol 2.0  version for webapp was enabled  with Success isValid flag {}", isValid);
-            return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+            return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
         }
 
         logger.debug("remote debugging for azure app service is disabled with Success isValid flag {}", isValid);
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
     private boolean isHttpProtocolversion20Enabled(String esUrl, Map<String, Object> mustFilter) throws Exception {

@@ -56,11 +56,10 @@ public class LoadBalancerCollector {
 
            List<SslPolicyVH>sslPolicyVHList=new ArrayList<>();
 
-           for(String ssl_Policy:sslPolicyList) {
 
                SslPolicyVH sslPolicyVH = new SslPolicyVH();
 
-               Iterable<SslPolicy> sslPolicies = gcpCredentialsProvider.getSslPoliciesClient().list(ssl_Policy).iterateAll();
+               Iterable<SslPolicy> sslPolicies = gcpCredentialsProvider.getSslPoliciesClient().list(project.getProjectId()).iterateAll();
                for (SslPolicy sslPolicy : sslPolicies) {
                    sslPolicyVH.setMinTlsVersion(sslPolicy.getMinTlsVersion());
                    sslPolicyVH.setProfile(sslPolicy.getProfile());
@@ -68,7 +67,6 @@ public class LoadBalancerCollector {
 
                    sslPolicyVHList.add(sslPolicyVH);
                }
-           }
 
            loadBalancerVH.setSslPolicyList(sslPolicyVHList);
 

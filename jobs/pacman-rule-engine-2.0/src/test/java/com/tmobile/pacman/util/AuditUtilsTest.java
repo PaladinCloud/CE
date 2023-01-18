@@ -45,7 +45,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.Annotation;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.config.ConfigManager;
 
 // TODO: Auto-generated Javadoc

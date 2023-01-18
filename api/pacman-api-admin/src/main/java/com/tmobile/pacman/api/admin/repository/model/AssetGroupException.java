@@ -38,8 +38,8 @@ public class AssetGroupException {
 	private long id;
 	private String groupName;
 	private String targetType;
-	private String ruleName;
-	private String ruleId;
+	private String policyName;
+	private String policyId;
 	private Date expiryDate;
 	private String exceptionName;
 	private String exceptionReason;
@@ -69,20 +69,20 @@ public class AssetGroupException {
 		this.targetType = targetType;
 	}
 
-	public String getRuleName() {
-		return ruleName;
+	public String getPolicyName() {
+		return policyName;
 	}
 
-	public void setRuleName(String ruleName) {
-		this.ruleName = ruleName;
+	public void setPolicyName(String policyName) {
+		this.policyName = policyName;
 	}
 
-	public String getRuleId() {
-		return ruleId;
+	public String getPolicyId() {
+		return policyId;
 	}
 
-	public void setRuleId(String ruleId) {
-		this.ruleId = ruleId;
+	public void setPolicyId(String policyId) {
+		this.policyId = policyId;
 	}
 
 	public Date getExpiryDate() {

@@ -30,13 +30,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-non-role-tasks-member-rule", desc = "Checks for non-role task members rule", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class CheckNonRoleTasksMemberRule extends BaseRule {
+@PacmanPolicy(key = "check-for-non-role-tasks-member-rule", desc = "Checks for non-role task members rule", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class CheckNonRoleTasksMemberRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory
             .getLogger(CheckNonRoleTasksMemberRule.class);
@@ -71,7 +71,7 @@ public class CheckNonRoleTasksMemberRule extends BaseRule {
      *
      */
     @Override
-    public RuleResult execute(Map<String, String> ruleParam,
+    public PolicyResult execute(Map<String, String> ruleParam,
             Map<String, String> resourceAttributes) {
 
         logger.debug("========CheckNonRoleTasksMemberRule started=========");
@@ -90,7 +90,7 @@ public class CheckNonRoleTasksMemberRule extends BaseRule {
         }
         
         MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -129,13 +129,13 @@ public class CheckNonRoleTasksMemberRule extends BaseRule {
                     logger.debug(
                             "========CheckNonRoleTasksMemberRule ended with annotation : {}=========",
                             annotation);
-                    return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,
+                    return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,
                             PacmanRuleConstants.FAILURE_MESSAGE, annotation);
                 }
             }
         }
         logger.debug("========CheckNonRoleTasksMemberRule ended=========");
-        return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,
+        return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,
                 PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 

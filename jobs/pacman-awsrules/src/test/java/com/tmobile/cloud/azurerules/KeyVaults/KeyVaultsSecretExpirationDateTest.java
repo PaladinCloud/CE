@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.azurerules.KeyValts.KeyVaultsSecretExpirationDate;
-import com.tmobile.pacman.commons.rule.BaseRule;
+
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -22,10 +22,11 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BaseRule.class, RulesElasticSearchRepositoryUtil.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class})
 public class KeyVaultsSecretExpirationDateTest {
     @InjectMocks
     KeyVaultsSecretExpirationDate keyVaultsSecretExpirationDate;

@@ -22,7 +22,7 @@ package com.tmobile.pacman.common.exception;
  *
  * @author kkumar
  */
-public class FailedExecutionException extends RuleEngineRunTimeException {
+public class FailedExecutionException extends PolicyEngineRunTimeException {
 
     /**
      * Instantiates a new failed execution exception.

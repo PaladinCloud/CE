@@ -42,13 +42,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-redshift-public-access", desc = "checks redshift server has public access", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class RedShiftPublicAccessRule extends BaseRule {
+@PacmanPolicy(key = "check-for-redshift-public-access", desc = "checks redshift server has public access", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class RedShiftPublicAccessRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedShiftPublicAccessRule.class);
 	/**
@@ -83,7 +83,7 @@ public class RedShiftPublicAccessRule extends BaseRule {
 	 * @param resourceAttributes this is a resource in context which needs to be scanned this is provided by execution engine
 	 *
 	 */
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========RedShiftPublicAccessRule started=========");Annotation annotation = null;
 		String subnet = null;
 		String routetableAssociationsEsURL = null;
@@ -113,7 +113,7 @@ public class RedShiftPublicAccessRule extends BaseRule {
 		
 		String description ="Redshift has publicly accessible port" + endPointPort;
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
 		logger.debug("========pacmanHost {}  =========", pacmanHost);
@@ -184,7 +184,7 @@ public class RedShiftPublicAccessRule extends BaseRule {
 					annotation = PacmanUtils.setAnnotation(openPortsMap, ruleParam,subnet,description, issue);
 					if (null != annotation) {
 						annotation.put(PacmanRuleConstants.RESOURCE_DISPLAY_ID, resourceId);
-						return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+						return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 					}
 				}
 			}
@@ -193,7 +193,7 @@ public class RedShiftPublicAccessRule extends BaseRule {
 			throw new RuleExecutionFailedExeption(exception.getMessage());
 		}
 		logger.debug("========RedShiftPublicAccessRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 		
 	}
 

@@ -47,10 +47,10 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.BaseRule;
+import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BaseRule.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
 public class CheckCloudWatchEventsForAllAccountsRuleTest {
 
     @InjectMocks
@@ -86,7 +86,7 @@ public class CheckCloudWatchEventsForAllAccountsRuleTest {
         map.put("client", cloudWatchEventsClient);
         CheckCloudWatchEventsForAllAccountsRule spy = Mockito.spy(new CheckCloudWatchEventsForAllAccountsRule());
         
-        Mockito.doReturn(map).when((BaseRule)spy).getClientFor(anyObject(), anyString(), anyObject());
+        Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
         
         when(cloudWatchEventsClient.listRules(anyObject())).thenReturn(listRulesResult);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));

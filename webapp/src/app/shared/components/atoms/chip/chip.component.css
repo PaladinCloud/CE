@@ -1,0 +1,21 @@
+.chip{
+    border-radius: 4px;
+    font: var(--text-body-2);
+    width: fit-content;
+    padding: 4px 10px;
+}
+
+.variant1{
+    background: #E6F5EC;
+    color: var(--secondary-600);
+}
+
+.variant2{
+    background: var(--background-grey);
+    color: var(--text-low-emphasis);
+}
+
+.variant3{
+    background: var(--border-100);
+    color: #548BE7;
+}

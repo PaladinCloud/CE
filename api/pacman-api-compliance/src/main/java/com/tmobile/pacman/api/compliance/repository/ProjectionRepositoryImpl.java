@@ -345,9 +345,9 @@ public class ProjectionRepositoryImpl implements ProjectionRepository, Constants
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), OPEN);
         if (resourceType.equals(ONPREMSERVER)) {
-            mustFilter.put(CommonUtils.convertAttributetoKeyword(RULEID), ONPREM_KERNEL_COMPLIANCE_RULE);
+            mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), ONPREM_KERNEL_COMPLIANCE_RULE);
         } else if (resourceType.equals(EC2)) {
-            mustFilter.put(CommonUtils.convertAttributetoKeyword(RULEID), EC2_KERNEL_COMPLIANCE_RULE);
+            mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), EC2_KERNEL_COMPLIANCE_RULE);
         }
 
         String aggsFilterApp = CommonUtils.convertAttributetoKeyword(TAGS_APPLICATION);

@@ -17,11 +17,11 @@
 }
 
 .violations-card-wrapper{
-  gap: 16px;
+  gap: 8px;
 }
 
 .violations-content{
-  gap: 16px;
+  gap: 8px;
   overflow: hidden;
 }
 

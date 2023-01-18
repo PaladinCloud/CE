@@ -37,13 +37,13 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-ec2-public-access-port-with-s5-vulnerabilities", desc = "An Ec2 instance with remotely exploitable vulnerability (S5) should not be open to internet", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BaseRule {
+@PacmanPolicy(key = "check-for-ec2-public-access-port-with-s5-vulnerabilities", desc = "An Ec2 instance with remotely exploitable vulnerability (S5) should not be open to internet", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(Ec2PublicAccessPortWithS5vulnerabilitiesRule.class);
 
@@ -74,7 +74,7 @@ public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 		logger.debug("========Ec2PublicAccessPortWithS5vulnerabilitiesRule started=========");
 		Annotation annotation = null;
 		String instanceId = null;
@@ -96,7 +96,7 @@ public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BaseRule {
 		
 		String publicIp=null;
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex		
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
 		if (!PacmanUtils.doesAllHaveValue(severity,category,ec2PubAccessPortUrl,ec2WithVulnInfoForS5Url,ec2PortRuleId,severityVulnValue)) {
@@ -127,7 +127,7 @@ public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BaseRule {
 					issueList.add(issue);
 					annotation.put("issueDetails",issueList.toString());
 					logger.debug("========Ec2PublicAccessPortWithS5vulnerabilitiesRule ended with an annotation {} : =========",annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 					
 				}
 			}
@@ -138,7 +138,7 @@ public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BaseRule {
 			
 		}
 		logger.debug("========Ec2PublicAccessPortWithS5vulnerabilitiesRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	public String getHelpText() {

@@ -42,7 +42,9 @@ import com.tmobile.pacman.api.compliance.domain.IssueExceptionResponse;
 import com.tmobile.pacman.api.compliance.domain.IssuesException;
 import com.tmobile.pacman.api.compliance.domain.PolicyViolationDetails;
 import com.tmobile.pacman.api.compliance.domain.RevokeIssuesException;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 import com.tmobile.pacman.api.compliance.service.ComplianceService;
+import com.tmobile.pacman.api.compliance.service.PolicyTableService;
 import com.tmobile.pacman.api.compliance.util.CommonTestUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -53,6 +55,9 @@ public class ComplianceControllerTest {
     
     @Mock
     ComplianceService complianceService;
+    
+    @Mock
+    PolicyTableService policyTableService;
     
     @Test
     public void getIssuesTest() throws Exception {
@@ -74,12 +79,12 @@ public class ComplianceControllerTest {
     @Test
     public void getIssuesCountTest() throws Exception {
         when(complianceService.getIssuesCount(anyString(),anyString(),anyString())).thenReturn(1000l);
-        assertThat(complianceController.getIssuesCount("ag","ruleId","domain"), is(notNullValue()));
+        assertThat(complianceController.getIssuesCount("ag","policyId","domain"), is(notNullValue()));
         assertThat(complianceController.getIssuesCount("","",""), is(notNullValue()));
         
         when(complianceService.getIssuesCount(anyString(),anyString(),anyString())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.getIssuesCount("ag","ruleId","domain");
+        ResponseEntity<Object> responseObj = complianceController.getIssuesCount("ag","policyId","domain");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
@@ -223,36 +228,36 @@ public class ComplianceControllerTest {
     @Test
     public void getPolicydetailsbyApplicationTest() throws Exception {
         when(complianceService.getRuleDetailsbyApplication(anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
-        assertThat(complianceController.getPolicydetailsbyApplication("ag","ruleId","searchText"), is(notNullValue()));
+        assertThat(complianceController.getPolicydetailsbyApplication("ag","policyId","searchText"), is(notNullValue()));
         assertThat(complianceController.getPolicydetailsbyApplication("","",""), is(notNullValue()));
         
         when(complianceService.getRuleDetailsbyApplication(anyString(),anyString(),anyString())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.getPolicydetailsbyApplication("ag","ruleId","searchText");
+        ResponseEntity<Object> responseObj = complianceController.getPolicydetailsbyApplication("ag","policyId","searchText");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
     @Test
     public void getpolicydetailsbyEnvironmentTest() throws Exception {
         when(complianceService.getRuleDetailsbyEnvironment(anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
-        assertThat(complianceController.getpolicydetailsbyEnvironment("ag","ruleId","application","searchText"), is(notNullValue()));
+        assertThat(complianceController.getpolicydetailsbyEnvironment("ag","policyId","application","searchText"), is(notNullValue()));
         assertThat(complianceController.getpolicydetailsbyEnvironment("","","",""), is(notNullValue()));
         
         when(complianceService.getRuleDetailsbyEnvironment(anyString(),anyString(),anyString(),anyString())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.getpolicydetailsbyEnvironment("ag","ruleId","application","searchText");
+        ResponseEntity<Object> responseObj = complianceController.getpolicydetailsbyEnvironment("ag","policyId","application","searchText");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
     @Test
     public void getPolicyDescriptionTest() throws Exception {
         when(complianceService.getRuleDescription(anyString())).thenReturn(CommonTestUtil.getMapObject());
-        assertThat(complianceController.getPolicyDescription("ruleId"), is(notNullValue()));
+        assertThat(complianceController.getPolicyDescription("policyId"), is(notNullValue()));
         assertThat(complianceController.getPolicyDescription(""), is(notNullValue()));
         
         when(complianceService.getRuleDescription(anyString())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.getPolicyDescription("ruleId");
+        ResponseEntity<Object> responseObj = complianceController.getPolicyDescription("policyId");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     
@@ -346,6 +351,15 @@ public class ComplianceControllerTest {
        when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
        ResponseEntity<Object> responseObj = complianceController.getDistributionBySeverity("ag", "domain");
        assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
+   }
+   
+   @Test
+   public void getPolicyDetailsbyID() throws Exception{
+       when(policyTableService.getPolicyTableByPolicyId(anyString())).thenReturn(new PolicyTable());
+       assertThat(complianceController.getPoliciesById("S3MFADeleteEnabled_version-1_MFADeleteEnabled_s3"), is(notNullValue()));
+       assertThat(complianceController.getPoliciesById(""), is(notNullValue()));
+       ResponseEntity<Object> responseObj = complianceController.getPoliciesById("S3MFADeleteEnabled_version-1_MFADeleteEnabled_s3");
+       assertTrue(responseObj.getStatusCode() == HttpStatus.OK);
    }
     
    /* @Test

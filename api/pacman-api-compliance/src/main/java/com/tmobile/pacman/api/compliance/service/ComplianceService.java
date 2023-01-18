@@ -28,7 +28,7 @@ import com.tmobile.pacman.api.compliance.domain.KernelVersion;
 import com.tmobile.pacman.api.compliance.domain.PolicyViolationDetails;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
-import com.tmobile.pacman.api.compliance.domain.RuleDetails;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -159,7 +159,7 @@ public interface ComplianceService {
      * @return Map<String, Object>
      */
 
-    public Map<String, Object> closeIssuesByRule(RuleDetails ruleDetails);
+    public Map<String, Object> closeIssuesByRule(PolicyDetails ruleDetails);
 
     /**
      * Gets the list of all the rules compliance mapped to that domain.

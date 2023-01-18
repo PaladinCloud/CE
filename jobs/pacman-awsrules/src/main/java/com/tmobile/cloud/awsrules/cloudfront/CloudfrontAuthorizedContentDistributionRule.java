@@ -25,9 +25,9 @@ import org.slf4j.MDC;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Purpose: This rule checks for cloudfront resources serving content without
@@ -39,8 +39,8 @@ import com.tmobile.pacman.commons.rule.RuleResult;
  * 
  * Modified Date: April 15th, 2019
  */
-@PacmanRule(key = "check-for-unauthorized-cloudfront-distribution", desc = "checks for unauthorized cloudfront distribution", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class CloudfrontAuthorizedContentDistributionRule extends BaseRule {
+@PacmanPolicy(key = "check-for-unauthorized-cloudfront-distribution", desc = "checks for unauthorized cloudfront distribution", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class CloudfrontAuthorizedContentDistributionRule extends BasePolicy {
 	private static final Logger logger = LoggerFactory.getLogger(CloudfrontAuthorizedContentDistributionRule.class);
 
 	/**
@@ -57,7 +57,7 @@ public class CloudfrontAuthorizedContentDistributionRule extends BaseRule {
 	 *
 	 */
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========CloudfrontAuthorizedContentDistributionRule started=========");
 		String cloudFrontResourceID = resourceAttributes.get(PacmanSdkConstants.RESOURCE_ID);
 
@@ -65,17 +65,17 @@ public class CloudfrontAuthorizedContentDistributionRule extends BaseRule {
 				+ " is unauthorized for content distribution";
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		if (!StringUtils.isEmpty(cloudFrontResourceID)) {
 			logger.info("Found Cloudfront instance with Resource Id: [{}] distributing content without authorization.",
 					resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
-			return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+			return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 					PacmanUtils.createAnnotation("cloudfront", ruleParam, description, PacmanSdkConstants.SEV_MEDIUM,
 							PacmanSdkConstants.SECURITY));
 
 		}
 
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

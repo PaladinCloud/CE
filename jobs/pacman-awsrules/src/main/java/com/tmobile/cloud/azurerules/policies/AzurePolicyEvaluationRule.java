@@ -14,28 +14,28 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * Possible network Just In Time (JIT) access will be monitored by Azure
  * Security Center as recommendations
  */
 
-@PacmanRule(key = "check-for-azure-policy-evaluation-results", desc = "Azure policy evaluation results for different target types", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class AzurePolicyEvaluationRule extends BaseRule {
+@PacmanPolicy(key = "check-for-azure-policy-evaluation-results", desc = "Azure policy evaluation results for different target types", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class AzurePolicyEvaluationRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(AzurePolicyEvaluationRule.class);
 
 	
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("======== Azure Policy Evaluation Rule started =========");
 
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
@@ -71,7 +71,7 @@ public class AzurePolicyEvaluationRule extends BaseRule {
 					logger.debug(
 							"======== Azure Policy Evaluation Rule ended with annotation {} : =========",
 							annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 							annotation);
 
 				}
@@ -83,7 +83,7 @@ public class AzurePolicyEvaluationRule extends BaseRule {
 		}
 
 		logger.debug("======== Azure Policy Evaluation Rule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

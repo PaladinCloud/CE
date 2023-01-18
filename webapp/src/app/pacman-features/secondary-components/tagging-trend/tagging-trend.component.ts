@@ -88,10 +88,9 @@ export class TaggingTrendComponent implements OnInit, OnDestroy, AfterViewInit {
       const payload = {
           'ag': this.selectedAssetGroup,
           'frdt': fromDay,
-          'ruleId': '',
+          'policyId': '',
           'app': '',
-          'env': '',
-          'policyId': 'TaggingRule_version-1'
+          'env': ''
       };
 
       const url = environment.issueTrends.url;

@@ -77,24 +77,18 @@
 }
 
 .submit-btn {
-    max-height: 2.4em;
+    height: 36px;
     border: none;
-    border-radius: 7px;
+    border-radius: 4px;
     background-color: var(--primary-400);
     color: #fff;
     display: inline-block;
-    font-weight: bold;
+    font: var(--text-body-2);
     padding: 0.6em 1.5em;
     letter-spacing: 0.1em;
-    text-transform: uppercase;
     cursor: pointer;
-    min-height: 2.4em;
     min-width: 5em;
     text-align: center;
-    transition: all 0.5s ease;
-    font-size: 1em;
-    box-shadow: 0px 0px 6px 0 rgba(0, 0, 0, 0.5);
-    font-family: var(--text-light-font-family);
 }
 
 .submit-btn:hover {

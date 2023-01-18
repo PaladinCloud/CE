@@ -148,19 +148,17 @@ public class FilterController implements Constants {
      * @return ResponseEntity<Object>
      */
     
-    @RequestMapping(path = "/v1/filters/rules", method = RequestMethod.GET)
-    public ResponseEntity<Object> getRules(@RequestParam("ag") String assetGroup, @RequestParam("domain") String domain) {
-        if (Strings.isNullOrEmpty(assetGroup)) {
-            return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
-        }
-        ResponseData response = null;
-        try {
-            response = new ResponseData(filterService.getRules(assetGroup, domain));
-        } catch (ServiceException e) {
-            return complianceService.formatException(e);
-        }
-        return ResponseUtils.buildSucessResponse(response);
-    }
+	/*
+	 * @RequestMapping(path = "/v1/filters/rules", method = RequestMethod.GET)
+	 * public ResponseEntity<Object> getRules(@RequestParam("ag") String
+	 * assetGroup, @RequestParam("domain") String domain) { if
+	 * (Strings.isNullOrEmpty(assetGroup)) { return
+	 * ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY)); }
+	 * ResponseData response = null; try { response = new
+	 * ResponseData(filterService.getRules(assetGroup, domain)); } catch
+	 * (ServiceException e) { return complianceService.formatException(e); } return
+	 * ResponseUtils.buildSucessResponse(response); }
+	 */
 
     /**
      * Gets the list of applications.

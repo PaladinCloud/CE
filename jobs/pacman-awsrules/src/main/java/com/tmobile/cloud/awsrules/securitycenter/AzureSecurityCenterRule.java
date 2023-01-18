@@ -16,19 +16,19 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
-@PacmanRule(key = "check-for-azure-security-rule", desc = "checks virtualmachines for network access control", severity = PacmanSdkConstants.SEV_HIGH, category = "networking")
-public class AzureSecurityCenterRule extends BaseRule {
+@PacmanPolicy(key = "check-for-azure-security-rule", desc = "checks virtualmachines for network access control", severity = PacmanSdkConstants.SEV_HIGH, category = "networking")
+public class AzureSecurityCenterRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(AzureSecurityCenterRule.class);
 	
 	@Override
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		
 		logger.debug("========AzureSecurityCenterRule started=========");
 		String entityId = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
@@ -38,7 +38,7 @@ public class AzureSecurityCenterRule extends BaseRule {
 		String policyName = ruleParam.get("policyName").replaceAll("@", " ");
 		
 		MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); // this is the logback Mapped Diagnostic Contex
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
 
 		if (!PacmanUtils.doesAllHaveValue(severity, category, targetType)) {
 			logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -75,11 +75,11 @@ public class AzureSecurityCenterRule extends BaseRule {
 				issueList.add(issue);
 				annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
 				logger.debug("========AzureSecurityCenterRule ended with annotation {} : =========", annotation);
-				return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,	annotation);
+				return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,	annotation);
 			}
 		}
 		logger.debug("========AzureSecurityCenterRule Completed==========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 	@Override
 	public String getHelpText() {

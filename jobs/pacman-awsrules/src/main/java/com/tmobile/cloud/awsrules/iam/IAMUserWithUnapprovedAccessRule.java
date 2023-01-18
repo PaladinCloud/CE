@@ -40,16 +40,16 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 /**
  * The Class IAMUserWithUnapprovedAccessRule.
  */
-@PacmanRule(key = "iam-user-with-unapproved-access", desc = "Checks if any iam user has unapproved access to actions and creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class IAMUserWithUnapprovedAccessRule extends BaseRule {
+@PacmanPolicy(key = "iam-user-with-unapproved-access", desc = "Checks if any iam user has unapproved access to actions and creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class IAMUserWithUnapprovedAccessRule extends BasePolicy {
 
 	/** The Constant LOGGER. */
 	private static final Logger logger = LoggerFactory.getLogger(IAMUserWithUnapprovedAccessRule.class);
@@ -90,7 +90,7 @@ public class IAMUserWithUnapprovedAccessRule extends BaseRule {
 	 * java.util.Map)
 	 */
 	@Override
-	public RuleResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========IAMUserWithUnapprovedAccessRule started=========");
 		Map<String, String> ruleParamIam = new HashMap<>();
 		ruleParamIam.putAll(ruleParam);
@@ -108,7 +108,7 @@ public class IAMUserWithUnapprovedAccessRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
-		MDC.put(PacmanSdkConstants.RULE_ID, ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
 		List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
 		LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
@@ -149,7 +149,7 @@ public class IAMUserWithUnapprovedAccessRule extends BaseRule {
 
 					logger.debug("========IAMUserWithUnapprovedAccessRule ended with annotation {} :=========",
 							annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
 							annotation);
 				}
 			}
@@ -159,7 +159,7 @@ public class IAMUserWithUnapprovedAccessRule extends BaseRule {
 			throw new InvalidInputException(PacmanRuleConstants.UNABLE_TO_GET_CLIENT, e);
 		}
 		logger.debug("========IAMUserWithUnapprovedAccessRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
 	@Override

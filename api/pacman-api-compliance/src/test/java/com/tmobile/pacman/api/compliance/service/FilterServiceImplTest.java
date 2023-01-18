@@ -150,17 +150,17 @@ public class FilterServiceImplTest {
         String targetTypes = "'ec2','s3','volume'";
         Map<String, Object> ruleMap = new HashMap<>();
         List<Map<String, Object>> ruleList = new ArrayList<>();
-        ruleMap.put("ruleId", "ruleId");
+        ruleMap.put("policyId", "policyId");
         ruleMap.put("displayName", "Amazon RDS DB instances should not be idle");
         ruleList.add(ruleMap);
         when(complainceRepository.getTargetTypeForAG(anyString(),anyString()))
         .thenReturn(targetTypes);
-        when(complainceRepository.getRuleIdWithDisplayNameQuery(anyString()))
+        when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
                 .thenReturn(ruleList);
         assertThat(filterServiceImpl.getRules("dummyString","testString"),
                 is(notNullValue()));
         
-        when(complainceRepository.getRuleIdWithDisplayNameQuery(anyString())).thenThrow(new DataException());
+        when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString())).thenThrow(new DataException());
         assertThatThrownBy( 
                 () -> filterServiceImpl.getRules("dummyString","qwe")).isInstanceOf(ServiceException.class);
     }

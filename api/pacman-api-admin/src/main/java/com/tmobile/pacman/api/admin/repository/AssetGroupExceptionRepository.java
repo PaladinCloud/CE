@@ -62,11 +62,11 @@ public interface AssetGroupExceptionRepository  extends JpaRepository<AssetGroup
      * @param pageable - pagination information
      * @return All Asset Group Exception Details
      */
-	@Query(value = "SELECT exception.id AS id, exception.groupName AS assetGroup, exception.targetType AS targetType, exception.ruleName AS ruleName, exception.ruleId AS ruleId, exception.expiryDate AS expiryDate, exception.exceptionName AS exceptionName, exception.exceptionReason AS exceptionReason, exception.dataSource AS dataSource FROM AssetGroupException exception WHERE "
+	@Query(value = "SELECT exception.id AS id, exception.groupName AS assetGroup, exception.targetType AS targetType, exception.policyName AS policyName, exception.policyId AS policyId, exception.expiryDate AS expiryDate, exception.exceptionName AS exceptionName, exception.exceptionReason AS exceptionReason, exception.dataSource AS dataSource FROM AssetGroupException exception WHERE "
 			+ "LOWER(exception.groupName) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.targetType) LIKE %:searchTerm% OR "
-			+ "LOWER(exception.ruleName) LIKE %:searchTerm% OR "
-			+ "LOWER(exception.ruleId) LIKE %:searchTerm% OR "
+			+ "LOWER(exception.policyName) LIKE %:searchTerm% OR "
+			+ "LOWER(exception.policyId) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.expiryDate) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.exceptionName) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.exceptionReason) LIKE %:searchTerm% OR "
@@ -75,8 +75,8 @@ public interface AssetGroupExceptionRepository  extends JpaRepository<AssetGroup
 			countQuery = "SELECT COUNT(*) FROM AssetGroupException exception WHERE "
 			+ "LOWER(exception.groupName) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.targetType) LIKE %:searchTerm% OR "
-			+ "LOWER(exception.ruleName) LIKE %:searchTerm% OR "
-			+ "LOWER(exception.ruleId) LIKE %:searchTerm% OR "
+			+ "LOWER(exception.policyName) LIKE %:searchTerm% OR "
+			+ "LOWER(exception.policyId) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.expiryDate) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.exceptionName) LIKE %:searchTerm% OR "
 			+ "LOWER(exception.exceptionReason) LIKE %:searchTerm% OR "
@@ -92,7 +92,7 @@ public interface AssetGroupExceptionRepository  extends JpaRepository<AssetGroup
      * @param dataSource - valid dataSource
      * @return All Asset Group Exception Details
      */
-	@Query("SELECT exception.id AS id, exception.groupName AS assetGroup, exception.targetType AS targetType, exception.ruleName AS ruleName, exception.ruleId AS ruleId, exception.expiryDate AS expiryDate, exception.exceptionName AS exceptionName, exception.exceptionReason AS exceptionReason, exception.dataSource AS dataSource FROM AssetGroupException exception WHERE exception.exceptionName=:exceptionName AND exception.dataSource=:dataSource ORDER BY exception.targetType")
+	@Query("SELECT exception.id AS id, exception.groupName AS assetGroup, exception.targetType AS targetType, exception.policyName AS policyName, exception.policyId AS policyId, exception.expiryDate AS expiryDate, exception.exceptionName AS exceptionName, exception.exceptionReason AS exceptionReason, exception.dataSource AS dataSource FROM AssetGroupException exception WHERE exception.exceptionName=:exceptionName AND exception.dataSource=:dataSource ORDER BY exception.targetType")
 	public List<AssetGroupExceptionProjections> findAllAssetGroupExceptions(@Param("exceptionName") final String exceptionName, @Param("dataSource") final String dataSource);
 
 	/**

@@ -49,7 +49,7 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
     @Override
     public List<PolicyScanInfo> getPolicyExecutionDetails(String ag,
             String resourceType, String resourceId) throws ServiceException {
-        List<Map<String, Object>> rules = repository
+        List<Map<String, Object>> poicies = repository
                 .fetchRuleDetails(resourceType);
         List<Map<String, Object>> issueList;
 		try {
@@ -61,25 +61,24 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
         List<PolicyScanInfo> scanList = new ArrayList<>();
         if (issueList != null) {
 
-            for (Map<String, Object> rule : rules) {
+            for (Map<String, Object> policy : poicies) {
                 PolicyScanInfo scanInfo = new PolicyScanInfo();
 				Optional<Map<String, Object>> issueOpenOptonal = issueList.stream()
-						.filter(obj -> (rule.get(RULEID).equals(obj.get(RULEID)) && obj.get("issueStatus").equals("open"))).findFirst();
+						.filter(obj -> (policy.get(POLICYID).equals(obj.get(POLICYID)) && obj.get("issueStatus").equals("open"))).findFirst();
 				Map<String, Object> openIssue = null;
                 if (issueOpenOptonal.isPresent()) {
                     openIssue = issueOpenOptonal.get();
                 }
                 
             	Optional<Map<String, Object>> issueExemptOptonal = issueList.stream()
-						.filter(obj -> (rule.get(RULEID).equals(obj.get(RULEID)) && obj.get("issueStatus").equals("exempted"))).findFirst();
+						.filter(obj -> (policy.get(POLICYID).equals(obj.get(POLICYID)) && obj.get("issueStatus").equals("exempted"))).findFirst();
 				Map<String, Object> exemptIssue = null;
                 if (issueExemptOptonal.isPresent()) {
                 	exemptIssue = issueExemptOptonal.get();
                 }
                 
-                scanInfo.setPolicyName(rule.get("displayName").toString());
-                scanInfo.setRuleId(rule.get(RULEID).toString());
-                scanInfo.setPolicyId(rule.get("policyId").toString());
+                scanInfo.setPolicyName(policy.get("policyDisplayName").toString());
+                scanInfo.setPolicyId(policy.get(POLICYID).toString());
                 if (openIssue != null && !openIssue.isEmpty()) {
                     scanInfo.setLastScan("Fail");
                     scanInfo.setIssueId(openIssue.get("_id").toString());
@@ -93,10 +92,10 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                     scanInfo.setIssueId("");
                     scanList.add(scanInfo);
                 }
-                scanInfo.setFrequency(CommonUtil.decodeAwsCronExp(rule.get(
-                        "ruleFrequency").toString()));
-                scanInfo.setSeverity(CommonUtil.getRuleSeverityFromParms(rule
-                        .get("ruleParams").toString()));
+                scanInfo.setFrequency(CommonUtil.decodeAwsCronExp(policy.get(
+                        "policyFrequency").toString()));
+                scanInfo.setSeverity(CommonUtil.getPolicySeverityFromParms(policy
+                        .get("policyParams").toString()));
                 scanInfo.setScanHistory(new ArrayList<>());
                 // Need additional data source to find if the asset is scanned.
                 // As we only capture issue aduti which is not truley scan
@@ -112,9 +111,9 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
     @Override
     public PolicyVialationSummary getPolicyViolationSummary(String ag,
             String resourceType, String resourceId) throws ServiceException {
-        List<Map<String, Object>> rules = repository
+        List<Map<String, Object>> policies = repository
                 .fetchRuleDetails(resourceType);
-        Map<String, String> ruleSevMap = new HashMap<>();
+        Map<String, String> policySevMap = new HashMap<>();
 		List<Map<String, Object>> issueList;
 		try {
 			issueList = repository.fetchOpenIssues(ag, resourceType, resourceId, false);
@@ -123,23 +122,23 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
 		}
 
         if (!issueList.isEmpty()) {
-            rules.forEach(rule -> {
-                ruleSevMap.put(
-                        rule.get(RULEID).toString(),
-                        CommonUtil.getRuleSeverityFromParms(rule.get(
-                                "ruleParams").toString()));
+            policies.forEach(policy -> {
+                policySevMap.put(
+                        policy.get(POLICYID).toString(),
+                        CommonUtil.getPolicySeverityFromParms(policy.get(
+                                "policyParams").toString()));
             });
 
             issueList = issueList
                     .stream()
-                    .filter(issue -> ruleSevMap.get(issue.get(RULEID)
+                    .filter(issue -> policySevMap.get(issue.get(POLICYID)
                             .toString()) != null).collect(Collectors.toList());
             int criticalCnt = 0;
             int highCnt = 0;
             int mediumCnt = 0;
             int lowCnt = 0;
             for (Map<String, Object> issue : issueList) {
-                String severity = ruleSevMap.get(issue.get(RULEID).toString());
+                String severity = policySevMap.get(issue.get(POLICYID).toString());
                 if (severity != null) {
                     switch (severity) {
                     case CRITICAL:
@@ -169,7 +168,7 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
             sevList.add(medium);
             sevList.add(low);
 
-            long denominator = ruleSevMap.values().stream()
+            long denominator = policySevMap.values().stream()
                     .mapToLong(severity -> {
                         long weigtage = 0;
                         switch (severity) {

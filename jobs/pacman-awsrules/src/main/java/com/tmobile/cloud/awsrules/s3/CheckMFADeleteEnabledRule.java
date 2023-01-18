@@ -17,13 +17,13 @@ import com.tmobile.pacman.commons.AWSService;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.UnableToCreateClientException;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
-@PacmanRule(key = "check-for-s3-MFA-delete-enabled", desc = "checks s3 bucket has MFA delete enabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
-public class CheckMFADeleteEnabledRule extends BaseRule {
+@PacmanPolicy(key = "check-for-s3-MFA-delete-enabled", desc = "checks s3 bucket has MFA delete enabled or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
+public class CheckMFADeleteEnabledRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckMFADeleteEnabledRule.class);
 
@@ -45,7 +45,7 @@ public class CheckMFADeleteEnabledRule extends BaseRule {
 	 *
 	 */
 
-	public RuleResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
+	public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
 		logger.debug("========CheckMFADeleteEnabledRule started=========");
 		Map<String, Object> map = null;
 		AmazonS3Client awsS3Client = null;
@@ -56,7 +56,7 @@ public class CheckMFADeleteEnabledRule extends BaseRule {
 		String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
 
 		MDC.put("executionId", ruleParam.get("executionId")); 
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID)); 
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); 
 		
 		List<LinkedHashMap<String,Object>>issueList = new ArrayList<>();
 		LinkedHashMap<String,Object>issue = new LinkedHashMap<>();
@@ -85,12 +85,12 @@ public class CheckMFADeleteEnabledRule extends BaseRule {
 					issueList.add(issue);
 					annotation.put("issueDetails",issueList.toString());
 					logger.debug("========CheckMFADeleteEnabledRule ended with annotation {} :=========",annotation);
-					return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 				}
 
 		}
 		logger.debug("========CheckMFADeleteEnabledRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
 

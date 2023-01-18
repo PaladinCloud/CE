@@ -32,14 +32,14 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
-import com.tmobile.pacman.commons.rule.Annotation;
-import com.tmobile.pacman.commons.rule.BaseRule;
-import com.tmobile.pacman.commons.rule.PacmanRule;
-import com.tmobile.pacman.commons.rule.RuleResult;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 
 
-@PacmanRule(key = "check-for-application-tag-rule", desc = "checks for application tag rule's value is valid or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
-public class CheckApplicationTagRule extends BaseRule {
+@PacmanPolicy(key = "check-for-application-tag-rule", desc = "checks for application tag rule's value is valid or not", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.GOVERNANCE)
+public class CheckApplicationTagRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(CheckApplicationTagRule.class);
 
@@ -73,7 +73,7 @@ public class CheckApplicationTagRule extends BaseRule {
      *
      */
 
-	public RuleResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
+	public PolicyResult execute(final Map<String, String> ruleParam,Map<String, String> resourceAttributes) {
 
 		logger.debug("========CheckApplicationTagRule started=========");
 		Annotation annotation = null;
@@ -94,7 +94,7 @@ public class CheckApplicationTagRule extends BaseRule {
 		String reSourceId = ruleParam.get(PacmanSdkConstants.RESOURCE_ID);
 		String eventType = PacmanRuleConstants.CREATED_EVENT_TYPE;
 		MDC.put("executionId", ruleParam.get("executionId"));
-		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.RULE_ID));
+		MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		
 		String formattedUrl = PacmanUtils.formatUrl(ruleParam,PacmanRuleConstants.ES_APPLICATION_TAG_URL);
 		String heimdallFormattedUrl = PacmanUtils.formatUrl(ruleParam,PacmanRuleConstants.ES_HEIMDALL_URL,PacmanRuleConstants.HEIMDALL_URI);
@@ -174,11 +174,11 @@ public class CheckApplicationTagRule extends BaseRule {
 			issueList.add(issue);
 			annotation.put("issueDetails", issueList.toString());
 			logger.debug("========CheckApplicationTagRule ended with annotation {} :=========",annotation);
-			return new RuleResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+			return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
 
 		}
 		logger.debug("========CheckApplicationTagRule ended=========");
-		return new RuleResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
+		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
     public String getHelpText() {
