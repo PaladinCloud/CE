@@ -21,6 +21,10 @@ import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.google.cloud.dataproc.v1.ClusterControllerSettings;
 import com.google.cloud.dns.Dns;
 import com.google.cloud.dns.DnsOptions;
+import com.google.cloud.functions.v1.CloudFunctionsServiceClient;
+import com.google.cloud.functions.v1.CloudFunctionsServiceSettings;
+import com.google.cloud.functions.v2.FunctionServiceClient;
+import com.google.cloud.functions.v2.FunctionServiceSettings;
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
 import com.google.cloud.kms.v1.KeyManagementServiceSettings;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
@@ -71,7 +75,9 @@ public class GCPCredentialsProvider {
 
     private ApiKeysClient apiKeysClient;
 
+    private FunctionServiceClient functionServiceClient;
 
+    private CloudFunctionsServiceClient cloudFuntionClient;
 
     // If you don't specify credentials when constructing the client, the client
     // library will
@@ -180,6 +186,20 @@ public class GCPCredentialsProvider {
         }
 
         return topicAdminClient;
+    }
+
+    public FunctionServiceClient getFunctionClient(String region) throws IOException {
+        String url = region + "-dataproc.googleapis.com:443";
+        FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).setEndpoint(url).build();
+        functionServiceClient=FunctionServiceClient.create(functionServiceSettings);
+        return functionServiceClient;
+    }
+    public FunctionServiceClient getFunctionClient() throws IOException {
+        FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+        functionServiceClient=FunctionServiceClient.create(functionServiceSettings);
+        return functionServiceClient;
     }
 
     public ClusterControllerClient getDataProcClient(String region) throws IOException {
@@ -301,6 +321,15 @@ public class GCPCredentialsProvider {
             sslPoliciesClient=SslPoliciesClient.create(sslPoliciesSettings);
         }
         return sslPoliciesClient;
+    }
+
+
+
+    public CloudFunctionsServiceClient getFunctionClientGen1() throws IOException {
+        CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+        cloudFuntionClient = CloudFunctionsServiceClient.create(functionsServiceSettings);
+        return cloudFuntionClient;
     }
 
     // close the client in destroy method
