@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class KmsKeyInventoryCollector {
     public List<KMSKeyVH> fetchKmsKeysInventory(ProjectVH project) throws IOException {
         logger.info("Running collector for cloud KMS keys inventory.");
         List<KMSKeyVH> kmsKeyList = new ArrayList<>();
+        HashSet<KMSKeyVH> kmsKeyVHHashSet=new HashSet<>();
 
         try {
             KeyManagementServiceClient kmsKeyClient = gcpCredentialsProvider.getKmsKeyServiceClient();
@@ -46,17 +48,18 @@ public class KmsKeyInventoryCollector {
                 logger.info("Parent for fetching key rings : {}",parentForRings);
                 KeyManagementServiceClient.ListKeyRingsPagedResponse keyRingsResponse = kmsKeyClient.listKeyRings(parentForRings);
                 logger.info("KeyRing fetch response:{}", keyRingsResponse);
-                fetchKmsKeys(project, kmsKeyList, kmsKeyClient, loc, keyRingsResponse);
+                fetchKmsKeys(project, kmsKeyVHHashSet, kmsKeyClient, loc, keyRingsResponse);
             }
         } catch (Exception e) {
             logger.error("Exception in fetching kms key data", e);
         }
 
         logger.info("KMS key data collected list size: {}", kmsKeyList.size());
+        kmsKeyList.addAll(kmsKeyVHHashSet);
         return kmsKeyList;
     }
 
-    private void fetchKmsKeys(ProjectVH project, List<KMSKeyVH> kmsKeyList, KeyManagementServiceClient kmsKeyClient, String loc, KeyManagementServiceClient.ListKeyRingsPagedResponse keyRingsResponse) {
+    private void fetchKmsKeys(ProjectVH project, HashSet<KMSKeyVH> kmsKeyVHHashSet, KeyManagementServiceClient kmsKeyClient, String loc, KeyManagementServiceClient.ListKeyRingsPagedResponse keyRingsResponse) {
         for(KeyRing keyRing: keyRingsResponse.iterateAll()){
             String key=keyRing.getName();
             String keyRingName =key.substring(key.lastIndexOf("/")+1,key.length());
@@ -64,11 +67,11 @@ public class KmsKeyInventoryCollector {
             KeyRingName parent = KeyRingName.of(project.getProjectId(), loc, keyRingName);
             logger.info("Parent for fetching keys : {}",parent);
             KeyManagementServiceClient.ListCryptoKeysPagedResponse listCryptoKeysPagedResponse = kmsKeyClient.listCryptoKeys(parent);
-            populateKmsData(project, kmsKeyList, kmsKeyClient, loc, keyRingName, listCryptoKeysPagedResponse);
+            populateKmsData(project, kmsKeyVHHashSet, kmsKeyClient, loc, keyRingName, listCryptoKeysPagedResponse);
         }
     }
 
-    private void populateKmsData(ProjectVH project, List<KMSKeyVH> kmsKeyList, KeyManagementServiceClient kmsKeyClient, String loc, String keyRingName, KeyManagementServiceClient.ListCryptoKeysPagedResponse listCryptoKeysPagedResponse) {
+    private void populateKmsData(ProjectVH project, HashSet<KMSKeyVH> kmsKeyVHHashSet, KeyManagementServiceClient kmsKeyClient, String loc, String keyRingName, KeyManagementServiceClient.ListCryptoKeysPagedResponse listCryptoKeysPagedResponse) {
         logger.info("Crypto list response: {}", listCryptoKeysPagedResponse);
         for (CryptoKey cryptoKey : listCryptoKeysPagedResponse.iterateAll()) {
             KMSKeyVH kmsKeyVH = new KMSKeyVH();
@@ -81,13 +84,14 @@ public class KmsKeyInventoryCollector {
             kmsKeyVH.setRegion(loc);
             kmsKeyVH.setKeyRingName(keyRingName);
             kmsKeyVH.setName(cryptoKey.getName());
+            kmsKeyVH.setTags(cryptoKey.getLabelsMap());
             kmsKeyVH.setCryptoBackend(cryptoKey.getCryptoKeyBackend());
             kmsKeyVH.setImportOnly(cryptoKey.getImportOnly());
             kmsKeyVH.setLabelsCount(cryptoKey.getLabelsCount());
             kmsKeyVH.setLabels(cryptoKey.getLabelsMap());
             kmsKeyVH.setRotationPeriod(cryptoKey.getRotationPeriod().getSeconds());
             setIamPolicies(kmsKeyVH, kmsKeyClient.getIamPolicy(cryptoKey.getName()));
-            kmsKeyList.add(kmsKeyVH);
+            kmsKeyVHHashSet.add(kmsKeyVH);
         }
     }
 

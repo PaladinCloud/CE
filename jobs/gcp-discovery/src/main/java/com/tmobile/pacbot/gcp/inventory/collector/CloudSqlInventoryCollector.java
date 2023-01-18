@@ -81,6 +81,10 @@ public class CloudSqlInventoryCollector {
                         setIpAddresses(cloudSqlVH, dbInstance.getIpAddresses());
                         setServerCerts(cloudSqlVH, dbInstance.getServerCaCert());
                         cloudSqlVH.setSettings(dbInstance.getSettings());
+                        if(dbInstance.getSettings().getUserLabels()!=null)
+                        {
+                            cloudSqlVH.setTags(dbInstance.getSettings().getUserLabels());
+                        }
 
                         if (dbInstance.getDiskEncryptionStatus() != null) {
                             cloudSqlVH.setKmsKeyVersion(dbInstance.getDiskEncryptionStatus().getKmsKeyVersionName());

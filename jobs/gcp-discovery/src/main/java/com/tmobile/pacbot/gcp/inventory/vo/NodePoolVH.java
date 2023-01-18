@@ -1,6 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
-public class NodePoolVH extends GCPVH{
+public class NodePoolVH {
     private boolean autoUpgrade;
     private boolean enableIntegrityMonitoring;
     private boolean enableSecureBoot;

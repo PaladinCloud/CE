@@ -43,6 +43,7 @@ public class DataProcInventoryCollector {
                     clusterVH.setProjectName(project.getProjectName());
                     clusterVH.setProjectId(project.getProjectId());
                     clusterVH.setId(cluster.getClusterName());
+                    clusterVH.setTags(cluster.getLabelsMap());
                     clusterVH.setRegion(region);
                     clusterVHList.add(clusterVH);
                 }
