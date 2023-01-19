@@ -342,6 +342,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyParams = this.buildpolicyParams();
     PolicyModel.isFileChanged = this.isFileChanged;
     PolicyModel.policyFrequency = "0 0 ? * MON *";
+    PolicyModel.isAutofixEnabled = false;
 
     if (this.isFileChanged && this.selectedPolicyType === 'Federated') {
       this.currentFileUpload = this.selectedFiles.item(0);

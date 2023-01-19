@@ -184,3 +184,11 @@ gap: 20px;
   flex-direction: column;
   width: 33%;
 }
+
+.table-wrapper{
+  height: 300px;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-label-wrapper{
+  top: -13px !important;
+}

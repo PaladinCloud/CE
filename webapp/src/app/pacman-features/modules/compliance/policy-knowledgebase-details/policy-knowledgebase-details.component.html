@@ -21,7 +21,7 @@
         <div class="header-text">
             {{policyDisplayName}}
         </div>
-        <app-dropdown *ngIf="haveAdminPageAccess" (selected)="goToDetails($event)" [items]="actionItems"
+        <app-dropdown *ngIf="haveAdminPageAccess && haveEditAccess" (selected)="goToDetails($event)" [items]="actionItems"
             placeholder="Actions"></app-dropdown>
     </div>
     <div class="overview-wrapper">
