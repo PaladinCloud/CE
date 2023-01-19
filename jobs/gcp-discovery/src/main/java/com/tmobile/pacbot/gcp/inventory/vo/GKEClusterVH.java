@@ -20,8 +20,6 @@ public class GKEClusterVH extends GCPVH {
     private String version;
     private boolean disableKubernetesDashBoard;
 
-    private Map<String, String> tags;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -41,14 +39,6 @@ public class GKEClusterVH extends GCPVH {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Map<String, String> tags) {
-        this.tags = tags;
     }
 
     public boolean isDisableKubernetesDashBoard() {

@@ -4,7 +4,6 @@ import com.google.api.services.sqladmin.model.AclEntry;
 import com.google.api.services.sqladmin.model.Settings;
 
 import java.util.List;
-import java.util.Map;
 
 public class CloudSqlVH extends GCPVH{
     private String name;
@@ -30,15 +29,6 @@ public class CloudSqlVH extends GCPVH{
 
     private AclEntry authorizedNetwork;
 
-    private Map<String, String> tags;
-
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Map<String, String> tags) {
-        this.tags = tags;
-    }
 
     public String getName() {
         return name;

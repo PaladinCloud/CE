@@ -20,7 +20,6 @@ public class KMSKeyVH extends GCPVH{
     private List<Bindings> bindings;
 
     private long rotationPeriod;
-    private Map<String, String> tags;
 
     @Override
     public boolean equals(Object o) {
@@ -35,13 +34,6 @@ public class KMSKeyVH extends GCPVH{
         return Objects.hash(name);
     }
 
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Map<String, String> tags) {
-        this.tags = tags;
-    }
 
     public String getKeyRingName() {
         return keyRingName;
