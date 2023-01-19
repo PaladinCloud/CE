@@ -82,9 +82,6 @@ public class ApiService implements Constants {
 	private CredentialProvider credentialProvider;
 
 	@Autowired
-	private TenantService tenantService;
-
-	@Autowired
 	private CognitoUserService cognitoUserService;
 
 	@Value("${pacman.api.oauth2.client-id}")
@@ -227,7 +224,7 @@ public class ApiService implements Constants {
 								.create(awsBaseCreds.getAWSAccessKeyId(), awsBaseCreds.getAWSSecretKey(), awsBaseCreds.getSessionToken()))).build();
 
 
-		String clientSecret=tenantService.getAttributeByUserPool(userPoolId, "Clientsecret");
+		String clientSecret=System.getenv("CLIENT_SECRET");
 		Map<String,Object> response=new HashMap<>();
 
 		final Map<String, String> authParams = new HashMap<>();

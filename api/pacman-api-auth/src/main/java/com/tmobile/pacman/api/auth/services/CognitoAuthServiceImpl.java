@@ -40,9 +40,6 @@ public class CognitoAuthServiceImpl implements AuthService {
 	private CognitoUserService cognitoUserService;
 
 	@Autowired
-	private TenantService tenantService;
-
-	@Autowired
 	private ApiService apiService;
 
 	@Autowired
@@ -52,8 +49,6 @@ public class CognitoAuthServiceImpl implements AuthService {
 	private String activeAuth;
 
 	private static final String DEFAULT_GROUP = "ROLE_USER";
-
-	public static final String TENANT_ID = "tenantId";
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -135,15 +130,6 @@ public class CognitoAuthServiceImpl implements AuthService {
 					userPoolId, userName, "custom:defaultAssetGroup", "aws"));
 		} else {
 			userInfo.put("defaultAssetGroup", (String) userInfo.get("custom:defaultAssetGroup"));
-		}
-		if (tenantId == null && StringUtils.isEmpty((String) userInfo.get("custom:tenantId"))) {
-			//TenantId value missing from the userAttributes- Adding tenantId
-			logger.info("TenantId is not set. updating tenantId value");
-			String tenantIdValue = tenantService.getAttributeByUserPool(userPoolId, TENANT_ID);
-			userInfo.put("tenantId", cognitoUserService.updateDefaultAssetGroup(identityProviderClient,
-					userPoolId, userName, "custom:tenantId", tenantIdValue));
-		} else {
-			userInfo.put("tenantId", tenantId);
 		}
 		GroupType defaultRole = cognitoUserService.getGroup(identityProviderClient, userPoolId, DEFAULT_GROUP);
 		if (defaultRole == null) {

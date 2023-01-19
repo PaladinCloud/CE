@@ -1,6 +1,5 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
-import com.tmobile.pacman.api.admin.controller.RuleController;
 import com.tmobile.pacman.api.admin.domain.Permission;
 import com.tmobile.pacman.api.admin.domain.RoleMapping;
 import com.tmobile.pacman.api.admin.domain.RoleMappingResponse;
@@ -18,7 +17,7 @@ import java.util.stream.Stream;
 @Service
 public class RoleMappingServiceImpl implements RoleMappingService {
 
-	private static final Logger log = LoggerFactory.getLogger(RuleController.class);
+	private static final Logger log = LoggerFactory.getLogger(RoleMappingServiceImpl.class);
 	@Autowired
 	private PacmanRdsRepository rdsRepository;
 
