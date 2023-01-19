@@ -74,6 +74,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   tableErrorMessage = '';
   tableDataLoaded = false;
   haveAdminPageAccess = false;
+  haveEditAccess = false;
   policyParams = [
     {
       "key": "policykey",
@@ -121,7 +122,6 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private utils: UtilsService,
-    private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private adminService: AdminService,
     private permissions: PermissionGuardService,
@@ -150,6 +150,9 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
         this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
       }
       this.breadcrumbPresent = "Policy Details ";
+      if (this.breadcrumbArray[0] == "Policies") {
+        this.haveEditAccess = true;
+      }
     } catch (error) {
       this.logger.log("error", error);
     }
@@ -446,9 +449,6 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
 
   goToDetails(event) {
     const action = event?.toLowerCase();
-    // if(!this.haveAdminPageAccess){
-    //   return;
-    // }
     if (action == "enable" || action == "disable") {
       this.openDialog(event);
       return;
