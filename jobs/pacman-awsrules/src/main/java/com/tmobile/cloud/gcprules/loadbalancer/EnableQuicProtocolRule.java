@@ -49,8 +49,8 @@ public class EnableQuicProtocolRule extends BasePolicy {
         logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", vmEsURL);
         boolean isQuicEnabled;
 
-        MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
+        MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get("executionId"));
+        MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
@@ -71,7 +71,7 @@ public class EnableQuicProtocolRule extends BasePolicy {
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
                     issue.put(PacmanRuleConstants.VIOLATION_REASON," Google cloud service load Balancer HTTPS target proxies are not configured with QUIC protocol" );
                     issueList.add(issue);
-                    annotation.put("issueDetails", issueList.toString());
+                    annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug("========rule ended with status failure {}", annotation);
                     return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
@@ -90,21 +90,26 @@ public class EnableQuicProtocolRule extends BasePolicy {
 
     private boolean checkQuicEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("========checkQuicNegotiationEnabledForHttpsTargetProxies  started=========");
-        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = true;
-        if (hitsJsonArray.size() > 0) {
-            logger.debug("========checkQuicNegotiationEnabledForHttpsTargetProxies hit array=========");
-            JsonObject loadBalancer = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                    .get(PacmanRuleConstants.SOURCE);
+        try{
+            JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
+            if (hitsJsonArray.size() > 0) {
+                logger.debug("========checkQuicNegotiationEnabledForHttpsTargetProxies hit array=========");
+                JsonObject loadBalancer = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                        .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", loadBalancer);
-            JsonArray quicNegotiation = loadBalancer.get("quicNegotiation").getAsJsonArray();
-            for(JsonElement quic : quicNegotiation){
-                if(!quic.getAsBoolean()){
-                    validationResult = false;
-                    break;
+                logger.debug("Validating the data item: {}", loadBalancer);
+                JsonArray quicNegotiation = loadBalancer.get(PacmanRuleConstants.QUIC_NEGOTIATION).getAsJsonArray();
+                for(JsonElement quic : quicNegotiation){
+                    if(!quic.getAsBoolean()){
+                        validationResult = false;
+                        break;
+                    }
                 }
             }
+        }catch (Exception e){
+            logger.error("Error occurred in checkQuicEnabled ::"+e);
+            validationResult = false;
         }
         return validationResult;
     }
