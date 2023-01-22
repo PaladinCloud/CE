@@ -1,6 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.cloud.functions.v1.CloudFunction;
+import com.google.cloud.functions.v1.CloudFunctionsServiceClient;
 import com.google.cloud.functions.v1.ListFunctionsRequest;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.util.GCPlocationUtil;
@@ -36,10 +37,11 @@ public class CloudFunctionGen1Collector {
             regions.remove("global");
             logger.info("fetching regions for CloudFunctionGen1Collector {} ::", regions.size());
             logger.debug("Project name: {} and id :{}", project.getProjectName(), project.getProjectId());
+            CloudFunctionsServiceClient cloudFunctionsServiceClient = gcpCredentialsProvider.getFunctionClientGen1();
             for(String region : regions) {
                 String parent = "projects/" + project.getProjectId() + "/locations/" + region;
                 ListFunctionsRequest listFunctionsRequest = ListFunctionsRequest.newBuilder().setParent(parent).build();
-                Iterable<CloudFunction> funcList = gcpCredentialsProvider.getFunctionClientGen1().listFunctions(listFunctionsRequest).iterateAll();
+                Iterable<CloudFunction> funcList = cloudFunctionsServiceClient.listFunctions(listFunctionsRequest).iterateAll();
                 for (CloudFunction ob : funcList) {
                     CloudFunctionVH cloudFunctionVH = new CloudFunctionVH();
                     cloudFunctionVH.setId(ob.getName());
@@ -53,6 +55,7 @@ public class CloudFunctionGen1Collector {
                     cloudFunctionVHList.add(cloudFunctionVH);
                 }
             }
+            cloudFunctionsServiceClient.close();
         }catch(Exception e){
             logger.error("Error occurred in CloudFunctionGen1Collector {} ::", e.getMessage());
         }

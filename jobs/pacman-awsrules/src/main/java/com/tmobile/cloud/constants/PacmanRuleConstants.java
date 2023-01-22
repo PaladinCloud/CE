@@ -621,4 +621,11 @@ public class PacmanRuleConstants {
     public static final String DISABLE_KUBERNETES_DASHBOARD="disableKubernetesDashBoard";
 
     public static final String RESTRICTIONS="restrictions";
+
+
+    public static final String  VPC_CONNECTOR = "vpcConnector";
+    public static final String HTTP_TRIGGER = "httpTrigger";
+    public static final Integer SECURE_ALWAYS = 1;
+    public static final String INGRESS_SETTING = "ingressSetting";
+    public static final String ALLOW_ALL = "ALLOW_ALL";
 }

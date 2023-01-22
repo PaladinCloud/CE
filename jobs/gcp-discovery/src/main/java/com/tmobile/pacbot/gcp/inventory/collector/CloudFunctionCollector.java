@@ -34,10 +34,10 @@ public class CloudFunctionCollector {
             regions.remove("global");
             logger.info("fetching regions for cloudfunctioncollector {}::", regions.size());
             logger.debug("Project name: {} and id :{}", project.getProjectName(), project.getProjectId());
+            FunctionServiceClient functionServiceClient = gcpCredentialsProvider.getFunctionClient();
             for(String region : regions) {
                 String parent = "projects/"+project.getProjectId()+"/locations/"+region;
                 logger.info("parent is {} ::", parent);
-                FunctionServiceClient functionServiceClient = gcpCredentialsProvider.getFunctionClient();
                 FunctionServiceClient.ListFunctionsPagedResponse funcList = functionServiceClient.listFunctions(parent);
 
                 logger.info("funcList is {} ::", funcList);
@@ -58,10 +58,8 @@ public class CloudFunctionCollector {
                         cloudFunctionVHList.add(cloudFunctionVH);
                     }
                 }
-
-                functionServiceClient.close();
             }
-
+            functionServiceClient.close();
         }catch(Exception e){
             logger.error("Error occurred in cloudFunctionCollector {} ", e.getMessage());
         }

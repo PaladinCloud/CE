@@ -43,8 +43,8 @@ public class IngressSettingRule extends BasePolicy {
         logger.debug("========gcp_cloudfunction URL after concatenation param {}  =========", esUrl);
         boolean isVpcConnector = false;
 
-        MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
+        MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get(PacmanSdkConstants.EXECUTION_ID));
+        MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
@@ -82,21 +82,26 @@ public class IngressSettingRule extends BasePolicy {
 
     }
     private boolean checkIngressSettings(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
-        logger.debug("========checkHTTPSEnabled  started=========");
-        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
+        logger.debug("========checkIngressSettings  started=========");
         boolean validationResult = true;
-        if (hitsJsonArray.size() > 0) {
-            logger.debug("========checkVpcConnector hit array=========");
-            JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                    .get(PacmanRuleConstants.SOURCE);
+        try{
+            JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
+            if (hitsJsonArray.size() > 0) {
+                logger.debug("========checkIngressSettings hit array=========");
+                JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                        .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Data retrieved from ES: {}", sourceData);
-            String ingressSetting  = sourceData.getAsJsonObject().get("ingressSetting").getAsString();
+                logger.debug("Data retrieved from ES: {}", sourceData);
+                String ingressSetting  = sourceData.getAsJsonObject().get(PacmanRuleConstants.INGRESS_SETTING).getAsString();
 
-            if(!StringUtils.isNullOrEmpty(ingressSetting) && ingressSetting.equals("ALLOW_ALL")){
-                validationResult = false;
+                if(!StringUtils.isNullOrEmpty(ingressSetting) && ingressSetting.equals(PacmanRuleConstants.ALLOW_ALL)){
+                    validationResult = false;
+                }
+                logger.debug("Validating the data item: {}", sourceData);
             }
-            logger.debug("Validating the data item: {}", sourceData);
+        }catch(Exception e){
+            logger.error("Error occurred in checkIngressSettings ::"+e);
+            validationResult = false;
         }
         return validationResult;
     }

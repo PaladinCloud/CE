@@ -20,12 +20,12 @@ import org.slf4j.MDC;
 
 import java.util.*;
 
-@PacmanPolicy(key = "GCP-Cloud-Function-not-enabled-with-VPC-connector", desc = "GCP-Cloud-Function-not-enabled-with-VPC-connector", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+@PacmanPolicy(key = "GCP-Cloud-Function-not-enabled-with-VPC-connector", desc = "GCP Cloud Function not enabled with VPC connector", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class VpnConnectorRule extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(VpnConnectorRule.class);
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.debug("Executing GCP-Cloud-Function-not-enabled-with-VPC-connector rule for gcp cloud function");
+        logger.debug("Executing GCP Cloud Function not enabled with VPC connector rule for gcp cloud function");
         Annotation annotation = null;
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         String severity = ruleParam.get(PacmanRuleConstants.SEVERITY);
@@ -43,8 +43,8 @@ public class VpnConnectorRule extends BasePolicy {
         logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", esUrl);
         boolean isVpcConnector = false;
 
-        MDC.put("executionId", ruleParam.get("executionId"));
-        MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID));
+        MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get("executionId"));
+        MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             logger.debug("========after url");
@@ -83,27 +83,24 @@ public class VpnConnectorRule extends BasePolicy {
     }
 
     private boolean checkIfVpcConnectorIsEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
-        logger.debug("========checkHTTPSEnabled  started=========");
+        logger.debug("========checkIfVpcConnectorIsEnabled  started=========");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
-        boolean validationResult = true;
-        if (hitsJsonArray.size() > 0) {
+        boolean validationResult = false;
+        if (hitsJsonArray != null && hitsJsonArray.size() > 0) {
             logger.debug("========checkVpcConnector hit array=========");
-            JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                    .get(PacmanRuleConstants.SOURCE);
-
-            logger.debug("Data retrieved from ES: {}", sourceData);
-            String vpcConnector = null;
             try{
-                vpcConnector  = sourceData.getAsJsonObject().get("vpcConnector").getAsString();
+                JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                        .get(PacmanRuleConstants.SOURCE);
+                logger.debug("Data retrieved from ES: {}", sourceData);
+                String vpcConnector = sourceData.getAsJsonObject().get(PacmanRuleConstants.VPC_CONNECTOR).getAsString();
+                if(!StringUtils.isNullOrEmpty(vpcConnector)){
+                    validationResult = true;
+                }
+                logger.debug("Validating the data item: {}", sourceData);
             }catch(Exception e){
-                logger.error("Error in fetching attribute vpcConnector for cloud function of source data {} ", e.getMessage());
-                vpcConnector = "";
-            }
-
-            if(!StringUtils.isNullOrEmpty(vpcConnector)){
+                logger.error("Error in fetching attribute vpcConnector for cloud function of source data ::", e);
                 validationResult = false;
             }
-            logger.debug("Validating the data item: {}", sourceData);
         }
         return validationResult;
     }

@@ -188,13 +188,6 @@ public class GCPCredentialsProvider {
         return topicAdminClient;
     }
 
-    public FunctionServiceClient getFunctionClient(String region) throws IOException {
-        String url = region + "-dataproc.googleapis.com:443";
-        FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).setEndpoint(url).build();
-        functionServiceClient=FunctionServiceClient.create(functionServiceSettings);
-        return functionServiceClient;
-    }
     public FunctionServiceClient getFunctionClient() throws IOException {
         FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();

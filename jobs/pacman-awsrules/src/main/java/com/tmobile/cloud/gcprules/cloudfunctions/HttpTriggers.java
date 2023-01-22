@@ -64,12 +64,11 @@ public class HttpTriggers extends BasePolicy {
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
                     issue.put(PacmanRuleConstants.VIOLATION_REASON, "GCP Cloud Functions HTTP trigger is not secured");
                     issueList.add(issue);
-                    annotation.put("issueDetails", issueList.toString());
+                    annotation.put(PacmanRuleConstants.ISSUE_DETAILS, issueList.toString());
                     logger.debug("========rule ended with status failure {}", annotation);
                     return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
-
             } catch (Exception exception) {
                 exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
@@ -83,20 +82,23 @@ public class HttpTriggers extends BasePolicy {
 
     private boolean checkHTTPSEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("========checkHTTPSEnabled  started=========");
-        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = true;
-        if (hitsJsonArray.size() > 0) {
-            logger.debug("========checkHTTPSEnabled hit array=========");
-            JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                    .get(PacmanRuleConstants.SOURCE);
-
-            logger.debug("Data retrieved from ES: {}", sourceData);
-            Integer httpTrigger = sourceData.getAsJsonObject().get("httpTrigger").getAsInt();
-
-            if (httpTrigger == 2) {
-                validationResult = false;
+        try{
+            JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
+            if (hitsJsonArray != null && hitsJsonArray.size() > 0) {
+                logger.debug("========checkHTTPSEnabled hit array=========");
+                JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                        .get(PacmanRuleConstants.SOURCE);
+                logger.debug("Validating the data item: {}", sourceData);
+                Integer httpTrigger = sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).getAsInt();
+                /*refrence https://cloud.google.com/java/docs/reference/google-cloud-functions/latest/com.google.cloud.functions.v1.HttpsTrigger.SecurityLevel*/
+                if (httpTrigger != PacmanRuleConstants.SECURE_ALWAYS) {
+                    validationResult = false;
+                }
             }
-            logger.debug("Validating the data item: {}", sourceData);
+        }catch(Exception e){
+            logger.error("Error occurred in checkHTTPSEnabled ::"+e);
+            validationResult = false;
         }
         return validationResult;
     }
