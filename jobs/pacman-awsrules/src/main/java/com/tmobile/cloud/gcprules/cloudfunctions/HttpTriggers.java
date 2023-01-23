@@ -91,7 +91,7 @@ public class HttpTriggers extends BasePolicy {
                 logger.debug("Validating the data item: {}", sourceData);
                 Integer httpTrigger = sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).getAsInt();
                 /*refrence https://cloud.google.com/java/docs/reference/google-cloud-functions/latest/com.google.cloud.functions.v1.HttpsTrigger.SecurityLevel*/
-                if (httpTrigger != PacmanRuleConstants.SECURE_ALWAYS) {
+                if (httpTrigger.intValue() != PacmanRuleConstants.SECURE_ALWAYS.intValue()) {
                     validationResult = false;
                 }
             }
