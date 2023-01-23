@@ -93,7 +93,8 @@ public class VpnConnectorRuleTest {
                 .thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(vpnConnectorRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
+        Map<String, String> map = getMapString("r_123 ");
+        assertThat(vpnConnectorRule.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
@@ -130,7 +131,8 @@ public class VpnConnectorRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> vpnConnectorRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        Map<String, String> map = getMapString("r_123 ");
+        assertThatThrownBy(() -> vpnConnectorRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }
 
 

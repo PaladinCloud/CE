@@ -129,7 +129,8 @@ public class HttpTriggersTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> httpTriggerRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        Map<String, String> map = getMapString("r_123 ");
+        assertThatThrownBy(() -> httpTriggerRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }
 
 

@@ -74,7 +74,6 @@ public class HttpTriggers extends BasePolicy {
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
-
         logger.debug("======== ended with status true=========");
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
@@ -82,10 +81,10 @@ public class HttpTriggers extends BasePolicy {
 
     private boolean checkHTTPSEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("========checkHTTPSEnabled  started=========");
+        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = true;
         try{
-            JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
-            if (hitsJsonArray != null && hitsJsonArray.size() > 0) {
+            if (hitsJsonArray.size() > 0) {
                 logger.debug("========checkHTTPSEnabled hit array=========");
                 JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
@@ -97,7 +96,7 @@ public class HttpTriggers extends BasePolicy {
                 }
             }
         }catch(Exception e){
-            logger.error("Error occurred in checkHTTPSEnabled ::"+e);
+            logger.error("Error occurred in checkHTTPSEnabled {} ", hitsJsonArray, e);
             validationResult = false;
         }
         return validationResult;

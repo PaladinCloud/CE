@@ -86,7 +86,7 @@ public class VpnConnectorRule extends BasePolicy {
         logger.debug("========checkIfVpcConnectorIsEnabled  started=========");
         JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         boolean validationResult = false;
-        if (hitsJsonArray != null && hitsJsonArray.size() > 0) {
+        if (hitsJsonArray.size() > 0) {
             logger.debug("========checkVpcConnector hit array=========");
             try{
                 JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
@@ -98,7 +98,7 @@ public class VpnConnectorRule extends BasePolicy {
                 }
                 logger.debug("Validating the data item: {}", sourceData);
             }catch(Exception e){
-                logger.error("Error in fetching attribute vpcConnector for cloud function of source data ::", e);
+                logger.error("Error in fetching attribute vpcConnector for cloud function of source data {} ", hitsJsonArray, e);
                 validationResult = false;
             }
         }

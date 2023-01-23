@@ -84,8 +84,8 @@ public class IngressSettingRule extends BasePolicy {
     private boolean checkIngressSettings(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("========checkIngressSettings  started=========");
         boolean validationResult = true;
+        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         try{
-            JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
             if (hitsJsonArray.size() > 0) {
                 logger.debug("========checkIngressSettings hit array=========");
                 JsonObject sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
@@ -100,7 +100,7 @@ public class IngressSettingRule extends BasePolicy {
                 logger.debug("Validating the data item: {}", sourceData);
             }
         }catch(Exception e){
-            logger.error("Error occurred in checkIngressSettings ::"+e);
+            logger.error("Error occurred in checkIngressSettings {} ", hitsJsonArray, e);
             validationResult = false;
         }
         return validationResult;
