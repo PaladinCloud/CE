@@ -3,7 +3,7 @@ from resources.iam.ecs_role import ECSRole
 from resources.pacbot_app.task_def_variables import ContainerDefinitions
 from resources.pacbot_app.ecr import APIDockerImageBuild, UIDockerImageBuild
 from resources.pacbot_app.utils import need_to_deploy_vulnerability_service
-
+from resources.cognito.userpool import AppCLient
 
 container_def = ContainerDefinitions()
 
@@ -15,7 +15,7 @@ class BaseTaskDefinition:
     memory = 4096
     execution_role_arn = ECSRole.get_output_attr('arn')
     task_role_arn = ECSRole.get_output_attr('arn')
-
+    DEPENDS_ON = [AppCLient]
 
 class NginxEcsTaskDefinition(ECSTaskDefinitionResource, BaseTaskDefinition):
     family = "webapp"

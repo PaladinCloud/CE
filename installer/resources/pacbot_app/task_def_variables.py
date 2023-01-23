@@ -1,4 +1,5 @@
 
+from resources.iam.base_role import BaseRole
 from .utils import need_to_enable_azure, need_to_enable_gcp
 from resources.pacbot_app.cloudwatch_log_groups import UiCloudWatchLogGroup, ApiCloudWatchLogGroup
 from resources.pacbot_app.ecr import APIEcrRepository, UIEcrRepository
@@ -6,6 +7,7 @@ from resources.data.aws_info import AwsRegion
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.datastore.db import MySQLDatabase
 from core.config import Settings
+from resources.cognito.userpool import UserPool, AppCLient, Appcredentials
 import json
 
 
@@ -24,6 +26,16 @@ class ContainerDefinitions:
     RDS_USERNAME = MySQLDatabase.get_input_attr('username')
     RDS_PASSWORD = MySQLDatabase.get_input_attr('password')
     RDS_URL = MySQLDatabase.get_rds_db_url()
+    CLIENT_ID = AppCLient.get_output_attr('id')
+    CLIENT_SECRET = AppCLient.get_output_attr('client_secret')
+    USERPOOL_ID = UserPool.get_output_attr('id')
+    AWS_REGION = Settings.AWS_REGION #userpool id region
+    REGION = Settings.AWS_REGION
+    PALADINCLOUD_RO = BaseRole.get_output_attr('name')
+    DOMAIN_URL = "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"
+
+
+
     
     def get_container_definitions_without_env_vars(self, container_name):
         """
@@ -54,7 +66,7 @@ class ContainerDefinitions:
                     "awslogs-region": AwsRegion.get_output_attr('name'),
                     "awslogs-stream-prefix": Settings.RESOURCE_NAME_PREFIX + "-" + container_name
                 }
-            }
+            },
         }
 
     def get_container_definitions(self, container_name):
@@ -93,7 +105,14 @@ class ContainerDefinitions:
             {'name': "RDS_URL", 'value': self.RDS_URL},
             {'name': "RDS_USERNAME", 'value': self.RDS_USERNAME},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
         ]
+
 
     def get_admin_container_env_vars(self):
         return [
@@ -101,7 +120,13 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('admin')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('admin')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
         ]
 
     def get_compliance_container_env_vars(self):
@@ -110,7 +135,13 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('compliance')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('compliance')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}      
         ]
 
     def get_notifications_container_env_vars(self):
@@ -119,7 +150,13 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('notifications')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('notifications')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
         ]
 
     def get_statistics_container_env_vars(self):
@@ -128,7 +165,13 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('statistics')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('statistics')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
         ]
 
     def get_asset_container_env_vars(self):
@@ -137,7 +180,13 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('asset')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('asset')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
         ]
 
     def get_auth_container_env_vars(self):
@@ -146,7 +195,14 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('auth')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('auth')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name':"AUTH_API_URL",'value':self.DOMAIN_URL},
         ]
         
     def get_scheduler_container_env_vars(self):
@@ -154,6 +210,12 @@ class ContainerDefinitions:
             {'name': "JAR_FILE", 'value': "paladin-job-scheduler.jar"},
             {'name': "CONFIG_CREDS", 'value': self.CONFIG_CREDS},
             {'name': "CONFIG_URL", 'value': self.CONFIG_URL},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
         ]
  
     def get_vulnerability_container_env_vars(self):
@@ -162,5 +224,11 @@ class ContainerDefinitions:
             {'name': "CONFIG_PASSWORD", 'value': self.CONFIG_PASSWORD},
             {'name': "CONFIG_SERVER_URL", 'value': self.CONFIG_SERVER_URL},
             {'name': "PACMAN_HOST_NAME", 'value': self.PACMAN_HOST_NAME},
-            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('vulnerability')}
+            {'name': "DOMAIN_URL", 'value': ApplicationLoadBalancer.get_api_server_url('vulnerability')},
+            {'name': "CLIENT_ID", 'value': self.CLIENT_ID},
+            {'name': "CLIENT_SECRET", 'value': self.CLIENT_SECRET},
+            {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
+            {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
+            {'name':"REGION",'value':self.REGION},
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
         ]

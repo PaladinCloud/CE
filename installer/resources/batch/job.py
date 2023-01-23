@@ -1,6 +1,7 @@
 from core.terraform.resources.aws.batch import BatchJobDefinitionResource, BatchJobQueueResource
 from core.providers.aws.boto3.ecs import deregister_task_definition
 from core.config import Settings
+from resources.cognito.userpool import Appcredentials
 from resources.datastore.es import ESDomain
 from resources.batch.env import RuleEngineBatchJobEnv
 from resources.batch.ecr import RuleEngineEcrRepository
@@ -34,7 +35,8 @@ class SubmitAndRuleEngineJobDefinition(BatchJobDefinitionResource):
             {'name': "HEIMDALL_URI", 'value': ESDomain.get_http_url_with_port()},
             {'name': "PACMAN_API_URI", 'value': ApplicationLoadBalancer.get_api_base_url()},
             {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
-            {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"}
+            {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"},
+            {'name': "AUTH_API_URL",'value': "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"},
         ]
     })
 
