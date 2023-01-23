@@ -23,10 +23,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -61,12 +59,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1090,6 +1091,48 @@ public class CommonUtils {
             }
         }
         return Boolean.TRUE;
+    }
+
+    public static String postUrlEncoded(String url, String requestBody,String token,String tokeType) throws Exception {
+        try {
+            CloseableHttpClient httpClient = getHttpClient();
+            if(httpClient!=null){
+                HttpPost httppost = new HttpPost(url);
+                httppost.setHeader("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
+
+                if(!Strings.isNullOrEmpty(token)){
+                    httppost.addHeader("Authorization", tokeType+" "+token);
+                }
+                httppost.setEntity(new StringEntity(requestBody));
+                HttpResponse httpresponse = httpClient.execute(httppost);
+                if( httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
+                    throw new IOException("non 200 code from rest call--->" + url);
+                }
+                return EntityUtils.toString(httpresponse.getEntity());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error getting the data " , e);
+            throw e;
+        }
+        return null;
+
+    }
+
+
+    private static CloseableHttpClient getHttpClient() {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = HttpClientBuilder.create().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                    .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+                        @Override
+                        public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+                            return true;
+                        }
+                    }).build()).build();
+        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+            LOGGER.error("Error getting getHttpClient " , e);
+        }
+        return httpClient;
     }
 
 

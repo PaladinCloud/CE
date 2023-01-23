@@ -27,6 +27,10 @@ import { AuthService } from '../../core/services/auth.service';
 
 import { CONFIGURATIONS } from './../../../config/configurations';
 import { AdalService } from '../../core/services/adal.service';
+import { AwsCognitoService } from '../../core/services/aws-cognito.service';
+import * as moment from 'moment';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
 
 @Component({
     selector: 'app-login',
@@ -52,13 +56,19 @@ export class LoginComponent implements OnInit {
                 private router: Router,
                 private utilityService: UtilsService,
                 private adalService: AdalService,
-                private onPremAuthentication: OnPremAuthenticationService) {
+                private onPremAuthentication: OnPremAuthenticationService,
+                private cognitoService: AwsCognitoService,
+                private dataCacheService: DataCacheService) {
 
-                    if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
-                        this.adalService.login();
-                    } else {
-                        this.showOnPremLogin = true;
-                    }
+        console.log('Auth type:', CONFIGURATIONS.optional.auth.AUTH_TYPE)
+        if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
+            this.adalService.login();
+        } else if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito') {
+            console.log('Inside Cognito auth')
+            window.location.assign(CONFIGURATIONS.optional.auth.cognitoConfig.loginURL);
+        } else {
+            this.showOnPremLogin = true;
+        }
 
                     this.content = CONTENT;
     }
@@ -72,7 +82,10 @@ export class LoginComponent implements OnInit {
     login() {
         if (!this.username || !this.password) {
             this.throwLoginError();
-        }else {
+        } else if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito') {
+            console.log('Inside Cognito auth')
+            window.location.replace(CONFIGURATIONS.optional.auth.cognitoConfig.loginURL);
+        } else {
             this.loginPending = true;
             const payload = {
                 clientId: this.CLIENT_ID,

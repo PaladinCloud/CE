@@ -47,7 +47,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Api(value = "/asset-group", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'asset-group-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/asset-group")
 public class AssetGroupController {
 

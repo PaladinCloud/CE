@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiParam;
  * The controller layer for  Assets which has methods to fetch the asset related info.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 @CrossOrigin
 public class AssetController {
 

@@ -12,20 +12,21 @@
  * limitations under the License.
  */
 
-import {NgModule, Optional, SkipSelf} from '@angular/core';
+import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SharedModule } from '../shared/shared.module';
 import { LandingPageRoutingModule } from './landing-page.routing.module';
 
-import {HomePageComponent} from './home-page/home-page.component';
-import {LoginComponent} from './login/login.component';
-import {FeatureComponent} from './common/feature/feature.component';
-import {PulseBallComponent} from './common/pulse-ball/pulse-ball.component';
-import {GlowTravellerComponent} from './common/glow-traveller/glow-traveller.component';
-import {LandingPageHeaderComponent} from './common/landing-page-header/landing-page-header.component';
-import {LandingDiamondComponent} from './common/landing-diamond/landing-diamond.component';
-import {TopGlowTravellerComponent} from './common/top-glow-traveller/top-glow-traveller.component';
+import { HomePageComponent } from './home-page/home-page.component';
+import { LoginComponent } from './login/login.component';
+import { FeatureComponent } from './common/feature/feature.component';
+import { PulseBallComponent } from './common/pulse-ball/pulse-ball.component';
+import { GlowTravellerComponent } from './common/glow-traveller/glow-traveller.component';
+import { LandingPageHeaderComponent } from './common/landing-page-header/landing-page-header.component';
+import { LandingDiamondComponent } from './common/landing-diamond/landing-diamond.component';
+import { TopGlowTravellerComponent } from './common/top-glow-traveller/top-glow-traveller.component';
+import { AwsCognitoService } from '../core/services/aws-cognito.service';
 
 
 
@@ -42,13 +43,16 @@ import {TopGlowTravellerComponent} from './common/top-glow-traveller/top-glow-tr
     LandingPageHeaderComponent,
     LandingDiamondComponent,
     TopGlowTravellerComponent
+  ],
+  providers: [
+    AwsCognitoService
   ]
 })
 export class LandingPageModule {
-  constructor (@Optional() @SkipSelf() parentModule: LandingPageModule) {
+  constructor(@Optional() @SkipSelf() parentModule: LandingPageModule) {
     if (parentModule) {
       throw new Error(
-          'LandingPageModule is already loaded. Import it in the AppModule only');
+        'LandingPageModule is already loaded. Import it in the AppModule only');
     }
   }
 }

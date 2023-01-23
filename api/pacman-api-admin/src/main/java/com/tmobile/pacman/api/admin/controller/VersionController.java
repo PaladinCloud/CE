@@ -17,7 +17,8 @@ package com.tmobile.pacman.api.admin.controller;
 
 @Api(value = "/version", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
+
 @RequestMapping("/version")
 public class VersionController {
 

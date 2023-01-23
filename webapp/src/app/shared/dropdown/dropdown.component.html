@@ -2,7 +2,7 @@
     <mat-form-field>
         <mat-label>{{placeholder}}</mat-label>
         <mat-select [disabled]="isDisabled" disableOptionCentering (closed)="onClose()" [required]="required"
-            (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption">
+            (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption" [disabled]="isAccessAllowed">
             <mat-select-trigger>
                 <div [class.optionImage]="optionImage">
                     <img *ngIf="optionImage" src="{{selectedOptionImage}}">

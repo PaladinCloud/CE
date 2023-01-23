@@ -18,7 +18,13 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
+security:
+  oauth2:
+    resource:
+      jwk:
+        key-set-uri: https://cognito-idp.${AWS_USERPOOL_REGION}.amazonaws.com/${USERPOOL_ID}/.well-known/jwks.json
+      client:
+        clientId: ${CLIENT_ID}
 logging: 
    level:
      com.tmobile: DEBUG
