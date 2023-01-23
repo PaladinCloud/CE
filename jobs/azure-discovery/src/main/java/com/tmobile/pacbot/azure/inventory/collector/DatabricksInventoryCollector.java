@@ -20,6 +20,8 @@ import com.tmobile.pacbot.azure.inventory.vo.DatabricksVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
+import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroupNameFromId;
+
 @Component
 public class DatabricksInventoryCollector {
 	
@@ -45,11 +47,7 @@ public class DatabricksInventoryCollector {
 				JsonObject properties = databricksObject.getAsJsonObject("properties");
 				JsonObject sku = databricksObject.getAsJsonObject("sku");
 				databricksVH.setId(databricksObject.get("id").getAsString());
-				String id =databricksVH.getId();
-				int beginningIndex=id.indexOf("resourceGroups")+15;
-				String resourceGroupName=(databricksVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
-				log.debug("Resource group name: {}",resourceGroupName);
-				databricksVH.setResourceGroupName(resourceGroupName);
+				databricksVH.setResourceGroupName(getResourceGroupNameFromId(databricksVH.getId()));
 				databricksVH.setLocation(databricksObject.get("location").getAsString());
 				databricksVH.setRegion(databricksObject.get("location").getAsString());
 				databricksVH.setName(databricksObject.get("name").getAsString());

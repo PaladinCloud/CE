@@ -21,6 +21,8 @@ import com.tmobile.pacbot.azure.inventory.vo.BatchAccountVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
+import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroupNameFromId;
+
 @Component
 public class BatchAccountInventoryCollector {
 	
@@ -48,10 +50,7 @@ public class BatchAccountInventoryCollector {
 					batchAccountVH.setSubscription(subscription.getSubscriptionId());
 					batchAccountVH.setSubscriptionName(subscription.getSubscriptionName());
 					batchAccountVH.setId(batchAccountObject.get("id").getAsString());
-					String id =batchAccountVH.getId();
-					int beginningIndex=id.indexOf("resourceGroups")+15;
-					String resourceGroupName=(batchAccountVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
-					batchAccountVH.setResourceGroupName(resourceGroupName);
+					batchAccountVH.setResourceGroupName(getResourceGroupNameFromId(batchAccountVH.getId()));
 					batchAccountVH.setLocation(batchAccountObject.get("location").getAsString());
 					batchAccountVH.setRegion(batchAccountObject.get("location").getAsString());
 					batchAccountVH.setName(batchAccountObject.get("name").getAsString());
