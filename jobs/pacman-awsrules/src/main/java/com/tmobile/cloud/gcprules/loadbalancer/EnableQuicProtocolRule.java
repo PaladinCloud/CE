@@ -91,8 +91,8 @@ public class EnableQuicProtocolRule extends BasePolicy {
     private boolean checkQuicEnabled(String vmEsURL, Map<String, Object> mustFilter) throws Exception {
         logger.debug("========checkQuicNegotiationEnabledForHttpsTargetProxies  started=========");
         boolean validationResult = true;
+        JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
         try{
-            JsonArray hitsJsonArray = GCPUtils.getHitsArrayFromEs(vmEsURL, mustFilter);
             if (hitsJsonArray.size() > 0) {
                 logger.debug("========checkQuicNegotiationEnabledForHttpsTargetProxies hit array=========");
                 JsonObject loadBalancer = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
@@ -108,7 +108,7 @@ public class EnableQuicProtocolRule extends BasePolicy {
                 }
             }
         }catch (Exception e){
-            logger.error("Error occurred in checkQuicEnabled ::"+e);
+            logger.error("rror occurred in checkQuicNegotiationEnabledForHttpsTargetProxies: {}", hitsJsonArray, e);
             validationResult = false;
         }
         return validationResult;

@@ -1,7 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 
 import java.util.List;
 
