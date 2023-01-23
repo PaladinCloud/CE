@@ -1938,5 +1938,25 @@
     "modifiedDate": "2022-11-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "policyId": "Configure_custom_ssl_for_https",
+    "policyUUID": "Configure_custom_ssl_for_https",
+    "policyName": "Configure_custom_ssl_for_https",
+    "targetType": "gcploadbalancer",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"configure-custom-ssl-for-https\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Configure_custom_ssl_for_https\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gcploadbalancer\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Configure_custom_ssl_for_https\",\"policyType\":\"ManagePolicy\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Configure_custom_ssl_for_https",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Configure custom ssl for https",
+    "createdDate": "2023-01-23",
+    "modifiedDate": "2023-01-23",
+    "severity": "medium",
+    "category": "security"
   }
 ]
