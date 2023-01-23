@@ -54,7 +54,8 @@ public class IngressSettingRuleTest {
                 .thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(ingressSettingRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
+        Map<String, String> map = getMapString("r_123 ");
+        assertThat(ingressSettingRule.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
@@ -129,7 +130,8 @@ public class IngressSettingRuleTest {
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
-        assertThatThrownBy(() -> ingressSettingRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+        Map<String, String> map = getMapString("r_123 ");
+        assertThatThrownBy(() -> ingressSettingRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }
 
 
