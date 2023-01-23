@@ -128,8 +128,7 @@ public class IngressSettingRuleTest {
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureHitsJsonArrayForIngressSettingRule());
 
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
-                false);
+        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(false);
         Map<String, String> map = getMapString("r_123 ");
         assertThatThrownBy(() -> ingressSettingRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }

@@ -70,7 +70,6 @@ public class HttpTriggers extends BasePolicy {
                             annotation);
                 }
             } catch (Exception exception) {
-                exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
