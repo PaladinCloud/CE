@@ -20,6 +20,8 @@ import com.tmobile.pacbot.azure.inventory.vo.PostgreSQLServerVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
+import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroupNameFromId;
+
 @Component
 public class PostgreSQLInventoryCollector {
 	
@@ -57,11 +59,7 @@ public class PostgreSQLInventoryCollector {
 					HashMap<String, String> tagsMap = new Gson().fromJson(tags.toString(), HashMap.class);
 					postgreSQLServerVH.setTags(tagsMap);
 				}
-				String id =postgreSQLServerVH.getId();
-				int beginningIndex=id.indexOf("resourceGroups")+15;
-				String resourceGroupName=(postgreSQLServerVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
-				log.debug("Resource group name: {}",resourceGroupName);
-				postgreSQLServerVH.setResourceGroupName(resourceGroupName);
+				postgreSQLServerVH.setResourceGroupName(getResourceGroupNameFromId(postgreSQLServerVH.getId()));
 				if (sku!=null) {
 					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
 					postgreSQLServerVH.setSkuMap(skuMap);

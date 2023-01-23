@@ -24,6 +24,8 @@ import com.tmobile.pacbot.azure.inventory.vo.SubnetVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
+import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroupNameFromId;
+
 @Component
 public class SubnetInventoryCollector {
 	
@@ -53,10 +55,7 @@ public class SubnetInventoryCollector {
 					JsonObject subnetObject = subnetElement.getAsJsonObject();
 					JsonObject properties = subnetObject.getAsJsonObject("properties");
 					subnetVH.setId(subnetObject.get("id").getAsString());
-					String id =subnetVH.getId();
-					int beginningIndex=subnetVH.getId().indexOf("resourceGroups")+15;
-					String resourceGroupName=(subnetVH.getId()).substring(beginningIndex,id.indexOf('/',beginningIndex+2));
-					subnetVH.setResourceGroupName(resourceGroupName);
+					subnetVH.setResourceGroupName(getResourceGroupNameFromId(subnetVH.getId()));
 					subnetVH.setName(subnetObject.get("name").getAsString());
 					subnetVH.setType(subnetObject.get("type").getAsString());
 					subnetVH.setEtag(subnetObject.get("etag").getAsString());
