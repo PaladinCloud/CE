@@ -1,5 +1,5 @@
 
-package com.tmobile.pacman.api.auth.common;
+package com.tmobile.pacman.api.commons.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
