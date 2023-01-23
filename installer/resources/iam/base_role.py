@@ -266,3 +266,23 @@ class PaladinCloudReadOnlyAccessRolePolicy(iam.IAMRolePolicyResource):
 class PaladinCloudReadOnlyAccessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = PaladinCloudReadOnlyAccessRolePolicy.get_output_attr('arn')
+
+
+class PaladinCognitoUserPoolFullAccessDocument(iam.IAMPolicyDocumentData):
+	statement = [	 
+        	{
+            	"effect": "Allow",
+            	"actions": ["cognito-idp:*"],
+            	"resources": ["*"]
+        	}
+	]
+class PaladinCognitoUserPoolFullAccessPolicy(iam.IAMRolePolicyResource):
+    name = "PaladinCognitoUserPoolFullAccess"
+    path = '/'
+    policy = PaladinCognitoUserPoolFullAccessDocument.get_output_attr('json')
+
+
+
+class PaladinCognitoUserPoolFullAccessAttach(iam.IAMRolePolicyAttachmentResource):
+    role = BaseRole.get_output_attr('name')
+    policy_arn = PaladinCognitoUserPoolFullAccessPolicy.get_output_attr('arn')

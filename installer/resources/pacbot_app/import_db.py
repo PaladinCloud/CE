@@ -20,6 +20,7 @@ from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 from shutil import copy2
 import os
 import json
+from resources.cognito.userpool import Appcredentials
 
 
 class ReplaceSQLPlaceHolder(NullResource):
@@ -27,9 +28,9 @@ class ReplaceSQLPlaceHolder(NullResource):
     azure_ad_dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Azure_AD_With_Values.sql')
     policy_dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Policy_With_Values.sql')
     cognito_query_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Cognito.sql')
-    triggers = {'version': "1.1"}
+    triggers = triggers = {'id' : "${timestamp()}"}
 
-    DEPENDS_ON = [MySQLDatabase, ESDomain]
+    DEPENDS_ON = [MySQLDatabase, ESDomain, Appcredentials]
 
     def prepare_azure_tenants_credentias(self):
         tenants = Settings.get('AZURE_TENANTS', [])
@@ -103,6 +104,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_RULE_LAMBDA_REGION': AwsRegion.get_output_attr('name'),
                         'ENV_RULE_FUNCTION_NAME': RuleEngineLambdaFunction.get_input_attr('function_name'),
                         'ENV_RULE_FUNCTION_ARN': RuleEngineLambdaFunction.get_output_attr('arn'),
+                        'ENV_COGNITO_INFO' : Appcredentials.get_cognito_info(),
                         'ENV_CLOUD_INSIGHTS_TOKEN_URL': "http://localhost",
                         'ENV_CLOUD_INSIGHTS_COST_URL': "http://localhost",
                         'ENV_SVC_CORP_USER_ID': "testid",
@@ -159,6 +161,8 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_CURRENT_RELEASE': str(Settings.CURRENT_RELEASE),
                         'EVENT_BRIDGE_PRIFIX' : Settings.RESOURCE_NAME_PREFIX,
                         'ENV_MANDATORY_TAGS': str(Settings.MANDATORY_TAGS)
+                        'ENV_API_CLIENT_ID' : str(Appcredentials.get_output_attr('id')),
+                        'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret'))
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }
@@ -180,7 +184,7 @@ class ReplaceSQLPlaceHolder(NullResource):
 
 
 class ImportDbSql(NullResource):
-    triggers = {'version': "1.1"}
+    triggers = {'id' : "${timestamp()}"}
 
     DEPENDS_ON = [MySQLDatabase, ReplaceSQLPlaceHolder]
 
