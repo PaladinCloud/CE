@@ -15,43 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.service;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
 import com.amazonaws.auth.BasicSessionCredentials;
-import com.tmobile.pacman.api.asset.auth.CredentialProvider;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.tmobile.pacman.api.asset.AssetConstants;
+import com.tmobile.pacman.api.asset.auth.CredentialProvider;
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
 import com.tmobile.pacman.api.asset.repository.AssetRepository;
@@ -61,7 +29,14 @@ import com.tmobile.pacman.api.commons.exception.NoDataFoundException;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -69,6 +44,13 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Implemented class for AssetService and all its method
@@ -289,7 +271,7 @@ public class AssetServiceImpl implements AssetService {
             LOGGER.info("Default asset group in cognito updated to {}",defaultUserAssetGroup.getDefaultAssetGroup());
         }
         int response = repository.saveOrUpdateAssetGroup(defaultUserAssetGroup);
-        return response > 0 ? true : false;
+        return response > 0;
     }
 
     @Override
@@ -1180,7 +1162,7 @@ public class AssetServiceImpl implements AssetService {
                     (AdminUpdateUserAttributesRequest.builder().userPoolId(poolId).username(userName)
                             .userAttributes(AttributeType.builder().name("custom:defaultAssetGroup")
                                     .value(assetGroupValue).build()).build());
-            LOGGER.info("Update response :{}",response.toString());
+            LOGGER.info("Update response :{}",response);
         } catch (Exception e) {
             LOGGER.error("Error in updating user default asset group",e);
         }

@@ -15,15 +15,14 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.commons.service;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.tmobile.pacman.api.commons.config.RoleMappingLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**

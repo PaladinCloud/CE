@@ -10,7 +10,6 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +19,7 @@ public class CredentialProvider {
 	String baseRegion= System.getenv("REGION");
 	String roleName= System.getenv("PALADINCLOUD_RO");
 
-	private static boolean devMode = System.getProperty("PIC_DEV_MODE")==null?false:true;
+	private static boolean devMode = System.getProperty("PIC_DEV_MODE")!=null;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

@@ -69,7 +69,7 @@ public class CognitoUserService {
                     (AdminUpdateUserAttributesRequest.builder().userPoolId(userPoolId).username(userName)
                             .userAttributes(AttributeType.builder().name(customAttributeName)
                                     .value(assetGroupValue).build()).build());
-            logger.info("Response:{}",updateResponse.toString());
+            logger.info("Response:{}",updateResponse);
         } catch (Exception e) {
             logger.error("Error in updating default asset group",e);
             return null;
@@ -83,7 +83,7 @@ public class CognitoUserService {
                     groupName(groupName).build());
             return group.group();
         } catch (AwsServiceException | SdkClientException e) {
-            logger.error("Error in fetching group "+e);
+            logger.error("Error in fetching group :{}",e.getMessage());
         }
         return null;
     }
@@ -103,10 +103,11 @@ public class CognitoUserService {
                 //add user to group
                 AdminAddUserToGroupResponse addUserResponse = client.adminAddUserToGroup(AdminAddUserToGroupRequest.builder().userPoolId(userPoolId)
                         .username(userName).groupName(groupName).build());
+                logger.info("Add user resposne: {}",addUserResponse);
                 logger.info("User:{} added to the group:{}",userName,groupName);
             }
         } catch (AwsServiceException |  SdkClientException e) {
-            logger.error("Error in updating user group membership"+e);
+            logger.error("Error in updating user group membership:{}",e.getMessage());
         }
     }
 

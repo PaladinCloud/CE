@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -65,16 +65,21 @@ import java.util.Map;
  * @author 	NidhishKrishnan
  * @purpose ApiService Service
  * @since	November 10, 2018
- * @version	1.0 
+ * @version	1.0
 **/
 @Service
 public class ApiService implements Constants {
 
+	public static final String UTF_8 = "UTF-8";
+	public static final String UNEXPECTED_ERROR_OCCURED = "Unexpected Error Occured!!!";
+	public static final String SUCCESS = "success";
+	public static final String MESSAGE = "message";
+	public static final String EXCEPTION_IN_LOGIN_PROXY = "Exception in loginProxy: {}";
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
     private DataSource dataSource;
-	
+
 	@Autowired
 	private ObjectMapper mapper;
 
@@ -86,7 +91,7 @@ public class ApiService implements Constants {
 
 	@Value("${pacman.api.oauth2.client-id}")
 	private String oauth2ClientId;
-	
+
 	@Value("${pacman.api.oauth2.client-secret}")
 	private String oauth2ClientSecret;
 
@@ -101,11 +106,11 @@ public class ApiService implements Constants {
 	public Map<String, Object> loginProxy(final UserClientCredentials credentials) {
 		String requestBodyUrl = StringUtils.EMPTY;
 		try {
-			requestBodyUrl = "grant_type=password&username=".concat(URLEncoder.encode(credentials.getUsername(), "UTF-8")).concat("&password=".concat(URLEncoder.encode(credentials.getPassword(), "UTF-8")));
+			requestBodyUrl = "grant_type=password&username=".concat(URLEncoder.encode(credentials.getUsername(), UTF_8)).concat("&password=".concat(URLEncoder.encode(credentials.getPassword(), UTF_8)));
 			return generateAccessToken(requestBodyUrl, credentials.getClientId());
 		} catch (UnsupportedEncodingException exception) {
-			log.error("Exception in loginProxy: " + exception.getMessage());
-			return response(false, "Unexpected Error Occured!!!");
+			log.error(EXCEPTION_IN_LOGIN_PROXY, exception.getMessage());
+			return response(false, UNEXPECTED_ERROR_OCCURED);
 		}
 	}
 
@@ -113,14 +118,14 @@ public class ApiService implements Constants {
 		String requestBodyUrl = StringUtils.EMPTY;
 		String clientId=System.getenv("CLIENT_ID");
 		try {
-        	requestBodyUrl = "?grant_type=refresh_token&clientId=".concat(clientId).concat("&refresh_token=").concat(URLEncoder.encode(refreshToken, "UTF-8"));
+        	requestBodyUrl = "?grant_type=refresh_token&clientId=".concat(clientId).concat("&refresh_token=").concat(URLEncoder.encode(refreshToken, UTF_8));
 			return generateAccessToken(requestBodyUrl, clientId);
 		} catch (UnsupportedEncodingException exception) {
-			log.error("Exception in loginProxy: " + exception.getMessage());
-			return response(false, "Unexpected Error Occured!!!");
+			log.error(EXCEPTION_IN_LOGIN_PROXY, exception.getMessage());
+			return response(false, UNEXPECTED_ERROR_OCCURED);
 		}
 	}
-	
+
 	private Map<String, Object> generateAccessToken(String requestBodyUrl, String clientId) {
 		Map<String, Object> accessTokenDetails = Maps.newHashMap();
 		String clientSecret=System.getenv("CLIENT_SECRET");
@@ -134,29 +139,29 @@ public class ApiService implements Constants {
 				byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
 				clientCredentials = "Basic " + new String(authEncBytes);
 			} catch (Exception exception) {
-				log.error("Exception in getClientAuthorization: " + exception.getMessage());
+				log.error("Exception in getClientAuthorization: {}", exception.getMessage());
 				return response(false, "Client Validation Failed!!!");
 			}
 
 			headers.put(HttpHeaders.AUTHORIZATION, clientCredentials);
 			String accessToken = doHttpPost(url+requestBodyUrl,"", headers);
 			accessTokenDetails = mapper.readValue(accessToken, new TypeReference<HashMap<String, Object>>() {});
-			
+
 			if (accessTokenDetails.containsKey("error_description")) {
 				return response(false, accessTokenDetails.get("error_description").toString());
 			} else {
-				accessTokenDetails.put("success", true);
-				accessTokenDetails.put("message", "Authentication Successfull");
+				accessTokenDetails.put(SUCCESS, true);
+				accessTokenDetails.put(MESSAGE, "Authentication Successfull");
 			}
 		} catch (Exception exception) {
-			log.error("Exception in loginProxy: " + exception.getMessage());
-			return response(false, "Unexpected Error Occured!!!");
+			log.error(EXCEPTION_IN_LOGIN_PROXY,  exception.getMessage());
+			return response(false, UNEXPECTED_ERROR_OCCURED);
 		}
 		return accessTokenDetails;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param url
 	 * @param requestBody
 	 * @param headers
@@ -175,13 +180,13 @@ public class ApiService implements Constants {
 		     HttpResponse httpresponse = client.execute(httppost);
 			 return EntityUtils.toString(httpresponse.getEntity());
 		} catch (org.apache.http.ParseException parseException) {
-			log.error("ParseException : "+parseException.getMessage());
+			log.error("ParseException : {}",parseException.getMessage());
 		} catch (IOException ioException) {
-			log.error("IOException : "+ioException.getMessage());
+			log.error("IOException : {}",ioException.getMessage());
 		}
 		return null;
 	}
-	
+
 	public String doHttpGet(String url, Map<String, String> headers) {
 	  try {
 			 HttpClient client = HttpClientBuilder.create().build();
@@ -194,17 +199,17 @@ public class ApiService implements Constants {
 		    	 return EntityUtils.toString(httpresponse.getEntity());
 		     }
 		} catch (org.apache.http.ParseException parseException) {
-			log.error("ParseException : "+parseException.getMessage());
+			log.error("ParseException : {}",parseException.getMessage());
 		} catch (IOException ioException) {
-			log.error("IOException : "+ioException.getMessage());
+			log.error("IOException : {}",ioException.getMessage());
 		}
 		return null;
 	}
 
 	public Map<String, Object> response(final boolean success, final String message) {
 		Map<String, Object> response = Maps.newHashMap();
-		response.put("success", success);
-		response.put("message", message);
+		response.put(SUCCESS, success);
+		response.put(MESSAGE, message);
 		return response;
 	}
 
@@ -248,7 +253,7 @@ public class ApiService implements Constants {
 				response.put("id_token", authenticationResult.idToken());
 				response.put("access_token", accessToken);
 				response.put("refresh_token", authenticationResult.refreshToken());
-				response.put("success", true);
+				response.put(SUCCESS, true);
 				response.put("token_type", authenticationResult.tokenType());
 				response.put("expires_in", authenticationResult.expiresIn());
 				Map<String, Object> userInfoMap = cognitoUserService.getUserInfo(identityProviderClient, userPoolId, credentials.getUsername());
@@ -258,8 +263,8 @@ public class ApiService implements Constants {
 				log.debug("User is not authentication. Challenge {}", result.challengeName() );
 			}
 		} catch (CognitoIdentityProviderException ex){
-			response.put("success",false);
-			response.put("message",ex.getMessage());
+			response.put(SUCCESS,false);
+			response.put(MESSAGE,ex.getMessage());
 			response.put("statusCode",ex.statusCode());
 			response.put("errorCode",ex.awsErrorDetails().errorCode());
 			response.put("errorDetail",ex.awsErrorDetails().errorMessage());

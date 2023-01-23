@@ -15,8 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.auth.config;
 
-import javax.sql.DataSource;
-
+import com.tmobile.pacman.api.auth.services.CustomUserDetailsService;
 import com.tmobile.pacman.api.commons.config.CognitoAccessTokenConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
@@ -35,11 +34,9 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeServic
 import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
-
-import com.tmobile.pacman.api.auth.services.CustomUserDetailsService;
 import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 
+import javax.sql.DataSource;
 import java.util.Collections;
 
 /**

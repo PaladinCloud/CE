@@ -38,6 +38,7 @@ public class RoleMappingLoader {
             "where r.role_id= rp.role_id\n" +
             "and rp.permission_id=p.permission_id";
     public RoleMappingLoader() {
+        //default constructor
     }
     @PostConstruct
     public void runAfterObjectCreated() {

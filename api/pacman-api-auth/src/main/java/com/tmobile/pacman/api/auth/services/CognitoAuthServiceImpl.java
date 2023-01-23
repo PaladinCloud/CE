@@ -3,7 +3,6 @@ package com.tmobile.pacman.api.auth.services;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.common.collect.Maps;
 import com.tmobile.pacman.api.auth.common.CredentialProvider;
@@ -33,6 +32,8 @@ import java.util.Map;
 		havingValue = "cognito")
 public class CognitoAuthServiceImpl implements AuthService {
 
+	public static final String SUCCESS = "success";
+	public static final String CUSTOM_DEFAULT_ASSET_GROUP = "custom:defaultAssetGroup";
 	@Autowired
 	private CustomUserService userService;
 
@@ -54,16 +55,17 @@ public class CognitoAuthServiceImpl implements AuthService {
 
 	@Override
 	public Map<String, Object> doLogin(UserLoginCredentials credentials) {
-		return null;
+		return new HashMap<>();
 	}
 
 	@Override
 	public void logout(Principal principal) {
+		//logout is not implemented, logout is done through the cognito logout url
 	}
 
 	@Override
 	public Map<String, Object> loginProxy(UserClientCredentials credentials) {
-		return null;
+		return new HashMap<>();
 	}
 
 	@Override
@@ -74,7 +76,7 @@ public class CognitoAuthServiceImpl implements AuthService {
 	public Map<String, Object> authorizeUser(String idToken) {
 		if(activeAuth.equalsIgnoreCase("cognito")) {
 			Map<String, Object> userDetails = validateIdTokenAndGetUserDetails(idToken);
-			if(!userDetails.isEmpty() && Boolean.parseBoolean(String.valueOf(userDetails.get("success")))) {
+			if(!userDetails.isEmpty() && Boolean.parseBoolean(String.valueOf(userDetails.get(SUCCESS)))) {
 				return userDetails;
 			} else {
 				return apiService.response(false, String.valueOf(userDetails.get("message")));
@@ -88,12 +90,10 @@ public class CognitoAuthServiceImpl implements AuthService {
 		Map<String, Object> userDetails = Maps.newHashMap();
 		try {
 			DecodedJWT jwt = JWT.decode(idToken);
-			//check if token encryption is needed
-			//DecodedJWT jwt = verifyToken(newPublicKey, idToken);
 			userDetails= getUserDetails(jwt);
 		}catch (JWTDecodeException exception) {
-			exception.printStackTrace();
-			userDetails.put("success", false);
+			logger.error(exception.getMessage());
+			userDetails.put(SUCCESS, false);
 			userDetails.put("message", "Exception in Id Token verification");
 		}
 		return userDetails;
@@ -113,23 +113,22 @@ public class CognitoAuthServiceImpl implements AuthService {
 								.create(credentials.getAWSAccessKeyId(), credentials.getAWSSecretKey(), credentials.getSessionToken()))).build();
 
 		String userName = jwt.getClaim("cognito:username").asString().toLowerCase();
-		Claim claimTenantId = jwt.getClaim("custom:tenantId");
-		String tenantId = claimTenantId.asString() != null ? claimTenantId.asString().toLowerCase() : null;
 
 		Map<String, Object> userDetails = new HashMap<>();
 		Map<String, Object> userInfo = cognitoUserService.getUserInfo(identityProviderClient, userPoolId, userName);
 
 
-		jwt.getClaims().entrySet().forEach(entry -> {
-			logger.info("Entry: {} Value: {}", entry.getKey(), entry.getValue().asString());
-		});
+		jwt.getClaims().entrySet().forEach(entry ->
+			logger.info("Entry: {} Value: {}", entry.getKey(), entry.getValue().asString())
+		);
 
-		if (StringUtils.isEmpty((String) userInfo.get("custom:defaultAssetGroup"))) {
+		String defaultAgValue = (String) userInfo.get(CUSTOM_DEFAULT_ASSET_GROUP);
+		if (StringUtils.isEmpty(defaultAgValue)) {
 			logger.info("User default asset group is not set. Setting aws as default asset group for user :{} ", userName);
 			userInfo.put("defaultAssetGroup", cognitoUserService.updateDefaultAssetGroup(identityProviderClient,
-					userPoolId, userName, "custom:defaultAssetGroup", "aws"));
+					userPoolId, userName, CUSTOM_DEFAULT_ASSET_GROUP, "aws"));
 		} else {
-			userInfo.put("defaultAssetGroup", (String) userInfo.get("custom:defaultAssetGroup"));
+			userInfo.put("defaultAssetGroup", defaultAgValue);
 		}
 		GroupType defaultRole = cognitoUserService.getGroup(identityProviderClient, userPoolId, DEFAULT_GROUP);
 		if (defaultRole == null) {
@@ -140,7 +139,7 @@ public class CognitoAuthServiceImpl implements AuthService {
 		cognitoUserService.assignRole(identityProviderClient, userPoolId, userName, DEFAULT_GROUP);
 		userInfo.put("userRoles", cognitoUserService.getUserRoles(identityProviderClient, userPoolId, userName));
 		userDetails.put("userInfo", userInfo);
-		userDetails.put("success", true);
+		userDetails.put(SUCCESS, true);
 		return userDetails;
 	}
 

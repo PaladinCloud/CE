@@ -12,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
@@ -33,7 +30,7 @@ public class RoleMappingController {
     private RoleMappingService roleMappingService;
 
     @ApiOperation(httpMethod = "GET", value = "API to get the permission associated with given roles", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getRoleMapping(@ApiParam(value = "provide valid roles", required = true) @RequestParam("roles") String roles) {
         try {
             return ResponseUtils.buildSucessResponse(roleMappingService.getRoleCapabilityMapping(roles));

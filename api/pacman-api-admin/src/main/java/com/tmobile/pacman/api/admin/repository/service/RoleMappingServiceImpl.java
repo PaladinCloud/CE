@@ -34,7 +34,7 @@ public class RoleMappingServiceImpl implements RoleMappingService {
 	@Override
 	public RoleMappingResponse getRoleCapabilityMapping(String roles) throws Exception {
 		if(roles.contains(",")){
-			roles=Arrays.stream(roles.split(",")).map(role -> "'" + role.toString().trim() + "'")
+			roles=Arrays.stream(roles.split(",")).map(role -> "'" + role.trim() + "'")
 					.collect(Collectors.joining(","));
 		}else{
 			roles="'"+roles+"'";
