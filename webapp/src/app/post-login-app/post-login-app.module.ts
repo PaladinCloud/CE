@@ -59,6 +59,7 @@ import { MatIconModule } from "@angular/material/icon";
 import {MatInputModule} from '@angular/material/input';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { FetchResourcesService } from "../pacman-features/services/fetch-resources.service";
+import { TokenResolverService } from "../resolver/token-resolver.service";
 
 @NgModule({
   imports: [
@@ -110,7 +111,8 @@ import { FetchResourcesService } from "../pacman-features/services/fetch-resourc
     CopyElementService,
     HelpObservableService,
     DownloadService,
-    FetchResourcesService
+    FetchResourcesService,
+    TokenResolverService
   ],
 })
 export class PostLoginAppModule {

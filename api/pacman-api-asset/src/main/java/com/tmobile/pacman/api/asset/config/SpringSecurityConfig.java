@@ -15,8 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.config;
 
+import com.tmobile.pacman.api.commons.config.CognitoAccessTokenConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -28,12 +31,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+
+import java.util.Collections;
 
 /**
  * Sample SpringSecurty Config to Support / in "@pathparam". Http security is
@@ -50,6 +57,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     
 	@Value("${swagger.auth.whitelist:}")
 	private String[] AUTH_WHITELIST;
+
+	@Autowired
+	private ResourceServerProperties resource;
 	/**
 	 * Constructor disables the default security settings
 	 **/
@@ -96,5 +106,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		.and()
         .csrf()
         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+	}
+	@Bean
+	public TokenStore jwkTokenStore() {
+		return new JwkTokenStore(
+				Collections.singletonList(resource.getJwk().getKeySetUri()),
+				new CognitoAccessTokenConverter(),
+				null);
 	}
 }

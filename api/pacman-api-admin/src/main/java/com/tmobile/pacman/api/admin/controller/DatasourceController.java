@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @Api(value = "/datasource", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'rule-severity-management', 'rule-admin', 'target-type-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/datasource")
 public class DatasourceController {
 

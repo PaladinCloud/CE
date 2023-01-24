@@ -13,6 +13,7 @@
  */
 
 export const AZURE_SSO = 'azuresso';
+export const COGNITO = 'cognito';
 const DB = 'db';
 const LDAP = 'ldap';
 
@@ -35,10 +36,22 @@ export const CONFIGURATIONS = {
   },
   optional: {
     auth: {
-      AUTH_TYPE: DB, // AZURE_SSO | DB | LDAP
+      AUTH_TYPE: COGNITO, // AZURE_SSO | DB | LDAP
       adConfig: {
         tenant: '', // Expected values: Value expected if 'AD_AUTHENTICATION' is true
         clientId: '' // Expected values: Value expected if 'AD_AUTHENTICATION' is true
+      },
+      cognitoConfig: {
+        sso_api_username: '',
+        sso_api_pwd: '',
+
+        loginURL: '',
+
+        redirectURL: '',
+
+        cognitoTokenURL: '',
+
+        logout: ''
       }
     },
     pacmanIssue: {

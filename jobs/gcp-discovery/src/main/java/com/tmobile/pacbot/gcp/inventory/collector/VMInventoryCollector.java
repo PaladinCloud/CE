@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class VMInventoryCollector {
@@ -57,7 +58,7 @@ public class VMInventoryCollector {
                         VirtualMachineVH virtualMachineVH = new VirtualMachineVH();
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
                         virtualMachineVH.setMachineType(instance.getMachineType());
-                        virtualMachineVH.setTags(instance.getLabelsMap());
+                        virtualMachineVH.setTags(updateApplicationTag(instance.getLabelsMap()));
                         virtualMachineVH.setProjectName(project.getProjectName());
                         virtualMachineVH.setProjectId(project.getProjectId());
                         virtualMachineVH.setName(instance.getName());
@@ -164,6 +165,7 @@ public class VMInventoryCollector {
         // convert AttachedDisk into VMDiskVH
         disksList.forEach(disk -> {
             VMDiskVH diskVH = new VMDiskVH();
+            diskVH.setProjectId(vm.getProjectId());
             diskVH.setId(String.valueOf(disk.getIndex()));
             diskVH.setName(disk.getDeviceName());
             diskVH.setSizeInGB(disk.getDiskSizeGb());
@@ -174,5 +176,18 @@ public class VMInventoryCollector {
             diskVHS.add(diskVH);
         });
         vm.setDisks(diskVHS);
+    }
+    private Map<String, String> updateApplicationTag(Map<String, String> labelsMap){
+        if(labelsMap==null || labelsMap.isEmpty()){
+            return labelsMap;
+        }
+        return labelsMap.keySet().stream()
+                .collect(Collectors.toMap(key -> {
+                    if(key.equals("application")){
+                        return "Application";
+                    }else{
+                        return key;
+                    }
+                },  labelsMap::get));
     }
 }

@@ -30,6 +30,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
 import { ErrorHandlingService } from './shared/services/error-handling.service';
 import { FetchResourcesService } from './pacman-features/services/fetch-resources.service';
+import { TokenResolverService } from './resolver/token-resolver.service';
 
 @NgModule({
     declarations: [
@@ -49,7 +50,8 @@ import { FetchResourcesService } from './pacman-features/services/fetch-resource
         PostLoginAppModule,
         CoreModule
     ],
-    providers: [FetchResourcesService],
+    providers: [FetchResourcesService,
+        TokenResolverService],
     bootstrap: [AppComponent]
 })
 

@@ -49,7 +49,7 @@ import com.tmobile.pacman.api.compliance.service.TaggingService;
  * The Class TaggingController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class TaggingController implements Constants {
 
     /** The tagging service. */

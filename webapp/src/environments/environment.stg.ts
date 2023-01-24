@@ -33,7 +33,7 @@ export const environment = {
         url: '{{baseUrl}}/auth/user/login',
         method: 'POST'
     },
-    distributionBySeverity:{
+    distributionBySeverity: {
         url: '{{baseUrl}}/compliance/v1/issues/distribution/aggregate',
         method: 'GET'
     },
@@ -163,15 +163,15 @@ export const environment = {
                 url: '{{baseUrl}}/vulnerability/v1/vulnerabilites',
                 method: 'GET'
             },
-      Tagging: {
+            Tagging: {
                 url: '{{baseUrl}}/compliance/v1/tagging',
                 method: 'GET'
             },
-      Certificates: {
+            Certificates: {
                 url: '{{baseUrl}}/compliance/v1/certificates',
                 method: 'GET'
             },
-      Patching: {
+            Patching: {
                 url: '{{baseUrl}}/compliance/v1/patching',
                 method: 'GET'
             }
@@ -297,23 +297,23 @@ export const environment = {
         url: '{{baseUrl}}/compliance/v1/noncompliancepolicy',
         method: 'POST'
     },
-    cloudNotifications : {
+    cloudNotifications: {
         url: '{{baseUrl}}/asset/v1/cloud/notifications',
         method: 'POST'
     },
-    getEventDescription : {
+    getEventDescription: {
         url: '{{baseUrl}}/asset/v1/cloud/notifications/info',
         method: 'GET'
     },
-    getEventDetails : {
+    getEventDetails: {
         url: '{{baseUrl}}/asset/v1/cloud/notifications/detail',
         method: 'GET'
     },
-    getAutofixDetails : {
+    getAutofixDetails: {
         url: '{{baseUrl}}/asset/v1/autofix/notifications/detail',
         method: 'POST'
     },
-    cloudNotifSummary : {
+    cloudNotifSummary: {
         url: '{{baseUrl}}/asset/v1/cloud/notifications/summary',
         method: 'GET'
     },
@@ -540,7 +540,7 @@ export const environment = {
     },
     jobDetailsById: {
         url: '{{baseUrl}}/admin/job-execution-manager/details-by-id',
-         method: 'GET'
+        method: 'GET'
     },
     allJobIdList: {
         url: '{{baseUrl}}/admin/job-execution-manager/job-ids',
@@ -690,11 +690,11 @@ export const environment = {
         url: '{{baseUrl}}/admin/roles/list',
         method: 'GET'
     },
-    createRole : {
+    createRole: {
         url: '{{baseUrl}}/admin/roles/create',
         method: 'POST'
     },
-    updateRole : {
+    updateRole: {
         url: '{{baseUrl}}/admin/roles/update',
         method: 'POST'
     },
@@ -706,11 +706,11 @@ export const environment = {
         url: '{{baseUrl}}/admin/users-roles/allocate',
         method: 'POST'
     },
-    configureStickyException : {
+    configureStickyException: {
         url: '{{baseUrl}}/admin/asset-group-exception/configure',
         method: 'POST'
     },
-    deleteStickyException : {
+    deleteStickyException: {
         url: '{{baseUrl}}/admin/asset-group-exception/delete',
         method: 'POST'
     },
@@ -754,11 +754,11 @@ export const environment = {
         url: '{{baseUrl}}/compliance/v1/tagging/taggingByApplication',
         method: 'GET'
     },
-    PullReqLineTrend : {
+    PullReqLineTrend: {
         url: '{{baseUrl}}/devstandards/v1/pullrequests/asset/bystates',
         method: 'POST'
     },
-    PullReqAge : {
+    PullReqAge: {
         url: '{{baseUrl}}/devstandards/v1/pullrequests/assets/openstate',
         method: 'POST'
     },
@@ -774,35 +774,35 @@ export const environment = {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/distribution-vulntype',
         method: 'GET'
     },
-    remediationTable : {
+    remediationTable: {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/remediations/summary',
         method: 'GET'
     },
-    postPlugins : {
+    postPlugins: {
         url: '{{baseUrl}}/admin/plugin/v1/updateplugins',
         method: 'POST'
     },
-    performersTable : {
+    performersTable: {
         url: '{{baseUrl}}/vulnerability/v2/vulnerabilities/performers',
         method: 'GET'
     },
-    vulnReportGraph : {
-      url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/trend/open-new',
-      method: 'POST'
+    vulnReportGraph: {
+        url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/trend/open-new',
+        method: 'POST'
     },
-    getVulnTrendNotes : {
+    getVulnTrendNotes: {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/trend/notes',
         method: 'GET'
     },
-    postVulnTrendNotes : {
+    postVulnTrendNotes: {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/trend/notes',
         method: 'POST'
     },
-    azureAuthorize : {
+    azureAuthorize: {
         url: '{{baseUrl}}/auth/user/authorize',
         method: 'POST'
     },
-    deleteVulnNote : {
+    deleteVulnNote: {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/trend/notes',
         method: 'DELETE'
     },
@@ -810,35 +810,35 @@ export const environment = {
         url: '{{baseUrl}}/devstandards/v1/repositories/assets/repositoryorapplicationdistribution',
         method: 'POST'
     },
-    revokeIssueException : {
+    revokeIssueException: {
         url: '{{baseUrl}}/compliance/v2/issue/revoke-exception',
         method: 'POST'
     },
-    addIssueException : {
+    addIssueException: {
         url: '{{baseUrl}}/compliance/v2/issue/add-exception',
         method: 'POST'
     },
-    getPlugins : {
+    getPlugins: {
         url: '{{baseUrl}}/admin/plugin/v1/plugins',
         method: 'GET'
     },
-    getAccounts : {
+    getAccounts: {
         url: '{{baseUrl}}/admin/awsaccounts',
         method: 'GET'
     },
-    updateAccount : {
+    updateAccount: {
         url: '{{baseUrl}}/admin/awsaccounts',
         method: 'PUT'
     },
-    createAccount : {
+    createAccount: {
         url: '{{baseUrl}}/admin/awsaccounts',
         method: 'POST'
     },
-    deleteAccounts : {
+    deleteAccounts: {
         url: '{{baseUrl}}/admin/awsaccounts/{{accountId}}',
         method: 'DELETE'
     },
-    roleAndDefaultAssetGroup : {
+    roleAndDefaultAssetGroup: {
         url: '{{baseUrl}}/admin/users/list',
         method: 'GET'
     },
@@ -854,11 +854,11 @@ export const environment = {
         url: '{{baseUrl}}/admin/system/status',
         method: 'GET'
     },
-    getConfigProperties : {
+    getConfigProperties: {
         url: '{{baseUrl}}/admin/config-properties',
         method: 'GET'
     },
-    getCurrentVersion : {
+    getCurrentVersion: {
         url: '{{baseUrl}}/admin/version',
         method: 'GET'
     },
@@ -886,23 +886,23 @@ export const environment = {
         url: '{{baseUrl}}/admin/config-properties/rollback',
         method: 'PUT'
     },
-    recommendationSummary : {
+    recommendationSummary: {
         url: '{{baseUrl}}/asset/v1/recommendations/summary',
         method: 'GET'
     },
-    recommendationApplication : {
+    recommendationApplication: {
         url: '{{baseUrl}}/asset/v1/recommendations/summaryByApplication',
         method: 'GET'
     },
-    recommendations : {
+    recommendations: {
         url: '{{baseUrl}}/asset/v1/recommendations',
         method: 'POST'
     },
-    costApplications : {
+    costApplications: {
         url: '{{baseUrl}}/asset/v1/costByApplication',
         method: 'GET'
     },
-    recommendationsInfo : {
+    recommendationsInfo: {
         url: '{{baseUrl}}/asset/v1/recommendations/info',
         method: 'GET'
     },
@@ -914,4 +914,8 @@ export const environment = {
         url: '{{baseUrl}}/vulnerability/v1/vulnerabilities/summarybyassets',
         method: 'GET'
     },
+    roleMappingUrl: {
+        url: '{{baseUrl}}/admin/rolemapping',
+        method: 'GET'
+    }
 };
