@@ -125,7 +125,7 @@
     "policyName": "Ec2StoppedInstanceForLong",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -133,11 +133,11 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_ec2_should_not_be_stopped_state_for_too_long",
     "status": "ENABLED",
     "userId": "ASGC",
-    "policyDisplayName": "EC2 instances should not be in stopped state for more than 60 days",
+    "policyDisplayName": "Ensure that EC2 instances are not Left in a Stopped State",
     "createdDate": "2017-08-29",
     "modifiedDate": "2018-11-12",
     "severity": "high",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2",
