@@ -52,7 +52,8 @@ public class ConfigureHttpWithCustomSSLPolicyTest {
                 .thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(configureHttpWithCustomSSLPolicy.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
+        Map<String, String> map = getMapString("r_123 ");
+        assertThat(configureHttpWithCustomSSLPolicy.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
@@ -78,7 +79,8 @@ public class ConfigureHttpWithCustomSSLPolicyTest {
                 .thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(configureHttpWithCustomSSLPolicy.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
+        Map<String, String> map = getMapString("r_123 ");
+        assertThat(configureHttpWithCustomSSLPolicy.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
