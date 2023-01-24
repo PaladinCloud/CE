@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyTable` (
   `modifiedDate` date DEFAULT NULL,
   `severity` varchar(20) COLLATE utf8_bin DEFAULT NULL,
   `category` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `autoFixEnabled` VARCHAR(20) COLLATE utf8_bin DEFAULT 'false',
   PRIMARY KEY (`policyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -59,6 +60,27 @@ update cf_PolicyTable set policyDisplayname = policyname where policyDisplayName
 DROP TABLE IF EXISTS cf_RuleInstance;
 DROP TABLE IF EXISTS cf_Policy;
 DROP TABLE IF EXISTS pac_v2_ruleCategory_weightage;
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_policytable_add_columns $$
+CREATE PROCEDURE alter_cf_policytable_add_columns()
+BEGIN
+IF NOT EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_PolicyTable'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'autoFixEnabled')  THEN
+
+
+
+ ADD COLUMN `autoFixEnabled` VARCHAR(20) NULL DEFAULT 'false' AFTER category;
+
+
+
+END IF;
+END $$
+DELIMITER ;
+CALL alter_cf_policytable_add_columns();
 
 
 

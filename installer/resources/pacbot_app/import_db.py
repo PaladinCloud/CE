@@ -156,7 +156,8 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_AZURE_ENABLED' : str(need_to_enable_azure()).lower(),
                         'ENV_GCP_ENABLED' : str(need_to_enable_gcp()).lower(),
                         'ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES' : str(Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES),
-                        'ENV_CURRENT_RELEASE': str(Settings.CURRENT_RELEASE)
+                        'ENV_CURRENT_RELEASE': str(Settings.CURRENT_RELEASE),
+                        'EVENT_BRIDGE_PRIFIX' : Settings.RESOURCE_NAME_PREFIX
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

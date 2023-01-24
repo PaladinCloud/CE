@@ -39,6 +39,7 @@ public class Policy {
 	private Date modifiedDate;
 	private String severity;
 	private String category;
+	private String autoFixEnabled;
 	
 	public String getPolicyId() {
 		return policyId;
@@ -171,6 +172,12 @@ public class Policy {
 	}
 	public void setCategory(String category) {
 		this.category = category;
+	}
+	public String getAutoFixEnabled() {
+		return autoFixEnabled;
+	}
+	public void setAutoFixEnabled(String autoFixEnabled) {
+		this.autoFixEnabled = autoFixEnabled;
 	}
 
 	
