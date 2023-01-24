@@ -111,11 +111,11 @@ public class ConfigureHttpWithCustomSSLPolicyTest {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("executionId", "1234");
         commonMap.put("_resourceid", passRuleResourceId);
-        commonMap.put("severity", "high");
+        commonMap.put("severity", "medium");
         commonMap.put("ruleCategory", "security");
         commonMap.put("accountid", "12345");
-        commonMap.put("ruleId", "Enable_HTTPS_For_LoadBalancer");
-        commonMap.put("policyId", "Enable_HTTPS_For_LoadBalancer");
+        commonMap.put("ruleId", "Configure_custom_ssl_for_https");
+        commonMap.put("policyId", "Configure_custom_ssl_for_https");
         commonMap.put("policyVersion", "version-1");
 
 
