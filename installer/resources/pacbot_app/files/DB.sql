@@ -95,6 +95,7 @@ SET @AWS_EVENTBRIDGE_BUS_DETAILS='$AWS_EVENTBRIDGE_BUS_DETAILS';
 SET @AZURE_ENABLED='$AZURE_ENABLED';
 SET @GCP_ENABLED='$GCP_ENABLED';
 SET @JOB_SCHEDULER_NUMBER_OF_BATCHES='$JOB_SCHEDULER_NUMBER_OF_BATCHES';
+SET @EVENT_BRIDGE_PRIFIX= '$EVENT_BRIDGE_PRIFIX';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -3132,6 +3133,8 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetails','tags.Name,accountid,accountname,tags.Environment,tags.Application,privateipaddress,instanceid,region,availabilityzone,imageid,platform,privatednsname,instancetype,subnetid,_resourceid,publicipaddress,publicdnsname,vpcid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetailsboth','tags.Name,tags.Environment,tags.Application,ip_address,privateipaddress,_entitytype,_resourceid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) 
+VALUES ('application.prefix',concat(@EVENT_BRIDGE_PRIFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 
 
