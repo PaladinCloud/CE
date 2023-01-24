@@ -369,7 +369,7 @@ public class PolicyServiceImpl implements PolicyService {
 					.withDescription(policyDetails.getPolicyId());
 			ruleRequest.withScheduleExpression("cron(".concat(policyDetails.getPolicyFrequency()).concat(")"));
 			if (policyDetails.getStatus().equalsIgnoreCase(RuleState.ENABLED.name())) {
-				ruleRequest.setState(RuleState.DISABLED);
+				ruleRequest.setState(RuleState.ENABLED);
 			} else {
 				ruleRequest.setState(RuleState.DISABLED);
 			}
