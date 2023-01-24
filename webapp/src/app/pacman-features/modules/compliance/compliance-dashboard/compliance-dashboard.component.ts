@@ -203,11 +203,11 @@ export class ComplianceDashboardComponent implements OnInit {
     data.push({"key":"Total Assets", "values":[], "info":{}})
 
     for(let i=0; i<data.length; i++){
-        graphData.trend.forEach(e => {
+      graphData.trend.forEach(e => {
         data[i].values.push({
-            'date':new Date(e.date),
-            'value':e.totalassets+i*25,
-            'zero-value':e.totalassets+i*25==0
+            'date': new Date(e.date),
+            'value':e.totalassets,
+            'zero-value':e.totalassets==0
         });
       })   
       data[i].values.sort(function(a,b){

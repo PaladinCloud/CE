@@ -34,7 +34,7 @@ import com.tmobile.pacman.api.compliance.service.AssetGroupService;
  * The Class AssetGroupController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class AssetGroupController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AssetGroupController.class);
     @Autowired

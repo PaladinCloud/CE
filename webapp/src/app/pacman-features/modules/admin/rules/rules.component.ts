@@ -25,6 +25,7 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
+import { DataCacheService } from "../../../../core/services/data-cache.service";
 
 @Component({
   selector: "app-admin-rules",
@@ -93,7 +94,8 @@ export class RulesComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
-    private commonResponseService: CommonResponseService
+    private commonResponseService: CommonResponseService,
+    private dataCacheService: DataCacheService
   ) {
     this.routerParam();
     this.updateComponent();
@@ -145,7 +147,7 @@ export class RulesComponent implements OnInit, OnDestroy {
           if (!response) return;
           this.isRulesTurnedOff = response.rule !== "ENABLED";
         },
-        (error) => {}
+        (error) => { }
       );
   }
 
@@ -302,6 +304,22 @@ export class RulesComponent implements OnInit, OnDestroy {
     return newData;
   }
 
+  isRuleEnableAccess(roleCapabilities, ruleCategory) {
+    let techAdminRuleCategories = ['cost', 'tagging', 'operations'];
+    ruleCategory = ruleCategory.toLowerCase();
+    if (roleCapabilities.includes('rules-security') && roleCapabilities.includes('rules-technical-admin')) {
+      return true;
+    } else {
+      if (roleCapabilities.includes('rules-security')) {
+        return ruleCategory === 'security';
+      } else if (roleCapabilities.includes('rules-technical-admin')) {
+        return techAdminRuleCategories.includes(ruleCategory);
+      } else {
+        return true;
+      }
+    }
+  }
+
   processData(data) {
     try {
       var innerArr = {};
@@ -314,6 +332,7 @@ export class RulesComponent implements OnInit, OnDestroy {
       var yellow = "yellow";
       this.outerArr = [];
       var getData = data;
+      let roleCapabilities = this.dataCacheService.getRoleCapabilities();
 
       if (getData.length) {
         var getCols = Object.keys(getData[0]);
@@ -326,10 +345,14 @@ export class RulesComponent implements OnInit, OnDestroy {
         for (var col = 0; col < getCols.length; col++) {
           if (getCols[col].toLowerCase() == "actions") {
             let dropDownItems: Array<String> = ["Edit"];
+            let ruleCategory = getData[row].Category;
+            let allowEnableDisable = this.isRuleEnableAccess(roleCapabilities, ruleCategory);
             if (getData[row].Status === "ENABLED") {
-              dropDownItems.push("Disable");
               dropDownItems.push("Invoke");
-            } else {
+              if (allowEnableDisable) {
+                dropDownItems.push("Disable");
+              }
+            } else if (allowEnableDisable) {
               dropDownItems.push("Enable");
             }
             cellObj = {

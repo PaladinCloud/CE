@@ -15,8 +15,11 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.auth.config;
 
+import com.tmobile.pacman.api.commons.config.CognitoAccessTokenConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +32,12 @@ import org.springframework.security.oauth2.provider.error.DefaultWebResponseExce
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+
+import java.util.Collections;
 
 /**
  * @author 	NidhishKrishnan
@@ -43,12 +50,24 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    private ResourceServerProperties resource;
 	
     @Override
     public void configure(final ResourceServerSecurityConfigurer resources) throws Exception {
         resources
             .accessDeniedHandler(accessDeniedHandler())
-            .authenticationEntryPoint(authenticationEntryPoint());
+            .authenticationEntryPoint(authenticationEntryPoint())
+                .tokenStore(jwkTokenStore());
+    }
+
+    @Bean
+    public TokenStore jwkTokenStore() {
+        return new JwkTokenStore(
+                Collections.singletonList(resource.getJwk().getKeySetUri()),
+                new CognitoAccessTokenConverter(),
+                null);
     }
 
     /** Define your custom exception translator bean here */

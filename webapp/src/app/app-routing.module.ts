@@ -14,6 +14,7 @@
 
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { TokenResolverService } from './resolver/token-resolver.service';
 
 const routes: Routes = [
     {
@@ -30,6 +31,13 @@ const routes: Routes = [
         path: 'post-login',
         redirectTo: '/home',
         pathMatch: 'prefix'
+    },
+    {
+        path: 'callback',
+        redirectTo: '/home',
+        // resolve: {
+        //     access: TokenResolverService
+        // }
     }
 ];
 

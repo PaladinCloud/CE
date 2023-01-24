@@ -58,7 +58,7 @@ public class UserController {
      * @return User details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get user details by email id", response = Response.class,  produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+	@PreAuthorize("@securityService.hasPermission(authentication, 'user-management') or #oauth2.hasScope('API_OPERATION/READ')")
 	@RequestMapping(path = "/list", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getUserByEmailId(
 		@ApiParam(value = "provide valid user email id", required = true) @RequestParam(name = "emailId", required = true) String emailId) {
@@ -79,7 +79,7 @@ public class UserController {
      * @return User details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all sign-in users", response = Response.class,  produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+	@PreAuthorize("@securityService.hasPermission(authentication, 'user-management') or #oauth2.hasScope('API_OPERATION/READ')")
 	@RequestMapping(path = "/list-users", method = RequestMethod.GET,  produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllLoginUsers()  {
 		try {

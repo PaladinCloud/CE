@@ -55,7 +55,7 @@ import com.tmobile.pacman.api.commons.utils.ResponseUtils;
  */
 @Api(value = "/config-properties", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'configuration-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/config-properties")
 public class ConfigPropertyController {
 

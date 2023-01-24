@@ -49,11 +49,11 @@ export class HomePageComponent implements OnInit {
     public roleAndDefaultAssetGroupLoaded = true;
 
     constructor(private ngZone: NgZone,
-                private dataStore: DataCacheService,
-                private logger: LoggerService,
-                private adalService: AdalService,
-                private authService: AuthService,
-                private commonResponseService: CommonResponseService) {
+        private dataStore: DataCacheService,
+        private logger: LoggerService,
+        private adalService: AdalService,
+        private authService: AuthService,
+        private commonResponseService: CommonResponseService) {
 
         this.content = CONTENT;
 
@@ -71,7 +71,7 @@ export class HomePageComponent implements OnInit {
             this.currentYear = (new Date()).getFullYear();
             /* Will not redirect user to post login automatically. User will be redirected when he clicks on Go to dashboard */
             this.redirectLoggedinUser();
-        }catch (error) {
+        } catch (error) {
             this.logger.log('error', error);
         }
     }
@@ -104,11 +104,11 @@ export class HomePageComponent implements OnInit {
             this.logger.log('info', '**Home page redirection - User is authenticated to proceed with post login section**');
             // If user is already logged in
             const userDefaultAssetGroup = this.dataStore.getUserDefaultAssetGroup();
-            const userRoles = this.dataStore.getUserDetailsValue().getRoles();
+            //const userRoles = this.dataStore.getUserDetailsValue().getRoles();
 
-               // if (!userDefaultAssetGroup || userDefaultAssetGroup === null) {
-               /* This step is valid only for azure sso type of authentication. */
-               if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
+            // if (!userDefaultAssetGroup || userDefaultAssetGroup === null) {
+            /* This step is valid only for azure sso type of authentication. */
+            if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'azuresso') {
 
                 this.logger.log('info', '**Fetching users default asset group and roles**');
                 // Get information when default asset group is not set
@@ -118,11 +118,28 @@ export class HomePageComponent implements OnInit {
                     this.logger.log('info', '**Successfully set user Fetched information**');
                     this.authService.redirectPostLogin(this.dataStore.getUserDefaultAssetGroup());
                 },
-                error => {
-                    this.logger.log('info', '**Error in setting user Fetched information**');
+                    error => {
+                        this.logger.log('info', '**Error in setting user Fetched information**');
+                        this.authService.redirectPostLogin(this.dataStore.getUserDefaultAssetGroup());
+                    });
+            } else if (CONFIGURATIONS.optional.auth.AUTH_TYPE === 'cognito') {
+                this.logger.log('info', '**Fetching users default asset group and roles from cognito**');
+                // Get information when default asset group is not set
+                this.roleAndDefaultAssetGroupLoaded = false;
+
+                console.log('*****roleAndDefaultAssetGroupLoaded****: ', this.roleAndDefaultAssetGroupLoaded);
+                // this.authService.setCognitoUserInformation();
+                // this.authService.redirectPostLogin(this.dataStore.getUserDefaultAssetGroup());
+                this.authService.setUserFetchedInformationCognito().subscribe(response => {
+                    this.logger.log('info', '**Successfully set user Fetched information**');
                     this.authService.redirectPostLogin(this.dataStore.getUserDefaultAssetGroup());
-                });
-            } else {
+                },
+                    error => {
+                        this.logger.log('info', '**Error in setting user Fetched information**');
+                        this.authService.redirectPostLogin(this.dataStore.getUserDefaultAssetGroup());
+                    });
+            }
+            else {
                 // Redirect when default asset group is already set
                 this.authService.redirectPostLogin(userDefaultAssetGroup);
             }

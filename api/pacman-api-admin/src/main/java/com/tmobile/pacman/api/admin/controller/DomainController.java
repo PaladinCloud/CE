@@ -45,7 +45,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Api(value = "/domains", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'asset-group-management', 'domain-management', 'target-type-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/domains")
 public class DomainController {
 

@@ -15,23 +15,25 @@
 /* Created by Puneet Baser 20/11/2017 */
 
 import { Injectable } from '@angular/core';
-import {Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
-import {DataCacheService} from './data-cache.service';
+import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { DataCacheService } from './data-cache.service';
 import * as _ from 'lodash';
 
 @Injectable()
 export class PermissionGuardService implements CanActivate {
     constructor(private dataCacheService: DataCacheService,
-                private router: Router) {}
+        private router: Router) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
         // this will be passed from the route config
-        const urlPermissions = route.data.roles;
+        const urlPermissions = route.data.capabilities;
         const userRoles = this.dataCacheService.getUserDetailsValue().getRoles();
-
-        const canUserAccess = this.checkUserPermissionToAccessThisUrl(urlPermissions, userRoles);
-
+        const userPermissions = this.dataCacheService.getRoleCapabilities();
+        console.log("User permissions: ", userPermissions);
+        console.log("urlPermissions", urlPermissions);
+        const canUserAccess = this.checkUserPermissionToAccessThisUrl(urlPermissions, userPermissions);
+        //window.alert("canUserAccess" + canUserAccess);
         if (!canUserAccess) {
             this.router.navigate(['/home']);
             return false;
@@ -40,13 +42,17 @@ export class PermissionGuardService implements CanActivate {
     }
 
     checkUserPermissionToAccessThisUrl(urlPermissions, userRoles) {
-        return !(_.difference(urlPermissions, userRoles).length );
+        if ((urlPermissions === 'undefined' || urlPermissions.length == 0)) {
+            //default permission, no specific role capability is required
+            return true;
+        } else {
+            return urlPermissions.some(role => userRoles.includes(role));
+        }
+        //return !(_.difference(urlPermissions, userRoles).length);
     }
 
     checkAdminPermission() {
-        const userDetailsRoles = this.dataCacheService.getUserDetailsValue().getRoles();
-        const adminAccess = userDetailsRoles.includes('ROLE_ADMIN');
-        return adminAccess;
+        return this.dataCacheService.isAdminCapability();
     }
 
     checkOnPremAdminPermission() {

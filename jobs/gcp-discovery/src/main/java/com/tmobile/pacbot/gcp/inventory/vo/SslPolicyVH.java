@@ -3,7 +3,7 @@ package com.tmobile.pacbot.gcp.inventory.vo;
 import java.util.List;
 
 
-public class SslPolicyVH extends GCPVH{
+public class SslPolicyVH {
 
      private String minTlsVersion;
     private String profile;

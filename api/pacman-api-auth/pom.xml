@@ -134,6 +134,25 @@
 			<groupId>com.unboundid</groupId>
 			<artifactId>unboundid-ldapsdk</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>cognitoidentity</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>cognitoidentityprovider</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>dynamodb</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.12.234</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
@@ -149,6 +168,13 @@
 				<groupId>de.codecentric</groupId>
 				<artifactId>spring-boot-admin-dependencies</artifactId>
 				<version>${spring-boot-admin.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>2.17.230</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -172,24 +198,24 @@
 					<executable>true</executable>
 				</configuration>
 			</plugin>
-			
-			<plugin>	
-				<groupId>org.apache.maven.plugins</groupId>	
-				<artifactId>maven-antrun-plugin</artifactId>	
-				<version>1.8</version>	
-				<executions>	
-					<execution>	
-						<phase>install</phase>	
-						<configuration>	
-							<target>	
-								<copy file="target/pacman-api-auth.jar" tofile="../../dist/api/pacman-api-auth.jar"/>	
-							</target>	
-						</configuration>	
-						<goals>	
-							<goal>run</goal>	
-						</goals>	
-					</execution>	
-				</executions>	
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<configuration>
+							<target>
+								<copy file="target/pacman-api-auth.jar" tofile="../../dist/api/pacman-api-auth.jar"/>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
