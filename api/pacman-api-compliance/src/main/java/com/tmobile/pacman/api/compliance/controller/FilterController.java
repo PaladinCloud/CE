@@ -38,7 +38,7 @@ import io.swagger.annotations.ApiParam;
  * The Class FilterController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class FilterController implements Constants {
 
     /** The filter service. */

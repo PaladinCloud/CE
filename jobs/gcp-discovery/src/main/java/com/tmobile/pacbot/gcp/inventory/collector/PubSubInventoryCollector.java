@@ -34,7 +34,9 @@ public class PubSubInventoryCollector {
                 logger.debug("Inside for loop of list topics");
                 TopicVH topicVH=new TopicVH();
                 topicVH.setKmsKeyName(topic.getKmsKeyName()==""?null:topic.getKmsKeyName());
+                topicVH.setTags(topic.getLabelsMap());
                 topicVH.setProjectName(project.getProjectName());
+                topicVH.setRegion(project.getRegion());
                 topicVH.setProjectId(project.getProjectId());
                 topicVH.setId(topic.getName());
                 topicList.add(topicVH);
@@ -42,8 +44,6 @@ public class PubSubInventoryCollector {
             logger.debug("After populating topicList");
             return topicList;
         } catch (Exception e) {
-            logger.error("Exception has occurred {}",e.getMessage());
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
 

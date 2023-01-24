@@ -1,8 +1,10 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
+
 public class CloudDNSVH extends GCPVH{
     public String dnsSecConfigState;
     public String dnsName;
+
 
     public String getDnsName() {
         return dnsName;

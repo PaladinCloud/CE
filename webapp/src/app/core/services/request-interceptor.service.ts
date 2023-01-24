@@ -21,7 +21,9 @@ export class RequestInterceptorService implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any> | HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
-
+        if (req.url.includes('/oauth2/token')) {
+           return next.handle(req);
+       }
         const authService = this.injector.get(AuthService);
         if (req.url.includes('user/authorize') || req.url.includes('user/login') || req.url.includes('user/refresh')) {
             this.loggerService.log('info', 'Not adding the access token for this api - ' + req.url);

@@ -69,7 +69,7 @@ import com.tmobile.pacman.api.compliance.service.PolicyTableService;
  * The Class ComplianceController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class ComplianceController implements Constants {
 
 	/** The Constant logger. */

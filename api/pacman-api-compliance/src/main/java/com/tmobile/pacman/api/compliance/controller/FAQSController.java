@@ -42,7 +42,7 @@ import com.tmobile.pacman.api.compliance.service.FAQService;
  * The Class FAQSController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 public class FAQSController {
 
     /** The Constant LOGGER. */

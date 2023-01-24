@@ -15,10 +15,13 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.statistics.config;
 
+import com.tmobile.pacman.api.commons.config.CognitoAccessTokenConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -30,6 +33,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStore;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
@@ -38,6 +43,8 @@ import com.tmobile.pacman.api.statistics.repository.StatisticsRepositoryImpl;
 
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+
+import java.util.Collections;
 
 /**
  * Sample SpringSecurty Configuration.
@@ -54,6 +61,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	 private static final Logger LOGGER = LoggerFactory.getLogger(SpringSecurityConfig.class);
 	@Value("${swagger.auth.whitelist:}")
 	private String[] AUTH_WHITELIST;
+
+	@Autowired
+	private ResourceServerProperties resource;
 	/**
 	 * Constructor disables the default security settings
 	 **/
@@ -84,6 +94,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	            requestTemplate.header("Authorization", "bearer " + details.getTokenValue());
 	        }
 	    };
+	}
+
+	@Bean
+	public TokenStore jwkTokenStore() {
+		return new JwkTokenStore(
+				Collections.singletonList(resource.getJwk().getKeySetUri()),
+				new CognitoAccessTokenConverter(),
+				null);
 	}
     
 	@Override

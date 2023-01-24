@@ -35,7 +35,7 @@ import io.swagger.annotations.ApiParam;
  */
 @Api(value = "/policy")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'policy-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/policy")
 public class PolicyController {
 

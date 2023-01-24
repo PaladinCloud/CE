@@ -26,6 +26,7 @@ class ReplaceSQLPlaceHolder(NullResource):
     dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_With_Values.sql')
     azure_ad_dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Azure_AD_With_Values.sql')
     policy_dest_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Policy_With_Values.sql')
+    cognito_query_file = os.path.join(get_terraform_scripts_and_files_dir(), 'DB_Cognito.sql')
     triggers = {'version': "1.1"}
 
     DEPENDS_ON = [MySQLDatabase, ESDomain]
@@ -170,6 +171,8 @@ class ReplaceSQLPlaceHolder(NullResource):
         copy2(src_file, self.dest_file)
         src_policy_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Policy.sql')
         copy2(src_policy_file, self.policy_dest_file)
+        cognito_db_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Cognito.sql')
+                copy2(cognito_db_file, self.cognito_query_file)
         if Settings.AUTHENTICATION_TYPE == "AZURE_AD":
             src_azure_ad_file = os.path.join(Settings.BASE_APP_DIR, 'resources', 'pacbot_app', 'files', 'DB_Azure_AD.sql')
             copy2(src_azure_ad_file, self.azure_ad_dest_file)
@@ -196,6 +199,12 @@ class ImportDbSql(NullResource):
                     'command': "mysql -u %s --password=%s -h %s < %s" % (
                     db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.policy_dest_file)
                 }
+            },
+            {
+                 'local-exec': {
+                    'command': "mysql -u %s --password=%s -h %s < %s" % (
+                    db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.cognito_query_file)
+                 }
             }
 
         ]
@@ -212,6 +221,12 @@ class ImportDbSql(NullResource):
                 'local-exec': {
                     'command': "mysql -u %s --password=%s -h %s < %s" % (
                     db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.azure_ad_dest_file)
+                }
+            },
+            {
+                'local-exec': {
+                    'command': "mysql -u %s --password=%s -h %s < %s" % (
+                    db_user_name, db_password, db_host, ReplaceSQLPlaceHolder.cognito_query_file)
                 }
             }
 

@@ -15,12 +15,14 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.commons.service;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.tmobile.pacman.api.commons.config.RoleMappingLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -29,15 +31,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityService {
 
+	@Autowired
+	private RoleMappingLoader roleMappingLoader;
+
 	/**
-     * Service to check user permission
-     *
-     * @author Nidhish
-     * @param authentication - valid user authentication details
-     * @return Boolean value
-     */
-	public boolean hasPermission(Authentication authentication, String role) {
+	 * Service to check user permission
+	 *
+	 * @param authentication - valid user authentication details
+	 * @return Boolean value
+	 * @author Nidhish
+	 */
+	public boolean hasPermission(Authentication authentication, String... permissions) {
 		final Set<String> userRoles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
-		return userRoles.contains(role);
+		Map<String, List<String>> rolePermissionMappings = roleMappingLoader.getRoleList();
+		List<String> allowedPermissions = new ArrayList<>();
+		userRoles.stream().forEach(role -> {
+			List<String> permissionList = rolePermissionMappings.get(role);
+			if (permissionList != null) {
+				allowedPermissions.addAll(permissionList);
+			}
+		});
+		//check if any one of the required permission(input- permissisons) is in allowedPermission
+		return Arrays.asList(permissions).stream().map(String::toLowerCase)
+				.anyMatch( allowedPermissions.stream().map(String::toLowerCase)
+								.collect(Collectors.toSet())::contains);
 	}
 }

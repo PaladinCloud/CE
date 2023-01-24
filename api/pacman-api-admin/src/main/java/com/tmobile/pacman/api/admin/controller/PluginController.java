@@ -33,7 +33,7 @@ import io.swagger.annotations.Api;
 
 @Api(value = "/plugin", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'connector-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/plugin")
 public class PluginController {
     PluginService pluginService;

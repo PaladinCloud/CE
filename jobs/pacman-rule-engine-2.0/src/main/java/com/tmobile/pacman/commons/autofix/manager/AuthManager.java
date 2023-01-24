@@ -15,7 +15,11 @@ import com.tmobile.pacman.util.CommonUtils;
 public class AuthManager {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthManager.class);
-   
+
+    private static final String AUTH_API_URL = System.getenv("AUTH_API_URL");
+    private static final String API_READ_SCOPE = "API_OPERATION/READ";
+    private static final String API_AUTH_INFO = "apiauthinfo";
+
     private static AccessToken accessToken ;
     
     private AuthManager(){
@@ -30,19 +34,26 @@ public class AuthManager {
             Map<String,String> creds = new HashMap<>();
             creds.put("password", CommonUtils.getPropValue(PacmanSdkConstants.PACMAN_LOGIN_PASSWORD));
             creds.put("username", CommonUtils.getPropValue(PacmanSdkConstants.PACMAN_LOGIN_USER_NAME));
-           
-            String response = CommonUtils.doHttpPost(loginUrl, serializer.toJson(creds), new HashMap<String, String>());
-            
+             String credentials = System.getenv(API_AUTH_INFO);
+             String response =null;
+             if(credentials!=null){
+                 response = CommonUtils.postUrlEncoded(AUTH_API_URL+"/oauth2/token?grant_type=client_credentials&scope="+API_READ_SCOPE,
+                         "",credentials,"Basic");
+             }else {
+                 response = CommonUtils.doHttpPost(loginUrl, serializer.toJson(creds), new HashMap<>());
+             }
+             LOGGER.info("Called Authorise");
+
             if(null!=response && response.contains("error")){
-            	LOGGER.error(String.format("unexpected response from auth api %s",loginUrl),response);
+                LOGGER.info("Login Url: {}",loginUrl);
+            	LOGGER.error("unexpected response from auth api: {}",response);
             }
-            JsonParser jsonParser  = new JsonParser();
-            JsonObject jsonObject = (JsonObject) jsonParser.parse(response);
+            JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
             String token = jsonObject.get("access_token").getAsString();
             String expiresIn = jsonObject.get("expires_in").getAsString(); // In seconds
             if( token!=null){
-                long tokenExpiresAt = System.currentTimeMillis() + Long.valueOf(expiresIn.toString())*1000 - (20*1000) ; // 20 second buffer
-                accessToken = new AccessToken(token.toString(), tokenExpiresAt);
+                long tokenExpiresAt = System.currentTimeMillis() + Long.valueOf(expiresIn)*1000 - (20*1000) ; // 20 second buffer
+                accessToken = new AccessToken(token, tokenExpiresAt);
             }
             
             }catch (Exception e) {

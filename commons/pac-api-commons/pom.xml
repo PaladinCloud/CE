@@ -115,6 +115,11 @@
 			<version>2.2.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.12.234</version>
+		</dependency>
 		
 		<dependency>
     		<groupId>org.elasticsearch.client</groupId>

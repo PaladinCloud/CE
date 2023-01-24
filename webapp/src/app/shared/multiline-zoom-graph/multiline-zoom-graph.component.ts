@@ -41,7 +41,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   @Input() singlePercentLine = false;
   @Input() hoverActive = true;
   @Input() doNotShowContext;
-  axisMinValue=1;
+  axisMinValue;
+  axisMaxValue;
+  graphTickValues;
 
   @Output() error: EventEmitter<any> = new EventEmitter();
 
@@ -290,20 +292,52 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {    
     this.axisMinValue = Infinity;
+    this.axisMaxValue = 0;
     for(let i=0; i<this.graphLinesData.length; i++){
       this.graphLinesData[i].values.forEach(element => {      
       if(element.value<this.axisMinValue){
         this.axisMinValue = element.value;
       }
+      if(element.value>this.axisMaxValue){
+        this.axisMaxValue = element.value;
+      }
     });
     }
-    
+
+    this.graphTickValues = this.getTickValuesForYAxis();
     this.margin2 = {
       top: this.graphHeight - 40,
       right: 20,
       bottom: 30,
       left: 20,
     };
+  }
+
+  // rounds off to nearest multiple of roundOffToVal bounding up to valToRoundOff
+  roundOff(valToRoundOff, roundOffToVal){
+    return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal; 
+  }
+
+  getNearestPowerOf10(val, offSet=0){
+    return Math.pow(10, Math.floor(Math.log10(val))-offSet); // 10^( |_ log10(val) _| - 1 )
+  }
+
+  getTickValuesForYAxis(){
+    const roundOffMultiple = 2;
+    const maxNumberOfTickValues = 6;
+    let roundOffToVal = roundOffMultiple*this.getNearestPowerOf10(this.axisMaxValue - this.axisMinValue, 1);
+    let graphTickValues = [];
+    // we need floor of val to get tickVal below minVal, minval should be rounded off to nearest roundOffToVal
+    const yMin = this.roundOff(this.axisMinValue-roundOffToVal, roundOffToVal) // we remove roundOffToVal from axisMinValue to get floor value since roundOff function returns ceil val
+    const yMax = this.roundOff(this.axisMaxValue, roundOffToVal); 
+    let y = this.roundOff(Math.ceil((yMax - yMin)/(maxNumberOfTickValues - 1)),roundOffToVal);
+    let x = yMin;
+    for(let i=0; i<maxNumberOfTickValues; i++){
+      const tickVal = x + i*y;
+      graphTickValues.push(tickVal);
+      if(tickVal>this.axisMaxValue) break;
+    }
+    return graphTickValues;
   }
 
   private removeZeroValues() {
@@ -430,33 +464,27 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       if (maxValue > 1) {
         if (this.singlePercentLine) {
           // To show a scale of 1-100 if we're showing a single percentage line (out of 100)
-          this.y.domain([0, 100]);
+          this.y.domain([0, 100]).nice();
         } else {
+          const yFactor = 0//0.6*(this.axisMaxValue-this.axisMinValue)/4;          
           this.y.domain([
-            0.8*this.axisMinValue,
-            d3Array.max(this.graphData, (c) => {
-              return d3Array.max(c[`values`], (d) => {
-                return d[`value`];
-              });
-            }),
-          ]);
+            this.axisMinValue - yFactor,
+            this.axisMaxValue + yFactor,
+          ]).nice();
         }
       } else {
         // If the max value itself if 0, we'll be keeping a default range of 0-10
-        this.y.domain([0, 10]);
+        this.y.domain([0, 10]).nice();
       }
     } else {
-      this.yLogAxis = true;
+      this.yLogAxis = false;
       this.y = d3Scale.scaleLinear().range([this.height, 0]);
 
+      const yFactor = 0// 0.4*(this.axisMaxValue-this.axisMinValue)/4;
       this.y.domain([
-        this.axisMinValue?0.8*this.axisMinValue:1,
-        d3Array.max(this.graphData, (c) => {
-          return d3Array.max(c[`values`], (d) => {
-            return d[`value`];
-          });
-        }),
-      ]);
+        this.axisMinValue - yFactor,
+        this.axisMaxValue + yFactor,
+      ]).nice();
     }
     this.x2 = d3Scale.scaleTime().range([0, this.timeLineWidth]);
     this.y2 = d3Scale.scaleLinear().range([this.height2, 0]);
@@ -1073,7 +1101,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .call(
         d3Axis
           .axisLeft(this.y)
-          .ticks(3)
+          .tickValues(this.graphTickValues)
           .tickSize(-this.width)
           .tickFormat((d) => "")
       );
@@ -1105,7 +1133,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       .call(
         d3Axis
           .axisLeft(this.y)
-          .ticks(3)
+          .tickValues(this.graphTickValues)
           .tickFormat((d) => this.abbreviateNumber(d))
       )
       .append("text")
@@ -1290,49 +1318,37 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       // Function to limit the number of ticks on Y-axis, when its a log scale, if the number
       // of ticks are more than 4
 
-      const tickGroups = this.focus
+      let tickGroups = this.focus
         .select(".axis.axis--y")
         .selectAll(".tick")
         .selectAll("text")._parents;
-      const tickTexts = this.focus
-        .select(".axis.axis--y")
-        .selectAll(".tick")
-        .selectAll("text")._groups;
       const grids = this.svg
         .selectAll(".grid.horizontal")
         .selectAll(".tick")._groups;
-      const numOfTicks = tickTexts.length;
-      const initial = parseInt(tickTexts[0][0].innerHTML, 10);
-      const lastVal = parseInt(
-        tickTexts[tickTexts.length - 1][0].innerHTML,
-        10
-      );
-      
+      const numOfTicks = tickGroups.length;
       let last = 0;
       let count= 0;
-      if (numOfTicks >= 5) {
-        for (let i = 0; i < tickTexts.length; i++) {
-          if (i==0 || i==tickTexts.length-1) {
-              tickGroups[i].style["display"] = "block";
-              grids.forEach((grid) => {
-                grid[i].style["display"] = "block";
-              });
-              last = i;
-            }else if((i==Math.floor(last+(tickTexts.length-1)/3) && count<2)){
-              tickGroups[i].style["display"] = "block";
-              grids.forEach((grid) => {
-                grid[i].style["display"] = "block";
-              });
-              last = i;
-              count++;
-            } else {
-              tickGroups[i].style["display"] = "none";
-              grids.forEach((grid) => {
-                grid[i].style["display"] = "none";
-              });
-            }
+      tickGroups.forEach((item, i) => {
+        // TO DO : need to write more logic here to cut down extra tick lines when logscale is used.
+        if((tickGroups[i-1] && parseFloat(tickGroups[i-1].textContent)<=this.axisMaxValue && parseFloat(tickGroups[i-1].textContent)>=this.axisMinValue) || 
+        (tickGroups[i+1] && parseFloat(tickGroups[i+1].textContent)>=this.axisMinValue && parseFloat(tickGroups[i+1].textContent)<=this.axisMaxValue)){
+          tickGroups[i].style["display"] = "block";
+          grids.forEach((grid) => {
+            grid[i].style["display"] = "block";
+          }); 
+        }else if(parseFloat(tickGroups[i])<=this.axisMaxValue && parseFloat(tickGroups[i])>=this.axisMinValue){
+          tickGroups[i].style["display"] = "block";
+          grids.forEach((grid) => {
+            grid[i].style["display"] = "block";
+          }); 
         }
-      }
+        else{
+          tickGroups[i].style["display"] = "none";
+          grids.forEach((grid) => {
+            grid[i].style["display"] = "none";
+          });
+        }
+      });
     } catch (error) {
       this.loggerService.log("error", error);
     }

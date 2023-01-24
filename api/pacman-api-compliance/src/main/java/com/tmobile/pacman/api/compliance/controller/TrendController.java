@@ -58,7 +58,7 @@ import io.swagger.annotations.ApiResponses;
  * The Class TrendController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 @CacheConfig(cacheNames = { "trends" })
 public class TrendController implements Constants {
 

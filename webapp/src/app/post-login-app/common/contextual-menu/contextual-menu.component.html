@@ -20,9 +20,10 @@
   <div class="tree-component">
     <tree-root [nodes]="nodes" class="tree">
       <ng-template #treeNodeWrapperTemplate let-node let-index="index">
-        <div *ngIf="
+        <!-- <div *ngIf="
           (haveAdminPageAccess || (node.data.name!='Admin'))
-        ">
+        "> -->
+        <div *ngIf="hasRequiredPermission(node)">
           <div *ngIf="!(node.data.notDisplayIfAzure == true && agAndDomain.ag == 'azure')" class="node-wrapper"
             [class.wrapper]="currentParentId == node.id && node.hasChildren" [class.node-wrapper-active]="
           node.id == currentNodeId && !node.hasChildren
@@ -62,7 +63,7 @@
     </div>
   </div>
   <div class="version-wrapper" [class.collapsed]="!expanded">
-    <span class="version-text"  [class.collapsed]="!expanded">Version</span>
+    <span class="version-text" [class.collapsed]="!expanded">Version</span>
     <span class="version-number">{{current_version}}</span>
   </div>
 </div>

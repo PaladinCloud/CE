@@ -3,13 +3,11 @@ package com.tmobile.pacbot.gcp.inventory.vo;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class VirtualMachineVH extends GCPVH {
     private String name;
     private String description;
     private List<VMDiskVH> disks;
-    private Map<String, String> tags;
     private String machineType;
     private String status;
     private List<NetworkInterfaceVH> networkInterfaces;
@@ -98,13 +96,6 @@ public class VirtualMachineVH extends GCPVH {
         this.disks = disks;
     }
 
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Map<String, String> tags) {
-        this.tags = tags;
-    }
 
     public String getMachineType() {
         return machineType;

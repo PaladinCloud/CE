@@ -46,7 +46,7 @@ import io.swagger.annotations.ApiParam;
 
 @Api(value = "/", consumes = "application/json", produces = "application/json")
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_ADMIN')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'rule-severity-management','rule-admin', 'job-execution-management','system-management') or #oauth2.hasScope('API_OPERATION/READ')")
 @RequestMapping("/")
 public class AdminController {
 

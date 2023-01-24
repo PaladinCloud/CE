@@ -2,6 +2,8 @@ package com.tmobile.pacbot.gcp.inventory.vo;
 
 import com.tmobile.pacbot.gcp.inventory.collector.Util;
 
+import java.util.Map;
+
 public class GCPVH {
 
     private String discoveryDate;
@@ -11,16 +13,15 @@ public class GCPVH {
     private String projectName;
 
     private String projectId;
+    private Map<String, String> tags;
 
-    // private Long projectNumber;
+    public Map<String, String> getTags() {
+        return tags;
+    }
 
-    // public Long getProjectNumber() {
-    //     return projectNumber;
-    // }
-
-    // public void setProjectNumber(Long projectNumber) {
-    //     this.projectNumber = projectNumber;
-    // }
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
     public String getRegion() {
         return region;
@@ -59,14 +60,6 @@ public class GCPVH {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
-    }
-
-    public String getDiscoveryDate() {
-        return discoveryDate;
-    }
-
-    public void setDiscoveryDate(String discoveryDate) {
-        this.discoveryDate = discoveryDate;
     }
 
     public String getProjectId() {

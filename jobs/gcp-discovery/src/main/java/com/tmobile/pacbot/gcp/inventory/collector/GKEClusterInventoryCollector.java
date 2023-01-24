@@ -1,6 +1,5 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
-import com.amazonaws.services.dynamodbv2.document.Item;
 import com.google.container.v1.ListNodePoolsResponse;
 import com.google.container.v1.NodePool;
 import com.tmobile.pacbot.gcp.inventory.vo.GKEClusterVH;
@@ -16,11 +15,9 @@ import com.tmobile.pacbot.gcp.inventory.vo.NodePoolVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +33,7 @@ public class GKEClusterInventoryCollector {
 
     public List<GKEClusterVH> fetchGKEClusterInventory(ProjectVH project){
         List<GKEClusterVH> gkeClusterlist = new ArrayList<>();
+        HashSet<GKEClusterVH> gkeClusterVHSet=new HashSet<>();
         logger.info("### GKe cluster  collector ###########");
         try {
             List<String> regions = gcPlocationUtil.getZoneList(project.getProjectId());
@@ -61,15 +59,18 @@ public class GKEClusterInventoryCollector {
                 }
 
                 if(clusterList!=null){
-                for (Cluster cluster : clusterList.getClustersList()) {
+                    List<Cluster> clusters=clusterList.getClustersList();
+                for (Cluster cluster : clusters) {
                     GKEClusterVH gkeClusterVH = new GKEClusterVH();
                     gkeClusterVH.setId(cluster.getId());
+                    gkeClusterVH.setName(cluster.getName());
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
                     gkeClusterVH.setIPAlias(cluster.getIpAllocationPolicy().getUseIpAliases());
                     gkeClusterVH.setCloudLogging(cluster.getLoggingService());
                     gkeClusterVH.setCloudMonitoring(cluster.getMonitoringService());
+                    gkeClusterVH.setTags(cluster.getResourceLabelsMap());
                     logger.info("monitoring services {} {}", cluster.getName(), cluster.getMonitoringService());
                     if (cluster.getAddonsConfig() != null && !cluster.getAddonsConfig().getAllFields().isEmpty()) {
                         gkeClusterVH.setDisableKubernetesDashBoard(cluster.getAddonsConfig().getKubernetesDashboard().getDisabled());
@@ -141,7 +142,7 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setPassword(cluster.getMasterAuth().getPassword());
                     gkeClusterVH.setUsername(cluster.getMasterAuth().getUsername());
 
-                    gkeClusterlist.add(gkeClusterVH);
+                    gkeClusterVHSet.add(gkeClusterVH);
 
                 }
                 logger.debug("##########ending########-> {}", gkeClusterlist);
@@ -151,6 +152,7 @@ public class GKEClusterInventoryCollector {
         } catch (Exception e) {
             logger.debug(e.getMessage());
         }
+        gkeClusterlist.addAll(gkeClusterVHSet);
         return gkeClusterlist;
     }
 

@@ -89,6 +89,7 @@ export class DataCacheService {
           const authTokenValues = {
             'token_type': secretData.token_type,
             'access_token': secretData.access_token,
+            'id_token': secretData.id_token,
             'refresh_token': secretData.refresh_token,
             'expires_in': secretData.expires_in
           };
@@ -193,6 +194,30 @@ export class DataCacheService {
   public getListOfAssetGroups() {
     const key = 'allAssetGroups';
     return this.get(key);
+  }
+
+  public setRoleCapabilities(roleCapabilities) {
+    const key = 'roleCapabilities';
+    if (roleCapabilities) { this.set(key, roleCapabilities); }
+  }
+
+  public getRoleCapabilities() {
+    const key = 'roleCapabilities';
+    return this.get(key);
+  }
+  public setAdminCapability(isAdmin) {
+    const key = 'isAdmin';
+    this.set(key, isAdmin);
+  }
+
+  public isAdminCapability() {
+    const key = 'isAdmin';
+    if (this.get(key) == null || this.get(key) === undefined) {
+      //by default isAdmin is false
+      return false;
+    } else {
+      return this.get(key) === 'true';
+    }
   }
 
   public setUserDefaultAssetGroup(defaultAssetGroup) {

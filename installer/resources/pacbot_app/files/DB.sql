@@ -3637,3 +3637,5 @@ Update cf_Target set status = 'finding' where targetName in ( 'checks','phd','se
 
 /* Updating cf_RuleInstance targetType field, can be removed in future   */
 update cf_RuleInstance set targetType = 'virtualmachine' where targetType = 'virtualMachine';
+
+update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region,_cloudType' where resourceType='all_list';
