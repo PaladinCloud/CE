@@ -125,7 +125,7 @@
     "policyName": "Ec2StoppedInstanceForLong",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -136,7 +136,7 @@
     "policyDisplayName": "EC2 instances should not be in stopped state for more than 60 days",
     "createdDate": "2017-08-29",
     "modifiedDate": "2018-11-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -1517,7 +1517,7 @@
     "createdDate": "2018-08-22",
     "modifiedDate": "2018-09-19",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "Unused-Security-group_version-1_UnusedSecurityGroup_sg",
@@ -1537,7 +1537,7 @@
     "createdDate": "2017-10-16",
     "modifiedDate": "2018-12-18",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb",
@@ -1557,7 +1557,7 @@
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb",
@@ -1577,7 +1577,7 @@
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedEBSRule_version-1_UnusedEbsRule_volume",
@@ -1597,7 +1597,7 @@
     "createdDate": "2017-10-13",
     "modifiedDate": "2018-11-12",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip",
@@ -1617,7 +1617,7 @@
     "createdDate": "2018-02-01",
     "modifiedDate": "2018-09-19",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "VpcFlowLogsEnabled_version-1_VpcFlowLogsEnabled_vpc",
