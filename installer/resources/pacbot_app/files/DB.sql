@@ -3656,3 +3656,46 @@ UPDATE cf_PolicyTable SET category = 'cost' WHERE policyId IN ('UntaggedOrUnused
 
 
 UPDATE `pacmandata`.`pac_config_key_metadata` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
+
+/* Procedure to update metadata based on the mandatory tags configured */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `update_filter_for_tag` $$
+CREATE PROCEDURE `update_filter_for_tag`(mandatoryTags MEDIUMTEXT)
+BEGIN
+
+DECLARE tag TEXT DEFAULT NULL;
+DECLARE tagLength INT DEFAULT NULL;
+DECLARE _value TEXT DEFAULT NULL;
+
+-- delete the existing configured filters for mandatory tags
+delete from pac_v2_ui_options where optionValue like '%tags%';
+
+iterator:
+LOOP
+
+  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
+    LEAVE iterator;
+  END IF;
+
+  -- fetch the next value from the mandatoryTags list
+  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
+  SET tagLength = CHAR_LENGTH(tag);
+
+  -- trim the value of leading and trailing spaces
+  SET _value = TRIM(tag);
+
+  -- insert the filters metadata for mandatory tags
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+
+  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
+END LOOP;
+
+END $$
+
+DELIMITER ;
+
+CALL update_filter_for_tag(@MANDATORY_TAGS);
