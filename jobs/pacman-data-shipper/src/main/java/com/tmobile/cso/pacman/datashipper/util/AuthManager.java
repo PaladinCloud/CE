@@ -9,6 +9,7 @@ public class AuthManager {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthManager.class);
     private static final String AUTH_API_URL = System.getenv("AUTH_API_URL");
+    private static final String API_READ_SCOPE = "API_OPERATION/READ";
    
     private static AccessToken accessToken ;
     
@@ -18,7 +19,7 @@ public class AuthManager {
     private static void  authorise() throws Exception{
         LOGGER.info("Called Authorise");
         String credentials = System.getProperty(Constants.API_AUTH_INFO);
-        String response = HttpUtil.post(AUTH_API_URL+"/oauth/token?grant_type=client_credentials","",credentials,"Basic");
+        String response = HttpUtil.post(AUTH_API_URL+"/oauth2/token?grant_type=client_credentials&scope="+API_READ_SCOPE,"",credentials,"Basic");
         Map<String,Object> authInfo = Util.parseJson(response);
         Object token = authInfo.get("access_token");
         Object expiresIn = authInfo.get("expires_in"); // In seconds
@@ -27,7 +28,7 @@ public class AuthManager {
             accessToken = new AccessToken(token.toString(), tokenExpiresAt);
         }
     }
-    
+
     public static String getToken(){
         if(!isTokenValid()){
             try {

@@ -48,7 +48,7 @@ import com.tmobile.pacman.api.compliance.service.PatchingService;
  * The Class PatchingController.
  */
 @RestController
-@PreAuthorize("@securityService.hasPermission(authentication, 'ROLE_USER')")
+@PreAuthorize("@securityService.hasPermission(authentication, 'readonly') or #oauth2.hasScope('API_OPERATION/READ')")
 @ConditionalOnProperty(name="features.patching.enabled")
 public class PatchingController implements Constants {
     

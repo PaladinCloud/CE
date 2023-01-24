@@ -15,24 +15,20 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.service;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.google.common.collect.Lists;
+import com.google.gson.*;
+import com.tmobile.pacman.api.asset.AssetConstants;
+import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
+import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
+import com.tmobile.pacman.api.asset.repository.AssetRepository;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.config.CredentialProvider;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.exception.NoDataFoundException;
+import com.tmobile.pacman.api.commons.exception.ServiceException;
+import com.tmobile.pacman.api.commons.utils.CommonUtils;
+import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.ParseException;
 import org.slf4j.Logger;
@@ -41,24 +37,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.tmobile.pacman.api.asset.AssetConstants;
-import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
-import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
-import com.tmobile.pacman.api.asset.repository.AssetRepository;
-import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.commons.exception.NoDataFoundException;
-import com.tmobile.pacman.api.commons.exception.ServiceException;
-import com.tmobile.pacman.api.commons.utils.CommonUtils;
-import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Implemented class for AssetService and all its method
@@ -82,6 +74,12 @@ public class AssetServiceImpl implements AssetService {
 
     @Value("${cloudinsights.corp-password}")
     String svcCorpPassword;
+
+    @Value("${auth.active}")
+    private String activeAuth;
+
+    @Autowired
+    private CredentialProvider credentialProvider;
 
     @Override
     public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
@@ -267,8 +265,13 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Boolean saveOrUpdateAssetGroup(final DefaultUserAssetGroup defaultUserAssetGroup) {
+        if(activeAuth.equalsIgnoreCase("cognito")){
+            //update default AG in cognito
+            updateDefaultAssetGroup(defaultUserAssetGroup.getUserId(),defaultUserAssetGroup.getDefaultAssetGroup());
+            LOGGER.info("Default asset group in cognito updated to {}",defaultUserAssetGroup.getDefaultAssetGroup());
+        }
         int response = repository.saveOrUpdateAssetGroup(defaultUserAssetGroup);
-        return response > 0 ? true : false;
+        return response > 0;
     }
 
     @Override
@@ -1138,5 +1141,30 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to) {
         return repository.getAssetCountTrend(assetGroup, type, from, to);
+    }
+
+    public void updateDefaultAssetGroup(String userName, String assetGroupValue) {
+
+        String region = System.getenv("REGION");
+        String poolId = System.getenv("USERPOOL_ID");
+
+        LOGGER.info("Updating default asset group value ");
+
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+        Region reg=Region.of(region);
+        CognitoIdentityProviderClient client = CognitoIdentityProviderClient.builder()
+                .region(reg).credentialsProvider(StaticCredentialsProvider
+                        .create(AwsSessionCredentials
+                                .create(credentials.getAWSAccessKeyId(), credentials.getAWSSecretKey(), credentials.getSessionToken()))).build();
+
+        try {
+            AdminUpdateUserAttributesResponse response = client.adminUpdateUserAttributes
+                    (AdminUpdateUserAttributesRequest.builder().userPoolId(poolId).username(userName)
+                            .userAttributes(AttributeType.builder().name("custom:defaultAssetGroup")
+                                    .value(assetGroupValue).build()).build());
+            LOGGER.info("Update response :{}",response);
+        } catch (Exception e) {
+            LOGGER.error("Error in updating user default asset group",e);
+        }
     }
 }

@@ -1,7 +1,9 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
+
 public class ClusterVH extends GCPVH{
     String kmsKeyName;
+
 
     public String getKmsKeyName() {
         return kmsKeyName;
