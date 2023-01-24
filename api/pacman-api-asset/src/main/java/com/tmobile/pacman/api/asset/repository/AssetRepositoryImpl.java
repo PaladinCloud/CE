@@ -86,6 +86,7 @@ import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 @ConfigurationProperties(prefix = "resource")
 public class AssetRepositoryImpl implements AssetRepository {
 
+    public static final String ASSET = "asset";
     private Map<String, String> events;
 
     @Value("${tagging.mandatoryTags}")
@@ -772,15 +773,13 @@ public class AssetRepositoryImpl implements AssetRepository {
         Map<String, Object> mustFilter = new HashMap<>();
 
         Iterator it = filter.entrySet().iterator();
-        List<String> mandatoryTags=Util.getMandatoryTags();
+        List<String> mandatoryTagList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            if(mandatoryTags.contains(entry.getKey())){
-                mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-            }
+            addTagToFilter(mustFilter, mandatoryTagList, filterTagMap, entry);
             if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
                 targetType = entry.getValue().toString();
             }
@@ -827,6 +826,12 @@ public class AssetRepositoryImpl implements AssetRepository {
         return formGetListResponse(fieldNames,assetDetails,fieldsToBeSkipped);
     }
 
+    private static void addTagToFilter(Map<String, Object> mustFilter, List<String> mandatoryTagList, Map<String, String> filterTagMap, Entry entry) {
+        if(mandatoryTagList.contains(entry.getKey())){
+            mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
+        }
+    }
+
     @Override
     public long getAssetCount(String assetGroup, Map<String, String> filter, String searchText) {
 
@@ -834,18 +839,16 @@ public class AssetRepositoryImpl implements AssetRepository {
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, true);
         mustFilter.put(Constants.LATEST, true);
         String domain = filter.get(Constants.DOMAIN);
-        List<String> mandatoryTags=Util.getMandatoryTags();
+        List<String> mandatoryTagList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
         String targetType = "";
         if (filter != null) {
             Iterator<Entry<String, String>> it = filter.entrySet().iterator();
             while (it.hasNext()) {
                 Entry<String, String> entry = it.next();
-                if(mandatoryTags.contains(entry.getKey())){
-                    mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                }
+                addTagToFilter(mustFilter, mandatoryTagList, filterTagMap, entry);
                 if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
                     targetType = entry.getValue();
                 }
@@ -1204,10 +1207,10 @@ public class AssetRepositoryImpl implements AssetRepository {
        // mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
-        List<String> mandatoryTags=Util.getMandatoryTags();
+        List<String> mandatoryTagList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
         filter.entrySet()
                 .stream()
                 .forEach(
@@ -1215,11 +1218,11 @@ public class AssetRepositoryImpl implements AssetRepository {
                             String filterKey = entry.getKey();
                             if (!(filterKey.equals(AssetConstants.FILTER_TAGGED)
                                     || filterKey.equals(AssetConstants.FILTER_RES_TYPE) || filterKey
-                                    .equals(AssetConstants.FILTER_TAGNAME))) {
-                                if(mandatoryTags.contains(entry.getKey())){
-                                    mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                                    mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                                }
+                                    .equals(AssetConstants.FILTER_TAGNAME))
+                                    && mandatoryTagList.contains(entry.getKey())) {
+                                mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
+                                mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
+
                             }
                         });
         if (!Strings.isNullOrEmpty(targetType)) {
@@ -1477,18 +1480,17 @@ public class AssetRepositoryImpl implements AssetRepository {
         List<String> mandatoryTagsList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
         filter.entrySet()
                 .stream()
                 .forEach(
                         entry -> {
                             if (!(entry.getKey().equals(AssetConstants.FILTER_POLICYID)
                                     || entry.getKey().equals(AssetConstants.FILTER_RES_TYPE) || entry.getKey().equals(
-                                    AssetConstants.FILTER_COMPLIANT))) {
-                                if(mandatoryTagsList.contains(entry.getKey())){
-                                    mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                                    mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                                }
+                                    AssetConstants.FILTER_COMPLIANT))
+                                    && mandatoryTagsList.contains(entry.getKey())) {
+                                mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
+                                mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
                             }
                         });
 
@@ -2271,16 +2273,14 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(Constants.LATEST, Constants.TRUE);
-        List<String> mandatoryTags=Util.getMandatoryTags();
+        List<String> mandatoryTagList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
         Iterator it = filter.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry entry = (Map.Entry) it.next();
-            if(mandatoryTags.contains(entry.getKey())){
-                mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-            }
+            addTagToFilter(mustFilter, mandatoryTagList, filterTagMap, entry);
             if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
                 targetType = entry.getValue().toString();
             }
@@ -2406,21 +2406,21 @@ public class AssetRepositoryImpl implements AssetRepository {
 		parentEntryMap.put(AssetConstants.QUERY, queryMap);
 		mustFilter.put("has_parent", parentEntryMap);
 
-        List<String> mandatoryTags=Util.getMandatoryTags();
+        List<String> mandatoryTagList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
 
 		filter.entrySet().stream().forEach(entry -> {
 			if (!(entry.getKey().equals(AssetConstants.FILTER_PATCHED)
 					|| entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)
 					|| entry.getKey().equals(AssetConstants.FILTER_EXEC_SPONSOR)
-					|| entry.getKey().equals(AssetConstants.FILTER_DIRECTOR))) {
-                if(mandatoryTags.contains(entry.getKey())){
-                    mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                    mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                }
-			}
+					|| entry.getKey().equals(AssetConstants.FILTER_DIRECTOR))
+                    && mandatoryTagList.contains(entry.getKey())) {
+                mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
+                mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
+
+            }
 		});
 
 		mustFilterAsset.put(Constants.LATEST, true);
@@ -2491,10 +2491,10 @@ public class AssetRepositoryImpl implements AssetRepository {
         
         // Has Parent Query End
 
-        List<String> mandatoryTags=Util.getMandatoryTags();
+        List<String> mandatoryTagList=Util.getMandatoryTags();
 
         //Map containing the filter optionName and filter option value
-        Map<String, String> filterTagMap = getAssetFilterOptionValue("asset");
+        Map<String, String> filterTagMap = getAssetFilterOptionValue(ASSET);
         filter.entrySet()
                 .stream()
                 .forEach(
@@ -2502,11 +2502,10 @@ public class AssetRepositoryImpl implements AssetRepository {
                             if (!(entry.getKey().equals(AssetConstants.FILTER_PATCHED)
                                     || entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)
                                     || entry.getKey().equals(AssetConstants.FILTER_EXEC_SPONSOR) || entry
-                                    .getKey().equals(AssetConstants.FILTER_DIRECTOR))) {
-                                if(mandatoryTags.contains(entry.getKey())){
-                                    mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                                    mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
-                                }
+                                    .getKey().equals(AssetConstants.FILTER_DIRECTOR))
+                                    && mandatoryTagList.contains(entry.getKey())) {
+                                mustFilter.put(filterTagMap.get(entry.getKey()), entry.getValue());
+                                mustFilterAsset.put(filterTagMap.get(entry.getKey()), entry.getValue());
                             }
                         });
 
