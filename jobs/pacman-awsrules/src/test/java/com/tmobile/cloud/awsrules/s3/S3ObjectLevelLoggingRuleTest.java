@@ -1,11 +1,11 @@
 package com.tmobile.cloud.awsrules.s3;
 
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.awsrules.utils.S3PacbotUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,10 +58,6 @@ public class S3ObjectLevelLoggingRuleTest {
     public void executeReadTest() throws Exception {
 
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
-        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
-                any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
-        when(PacmanUtils.getValidResourceValue(any(), any())).thenReturn(Collections.singletonList("test"));
-        when(PacmanUtils.isValidateReadWriteType(any(), any())).thenReturn(true);
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
                 any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
@@ -69,19 +65,26 @@ public class S3ObjectLevelLoggingRuleTest {
                 any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("All")));
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
+                any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
+                .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3")));
 
         PolicyResult ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
+
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
+                any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
+                .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3" + ":::"
+                        + resourceAttribute.get(PacmanRuleConstants.NAME) + "/")));
+
+        ruleResult = s3ObjectLevelReadLoggingRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
+
     }
 
     @Test
     public void executeWriteTest() throws Exception {
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
-
-        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
-                any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
-        when(PacmanUtils.getValidResourceValue(any(), any())).thenReturn(Collections.singletonList("test"));
-        when(PacmanUtils.isValidateReadWriteType(any(), any())).thenReturn(true);
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
                 any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
@@ -89,8 +92,19 @@ public class S3ObjectLevelLoggingRuleTest {
                 any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("All")));
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
+                any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
+                .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3")));
 
         PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
+        assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
+
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
+                any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
+                .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3" + ":::"
+                        + resourceAttribute.get(PacmanRuleConstants.NAME) + "/")));
+
+        ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
     }
 
@@ -117,10 +131,9 @@ public class S3ObjectLevelLoggingRuleTest {
     public void wrongTypeTest() throws Exception {
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
         String readTypeFromSearch = "test";
-        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
-                any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
-        when(PacmanUtils.getValidResourceValue(any(), any())).thenReturn(Collections.singletonList("test"));
-        when(PacmanUtils.isValidateReadWriteType(any(), any())).thenReturn(false);
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
+                any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
+                .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3")));
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
                 any(), eq("trailarn"), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
@@ -149,17 +162,15 @@ public class S3ObjectLevelLoggingRuleTest {
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
                 any(), eq("trailarn"), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
-        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
-                any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
                 any(), any(), any(), eq("readwritetype"), any())).thenReturn(new HashSet<>(Collections.singletonList(readTypeFromSearch)));
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(),
                 any(), any(), any(), any())).thenReturn(null);
-        when(PacmanUtils.getValidResourceValue(any(), any())).thenReturn(Collections.singletonList("test"));
-        when(PacmanUtils.isValidateReadWriteType(any(), any())).thenReturn(true);
         String expected = "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true,accountId: "
-                + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
-
+                + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID) + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
+        when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
+                any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
+                .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3")));
         PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
