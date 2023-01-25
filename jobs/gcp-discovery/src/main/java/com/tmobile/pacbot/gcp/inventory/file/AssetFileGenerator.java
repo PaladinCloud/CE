@@ -103,7 +103,7 @@ public class AssetFileGenerator {
 				try {
 					FileManager.generateCloudFunctionFile(cloudFunctionCollector.fetchCloudFunctionInventory(project));
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error("Error occured in generating data file for cloud functions {} ", e.getMessage());
 				}
 			});
 
@@ -299,7 +299,7 @@ public class AssetFileGenerator {
 				try {
 					FileManager.generateCloudFunctionGen1File(cloudFunctionGen1Collector.fetchCloudFunctionInventory(project));
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error("Error occured in generating data file for cloud functions gen1 {} ", e.getMessage());
 				}
 			});
 
