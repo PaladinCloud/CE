@@ -95,6 +95,8 @@ SET @AWS_EVENTBRIDGE_BUS_DETAILS='$AWS_EVENTBRIDGE_BUS_DETAILS';
 SET @AZURE_ENABLED='$AZURE_ENABLED';
 SET @GCP_ENABLED='$GCP_ENABLED';
 SET @JOB_SCHEDULER_NUMBER_OF_BATCHES='$JOB_SCHEDULER_NUMBER_OF_BATCHES';
+SET @EVENT_BRIDGE_PRIFIX= '$EVENT_BRIDGE_PRIFIX';
+SET @MANDATORY_TAGS='$MANDATORY_TAGS';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2819,7 +2821,7 @@ INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('api.services[5].name','Statistics Service','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('api.services[5].url','${PACMAN_HOST_NAME:http://localhost:8080}/api/statistics/v2/api-docs','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('api.services[5].version','2','api','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tagging.mandatoryTags','Application,Environment','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('tagging.mandatoryTags',concat(@MANDATORY_TAGS,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.types','ec2,onpremserver','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.summary.severity','5','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('swagger.auth.whitelist','/configuration/security,/swagger-ui.html,/api.html,/webjars/**,/user,/public/**,/api.html,/css/styles.js,/js/swagger.js,/js/swagger-ui.js,/js/swagger-oauth.js,/images/pacman_logo.svg,/images/favicon-32x32.png,/images/favicon-16x16.png,/images/favicon.ico,/docs/v1/api.html,/v2/api-docs/**,/v2/swagger.json,/webjars/springfox-swagger-ui/css/**,/webjars/springfox-swagger-ui/js/**,/configuration/ui,/swagger-resources/**,/configuration/**,/imgs/**,/css/**,/css/font/**,/proxy*/**,/hystrix/monitor/**,/hystrix/**/images/pacman_logo.svg,/images/favicon-32x32.png,/images/favicon-16x16.png,/images/favicon.ico,/docs/v1/api.html,/v2/api-docs/**,/v2/swagger.json,/webjars/springfox-swagger-ui/css/**,/webjars/springfox-swagger-ui/js/**,/configuration/ui,/swagger-resources/**,/configuration/**,/imgs/**,/css/**,/css/font/**,/proxy*/**,/hystrix/monitor/**,/hystrix/**,/refresh','api','prd','latest',NULL,NULL,NULL,NULL);
@@ -3132,6 +3134,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.occurance','severity,_resourceid,pciflag,_vulnage,vulntype,title,classification,_firstFound,_lastFound,qid,patchable,category','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetails','tags.Name,accountid,accountname,tags.Environment,tags.Application,privateipaddress,instanceid,region,availabilityzone,imageid,platform,privatednsname,instancetype,subnetid,_resourceid,publicipaddress,publicdnsname,vpcid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetailsboth','tags.Name,tags.Environment,tags.Application,ip_address,privateipaddress,_entitytype,_resourceid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PRIFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 
 
@@ -3653,3 +3656,48 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Ensure that EC2 instances are not
 
 UPDATE cf_PolicyTable SET category = 'cost' WHERE policyId IN ('UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume', 'Unused-Security-group_version-1_UnusedSecurityGroup_sg', 'UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb', 'UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb', 'UnusedEBSRule_version-1_UnusedEbsRule_volume', 'UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip');
 
+
+UPDATE `pacmandata`.`pac_config_key_metadata` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
+
+/* Procedure to update metadata based on the mandatory tags configured */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `update_filter_for_tag` $$
+CREATE PROCEDURE `update_filter_for_tag`(mandatoryTags MEDIUMTEXT)
+BEGIN
+
+DECLARE tag TEXT DEFAULT NULL;
+DECLARE tagLength INT DEFAULT NULL;
+DECLARE _value TEXT DEFAULT NULL;
+
+-- delete the existing configured filters for mandatory tags
+delete from pac_v2_ui_options where optionValue like '%tags%';
+
+iterator:
+LOOP
+
+  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
+    LEAVE iterator;
+  END IF;
+
+  -- fetch the next value from the mandatoryTags list
+  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
+  SET tagLength = CHAR_LENGTH(tag);
+
+  -- trim the value of leading and trailing spaces
+  SET _value = TRIM(tag);
+
+  -- insert the filters metadata for mandatory tags
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+
+  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
+END LOOP;
+
+END $$
+
+DELIMITER ;
+
+CALL update_filter_for_tag(@MANDATORY_TAGS);

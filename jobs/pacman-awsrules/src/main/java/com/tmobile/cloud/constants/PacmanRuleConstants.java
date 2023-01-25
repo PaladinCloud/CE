@@ -621,5 +621,8 @@ public class PacmanRuleConstants {
     public static final String DISABLE_KUBERNETES_DASHBOARD="disableKubernetesDashBoard";
 
     public static final String RESTRICTIONS="restrictions";
+    public static final String HTTP_PROXY_DETAIL_LIST="httpProxyDetailList";
+    public static final String HAS_CUSTOM_POLICY="hasCustomPolicy";
+
     public static final String QUIC_NEGOTIATION = "quicNegotiation";
 }

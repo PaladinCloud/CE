@@ -142,6 +142,8 @@ CURRENT_RELEASE = "v1.5.2"
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
+MANDATORY_TAGS = "Application,Environment"
+
 try:
     from settings.local import *
 except:

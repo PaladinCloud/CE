@@ -1,7 +1,9 @@
 package com.tmobile.pacbot.gcp.inventory.collector;
 
+import com.amazonaws.util.StringUtils;
 import com.google.cloud.compute.v1.*;
 import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
+import com.tmobile.pacbot.gcp.inventory.vo.HttpsProxyVH;
 import com.tmobile.pacbot.gcp.inventory.vo.LoadBalancerVH;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
 import com.tmobile.pacbot.gcp.inventory.vo.SslPolicyVH;
@@ -34,16 +36,22 @@ public class LoadBalancerCollector {
            Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient().list(project.getProjectId()).iterateAll();
            List<String> targetHttpsProxyVH = new ArrayList<>();
            List<String> sslPolicyList=new ArrayList<>();
+           List<HttpsProxyVH> httpProxyDetailList = new ArrayList<>();
            List<Boolean> quicEnabledList = new ArrayList<>();
 
            for (TargetHttpsProxy targetHttpsProxy : httpsProxies) {
                logger.debug("Target proxy :{} {}", targetHttpsProxy.getName(), targetHttpsProxy.getId());
-              sslPolicyList.add(targetHttpsProxy.getSslPolicy());
+               HttpsProxyVH httpsProxyVH = new HttpsProxyVH();
+               httpsProxyVH.setName(targetHttpsProxy.getName());
+               httpsProxyVH.setHasCustomPolicy(!StringUtils.isNullOrEmpty(targetHttpsProxy.getSslPolicy()));
+               sslPolicyList.add(targetHttpsProxy.getSslPolicy());
                targetHttpsProxyVH.add(targetHttpsProxy.getName());
+               httpProxyDetailList.add(httpsProxyVH);
                if(targetHttpsProxy.hasQuicOverride()){
                    quicEnabledList.add(targetHttpsProxy.getQuicOverride().equals("ENABLE"));
                }
            }
+           loadBalancerVH.setHttpProxyDetailList(httpProxyDetailList);
            loadBalancerVH.setTargetHttpsProxy(targetHttpsProxyVH);
            loadBalancerVH.setQuicNegotiation(quicEnabledList);
 

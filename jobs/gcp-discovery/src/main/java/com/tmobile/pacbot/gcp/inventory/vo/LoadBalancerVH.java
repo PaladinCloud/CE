@@ -9,12 +9,22 @@ public class LoadBalancerVH extends GCPVH{
 
     List<String> targetHttpsProxy;
 
+    List<HttpsProxyVH> httpProxyDetailList;
+
     boolean logConfigEnabled;
 
     @JsonProperty
     List<Boolean> quicNegotiation;
 
     List<SslPolicyVH> sslPolicyList;
+
+    public List<HttpsProxyVH> getHttpProxyDetailList() {
+        return httpProxyDetailList;
+    }
+
+    public void setHttpProxyDetailList(List<HttpsProxyVH> httpProxyDetailList) {
+        this.httpProxyDetailList = httpProxyDetailList;
+    }
 
     public boolean isLogConfigEnabled() {
         return logConfigEnabled;

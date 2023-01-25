@@ -112,7 +112,7 @@ public class CognitoAuthServiceImpl implements AuthService {
 						.create(AwsSessionCredentials
 								.create(credentials.getAWSAccessKeyId(), credentials.getAWSSecretKey(), credentials.getSessionToken()))).build();
 
-		String userName = jwt.getClaim("cognito:username").asString().toLowerCase();
+		String userName = jwt.getClaim("cognito:username").asString();
 
 		Map<String, Object> userDetails = new HashMap<>();
 		Map<String, Object> userInfo = cognitoUserService.getUserInfo(identityProviderClient, userPoolId, userName);
