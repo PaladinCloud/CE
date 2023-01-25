@@ -158,5 +158,10 @@ public class Util {
 		}
 
 	}
+	public static String getResourceGroupNameFromId(String id)
+	{
+		int beginningIndex=id.indexOf("resourceGroups")+15;
+		return id.substring(beginningIndex,id.indexOf('/',beginningIndex+2));
+	}
 	
 }

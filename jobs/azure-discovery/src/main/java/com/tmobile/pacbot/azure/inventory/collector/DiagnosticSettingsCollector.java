@@ -40,7 +40,7 @@ public class DiagnosticSettingsCollector {
                 diagnosticSettingVH.setId(diagnosticSetting.getAsJsonObject().getAsJsonPrimitive("id").getAsString());
                 diagnosticSettingVH.setName(diagnosticSetting.getAsJsonObject().getAsJsonPrimitive("name").getAsString());
                 diagnosticSettingVH.setSubscriptionName(subscription.getSubscriptionName());
-                diagnosticSettingVH.setSubscription(subscription.getSubscription());
+                diagnosticSettingVH.setSubscription(subscription.toString());
                 diagnosticSettingVH.setResourceGroupName(subscription.getResourceGroupName());
                 diagnosticSettingVH.setSubscriptionId(subscription.getSubscriptionId());
                 diagnosticSettingVH.setRegion(subscription.getRegion());

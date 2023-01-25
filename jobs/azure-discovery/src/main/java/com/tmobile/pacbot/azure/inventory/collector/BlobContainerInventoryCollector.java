@@ -51,6 +51,8 @@ public class BlobContainerInventoryCollector {
 					BlobContainerVH blobContainerVH = new BlobContainerVH();
 					blobContainerVH.setSubscription(subscription.getSubscriptionId());
 					blobContainerVH.setSubscriptionName(subscription.getSubscriptionName());
+					blobContainerVH.setResourceGroupName(storageAccount.resourceGroupName());
+					blobContainerVH.setRegion(storageAccount.regionName());
 					JsonObject blobObject = blobObjectElement.getAsJsonObject();
 					JsonObject properties = blobObject.getAsJsonObject("properties");
 					log.debug("Properties data{}",properties);

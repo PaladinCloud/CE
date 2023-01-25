@@ -1,10 +1,21 @@
 package com.tmobile.pacbot.azure.inventory.vo;
 
+import java.util.Map;
+
 public class RedisCacheVH extends AzureVH{
     private boolean nonSslPort;
     private String name;
 
     private int port;
+    private Map<String, String> tags;
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
     public int getPort() {
         return port;
@@ -29,4 +40,5 @@ public class RedisCacheVH extends AzureVH{
     public void setNonSslPort(boolean nonSslPort) {
         this.nonSslPort = nonSslPort;
     }
+
 }

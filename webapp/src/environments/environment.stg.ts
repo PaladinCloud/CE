@@ -611,7 +611,7 @@ export const environment = {
         method: 'POST'
     },
     getPolicyById: {
-        url: '{{baseUrl}}/admin/policy/details-by-id',
+        url: '{{baseUrl}}/compliance/v1/policy-details-by-id',
         method: 'GET'
     },
     enableDisableRule: {
@@ -842,7 +842,7 @@ export const environment = {
         url: '{{baseUrl}}/admin/users/list',
         method: 'GET'
     },
-    policyCategory : {
+    policyCategory: {
         url: '{{baseUrl}}/admin/policy/categories',
         method: 'GET'
     },
