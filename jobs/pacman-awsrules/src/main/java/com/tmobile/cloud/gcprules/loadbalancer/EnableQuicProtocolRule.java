@@ -76,9 +76,7 @@ public class EnableQuicProtocolRule extends BasePolicy {
                     return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
                             annotation);
                 }
-
             } catch (Exception exception) {
-                exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
