@@ -1,17 +1,3 @@
-/*
- *Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
- * this file except in compliance with the License. A copy of the License is located at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * or in the "license" file accompanying this file. This file is distributed on
- * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
- * implied. See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import {
   Component,
   OnInit,
@@ -32,6 +18,7 @@ import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
 import { FetchResourcesService } from 'src/app/pacman-features/services/fetch-resources.service';
 import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-asset-dashboard',
@@ -55,13 +42,14 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
   dataSubscription;
+  trendDataSubscription: Subscription;
 
   graphHeight;
   @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
   
   card = {
       id: 3,
-      header: "Total Assets vs Time",
+      header: "Asset Graph",
     }
 
     tiles = [
@@ -147,55 +135,10 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleGraphIntervalSelection = (e) => {
-    this.selectedItem = e;
-    e = e.toLowerCase();
-    if(e == "all time" || e == "custom"){
-      if(e=="custom"){
-        this.isCustomSelected = true;
-        this.matMenuTrigger.openMenu()
-        return;
-      }
-      this.dateIntervalSelected();
-      return;
-    }
-    let date = new Date();
-    this.isCustomSelected = false;
-    switch(e){
-      case "1 week":
-        date.setDate(date.getDate() - 7);
-        break;
-      case "1 month":
-        date.setMonth(date.getMonth() - 1);
-        break;
-      case "6 months":
-        date.setMonth(date.getMonth() - 6);
-        break;
-      case "12 months":
-        date.setFullYear(date.getFullYear() - 1);
-        break;
-    }
-    this.dateIntervalSelected(date); 
-  }
-
   getFormattedDate(date: Date){
     const offset = date.getTimezoneOffset()
     let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
     return formattedDate;
-  }
-
-  dateIntervalSelected(fromDate?, toDate?){
-    let queryParamObj = {}
-    if(fromDate){
-      this.fromDate = fromDate;
-      queryParamObj["from"] = this.getFormattedDate(fromDate);
-    }
-    if(toDate){
-      this.toDate = toDate;
-      queryParamObj["to"] = this.getFormattedDate(toDate);
-    }    
-    this.isCustomSelected = false;
-    this.getAssetsCountData(queryParamObj);
   }
 
   getAssetsTileData(){
@@ -275,29 +218,44 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getAssetsCountData(queryObj) {
+  getAssetsCountData(queryObj) {
     if(!this.assetGroupName){
       return;
     }
+
+    if(this.trendDataSubscription){
+      this.trendDataSubscription.unsubscribe();
+    }
+    if(queryObj.from){
+      this.fromDate = queryObj.from;
+    }
+
+    if(queryObj.to){
+      this.toDate = queryObj.to;
+    }
     const queryParams = {
       ag: this.assetGroupName,
-      ...queryObj
+      domain: this.domainName,
+      from: this.getFormattedDate(this.fromDate),
+      to: this.getFormattedDate(this.toDate)
     };
 
     this.totalAssetsCountDataError = '';
     this.totalAssetsCountData = [];
 
     try {
-        this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
-          if(response[0].length==0){
-              this.totalAssetsCountDataError = 'noDataAvailable';
-              return;
-          }
-          this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
+        this.trendDataSubscription = this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
+            this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
+            if(response[0].trend.length<2){
+                this.totalAssetsCountDataError = 'noDataAvailable';
+            }
+        }, (error) => {
+          this.logger.log("error", error);
+          this.totalAssetsCountDataError = "apiResponseError";
         });
     } catch (error) {
         this.totalAssetsCountDataError = "apiResponseError";
-        this.logger.log("--error--", error);
+        this.logger.log("error", error);
     }
   }
 
@@ -347,8 +305,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
           this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
           this.assetGroupName = assetGroupName;
           this.getAssetsCountData({
-            from: this.getFormattedDate(this.fromDate),
-            to: this.getFormattedDate(this.toDate)
+            from: this.fromDate,
+            to: this.toDate
           });
           this.getAssetsTileData();
           this.getExemtedAssetsCount();
@@ -358,6 +316,9 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     try {
+      if(this.trendDataSubscription){
+        this.trendDataSubscription.unsubscribe();
+      }
       this.dataStore.set('urlToRedirect', this.urlToRedirect);
     } catch (error) {
       this.logger.log('error', '--- Error while unsubscribing ---');

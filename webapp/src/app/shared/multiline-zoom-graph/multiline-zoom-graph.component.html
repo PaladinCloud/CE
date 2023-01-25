@@ -1,4 +1,4 @@
- <div #graphContainer class="multiline-graph-container">
+<div #graphContainer class="multiline-graph-container" id="{{id}}">
      <ul *ngIf="showLegend" class="flex flex-row flex-center flex-wrap">
         <li *ngFor="let line of graphData; let i = index;" class="flex flex-align-center">
             <div class="legend-color" [ngStyle]="{'background-color': lineColorsObject[line.key.split('-')[0]] || lineColorsObject[lineColorsArray[i]] }"></div>

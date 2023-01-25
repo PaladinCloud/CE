@@ -113,6 +113,9 @@ import { ChipComponent } from './components/atoms/chip/chip.component';
 import { TextComponent } from './components/atoms/text/text.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { StepperComponent } from "./stepper/stepper.component";
+import { CustomCardComponent } from './components/molecules/custom-card/custom-card.component';
+import { OverviewTileComponent } from './components/molecules/overview-tile/overview-tile.component';
+import { TextWithIconComponent } from "./components/molecules/text-with-icon/text-with-icon.component";
 
 @NgModule({
   imports: [
@@ -202,8 +205,14 @@ import { StepperComponent } from "./stepper/stepper.component";
     ChipComponent,
     TextComponent,
     StepperComponent,
+    CustomCardComponent,
+    OverviewTileComponent,
+    TextWithIconComponent
   ],
   exports: [
+    TextWithIconComponent,
+    CustomCardComponent,
+    OverviewTileComponent,
     TextComponent,
     ChipComponent,
     StepperComponent,

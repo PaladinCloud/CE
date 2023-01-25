@@ -337,6 +337,8 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       graphTickValues.push(tickVal);
       if(tickVal>this.axisMaxValue) break;
     }
+    this.axisMinValue = graphTickValues[0];
+    this.axisMaxValue = graphTickValues[graphTickValues.length-1];
     return graphTickValues;
   }
 
@@ -466,10 +468,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           // To show a scale of 1-100 if we're showing a single percentage line (out of 100)
           this.y.domain([0, 100]).nice();
         } else {
-          const yFactor = 0//0.6*(this.axisMaxValue-this.axisMinValue)/4;          
           this.y.domain([
-            this.axisMinValue - yFactor,
-            this.axisMaxValue + yFactor,
+            this.axisMinValue,
+            this.axisMaxValue,
           ]).nice();
         }
       } else {
@@ -480,10 +481,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       this.yLogAxis = false;
       this.y = d3Scale.scaleLinear().range([this.height, 0]);
 
-      const yFactor = 0// 0.4*(this.axisMaxValue-this.axisMinValue)/4;
       this.y.domain([
-        this.axisMinValue - yFactor,
-        this.axisMaxValue + yFactor,
+        this.axisMinValue ,
+        this.axisMaxValue ,
       ]).nice();
     }
     this.x2 = d3Scale.scaleTime().range([0, this.timeLineWidth]);
