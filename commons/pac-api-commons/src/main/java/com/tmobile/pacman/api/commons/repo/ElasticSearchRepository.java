@@ -251,7 +251,7 @@ public class ElasticSearchRepository implements Constants {
 	public List<Map<String, Object>> getSortedDataFromES(String dataSource, String targetType,
 			Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
 			final HashMultimap<String, Object> shouldFilter, List<String> fields, Map<String, Object> mustTermsFilter,
-			List<Map<String, Object>> sortFieldMapList) throws Exception {
+			Map<String, Object> sortFieldMapList) throws Exception {
 
 		Long totalDocs = getTotalDocumentCountForIndexAndType(dataSource, targetType, mustFilter, mustNotFilter,
 				shouldFilter, null, mustTermsFilter);
