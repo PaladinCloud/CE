@@ -58,6 +58,7 @@ public class VMInventoryCollector {
                         VirtualMachineVH virtualMachineVH = new VirtualMachineVH();
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
                         virtualMachineVH.setMachineType(instance.getMachineType());
+                        virtualMachineVH.setAutoRestart(instance.getScheduling().getAutomaticRestart());
                         virtualMachineVH.setTags(updateApplicationTag(instance.getLabelsMap()));
                         virtualMachineVH.setProjectName(project.getProjectName());
                         virtualMachineVH.setProjectId(project.getProjectId());

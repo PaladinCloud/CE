@@ -1938,5 +1938,25 @@
     "modifiedDate": "2022-11-29",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "policyId": "Enable_Auto_Restart_Vm_Instance",
+    "policyUUID": "Enable_Auto_Restart_Vm_Instance",
+    "policyName": "Enable_Auto_Restart_Vm_Instance",
+    "targetType": "vminstance",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-auto-restart-for-vm-instance\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Auto_Restart_Vm_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Auto_Restart_Vm_Instance\",\"policyType\":\"ManagePolicy\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Auto_Restart_Vm_Instance",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Enable Auto restart for vm instances",
+    "createdDate": "2023-01-25",
+    "modifiedDate": "2023-01-25",
+    "severity": "medium",
+    "category": "security"
   }
 ]
