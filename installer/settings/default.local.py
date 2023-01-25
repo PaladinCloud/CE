@@ -120,6 +120,7 @@ AWS_ACCOUNT_DETAILS = [
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
+MANDATORY_TAGS = "Application,Environment"
 
 #BATCH CONFIGURATION 
 BATCH_JOB_MEMORY = 3072
