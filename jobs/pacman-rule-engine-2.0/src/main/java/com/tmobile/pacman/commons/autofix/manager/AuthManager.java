@@ -34,7 +34,7 @@ public class AuthManager {
             Map<String,String> creds = new HashMap<>();
             creds.put("password", CommonUtils.getPropValue(PacmanSdkConstants.PACMAN_LOGIN_PASSWORD));
             creds.put("username", CommonUtils.getPropValue(PacmanSdkConstants.PACMAN_LOGIN_USER_NAME));
-             String credentials = System.getenv(API_AUTH_INFO);
+             String credentials = CommonUtils.getPropValue(API_AUTH_INFO);
              String response =null;
              if(credentials!=null){
                  response = CommonUtils.postUrlEncoded(AUTH_API_URL+"/oauth2/token?grant_type=client_credentials&scope="+API_READ_SCOPE,

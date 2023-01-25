@@ -10,4 +10,3 @@ class AuthPostLambdaFunction(LambdaFunctionResource):
     runtime = "python3.8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaPostAuthFile.get_output_attr('id') 
-

@@ -135,8 +135,8 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
                 'value': ApplicationLoadBalancer.get_api_version_url('asset')},
             {'name': "CMPL_API_URL",
                 'value': ApplicationLoadBalancer.get_api_version_url('compliance')},
-            {'name': "AUTH_API_URL",
-                'value': ApplicationLoadBalancer.get_api_version_url('auth')},
+            # {'name': "AUTH_API_URL",
+            #     'value': ApplicationLoadBalancer.get_api_version_url('auth')},
             {'name': "CONFIG_CREDENTIALS", 'value': "dXNlcjpwYWNtYW4="},
             {'name': "CONFIG_SERVICE_URL", 'value': ApplicationLoadBalancer.get_http_url(
             ) + "/api/config/rule/prd/latest"}
@@ -148,8 +148,6 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
             {'encrypt': False, 'key': "datasource", 'value': "aws"},
             {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
-            {'encrypt': False, 'key': "apiauthinfo",
-                'value': "MjJlMTQ5MjItODdkNy00ZWU0LWE0NzAtZGEwYmIxMGQ0NWQzOmNzcldwYzVwN0pGRjR2RVpCa3dHQ0FoNjdrR1FHd1h2NDZxdWc3djVad3RLZw=="},
             {'encrypt': False,'key': "AUTH_API_URL",'value': "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"}
         ]
     })
@@ -209,8 +207,7 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
         'params': [
             {'encrypt': False, 'key': "package_hint",
                 'value': "com.tmobile.cso.pacbot"},
-            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
-            {'encrypt': False,'key': "AUTH_API_URL",'value': "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="}
         ]
     })
 
