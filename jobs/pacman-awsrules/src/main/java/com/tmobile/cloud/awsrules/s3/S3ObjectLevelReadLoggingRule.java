@@ -1,5 +1,20 @@
 package com.tmobile.cloud.awsrules.s3;
 
+import com.google.common.collect.HashMultimap;
+import com.nimbusds.oauth2.sdk.util.MapUtils;
+import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.awsrules.utils.S3PacbotUtils;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.exception.InvalidInputException;
+import com.tmobile.pacman.commons.policy.Annotation;
+import com.tmobile.pacman.commons.policy.BasePolicy;
+import com.tmobile.pacman.commons.policy.PacmanPolicy;
+import com.tmobile.pacman.commons.policy.PolicyResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,32 +25,33 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.collect.HashMultimap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
-import com.nimbusds.oauth2.sdk.util.MapUtils;
-import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.pacman.commons.PacmanSdkConstants;
-import com.tmobile.pacman.commons.exception.InvalidInputException;
-import com.tmobile.pacman.commons.policy.Annotation;
-import com.tmobile.pacman.commons.policy.BasePolicy;
-import com.tmobile.pacman.commons.policy.PacmanPolicy;
-import com.tmobile.pacman.commons.policy.PolicyResult;
-
 @PacmanPolicy(key = "check-s3-object-level-read-logging-rule", desc = "This rule checks object level logging for s3 buckets", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class S3ObjectLevelReadLoggingRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(S3ObjectLevelReadLoggingRule.class);
 
-    private static final String CLOUD_TRAIL_URL = "/aws/cloudtrail/_search";
     private static final String CLOUD_TRAIL_EVENT_SELECTOR_URL = "/aws/cloudtrail_eventselector/_search";
     private static final String DATA_RESOURCE_TYPE = "AWS::S3::Object";
-    private static final String DATA_RESOURCE_VALUE = "arn:aws:s3";
-
     private static final List<String> READ_WRITE_TYPES = Arrays.asList("All", "ReadOnly");
+
+    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+
+        Annotation annotation = null;
+        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+
+        annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+        annotation.put(PacmanSdkConstants.DESCRIPTION, description);
+        annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
+        annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
+        annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+        issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
+        issueList.add(issue);
+        annotation.put("issueDetails", issueList.toString());
+        logger.debug("========CheckForS3ObjectLevelReadLogging annotation {} :=========", annotation);
+        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+
+    }
 
     /**
      * The method will get triggered from Rule Engine with following parameters
@@ -105,71 +121,20 @@ public class S3ObjectLevelReadLoggingRule extends BasePolicy {
                     shouldFilter, mustTermsFilter, PacmanRuleConstants.DATA_RESOURCE_VALUE, null);
 
             if (Objects.isNull(resourceValueSet) || resourceValueSet.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
-                        + " for s3 bucket: " + bucketName;
+                return S3PacbotUtils.CLOUD_TRAIL_MSG + accountId + " for s3 bucket: " + bucketName +
+                        " for S3ObjectLevelReadLogging";
             }
-            List<String> resourceValues = PacmanUtils.getValidResourceValue(resourceValueSet, bucketName);
+            List<String> resourceValues = S3PacbotUtils.getValidResourceValue(resourceValueSet, bucketName);
             if (resourceValues.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
-                        + " for s3 bucket: " + bucketName + " and resourceValue is not matching";
+                return S3PacbotUtils.CLOUD_TRAIL_MSG + accountId + " for s3 bucket: " + bucketName
+                        + " and resourceValue is not matching for S3ObjectLevelReadLogging";
             }
-            for (String resourceValue : resourceValues) {
-                mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_VALUE, resourceValue);
-                Set<String> readWriteTypeSet = PacmanUtils
-                        .getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                                shouldFilter, mustTermsFilter, "readwritetype", null);
-                if (Objects.isNull(readWriteTypeSet) || readWriteTypeSet.isEmpty()) {
-                    return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
-                            + " for s3 bucket: " + bucketName + " and readwritetype is not matching";
-                }
-                if (!PacmanUtils.isValidateReadWriteType(readWriteTypeSet, READ_WRITE_TYPES)) {
-                    return "CloudTrail log with matching conditions does not exists," +
-                            "readwritetype: " + String.join(",", readWriteTypeSet) + ",accountId: " + accountId
-                            + " for s3 bucket: " + bucketName;
-                }
-                Set<String> trailArnSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                        shouldFilter, mustTermsFilter, "trailarn", null);
-                if (Objects.isNull(trailArnSet) || trailArnSet.isEmpty()) {
-                    return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
-                            + " for s3 bucket: " + bucketName;
-                }
-                for (String trailFromSearch : trailArnSet) {
-                    esEndPoint = pacmanHost + CLOUD_TRAIL_URL;
-                    mustFilter = new HashMap<>();
-                    mustFilter.put(PacmanRuleConstants.MULTI_REGION_TRAIL, "true");
-                    mustFilter.put(PacmanRuleConstants.TRAIL_ARN, trailFromSearch);
-                    Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                            shouldFilter, mustTermsFilter, "trailarn", null);
-                    if (!(Objects.isNull(resultSet) || resultSet.isEmpty())) {
-                        return null;
-                    }
-                }
-            }
-            return "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
-                    + ",accountId: " + accountId + " for s3 bucket: " + bucketName;
+            return S3PacbotUtils.getCloudTrailUsingResourceValue(resourceValues, esEndPoint, accountId, mustFilter,
+                    bucketName, shouldFilter, pacmanHost, mustTermsFilter, READ_WRITE_TYPES);
         } catch (Exception ex) {
             logger.error("Object-level logging for read events is not enabled for S3 bucket" + ex.getMessage(), ex);
             return "Object-level logging for read events is enabled for S3 bucket";
         }
-    }
-
-    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
-
-        Annotation annotation = null;
-        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
-        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
-
-        annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-        annotation.put(PacmanSdkConstants.DESCRIPTION, description);
-        annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
-        annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
-        annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
-        issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
-        issueList.add(issue);
-        annotation.put("issueDetails", issueList.toString());
-        logger.debug("========CheckForS3ObjectLevelReadLogging annotation {} :=========", annotation);
-        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-
     }
 
     @Override
