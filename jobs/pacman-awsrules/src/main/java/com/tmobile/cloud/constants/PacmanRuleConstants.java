@@ -628,4 +628,7 @@ public class PacmanRuleConstants {
     public static final Integer SECURE_ALWAYS = 1;
     public static final String INGRESS_SETTING = "ingressSetting";
     public static final String ALLOW_ALL = "ALLOW_ALL";
+    public static final String HTTP_PROXY_DETAIL_LIST="httpProxyDetailList";
+    public static final String HAS_CUSTOM_POLICY="hasCustomPolicy";
+
 }
