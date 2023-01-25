@@ -3133,6 +3133,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.occurance','severity,_resourceid,pciflag,_vulnage,vulntype,title,classification,_firstFound,_lastFound,qid,patchable,category','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetails','tags.Name,accountid,accountname,tags.Environment,tags.Application,privateipaddress,instanceid,region,availabilityzone,imageid,platform,privatednsname,instancetype,subnetid,_resourceid,publicipaddress,publicdnsname,vpcid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetailsboth','tags.Name,tags.Environment,tags.Application,ip_address,privateipaddress,_entitytype,_resourceid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PRIFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 
 
