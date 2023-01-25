@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.tmobile.pacbot.gcp.inventory.InventoryConstants;
-import com.tmobile.pacbot.gcp.inventory.constants.DataFileNames;
+import com.tmobile.pacbot.gcp.inventory.constants.DataFileNamesConstants;
 import com.tmobile.pacbot.gcp.inventory.vo.*;
 
 /**
@@ -67,8 +67,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-iamusers.data", "[", false);
         FileGenerator.writeToFile("gcp-gcploadbalancer.data", "[", false);
         FileGenerator.writeToFile("gcp-apikeys.data", "[", false);
-        FileGenerator.writeToFile(DataFileNames.CLOUD_FUNCTION, "[", false);
-        FileGenerator.writeToFile(DataFileNames.CLOUD_FUNCTION_GEN1, "[", false);
+        FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "[", false);
+        FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -93,8 +93,8 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-iamusers.data", "]", true);
         FileGenerator.writeToFile("gcp-gcploadbalancer.data", "]", true);
         FileGenerator.writeToFile("gcp-apikeys.data", "]", true);
-        FileGenerator.writeToFile(DataFileNames.CLOUD_FUNCTION, "]", true);
-        FileGenerator.writeToFile(DataFileNames.CLOUD_FUNCTION_GEN1, "]", true);
+        FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "]", true);
+        FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "]", true);
 
     }
 
@@ -178,10 +178,10 @@ public class FileManager {
         FileGenerator.generateJson(apiKeysVHList, "gcp-apikeys.data");
     }
     public static void generateCloudFunctionFile(List<CloudFunctionVH> fetchCloudFunctionInventory) {
-        FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNames.CLOUD_FUNCTION);
+        FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNamesConstants.CLOUD_FUNCTION);
     }
 
     public static void generateCloudFunctionGen1File(List<CloudFunctionVH> fetchCloudFunctionInventory) {
-        FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNames.CLOUD_FUNCTION_GEN1);
+        FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNamesConstants.CLOUD_FUNCTION_GEN1);
     }
 }
