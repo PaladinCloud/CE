@@ -75,10 +75,6 @@ public class GCPCredentialsProvider {
 
     private ApiKeysClient apiKeysClient;
 
-    private FunctionServiceClient functionServiceClient;
-
-    private CloudFunctionsServiceClient cloudFuntionClient;
-
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -191,8 +187,7 @@ public class GCPCredentialsProvider {
     public FunctionServiceClient getFunctionClient() throws IOException {
         FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-        functionServiceClient=FunctionServiceClient.create(functionServiceSettings);
-        return functionServiceClient;
+        return FunctionServiceClient.create(functionServiceSettings);
     }
 
     public ClusterControllerClient getDataProcClient(String region) throws IOException {
@@ -321,8 +316,7 @@ public class GCPCredentialsProvider {
     public CloudFunctionsServiceClient getFunctionClientGen1() throws IOException {
         CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-        cloudFuntionClient = CloudFunctionsServiceClient.create(functionsServiceSettings);
-        return cloudFuntionClient;
+        return CloudFunctionsServiceClient.create(functionsServiceSettings);
     }
 
     // close the client in destroy method

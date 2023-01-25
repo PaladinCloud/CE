@@ -72,7 +72,6 @@ public class VpnConnectorRule extends BasePolicy {
                 }
 
             } catch (Exception exception) {
-                exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
