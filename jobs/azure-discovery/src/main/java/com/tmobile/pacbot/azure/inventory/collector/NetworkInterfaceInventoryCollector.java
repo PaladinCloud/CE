@@ -54,6 +54,7 @@ public class NetworkInterfaceInventoryCollector {
 			networkInterfaceVH.setSubscription(subscription.getSubscriptionId());
 			networkInterfaceVH.setSubscriptionName(subscription.getSubscriptionName());
 			networkInterfaceVH.setIPForwardingEnabled(networkInterface.isIPForwardingEnabled());
+			networkInterfaceVH.setResourceGroupName(networkInterface.resourceGroupName());
 			setipConfigurations(networkInterface.ipConfigurations(), networkInterfaceVH);
 			networkInterfaceList.add(networkInterfaceVH);
 

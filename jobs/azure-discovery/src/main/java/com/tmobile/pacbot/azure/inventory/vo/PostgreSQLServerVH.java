@@ -9,6 +9,15 @@ public class PostgreSQLServerVH extends AzureVH {
 	private String location;
 	private Map<String, Object> propertiesMap;
 	private Map<String, Object> skuMap;
+	private Map<String, String> tags;
+
+	public Map<String, String> getTags() {
+		return tags;
+	}
+
+	public void setTags(Map<String, String> tags) {
+		this.tags = tags;
+	}
 
 	public String getName() {
 		return name;

@@ -53,6 +53,7 @@ public class WebAppInventoryCollector {
                 webAppVH.setHttpsOnly(webApp.httpsOnly());
                 webAppVH.setClientCertEnabled(webApp.clientCertEnabled());
                 log.info("web app client cert {}", webApp.clientCertEnabled());
+                webAppVH.setTags(webApp.tags());
                 webAppVH.setSystemAssignedManagedServiceIdentityPrincipalId(webApp.systemAssignedManagedServiceIdentityPrincipalId());
                 webAppList.add(webAppVH);
 

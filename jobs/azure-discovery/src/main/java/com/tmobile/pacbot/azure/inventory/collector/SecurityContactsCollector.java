@@ -39,18 +39,23 @@ public class SecurityContactsCollector {
             String response = CommonUtils.doHttpGet(url, "Bearer", accessToken);
             JsonParser parser = new JsonParser();
             JsonArray jsonArray = (JsonArray) parser.parse(response);
-            SecurityContactsVH securityContactsVH = new SecurityContactsVH();
-            JsonObject responseJson = jsonArray.get(0).getAsJsonObject();
-            securityContactsVH.setId(responseJson.get(ID).getAsString());
-            securityContactsVH.setEtag(responseJson.get("etag").getAsString());
-            securityContactsVH.setName(responseJson.get(NAME).getAsString());
-            securityContactsVH.setRegion(responseJson.get("location").getAsString());
-            securityContactsVH.setType(responseJson.get(TYPE).getAsString());
-            JsonObject propertiesJson = responseJson.get(PROPERTY).getAsJsonObject();
-            HashMap<String, Object> propertiesMap = new Gson().fromJson(propertiesJson.toString(), HashMap.class);
-            securityContactsVH.setProperties(propertiesMap);
-            securityContactsVH.setAutoProvisioningSettingsList(fetchAutoProvisioningSettingsList(subscription));
-            securityContactsList.add(securityContactsVH);
+            for(JsonElement securityElement:jsonArray) {
+                SecurityContactsVH securityContactsVH = new SecurityContactsVH();
+                JsonObject securityObject=securityElement.getAsJsonObject();
+                securityContactsVH.setSubscription(subscription.toString());
+                securityContactsVH.setSubscriptionName(subscription.getSubscriptionName());
+                securityContactsVH.setId(securityObject.get(ID).getAsString());
+                securityContactsVH.setEtag(securityObject.get("etag").getAsString());
+                securityContactsVH.setName(securityObject.get(NAME).getAsString());
+                securityContactsVH.setRegion(securityObject.get("location").getAsString());
+                securityContactsVH.setType(securityObject.get(TYPE).getAsString());
+                JsonObject propertiesJson = securityObject.get(PROPERTY).getAsJsonObject();
+                HashMap<String, Object> propertiesMap = new Gson().fromJson(propertiesJson.toString(), HashMap.class);
+                securityContactsVH.setProperties(propertiesMap);
+                securityContactsVH.setAutoProvisioningSettingsList(fetchAutoProvisioningSettingsList(subscription));
+                securityContactsList.add(securityContactsVH);
+            }
+
 
         } catch (Exception e) {
             LOGGER.error("Error fetching Security Contacts", e);
@@ -75,6 +80,8 @@ public class SecurityContactsCollector {
 
             for(JsonElement autoProvisioningElement:autoProvisioningObjects){
                 AutoProvisioningSettingsVH autoProvisioningSettingsVH=new AutoProvisioningSettingsVH();
+                autoProvisioningSettingsVH.setSubscription(subscription.toString());
+                autoProvisioningSettingsVH.setSubscriptionName(subscription.getSubscriptionName());
                 JsonObject autoProvisioningObject=autoProvisioningElement.getAsJsonObject();
                 String id=autoProvisioningObject.get(ID).getAsString();
                 autoProvisioningSettingsVH.setId(id);

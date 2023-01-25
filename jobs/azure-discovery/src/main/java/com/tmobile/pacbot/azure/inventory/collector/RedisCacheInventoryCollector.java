@@ -34,6 +34,8 @@ public class RedisCacheInventoryCollector {
             redisCacheVH.setPort(redisCache.port());
             redisCacheVH.setId(redisCache.id());
             redisCacheVH.setRegion(redisCache.regionName());
+            redisCacheVH.setResourceGroupName(redisCache.resourceGroupName());
+            redisCacheVH.setTags(redisCache.tags());
             redisCacheList.add(redisCacheVH);
         }
         log.info("Target Type : {}  Total: {} ","redis cache",redisCacheList.size());
