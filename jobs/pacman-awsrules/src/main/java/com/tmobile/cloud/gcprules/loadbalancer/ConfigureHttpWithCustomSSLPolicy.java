@@ -27,7 +27,6 @@ public class ConfigureHttpWithCustomSSLPolicy extends BasePolicy {
 
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        Annotation annotation = null;
 
         String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
 
@@ -45,7 +44,6 @@ public class ConfigureHttpWithCustomSSLPolicy extends BasePolicy {
             vmEsURL = vmEsURL + "/gcp_gcploadbalancer/_search";
         }
         logger.debug("========gcp_gcploadbalancer URL after concatenation param {}  =========", vmEsURL);
-        boolean hasCustomSSLPolicy = false;
 
         MDC.put(PacmanSdkConstants.EXECUTION_ID, ruleParam.get("executionId"));
         MDC.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
@@ -58,12 +56,12 @@ public class ConfigureHttpWithCustomSSLPolicy extends BasePolicy {
             mustFilter.put(PacmanRuleConstants.LATEST, true);
 
             try {
-                hasCustomSSLPolicy = checkConfigureHttpWithCustomSSLPolicy(vmEsURL, mustFilter);
+                boolean hasCustomSSLPolicy = checkConfigureHttpWithCustomSSLPolicy(vmEsURL, mustFilter);
                 if (!hasCustomSSLPolicy) {
                     List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
                     LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
 
-                    annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+                    Annotation annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
                     annotation.put(PacmanSdkConstants.DESCRIPTION, "Google Cloud Platform (GCP) load balancers https target proxy should be configured with custom ssl policy instead of default");
                     annotation.put(PacmanRuleConstants.SEVERITY, severity);
                     annotation.put(PacmanRuleConstants.CATEGORY, category);
@@ -76,7 +74,6 @@ public class ConfigureHttpWithCustomSSLPolicy extends BasePolicy {
                 }
 
             } catch (Exception exception) {
-                exception.printStackTrace();
                 throw new RuleExecutionFailedExeption(exception.getMessage());
             }
         }
