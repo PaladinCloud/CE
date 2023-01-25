@@ -104,6 +104,8 @@ class CreateUserPool(TerraformResource):
     available_args = {
         'user_pool_id' : {'required': False},
         'username' : {'required': False},
+        'attributes' :{'required': False},
+        'lifecycle' : {'required': False}
     }
 
 
@@ -136,4 +138,19 @@ class AddUserinGroup(TerraformResource):
         'user_pool_id' : {'required': False},
         'username' : {'required': False},
         'group_name' : {'required': False}
+     }
+
+class UiCognito(TerraformResource):
+    """
+    Base resource class for Terraform AWS server cognito user ino cognito group resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_cognito_user_pool_ui_customization"
+    available_args = {
+        'user_pool_id' : {'required': False},
+        'css' : {'required': False},
+        'image_file' : {'required': False}
      }

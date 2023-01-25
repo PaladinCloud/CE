@@ -2777,9 +2777,7 @@ INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qu
 -- delete configs containing http url
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo.value');
-DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo2.value');
-INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo.value',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo2.value',TO_BASE64(concat(@COGNITO_INFO,'')),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.consoleLoggingLevel','INFO','application','prd','latest',NULL,NULL,NULL,NULL);

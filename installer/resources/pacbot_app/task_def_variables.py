@@ -3,7 +3,7 @@ from resources.iam.base_role import BaseRole
 from .utils import need_to_enable_azure, need_to_enable_gcp
 from resources.pacbot_app.cloudwatch_log_groups import UiCloudWatchLogGroup, ApiCloudWatchLogGroup
 from resources.pacbot_app.ecr import APIEcrRepository, UIEcrRepository
-from resources.data.aws_info import AwsRegion
+from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.datastore.db import MySQLDatabase
 from core.config import Settings
@@ -33,6 +33,7 @@ class ContainerDefinitions:
     REGION = Settings.AWS_REGION
     PALADINCLOUD_RO = BaseRole.get_output_attr('name')
     DOMAIN_URL = "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"
+    COGNITO_ACCOUNT = AwsAccount.get_output_attr('account_id')
 
 
 
@@ -66,7 +67,7 @@ class ContainerDefinitions:
                     "awslogs-region": AwsRegion.get_output_attr('name'),
                     "awslogs-stream-prefix": Settings.RESOURCE_NAME_PREFIX + "-" + container_name
                 }
-            },
+            }
         }
 
     def get_container_definitions(self, container_name):
@@ -110,7 +111,7 @@ class ContainerDefinitions:
             {'name': "USERPOOL_ID", 'value': self.USERPOOL_ID},
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
-            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO}
+            {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
         ]
 
 
@@ -127,6 +128,7 @@ class ContainerDefinitions:
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
         ]
 
     def get_compliance_container_env_vars(self):
@@ -187,6 +189,7 @@ class ContainerDefinitions:
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
+             {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
         ]
 
     def get_auth_container_env_vars(self):
@@ -203,6 +206,7 @@ class ContainerDefinitions:
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
             {'name':"AUTH_API_URL",'value':self.DOMAIN_URL},
+            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
         ]
         
     def get_scheduler_container_env_vars(self):
