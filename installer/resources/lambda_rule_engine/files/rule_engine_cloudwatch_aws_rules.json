@@ -125,7 +125,7 @@
     "policyName": "Ec2StoppedInstanceForLong",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -133,11 +133,11 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_ec2_should_not_be_stopped_state_for_too_long",
     "status": "ENABLED",
     "userId": "ASGC",
-    "policyDisplayName": "EC2 instances should not be in stopped state for more than 60 days",
+    "policyDisplayName": "Ensure that EC2 instances are not Left in a Stopped State",
     "createdDate": "2017-08-29",
     "modifiedDate": "2018-11-12",
-    "severity": "critical",
-    "category": "security"
+    "severity": "high",
+    "category": "cost"
   },
   {
     "policyId": "Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2",
@@ -1517,7 +1517,7 @@
     "createdDate": "2018-08-22",
     "modifiedDate": "2018-09-19",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "Unused-Security-group_version-1_UnusedSecurityGroup_sg",
@@ -1537,7 +1537,7 @@
     "createdDate": "2017-10-16",
     "modifiedDate": "2018-12-18",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb",
@@ -1557,7 +1557,7 @@
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb",
@@ -1577,7 +1577,7 @@
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedEBSRule_version-1_UnusedEbsRule_volume",
@@ -1597,7 +1597,7 @@
     "createdDate": "2017-10-13",
     "modifiedDate": "2018-11-12",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip",
@@ -1617,7 +1617,7 @@
     "createdDate": "2018-02-01",
     "modifiedDate": "2018-09-19",
     "severity": "critical",
-    "category": "security"
+    "category": "cost"
   },
   {
     "policyId": "VpcFlowLogsEnabled_version-1_VpcFlowLogsEnabled_vpc",
@@ -2325,7 +2325,7 @@
     "policyName": "Sg_with_memcached_port_11211_open_to_internet_access",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"11211\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_memcached_port_11211_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_memcached_port_11211\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"11211\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_memcached_port_11211_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_memcached_port_11211\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2336,7 +2336,7 @@
     "policyDisplayName": "Deny Security Group public access on Memcached port 11211",
     "createdDate": "2022-05-19",
     "modifiedDate": "2022-05-19",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -2805,7 +2805,7 @@
     "policyName": "aws_eks_secrets_should_be_encrypted_with_kms_cmks",
     "targetType": "eks",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-eks-secrets-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_eks_secret_encryption\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-eks-secrets-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_eks_secret_encryption\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2816,7 +2816,7 @@
     "policyDisplayName": "Enable Envelope Encryption for EKS Kubernetes Secrets",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -2985,7 +2985,7 @@
     "policyName": "Enable_CloudTrail_Global_Services",
     "targetType": "cloudtrail",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_cloudtrail_global_services\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_cloudtrail_global_services\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2996,7 +2996,7 @@
     "policyDisplayName": "Enable CloudTrail Global Services",
     "createdDate": "2022-05-11",
     "modifiedDate": "2022-05-11",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -3025,7 +3025,7 @@
     "policyName": "AWS_ACM_Certificate_Expired",
     "targetType": "acmcertificate",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-expired-acm-certificate\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ACM_Certificate_Expired_version-1_AWS_ACM_Certificate_Expired\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_check_for_expired_acm_certificate\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-expired-acm-certificate\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ACM_Certificate_Expired_version-1_AWS_ACM_Certificate_Expired\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_check_for_expired_acm_certificate\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3036,7 +3036,7 @@
     "policyDisplayName": "Delete Expired ACM Certificates",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "medium",
     "category": "security"
   },
   {
@@ -3045,7 +3045,7 @@
     "policyName": "Sg_with_redis_port_6379_open_to_internet_access",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6379\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6379\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6379\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6379\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3056,7 +3056,7 @@
     "policyDisplayName": "Deny Security Group public access on Redis port 6379",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -3125,7 +3125,7 @@
     "policyName": "ElasticSearchDomainNodeToNodeEncryption",
     "targetType": "elasticsearch",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-es-node-to-node-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1_ElasticSearchDomainNodeToNodeEncryption\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_domain_node_to_node_encryption\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-es-node-to-node-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1_ElasticSearchDomainNodeToNodeEncryption\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_domain_node_to_node_encryption\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3136,7 +3136,7 @@
     "policyDisplayName": "Encrypt OpenSearch Data in Transit",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3173,7 +3173,7 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_elasticsearch_domain_encryption_using_cmk_kms_keys",
     "status": "ENABLED",
     "userId": "ASGC",
-    "policyDisplayName": "Use KMS CMK to encrypt OpenSearch",
+    "policyDisplayName": "Use Customer Managed Key to encrypt OpenSearch data at rest",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "high",
