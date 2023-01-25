@@ -247,6 +247,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       queryParams["searchTerm"] = this.searchTxt;
     }
 
+    this.errorMessage = '';
+
     try{
       this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
       (reponse) => {
@@ -263,6 +265,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             this.onScrollDataLoader.next(processedData)
           }else{
             this.tableData = processedData;
+            if(this.tableData?.length==0){
+              this.errorMessage = "noDataAvailable";
+            }
           }
           this.totalRows = data.totalElements;
           this.dataLoaded = true;

@@ -1,0 +1,92 @@
+::ng-deep app-card {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius);
+}
+
+::ng-deep app-chart {
+  width: 100%;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px;
+  box-sizing: border-box;
+  background: var(--background-white);
+  border: 1px solid var(--border-100);
+  border-radius: 16px;
+  box-shadow: none;
+  height: 100%;
+  width: 100%;
+}
+
+mat-card-actions button {
+  border: none;
+  background: var(--background-white);
+  cursor: pointer;
+  height: 17px;
+  font-family: var(--text-medium-font-family);
+  font-style: var(--text-font-style);
+  font-weight: var(--text-font-weight);
+  font-size: var(--text-body-2-font-size);
+  display: flex;
+  letter-spacing: -0.005em;
+  color: var(--primary-500);
+}
+
+::ng-deep .mat-card-header-text {
+  margin: 0px !important;
+}
+
+mat-card-header {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px;
+  width: 100%;
+  height: 58px;
+  margin: 0;
+  background: var(--background-white);
+  border-bottom: 2px solid var(--border-100);
+  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+  font: var(--text-body-2);
+  color: var(--text-high-emphasis);
+}
+
+mat-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 24px;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  margin: 0;
+  background: var(--background-white);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.chart {
+  height: 100%;
+  width: 100%;
+}
+
+.date-dropdown-container{
+  margin-left: auto;
+}
+
+::ng-deep .mat-menu-panel{
+  min-height: auto !important;
+  min-width: fit-content !important;
+}
+
+::ng-deep .mat-menu-content{
+  padding: 0 !important;
+}
+
+.date-dropdown-container ::ng-deep .mat-form-field-infix{
+  width: 150px;
+}

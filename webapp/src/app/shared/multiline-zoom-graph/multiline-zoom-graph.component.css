@@ -38,6 +38,19 @@
   margin-left: 3%;
 }
 
+.multiline-graph-container ::ng-deep .horizontal .tick line{
+    stroke-dasharray: 3;
+    stroke: var(--gamma-grey-600);
+}
+
+.multiline-graph-container ::ng-deep .vertical .tick line{
+    display: none;
+}
+
+.multiline-graph-container ::ng-deep .focus .axis .domain{
+  display: none;
+}
+
 .hover {
   transition: 0.2s ease;
 }
@@ -46,4 +59,31 @@
   font: var(--text-caption);
   display: flex;
   justify-content: center;
+}
+
+.axis-title{
+  font: var(--text-body-2);
+}
+
+.disabled-option ::ng-deep .mat-pseudo-checkbox-disabled{
+  display: none;
+}
+
+.multiline-graph-container ::ng-deep .mat-select-arrow{
+  display: none;
+}
+
+.multiline-graph-container ::ng-deep .mat-form-field-infix{
+  width: 100%;
+}
+
+.line-selector-trigger-wrapper{
+  background: #F1F6FF;
+  color: var(--primary-400);
+  font: var(--text-body-2);
+  padding: 6px 4px 2px;
+}
+
+.line-selector-trigger img{
+  filter: invert(46%) sepia(16%) saturate(383%) hue-rotate(159deg) brightness(94%) contrast(82%);
 }

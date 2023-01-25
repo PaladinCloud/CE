@@ -133,7 +133,7 @@
                         </div>
                     </ng-template>
                     <ng-template #textImageData>
-                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText==0); else noData" (click)="handleClick(element, element[column])" class="nowrap-ellipsis" [class.pointer]="element[column].link" [title]="element[column].titleText">
+                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText===0); else noData" (click)="handleClick(element, element[column])" class="nowrap-ellipsis" [class.pointer]="element[column].link" [title]="element[column].titleText">
                             <img *ngIf="element[column].imgSrc" style="vertical-align: text-bottom;" src="/assets/icons/{{element[column].imgSrc}}.svg"> 
                             <span [class.row-title]="column=='Title'" *ngIf="element[column].text || element[column].text==0">{{ element[column].text }} </span>
                         </div>
