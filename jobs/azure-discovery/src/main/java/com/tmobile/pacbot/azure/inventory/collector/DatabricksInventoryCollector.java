@@ -20,6 +20,8 @@ import com.tmobile.pacbot.azure.inventory.vo.DatabricksVH;
 import com.tmobile.pacbot.azure.inventory.vo.SubscriptionVH;
 import com.tmobile.pacman.commons.utils.CommonUtils;
 
+import static com.tmobile.pacbot.azure.inventory.collector.Util.getResourceGroupNameFromId;
+
 @Component
 public class DatabricksInventoryCollector {
 	
@@ -45,11 +47,18 @@ public class DatabricksInventoryCollector {
 				JsonObject properties = databricksObject.getAsJsonObject("properties");
 				JsonObject sku = databricksObject.getAsJsonObject("sku");
 				databricksVH.setId(databricksObject.get("id").getAsString());
+				databricksVH.setResourceGroupName(getResourceGroupNameFromId(databricksVH.getId()));
 				databricksVH.setLocation(databricksObject.get("location").getAsString());
+				databricksVH.setRegion(databricksObject.get("location").getAsString());
 				databricksVH.setName(databricksObject.get("name").getAsString());
 				databricksVH.setType(databricksObject.get("type").getAsString());
 				databricksVH.setSubscription(subscription.getSubscriptionId());
 				databricksVH.setSubscriptionName(subscription.getSubscriptionName());
+				JsonObject tags = properties.getAsJsonObject("parameters").getAsJsonObject("resourceTags");
+				if (tags != null) {
+					HashMap<String, Object> tagsMap = new Gson().fromJson(tags.get("value").toString(), HashMap.class);
+					databricksVH.setTags(tagsMap);
+				}
 				if (sku!=null) {
 					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
 					databricksVH.setSkuMap(skuMap);

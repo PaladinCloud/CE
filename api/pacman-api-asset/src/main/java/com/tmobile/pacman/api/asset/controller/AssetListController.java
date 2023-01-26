@@ -96,8 +96,8 @@ public class AssetListController {
             filter = new HashMap<>();
         }
 
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_DOMAIN);
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_DOMAIN);
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -148,8 +148,8 @@ public class AssetListController {
         if (filter == null) {
             filter = new HashMap<>();
         }
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-        AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_EXEMPTED);
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_EXEMPTED);
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -203,9 +203,9 @@ public class AssetListController {
             filter = new HashMap<>();
         }
 
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_TAGGED,
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_TAGGED,
                 AssetConstants.FILTER_TAGNAME);
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -264,9 +264,9 @@ public class AssetListController {
             filter = new HashMap<>();
         }
 
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_PATCHED,
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_PATCHED,
                 AssetConstants.FILTER_EXEC_SPONSOR, AssetConstants.FILTER_DIRECTOR);
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -325,8 +325,8 @@ public class AssetListController {
             filter = new HashMap<>();
         }
 
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, "qid");
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE, "qid");
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -385,9 +385,9 @@ public class AssetListController {
             filter = new HashMap<>();
         }
 
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_POLICYID,
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_POLICYID,
                 AssetConstants.FILTER_COMPLIANT);
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -448,8 +448,8 @@ public class AssetListController {
 
         String searchText = request.getSearchtext();
 
-        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_APPLICATION,
-                AssetConstants.FILTER_ENVIRONMENT, AssetConstants.FILTER_RES_TYPE);
+        List<String> acceptedFilterKeys = Arrays.asList(AssetConstants.FILTER_RES_TYPE);
+        acceptedFilterKeys.addAll(Util.getMandatoryTags());
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS

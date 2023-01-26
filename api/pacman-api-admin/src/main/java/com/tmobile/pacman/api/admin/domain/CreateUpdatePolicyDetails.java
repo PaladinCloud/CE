@@ -40,7 +40,7 @@ public class CreateUpdatePolicyDetails {
 	private String userId;
 	private String dataSource;
 	private Boolean isFileChanged;
-	private Boolean  isAutofixEnabled;
+	private String  isAutofixEnabled;
 	private String severity;
 	private String category;
 	public String getPolicyId() {
@@ -163,10 +163,10 @@ public class CreateUpdatePolicyDetails {
 	public void setIsFileChanged(Boolean isFileChanged) {
 		this.isFileChanged = isFileChanged;
 	}
-	public Boolean getIsAutofixEnabled() {
+	public String getIsAutofixEnabled() {
 		return isAutofixEnabled;
 	}
-	public void setIsAutofixEnabled(Boolean isAutofixEnabled) {
+	public void setIsAutofixEnabled(String isAutofixEnabled) {
 		this.isAutofixEnabled = isAutofixEnabled;
 	}
 	public String getSeverity() {

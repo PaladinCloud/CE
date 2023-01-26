@@ -26,7 +26,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() showFilterBtn;
   @Input() showMoreMenu = true;
   @Input() rowClickable = true;
-  @Input() actionsList = [];
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];

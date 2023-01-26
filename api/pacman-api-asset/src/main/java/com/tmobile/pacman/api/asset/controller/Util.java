@@ -17,12 +17,15 @@ package com.tmobile.pacman.api.asset.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.tmobile.pacman.api.asset.AssetConstants;
@@ -36,6 +39,9 @@ import com.tmobile.pacman.api.commons.Constants;
 public class Util {
 
     private static final Log LOGGER = LogFactory.getLog(Util.class);
+
+    @Value("${tagging.mandatoryTags}")
+    private static String mandatoryTags;
    
     @Autowired(required = true)
     private static AssetService assetService;
@@ -118,5 +124,11 @@ public class Util {
         }
         return encoded;
     }
+
+    public static List<String> getMandatoryTags(){
+        return Arrays.stream(mandatoryTags.split(",")).collect(Collectors.toList());
+    }
+
+
 
 }

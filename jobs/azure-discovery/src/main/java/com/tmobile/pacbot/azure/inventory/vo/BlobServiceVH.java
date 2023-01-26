@@ -6,6 +6,15 @@ public class BlobServiceVH extends AzureVH{
     private String name;
     private String type;
     private Map<String, Object> propertiesMap;
+    private Map<String, String> tags;
+
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Map<String, String> tags) {
+        this.tags = tags;
+    }
 
     public String getName() {
         return name;

@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.cloudwatchevents.AmazonCloudWatchEvents;
 import com.amazonaws.services.cloudwatchevents.AmazonCloudWatchEventsClientBuilder;
+import com.amazonaws.services.eventbridge.AmazonEventBridge;
+import com.amazonaws.services.eventbridge.AmazonEventBridgeClientBuilder;
 import com.amazonaws.services.lambda.AWSLambda;
 import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
@@ -41,7 +43,7 @@ public class AmazonClientBuilderService {
 	 * @param region 
      * @return AmazonS3 Client
      */
-	public AmazonS3 getAmazonS3(final String region) {
+	public AmazonS3 getAmazonS3(final String region) {		
 		return AmazonS3ClientBuilder.standard().withRegion(region).build();
 	}
 
@@ -63,5 +65,15 @@ public class AmazonClientBuilderService {
      */
 	public AWSLambda getAWSLambdaClient(final String region) {
 		return AWSLambdaClientBuilder.standard().withRegion(region).build();
+	}
+	
+	/**
+     * Service function to get AWSEventBridge Client
+     *
+     * @author 
+     * @return AWSEventBridge Client
+     */
+	public AmazonEventBridge getAmazonEventBridgeClient(final String region) {
+		return AmazonEventBridgeClientBuilder.standard().withRegion(region).build();
 	}
 }

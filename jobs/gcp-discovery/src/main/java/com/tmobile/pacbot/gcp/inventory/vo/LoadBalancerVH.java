@@ -1,5 +1,7 @@
 package com.tmobile.pacbot.gcp.inventory.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class LoadBalancerVH extends GCPVH{
@@ -7,12 +9,33 @@ public class LoadBalancerVH extends GCPVH{
 
     List<String> targetHttpsProxy;
 
+    List<HttpsProxyVH> httpProxyDetailList;
+
     boolean logConfigEnabled;
 
-    List<SslPolicyVH>sslPolicyList;
+    @JsonProperty
+    List<Boolean> quicNegotiation;
+
+    List<SslPolicyVH> sslPolicyList;
+
+    public List<HttpsProxyVH> getHttpProxyDetailList() {
+        return httpProxyDetailList;
+    }
+
+    public void setHttpProxyDetailList(List<HttpsProxyVH> httpProxyDetailList) {
+        this.httpProxyDetailList = httpProxyDetailList;
+    }
 
     public boolean isLogConfigEnabled() {
         return logConfigEnabled;
+    }
+
+    public List<Boolean> isQuicProtocolEnabled() {
+        return quicNegotiation;
+    }
+
+    public void setQuicNegotiation(List<Boolean> quicNegotiation) {
+        this.quicNegotiation = quicNegotiation;
     }
 
     public void setLogConfigEnabled(boolean logConfigEnabled) {
