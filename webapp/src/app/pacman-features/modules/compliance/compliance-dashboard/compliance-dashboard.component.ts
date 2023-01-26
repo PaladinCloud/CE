@@ -33,6 +33,7 @@ import { OverallComplianceService } from "src/app/pacman-features/services/overa
 import { MultilineChartService } from "src/app/pacman-features/services/multilinechart.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { TableStateService } from "src/app/core/services/table-state.service";
+import { RouterUtilityService } from "src/app/shared/services/router-utility.service";
 
 @Component({
   selector: "app-compliance-dashboard",
@@ -53,6 +54,8 @@ export class ComplianceDashboardComponent implements OnInit {
 
   pageTitle = "Overview";
   filterArr: any = [];
+  filterText;
+  queryParamsWithoutFilter;
   subscriptionToAssetGroup: Subscription;
   selectedAssetGroup: string;
   showingArr: any;
@@ -74,6 +77,7 @@ export class ComplianceDashboardComponent implements OnInit {
   tableDataLoaded = false;
   showSearchBar = false;
   showAddRemoveCol = false;
+  private trendDataSubscription: Subscription;
   private assetGroupSubscription: Subscription;
   private onFilterChange: Subscription;
   private routeSubscription: Subscription;
@@ -293,7 +297,8 @@ export class ComplianceDashboardComponent implements OnInit {
     private domainObservableService: DomainTypeObservableService,
     private overallComplianceService: OverallComplianceService, 
     private tableStateService: TableStateService,
-    private multilineChartService: MultilineChartService
+    private multilineChartService: MultilineChartService,
+    private routerUtilityService: RouterUtilityService,
   ) {}
 
   handleHeaderColNameSelection(event) {
@@ -308,22 +313,6 @@ export class ComplianceDashboardComponent implements OnInit {
 
   storeState(state){
     this.tableStateService.setState("dashboard", state);    
-  }
-
-  getUpdatedUrl() {
-    let updatedQueryParams = {};
-    updatedQueryParams = {
-      headerColName: this.headerColName,
-      direction: this.direction,
-      bucketNumber: this.bucketNumber,
-      searchValue: this.searchTxt
-    }
-
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: updatedQueryParams,
-      queryParamsHandling: 'merge',
-    });
   }
 
   getDistributionBySeverity(){
@@ -453,8 +442,8 @@ export class ComplianceDashboardComponent implements OnInit {
   ngOnInit() {
     const state = this.tableStateService.getState("dashboard") || {};    
       
-    this.headerColName = state.headerColName || 'Compliance';
-    this.direction = state.direction || 'asc';
+    this.headerColName = state.headerColName || '';
+    this.direction = state.direction || '';
     // this.bucketNumber = state.bucketNumber || 0;
     
     this.displayedColumns = Object.keys(this.columnWidths);
@@ -505,6 +494,129 @@ export class ComplianceDashboardComponent implements OnInit {
     this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
   }
 
+  /*
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
+  routerParam() {
+    try {
+      // this.filterText saves the queryparam
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
+      if (currentQueryParams) {
+        this.queryParamsWithoutFilter = JSON.parse(
+          JSON.stringify(currentQueryParams)
+        );
+        delete this.queryParamsWithoutFilter["filter"];
+        /**
+         * The below code is added to get URLparameter and queryparameter
+         * when the page loads ,only then this function runs and hits the api with the
+         * filterText obj processed through processFilterObj function
+         */
+        this.filterText = this.utils.processFilterObj(currentQueryParams);
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+  getUpdatedUrl() {
+    let updatedQueryParams = {};    
+      this.filterText = this.utils.arrayToObject(
+      this.filters,
+      "filterkey",
+      "value"
+    ); // <-- TO update the queryparam which is passed in the filter of the api
+    this.filterText = this.utils.makeFilterObj(this.filterText);
+
+    /**
+     * To change the url
+     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+     */
+
+    updatedQueryParams = {
+      filter: this.filterText.filter,
+    }
+
+
+    /**
+     * Finally after changing URL Link
+     * api is again called with the updated filter
+     */
+    this.filterText = this.utils.processFilterObj(this.filterText);
+    
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+  });
+  }
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+      } else {
+        if (event.clearAll) {
+          this.filters = [];
+        } else {
+          this.filters.splice(event.index, 1);
+        }
+        this.getUpdatedUrl();
+        this.updateComponent();
+      }
+    } catch (error) { }
+    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  }
+  /*
+   * this functin passes query params to filter component to show filter
+   */
+  getFilterArray() {
+    try {
+      // let labelsKey = Object.keys(this.labels);
+      const filterObjKeys = Object.keys(this.filterText);
+      const dataArray = [];
+      for (let i = 0; i < filterObjKeys.length; i++) {
+        let obj = {};
+        obj = {
+          name: filterObjKeys[i],
+        };
+        dataArray.push(obj);
+      }
+      const formattedFilters = dataArray;
+      for (let i = 0; i < formattedFilters.length; i++) {
+        
+        let keyValue = _.find(this.filterTypeOptions, {
+          optionValue: formattedFilters[i].name,
+        })["optionName"];
+        this.changeFilterType(keyValue).then(() => {
+            let filterValue = _.find(this.filterTagOptions[keyValue], {
+              id: this.filterText[filterObjKeys[i]],
+            })["name"];
+          const eachObj = {
+            keyDisplayValue: keyValue,
+            filterValue: filterValue,
+            key: keyValue, // <-- displayKey-- Resource Type
+            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
+            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
+            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+          };
+          this.filters.push(eachObj);
+          this.filters = [...this.filters];
+        })
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  /**
+   * This function get calls the keyword service before initializing
+   * the filter array ,so that filter keynames are changed
+   */
+
   getFilters() {
     try {
       this.issueFilterSubscription = this.issueFilterService
@@ -516,7 +628,80 @@ export class ComplianceDashboardComponent implements OnInit {
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
+          
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.updateComponent();
         });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  changeFilterType(value) {
+    return new Promise((resolve) => {
+    try {
+      this.currentFilterType = _.find(this.filterTypeOptions, {
+        optionName: value,
+      });
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        this.issueFilterSubscription = this.issueFilterService
+        .getFilters(
+          {
+            ag: this.selectedAssetGroup,
+            domain: this.selectedDomain,
+          },
+          environment.base +
+          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
+            .url,
+          "GET"
+        )
+        .subscribe((response) => {
+          this.filterTagOptions[value] = response[0].response;
+          this.filterTagLabels[value] = _.map(response[0].response, "name");
+          this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
+          resolve(this.filterTagOptions[value]);
+        });
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    }); 
+  }
+
+  changeFilterTags(event) {    
+    let value = event.filterValue;
+    this.currentFilterType =  _.find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });      
+    
+    try {
+      if (this.currentFilterType) {
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
+        this.utils.addOrReplaceElement(
+          this.filters,
+          {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: value,
+            key: this.currentFilterType.optionName,
+            value: filterTag["id"],
+            filterkey: this.currentFilterType.optionValue.trim(),
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
+          },
+          (el) => {
+            return (
+              el.compareKey ===
+              this.currentFilterType.optionValue.toLowerCase().trim()
+            );
+          }
+        );
+      }
+      this.getUpdatedUrl();
+      this.utils.clickClearDropdown();
+      this.updateComponent();
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
@@ -561,74 +746,32 @@ export class ComplianceDashboardComponent implements OnInit {
     this.getComplianceData();
   }
 
-  changeFilterType(value) {
-    try {
-      this.currentFilterType = _.find(this.filterTypeOptions, {
-        optionName: value.value,
-      });
-      this.issueFilterSubscription = this.issueFilterService
-        .getFilters(
-          {
-            ag: this.selectedAssetGroup,
-          },
-          environment.base +
-          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-            .url,
-          "GET"
-        )
-        .subscribe((response) => {
-          this.filterTagOptions = response[0].response;
-          this.filterTagLabels = _.map(this.filterTagOptions, "name");
-        });
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
-
-  changeFilterTags(value) {
-    try {
-      if (this.currentFilterType) {
-        const filterTag = _.find(this.filterTagOptions, { name: value.value });
-        this.utils.addOrReplaceElement(
-          this.filters,
-          {
-            typeName: this.currentFilterType.optionName,
-            typeValue: this.currentFilterType.optionValue,
-            tagName: filterTag.name,
-            tagValue: filterTag["id"],
-            key: this.currentFilterType.optionName,
-            value: filterTag.name,
-          },
-          (el) => {
-            return el.key === this.currentFilterType.optionName;
-          }
-        );
-        this.updateComponent();
-      }
-      this.utils.clickClearDropdown();
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
-
-  deleteFilters(event?) {
-    /* TODO: Needs to follow the same thing as vulnerability,
-        updating component and updating compliance observable should be independent */
-    try {
-      if (!event) {
-        this.filters = [];
-      } else {
-        if (event.clearAll) {
-          this.filters = [];
-        } else {
-          this.filters.splice(event.index, 1);
-        }
-        this.updateComponent();
-      }
-    } catch (error) {}
-  }
+  // changeFilterTags(value) {
+  //   try {
+  //     if (this.currentFilterType) {
+  //       const filterTag = _.find(this.filterTagOptions, { name: value.value });
+  //       this.utils.addOrReplaceElement(
+  //         this.filters,
+  //         {
+  //           typeName: this.currentFilterType.optionName,
+  //           typeValue: this.currentFilterType.optionValue,
+  //           tagName: filterTag.name,
+  //           tagValue: filterTag["id"],
+  //           key: this.currentFilterType.optionName,
+  //           value: filterTag.name,
+  //         },
+  //         (el) => {
+  //           return el.key === this.currentFilterType.optionName;
+  //         }
+  //       );
+  //       this.updateComponent();
+  //     }
+  //     this.utils.clickClearDropdown();
+  //   } catch (error) {
+  //     this.errorMessage = this.errorHandling.handleJavascriptError(error);
+  //     this.logger.log("error", error);
+  //   }
+  // }
 
   getFormattedDate(date: Date){
     const offset = date.getTimezoneOffset()
@@ -639,6 +782,9 @@ export class ComplianceDashboardComponent implements OnInit {
   getAssetsCountData(queryObj) {
     if(!this.selectedAssetGroup){
       return;
+    }
+    if(this.trendDataSubscription){
+      this.trendDataSubscription.unsubscribe();
     }
     if(queryObj.from){
       this.graphFromDate = queryObj.from;
@@ -658,11 +804,14 @@ export class ComplianceDashboardComponent implements OnInit {
     this.totalAssetsCountData = [];
 
     try {
-        this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
+        this.trendDataSubscription = this.multilineChartService.getAssetTrendData(queryParams).subscribe(response => {
             this.totalAssetsCountData = this.massageAssetTrendGraphData(response[0]);
-            if(this.totalAssetsCountData.length==0){
+            if(response[0].trend.length<2){
                 this.totalAssetsCountDataError = 'noDataAvailable';
             }
+        }, (error) => {
+          this.logger.log("error", error);
+          this.totalAssetsCountDataError = "apiResponseError";
         });
     } catch (error) {
         this.totalAssetsCountDataError = "apiResponseError";
@@ -825,6 +974,7 @@ export class ComplianceDashboardComponent implements OnInit {
         (error) => {
           this.tableDataLoaded = true;
           this.tableErrorMessage = "apiResponseError";
+          this.logger.log("error", error);
         }
       );
   }
@@ -992,6 +1142,9 @@ export class ComplianceDashboardComponent implements OnInit {
       }
       if (this.activatedRouteSubscription) {
         this.activatedRouteSubscription.unsubscribe();
+      }
+      if(this.trendDataSubscription){
+        this.trendDataSubscription.unsubscribe();
       }
     } catch (error) {
       this.logger.log("error", error);

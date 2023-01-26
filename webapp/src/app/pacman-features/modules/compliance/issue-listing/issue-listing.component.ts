@@ -61,7 +61,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   tableTitle = "Violations";
   tableErrorMessage = '';
   errorMessage = '';
-  headerColName;
+  headerColName: string;
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
@@ -198,26 +198,26 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   handleAddFilterClick(e){}
 
   handleHeaderColNameSelection(event: any) {
-    this.headerColName = event.headerColName;
+    this.headerColName = event.headerColName?.toLowerCase();
     this.direction = event.direction;
     this.selectedOrder = this.direction;
     this.bucketNumber = 0;
-    this.sortOrder = null;
-    if (this.headerColName == "Severity") {
+    // this.sortOrder = null;
+    if (this.headerColName === "severity") {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
       this.sortOrder = ["low", "medium", "high", "critical"]
-    } else if (this.headerColName == "Issue ID") {
+    } else if (this.headerColName === "issue id") {
       this.fieldName = "_uid";
       this.fieldType = "string";
-    } else if (this.headerColName == "Resource ID") {
+    } else if (this.headerColName === "resource id") {
       this.fieldName = "_resourceid.keyword";
       this.fieldType = "string";
-    } else if (this.headerColName == "Category") {
+    } else if (this.headerColName === "category") {
       this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
       this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
-    } else if (this.headerColName == "Title") {
+    } else if (this.headerColName === "title") {
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
     }
@@ -589,7 +589,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             }
           },
           (error) => {
+            this.tableDataLoaded = true;
             this.tableErrorMessage = "apiResponseError";
+            this.logger.log("error", error);
           }
         );
     } catch (error) {
