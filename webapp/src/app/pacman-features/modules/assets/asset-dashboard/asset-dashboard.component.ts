@@ -96,8 +96,8 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
   
   selectedItem = "All time";
   isCustomSelected: boolean = false;
-  fromDate: Date = new Date(2022, 1, 1);
-  toDate: Date = new Date(2200, 12, 31);
+  fromDate: Date = new Date(2022, 0, 1);
+  toDate: Date = new Date();
  
 
   constructor(

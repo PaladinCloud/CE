@@ -18,7 +18,7 @@
 <section class="issue-details-wrapper" id="searchtext" (click)='bodyClicked();'>
     <header class="header-wrapper flex flex-align-center">
         <div class="arrow-img" (click)="navigateBack()">
-            <img *ngIf="backButtonRequired" style="height: 1.4em;" src="../assets/icons/left-arrow.svg">
+            <!-- <img *ngIf="backButtonRequired" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
         </div>
         <div class="heading-text">{{breadcrumbPresent}}</div>
     </header>
@@ -166,7 +166,7 @@
                                             <div *ngIf='!check' class="crossmark draw" [class.crossmark-show]='showLoadcomplete'></div>
                                         </div>
                                     </div>
-                                    <div class="error_msg_exception" *ngIf='showLoadcomplete && !check'>Exemption not added
+                                    <div class="error_msg_exception" *ngIf='showLoadcomplete && !check'>{{addRevokeExemptionErrorMessage}}
                                     </div>
                                     <div class="success_msg_exception" *ngIf='showLoadcomplete && check'>Exemption added successfully
                                     </div>
