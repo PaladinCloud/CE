@@ -68,3 +68,13 @@ mat-card-actions {
   border-top: 2px solid var(--border-100);
   border-radius: 0px 0px 16px 16px;
 }
+
+.btn-disabled{
+  color: var(--primary-200) !important;
+  cursor: unset !important;
+}
+
+.apply-btn{
+  margin-left: auto; 
+  color: var(--primary-400);
+}

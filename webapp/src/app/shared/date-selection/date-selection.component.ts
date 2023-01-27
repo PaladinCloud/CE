@@ -23,13 +23,14 @@ export class DateSelection implements OnInit {
     ];
   fromDays = [];
   toDays = [];
-  @Input() fromDate: Date = new Date(2022, 1, 1);
-  @Input() toDate: Date = new Date(2200, 12, 31);
+  today: Date = new Date();
+  fromDate: Date = new Date();
+  toDate: Date = new Date();
 
   @Output() datesSelected = new EventEmitter<any>();
 
   ngOnInit() {
-    for (let i = 2022; i <= 2200; i++) {
+    for (let i = 2022; i <= new Date().getFullYear(); i++) {
       this.years.push(i);
     }
   }
@@ -84,6 +85,9 @@ export class DateSelection implements OnInit {
   }
 
   customDateSelected(from: Date, to: Date){
+    if(to<=from || to>this.today){
+      return;
+    }
     let event = {
       from: from,
       to: to

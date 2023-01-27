@@ -1,8 +1,6 @@
 export const DATA_MAPPING = {
-    costOptimization: "cost",
+    costoptimization: "cost",
     governance: "operations",
-    Governance: "operations",
-    Critical: "critical",
     aws: "AWS",
     gcp: "GCP"
 }

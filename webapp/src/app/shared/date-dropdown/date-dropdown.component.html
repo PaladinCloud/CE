@@ -14,7 +14,7 @@
 
 <div class="date-wrapper" [formGroup]="user">
 	<mat-form-field appearance="outline">
-		<input matInput [matDatepicker]="picker" [min]="date" formControlName="dateValue" [(ngModel)]="date"
+		<input matInput [matDatepicker]="picker" [min]="today" formControlName="dateValue" [(ngModel)]="date"
 			(ngModelChange)='searchCalled($event)'>
 		<mat-hint>MM/DD/YYYY</mat-hint>
 		<mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
