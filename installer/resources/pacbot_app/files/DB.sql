@@ -1121,6 +1121,9 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`, `targetDesc`, `categ
 INSERT IGNORE INTO `cf_Target` (`targetName`,`displayName`,`targetDesc`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('gcploadbalancer','GCP Load balancer','load balancer data','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_loadbalancer'),'2022-12-07','2022-12-07','Infra & Platforms');
 
 
+INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunction','GCP Cloud Functions','GCP cloud functions','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunction'),'2023-01-10','2023-01-10','Infra & Platforms');
+INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('cloudfunctiongen1','GCP Cloud Functions Generation 1','GCP cloud functions Generation 1','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_cloudfunctiongen1'),'2023-01-10','2023-01-10','Infra & Platforms');
+
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11501','201','ec2','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11502','201','s3','all','all');
 INSERT IGNORE INTO cf_AssetGroupTargetDetails (id_,groupId,targetType,attributeName,attributeValue) VALUES ('11503','201','appelb','all','all');
@@ -1247,6 +1250,11 @@ INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`,
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('de364119-0f2b-4f63-8d61-81fa4d1d33fb','e0008397-f74e-4deb-9066-10bdf11202ae','iamusers','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('25e615a5-e7d3-444e-95a3-2dedaef0890e','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_apikeys','all','all');
 INSERT IGNORE INTO `cf_AssetGroupTargetDetails` (`id_`, `groupId`, `targetType`, `attributeName`, `attributeValue`) VALUES('9b942f42-4bd0-4911-8fd3-a1661f0cbc97','e0008397-f74e-4deb-9066-10bdf11202ae','gcp_loadbalancers','all','all');
+
+
+
+INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f00','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunction','all','all');
+INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f01','e0008397-f74e-4deb-9066-10bdf11202ae','cloudfunctiongen1','all','all');
 
 delete from `cf_AssetGroupTargetDetails` where targetType ='ecs';
 delete from `cf_AssetGroupTargetDetails` where targetType = 'policydefinitions';
@@ -1781,6 +1789,7 @@ INSERT IGNORE INTO cf_Policy (`policyId`,`policyName`,`policyDesc`,`resolution`,
 INSERT IGNORE INTO cf_Policy (`policyId`,`policyName`,`policyDesc`,`resolution`,`policyUrl`,`policyVersion`,`status`,`userId`,`createdDate`,`modifiedDate`,`resolutionUrl`) VALUES ('Rotate_Google_Cloud_API_Keys','Rotate Google Cloud API Keys','Ensure that all your Google Cloud API keys are regularly regenerated  in order to meet security and compliance requirements',NULL,NULL,'version-1',NULL,NULL,'2022-11-29','2022-11-29','https://github.com/PaladinCloud/CE/wiki/GCP-Policy');
 
 INSERT IGNORE INTO cf_Policy (`policyId`,`policyName`,`policyDesc`,`resolution`,`policyUrl`,`policyVersion`,`status`,`userId`,`createdDate`,`modifiedDate`,`resolutionUrl`) VALUES ('Disable_kubernetes_DashBoard','Disable kubernetes DashBoard','Disable the Kubernetes dashboard to prevent the need to manage its individual access interface and to eliminating it as an attack vector.',NULL,NULL,'version-1',NULL,NULL,'2022-11-22','2022-11-22','https://github.com/PaladinCloud/CE/wiki/Azure-Policy');
+
 
 /* Rule  Initialisation */
 
