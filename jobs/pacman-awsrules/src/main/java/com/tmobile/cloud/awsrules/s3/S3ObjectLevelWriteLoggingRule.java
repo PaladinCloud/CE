@@ -1,6 +1,5 @@
 package com.tmobile.cloud.awsrules.s3;
 
-import com.google.common.collect.HashMultimap;
 import com.nimbusds.oauth2.sdk.util.MapUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.S3PacbotUtils;
@@ -16,22 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @PacmanPolicy(key = "check-s3-object-level-write-logging-rule", desc = "This rule checks object level logging for s3 buckets", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(S3ObjectLevelWriteLoggingRule.class);
-    private static final String CLOUD_TRAIL_EVENT_SELECTOR_URL = "/aws/cloudtrail_eventselector/_search";
-    private static final String DATA_RESOURCE_TYPE = "AWS::S3::Object";
-    private static final List<String> READ_WRITE_TYPES = Arrays.asList("All", "WriteOnly");
 
     private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
 
@@ -99,42 +91,7 @@ public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
      */
     private String checkValidation(Map<String, String> resourceAttributes) {
 
-        String bucketName = resourceAttributes.get(PacmanRuleConstants.NAME);
-        String accountId = resourceAttributes.get(PacmanRuleConstants.ACCOUNTID);
-        String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
-
-        if (!PacmanUtils.doesAllHaveValue(pacmanHost, accountId, bucketName)) {
-            logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
-            throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
-        }
-
-        try {
-            String esEndPoint = pacmanHost + CLOUD_TRAIL_EVENT_SELECTOR_URL;
-            Map<String, Object> mustFilter = new HashMap<>();
-            mustFilter.put(PacmanRuleConstants.ACCOUNTID, accountId);
-            mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_TYPE, DATA_RESOURCE_TYPE);
-            HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-            Map<String, Object> mustTermsFilter = new HashMap<>();
-
-            Set<String> resourceValueSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, PacmanRuleConstants.DATA_RESOURCE_VALUE, null);
-
-            if (Objects.isNull(resourceValueSet) || resourceValueSet.isEmpty()) {
-                return S3PacbotUtils.CLOUD_TRAIL_MSG + accountId
-                        + " for s3 bucket: " + bucketName + " for S3ObjectLevelWriteLogging";
-            }
-            List<String> resourceValues = S3PacbotUtils.getValidResourceValue(resourceValueSet, bucketName);
-            if (resourceValues.isEmpty()) {
-                return S3PacbotUtils.CLOUD_TRAIL_MSG + accountId
-                        + " for s3 bucket: " + bucketName + " and resourceValue is not matching " +
-                        "for S3ObjectLevelWriteLogging";
-            }
-            return S3PacbotUtils.getCloudTrailUsingResourceValue(resourceValues, esEndPoint, accountId, mustFilter,
-                    bucketName, shouldFilter, pacmanHost, mustTermsFilter, READ_WRITE_TYPES);
-        } catch (Exception ex) {
-            logger.error("Object-level logging for write events is not enabled for S3 bucket" + ex.getMessage(), ex);
-            return "Object-level logging for write events is enabled for S3 bucket";
-        }
+        return S3PacbotUtils.checkValidationForS3ObjectLevelLogging(resourceAttributes, false);
     }
 
     @Override
