@@ -19,7 +19,7 @@ package com.tmobile.pacman.api.asset;
  * Constants class where the asset service constants are stored.
  */
 public final class AssetConstants {
-    
+
     private AssetConstants() {
         
     }
@@ -105,6 +105,8 @@ public final class AssetConstants {
     public static final String TOTAL_ASSETS = "totalassets";
     public static final String TYPE = "type";
     public static final String ISSUE_STATUS = "issueStatus";
+
+    public static final String ASSET = "asset";
     
 }
 

@@ -135,8 +135,8 @@ class AddusertoGroup(AddUserinGroup):
     username =  CreateUser.get_output_attr('username')
     group_name = CreateUserGroup.get_output_attr('name')
 
-class CognitoUi(UiCognito):
-    PATH = "/home/ec2-user/CE/installer/data/terraform/scripts_and_files/paladinlog.png"
-    user_pool_id = UserPool.get_output_attr('id')
-    css = ".label-customizable {\n\tfont-weight: 28px;\n}\n.inputField-customizable{\n\tbackground-color:rgba(0, 0, 0, 0.3);\n }\n.textDescription-customizable {\n\tpadding-top: 50px;\n\tpadding-bottom: 50px;\n\tdisplay: block;\n\tfont-size: 2em;\n}\n.submitButton-customizable{\n\tfont-size:1em;\n\theight: 2.8em;\n\tbackground-color:#336cc9;\n}\n",
-    image_file = "filebase64(PATH)"
+# class CognitoUi(UiCognito):
+#     PATH = "/home/ec2-user/CE/installer/data/terraform/scripts_and_files/paladinlog.png"
+#     user_pool_id = UserPool.get_output_attr('id')
+#     css = ".label-customizable {\n\tfont-weight: 28px;\n}\n.inputField-customizable{\n\tbackground-color:rgba(0, 0, 0, 0.3);\n }\n.textDescription-customizable {\n\tpadding-top: 50px;\n\tpadding-bottom: 50px;\n\tdisplay: block;\n\tfont-size: 2em;\n}\n.submitButton-customizable{\n\tfont-size:1em;\n\theight: 2.8em;\n\tbackground-color:#336cc9;\n}\n",
+#     image_file = "filebase64(PATH)"

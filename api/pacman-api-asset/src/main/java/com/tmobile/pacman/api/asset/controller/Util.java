@@ -39,13 +39,11 @@ import com.tmobile.pacman.api.commons.Constants;
 public class Util {
 
     private static final Log LOGGER = LogFactory.getLog(Util.class);
-
-    @Value("${tagging.mandatoryTags}")
-    private static String mandatoryTags;
    
     @Autowired(required = true)
     private static AssetService assetService;
-    
+
+
     /**
      * Sets the asset service.
      *
@@ -124,11 +122,6 @@ public class Util {
         }
         return encoded;
     }
-
-    public static List<String> getMandatoryTags(){
-        return Arrays.stream(mandatoryTags.split(",")).collect(Collectors.toList());
-    }
-
 
 
 }
