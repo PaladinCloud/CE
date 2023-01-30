@@ -78,6 +78,11 @@ public class AssetFileGenerator {
 	@Autowired
 	APIKeysInventoryCollector apiKeysInventoryCollector;
 
+	@Autowired
+	CloudFunctionCollector cloudFunctionCollector;
+	@Autowired
+	CloudFunctionGen1Collector cloudFunctionGen1Collector;
+
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
 		try {
@@ -90,6 +95,17 @@ public class AssetFileGenerator {
 			log.info("Started Discovery for project {}", project);
 
 			ExecutorService executor = Executors.newCachedThreadPool();
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("cloudfunction"))) {
+					return;
+				}
+				try {
+					FileManager.generateCloudFunctionFile(cloudFunctionCollector.fetchCloudFunctionInventory(project));
+				} catch (Exception e) {
+					log.error("Error occured in generating data file for cloud functions {} ", e.getMessage());
+				}
+			});
 
 			executor.execute(() -> {
 				if (!(isTypeInScope("computeinstance"))) {
@@ -276,6 +292,17 @@ public class AssetFileGenerator {
 					e.printStackTrace();
 				}
 			});
+			executor.execute(() -> {
+				if (!(isTypeInScope("cloudfunctiongen1"))) {
+					return;
+				}
+				try {
+					FileManager.generateCloudFunctionGen1File(cloudFunctionGen1Collector.fetchCloudFunctionInventory(project));
+				} catch (Exception e) {
+					log.error("Error occured in generating data file for cloud functions gen1 {} ", e.getMessage());
+				}
+			});
+
 
 			executor.shutdown();
 
