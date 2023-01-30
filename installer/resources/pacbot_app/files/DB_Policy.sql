@@ -72,8 +72,8 @@ IF NOT EXISTS( SELECT NULL
              AND column_name = 'autoFixEnabled')  THEN
 
 
+ALTER TABLE cf_PolicyTable ADD COLUMN autoFixEnabled VARCHAR(20) NULL DEFAULT 'false' AFTER category;
 
- ADD COLUMN `autoFixEnabled` VARCHAR(20) NULL DEFAULT 'false' AFTER category;
 
 
 
