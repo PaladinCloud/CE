@@ -18,6 +18,7 @@ package com.tmobile.pacman.api.asset.service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.tmobile.pacman.api.asset.domain.ResponseWithFieldsByTargetType;
 import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
@@ -532,5 +533,7 @@ public interface AssetService {
 	public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException;
 
     public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to);
+
+    public Set<String> getMandatoryTags(String filterName);
 
 }

@@ -30,7 +30,8 @@ class UserPoolResoures(TerraformResource):
                 'invite_message_template': {'required':False},
                 'sms_message': {'required':False},
                 }
-            }
+            },
+        'tags':{'required': False}
         }
     description = Settings.RESOURCE_DESCRIPTION
 
@@ -140,17 +141,17 @@ class AddUserinGroup(TerraformResource):
         'group_name' : {'required': False}
      }
 
-class UiCognito(TerraformResource):
-    """
-    Base resource class for Terraform AWS server cognito user ino cognito group resource
+# class UiCognito(TerraformResource):
+#     """
+#     Base resource class for Terraform AWS server cognito user ino cognito group resource
 
-    Attributes:
-        resource_instance_name (str): Type of resource instance
-        available_args (dict): Instance configurations
-    """
-    resource_instance_name = "aws_cognito_user_pool_ui_customization"
-    available_args = {
-        'user_pool_id' : {'required': False},
-        'css' : {'required': False},
-        'image_file' : {'required': False}
-     }
+#     Attributes:
+#         resource_instance_name (str): Type of resource instance
+#         available_args (dict): Instance configurations
+#     """
+#     resource_instance_name = "aws_cognito_user_pool_ui_customization"
+#     available_args = {
+#         'user_pool_id' : {'required': False},
+#         'css' : {'required': False},
+#         'image_file' : {'required': False}
+#      }
