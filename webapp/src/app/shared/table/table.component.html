@@ -117,7 +117,7 @@
                     <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
                 </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element"> 
-                    <div *ngIf="element[column] && element[column].isMenuBtn; else notClickable" style="text-align: center;">
+                    <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
                         <img class="pointer menu-btn" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
                         <mat-menu #actionMenu="matMenu">
                             <button (click)="handleAction(element, action)" style="min-width: 156px;" *ngFor="let action of element[column].menuItems" mat-menu-item>
@@ -125,7 +125,7 @@
                             </button>
                         </mat-menu>
                     </div>
-                    <ng-template #notClickable>
+                    <ng-template #clickable>
                         <div class="clickable">
                             <div *ngIf="element[column] && element[column].isChip; else textImageData" [title]="element[column].titleText">
                                 <app-chip [variant]="element[column].chipVariant">
