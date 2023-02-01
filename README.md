@@ -8,7 +8,7 @@
 
 # Introduction
 
-Paladin Cloud is an extensible, Security-as-Code platform to help developers and security teams significantly reduce
+Paladin Cloud is an extensible, Security-as-Code (SaC) platform to help developers and security teams significantly reduce
 risks in their cloud environments. The platform functions as a policy management plane across multi-cloud and enterprise
 systems to protect your applications and data. The platform contains best practice security policies and performs
 continuous monitoring of your cloud assets, while prioritizing security violations based on severity levels to help you

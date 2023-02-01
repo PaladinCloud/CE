@@ -558,6 +558,7 @@ public class PacmanRuleConstants {
     public static final String UNABLE_TO_GET_CLIENT_FOR_FOLLOWING_INPUT= "unable to get client for following input";
     public static final String ACCOUNT_ACCESS_KEYS_PRESENT = "AccountAccessKeysPresent";
     public static final String CLOUD_TRAIL_LOG_FILE_VALIDATION = "logfilevalidationenabled";
+    public static final String ROTATION_STATUS = "rotationstatus";
     public static final String KMS_KEY_ID = "kmskeyid";
     public static final String MULTI_REGION_TRAIL = "ismultiregiontrail";
     public static final String DATA_RESOURCE_TYPE = "datresourcestype";
@@ -573,10 +574,12 @@ public class PacmanRuleConstants {
     public static final String ENDPOINT_PUBLIC_ACCESS = "endpointpublicaccess";
     public static final String ENDPOINT_PRIVATE_ACCESS = "endpointprivateaccess";
     public static final String PUBLIC_ACCESS_CIDRS = "publicaccesscidrs";
+    public static final String PUBLIC_VALUE = "publicvalue";
     public static final String CLUSTER_LOGGING_ENABLED = "clusterloggingenabled";
     public static final String CLUSTER_NAME = "clustername";
     public static final String CLUSTER_SECURITY_GROUP_ID = "clustersecuritygroupid";
     public static final String LATEST_VERSION = "latestversion";
+    public static final String OLD_VERSIONS = "oldVersions";
     public static final String VERSION = "version";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
