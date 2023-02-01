@@ -15,22 +15,18 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.tmobile.pacman.api.asset.AssetConstants;
 import com.tmobile.pacman.api.asset.service.AssetService;
 import com.tmobile.pacman.api.commons.Constants;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains common methods to be used across other classes 
