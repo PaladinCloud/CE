@@ -1,16 +1,12 @@
-package com.tmobile.cso.pacman.inventory.dao;
-
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+package com.tmobile.pacman.commons.database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.sql.*;
+import java.util.*;
 
 
 /**
