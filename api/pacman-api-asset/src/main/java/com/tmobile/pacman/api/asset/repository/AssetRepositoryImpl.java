@@ -15,29 +15,25 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.asset.repository;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import com.tmobile.pacman.api.asset.controller.Util;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+import com.tmobile.pacman.api.asset.AssetConstants;
+import com.tmobile.pacman.api.asset.domain.ResourceResponse;
+import com.tmobile.pacman.api.asset.domain.ResourceResponse.Source;
+import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.exception.NoDataFoundException;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.CommonUtils;
+import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,30 +50,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
-import com.tmobile.pacman.api.asset.AssetConstants;
-import com.tmobile.pacman.api.asset.domain.ResourceResponse;
-import com.tmobile.pacman.api.asset.domain.ResourceResponse.Source;
-import com.tmobile.pacman.api.asset.model.DefaultUserAssetGroup;
-import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.commons.exception.NoDataFoundException;
-import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
-import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
-import com.tmobile.pacman.api.commons.utils.CommonUtils;
-import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Implemented class for AssetRepository and all its method
@@ -823,7 +804,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         return formGetListResponse(fieldNames,assetDetails,fieldsToBeSkipped);
     }
 
-    private static void addTagToFilter(Map<String, Object> mustFilter, Set<String> mandatoryTags,Entry entry) {
+    private static void addTagToFilter(Map<String, Object> mustFilter, Set<String> mandatoryTags,Entry<String,String> entry) {
         if(mandatoryTags.contains(entry.getKey())){
             mustFilter.put((String)entry.getKey(), entry.getValue());
         }
