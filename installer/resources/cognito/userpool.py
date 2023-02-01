@@ -4,6 +4,7 @@ from core.log import SysLog
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.cognito.function import AuthPostLambdaFunction
 from core.terraform.resources.aws.aws_lambda import LambdaPermission
+import base64
 
 
 class UserPool(UserPoolResoures):
@@ -56,8 +57,8 @@ class UserPool(UserPoolResoures):
     auto_verified_attributes = ['email']
     allow_admin_create_user_only =  True 
     invite_message_template = {
-        "email_message" : "Login to Your paladinApplication " + ApplicationLoadBalancer.get_pacbot_domain_url() + "  with username {username} and temporary password {####}",
-        "email_subject" :  "PaladinApplication Invite",
+        "email_message" : "Login to your PaladinCloud application " + ApplicationLoadBalancer.get_pacbot_domain_url() + "  with username {username} and temporary password {####}",
+        "email_subject" :  "PaladinCloud Application Invite",
         "sms_message" : "" + ApplicationLoadBalancer.get_pacbot_domain_url() + "  with username {username} and temporary password {####}",
 
     }
@@ -135,8 +136,10 @@ class AddusertoGroup(AddUserinGroup):
     username =  CreateUser.get_output_attr('username')
     group_name = CreateUserGroup.get_output_attr('name')
 
-# class CognitoUi(UiCognito):
-#     PATH = "/home/ec2-user/CE/installer/data/terraform/scripts_and_files/paladinlog.png"
-#     user_pool_id = UserPool.get_output_attr('id')
-#     css = ".label-customizable {\n\tfont-weight: 28px;\n}\n.inputField-customizable{\n\tbackground-color:rgba(0, 0, 0, 0.3);\n }\n.textDescription-customizable {\n\tpadding-top: 50px;\n\tpadding-bottom: 50px;\n\tdisplay: block;\n\tfont-size: 2em;\n}\n.submitButton-customizable{\n\tfont-size:1em;\n\theight: 2.8em;\n\tbackground-color:#336cc9;\n}\n",
-#     image_file = "filebase64(PATH)"
+class CognitoUi(UiCognito):
+    with open("resources/cognito/image/paladinlog.png", "rb") as image2string:
+        converted_string = str(base64.b64encode(image2string.read()))
+    string = converted_string[2:-1]
+    user_pool_id = UserPool.get_output_attr('id')
+    css = ".label-customizable {font-weight: 28px;}"
+    image_file = string
