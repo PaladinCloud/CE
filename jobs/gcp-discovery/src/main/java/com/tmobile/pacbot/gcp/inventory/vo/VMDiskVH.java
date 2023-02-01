@@ -9,6 +9,16 @@ public class VMDiskVH extends GCPVH {
 
     boolean hasKmsKeyName;
 
+    boolean autoDelete;
+
+    public boolean isAutoDelete() {
+        return autoDelete;
+    }
+
+    public void setAutoDelete(boolean autoDelete) {
+        this.autoDelete = autoDelete;
+    }
+
     public boolean isHasKmsKeyName() {
         return hasKmsKeyName;
     }

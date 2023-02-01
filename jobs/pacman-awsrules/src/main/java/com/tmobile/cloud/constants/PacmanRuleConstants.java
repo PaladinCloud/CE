@@ -633,4 +633,7 @@ public class PacmanRuleConstants {
 
     public static final String QUIC_NEGOTIATION = "quicNegotiation";
     public static final String HAS_AUTO_RESTART = "autoRestart";
+    public static final String PERSISTENT = "PERSISTENT";
+
+    public static final String AUTO_DELETE = "autoDelete";
 }

@@ -171,6 +171,7 @@ public class VMInventoryCollector {
             diskVH.setName(disk.getDeviceName());
             diskVH.setSizeInGB(disk.getDiskSizeGb());
             diskVH.setType(disk.getType());
+            diskVH.setAutoDelete(disk.getAutoDelete());
             diskVH.setHasSha256(disk.getDiskEncryptionKey().hasSha256());
             diskVH.setHasKmsKeyName(disk.getDiskEncryptionKey().hasKmsKeyName());
             diskVH.setProjectName(vm.getProjectName());
