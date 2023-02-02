@@ -3655,7 +3655,7 @@ update cf_RuleInstance set targetType = 'virtualmachine' where targetType = 'vir
 update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region,_cloudType' where resourceType='all_list';
 
 
-UPDATE `pacmandata`.`pac_config_key_metadata` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
+UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
 
 /* Procedure to update metadata based on the mandatory tags configured */
 DELIMITER $$
