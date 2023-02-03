@@ -311,6 +311,7 @@ public class PacmanRuleConstants {
     public static final String HAS_CHILD = "has_child";
     public static final String HAS_PARENT = "has_parent";
     public static final String RESOURCE_ID = "_resourceid";
+    public static final String EXECUTION_ID = "executionId";
     public static final String ISSUE_REASON = "Reason";
     public static final String ESTIMATED_MONTHLY_SAVINGS = "Estimated Monthly Savings";
     public static final String PUBLIC = "public";
@@ -399,6 +400,7 @@ public class PacmanRuleConstants {
     public static final String DESTINATION_BUCKET_AUTOFIX = "destinationBucketForAutofix";
     public static final String ACCESSLOGS_ENABLED_REGIONS = "accessLogsEnabledRegions";
     public static final String RULE_ID = "ruleId";
+    public static final String POLICY_ID = "policyId";
     public static final String STATUS_EXEMPTED = "exempted";
     public static final String ES_RESOURCE_WITH_VULN_INFO_SEVERITY_URL = "esResourceWithVulnInfoForSeverityUrl";
     public static final int FIRST_DISCOVERED_DATE_FORMAT_LENGTH = 10;

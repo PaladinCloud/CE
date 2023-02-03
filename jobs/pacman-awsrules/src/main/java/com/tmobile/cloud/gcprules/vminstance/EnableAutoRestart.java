@@ -1,8 +1,6 @@
 package com.tmobile.cloud.gcprules.vminstance;
 
 import com.amazonaws.util.StringUtils;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.cloud.constants.PacmanRuleDescriptionConstants;
@@ -18,17 +16,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.util.Map;
+import java.util.*;
 
-@PacmanPolicy(key = "disable-auto-delete-for-persistent-disk", desc = "Disable auto delete for persistent disk", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
-public class DisableAutoDeleteVMPersistentDisk extends BasePolicy {
-    private static final Logger logger = LoggerFactory.getLogger(DisableAutoDeleteVMPersistentDisk.class);
+@PacmanPolicy(key = "enable-auto-restart-for-vm-instance", desc = "Enable Automatic Restart for VM Instances", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
+public class EnableAutoRestart extends BasePolicy {
+    private static final Logger logger = LoggerFactory.getLogger(EnableAutoRestart.class);
 
     @Override
     public PolicyResult execute(Map<String, String> ruleParam, Map<String, String> resourceAttributes) {
-        logger.debug("========Disable auto delete for vm persistent disk started=========");
-        String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
+        logger.debug("========EnableAutoRestart started=========");
 
+        String resourceId = ruleParam.get(PacmanRuleConstants.RESOURCE_ID);
         if (Boolean.FALSE.equals(GCPUtils.validateRuleParam(ruleParam))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
@@ -41,10 +39,10 @@ public class DisableAutoDeleteVMPersistentDisk extends BasePolicy {
 
         if (!StringUtils.isNullOrEmpty(resourceId)) {
             try {
-                boolean ifDiskHashAutoDelete = verifyAutoDeleteForPersistentDisk(vmEsURL, resourceId);
-                if (!ifDiskHashAutoDelete) {
-                    return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.AUTO_DELETE_PERSISTENT_DISK,
-                            PacmanRuleViolationReasonConstants.AUTO_DELETE_PERSISTENT_DISK);
+                boolean ifVmHas2FA = verifyAutoRestart(vmEsURL, resourceId);
+                if (!ifVmHas2FA) {
+                    return GCPUtils.fetchPolicyResult(ruleParam, PacmanRuleDescriptionConstants.ENABLE_AUTO_RESTART,
+                            PacmanRuleViolationReasonConstants.ENABLE_AUTO_RESTART);
                 }
             } catch (Exception exception) {
                 throw new RuleExecutionFailedExeption(exception.getMessage());
@@ -54,26 +52,20 @@ public class DisableAutoDeleteVMPersistentDisk extends BasePolicy {
         return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
     }
 
-    private boolean verifyAutoDeleteForPersistentDisk(String vmEsURL, String resourceId) throws Exception {
+    private boolean verifyAutoRestart(String vmEsURL, String resourceId) throws Exception {
         logger.debug("========verifyAutoRestart started=========");
-        boolean validationResult = true;
         JsonObject vmInstanceObject = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
-        JsonArray disks = !vmInstanceObject.get(PacmanRuleConstants.DISKS).isJsonNull() ?
-                vmInstanceObject.get(PacmanRuleConstants.DISKS).getAsJsonArray() : null;
-        for(JsonElement disk : disks){
-            JsonElement typeJson = disk.getAsJsonObject().get(PacmanRuleConstants.TYPE);
-            JsonElement autoDeleteJson = disk.getAsJsonObject().get(PacmanRuleConstants.AUTO_DELETE);
-            if(typeJson.isJsonNull() || autoDeleteJson.isJsonNull() ||
-                    (typeJson.getAsString().equals(PacmanRuleConstants.PERSISTENT) &&  autoDeleteJson.getAsBoolean())){
-                validationResult = false;
-                break;
-            }
+        if(vmInstanceObject != null && vmInstanceObject.getAsJsonObject() != null &&
+                !vmInstanceObject.getAsJsonObject().get(PacmanRuleConstants.HAS_AUTO_RESTART).isJsonNull()){
+            return vmInstanceObject.getAsJsonObject()
+                    .get(PacmanRuleConstants.HAS_AUTO_RESTART).getAsBoolean();
         }
-        return validationResult;
+        logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+        return false;
     }
 
     @Override
     public String getHelpText() {
-        return "This rule checks if the persistent disk have auto delete as true";
+        return "This rule checks  if the vm instance have enable auto restart as true";
     }
 }
