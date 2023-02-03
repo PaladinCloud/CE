@@ -5,7 +5,7 @@
     "policyName": "AmazonRDSIdleDBInstancesRule",
     "targetType": "rdsdb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Ti39halfu8\",\"key\":\"checkId\"},{\"encrypt\":false,\"value\":\"check-for-amazon-RDS-idle-DB-instances\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"AmazonRDSIdleDBInstancesRule_version-1_AmazonRDSIdleDBInstancesRule_rdsdb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdsdb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rds_instances_should_not_tbe_idle_state\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Ti39halfu8\",\"key\":\"checkId\"},{\"encrypt\":false,\"value\":\"check-for-amazon-RDS-idle-DB-instances\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"AmazonRDSIdleDBInstancesRule_version-1_AmazonRDSIdleDBInstancesRule_rdsdb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdsdb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rds_instances_should_not_tbe_idle_state\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -16,8 +16,8 @@
     "policyDisplayName": "Delete AWS RDS DB instances running in idle mode",
     "createdDate": "2018-03-15",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
-    "category": "security"
+    "severity": "high",
+    "category": "cost"
   },
   {
     "policyId": "CheckGuardDutyIsEnabledForAllAccount_version-1_CheckGuardDutyIsEnabledForAllAccount_account",
@@ -25,7 +25,7 @@
     "policyName": "CheckGuardDutyIsEnabledForAllAccount",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-guard-duty-enabled-for-all-accounts\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"role/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"CheckGuardDutyIsEnabledForAllAccount_version-1_CheckGuardDutyIsEnabledForAllAccount_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_guardduty_should_be_enabled\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-guard-duty-enabled-for-all-accounts\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"role/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"CheckGuardDutyIsEnabledForAllAccount_version-1_CheckGuardDutyIsEnabledForAllAccount_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_guardduty_should_be_enabled\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -37,7 +37,7 @@
     "createdDate": "2018-01-19",
     "modifiedDate": "2018-08-31",
     "severity": "critical",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "CheckInactiveIamUser_version-1_CheckInactiveIamUser_iamuser",
@@ -145,7 +145,7 @@
     "policyName": "Ec2WithPublicAccessNonWebPort80",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"igw\",\"key\":\"internetGateWay\"},{\"encrypt\":\"false\",\"value\":\"80\",\"key\":\"portToCheck\"},{\"encrypt\":\"false\",\"value\":\"check-for-ec2-with-public-access-for-configured-port\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"0.0.0.0/0\",\"key\":\"cidrIp\"},{\"key\":\"esEc2SgURL\",\"value\":\"/aws/ec2_secgroups/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esRoutetableAssociationsURL\",\"value\":\"/aws_routetable/routetable_associations/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esRoutetableRoutesURL\",\"value\":\"/aws_routetable/routetable_routes/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esRoutetableURL\",\"value\":\"/aws_routetable/routetable/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSubnetURL\",\"value\":\"/aws_subnet/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_publicly_accessible_on_port80\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"igw\",\"key\":\"internetGateWay\"},{\"encrypt\":\"false\",\"value\":\"80\",\"key\":\"portToCheck\"},{\"encrypt\":\"false\",\"value\":\"check-for-ec2-with-public-access-for-configured-port\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"0.0.0.0/0\",\"key\":\"cidrIp\"},{\"key\":\"esEc2SgURL\",\"value\":\"/aws/ec2_secgroups/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esRoutetableAssociationsURL\",\"value\":\"/aws_routetable/routetable_associations/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esRoutetableRoutesURL\",\"value\":\"/aws_routetable/routetable_routes/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esRoutetableURL\",\"value\":\"/aws_routetable/routetable/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSubnetURL\",\"value\":\"/aws_subnet/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_publicly_accessible_on_port80\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -285,7 +285,7 @@
     "policyName": "IdleLoadbalancerRule",
     "targetType": "classicelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-idle-load-balancers\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"hjLMh88uM8\",\"key\":\"checkId\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"IdleLoadBalancerRule_version-1_IdleLoadbalancerRule_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classic_elb_should_not_be_in_idle_state\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-idle-load-balancers\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"hjLMh88uM8\",\"key\":\"checkId\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"IdleLoadBalancerRule_version-1_IdleLoadbalancerRule_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classic_elb_should_not_be_in_idle_state\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -296,8 +296,8 @@
     "policyDisplayName": "Terminate/Delete Idle Load Balancers ",
     "createdDate": "2018-02-25",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
-    "category": "security"
+    "severity": "high",
+    "category": "cost"
   },
   {
     "policyId": "LambdaFunWithAdmin-OrIamPrivileges_version-1_LambdaFunWithAdminOrIamPrivileges_lambda",
@@ -925,7 +925,7 @@
     "policyName": "SgWithAnywhereAccess",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"0.0.0.0/0\",\"key\":\"cidrIp\"},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"workerThreadCount\",\"value\":\"50\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"ANY\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"SGWithAnywhereAccess_version-1_SgWithAnywhereAccess_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_anywhere_access_with_anyport\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"0.0.0.0/0\",\"key\":\"cidrIp\"},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"workerThreadCount\",\"value\":\"50\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"ANY\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"SGWithAnywhereAccess_version-1_SgWithAnywhereAccess_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_anywhere_access_with_anyport\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1005,7 +1005,7 @@
     "policyName": "AppelbTaggingRule",
     "targetType": "appelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_AppelbTaggingRule_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_app_elb_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_AppelbTaggingRule_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_app_elb_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1016,7 +1016,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Application ELB",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1025,7 +1025,7 @@
     "policyName": "AsgTaggingRule",
     "targetType": "asg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_AsgTaggingRule_asg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_asg_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_AsgTaggingRule_asg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_asg_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1036,7 +1036,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Auto-Scaling Groups ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1045,7 +1045,7 @@
     "policyName": "ClassicelbTaggingRule",
     "targetType": "classicelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_ClassicelbTaggingRule_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classic_elb_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_ClassicelbTaggingRule_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classic_elb_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1056,7 +1056,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Classic ELB",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1065,7 +1065,7 @@
     "policyName": "CloudfrontTaggingRule",
     "targetType": "cloudfront",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_CloudfrontTaggingRule_cloudfront\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfront\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_cloudfront_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_CloudfrontTaggingRule_cloudfront\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfront\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_cloudfront_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1076,7 +1076,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Cloudfront",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1085,7 +1085,7 @@
     "policyName": "DynamodbTaggingRule",
     "targetType": "dynamodb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_DynamodbTaggingRule_dynamodb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"dynamodb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_dynamodb_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_DynamodbTaggingRule_dynamodb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"dynamodb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_dynamodb_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1096,7 +1096,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Dynamo db",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1125,7 +1125,7 @@
     "policyName": "EfsTaggingRule",
     "targetType": "efs",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_EfsTaggingRule_efs\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"efs\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_efs_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_EfsTaggingRule_efs\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"efs\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_efs_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1136,7 +1136,7 @@
     "policyDisplayName": "Assign Mandatory Tags to AWS Elastic File System",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1165,7 +1165,7 @@
     "policyName": "EmrTaggingRule",
     "targetType": "emr",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_EmrTaggingRule_emr\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_emr_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_EmrTaggingRule_emr\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_emr_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1176,7 +1176,7 @@
     "policyDisplayName": "Assign Mandatory Tags to AWS Elastic MapReduce",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1185,7 +1185,7 @@
     "policyName": "KmsTaggingRule",
     "targetType": "kms",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_KmsTaggingRule_kms\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kms\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_kms_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_KmsTaggingRule_kms\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kms\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_kms_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1196,7 +1196,7 @@
     "policyDisplayName": "Assign Mandatory Tags to AWS Key Management Services",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1205,7 +1205,7 @@
     "policyName": "LambdaTaggingRule",
     "targetType": "lambda",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_LambdaTaggingRule_lambda\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"lambda\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_lambda_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_LambdaTaggingRule_lambda\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"lambda\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_lambda_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1216,7 +1216,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Lambda Functions ",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1245,7 +1245,7 @@
     "policyName": "RedshiftTaggingRule",
     "targetType": "redshift",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_RedshiftTaggingRule_redshift\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"redshift\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_redshift_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_RedshiftTaggingRule_redshift\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"redshift\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_redshift_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1256,7 +1256,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Redshift",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1285,7 +1285,7 @@
     "policyName": "SgTaggingRule",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_SgTaggingRule_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_SgTaggingRule_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1296,7 +1296,7 @@
     "policyDisplayName": "Assign Mandatory Tags to the Network Security Group",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1305,7 +1305,7 @@
     "policyName": "SnapshotTaggingRule",
     "targetType": "snapshot",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_SnapshotTaggingRule_snapshot\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"snapshot\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_snapshot_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_SnapshotTaggingRule_snapshot\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"snapshot\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_snapshot_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1316,7 +1316,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Tag EBS snapshots",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1325,7 +1325,7 @@
     "policyName": "StackTaggingRule",
     "targetType": "stack",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_StackTaggingRule_stack\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"stack\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_stack_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_StackTaggingRule_stack\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"stack\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_stack_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1336,7 +1336,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Cloud Formation Stacks",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1345,7 +1345,7 @@
     "policyName": "SubnetTaggingRule",
     "targetType": "subnet",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_SubnetTaggingRule_subnet\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subnet\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_subnet_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_SubnetTaggingRule_subnet\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subnet\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_subnet_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1356,7 +1356,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Subnets",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1365,7 +1365,7 @@
     "policyName": "VolumeTaggingRule",
     "targetType": "volume",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_VolumeTaggingRule_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_volume_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_VolumeTaggingRule_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_volume_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1376,7 +1376,7 @@
     "policyDisplayName": "Assign Mandatory Tags to EBS Volumes",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1385,7 +1385,7 @@
     "policyName": "VpcTaggingRule",
     "targetType": "vpc",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_VpcTaggingRule_vpc\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpc\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vpc_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_VpcTaggingRule_vpc\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpc\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vpc_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1396,7 +1396,7 @@
     "policyDisplayName": "Assign Mandatory Tags to VPC",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1425,7 +1425,7 @@
     "policyName": "ECSTaskDefinitionTaggingRule",
     "targetType": "ecstaskdefinition",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_ECSTaskDefinitionTaggingRule_ecstaskdefinition\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ecstaskdefinition\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ecs_task_definition_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_ECSTaskDefinitionTaggingRule_ecstaskdefinition\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ecstaskdefinition\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ecs_task_definition_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1436,7 +1436,7 @@
     "policyDisplayName": "Assign Mandatory Tags to ECS Task Definition",
     "createdDate": "2022-10-13",
     "modifiedDate": "2022-10-13",
-    "severity": "low",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1445,7 +1445,7 @@
     "policyName": "ECSClusterTaggingRule",
     "targetType": "ecscluster",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_ECSClusterTaggingRule_ecscluster\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ecscluster\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ecs_cluster_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"check-for-missing-mandatory-tags\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Application,Environment,Stack,Role\",\"key\":\"mandatoryTags\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_ECSClusterTaggingRule_ecscluster\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ecscluster\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ecs_cluster_should_be_tagged_with_mandatory_tags\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1456,7 +1456,7 @@
     "policyDisplayName": "Assign Mandatory Tags to ECS Cluster ",
     "createdDate": "2022-10-13",
     "modifiedDate": "2022-10-13",
-    "severity": "low",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1485,7 +1485,7 @@
     "policyName": "UnderutilizedAmazonRedshiftClustersRule",
     "targetType": "redshift",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-under-utilized-amazon-redshift-clusters\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"G31sQ1E9U\",\"key\":\"checkId\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"redshift\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_redshift_clusters_should_not_be_under_utilized\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-under-utilized-amazon-redshift-clusters\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"G31sQ1E9U\",\"key\":\"checkId\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"redshift\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_redshift_clusters_should_not_be_under_utilized\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1496,7 +1496,7 @@
     "policyDisplayName": "Check for Underutilized Amazon Redshift Clusters",
     "createdDate": "2018-03-14",
     "modifiedDate": "2018-09-19",
-   "severity": "critical",
+   "severity": "high",
     "category": "security"
   },
   {
@@ -1505,7 +1505,7 @@
     "policyName": "UntaggedOrUnusedEbsRule",
     "targetType": "volume",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-unused-or-untagged-ebs-rule\",\"encrypt\":false},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"/aws/volume_attachments/_search\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"high\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ebs_volumes_should_not_be_tagged_and_under_utilized\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-unused-or-untagged-ebs-rule\",\"encrypt\":false},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"/aws/volume_attachments/_search\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"cost\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"high\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ebs_volumes_should_not_be_tagged_and_under_utilized\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1516,7 +1516,7 @@
     "policyDisplayName": "Delete Unused EBS Volumes",
     "createdDate": "2018-08-22",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
+    "severity": "high",
     "category": "cost"
   },
   {
@@ -1525,7 +1525,7 @@
     "policyName": "UnusedSecurityGroup",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-security-group\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"key\":\"fixKey\",\"value\":\"unused-sg-auto-fix\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esServiceWithSgUrl\",\"value\":\"/aws/ec2_secgroups/_search,/aws/rdsdb_secgroups/_search,/aws/rdscluster_secgroups/_search,/aws/redshift_secgroups/_search,/aws_lambda/lambda_secgroups/_search,/aws_appelb/appelb_secgroups/_search,/aws_classicelb/classicelb_secgroups/_search,/aws/elasticsearch/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"Unused-Security-group_version-1_UnusedSecurityGroup_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_security_groups_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-security-group\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"key\":\"fixKey\",\"value\":\"unused-sg-auto-fix\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esServiceWithSgUrl\",\"value\":\"/aws/ec2_secgroups/_search,/aws/rdsdb_secgroups/_search,/aws/rdscluster_secgroups/_search,/aws/redshift_secgroups/_search,/aws_lambda/lambda_secgroups/_search,/aws_appelb/appelb_secgroups/_search,/aws_classicelb/classicelb_secgroups/_search,/aws/elasticsearch/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"Unused-Security-group_version-1_UnusedSecurityGroup_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_security_groups_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1536,8 +1536,8 @@
     "policyDisplayName": "Delete Unused Security Groups",
     "createdDate": "2017-10-16",
     "modifiedDate": "2018-12-18",
-    "severity": "critical",
-    "category": "cost"
+    "severity": "high",
+    "category": "operations"
   },
   {
     "policyId": "UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb",
@@ -1545,7 +1545,7 @@
     "policyName": "UnusedApplicationElbRule",
     "targetType": "appelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"check-for-unused-application-elb\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"key\":\"esAppElbWithInstanceUrl\",\"value\":\"/aws/appelb_instances/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_app_elb_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"check-for-unused-application-elb\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"key\":\"esAppElbWithInstanceUrl\",\"value\":\"/aws/appelb_instances/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_app_elb_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1556,7 +1556,7 @@
     "policyDisplayName": "Delete Unused Application ELB",
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "cost"
   },
   {
@@ -1565,7 +1565,7 @@
     "policyName": "UnusedClassicElbRule",
     "targetType": "classicelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-classic-elb\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"key\":\"esClassicElbWithInstanceUrl\",\"value\":\"/aws/classicelb_instances/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"sdfsd\",\"key\":\"sdf\"}],\"policyId\":\"UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classic_elb_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-classic-elb\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"key\":\"esClassicElbWithInstanceUrl\",\"value\":\"/aws/classicelb_instances/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"sdfsd\",\"key\":\"sdf\"}],\"policyId\":\"UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classic_elb_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1576,7 +1576,7 @@
     "policyDisplayName": "Clean up Unused ELB",
     "createdDate": "2017-09-28",
     "modifiedDate": "2018-11-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "cost"
   },
   {
@@ -1585,7 +1585,7 @@
     "policyName": "UnusedEbsRule",
     "targetType": "volume",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-ebs-rule\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"/aws/volume_attachments/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"UnusedEBSRule_version-1_UnusedEbsRule_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ebs_volume_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-ebs-rule\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"key\":\"esEbsWithInstanceUrl\",\"value\":\"/aws/volume_attachments/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"UnusedEBSRule_version-1_UnusedEbsRule_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ebs_volume_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1596,7 +1596,7 @@
     "policyDisplayName": "Delete Unused ELB",
     "createdDate": "2017-10-13",
     "modifiedDate": "2018-11-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "cost"
   },
   {
@@ -1605,7 +1605,7 @@
     "policyName": "UnusedElasticIpRule",
     "targetType": "elasticip",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-elastic-ip\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"key\":\"esElasticIpUrl\",\"value\":\"/aws_elasticip/elasticip/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticip\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticip_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-elastic-ip\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"key\":\"esElasticIpUrl\",\"value\":\"/aws_elasticip/elasticip/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticip\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticip_should_not_be_unused\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1616,7 +1616,7 @@
     "policyDisplayName": "Delete Unused Elastic IPs",
     "createdDate": "2018-02-01",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
+    "severity": "high",
     "category": "cost"
   },
   {
@@ -1965,7 +1965,7 @@
     "policyName": "Check_MFA_RootUser",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[{\"key\":\"policyKey\",\"value\":\"check-for-MFA-RootUser\",\"encrypt\":false},{\"key\":\"roleIdentifyingString\",\"value\":\"role/paladincloud_ro\",\"encrypt\":false}],\"policyId\":\"Check_MFA_RootUSer_version-1_Check_MFA_RootUser_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_mfa_root_user\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[{\"key\":\"policyKey\",\"value\":\"check-for-MFA-RootUser\",\"encrypt\":false},{\"key\":\"roleIdentifyingString\",\"value\":\"role/paladincloud_ro\",\"encrypt\":false}],\"policyId\":\"Check_MFA_RootUSer_version-1_Check_MFA_RootUser_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_mfa_root_user\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1976,7 +1976,7 @@
     "policyDisplayName": "Enable MFA for Root User",
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -2145,7 +2145,7 @@
     "policyName": "LowUtilizationAmazonEC2InstancesRule",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-low-utilization-amazon-ec2-instance\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"checkId\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_low_utilization\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-low-utilization-amazon-ec2-instance\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"checkId\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_low_utilization\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2165,7 +2165,7 @@
     "policyName": "VpnGatewayTaggingRule",
     "targetType": "vpngateway",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-missing-mandatory-tags\",\"encrypt\":false},{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"mandatoryTags\",\"value\":\"Application,Environment,Stack,Role\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_VPNGatewayMandatoryTagging_vpngateway\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpngateway\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vpngateway_mandatory_tag_rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-missing-mandatory-tags\",\"encrypt\":false},{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"mandatoryTags\",\"value\":\"Application,Environment,Stack,Role\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"TaggingRule_version-1_VPNGatewayMandatoryTagging_vpngateway\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpngateway\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vpngateway_mandatory_tag_rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2176,7 +2176,7 @@
     "policyDisplayName": "Assign Mandatory Tags to VPNGateway",
     "createdDate": "2019-09-13",
     "modifiedDate": "2019-09-13",
-    "severity": "low",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -2185,7 +2185,7 @@
     "policyName": "Ec2WithS3VulnerabilityRule",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"S3\",\"key\":\"severityVulnValue\"},{\"key\":\"esResourceWithVulnInfoForSeverityUrl\",\"value\":\"/aws_ec2/vulninfo/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-resource-with-severity-vulnerabilities\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_vuln_severity_rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"S3\",\"key\":\"severityVulnValue\"},{\"key\":\"esResourceWithVulnInfoForSeverityUrl\",\"value\":\"/aws_ec2/vulninfo/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-resource-with-severity-vulnerabilities\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Ec2WithSeverityVulnerability_version-1_Ec2WithS3Vulnerability_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_vuln_severity_rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2196,7 +2196,7 @@
     "policyDisplayName": "Deny S3 Vulnerability on EC2 Instance",
     "createdDate": "2019-09-13",
     "modifiedDate": "2019-09-13",
-    "severity": "low",
+    "severity": "medium",
     "category": "security"
   },
   {
@@ -2205,7 +2205,7 @@
     "policyName": "Ec2WithS4VulnerabilityRule",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"S4\",\"key\":\"severityVulnValue\"},{\"key\":\"esResourceWithVulnInfoForSeverityUrl\",\"value\":\"/aws_ec2/vulninfo/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-resource-with-severity-vulnerabilities\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_vuln_s4_rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"S4\",\"key\":\"severityVulnValue\"},{\"key\":\"esResourceWithVulnInfoForSeverityUrl\",\"value\":\"/aws_ec2/vulninfo/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-resource-with-severity-vulnerabilities\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Ec2WithSeverityVulnerability_version-1_Ec2WithS4Vulnerability_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_vuln_s4_rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2216,7 +2216,7 @@
     "policyDisplayName": "Deny S4 Vulnerability on EC2 Instance",
     "createdDate": "2019-09-13",
     "modifiedDate": "2019-09-13",
-    "severity": "low",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -2225,7 +2225,7 @@
     "policyName": "Ec2WithS5VulnerabilityRule",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"S5\",\"key\":\"severityVulnValue\"},{\"key\":\"esResourceWithVulnInfoForSeverityUrl\",\"value\":\"/aws_ec2/vulninfo/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-resource-with-severity-vulnerabilities\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_vuln_s5_rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"S5\",\"key\":\"severityVulnValue\"},{\"key\":\"esResourceWithVulnInfoForSeverityUrl\",\"value\":\"/aws_ec2/vulninfo/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-resource-with-severity-vulnerabilities\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Ec2WithSeverityVulnerability_version-1_Ec2WithS5Vulnerability_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_vuln_s5_rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2236,7 +2236,7 @@
     "policyDisplayName": "Deny S5 Vulnerability on EC2 Instance",
     "createdDate": "2019-09-13",
     "modifiedDate": "2019-09-13",
-    "severity": "low",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -2625,7 +2625,7 @@
     "policyName": "IAM customer managed policies should not have full administrative privileges",
     "targetType": "iampolicies",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"iam-cutomer-managed-policy-with-admin-previlege\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1_Admin_Previlege_iampolicies\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"iampolicies\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_customer_managed_policy_with_admin_previlege\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"iam-cutomer-managed-policy-with-admin-previlege\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"role\/paladincloud_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_IAM_Customer_Mnged_Policy_With_Admin_Previlege_version-1_Admin_Previlege_iampolicies\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"iampolicies\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_customer_managed_policy_with_admin_previlege\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2636,7 +2636,7 @@
     "policyDisplayName": "Deny Full Administrative Privileges to Customer Managed Policy",
     "createdDate": "2022-08-23",
     "modifiedDate": "2022-08-23",
-    "severity": "medium",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -2685,7 +2685,7 @@
     "policyName": "aws_ecs_task_should_configure_log_driver",
     "targetType": "ecstaskdefinition",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-ecs-task-log-driver-in-use\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_ecs_task_should_use_log_driver_version-1_aws_enable_task_log_driver_ecs\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ecstaskdefinition\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_ecs_task_log_driver\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-ecs-task-log-driver-in-use\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_ecs_task_should_use_log_driver_version-1_aws_enable_task_log_driver_ecs\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ecstaskdefinition\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_ecs_task_log_driver\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2697,7 +2697,7 @@
     "createdDate": "2022-06-15",
     "modifiedDate": "2022-06-15",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Aws_iam_access_analyser_findings_version-1_aws_active_findings_accessanalyzer",
@@ -2705,7 +2705,7 @@
     "policyName": "aws_analyzer_findings_should_be_resolved",
     "targetType": "accessanalyzer",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-access-analyzer-findings\",\"encrypt\":false},{\"key\":\"esFindingsUrl\",\"value\":\"\/aws\/accessanalyzer_findings\/_search\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_iam_access_analyser_findings_version-1_aws_active_findings_accessanalyzer\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"accessanalyzer\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_active_accessanalyzer_findings_should_be_resolved\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-access-analyzer-findings\",\"encrypt\":false},{\"key\":\"esFindingsUrl\",\"value\":\"\/aws\/accessanalyzer_findings\/_search\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_iam_access_analyser_findings_version-1_aws_active_findings_accessanalyzer\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"accessanalyzer\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_active_accessanalyzer_findings_should_be_resolved\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2717,7 +2717,7 @@
     "createdDate": "2022-06-17",
     "modifiedDate": "2022-06-17",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AwsVaultMissingAccessPolicy_version-1_AwsVaultMissingAccessPolicy_backupvault",
@@ -2725,7 +2725,7 @@
     "policyName": "AWS backup should have delete access policy",
     "targetType": "backupvault",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-bakup-vault-delete-policy\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AwsVaultMissingAccessPolicy_version-1_AwsVaultMissingAccessPolicy_backupvault\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"backupvault\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vault_missing_delete_protection\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-bakup-vault-delete-policy\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AwsVaultMissingAccessPolicy_version-1_AwsVaultMissingAccessPolicy_backupvault\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"backupvault\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vault_missing_delete_protection\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2737,7 +2737,7 @@
     "createdDate": "2022-08-10",
     "modifiedDate": "2022-08-10",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AwsAsgMissingAMI_version-1_AwsAsgMissingAMI_asg",
@@ -2745,7 +2745,7 @@
     "policyName": "AWS_Asg_launch_configuration_should_use_active_AMIs",
     "targetType": "asg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-asg-referencing-missing-ami\",\"encrypt\":false},{\"key\":\"esAmiUrl\",\"value\":\"\/aws\/ami\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esAsgLcURL\",\"value\":\"\/aws\/asg_launchconfig\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AwsAsgMissingAMI_version-1_AwsAsgMissingAMI_asg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_asg_config_should_use_active_AMI\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-asg-referencing-missing-ami\",\"encrypt\":false},{\"key\":\"esAmiUrl\",\"value\":\"\/aws\/ami\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esAsgLcURL\",\"value\":\"\/aws\/asg_launchconfig\/_search\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AwsAsgMissingAMI_version-1_AwsAsgMissingAMI_asg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_asg_config_should_use_active_AMI\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2757,7 +2757,7 @@
     "createdDate": "2022-07-14",
     "modifiedDate": "2022-07-14",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AwsAsgInactiveSecurityGroup_version-1_AwsAsgInactiveSecurityGroup_asg",
@@ -3005,7 +3005,7 @@
     "policyName": "Enable_ElastiCache_Redis_clusters_encryption",
     "targetType": "elasticache",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-elasticache-clusters-encrypted\",\"encrypt\":false},{\"key\":\"engineType\",\"value\":\"redis\",\"encrypt\":false},{\"key\":\"engineVersion\",\"value\":\"3.2.6\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElastiCache_Clusters_Enabled_Encryption_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticache\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_elasticache_redis_clusters_encryption\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-elasticache-clusters-encrypted\",\"encrypt\":false},{\"key\":\"engineType\",\"value\":\"redis\",\"encrypt\":false},{\"key\":\"engineVersion\",\"value\":\"3.2.6\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElastiCache_Clusters_Enabled_Encryption_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticache\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_elasticache_redis_clusters_encryption\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3016,7 +3016,7 @@
     "policyDisplayName": "Encrypt ElastiCache for Redis Data",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   { 
@@ -3065,7 +3065,7 @@
     "policyName": "Enable_Amazon_EMR_clusters_encryption",
     "targetType": "emr",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-emr-clusters-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_EMR_Clusters_Enabled_Encryption_version-1_Enable_Amazon_EMR_clusters_encryption\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_emr_clusters_encryption\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-emr-clusters-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_EMR_Clusters_Enabled_Encryption_version-1_Enable_Amazon_EMR_clusters_encryption\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_emr_clusters_encryption\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3076,7 +3076,7 @@
     "policyDisplayName": "Enable EMR Data Encryption",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3165,7 +3165,7 @@
     "policyName": "ElasticSearchDomainEncryptionUsingCMKKMSKeys",
     "targetType": "elasticsearch",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-es-encrypted-using-kms-cmks\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElasticSearch_Domain_Encryption_Using_CMK_KMS_Key_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_domain_encryption_using_cmk_kms_keys\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-es-encrypted-using-kms-cmks\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElasticSearch_Domain_Encryption_Using_CMK_KMS_Key_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_domain_encryption_using_cmk_kms_keys\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3176,7 +3176,7 @@
     "policyDisplayName": "Use Customer Managed Key to encrypt OpenSearch data at rest",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3225,7 +3225,7 @@
     "policyName": "RDS Auto Minor Version Upgrade should be enabled",
     "targetType": "rdsdb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-rds-auto-minor-version-upgrade\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"RDSDBEnableAutoMinorVersionUpgrade_version-1_EnableAutoMinorVersionUpgrade_rdsdb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdsdb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rds_db_enable_auto_minor_version_upgrade\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-rds-auto-minor-version-upgrade\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"RDSDBEnableAutoMinorVersionUpgrade_version-1_EnableAutoMinorVersionUpgrade_rdsdb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdsdb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rds_db_enable_auto_minor_version_upgrade\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3237,7 +3237,7 @@
     "createdDate": "2022-09-23",
     "modifiedDate": "2022-09-23",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AWSAMIUnused_version-1_Unused_ami",
@@ -3325,7 +3325,7 @@
     "policyName": "Unauthorized API calls should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"UNAUTH_API_CALLS_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForUnAuthorizedAPI_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_unauthorized_api\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"UNAUTH_API_CALLS_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForUnAuthorizedAPI_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_unauthorized_api\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3337,7 +3337,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForManagementConsoleSignin_version-1_EnableCloudwatchAlarm_account",
@@ -3345,7 +3345,7 @@
     "policyName": "Management Console sign-in without MFA should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"MC_SIGNIN_WO_MFA_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForManagementConsoleSignin_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_mc_signin\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"MC_SIGNIN_WO_MFA_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForManagementConsoleSignin_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_mc_signin\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3357,7 +3357,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForRootAccountUsage_version-1_EnableCloudwatchAlarm_account",
@@ -3365,7 +3365,7 @@
     "policyName": "Usage of root account should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"USAGE_OF_ROOT_ACC_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForRootAccountUsage_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_root_account_usage\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"USAGE_OF_ROOT_ACC_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForRootAccountUsage_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_root_account_usage\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3377,7 +3377,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForIAMPolicyChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3385,7 +3385,7 @@
     "policyName": "IAM policy changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"IAM_POL_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForIAMPolicyChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_iam_policy_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"IAM_POL_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForIAMPolicyChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_iam_policy_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3397,7 +3397,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForCloudTrailConfigurationChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3405,7 +3405,7 @@
     "policyName": "Log metric filter and alarm should be enabled for CloudTrail configuration changes",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"CT_CFGN_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForCloudTrailConfigurationChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_ct_conf_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"CT_CFGN_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForCloudTrailConfigurationChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_ct_conf_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3417,7 +3417,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForManagementConsoleAuthenticationFailures_version-1_EnableCloudwatchAlarm_account",
@@ -3425,7 +3425,7 @@
     "policyName": "AWS Management Console authentication failures should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"MC_AUTH_FAIL_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForManagementConsoleAuthenticationFailures_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_mc_auth_failures\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"MC_AUTH_FAIL_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForManagementConsoleAuthenticationFailures_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_mc_auth_failures\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3437,7 +3437,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForCustomerCMK_version-1_EnableCloudwatchAlarm_account",
@@ -3445,7 +3445,7 @@
     "policyName": "Disabling or scheduled deletion of customer created CMKs should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"CUST_CMK_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForCustomerCMK_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_customer_cmk\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"CUST_CMK_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForCustomerCMK_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_customer_cmk\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3457,7 +3457,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForS3BucketPolicy_version-1_EnableCloudwatchAlarm_account",
@@ -3465,7 +3465,7 @@
     "policyName": "S3 bucket policy changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"S3_BUCK_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForS3BucketPolicy_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_s3_policy_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"S3_BUCK_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForS3BucketPolicy_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_s3_policy_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3477,7 +3477,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForAWSConfiguration_version-1_EnableCloudwatchAlarm_account",
@@ -3485,7 +3485,7 @@
     "policyName": "AWS Config configuration changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"AWS_CONF_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForAWSConfiguration_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_aws_conf\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"AWS_CONF_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForAWSConfiguration_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_aws_conf\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3497,7 +3497,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3505,7 +3505,7 @@
     "policyName": "Security group changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"SEC_GRP_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_sg_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"SEC_GRP_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForSecurityGroupChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_sg_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3517,7 +3517,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForNACLChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3525,7 +3525,7 @@
     "policyName": "Changes to NACL should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"NACL_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForNACLChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_nacl_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"NACL_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForNACLChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_nacl_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3537,7 +3537,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForNetworkGatewayChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3545,7 +3545,7 @@
     "policyName": "Changes to network gateways  should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"NTWK_GTWY_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForNetworkGatewayChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_network_gateway\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"NTWK_GTWY_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForNetworkGatewayChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_network_gateway\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3557,7 +3557,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForRouteTableChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3565,7 +3565,7 @@
     "policyName": "Route table changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"ROUTE_TBL_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForRouteTableChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_root_table\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"ROUTE_TBL_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForRouteTableChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_root_table\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3577,7 +3577,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForVPCChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3585,7 +3585,7 @@
     "policyName": "VPC changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"VPC_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForVPCChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_vpc_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"VPC_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForVPCChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_vpc_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3597,7 +3597,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AccountEnsureCloudwatchAlarmExistsForAWSOrganizationChanges_version-1_EnableCloudwatchAlarm_account",
@@ -3605,7 +3605,7 @@
     "policyName": "AWS Organizations changes should have log metric filter and alarm",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"AWS_ORG_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForAWSOrganizationChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_org_changes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudwatch-alarm-exists\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"CloudTrailEventCount\",\"key\":\"metricname\"},{\"encrypt\":false,\"value\":\"CloudTrailMetrics\",\"key\":\"metricnamespace\"},{\"encrypt\":false,\"value\":\"AWS_ORG_CHANGES_FILTER\",\"key\":\"filtername\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AccountEnsureCloudwatchAlarmExistsForAWSOrganizationChanges_version-1_EnableCloudwatchAlarm_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloudwatch_alarm_for_org_changes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3617,7 +3617,7 @@
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "EksSgInboundTrafficValidation_version-1_SgInboundTrafficValidation_eks",
@@ -3705,7 +3705,7 @@
     "policyName": "S3 object level read operations should be logged",
     "targetType": "s3",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-s3-object-level-read-logging-rule\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"S3ObjectLevelReadLogging_version-1_ObjectLevelReadLogging_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_object_level_read_logging\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-s3-object-level-read-logging-rule\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"S3ObjectLevelReadLogging_version-1_ObjectLevelReadLogging_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_object_level_read_logging\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3717,7 +3717,7 @@
     "createdDate": "2022-11-02",
     "modifiedDate": "2022-11-02",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "S3ObjectLevelWriteLogging_version-1_ObjectLevelWriteLogging_s3",
@@ -3725,7 +3725,7 @@
     "policyName": "S3 object level write operations should be logged",
     "targetType": "s3",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-s3-object-level-write-logging-rule\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"S3ObjectLevelWriteLogging_version-1_ObjectLevelWriteLogging_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_object_level_write_logging\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-s3-object-level-write-logging-rule\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"S3ObjectLevelWriteLogging_version-1_ObjectLevelWriteLogging_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_object_level_write_logging\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3737,7 +3737,7 @@
     "createdDate": "2022-11-02",
     "modifiedDate": "2022-11-02",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "AWS_eks_cluster_encryption_enabled_version-1_enable_cluster_encryption_eks",
