@@ -38,7 +38,7 @@ import { CONFIGURATIONS } from './../../../config/configurations';
   templateUrl: './stats-overlay.component.html',
   styleUrls: ['./stats-overlay.component.css'],
   providers: [CommonResponseService, AutorefreshService],
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(window:resize)': 'onResize($event)'
   }

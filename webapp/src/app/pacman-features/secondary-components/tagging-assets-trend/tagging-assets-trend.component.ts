@@ -28,7 +28,7 @@ import { AutorefreshService } from '../../services/autorefresh.service';
   styleUrls: ['./tagging-assets-trend.component.css'],
   providers: [ ComplianceOverviewService , AutorefreshService],
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(window:resize)': 'onResize($event)'
   }

@@ -37,7 +37,7 @@ import { ActivatedRoute, Router } from "@angular/router";
   styleUrls: ["./compliance-overview-trend.component.css"],
   providers: [ComplianceOverviewService, AutorefreshService],
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     "(window:resize)": "onResize($event)",
   },
