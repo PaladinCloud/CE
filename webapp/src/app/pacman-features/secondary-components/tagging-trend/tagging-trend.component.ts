@@ -25,7 +25,7 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['./tagging-trend.component.css'],
   providers: [IssuesHistoryService],
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(window:resize)': 'onResize($event)'
   }

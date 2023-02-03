@@ -30,7 +30,7 @@ import { RefactorFieldsService } from '../services/refactor-fields.service';
   templateUrl: './main-filter.component.html',
   styleUrls: ['./main-filter.component.css'],
   providers: [LoggerService],
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(document:click)': 'onClickOutside($event)'
   }

@@ -29,7 +29,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
     templateUrl: './inventory-container.component.html',
     styleUrls: ['./inventory-container.component.css'],
     providers: [MultilineChartService, AutorefreshService, IssueFilterService],
-    // tslint:disable-next-line:use-host-property-decorator
+    // eslint-disable-next-line
     host: {
         '(window:resize)': 'onResize($event)'
     }
