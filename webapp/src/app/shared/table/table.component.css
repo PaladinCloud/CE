@@ -353,3 +353,14 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
 .rotate-180{
   transform: rotate(180deg);
 }
+
+.menu-btn{
+  height: 28px;
+  width: 28px;
+  padding: 4px;
+}
+
+.menu-btn:hover{
+  border-radius: 50%;
+  background: var(--primary-100);
+}

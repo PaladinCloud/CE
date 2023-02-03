@@ -13,7 +13,7 @@ export class CustomCardComponent implements OnInit {
 
   @Input() selectedItem = "All time";
   @Input() fromDate: Date = new Date(2022, 0, 1);
-  @Input() toDate: Date = new Date(2200, 11, 31);
+  @Input() toDate: Date = new Date();
   @Input() showDateDropdown = false;
   @Input() card = {
     header: "Default title"
@@ -28,8 +28,8 @@ export class CustomCardComponent implements OnInit {
   }
 
   handleGraphIntervalSelection = (e) => {
-    this.fromDate = new Date(2022, 1, 1);
-    this.toDate = new Date(2200, 12, 31);
+    this.fromDate = new Date(2022, 0, 1);
+    this.toDate = new Date();
     this.selectedItem = e;
     e = e.toLowerCase();
     if(e == "all time" || e == "custom"){

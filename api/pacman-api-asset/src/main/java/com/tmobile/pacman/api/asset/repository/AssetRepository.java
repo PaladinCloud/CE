@@ -18,6 +18,7 @@ package com.tmobile.pacman.api.asset.repository;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
@@ -575,5 +576,7 @@ public interface AssetRepository {
     public List<String> getProvidersForAssetGroup(String assetGroup) throws DataException;
 
     public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to);
+
+    public Set<String> getMandatoryTags(String serviceName);
     
 }

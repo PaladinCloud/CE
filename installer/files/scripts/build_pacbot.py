@@ -35,6 +35,11 @@ class Buildpacbot(object):
         self.auth_type = auth_type
         self.tenant_id = tenant_id
         self.client_id = client_id
+        self.client_cognito_id = client_cognito_id
+        self.client_cognito_secert = client_cognito_secert
+        self.domain_cognito_url = domain_cognito_url
+        self.cognito_callback_url = cognito_callback_url
+        self.cognito_logout_url = cognito_logout_url
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -176,6 +181,23 @@ class Buildpacbot(object):
             if  self.auth_type == "DB":
                 if "AUTH_TYPE: AZURE_SSO" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: AZURE_SSO", "AUTH_TYPE: DB")
+
+            if self.auth_type == "COGNITO":
+                if "AUTH_TYPE: DB" in line:
+                    lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: COGNITO")
+                if "sso_api_username: '" in line:
+                    lines[idx] = "sso_api_username: '"+self.client_cognito_id+"' \n,"
+                if "sso_api_pwd: '" in line:
+                    lines[idx] = "sso_api_pwd: '" + self.client_cognito_secert+"'\n,"
+                if "loginURL: '" in line:
+                    lines[idx] = "loginURL: '" + self.domain_cognito_url + "/login?" + "client_id="  + self.client_cognito_id+ "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url +"'\n,"
+                if "redirectURL: '" in line:
+                    lines[idx] = "redirectURL: '"+ self.cognito_callback_url +"'\n,"
+                if "cognitoTokenURL: '" in line:
+                    lines[idx] = "cognitoTokenURL: '" + self.domain_cognito_url + "/oauth2/token""'\n,"
+                if "logout: '" in line:
+                    lines[idx] = "logout: '" +  self.domain_cognito_url + "/logout?" + "client_id="  + self.client_cognito_id+ "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url +"'"
+
                 
         with open(config_file, 'w') as f:
             f.writelines(lines)
@@ -227,7 +249,11 @@ if __name__ == "__main__":
     auth_type = os.getenv('AUTHENTICATION_TYPE')
     tenant_id = os.getenv('AD_TENANT_ID')
     client_id = os.getenv('AD_CLIENT_ID')
-    
+    client_cognito_id = os.getenv('COGNITO_CLIENT_ID')
+    client_cognito_secert = os.getenv('COGNITO_CLIENT_SECRET')
+    domain_cognito_url = "https://"+ str(os.getenv('COGNITO_DOMAIN')) + ".auth." + str(os.getenv('AWS_REGION')) + ".amazoncognito.com"
+    cognito_callback_url = os.getenv('APPLICATION_DOMAIN')+"/callback"
+    cognito_logout_url = "https://"+os.getenv('APPLICATION_DOMAIN')+"/home"
     Buildpacbot(
         aws_details,
         api_domain_url,

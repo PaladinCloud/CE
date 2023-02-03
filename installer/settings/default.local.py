@@ -87,7 +87,12 @@ GCP_PROJECT_IDS = []
 GCP_CREDENTIALS = {}
 
 # Azure AD integration 
-AUTHENTICATION_TYPE = "DB"	# login type value should be any one of these "AZURE_AD or DB "
+AUTHENTICATION_TYPE = "COGNITO"	# login type value should be any one of these "AZURE_AD or DB "
+
+COGNITO_USER_EMAIL_ID = ""
+COGNITO_DOMIAN = "" #example xyzpaladincloud
+
+# Azure AD integration
 AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
 AD_CLIENT_ID = "xxx-xxx-xxxx"  # AD Client ID
 AD_SECRET_KEY = "xxxxyyyyzzz"  # AD secret key
