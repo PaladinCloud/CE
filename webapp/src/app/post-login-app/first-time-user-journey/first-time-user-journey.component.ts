@@ -29,8 +29,7 @@ export class FirstTimeUserJourneyComponent {
     '../assets/images/know-your-dashboard/know-your-dashboard-2.png',
     '../assets/images/know-your-dashboard/know-your-dashboard-3.png',
     '../assets/images/know-your-dashboard/know-your-dashboard-4.png',
-    '../assets/images/know-your-dashboard/know-your-dashboard-5.png',
-    '../assets/images/know-your-dashboard/know-your-dashboard-6.png'];
+    '../assets/images/know-your-dashboard/know-your-dashboard-5.png'];
 
   selectedSlide = 0;
 

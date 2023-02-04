@@ -214,18 +214,17 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.getWidthFactor();
   }
 
-  handleClick(row, cell?){
+  handleClick(row, col){
+    if(row[col].isMenuBtn){
+      return;
+    }
     let event = {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
       data: this.data,
-      cell: cell
+      col: col
     }
-    if(this.rowClickable){
-      this.rowSelectEventEmitter.emit(event);
-    }else{
-      if(cell) this.cellSelectEventEmitter.emit(event);
-    }
+    this.rowSelectEventEmitter.emit(event);
   }
 
   handleAction(element, action){
@@ -363,12 +362,14 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
       for(const i in columnsToSearchIN) {
         const col = columnsToSearchIN[i];
-        if(String(item[col].text).toLowerCase().match(searchTxt)){
+        if(String(item[col].valueText).toLowerCase().match(searchTxt)){
           return true;
         }
       }
       return false;
     })
+
+    this.totalRows = this.dataSource.data.length;
 
     if(this.dataSource.data.length==0){
       this.tableErrorMessage = 'noSearchFound';
@@ -393,6 +394,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(this.tableErrorMessage == 'noSearchFound') this.tableErrorMessage = "";
     if(this.doLocalSearch){
       this.dataSource.data = this.mainDataSource.data;
+      this.totalRows = this.dataSource.data.length;
     }
     this.searchCalledEventEmitter.emit(this.searchQuery);
   }
@@ -417,7 +419,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
-      return (a[this.headerColName].text<b[this.headerColName].text? -1: 1)*(isAsc ? 1 : -1);
+      return (a[this.headerColName].valueText.toLowerCase()<b[this.headerColName].valueText.toLowerCase()? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 

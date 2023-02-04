@@ -97,6 +97,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
   lastPaginator: number;
   currentPointer = 0;
   errorValue = 0;
+  addRevokeExemptionErrorMessage;
   errorMessage: any;
   resourceDetails: any;
   issueAudit: any;
@@ -978,6 +979,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             this.upateStatusOnAddOrRevokeException('Exempt');
           },
           error => {
+            this.logger.log("error test", error);            
+            this.addRevokeExemptionErrorMessage = error.error.message;
             this.check = false;
             this.showLoadcomplete = true;
           }
@@ -1261,6 +1264,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         this.showTransaction = false;
         this.showLoadcomplete = false;
       }
+      this.user.reset();
     } catch (e) {
       this.logger.log('error', e);
     }

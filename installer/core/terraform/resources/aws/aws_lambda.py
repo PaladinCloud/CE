@@ -20,7 +20,7 @@ class LambdaFunctionResource(TerraformResource):
         'runtime': {'required': True},
         's3_bucket': {'required': True, },
         's3_key': {'required': True, },
-        'environment': {'required': True},
+        'environment': {'required': False},
         'description': {'required': False},
         'tags': {'required': False}
     }

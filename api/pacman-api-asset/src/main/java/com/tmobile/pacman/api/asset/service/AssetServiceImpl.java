@@ -1167,4 +1167,7 @@ public class AssetServiceImpl implements AssetService {
             LOGGER.error("Error in updating user default asset group",e);
         }
     }
+    public Set<String> getMandatoryTags(String filterName) {
+        return repository.getMandatoryTags(filterName);
+    }
 }

@@ -25,6 +25,7 @@ export class DateDropdownComponent implements OnInit {
 
   @Input() dataForm: FormGroup;
   date = new Date();
+  today = new Date();
   @Input() dateToday = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + this.date.getDate();
   @Output() dataSent = new EventEmitter();
   user: FormGroup;

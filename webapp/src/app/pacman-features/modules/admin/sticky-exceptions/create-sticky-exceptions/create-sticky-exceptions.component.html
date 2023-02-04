@@ -20,8 +20,8 @@
     </div>
     <div class="floating-widgets-header flex flex-between">
         <div>
-            <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;"
-                src="../assets/icons/left-arrow.svg">
+            <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;"
+                src="../assets/icons/left-arrow.svg"> -->
             <h1 class="title-text">{{pageTitle}}</h1>
         </div>
         <div class="md-stepper-horizontal orange">
@@ -157,7 +157,7 @@
                                                 <h1>{{attributeDetail.targetName}}</h1>
                                                 <div class="attrspacer"></div>
                                                 <h3 class="added">{{attributeDetail.policies.length}}</h3>
-                                                <h2 class="text">Rules added</h2>
+                                                <h2 class="text">Policies added</h2>
                                                 <div class="btnctn"><button class="attrbutton"
                                                         (click)="openAttributeConfigure(attributeDetail, idx)">CONFIG</button>
                                                 </div>
@@ -274,11 +274,11 @@
                                             <div class="formctn rule-attribute">
                                                 <div class="input-box">
                                                     <ul class="parameters rules">
-                                                        <label>Select Rule Name :</label>
+                                                        <label>Select Policy Name :</label>
                                                         <app-dropdown [items]="selectedallPolicies"
                                                             [selectedItem]="attributeName"
                                                             (selected)="onSelectRuleName($event)"
-                                                            [placeholder]="'Select Rule Name Required'">
+                                                            [placeholder]="'Select Policy Name Required'">
                                                         </app-dropdown>
                                                     </ul>
                                                     <button class="tmbutton btm30 ib"

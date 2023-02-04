@@ -42,6 +42,7 @@ PROCESS_RESOURCES = {
     'iam.ecs_role': {'tags': ["roles", "ecs_role"]},
     'iam.lambda_role': {'tags': ["roles"]},
     'iam.base_role_policy': {'tags': ["roles"]},
+    'iam.post_auth' : {'tags': ["roles"]},
     'iam.all_read_role': {'tags': ["roles", "all_read_role"]},
     'vpc.security_group': {'tags': ["security"]},
     'datastore.db': {'tags': ["rds", "datastore"]},
@@ -64,7 +65,10 @@ PROCESS_RESOURCES = {
     'lambda_rule_engine.s3_upload': {'tags': ["rule-engine-job", "batch"]},
     'lambda_rule_engine.function': {'tags': ["rule-engine-job", "batch", "infra"]},
     'pacbot_app.upload_terraform': {'tags': ["upload_tf"]},
-    'eventbus.custom_event_bus': {'tags': ["eventbus"]}
+    'eventbus.custom_event_bus': {'tags': ["eventbus"]},
+    'cognito.function' : {'tags' : ["cognito"]},
+    'cognito.s3_upload' : {'tags' : ["cognito"]},
+    'cognito.userpool' : {'tags' : ["cognito"]},
 }
 
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
@@ -138,7 +142,7 @@ AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
 JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"
 
-CURRENT_RELEASE = "v1.5.2"
+CURRENT_RELEASE = "v2.0.0"
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
