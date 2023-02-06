@@ -101,7 +101,13 @@ export class PolicyViolationDescComponent implements OnInit {
           // .search returns returns -1 if string doesn't exists
           if (!(checkifJsonString === -1)) {
             const arrayValues = [];
-            const innerObj = JSON.parse(dataToBeChecked[element]);
+            const modifyString = str => {
+              const replaced = str.replace(/([a-zA-Z0-9]+)/g, '"$1"');
+              return replaced;
+            };
+            let innerObjStr = modifyString(dataToBeChecked[element]);
+            innerObjStr  = innerObjStr.replace(/\"-\"/g, '-');
+            const innerObj = JSON.parse(innerObjStr);
             Object.keys(innerObj).forEach((elementinner) => {
               const eachObj = {
                 labelName: elementinner.replace(/_/g, " "), // remove the '_' from the key name before pushing,
