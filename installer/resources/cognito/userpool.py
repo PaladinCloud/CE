@@ -20,16 +20,7 @@ class UserPool(UserPoolResoures):
                         "min_length" : 0,     
                         "max_length" : 2048 
                     } 
-                },     
-                {
-                    'name': 'tenantId',
-                    'attribute_data_type': 'String',
-                    'required': 'false',  
-                    'string_attribute_constraints' :{
-                        "min_length" : 0,      
-                        "max_length" : 2048 
-                    }                    
-                },          
+                },            
                 {
                     'name': 'userRole',
                     'attribute_data_type': 'String',
@@ -81,6 +72,7 @@ class AppCLient(UserPoolClientResources):
     logout_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/home"]
     write_attributes = ['email','custom:tenantId']
     allowed_oauth_flows = ["code", "implicit"]
+    DEPENDS_ON = [UserPool]
 
 class ServerResoures(ServerPoolResource):
     user_pool_id = UserPool.get_output_attr('id')
@@ -88,6 +80,7 @@ class ServerResoures(ServerPoolResource):
     identifier = 'API_OPERATION'
     scope_name = 'READ'
     scope_description =  'Read api operation'
+    DEPENDS_ON = [UserPool]
 
 class Appcredentials(UserPoolClientResources):
     user_pool_id = UserPool.get_output_attr('id')
@@ -97,7 +90,7 @@ class Appcredentials(UserPoolClientResources):
     supported_identity_providers = ['COGNITO']
     allowed_oauth_scopes = ['API_OPERATION/READ']
     allowed_oauth_flows = ['client_credentials']
-    DEPENDS_ON = [ServerResoures]
+    DEPENDS_ON = [ServerResoures,UserPool]
     @classmethod
     def get_cognito_info(cls):
         info = "%s:%s" % (cls.get_output_attr('id'), cls.get_output_attr('client_secret'))
@@ -107,6 +100,7 @@ class Appcredentials(UserPoolClientResources):
 class PoolDomain(UserPoolDomain):
     user_pool_id = UserPool.get_output_attr('id')
     domain = Settings.COGNITO_DOMAIN
+    DEPENDS_ON = [UserPool]
 
 class CreateUser(CreateUserPool):
     user_pool_id = UserPool.get_output_attr('id')
@@ -117,24 +111,29 @@ class CreateUser(CreateUserPool):
         "attributes"
         ]
     }
+    DEPENDS_ON = [UserPool]
 
 class CreateUserGroup(CreateGroupPool):
     user_pool_id = UserPool.get_output_attr('id')
     name = 'ROLE_USER'
+    DEPENDS_ON = [UserPool]
 
 class CreateAdminGroup(CreateGroupPool):
     user_pool_id = UserPool.get_output_attr('id')
     name = 'ROLE_ADMIN'
+    DEPENDS_ON = [UserPool]
 
 class AddusertoGroup(AddUserinGroup):
     user_pool_id = UserPool.get_output_attr('id')
     username =  CreateUser.get_output_attr('username')
     group_name = CreateAdminGroup.get_output_attr('name')
+    DEPENDS_ON = [UserPool,CreateAdminGroup]
 
 class AddusertoGroup(AddUserinGroup):
     user_pool_id = UserPool.get_output_attr('id')
     username =  CreateUser.get_output_attr('username')
     group_name = CreateUserGroup.get_output_attr('name')
+    DEPENDS_ON = [UserPool,CreateAdminGroup]
 
 class CognitoUi(UiCognito):
     with open("resources/cognito/image/paladinlog.png", "rb") as image2string:
@@ -143,3 +142,4 @@ class CognitoUi(UiCognito):
     user_pool_id = UserPool.get_output_attr('id')
     css = ".label-customizable {font-weight: 28px;}"
     image_file = string
+    DEPENDS_ON = [UserPool]
