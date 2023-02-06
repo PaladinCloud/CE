@@ -57,7 +57,8 @@ public class HttpTriggers extends BasePolicy {
         boolean validationResult = false;
         JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
         if(sourceData != null){
-            Integer httpTrigger = sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).getAsInt();
+            Integer httpTrigger = !sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).isJsonNull() ?
+                        sourceData.getAsJsonObject().get(PacmanRuleConstants.HTTP_TRIGGER).getAsInt() : 0;
             /*refrence https://cloud.google.com/java/docs/reference/google-cloud-functions/latest/com.google.cloud.functions.v1.HttpsTrigger.SecurityLevel*/
             if (httpTrigger.intValue() == PacmanRuleConstants.SECURE_ALWAYS.intValue()) {
                 validationResult = true;

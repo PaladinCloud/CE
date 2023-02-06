@@ -6,10 +6,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.cloud.gcprules.loadbalancer.EnableHttpsRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
+import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,18 +49,27 @@ public class VpnConnectorRuleTest {
 
     @Test
     public void executeSuccessTest() throws Exception {
-
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForEnableHttpsRule());
-
+        when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
         when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
                 .thenReturn(CommonTestUtils.getAnnotation("123"));
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
-                true);
+        Map<String, String> map = getMapString("r_123 ");
         assertThat(vpnConnectorRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
+
+    private JsonObject getHitsJsonObjectForIngressSettingRule() {
+        JsonArray hitsJsonArray = getHitsJsonArrayForEnableHttpsRule();
+        JsonObject sourceData= null;
+        if (hitsJsonArray != null && hitsJsonArray.size() > 0){
+            sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                    .get(PacmanRuleConstants.SOURCE);
+        }
+        return sourceData;
+    }
+
     private JsonArray getHitsJsonArrayForEnableHttpsRule(){
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -84,18 +95,24 @@ public class VpnConnectorRuleTest {
 
     @Test
     public void executeFailureTest() throws Exception {
-
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
-                .thenReturn(getFailureHitsJsonArrayForEnableHttpsRule());
-
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
-        when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
-                true);
+        when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
+        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getFailureHitsJsonObjForIngressSettingRule());
+        when(GCPUtils.fetchPolicyResult(anyObject(), anyObject(), anyObject())).thenReturn(new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE,
+                anyObject()));
         Map<String, String> map = getMapString("r_123 ");
         assertThat(vpnConnectorRule.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_FAILURE));
+    }
+
+    private JsonObject getFailureHitsJsonObjForIngressSettingRule() {
+        JsonArray hitsJsonArray = getFailureHitsJsonArrayForEnableHttpsRule();
+        JsonObject sourceData= null;
+        if (hitsJsonArray != null && hitsJsonArray.size() > 0){
+            sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
+                    .get(PacmanRuleConstants.SOURCE);
+        }
+        return sourceData;
     }
 
 
@@ -112,8 +129,8 @@ public class VpnConnectorRuleTest {
                         "          \"projectId\": \"central-run-349616\",\n" +
                         "          \"functionName\": \"projects/central-run-349616/locations/us-central1/functions/function-2\",\n" +
                         "          \"ingressSetting\": \"ALLOW_ALL\",\n" +
-                        "          \"vpcConnector\": null,\n" +
-                        "          \"httpTrigger\": null,\n" +
+                        "          \"vpcConnector\": NULL,\n" +
+                        "          \"httpTrigger\": NULL,\n" +
                         "          \"discoverydate\": \"2022-12-08 11:48:00+0000\"\n" +
                         "        }\n" ,
                 JsonElement.class));

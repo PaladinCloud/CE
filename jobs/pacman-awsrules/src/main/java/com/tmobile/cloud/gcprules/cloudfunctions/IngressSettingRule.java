@@ -55,7 +55,8 @@ public class IngressSettingRule extends BasePolicy {
         boolean validationResult = false;
         JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
         if(sourceData != null){
-            String ingressSetting  = sourceData.getAsJsonObject().get(PacmanRuleConstants.INGRESS_SETTING).getAsString();
+            String ingressSetting  = !sourceData.getAsJsonObject().get(PacmanRuleConstants.INGRESS_SETTING).isJsonNull() ?
+                    sourceData.getAsJsonObject().get(PacmanRuleConstants.INGRESS_SETTING).getAsString() : "";
             if(!StringUtils.isNullOrEmpty(ingressSetting) && !ingressSetting.equals(PacmanRuleConstants.ALLOW_ALL)){
                 validationResult = true;
             }
