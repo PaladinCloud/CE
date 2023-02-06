@@ -1,4 +1,5 @@
 from core.terraform.resources.misc import NullResource
+from resources.cognito.userpool import AppCLient
 from resources.s3.bucket import BucketStorage
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from core.terraform.utils import get_terraform_scripts_dir, get_terraform_provider_file
@@ -33,7 +34,11 @@ class BuildUiAndApis(NullResource):
                     'ENABLE_VULNERABILITY_FEATURE': str(Settings.ENABLE_VULNERABILITY_FEATURE).lower(),
                     'AUTHENTICATION_TYPE': Settings.AUTHENTICATION_TYPE,
                     'AD_TENANT_ID': Settings.AD_TENANT_ID,
-                    'AD_CLIENT_ID': Settings.AD_CLIENT_ID
+                    'AD_CLIENT_ID': Settings.AD_CLIENT_ID,
+                    'COGNITO_CLIENT_ID' : AppCLient.get_output_attr('id'),
+                    'COGNITO_CLIENT_SECRET':AppCLient.get_output_attr('client_secret'),
+                    'COGNITO_DOMAIN': Settings.COGNITO_DOMAIN,
+                    'AWS_REGION': Settings.AWS_REGION,
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }

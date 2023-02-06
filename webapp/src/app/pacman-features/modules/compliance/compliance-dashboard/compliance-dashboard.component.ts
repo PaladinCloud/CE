@@ -153,19 +153,11 @@ export class ComplianceDashboardComponent implements OnInit {
           image: "category-security",
           imageOnly: true
       },
-      governance:{
-          image: "category-operations",
-          imageOnly: true
-      },
       operations:{
           image: "category-operations",
           imageOnly: true
       },
-      costOptimization:{
-          image: "category-cost",
-          imageOnly: true
-      },
-      cost: {
+      cost:{
           image: "category-cost",
           imageOnly: true
       },
@@ -199,8 +191,8 @@ export class ComplianceDashboardComponent implements OnInit {
   isStatePreserved = false;
   showDownloadBtn = true;
   tableScrollTop = 0;
-  graphFromDate: Date = new Date(2022, 1, 1);
-  graphToDate: Date = new Date(2200, 12, 31);
+  graphFromDate: Date = new Date(2022, 0, 1);
+  graphToDate: Date = new Date();
 
   massageAssetTrendGraphData(graphData){
     let data = [];
@@ -828,20 +820,28 @@ export class ComplianceDashboardComponent implements OnInit {
       var getData = data;      
       const keynames = Object.keys(getData[0]);
 
+      let cellData;
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
         keynames.forEach(col => {
+          cellData = getData[row][col];
           cellObj = {
-            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
-            titleText: getData[row][col]=="NR"?"No Resources": getData[row][col], // text to show on hover
-            valueText: getData[row][col],
+            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
+            titleText: cellData=="NR"?"No Resources": cellData, // text to show on hover
+            valueText: cellData,
             hasPostImage: false,
-            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
             postImgSrc: "",
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            link: ""
+            isLink: false
+          }
+          if(col.toLowerCase()=="title"){
+            cellObj = {
+              ...cellObj,
+              isLink: true
+            };
           }
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
@@ -1010,7 +1010,7 @@ export class ComplianceDashboardComponent implements OnInit {
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         // change data value
-        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
+        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newObj["Compliance"] = newObj["assetsScanned"]==0?'NR':newObj["Compliance"]+"%";
       newData.push(newObj);

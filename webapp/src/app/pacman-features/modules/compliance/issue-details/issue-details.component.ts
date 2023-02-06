@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 
+
  import {Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
  import {AssetGroupObservableService} from '../../../../core/services/asset-group-observable.service';
  import {ActivatedRoute, Router} from '@angular/router';
@@ -1493,4 +1494,3 @@
          }
      }
  }
- 

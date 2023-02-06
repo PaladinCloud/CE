@@ -1,8 +1,8 @@
 package com.tmobile.cloud.awsrules.s3;
 
-import com.google.common.collect.HashMultimap;
 import com.nimbusds.oauth2.sdk.util.MapUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.cloud.awsrules.utils.S3PacbotUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -10,29 +10,39 @@ import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @PacmanPolicy(key = "check-s3-object-level-write-logging-rule", desc = "This rule checks object level logging for s3 buckets", severity = PacmanSdkConstants.SEV_MEDIUM, category = PacmanSdkConstants.SECURITY)
 public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
 
     private static final Logger logger = LoggerFactory.getLogger(S3ObjectLevelWriteLoggingRule.class);
 
-    private static final String CLOUD_TRAIL_URL = "/aws/cloudtrail/_search";
-    private static final String CLOUD_TRAIL_EVENT_SELECTOR_URL = "/aws/cloudtrail_eventselector/_search";
-    private static final String DATA_RESOURCE_TYPE = "AWS::S3::Object";
+    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
+
+        Annotation annotation = null;
+        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+
+        annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+        annotation.put(PacmanSdkConstants.DESCRIPTION, description);
+        annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
+        annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
+        annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
+        issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
+        issueList.add(issue);
+        annotation.put("issueDetails", issueList.toString());
+        logger.debug("========CheckForS3ObjectLevelWriteLogging annotation {} :=========", annotation);
+        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+
+    }
 
     /**
      * The method will get triggered from Rule Engine with following parameters
@@ -81,80 +91,7 @@ public class S3ObjectLevelWriteLoggingRule extends BasePolicy {
      */
     private String checkValidation(Map<String, String> resourceAttributes) {
 
-        String description = null;
-        String bucketName = resourceAttributes.get(PacmanRuleConstants.NAME);
-        String accountId = resourceAttributes.get(PacmanRuleConstants.ACCOUNTID);
-        String pacmanHost = PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI);
-        List<String> readWriteTypes = Arrays.asList("All", "WriteOnly");
-        if (!PacmanUtils.doesAllHaveValue(pacmanHost, accountId, bucketName)) {
-            logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
-            throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
-        }
-
-        try {
-            String esEndPoint = pacmanHost + CLOUD_TRAIL_EVENT_SELECTOR_URL;
-            Map<String, Object> mustFilter = new HashMap<>();
-            mustFilter.put(PacmanRuleConstants.ACCOUNTID, accountId);
-            mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_TYPE, DATA_RESOURCE_TYPE);
-            mustFilter.put(PacmanRuleConstants.DATA_RESOURCE_VALUE, "arn:aws:s3:::" + bucketName + "/");
-            HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-            Map<String, Object> mustTermsFilter = new HashMap<>();
-
-            Set<String> resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, "trailarn", null);
-            Set<String> typeResultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, "readwritetype", null);
-
-            if (Objects.isNull(resultSet) || resultSet.isEmpty() || Objects.isNull(typeResultSet)
-                    || typeResultSet.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists,accountId: " + accountId
-                        + " for s3 bucket: " + bucketName;
-            }
-            String trailFromSearch = resultSet.iterator().next();
-            String readTypeFromSearch = typeResultSet.iterator().next();
-            if (!readWriteTypes.contains(readTypeFromSearch)) {
-                return "CloudTrail log with matching conditions does not exists," +
-                        "readwritetype: " + readTypeFromSearch + ",accountId: " + accountId
-                        + " for s3 bucket: " + bucketName;
-            }
-
-            esEndPoint = pacmanHost + CLOUD_TRAIL_URL;
-            mustFilter = new HashMap<>();
-            mustFilter.put(PacmanRuleConstants.MULTI_REGION_TRAIL, "true");
-            mustFilter.put(PacmanRuleConstants.TRAIL_ARN, trailFromSearch);
-            resultSet = PacmanUtils.getValueFromElasticSearchAsSet(esEndPoint, mustFilter,
-                    shouldFilter, mustTermsFilter, "trailarn", null);
-            if (Objects.isNull(resultSet) || resultSet.isEmpty()) {
-                return "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
-                        + ",accountId: " + accountId + " for s3 bucket: " + bucketName;
-            }
-
-
-        } catch (Exception ex) {
-            logger.error("Object-level logging for write events is not enabled for S3 bucket" + ex.getMessage(), ex);
-            description = "Object-level logging for write events is enabled for S3 bucket";
-        }
-
-        return description;
-    }
-
-    private static PolicyResult buildFailureAnnotation(final Map<String, String> ruleParam, String description) {
-
-        Annotation annotation = null;
-        LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
-        List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
-
-        annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-        annotation.put(PacmanSdkConstants.DESCRIPTION, description);
-        annotation.put(PacmanRuleConstants.SEVERITY, ruleParam.get(PacmanRuleConstants.SEVERITY));
-        annotation.put(PacmanRuleConstants.CATEGORY, ruleParam.get(PacmanRuleConstants.CATEGORY));
-        annotation.put(PacmanRuleConstants.RESOURCE_ID, ruleParam.get(PacmanRuleConstants.RESOURCE_ID));
-        issue.put(PacmanRuleConstants.VIOLATION_REASON, description);
-        issueList.add(issue);
-        annotation.put("issueDetails", issueList.toString());
-        logger.debug("========CheckForS3ObjectLevelWriteLogging annotation {} :=========", annotation);
-        return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-
+        return S3PacbotUtils.checkValidationForS3ObjectLevelLogging(resourceAttributes, false);
     }
 
     @Override

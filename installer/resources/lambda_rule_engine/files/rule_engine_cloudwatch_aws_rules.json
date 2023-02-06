@@ -3180,6 +3180,26 @@
     "category": "security"
   },
   {
+    "policyId": "AWSKMSKeyRotationEnabled_version-1_KeyRotationEnabled_kms",
+    "policyUUID": "aws_kms_key_rotation_enabled",
+    "policyName": "Enable Automatic Rotation for customer-managed Customer Master Keys",
+    "targetType": "kms",
+    "assetGroup": "aws",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-kms-key-rotation-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWSKMSKeyRotationEnabled_version-1_KeyRotationEnabled_kms\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kms\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_kms_key_rotation_enabled\",\"policyType\":\"ManagePolicy\"}",
+    "policyFrequency": "0 0 1/1 * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_kms_key_rotation_enabled",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Enable Automatic Rotation for Customer Master Keys",
+    "createdDate": "2023-01-20",
+    "modifiedDate": "2023-01-20",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
     "policyId": "AWS_Support_Access_Role_version-1_Support_Access_account",
     "policyUUID": "aws_account_without_aws_support_access_role",
     "policyName": "Support role should be created for the AWS support incidents",

@@ -18,7 +18,7 @@
     </div>
     <div class="floating-widgets-header flex flex-between">
         <div>
-            <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg">
+            <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
             <h1 class="title-text">{{pageTitle}}</h1>
         </div>
     </div>
@@ -57,10 +57,10 @@
 
                             <div class="pacman-alert-title">
                                 <span *ngIf="action=='enable'; else elseBlock">
-                                    Enabling <span *ngIf="isRule">Rule</span><span *ngIf="!isRule">Job</span> Failed
+                                    Enabling <span *ngIf="isRule">Policy</span><span *ngIf="!isRule">Job</span> Failed
                                 </span>
                                 <ng-template #elseBlock>
-                                    Disabling <span *ngIf="isRule">Rule</span><span *ngIf="!isRule">Job</span> Failed
+                                    Disabling <span *ngIf="isRule">Policy</span><span *ngIf="!isRule">Job</span> Failed
                                 </ng-template>
                             </div>
                             <div class="pacman-alert-message">
@@ -71,7 +71,7 @@
                                 <ng-template #elseBlock>
                                     disabling
                                 </ng-template>
-                                <span *ngIf="isRule">rule</span><span *ngIf="!isRule">job</span> - <span class="highlight-pink">{{ruleOrJobId}}</span>
+                                <span *ngIf="isRule">policy</span><span *ngIf="!isRule">job</span> - <span class="highlight-pink">{{ruleOrJobId}}</span>
                             </div>
                             <div class="pacman-alert-button">
                                 <button class="submit-btn uppercase" type="button" (click)="closeErrorMessage()"><i class="fa fa-arrow-left"></i>  BACK</button>
@@ -86,14 +86,14 @@
                             </div>
                             <div class="pacman-alert-title">
                                 <span *ngIf="action=='enable'; else elseBlock">
-                                    <span *ngIf="isRule">Rule</span><span *ngIf="!isRule">Job</span> Enabled
+                                    <span *ngIf="isRule">Policy</span><span *ngIf="!isRule">Job</span> Enabled
                                 </span>
                                 <ng-template #elseBlock>
-                                    <span *ngIf="isRule">Rule</span><span *ngIf="!isRule">Job</span> Disabled
+                                    <span *ngIf="isRule">Policy</span><span *ngIf="!isRule">Job</span> Disabled
                                 </ng-template>
                             </div>
                             <div class="pacman-alert-message">
-                                <span *ngIf="isRule">Rule</span><span *ngIf="!isRule">Job</span> <span class="highlight-pink">{{ruleOrJobId}}</span> has been successfully
+                                <span *ngIf="isRule">Policy</span><span *ngIf="!isRule">Job</span> <span class="highlight-pink">{{ruleOrJobId}}</span> has been successfully
                                 <span *ngIf="action=='enable'; else elseBlock1">
                                     enabled
                                 </span>
@@ -116,7 +116,7 @@
                                 </span>
                                 <ng-template #elseBlock>
                                     Disabling
-                                </ng-template> <span *ngIf="isRule">rule</span><span *ngIf="!isRule">job</span> - <span class="highlight-pink">{{ruleOrJobId}}</span> is under progress ...
+                                </ng-template> <span *ngIf="isRule">policy</span><span *ngIf="!isRule">job</span> - <span class="highlight-pink">{{ruleOrJobId}}</span> is under progress ...
                             </div>
                         </div>
                     </div>

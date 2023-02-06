@@ -97,6 +97,10 @@ SET @GCP_ENABLED='$GCP_ENABLED';
 SET @JOB_SCHEDULER_NUMBER_OF_BATCHES='$JOB_SCHEDULER_NUMBER_OF_BATCHES';
 SET @EVENT_BRIDGE_PRIFIX='$EVENT_BRIDGE_PRIFIX';
 SET @MANDATORY_TAGS='$MANDATORY_TAGS';
+SET @API_CLIENT_ID='$API_CLIENT_ID';
+SET @API_SCERET_ID='$API_SCERET_ID';
+SET @COGNITO_INFO='$COGNITO_INFO';
+
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2772,7 +2776,8 @@ INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qu
 
 -- delete configs containing http url
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
-
+DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.consoleLoggingLevel','INFO','application','prd','latest',NULL,NULL,NULL,NULL);
@@ -3650,7 +3655,7 @@ update cf_RuleInstance set targetType = 'virtualmachine' where targetType = 'vir
 update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,tags.Environment,_entitytype,accountid,accountname,region,_cloudType' where resourceType='all_list';
 
 
-UPDATE `pacmandata`.`pac_config_key_metadata` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
+UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
 
 /* Procedure to update metadata based on the mandatory tags configured */
 DELIMITER $$

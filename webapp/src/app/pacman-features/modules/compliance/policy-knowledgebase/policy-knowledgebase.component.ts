@@ -54,19 +54,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
           image: "category-security",
           imageOnly: true
       },
-      governance:{
-          image: "category-operations",
-          imageOnly: true
-      },
       operations:{
           image: "category-operations",
           imageOnly: true
       },
       cost:{
-          image: "category-cost",
-          imageOnly: true
-      },
-      costOptimization:{
           image: "category-cost",
           imageOnly: true
       },
@@ -266,22 +258,30 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       var cellObj = {};
       const keynames = Object.keys(getData[0]);
 
+      let cellData;
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
         keynames.forEach(col => {
+          cellData = getData[row][col];
           cellObj = {
-            text: this.tableImageDataMap[getData[row][col]]?.imageOnly?"":getData[row][col], // text to be shown in table cell
-            titleText: getData[row][col], // text to show on hover
-            valueText: getData[row][col],
+            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
+            titleText: cellData, // text to show on hover
+            valueText: cellData,
             hasPostImage: false,
-            imgSrc: this.tableImageDataMap[getData[row][col]]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
             postImgSrc: "",
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            link: ""
+            isLink: false
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
+          }
+          if(col.toLowerCase()=="title"){
+            cellObj = {
+              ...cellObj,
+              isLink: true
+            };
           }
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
@@ -358,7 +358,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         // change data value
-        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
+        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newData.push(newObj);
     });

@@ -295,7 +295,7 @@ export class TargetTypesComponent implements OnInit, OnDestroy {
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         // change data value
-        newObj[elementnew] = DATA_MAPPING[newObj[elementnew]]?DATA_MAPPING[newObj[elementnew]]: newObj[elementnew];
+        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newObj["Actions"] = "";
       newData.push(newObj);

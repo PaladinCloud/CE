@@ -15,7 +15,7 @@
 .policy-knowledgebase-wrapper {
   height: 100%;
   justify-content: flex-start;
-  overflow-y: hidden;
+  overflow-y: scroll;
   padding: 24px;
   background-color: var(--background-grey);
 }
