@@ -90,7 +90,7 @@ GCP_CREDENTIALS = {}
 AUTHENTICATION_TYPE = "COGNITO"	# login type value should be any one of these "AZURE_AD or DB "
 
 COGNITO_USER_EMAIL_ID = ""
-COGNITO_DOMIAN = "" #example xyzpaladincloud
+COGNITO_DOMAIN = "" #example xyzpaladincloud
 
 # Azure AD integration
 AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
