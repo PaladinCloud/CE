@@ -22,12 +22,15 @@ import { AuthService } from 'src/app/core/services/auth.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { OnPremAuthenticationService } from 'src/app/core/services/onprem-authentication.service';
 import { TokenResolverService } from 'src/app/resolver/token-resolver.service';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 import { HttpService } from 'src/app/shared/services/http-response.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
+import { FeatureComponent } from '../common/feature/feature.component';
+import { LandingPageHeaderComponent } from '../common/landing-page-header/landing-page-header.component';
 
 import { HomePageComponent } from './home-page.component';
 
@@ -38,7 +41,12 @@ describe('HomePageComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [HomePageComponent],
+      declarations: [
+        HomePageComponent,
+        LandingPageHeaderComponent,
+        FeatureComponent,
+        ButtonComponent,
+      ],
       providers: [
         AdalService,
         AssetGroupObservableService,

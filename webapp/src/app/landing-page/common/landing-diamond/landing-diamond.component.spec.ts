@@ -16,6 +16,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { GlowTravellerComponent } from '../glow-traveller/glow-traveller.component';
+import { PulseBallComponent } from '../pulse-ball/pulse-ball.component';
 
 import { LandingDiamondComponent } from './landing-diamond.component';
 
@@ -26,7 +28,7 @@ describe('LandingDiamondComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ BrowserAnimationsModule ],
-      declarations: [ LandingDiamondComponent ],
+      declarations: [ LandingDiamondComponent, PulseBallComponent, GlowTravellerComponent ],
       providers: [ LoggerService, RefactorFieldsService ]
     })
     .compileComponents();
