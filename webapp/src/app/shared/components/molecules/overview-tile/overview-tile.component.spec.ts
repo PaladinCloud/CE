@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TextComponent } from '../../atoms/text/text.component';
+import { TextWithIconComponent } from '../text-with-icon/text-with-icon.component';
 
 import { OverviewTileComponent } from './overview-tile.component';
 
@@ -8,7 +10,7 @@ describe('OverviewTileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OverviewTileComponent ]
+      declarations: [ OverviewTileComponent, TextWithIconComponent, TextComponent ]
     })
     .compileComponents();
   });

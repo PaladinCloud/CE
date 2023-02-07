@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { LoggerService } from '../services/logger.service';
 import { RefactorFieldsService } from '../services/refactor-fields.service';
@@ -26,6 +27,7 @@ describe('SearchbarDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [FormsModule],
       declarations: [ SearchbarDropdownComponent ],
       providers: [ DataCacheService, LoggerService, RefactorFieldsService, UtilsService ]
     })
@@ -35,6 +37,14 @@ describe('SearchbarDropdownComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchbarDropdownComponent);
     component = fixture.componentInstance;
+    component.dropDownSelectedValue = 'id1';
+    component.dropdownData = [
+      {
+        id: 'id1',
+        value: 'id1'
+      }
+    ]
+    component.ngAfterViewInit();
     fixture.detectChanges();
   });
 

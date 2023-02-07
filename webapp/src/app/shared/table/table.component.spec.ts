@@ -37,8 +37,22 @@ describe('TableComponent', () => {
     component = fixture.componentInstance;
 
     component.data = [
-      {col1:"row1 col1", col2:"row1 col2"},
-      {col1:"row2 col1", col2:"row2 col2"},
+      {
+        col1: {
+          valueText: "row1 col1",
+        },
+        col2: {
+          valueText: "row1 col2",
+        },
+      },
+      {
+        col1: {
+          valueText: "row2 col1",
+        },
+        col2: {
+          valueText: "row2 col2",
+        },
+      },
     ];
 
     component.displayedColumns = ["col1", "col2"];
