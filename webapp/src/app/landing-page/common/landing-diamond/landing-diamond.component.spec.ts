@@ -13,6 +13,9 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 
 import { LandingDiamondComponent } from './landing-diamond.component';
 
@@ -22,7 +25,9 @@ describe('LandingDiamondComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LandingDiamondComponent ]
+      imports: [ BrowserAnimationsModule ],
+      declarations: [ LandingDiamondComponent ],
+      providers: [ LoggerService, RefactorFieldsService ]
     })
     .compileComponents();
   }));
