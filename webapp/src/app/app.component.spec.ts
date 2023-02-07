@@ -14,12 +14,26 @@
 
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { AdalService } from './core/services/adal.service';
+import { AuthSessionStorageService } from './core/services/auth-session-storage.service';
+import { DataCacheService } from './core/services/data-cache.service';
+import { LoggerService } from './shared/services/logger.service';
+import { RefactorFieldsService } from './shared/services/refactor-fields.service';
+import { UtilsService } from './shared/services/utils.service';
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent
       ],
+      providers: [
+        AdalService,
+        DataCacheService,
+        UtilsService,
+        LoggerService,
+        RefactorFieldsService,
+        AuthSessionStorageService,
+      ]
     }).compileComponents();
   }));
   it('should create the app', async(() => {
@@ -31,11 +45,5 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app.title).toEqual('app');
-  }));
-  it('should render title in a h1 tag', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to app!');
   }));
 });

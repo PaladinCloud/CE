@@ -12,7 +12,22 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AdalService } from 'src/app/core/services/adal.service';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { AuthSessionStorageService } from 'src/app/core/services/auth-session-storage.service';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { OnPremAuthenticationService } from 'src/app/core/services/onprem-authentication.service';
+import { TokenResolverService } from 'src/app/resolver/token-resolver.service';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { HomePageComponent } from './home-page.component';
 
@@ -22,9 +37,24 @@ describe('HomePageComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HomePageComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      declarations: [HomePageComponent],
+      providers: [
+        AdalService,
+        AssetGroupObservableService,
+        AuthService,
+        AuthSessionStorageService,
+        CommonResponseService,
+        DataCacheService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        OnPremAuthenticationService,
+        RefactorFieldsService,
+        TokenResolverService,
+        UtilsService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

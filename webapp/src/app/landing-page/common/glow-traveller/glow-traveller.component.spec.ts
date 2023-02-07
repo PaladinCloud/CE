@@ -13,6 +13,9 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 
 import { GlowTravellerComponent } from './glow-traveller.component';
 
@@ -22,7 +25,9 @@ describe('GlowTravellerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GlowTravellerComponent ]
+      imports: [BrowserAnimationsModule],
+      declarations: [ GlowTravellerComponent ],
+      providers: [ LoggerService, RefactorFieldsService ],
     })
     .compileComponents();
   }));

@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { PulseBallComponent } from './pulse-ball.component';
 
@@ -22,6 +23,7 @@ describe('PulseBallComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ BrowserAnimationsModule ],
       declarations: [ PulseBallComponent ]
     })
     .compileComponents();
