@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FormInputComponent } from './form-input.component';
 
@@ -22,6 +23,7 @@ describe('FormInputComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ NoopAnimationsModule ],
       declarations: [ FormInputComponent ]
     })
     .compileComponents();

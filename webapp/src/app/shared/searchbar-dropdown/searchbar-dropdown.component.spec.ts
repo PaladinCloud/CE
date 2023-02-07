@@ -13,6 +13,10 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { LoggerService } from '../services/logger.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
+import { UtilsService } from '../services/utils.service';
 
 import { SearchbarDropdownComponent } from './searchbar-dropdown.component';
 
@@ -22,7 +26,8 @@ describe('SearchbarDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchbarDropdownComponent ]
+      declarations: [ SearchbarDropdownComponent ],
+      providers: [ DataCacheService, LoggerService, RefactorFieldsService, UtilsService ]
     })
     .compileComponents();
   }));

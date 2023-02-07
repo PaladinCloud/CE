@@ -16,6 +16,19 @@ describe('OverviewTileComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OverviewTileComponent);
     component = fixture.componentInstance;
+    component.tile = {
+      mainContent: {
+        title: 'AdminTitle',
+        image: 'admin',
+        count: 1,
+      },
+      subcontent: [
+        {
+          title: 'subtitle',
+          count: 2
+        }
+      ]
+    }
     fixture.detectChanges();
   });
 

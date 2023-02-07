@@ -12,8 +12,16 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { HelpObservableService } from 'src/app/post-login-app/common/services/help-observable.service';
+import { ErrorHandlingService } from '../services/error-handling.service';
+import { HttpService } from '../services/http-response.service';
+import { LoggerService } from '../services/logger.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
+import { UtilsService } from '../services/utils.service';
 import { HelpTextComponent } from './help-text.component';
 
 describe('HelpTextComponent', () => {
@@ -22,9 +30,18 @@ describe('HelpTextComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HelpTextComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      declarations: [HelpTextComponent],
+      providers: [
+        DataCacheService,
+        ErrorHandlingService,
+        HelpObservableService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        UtilsService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
