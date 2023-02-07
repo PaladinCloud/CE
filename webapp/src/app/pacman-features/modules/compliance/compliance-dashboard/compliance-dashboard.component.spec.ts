@@ -298,13 +298,13 @@ describe('ComplianceDashboardComponent', () => {
 
 
   it('shoud call updateUrl on if the searchTxt is not empty', () => {
-    component.searchCalled("admin");
+    component.callNewSearch("admin");
     expect(component.searchTxt).toEqual("admin");
     expect(component.getUpdatedUrl).toHaveBeenCalled;
   })
 
   it('should updateUrl on calling callNewSearch', () => {
-    component.callNewSearch();
+    component.callNewSearch('something');
     expect(component.getUpdatedUrl).toHaveBeenCalled;
   })
 
