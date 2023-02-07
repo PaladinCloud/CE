@@ -30,6 +30,7 @@ describe('SearchableDropdownComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchableDropdownComponent);
     component = fixture.componentInstance;
+    component.items = [];
     fixture.detectChanges();
   });
 

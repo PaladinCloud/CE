@@ -12,7 +12,17 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { ErrorHandlingService } from '../services/error-handling.service';
+import { FilterManagementService } from '../services/filter-management.service';
+import { HttpService } from '../services/http-response.service';
+import { LoggerService } from '../services/logger.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
+import { UtilsService } from '../services/utils.service';
 
 import { GenericPageFilterComponent } from './generic-page-filter.component';
 
@@ -22,9 +32,20 @@ describe('GenericPageFilterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GenericPageFilterComponent ]
-    })
-    .compileComponents();
+      imports: [ HttpClientTestingModule ],
+      declarations: [GenericPageFilterComponent],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        DomainTypeObservableService,
+        ErrorHandlingService,
+        FilterManagementService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        UtilsService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

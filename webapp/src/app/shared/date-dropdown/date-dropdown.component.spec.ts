@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { DateDropdownComponent } from './date-dropdown.component';
 
@@ -22,6 +23,7 @@ describe('DateDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ ReactiveFormsModule ],
       declarations: [ DateDropdownComponent ]
     })
     .compileComponents();
@@ -30,6 +32,7 @@ describe('DateDropdownComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DateDropdownComponent);
     component = fixture.componentInstance;
+    component.dataForm = new FormGroup({});
     fixture.detectChanges();
   });
 

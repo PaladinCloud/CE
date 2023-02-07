@@ -30,6 +30,7 @@ describe('FilterInfoComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FilterInfoComponent);
     component = fixture.componentInstance;
+    component.tags = {};
     fixture.detectChanges();
   });
 

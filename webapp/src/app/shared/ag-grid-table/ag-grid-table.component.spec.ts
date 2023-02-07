@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
 
 import { AgGridTableComponent } from './ag-grid-table.component';
 
@@ -8,7 +9,8 @@ describe('AgGridTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AgGridTableComponent ]
+      declarations: [ AgGridTableComponent ],
+      providers: [ RefactorFieldsService ],
     })
     .compileComponents();
   }));

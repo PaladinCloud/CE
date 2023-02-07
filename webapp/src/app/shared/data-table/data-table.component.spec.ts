@@ -13,6 +13,8 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoggerService } from '../services/logger.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
 
 import { DataTableComponent } from './data-table.component';
 
@@ -22,7 +24,8 @@ describe('DataTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DataTableComponent ]
+      declarations: [ DataTableComponent ],
+      providers: [ LoggerService, RefactorFieldsService ]
     })
     .compileComponents();
   }));
