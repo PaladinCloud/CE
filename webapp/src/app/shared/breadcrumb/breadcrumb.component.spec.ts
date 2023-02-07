@@ -18,6 +18,7 @@ import { AssetGroupObservableService } from 'src/app/core/services/asset-group-o
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { TextComponent } from '../components/atoms/text/text.component';
 import { LoggerService } from '../services/logger.service';
 import { RefactorFieldsService } from '../services/refactor-fields.service';
 import { RouterUtilityService } from '../services/router-utility.service';
@@ -32,7 +33,7 @@ describe('BreadcrumbComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ RouterTestingModule ],
-      declarations: [BreadcrumbComponent],
+      declarations: [BreadcrumbComponent, TextComponent ],
       providers: [
         AssetGroupObservableService,
         DataCacheService,

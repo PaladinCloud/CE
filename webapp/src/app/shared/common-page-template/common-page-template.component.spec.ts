@@ -14,11 +14,16 @@
 
 import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { NgxSelectDropdownComponent } from 'ngx-select-dropdown';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { FilteredSelectorComponent } from '../filtered-selector/filtered-selector.component';
+import { GenericPageFilterComponent } from '../generic-page-filter/generic-page-filter.component';
+import { SearchableDropdownComponent } from '../searchable-dropdown/searchable-dropdown.component';
 import { ErrorHandlingService } from '../services/error-handling.service';
 import { FilterManagementService } from '../services/filter-management.service';
 import { HttpService } from '../services/http-response.service';
@@ -35,8 +40,14 @@ describe('CommonPageTemplateComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientModule, RouterTestingModule ],
-      declarations: [CommonPageTemplateComponent],
+      imports: [HttpClientModule, RouterTestingModule, FormsModule],
+      declarations: [
+        CommonPageTemplateComponent,
+        GenericPageFilterComponent,
+        SearchableDropdownComponent,
+        NgxSelectDropdownComponent,
+        FilteredSelectorComponent,
+      ],
       providers: [
         AssetGroupObservableService,
         DataCacheService,

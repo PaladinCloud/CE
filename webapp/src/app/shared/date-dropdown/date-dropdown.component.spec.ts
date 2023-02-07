@@ -14,6 +14,11 @@
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { DateDropdownComponent } from './date-dropdown.component';
 
@@ -23,10 +28,16 @@ describe('DateDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ ReactiveFormsModule ],
-      declarations: [ DateDropdownComponent ]
-    })
-    .compileComponents();
+      imports: [
+        NoopAnimationsModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+      ],
+      declarations: [DateDropdownComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

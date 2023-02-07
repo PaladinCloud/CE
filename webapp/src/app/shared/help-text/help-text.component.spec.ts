@@ -17,6 +17,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { HelpObservableService } from 'src/app/post-login-app/common/services/help-observable.service';
+import { OverlayComponent } from '../overlay/overlay.component';
 import { ErrorHandlingService } from '../services/error-handling.service';
 import { HttpService } from '../services/http-response.service';
 import { LoggerService } from '../services/logger.service';
@@ -31,7 +32,7 @@ describe('HelpTextComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule],
-      declarations: [HelpTextComponent],
+      declarations: [HelpTextComponent, OverlayComponent],
       providers: [
         DataCacheService,
         ErrorHandlingService,

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TextComponent } from '../../atoms/text/text.component';
 
 import { TextWithIconComponent } from './text-with-icon.component';
 
@@ -8,7 +9,7 @@ describe('TextWithIconComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TextWithIconComponent ]
+      declarations: [ TextWithIconComponent, TextComponent ]
     })
     .compileComponents();
   });

@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { OverlayComponent } from '../overlay/overlay.component';
 
 import { ConfirmationBoxComponent } from './confirmation-box.component';
 
@@ -8,7 +9,7 @@ describe('ConfirmationBoxComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfirmationBoxComponent ]
+      declarations: [ ConfirmationBoxComponent, OverlayComponent ]
     })
     .compileComponents();
   }));

@@ -14,9 +14,12 @@
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { NgxSelectDropdownComponent } from 'ngx-select-dropdown';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { SearchableDropdownComponent } from '../searchable-dropdown/searchable-dropdown.component';
 import { ErrorHandlingService } from '../services/error-handling.service';
 import { FilterManagementService } from '../services/filter-management.service';
 import { HttpService } from '../services/http-response.service';
@@ -32,8 +35,8 @@ describe('GenericPageFilterComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ HttpClientTestingModule ],
-      declarations: [GenericPageFilterComponent],
+      imports: [ HttpClientTestingModule, FormsModule ],
+      declarations: [GenericPageFilterComponent, SearchableDropdownComponent, NgxSelectDropdownComponent],
       providers: [
         AssetGroupObservableService,
         DataCacheService,
