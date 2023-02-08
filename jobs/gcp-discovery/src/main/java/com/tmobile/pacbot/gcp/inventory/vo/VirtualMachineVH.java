@@ -17,6 +17,16 @@ public class VirtualMachineVH extends GCPVH {
     private List<HashMap<String,Object>> serviceAccounts;
     private boolean confidentialComputing;
 
+    private boolean autoRestart;
+
+    public boolean isAutoRestart() {
+        return autoRestart;
+    }
+
+    public void setAutoRestart(boolean autoRestart) {
+        this.autoRestart = autoRestart;
+    }
+
     public boolean isConfidentialComputing() {
         return confidentialComputing;
     }
@@ -24,8 +34,6 @@ public class VirtualMachineVH extends GCPVH {
     public void setConfidentialComputing(boolean confidentialComputing) {
         this.confidentialComputing = confidentialComputing;
     }
-
-
 
     private boolean canIPForward;
 

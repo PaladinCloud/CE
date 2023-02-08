@@ -58,6 +58,7 @@ public class VMInventoryCollector {
                         VirtualMachineVH virtualMachineVH = new VirtualMachineVH();
                         virtualMachineVH.setId(String.valueOf(instance.getId()));
                         virtualMachineVH.setMachineType(instance.getMachineType());
+                        virtualMachineVH.setAutoRestart(instance.getScheduling().getAutomaticRestart());
                         virtualMachineVH.setTags(updateApplicationTag(instance.getLabelsMap()));
                         virtualMachineVH.setProjectName(project.getProjectName());
                         virtualMachineVH.setProjectId(project.getProjectId());
@@ -170,6 +171,7 @@ public class VMInventoryCollector {
             diskVH.setName(disk.getDeviceName());
             diskVH.setSizeInGB(disk.getDiskSizeGb());
             diskVH.setType(disk.getType());
+            diskVH.setAutoDelete(disk.getAutoDelete());
             diskVH.setHasSha256(disk.getDiskEncryptionKey().hasSha256());
             diskVH.setHasKmsKeyName(disk.getDiskEncryptionKey().hasKmsKeyName());
             diskVH.setProjectName(vm.getProjectName());

@@ -5,7 +5,7 @@
     "policyName": "VirtualMachinePublicAccess",
     "targetType": "vminstance",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vminstnace-public-access\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"VM Instance is having public IP \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"VM Instance in not having public access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure VM instances are not using public IP addresses\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Virtual_Machine_public_access_version-1_Rule\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Virtual_Machine_public_access_Rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vminstnace-public-access\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"VM Instance is having public IP \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"VM Instance in not having public access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure VM instances are not using public IP addresses\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Virtual_Machine_public_access_version-1_Rule\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Virtual_Machine_public_access_Rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -16,7 +16,7 @@
     "policyDisplayName": "Deny Public Access to VM Instance",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -345,7 +345,7 @@
     "policyName": "KMSPublicAccessRule",
     "targetType": "kmskey",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-kms-key-public-access\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Ensure there are no publicly accessible KMS cryptographic keys available within your Google Cloud account.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Cloud key is publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_kmskey\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Check for Publicly Accessible Cloud KMS Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"kms-public-access-auto-fix\",\"key\":\"fixKey\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_kms_public_access_rule\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kmskey\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"gcp_kms_public_access_rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-kms-key-public-access\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Ensure there are no publicly accessible KMS cryptographic keys available within your Google Cloud account.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google Cloud key is publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"\/gcp_kmskey\/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Check for Publicly Accessible Cloud KMS Keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"kms-public-access-auto-fix\",\"key\":\"fixKey\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_kms_public_access_rule\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kmskey\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"gcp_kms_public_access_rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -356,7 +356,7 @@
     "policyDisplayName": "Check for Publicly Accessible Cloud KMS Keys",
     "createdDate": "2022-07-14",
     "modifiedDate": "2022-07-14",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -405,7 +405,7 @@
     "policyName": "Cloud_Storage_should_not_be_public",
     "targetType": "cloudstorage",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-public-access\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Ensure there are no cloud storage buckets with public access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google cloud storage should not have public access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"cloud storage should not have public access\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Cloud_Storage_should_not_be_public\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Cloud_Storage_should_not_be_public\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-public-access\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Ensure there are no cloud storage buckets with public access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Google cloud storage should not have public access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"cloud storage should not have public access\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Cloud_Storage_should_not_be_public\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Cloud_Storage_should_not_be_public\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -416,7 +416,7 @@
     "policyDisplayName": "Deny public access to Cloud Storage",
     "createdDate": "2022-06-24",
     "modifiedDate": "2022-06-24",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -425,7 +425,7 @@
     "policyName": "GCP_Virtual_Machine_2FA_Rule",
     "targetType": "vminstance",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vm-two-factor-authentication\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"VM Instance does NOT have 2 Factor Authorisation\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"VM Instance has two factor authorisation \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure VM instances has 2 factor Authentication\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Virtual_Machine_2FA_Rule\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Virtual_Machine_2FA_Rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vm-two-factor-authentication\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"VM Instance does NOT have 2 Factor Authorisation\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"VM Instance has two factor authorisation \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure VM instances has 2 factor Authentication\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Virtual_Machine_2FA_Rule\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Virtual_Machine_2FA_Rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -436,7 +436,7 @@
     "policyDisplayName": "Enable MFA for OS Login",
     "createdDate": "2022-06-21",
     "modifiedDate": "2022-06-21",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -465,7 +465,7 @@
     "policyName": "SMTPPortAccess",
     "targetType": "vpcfirewall",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vpc-network-firewall-outbound-security\",\"key\":\"policyKey\"},{\"key\":\"port\",\"value\":\"udp:0-65535,tcp:0-65535\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure there are no VPC firewall rules that allow unrestricted outbound access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VPC Firewall with  unrestricted outbound  access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VPC Firewall with Egress ports  should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpcfirewall\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-vpc-network-firewall-outbound-security\",\"key\":\"policyKey\"},{\"key\":\"port\",\"value\":\"udp:0-65535,tcp:0-65535\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure there are no VPC firewall rules that allow unrestricted outbound access \",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VPC Firewall with  unrestricted outbound  access\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"VirtualMachines\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"VPC Firewall with Egress ports  should not be publicly accessible\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpcfirewall\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"VPC_firewall_OuBound_Egress_should_not_be_publicly_accessible\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -476,7 +476,7 @@
     "policyDisplayName": "Deny Public Access to Egress on all Ports",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -725,7 +725,7 @@
     "policyName": "Enable Automated backups for cloud sql database",
     "targetType": "cloudstorage",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-automated-backups-enabled\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"check if the automated backups are enabled for all Cloud SQL database instances\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Automated backups are not enabled for Google cloud sql database.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Automated backups for cloud sql database\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Automated_backups_for_sql_database\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Automated_backups_for_sql_database\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-automated-backups-enabled\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"check if the automated backups are enabled for all Cloud SQL database instances\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Automated backups are not enabled for Google cloud sql database.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Automated backups for cloud sql database\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Automated_backups_for_sql_database\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Automated_backups_for_sql_database\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -737,7 +737,7 @@
     "createdDate": "2022-06-27",
     "modifiedDate": "2022-06-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Ensure_cross_DB_ownership_flag_disabled_for_SQL",
@@ -805,7 +805,7 @@
     "policyName": "Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones",
     "targetType": "clouddns",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-DNS-Sec-config-state-enabled\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Ensure DNSSEC security feature is enabled for Google Cloud DNS managed zones\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"clouddns\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-DNS-Sec-config-state-enabled\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Ensure DNSSEC security feature is enabled for Google Cloud DNS managed zones\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"clouddns\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Ensure_DNSSEC_security_feature_enabled_for_DNS_managed_zones\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -817,7 +817,7 @@
     "createdDate": "2022-08-16",
     "modifiedDate": "2022-08-16",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Disable_Contained_DB_Auth_Flag_for_SQL_Server_DB_Instances",
@@ -925,7 +925,7 @@
     "policyName": "Enable Uniform Bucket-Level Access for cloud storage Buckets",
     "targetType": "cloudstorage",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-uniform-bucket-level-access-enabled\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"check if cloud storage has uniform bucket level access enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Uniform Bucket-level access is not enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_cloudstorage/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Uniform Bucket-Level Access for cloud storage Buckets\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Uniform_Bucket_Level_Access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Uniform_Bucket_Level_Access\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-cloud-storage-has-uniform-bucket-level-access-enabled\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"check if cloud storage has uniform bucket level access enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Uniform Bucket-level access is not enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"name\",\"value\":\"cloudstorage\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_cloudstorage/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Uniform Bucket-Level Access for cloud storage Buckets\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Uniform_Bucket_Level_Access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudstorage\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Uniform_Bucket_Level_Access\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -937,7 +937,7 @@
     "createdDate": "2022-06-27",
     "modifiedDate": "2022-06-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Default_Network_should_Not_Exist_in_a_Project",
@@ -965,7 +965,7 @@
     "policyName": "Enforce cloud SQL incoming Connections To Use SSL",
     "targetType": "cloudsql",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-ssl-to-cloud-sql\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enforce cloud SQL incoming Connections To Use SSL\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-ssl-to-cloud-sql\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enforce cloud SQL incoming Connections To Use SSL\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_cloud_SQL_incoming_Connections_To_Use_SSL\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -977,7 +977,7 @@
     "createdDate": "2022-08-16",
     "modifiedDate": "2022-08-16",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Compute_Engine_using_instance_level_SSH_keys",
@@ -985,7 +985,7 @@
     "policyName": "Enable Compute Engine using instance-level SSH keys",
     "targetType": "vminstance",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-block-project-ssh-key\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"checks if instance-level SSH keys is enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Compute Engine project-wide ssh keys is not enabled.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_vminstance/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Compute Engine using instance-level SSH keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Compute_Engine_using_instance_level_SSH_keys\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Compute_Engine_using_instance_level_SSH_keys\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-block-project-ssh-key\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"checks if instance-level SSH keys is enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Compute Engine project-wide ssh keys is not enabled.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_vminstance/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Compute Engine using instance-level SSH keys\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Compute_Engine_using_instance_level_SSH_keys\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Compute_Engine_using_instance_level_SSH_keys\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -997,7 +997,7 @@
     "createdDate": "2022-08-01",
     "modifiedDate": "2022-08-01",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Legacy_Subnet_should_Not_Exist_in_a_Project",
@@ -1025,7 +1025,7 @@
     "policyName": "Compute instances should be shielded",
     "targetType": "vminstance",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-vminstance-has-shielded-config\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"checks if virtual machine instance has shielded config\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VM instance does not have shielded config\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_vminstance/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Shielded VM for compute instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_VM_Instance_Shielded_Config\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_VM_Instance_Shielded_Config\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-if-vminstance-has-shielded-config\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"checks if virtual machine instance has shielded config\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"VM instance does not have shielded config\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/gcp_vminstance/_search\",\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Shielded VM for compute instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_VM_Instance_Shielded_Config\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_VM_Instance_Shielded_Config\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1037,7 +1037,7 @@
     "createdDate": "2022-09-13",
     "modifiedDate": "2022-09-13",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_osLogin_for_a_project",
@@ -1045,7 +1045,7 @@
     "policyName": "Enable OS Login for a project",
     "targetType": "vminstance",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-os-login-project-level\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enable OS Login for a project\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_osLogin_for_a_project\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_osLogin_for_a_project\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-os-login-project-level\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enable OS Login for a project\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_osLogin_for_a_project\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_osLogin_for_a_project\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1057,7 +1057,7 @@
     "createdDate": "2022-08-23",
     "modifiedDate": "2022-08-23",
     "severity": "medium",
-    "category": "tagging"
+    "category": "operations"
   },
   {
     "policyId": "kms_keys_rotation_period_within_90_days",
@@ -1125,7 +1125,7 @@
     "policyName": "Enable Cloud Asset Inventory",
     "targetType": "project",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-cloud-asset-api\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enable Cloud Asset Inventory\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"tagging\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Cloud_Asset_Inventory\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"project\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Cloud_Asset_Inventory\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-cloud-asset-api\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enable Cloud Asset Inventory\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Cloud_Asset_Inventory\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"project\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Cloud_Asset_Inventory\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1137,7 +1137,7 @@
     "createdDate": "2022-09-29",
     "modifiedDate": "2022-09-29",
     "severity": "medium",
-    "category": "tagging"
+    "category": "operations"
   },
   {
     "policyId": "Deny_Admin_Privilege_Service_Account",
@@ -1225,7 +1225,7 @@
     "policyName": "Enable skip_show_database Flag for Cloud SQL",
     "targetType": "cloudsql_mysqlserver",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_mysqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"skip_show_database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"on\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable skip_show_database Flag for Cloud SQL\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that the skip_show_database database flag is enabled for your Google Cloud MySQL database instances in order to prevent users from using the SHOW DATABASES statement if they don't have this privilege.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Skip_show_database flag is not enabled for your Google Cloud MySQL Server database instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_skip_show_database_for_MySQL_Server_DB_Instances\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_mysqlserver\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_skip_show_database_for_MySQL_Server_DB_Instances\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_mysqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"skip_show_database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"on\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable skip_show_database Flag for Cloud SQL\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that the skip_show_database database flag is enabled for your Google Cloud MySQL database instances in order to prevent users from using the SHOW DATABASES statement if they don't have this privilege.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Skip_show_database flag is not enabled for your Google Cloud MySQL Server database instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_skip_show_database_for_MySQL_Server_DB_Instances\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_mysqlserver\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_skip_show_database_for_MySQL_Server_DB_Instances\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1237,7 +1237,7 @@
     "createdDate": "2022-10-06",
     "modifiedDate": "2022-10-06",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Log_connections_for_Postgres_Server_DB_Instances",
@@ -1265,7 +1265,7 @@
     "policyName": "Enable Log_disconnections DB Flag for PostgreSQL",
     "targetType": "cloudsql_postgres",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"log_disconnections\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"on\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Log_disconnections DB Flag for PostgreSQL\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that log_disconnections database flag is enabled for all your Google Cloud PostgreSQL database instances. When this flag is enabled, PostgreSQL database logs the end of each session. The log output provides information similar to the one generated by the log_connections flag, plus the duration of the session. The database flag can be changed at the session start, and it cannot be changed during a session.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"log_disconnections flag is disabled for your Google Cloud postgres Server database instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Log_disconnections_for_Postgres_Server_DB_Instances\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Log_disconnections_for_Postgres_Server_DB_Instances\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"log_disconnections\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"on\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Log_disconnections DB Flag for PostgreSQL\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that log_disconnections database flag is enabled for all your Google Cloud PostgreSQL database instances. When this flag is enabled, PostgreSQL database logs the end of each session. The log output provides information similar to the one generated by the log_connections flag, plus the duration of the session. The database flag can be changed at the session start, and it cannot be changed during a session.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"log_disconnections flag is disabled for your Google Cloud postgres Server database instances\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Log_disconnections_for_Postgres_Server_DB_Instances\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Log_disconnections_for_Postgres_Server_DB_Instances\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1277,7 +1277,7 @@
     "createdDate": "2022-10-07",
     "modifiedDate": "2022-10-07",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_log_hostname_for_Postgres_Server_DB_Instances",
@@ -1305,7 +1305,7 @@
     "policyName": "Enforce log_min_error_statement database flag for postgres Instance is set to Error or Stricter",
     "targetType": "cloudsql_postgres",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"log_min_error_statement\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"ERROR\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enforce log_min_error_statement database flag for postgres Instance is set to Error or Stricter\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"The log_min_error_statement flag defines the minimum message severity level that are considered as an error statement. Messages for error statements are logged with the SQL statement.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\" log_min_error_statement flag is not set to ERROR or stricter\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_log_min_error_statement_for_Postgres_Server_DB_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_log_min_error_statement_for_Postgres_Server_DB_Instance\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"log_min_error_statement\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"ERROR\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enforce log_min_error_statement database flag for postgres Instance is set to Error or Stricter\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"The log_min_error_statement flag defines the minimum message severity level that are considered as an error statement. Messages for error statements are logged with the SQL statement.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\" log_min_error_statement flag is not set to ERROR or stricter\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_log_min_error_statement_for_Postgres_Server_DB_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_log_min_error_statement_for_Postgres_Server_DB_Instance\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1317,7 +1317,7 @@
     "createdDate": "2022-10-09",
     "modifiedDate": "2022-10-09",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Disable_Log_min_duration_statement_for_PostgreSQL",
@@ -1345,7 +1345,7 @@
     "policyName": "Enable Confidential Computing for Compute Instance",
     "targetType": "vminstance",
     "assetGroup": "Gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-confidential-computing-instance\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enable Confidential Computing for Compute Instance\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-confidential-computing-instance\",\"key\":\"policyKey\"},{\"key\":\"policyName\",\"value\":\"Enable Confidential Computing for Compute Instance\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Confidential_Computing_for_Compute_Instance\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1357,7 +1357,7 @@
     "createdDate": "2022-10-04",
     "modifiedDate": "2022-10-04",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "IP_forwarding_for_Instances",
@@ -1385,7 +1385,7 @@
     "policyName": "Enforce user Connections Database Flag for  Sql Server Instance is Set to  Non-limiting Value",
     "targetType": "cloudsql_sqlserver",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_sqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"user connections\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"0\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enforce user Connections Database Flag for Sql Server Instance is Set to Non-limiting Value\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that the user connections database flag configured for your Google Cloud SQL Server database instances has the optimal value, in accordance with your organization or project guidelines.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"user connections DataBase flag  for your Google Cloud SQL Server database instances is not set to organization defined value.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_sqlserver\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_sqlserver\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"user connections\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"0\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enforce user Connections Database Flag for Sql Server Instance is Set to Non-limiting Value\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure that the user connections database flag configured for your Google Cloud SQL Server database instances has the optimal value, in accordance with your organization or project guidelines.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"user connections DataBase flag  for your Google Cloud SQL Server database instances is not set to organization defined value.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_sqlserver\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_Sql_Server_user_Connections_DB_Flag_to_Non_Limiting\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1397,7 +1397,7 @@
     "createdDate": "2022-10-06",
     "modifiedDate": "2022-10-06",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_pgAudit_Database_Flag_for_Postgresql_Instance",
@@ -1405,7 +1405,7 @@
     "policyName": "Enable cloudsql.enable_pgaudit Database Flag for Postgresql Instance",
     "targetType": "cloudsql_postgres",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"cloudsql.enable_pgaudit\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"on\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable cloudsql.enable_pgaudit Database Flag for Postgresql Instance\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure cloudsql.enable_pgaudit database flag for Cloud SQL PostgreSQL instance is set to on to allow for centralized logging.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"cloudsql.enable_pgaudit database flag for Cloud SQL PostgreSQL instance is off.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_pgAudit_Database_Flag_for_Postgresql_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_pgAudit_Database_Flag_for_Postgresql_Instance\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-enable-database-flags-for-cloudsql-server\",\"key\":\"policyKey\"},{\"key\":\"dataBaseType\",\"value\":\"gcp_cloudsql_postgres\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagName\",\"value\":\"cloudsql.enable_pgaudit\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"dbFlagValue\",\"value\":\"on\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable cloudsql.enable_pgaudit Database Flag for Postgresql Instance\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure cloudsql.enable_pgaudit database flag for Cloud SQL PostgreSQL instance is set to on to allow for centralized logging.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"cloudsql.enable_pgaudit database flag for Cloud SQL PostgreSQL instance is off.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_pgAudit_Database_Flag_for_Postgresql_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudsql_postgres\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_pgAudit_Database_Flag_for_Postgresql_Instance\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1417,7 +1417,7 @@
     "createdDate": "2022-10-06",
     "modifiedDate": "2022-10-06",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Remove_user_options_for_SQLServer",
@@ -1485,7 +1485,7 @@
     "policyName": "Integrity Monitoring should be enabled",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-node-pool-managements\",\"key\":\"policyKey\"},{\"key\":\"nodePoolKey\",\"value\":\"enableIntegrityMonitoring\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure Integrity monitoring for GKE nodes enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Integrity monitoring for GKE nodes disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Integrity_Monitoring_For_Node_Pool\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Integrity_Monitoring_For_Node_Pool\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-node-pool-managements\",\"key\":\"policyKey\"},{\"key\":\"nodePoolKey\",\"value\":\"enableIntegrityMonitoring\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure Integrity monitoring for GKE nodes enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Integrity monitoring for GKE nodes disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Integrity_Monitoring_For_Node_Pool\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Integrity_Monitoring_For_Node_Pool\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1497,7 +1497,7 @@
     "createdDate": "2022-10-27",
     "modifiedDate": "2022-10-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Secure_Boot_For_Node_Pool",
@@ -1505,7 +1505,7 @@
     "policyName": "Secure Boot should be enabled",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-node-pool-managements\",\"key\":\"policyKey\"},{\"key\":\"nodePoolKey\",\"value\":\"enableSecureBoot\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure secure boot for GKE nodes enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Secure boot for GKE nodes disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Secure_Boot_For_Node_Pool\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Secure_Boot_For_Node_Pool\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-node-pool-managements\",\"key\":\"policyKey\"},{\"key\":\"nodePoolKey\",\"value\":\"enableSecureBoot\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure secure boot for GKE nodes enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Secure boot for GKE nodes disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Secure_Boot_For_Node_Pool\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Secure_Boot_For_Node_Pool\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1517,7 +1517,7 @@
     "createdDate": "2022-10-27",
     "modifiedDate": "2022-10-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_VPC_Flow_Logs_and_IntraNode_Visibility",
@@ -1525,7 +1525,7 @@
     "policyName": "Enable VPC Flow Logs and IntraNode Visibility",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-intraNode-visibility\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Enabling IntraNode Visibility makes your intraNode pod to pod traffic visible to the networking fabric. With this feature, you can use VPC Flow Logs or other VPC features for intranode traffic.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"This rule will be violated if intraNodeVisibility flag is disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_VPC_Flow_Logs_and_IntraNode_Visibility\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_VPC_Flow_Logs_and_IntraNode_Visibility\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-intraNode-visibility\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Enabling IntraNode Visibility makes your intraNode pod to pod traffic visible to the networking fabric. With this feature, you can use VPC Flow Logs or other VPC features for intranode traffic.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"This rule will be violated if intraNodeVisibility flag is disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_VPC_Flow_Logs_and_IntraNode_Visibility\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_VPC_Flow_Logs_and_IntraNode_Visibility\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1537,7 +1537,7 @@
     "createdDate": "2022-10-27",
     "modifiedDate": "2022-10-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Auto_Upgrade_for_GKE_nodes",
@@ -1545,7 +1545,7 @@
     "policyName": "Enable Auto-Upgrade for GKE nodes",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-node-pool-managements\",\"key\":\"policyKey\"},{\"key\":\"nodePoolKey\",\"value\":\"autoUpgrade\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure  Auto-Upgrade for GKE nodes enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Auto-Upgrade for GKE nodes disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Auto_Upgrade_for_GKE_nodes\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Auto_Upgrade_for_GKE_nodes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-node-pool-managements\",\"key\":\"policyKey\"},{\"key\":\"nodePoolKey\",\"value\":\"autoUpgrade\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"description\",\"value\":\"Ensure  Auto-Upgrade for GKE nodes enabled\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Auto-Upgrade for GKE nodes disabled\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Auto_Upgrade_for_GKE_nodes\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Auto_Upgrade_for_GKE_nodes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1557,7 +1557,7 @@
     "createdDate": "2022-10-27",
     "modifiedDate": "2022-10-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Disable_Legacy_Authorization",
@@ -1625,7 +1625,7 @@
     "policyName": "Enforce clusters are created with Private Nodes",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"ensure-clusters-with-private-nodes\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Disable public IP addresses for cluster nodes, so that they only have private IP addresses. Private Nodes are nodes with no public IP addresses.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Cluster is not created with private nodes.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"Cluster is created with private nodes.\",\"key\":\"SUCCESS\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Ensure_clusters_created_with_pvtnodes\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Ensure_clusters_created_with_pvtnodes\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"ensure-clusters-with-private-nodes\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Disable public IP addresses for cluster nodes, so that they only have private IP addresses. Private Nodes are nodes with no public IP addresses.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Cluster is not created with private nodes.\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"Cluster is created with private nodes.\",\"key\":\"SUCCESS\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Ensure_clusters_created_with_pvtnodes\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Ensure_clusters_created_with_pvtnodes\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1637,7 +1637,7 @@
     "createdDate": "2022-10-27",
     "modifiedDate": "2022-10-27",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Ensure_clusters_created_with_pvt_endpoints",
@@ -1685,7 +1685,7 @@
     "policyName": "Enable VPC-native for clusters",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-vpc-native-Clusters\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_VPC_native_for_clusters\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_VPC_native_for_clusters\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-vpc-native-Clusters\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_VPC_native_for_clusters\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_VPC_native_for_clusters\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1697,7 +1697,7 @@
     "createdDate": "2022-10-30",
     "modifiedDate": "2022-10-30",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Disable_client_certificate_Authentication_for_Cluster",
@@ -1725,7 +1725,7 @@
     "policyName": "Enable Cloud Logging and Monitoring",
     "targetType": "gkecluster",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-cloud-logging-monitoring\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Cloud_Logging_Monitoring\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Disable_client_certificate_Authentication_for_Cluster\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-cloud-logging-monitoring\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Cloud_Logging_Monitoring\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gkecluster\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Disable_client_certificate_Authentication_for_Cluster\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1737,7 +1737,7 @@
     "createdDate": "2022-11-01",
     "modifiedDate": "2022-11-01",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Disable_Kubernetes_Web_UI",
@@ -1765,7 +1765,7 @@
     "policyName": "Separation of duties",
     "targetType": "iamusers",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-separation-of-duties-for-kms\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Enforce Separation of Duties While Assigning KMS Related Roles to Users\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Separation of Duties While Assigning KMS Related Roles to Users is NOT Enforced\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"Separation of Duties While Assigning KMS Related Roles to Users is enforced\",\"key\":\"SUCCESS\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"iamusers\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enforce-separation-of-duties-for-kms\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Enforce Separation of Duties While Assigning KMS Related Roles to Users\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"Separation of Duties While Assigning KMS Related Roles to Users is NOT Enforced\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"Separation of Duties While Assigning KMS Related Roles to Users is enforced\",\"key\":\"SUCCESS\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"iamusers\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enforce_Separation_Of_Duties_For_KMS_Roles\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1777,7 +1777,7 @@
     "createdDate": "2022-11-29",
     "modifiedDate": "2022-11-29",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Avoid_Service_roles_to_IAM_user_at_project_level",
@@ -1845,7 +1845,7 @@
     "policyName": "Enable logging for load balancer backend services",
     "targetType": "gcploadbalancer",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-https-logging-for-backend-services\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gcploadbalancer\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-https-logging-for-backend-services\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"gcploadbalancer\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Logging_For_BackendServices_LoadBalancer\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1857,7 +1857,7 @@
     "createdDate": "2022-12-08",
     "modifiedDate": "2022-12-08",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Secure_SSL_Cipher_Suites",
@@ -1885,7 +1885,7 @@
     "policyName": "Enable API Key Application Restrictions change to Configure Application Restrictions for Google Cloud API Key",
     "targetType": "apikeys",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Check-for-API-Key-Application-Restrictions\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_API_Key_Application_Restrictions\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"apikeys\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_API_Key_Application_Restrictions\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Check-for-API-Key-Application-Restrictions\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_API_Key_Application_Restrictions\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"apikeys\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_API_Key_Application_Restrictions\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1897,7 +1897,7 @@
     "createdDate": "2022-11-29",
     "modifiedDate": "2022-11-29",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Rotate_Google_Cloud_API_Keys",
@@ -1925,7 +1925,7 @@
     "policyName": "Configure API Restriction for API Keys",
     "targetType": "apikeys",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Check-for-API-Key-API-Restrictions\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_API_Key_Restrictions\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"apikeys\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_API_Key_Restrictions\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Check-for-API-Key-API-Restrictions\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_API_Key_Restrictions\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"apikeys\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_API_Key_Restrictions\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1937,7 +1937,7 @@
     "createdDate": "2022-11-29",
     "modifiedDate": "2022-11-29",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Configure_custom_ssl_for_https",
@@ -1981,32 +1981,12 @@
     "category": "security"
   },
   {
-    "policyId": "Enable_Https_For_Cloudfunc",
-    "policyUUID": "Enable_Https_For_Cloudfunc",
-    "policyName": "Enable_Https_For_Cloudfunc",
-    "targetType": "cloudfunctiongen1",
-    "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Enable-Https-For-Cloudfunc\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Https_For_Cloudfunc\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfunctiongen1\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Https_For_Cloudfunc\",\"policyType\":\"ManagePolicy\"}",
-    "policyFrequency": "0 0/6 * * ? *",
-    "policyExecutable": "",
-    "policyRestUrl": "",
-    "policyType": "ManagePolicy",
-    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Https_For_Cloudfunc",
-    "status": "ENABLED",
-    "userId": "ASGC",
-    "policyDisplayName": "Enable https for Cloud Functions",
-    "createdDate": "2023-01-18",
-    "modifiedDate": "2023-01-18",
-    "severity": "medium",
-    "category": "security"
-  },
-  {
     "policyId": "GCP_Cloud_Function_not_enabled_with_VPC_connector",
     "policyUUID": "GCP_Cloud_Function_not_enabled_with_VPC_connector",
     "policyName": "GCP_Cloud_Function_not_enabled_with_VPC_connector",
     "targetType": "cloudfunction",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"GCP-Cloud-Function-not-enabled-with-VPC-connector\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfunction\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"GCP-Cloud-Function-not-enabled-with-VPC-connector\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfunction\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"policyType\":\"ManagePolicy\"f}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2015,6 +1995,46 @@
     "status": "ENABLED",
     "userId": "ASGC",
     "policyDisplayName": "GCP Cloud Function not enabled with VPC connector",
+    "createdDate": "2023-01-18",
+    "modifiedDate": "2023-01-18",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
+    "policyId": "Enable_Auto_Restart_Vm_Instance",
+    "policyUUID": "Enable_Auto_Restart_Vm_Instance",
+    "policyName": "Enable_Auto_Restart_Vm_Instance",
+    "targetType": "vminstance",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-auto-restart-for-vm-instance\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Auto_Restart_Vm_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Auto_Restart_Vm_Instance\",\"policyType\":\"ManagePolicy\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Auto_Restart_Vm_Instance",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Enable Auto restart for vm instances",
+    "createdDate": "2023-01-25",
+    "modifiedDate": "2023-01-25",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
+    "policyId": "Enable_Https_For_Cloudfunc",
+    "policyUUID": "Enable_Https_For_Cloudfunc",
+    "policyName": "Enable_Https_For_Cloudfunc",
+    "targetType": "cloudfunctiongen1",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Enable-Https-For-Cloudfunc\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Https_For_Cloudfunc\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfunctiongen1\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Https_For_Cloudfunc\",\"policyType\":\"ManagePolicy\",\"esUrl\":\"/gcp_cloudfunctiongen1/_search\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Https_For_Cloudfunc",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Enable https for Cloud Functions",
     "createdDate": "2023-01-18",
     "modifiedDate": "2023-01-18",
     "severity": "medium",
@@ -2037,6 +2057,46 @@
     "policyDisplayName": "Check permission of Ingress Setting of GCP cloud Function",
     "createdDate": "2023-01-18",
     "modifiedDate": "2023-01-18",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
+    "policyId": "Enable_Auto_Restart_Vm_Instance",
+    "policyUUID": "Enable_Auto_Restart_Vm_Instance",
+    "policyName": "Enable_Auto_Restart_Vm_Instance",
+    "targetType": "vminstance",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"enable-auto-restart-for-vm-instance\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Auto_Restart_Vm_Instance\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Auto_Restart_Vm_Instance\",\"policyType\":\"ManagePolicy\",\"esUrl\":\"/gcp_vminstance/_search\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Auto_Restart_Vm_Instance",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Enable Auto restart for vm instances",
+    "createdDate": "2023-01-25",
+    "modifiedDate": "2023-01-25",
+    "severity": "medium",
+    "category": "security"
+  },
+  {
+    "policyId": "Disable_Auto_Delete_For_Persistent_Disk",
+    "policyUUID": "Disable_Auto_Delete_For_Persistent_Disk",
+    "policyName": "Disable_Auto_Delete_For_Persistent_Disk",
+    "targetType": "vminstance",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"disable-auto-delete-for-persistent-disk\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Disable_Auto_Delete_For_Persistent_Disk\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Disable_Auto_Delete_For_Persistent_Disk\",\"policyType\":\"ManagePolicy\",\"esUrl\":\"/gcp_vminstance/_search\",\"esUrl\":\"/gcp_vminstance/_search\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Disable_Auto_Delete_For_Persistent_Disk",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Disable auto delete for persistent disk",
+    "createdDate": "2023-01-27",
+    "modifiedDate": "2023-01-27",
     "severity": "medium",
     "category": "security"
   }

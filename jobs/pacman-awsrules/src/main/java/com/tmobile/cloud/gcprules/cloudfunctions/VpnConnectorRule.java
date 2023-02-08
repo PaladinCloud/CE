@@ -56,7 +56,8 @@ public class VpnConnectorRule extends BasePolicy {
         boolean validationResult = false;
         JsonObject sourceData = GCPUtils.getJsonObjFromSourceData(vmEsURL, resourceId);
         if(sourceData != null){
-            String vpcConnector = sourceData.getAsJsonObject().get(PacmanRuleConstants.VPC_CONNECTOR).getAsString();
+            String vpcConnector = !sourceData.getAsJsonObject().get(PacmanRuleConstants.VPC_CONNECTOR).isJsonNull() ?
+                    sourceData.getAsJsonObject().get(PacmanRuleConstants.VPC_CONNECTOR).getAsString() : "";
             if(!StringUtils.isNullOrEmpty(vpcConnector)){
                 validationResult = true;
             }
