@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from "@angular/core";
 import { Subscription } from "rxjs";
 import * as _ from "lodash";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
@@ -24,7 +24,6 @@ import { ErrorHandlingService } from "../../../../shared/services/error-handling
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
 import { UtilsService } from "src/app/shared/services/utils.service";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from "@angular/material/dialog";
 import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
 import { AdminService } from "src/app/pacman-features/services/all-admin.service";
@@ -62,8 +61,9 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   public dataSubscriber: Subscription;
   public errorMessage: any;
   public policyDesc: {};
+  backgroundColor : string;
+  color : string;
   displayName: any = "";
-  policyParamList: Array<Array<String>>;
   totalRows = 0;
   userId = "";
   tableScrollTop = true;
@@ -75,21 +75,10 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   tableDataLoaded = false;
   haveAdminPageAccess = false;
   haveEditAccess = false;
-  policyParams = [
-    {
-      "key": "policykey",
-      "value": "check-for-cloud-storage"
-    },
-    {
-      "key": "Metric Name",
-      "value": "cloud trial event"
-    }
-  ]
   policyDescription: any = "";
   resolution: any = [];
   private routeSubscription: Subscription;
   urlToRedirect: any = "";
-  private previousUrl: any = "";
   private pageLevel = 0;
   public backButtonRequired;
   public resolutionUrl: string;
@@ -111,6 +100,9 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   createdDate: any;
   modifiedDate: any;
   paramsList = [];
+  @ViewChild("actionRef") actionRef: TemplateRef<any>;
+  chipsList = [];
+  action: any;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -210,11 +202,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
           .subscribe(
             (response) => {
               try {
+                if(response){
                 this.showLoader = false;
                 this.seekdata = false;
                 this.dataComing = true;
-
                 this.processData(response);
+                }
               } catch (e) {
                 this.errorMessage = this.errorHandling.handleJavascriptError(e);
                 this.getErrorValues();
@@ -292,6 +285,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     this.policyDetails.dataSource = 'N/A';
     this.allEnvironments = [];
     this.allpolicyParams = [];
+    this.paramsList= [];
     this.isAutofixEnabled = false;
     this.policyDisplayName = this.uppercasefirst(this.policyDetails.policyDisplayName);
     policyParams = JSON.parse(this.policyDetails.policyParams);
@@ -347,11 +341,17 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.isAutofixEnabled = policyParams.autofix;
     }
     this.status = this.uppercasefirst(data.status);
+    this.chipsList = [];
+    this.chipsList.push(this.status);
+    this.chipsList = this.chipsList.slice();
     let dropDownItems = ["Edit"];
     if (this.status.toLowerCase() === "enabled") {
+      this.backgroundColor = "#edf2f7";
+      this.color = "#548BE7"
       dropDownItems.push("Disable");
     } else {
-      // dropDownItems.push("Invoke");
+      this.backgroundColor = "#fff1ef";
+      this.color = "#D95140"
       dropDownItems.push("Enable");
     }
     this.actionItems = dropDownItems;
@@ -382,28 +382,32 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     value = value.toLocaleLowerCase();
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
-  openDialog(event): void {
-    const action = event;
-    let title, message;
-    if (action == "Enable") {
-      title = "Enable Policy";
-    } else if (action == "Disable") {
-      title = "Disable Policy";
+  confirmAction(action:any){
+    this.action = action;
+      const dialogRef = this.dialog.open(DialogBoxComponent,
+      {
+        width: '600px',
+        data: {
+          title: null,
+          yesButtonLabel: action,
+          noButtonLabel: "Cancel",
+          template: this.actionRef
+        }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        try {
+          if (result == "yes") {
+            this.enableDisableRuleOrJob(action);
+          }
+        }
+        catch (error) {
+          this.errorMessage = this.errorHandling.handleJavascriptError(error);
+          this.logger.log('error', error);
+        }
+      });
     }
-    message = 'Are you really sure you want to disable "' + this.policyDisplayName + '".';
-    const dialogRef = this.dialog.open(DialogBoxComponent, {
-      width: '500px',
-      data: { title: title, message: message, yesButtonLabel: action, noButtonLabel: "Cancel" },
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result == "yes") {
-        this.enableDisableRuleOrJob(event);
-      }
-    });
-  }
-
-  enableDisableRuleOrJob(event) {
+  enableDisableRuleOrJob(action:any) {
     if (!this.haveAdminPageAccess) {
       return;
     }
@@ -413,11 +417,11 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       const params = {};
       params['policyId'] = this.policyID;
 
-      params['action'] = event;
+      params['action'] = action;
 
       this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
         // change status 
-        this.status = event + 'd';
+        this.status = action + 'd';
         // change actions list
 
         let dropDownItems = ["Edit"];
@@ -431,7 +435,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
 
         const snackbarText = 'Policy "' + this.policyDisplayName + '" ' + this.status.toLowerCase() + ' successfully';
         this.openSnackBar(snackbarText, "check-circle");
-
+        this.getData();
       },
         error => {
           this.logger.log("error", error);
@@ -443,14 +447,14 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
 
   openSnackBar(message, iconSrc) {
-    this.notificationObservableService.postMessage(message, 3 * 1000, "variant1", iconSrc);
+    this.notificationObservableService.postMessage(message, 3 * 1000, "success", iconSrc);
   }
 
 
   goToDetails(event) {
-    const action = event?.toLowerCase();
-    if (action == "enable" || action == "disable") {
-      this.openDialog(event);
+    const action = event;
+    if (action == "Enable" || action == "Disable") {
+      this.confirmAction(action);
       return;
     }
 

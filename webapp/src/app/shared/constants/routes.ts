@@ -70,6 +70,7 @@ import { ConfigManagementComponent } from "../../pacman-features/modules/admin/c
 import { RecommendationsComponent } from "../../pacman-features/modules/compliance/recommendations/recommendations.component";
 import { RecommendationsDetailsComponent } from "../../pacman-features/modules/compliance/recommendations-details/recommendations-details.component";
 import { AssetDistributionComponent } from "src/app/pacman-features/modules/assets/asset-distribution/asset-distribution.component";
+import { UserManagementComponent } from "src/app/pacman-features/modules/admin/user-management/user-management.component";
 
 export const COMPLIANCE_ROUTES = [
   {
@@ -579,10 +580,21 @@ export const ADMIN_ROUTES = [
         }
     }*/
   {
-    path: "config-management",
+    path: "user-management",
+    component: UserManagementComponent,
+    data: {
+      title: "User Management",
+      roles: ["ROLE_ADMIN"],
+      pageLevel: 0,
+      capabilities: ["user-management"]
+    },
+    canActivate: [AuthGuardService, PermissionGuardService]
+  },
+{
+  path: "config-management",
     component: ConfigManagementComponent,
     data: {
-      title: "Configuration Management",
+    title: "Configuration Management",
       roles: ["ROLE_ADMIN"],
       pageLevel: 0,
       capabilities: ["configuration-management"]

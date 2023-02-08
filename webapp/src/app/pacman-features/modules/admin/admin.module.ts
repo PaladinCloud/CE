@@ -48,6 +48,8 @@ import { ConfigManagementComponent } from "./config-management/config-management
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from "@angular/material/input";
+import { UserManagementComponent } from './user-management/user-management.component';
+import { AdminService } from "../../services/all-admin.service";
 
 @NgModule({
   imports: [
@@ -88,6 +90,8 @@ import { MatInputModule } from "@angular/material/input";
     PluginManagementComponent,
     SystemManagementComponent,
     ConfigManagementComponent,
+    UserManagementComponent,
   ],
+  providers: [AdminService]
 })
 export class AdminModule {}

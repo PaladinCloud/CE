@@ -369,7 +369,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
       this.policyLoader = false;
       this.ispolicyCreationSuccess = true;
-      this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + (this.isCreate ? " created" : " updated") + " successfully!!", 500, "variant1", "green-info-circle");
+      this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + (this.isCreate ? " created" : " updated") + " successfully!!", 500, "success", "green-info-circle");
     },
       error => {
         this.ispolicyCreationFailed = true;

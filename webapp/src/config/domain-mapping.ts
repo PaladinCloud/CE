@@ -129,8 +129,12 @@ export const  DOMAIN_MAPPING = [
                         'sequence': 7
                     },
                     {
-                        'route': 'config-management',
+                        'route': 'user-management',
                         'sequence': 8
+                    },
+                    {
+                        'route': 'config-management',
+                        'sequence': 9
                     },
                     /*{
                         'route': 'account-management',

@@ -1,5 +1,11 @@
-<div [class]="'chip flex flex-align-center flex-center '+variant">
-    <ng-content>
-
-    </ng-content>
+<div class="chip-wrapper">
+    <mat-chip-list>
+        <mat-chip [ngStyle]="{'background-color': backgroundColor, 'color': color}"
+        *ngFor="let item of chipsList" [removable]="isRemovable" (removed)="onReomve(item)">
+            {{ item }}
+            <div *ngIf="isRemovable">
+            <mat-icon matChipRemove>cancel</mat-icon>
+            </div>
+        </mat-chip>
+    </mat-chip-list>
 </div>
