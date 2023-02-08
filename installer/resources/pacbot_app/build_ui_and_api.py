@@ -12,7 +12,7 @@ class BuildUiAndApis(NullResource):
     DEPENDS_ON = [BucketStorage, ApplicationLoadBalancer]
 
     def pre_generate_terraform(self):
-        pom_file = os.path.join(Settings.PACBOT_CODE_DIR, "pom.xml")
+        pom_file = os.path.join(Settings.PALADINCLOUD_CODE_DIR, "pom.xml")
         if not os.path.exists(pom_file):
             raise Exception("Pacbot CodeBase, %s,  is Not Found!" % pom_file)
 
@@ -26,7 +26,7 @@ class BuildUiAndApis(NullResource):
                 'environment': {
                     'PROVIDER_FILE': get_terraform_provider_file(),
                     'APPLICATION_DOMAIN': ApplicationLoadBalancer.get_pacbot_domain_url(),
-                    'PACBOT_CODE_DIR': Settings.PACBOT_CODE_DIR,
+                    'PALADINCLOUD_CODE_DIR': Settings.PALADINCLOUD_CODE_DIR,
                     'DIST_FILES_UPLOAD_DIR': upload_dir,
                     'LOG_DIR': Settings.LOG_DIR,
                     'S3_BUCKET': BucketStorage.get_output_attr('bucket'),

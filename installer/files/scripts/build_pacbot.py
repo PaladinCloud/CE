@@ -23,10 +23,10 @@ class Buildpacbot(object):
     archive_type = "zip"  # What type of archive is required
     issue_email_template = ''
 
-    def __init__(self, aws_details, api_domain_url, upload_dir, log_dir, pacbot_code_dir, enable_vulnerability_feautre, auth_type, tenant_id, client_id):
+    def __init__(self, aws_details, api_domain_url, upload_dir, log_dir, PALADINCLOUD_CODE_DIR, enable_vulnerability_feautre, auth_type, tenant_id, client_id):
         self.api_domain_url = api_domain_url
-        self.cwd = pacbot_code_dir
-        self.codebase_root_dir = pacbot_code_dir
+        self.cwd = PALADINCLOUD_CODE_DIR
+        self.codebase_root_dir = PALADINCLOUD_CODE_DIR
         self.debug_log = os.path.join(log_dir, "debug.log")
         self.maven_build_log = os.path.join(log_dir, "maven_build.log")
         self.upload_dir = upload_dir
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     This script is executed from the provisioner of terraform resource to build pacbot app
     """
     api_domain_url = os.getenv('APPLICATION_DOMAIN')
-    pacbot_code_dir = os.getenv('PACBOT_CODE_DIR')
+    PALADINCLOUD_CODE_DIR = os.getenv('PALADINCLOUD_CODE_DIR')
     dist_files_upload_dir = os.getenv('DIST_FILES_UPLOAD_DIR')
     log_dir = os.getenv('LOG_DIR')
     provider_json_file = os.getenv('PROVIDER_FILE')
@@ -259,7 +259,7 @@ if __name__ == "__main__":
         api_domain_url,
         dist_files_upload_dir,
         log_dir,
-        pacbot_code_dir,
+        PALADINCLOUD_CODE_DIR,
         enable_vulnerability_feautre,auth_type,tenant_id,client_id).build_api_and_ui_apps(
             s3_bucket,
             s3_key_prefix
