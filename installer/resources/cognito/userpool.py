@@ -5,6 +5,7 @@ from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.cognito.function import AuthPostLambdaFunction
 from core.terraform.resources.aws.aws_lambda import LambdaPermission
 import base64
+from resources.datastore.es import ESDomain
 
 
 class UserPool(UserPoolResoures):
@@ -53,6 +54,7 @@ class UserPool(UserPoolResoures):
         "sms_message" : "" + ApplicationLoadBalancer.get_pacbot_domain_url() + "  with username {username} and temporary password {####}",
 
     }
+    DEPENDS_ON = [ESDomain]
 
 class CognitoRuleLambdaPermission(LambdaPermission):
     statement_id = "Event"
@@ -70,7 +72,7 @@ class AppCLient(UserPoolClientResources):
     allowed_oauth_scopes = ["email", "openid","profile"]
     callback_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/callback"]
     logout_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/home"]
-    write_attributes = ['email','custom:tenantId']
+    write_attributes = ['email']
     allowed_oauth_flows = ["code", "implicit"]
     DEPENDS_ON = [UserPool]
 
@@ -123,17 +125,17 @@ class CreateAdminGroup(CreateGroupPool):
     name = 'ROLE_ADMIN'
     DEPENDS_ON = [UserPool]
 
-class AddusertoGroup(AddUserinGroup):
+class AddadmintoGroup(AddUserinGroup):
     user_pool_id = UserPool.get_output_attr('id')
     username =  CreateUser.get_output_attr('username')
     group_name = CreateAdminGroup.get_output_attr('name')
-    DEPENDS_ON = [UserPool,CreateAdminGroup]
+    DEPENDS_ON = [UserPool,CreateUser]
 
 class AddusertoGroup(AddUserinGroup):
     user_pool_id = UserPool.get_output_attr('id')
     username =  CreateUser.get_output_attr('username')
     group_name = CreateUserGroup.get_output_attr('name')
-    DEPENDS_ON = [UserPool,CreateAdminGroup]
+    DEPENDS_ON = [UserPool,CreateUser]
 
 class CognitoUi(UiCognito):
     with open("resources/cognito/image/paladinlog.png", "rb") as image2string:
@@ -142,4 +144,4 @@ class CognitoUi(UiCognito):
     user_pool_id = UserPool.get_output_attr('id')
     css = ".label-customizable {font-weight: 28px;}"
     image_file = string
-    DEPENDS_ON = [UserPool]
+    DEPENDS_ON = [UserPool,PoolDomain]
