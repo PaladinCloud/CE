@@ -12,7 +12,15 @@
  * limitations under the License.
  */
 
+import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { StatsOverlayComponent } from './stats-overlay.component';
 
@@ -22,9 +30,17 @@ describe('StatsOverlayComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StatsOverlayComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientModule, RouterTestingModule],
+      declarations: [StatsOverlayComponent],
+      providers: [
+        DataCacheService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        UtilsService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

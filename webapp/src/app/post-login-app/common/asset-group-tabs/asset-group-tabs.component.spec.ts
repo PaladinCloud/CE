@@ -13,6 +13,10 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { AssetGroupTabsComponent } from './asset-group-tabs.component';
 
@@ -22,7 +26,9 @@ describe('AssetGroupTabsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AssetGroupTabsComponent ]
+      imports: [ RouterTestingModule ],
+      declarations: [ AssetGroupTabsComponent ],
+      providers: [LoggerService, RefactorFieldsService, UtilsService]
     })
     .compileComponents();
   }));

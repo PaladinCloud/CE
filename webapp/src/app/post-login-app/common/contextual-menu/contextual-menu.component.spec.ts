@@ -12,7 +12,30 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { TreeModule } from '@circlon/angular-tree-component';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { PermissionGuardService } from 'src/app/core/services/permission-guard.service';
+import { RecentlyViewedObservableService } from 'src/app/core/services/recently-viewed-observable.service';
+import { ThemeObservableService } from 'src/app/core/services/theme-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { DownloadService } from 'src/app/shared/services/download.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { DefaultAssetGroupComponent } from '../../default-asset-group/default-asset-group.component';
+import { AssetSwitcherComponent } from '../asset-switcher/asset-switcher.component';
+import { ToastObservableService } from '../services/toast-observable.service';
 
 import { ContextualMenuComponent } from './contextual-menu.component';
 
@@ -22,9 +45,29 @@ describe('ContextualMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContextualMenuComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, TreeModule, RouterTestingModule],
+      declarations: [DefaultAssetGroupComponent, AssetSwitcherComponent, ContextualMenuComponent],
+      providers: [
+        AssetGroupObservableService,
+        AssetTilesService,
+        AwsResourceTypeSelectionService,
+        CommonResponseService,
+        DataCacheService,
+        DomainTypeObservableService,
+        DownloadService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        PermissionGuardService,
+        RefactorFieldsService,
+        RecentlyViewedObservableService,
+        RouterUtilityService,
+        ThemeObservableService,
+        ToastObservableService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
