@@ -12,7 +12,19 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { AssetInfoComponent } from './asset-info.component';
 
@@ -22,7 +34,20 @@ describe('AssetInfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AssetInfoComponent ]
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      declarations: [ AssetInfoComponent ],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        DomainTypeObservableService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ]
     })
     .compileComponents();
   }));
