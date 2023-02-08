@@ -129,7 +129,7 @@ JOB_SCHEDULE_INTERVAL = 6   #Job interval  in hrs
 JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules 
 
 # Azure AD integration 
-AUTHENTICATION_TYPE = "DB"	# login type value any one of this "AZURE_AD or DB "
+AUTHENTICATION_TYPE = "COGNITO"	# login type value any one of this "AZURE_AD or DB "
 AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
 AD_CLIENT_ID = "xxx-xxx-xxxx"  # AD Client ID
 AD_SECRET_KEY = "xxxxyyyyzzz"  # AD secret key

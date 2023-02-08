@@ -106,8 +106,8 @@ class PoolDomain(UserPoolDomain):
 
 class CreateUser(CreateUserPool):
     user_pool_id = UserPool.get_output_attr('id')
-    username = Settings.COGNITO_USER_EMAIL_ID
-    attributes ={ 'email':Settings.COGNITO_USER_EMAIL_ID , 'email_verified' : True, 'custom:defaultAssetGroup':'aws'}
+    username = Settings.COGNITO_ADMIN_EMAIL_ID
+    attributes ={ 'email':Settings.COGNITO_ADMIN_EMAIL_ID , 'email_verified' : True, 'custom:defaultAssetGroup':'aws'}
     lifecycle = {
         "ignore_changes" : [
         "attributes"
