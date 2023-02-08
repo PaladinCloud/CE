@@ -12,7 +12,23 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { DropdownComponent } from 'src/app/shared/dropdown/dropdown.component';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { PacmanLoaderComponent } from '../../commons/pacman-loader/pacman-loader.component';
 import { CreateJobExecutionManagerComponent } from './create-job-execution-manager.component';
 
 describe('CreateJobExecutionManagerComponent', () => {
@@ -21,9 +37,31 @@ describe('CreateJobExecutionManagerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateJobExecutionManagerComponent ]
-    })
-    .compileComponents();
+      imports: [
+        HttpClientTestingModule,
+        FormsModule,
+        MatSelectModule,
+        NoopAnimationsModule,
+        ReactiveFormsModule,
+        RouterTestingModule,
+      ],
+      declarations: [
+        CreateJobExecutionManagerComponent,
+        PacmanLoaderComponent,
+        DropdownComponent,
+      ],
+      providers: [
+        DataCacheService,
+        ErrorHandlingService,
+        FilterManagementService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
