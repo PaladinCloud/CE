@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { GenericSummaryComponent } from 'src/app/shared/generic-summary/generic-summary.component';
 
 import { AssetSummaryComponent } from './asset-summary.component';
 
@@ -22,7 +23,7 @@ describe('AssetSummaryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AssetSummaryComponent ]
+      declarations: [ AssetSummaryComponent, GenericSummaryComponent ]
     })
     .compileComponents();
   }));
@@ -30,6 +31,7 @@ describe('AssetSummaryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AssetSummaryComponent);
     component = fixture.componentInstance;
+    component.dataArray = []
     fixture.detectChanges();
   });
 

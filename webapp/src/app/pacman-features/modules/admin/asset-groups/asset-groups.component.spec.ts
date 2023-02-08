@@ -15,7 +15,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AssetGroupsComponent } from './asset-groups.component';
 
-describe('AssetGroupsComponent', () => {
+describe('PacBot AssetGroupsComponent', () => {
   let component: AssetGroupsComponent;
   let fixture: ComponentFixture<AssetGroupsComponent>;
 
