@@ -12,7 +12,33 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSelectModule } from '@angular/material/select';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { AssetTilesService } from 'src/app/core/services/asset-tiles.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
+import { TextComponent } from 'src/app/shared/components/atoms/text/text.component';
+import { CustomCardComponent } from 'src/app/shared/components/molecules/custom-card/custom-card.component';
+import { OverviewTileComponent } from 'src/app/shared/components/molecules/overview-tile/overview-tile.component';
+import { TextWithIconComponent } from 'src/app/shared/components/molecules/text-with-icon/text-with-icon.component';
+import { DateSelection } from 'src/app/shared/date-selection/date-selection.component';
+import { DropdownComponent } from 'src/app/shared/dropdown/dropdown.component';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { AssetDashboardComponent } from './asset-dashboard.component';
 
@@ -22,9 +48,40 @@ describe('AssetDashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AssetDashboardComponent ]
-    })
-    .compileComponents();
+      imports: [
+        FormsModule,
+        HttpClientTestingModule,
+        MatCardModule,
+        MatMenuModule,
+        MatSelectModule,
+        NoopAnimationsModule,
+        RouterTestingModule,
+      ],
+      declarations: [
+        AssetDashboardComponent,
+        DateSelection,
+        DropdownComponent,
+        TextComponent,
+        TextWithIconComponent,
+        CustomCardComponent,
+        OverviewTileComponent,
+      ],
+      providers: [
+        AssetGroupObservableService,
+        AssetTilesService,
+        AwsResourceTypeSelectionService,
+        CommonResponseService,
+        DataCacheService,
+        DomainTypeObservableService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

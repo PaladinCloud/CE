@@ -13,8 +13,20 @@
  */
 
  import { async, ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AwsResourceTypeSelectionService } from 'src/app/pacman-features/services/aws-resource-type-selection.service';
+import { SearchFilterPipe } from 'src/app/shared/pipes/search-filter.pipe';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { NgApexchartsModule } from 'ng-apexcharts';
 
- import { AssetDistributionComponent } from './asset-distribution.component';
+import { AssetDistributionComponent } from './asset-distribution.component';
+import { FormsModule } from '@angular/forms';
  
  describe('AssetDistributionComponent', () => {
    let component: AssetDistributionComponent;
@@ -22,9 +34,19 @@
  
    beforeEach(waitForAsync(() => {
      TestBed.configureTestingModule({
-       declarations: [ AssetDistributionComponent ]
-     })
-     .compileComponents();
+       imports: [NgApexchartsModule, FormsModule, RouterTestingModule],
+       declarations: [AssetDistributionComponent, SearchFilterPipe],
+       providers: [
+         AwsResourceTypeSelectionService,
+         DataCacheService,
+         LoggerService,
+         RefactorFieldsService,
+         RouterUtilityService,
+         UtilsService,
+         WindowExpansionService,
+         WorkflowService,
+       ],
+     }).compileComponents();
    }));
  
    beforeEach(() => {
