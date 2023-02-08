@@ -13,6 +13,8 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { OverlayComponent } from 'src/app/shared/overlay/overlay.component';
 
 import { KnowYourDashboardComponent } from './know-your-dashboard.component';
 
@@ -22,7 +24,8 @@ describe('KnowYourDashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ KnowYourDashboardComponent ]
+      imports: [RouterTestingModule],
+      declarations: [ KnowYourDashboardComponent, OverlayComponent ]
     })
     .compileComponents();
   }));
