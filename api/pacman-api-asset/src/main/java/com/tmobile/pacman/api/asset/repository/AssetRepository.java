@@ -578,5 +578,6 @@ public interface AssetRepository {
     public List<Map<String, Object>> getAssetCountTrend(String assetGroup, String type, Date from, Date to);
 
     public Set<String> getMandatoryTags(String serviceName);
-    
+
+    List<String> getValuesListForTag(String aseetGroupName, String tagName) throws DataException;
 }

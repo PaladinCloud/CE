@@ -3670,6 +3670,7 @@ DECLARE _value TEXT DEFAULT NULL;
 
 -- delete the existing configured filters for mandatory tags
 delete from pac_v2_ui_options where optionValue like '%tags%';
+delete from pac_v2_ui_options where filterId=8 and optionName in ('Application','Environment');
 
 iterator:
 LOOP
@@ -3685,11 +3686,12 @@ LOOP
   -- trim the value of leading and trailing spaces
   SET _value = TRIM(tag);
 
-  -- insert the filters metadata for mandatory tags
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/',LOWER(_value),'?ag=aws'));
+  -- insert the filters metadata for mandatory tags  compliance/v1/filters/tag?ag=aws&tag=tags.Environment.keyword
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
 
   SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
 END LOOP;
