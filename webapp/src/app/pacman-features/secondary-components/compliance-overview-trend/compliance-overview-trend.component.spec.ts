@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
@@ -37,7 +37,7 @@ describe('ComplianceOverviewTrendComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
+      imports: [HttpClientTestingModule, RouterTestingModule],
       declarations: [ComplianceOverviewTrendComponent, TitleBurgerHeadComponent, OverlayComponent],
       providers: [
         AssetGroupObservableService,

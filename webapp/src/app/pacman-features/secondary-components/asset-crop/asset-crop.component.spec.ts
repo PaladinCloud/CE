@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
@@ -31,7 +31,7 @@ describe('AssetCropComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
+      imports: [HttpClientTestingModule],
       declarations: [AssetCropComponent],
       providers: [
         AssetGroupObservableService,
