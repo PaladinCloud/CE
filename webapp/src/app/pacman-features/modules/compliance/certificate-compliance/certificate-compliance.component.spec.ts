@@ -12,7 +12,33 @@
  * limitations under the License.
  */
 
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { async, ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AllCertificateTableComponent } from 'src/app/pacman-features/secondary-components/all-certificate-table/all-certificate-table.component';
+import { CertificateAssetsTrendComponent } from 'src/app/pacman-features/secondary-components/certificate-assets-trend/certificate-assets-trend.component';
+import { CertificateStageComponent } from 'src/app/pacman-features/secondary-components/certificate-stage/certificate-stage.component';
+import { CertificateSummaryComponent } from 'src/app/pacman-features/secondary-components/certificate-summary/certificate-summary.component';
+import { CertificatesComplianceTrendComponent } from 'src/app/pacman-features/secondary-components/certificates-compliance-trend/certificates-compliance-trend.component';
+import { SelectComplianceDropdown } from 'src/app/pacman-features/services/select-compliance-dropdown.service';
+import { ToastObservableService } from 'src/app/post-login-app/common/services/toast-observable.service';
+import { BreadcrumbComponent } from 'src/app/shared/breadcrumb/breadcrumb.component';
+import { TextComponent } from 'src/app/shared/components/atoms/text/text.component';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
+import { ErrorMessageComponent } from 'src/app/shared/error-message/error-message.component';
+import { DownloadService } from 'src/app/shared/services/download.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title-burger-head.component';
 
 import { CertificateComplianceComponent } from './certificate-compliance.component';
 
@@ -22,17 +48,45 @@ describe('CertificateComplianceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CertificateComplianceComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+      declarations: [
+        CertificateComplianceComponent,
+        AllCertificateTableComponent,
+        BreadcrumbComponent,
+        CertificateAssetsTrendComponent,
+        CertificatesComplianceTrendComponent,
+        CertificateStageComponent,
+        CertificateSummaryComponent,
+        DataTableComponent,
+        ErrorMessageComponent,
+        TextComponent,
+        TitleBurgerHeadComponent,
+      ],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        DomainTypeObservableService,
+        DownloadService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        SelectComplianceDropdown,
+        ToastObservableService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
-  beforeEach(() => {
+  beforeEach(async () => {
     fixture = TestBed.createComponent(CertificateComplianceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
+  // todo: fix undefined widgetContainer in ngOnInit method
   it('should create', () => {
     expect(component).toBeTruthy();
   });

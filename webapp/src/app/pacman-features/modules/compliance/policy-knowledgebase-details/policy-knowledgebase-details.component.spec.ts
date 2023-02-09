@@ -12,7 +12,23 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { PermissionGuardService } from 'src/app/core/services/permission-guard.service';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { ChipComponent } from 'src/app/shared/components/atoms/chip/chip.component';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { TableComponent } from 'src/app/shared/table/table.component';
 
 import { PolicyKnowledgebaseDetailsComponent } from './policy-knowledgebase-details.component';
 
@@ -22,9 +38,22 @@ describe('PolicyKnowledgebaseDetailsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PolicyKnowledgebaseDetailsComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, MatDialogModule, RouterTestingModule],
+      declarations: [PolicyKnowledgebaseDetailsComponent, TableComponent, ChipComponent],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        PermissionGuardService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+        WindowExpansionService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
