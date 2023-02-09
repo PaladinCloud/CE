@@ -2793,4 +2793,22 @@ public class AssetRepositoryImpl implements AssetRepository {
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public List<String> getValuesListForTag(String aseetGroupName, String tagName) throws DataException {
+
+        Map<String, Object> filter = new HashMap<>();
+        filter.put(Constants.LATEST, Constants.TRUE);
+        filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        Map<String, Long> applicationMap ;
+        try {
+            //tagName should be in format tags.TAGNAME.keyword
+            applicationMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null, null,
+                    tagName, Constants.THOUSAND, null);
+        } catch (Exception e) {
+            LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
+            throw new DataException(e);
+        }
+        return new ArrayList<>(applicationMap.keySet());
+    }
+
 }
