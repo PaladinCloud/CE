@@ -536,4 +536,6 @@ public interface AssetService {
 
     public Set<String> getMandatoryTags(String filterName);
 
+    public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag) throws DataException;
+
 }
