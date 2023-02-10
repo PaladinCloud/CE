@@ -66,44 +66,18 @@ ENABLE_VULNERABILITY_FEATURE = False
 QUALYS_API_URL = ""  # Qualys API Url without trailing slash
 QUALYS_INFO = ""  # Base64 encoded user:password of qualys
 
-# Settings for enabling AZURE  
-ENABLE_AZURE = False
-# Tenants should be a list of dict containing tenantId, clientId and secretValue
-AZURE_TENANTS = [
-    {
-        'tenantId': "t111",
-        'clientId': "c111",
-        'secretValue': "s111"
-    },
-    {
-        'tenantId': "t222",
-        'clientId': "c222",
-        'secretValue': "s222"
-    },
-]
-# Settings for enabling GCP 
-ENABLE_GCP = False
-GCP_PROJECT_IDS = []
-GCP_CREDENTIALS = {}
 
-# Azure AD integration 
-AUTHENTICATION_TYPE = "COGNITO"	# login type value should be any one of these "AZURE_AD or DB "
-
-COGNITO_USER_EMAIL_ID = ""
-COGNITO_DOMAIN = "" #example xyzpaladincloud
-
-# Azure AD integration
-AD_TENANT_ID = "xxxx- xxxxx_xxxx" # AD Tenant ID 
-AD_CLIENT_ID = "xxx-xxx-xxxx"  # AD Client ID
-AD_SECRET_KEY = "xxxxyyyyzzz"  # AD secret key
-AD_ENCRY_SECRET_KEY = "xxyssxxxzz" # Encrypted AD secret key using bcrypt
-AD_PUBLIC_KEY_URL = "https://login.microsoftonline.com/common/discovery/v2.0/keys"
-AD_PUBLIC_KEY = "ssyyssdddd" # AD public key
-AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
-
+#Cognito Configuration
+COGNITO_ADMIN_EMAIL_ID = "" #email_id of admin user 
+COGNITO_DOMAIN = ""       #example xyzpaladincloud
 
 #job/rules intervals
-JOB_SCHEDULE_INTERVAL = 6 #by default it is 6hrs
+JOB_SCHEDULE_INITIALDELAY = 5 #scheduling jobs initial delay in minute
+JOB_SCHEDULE_INITIALDELAY_SHIPPER = 15 #delay for shipper in minute (JOB_SCHEDULE_INITIALDELAY + 10 min)
+JOB_SCHEDULE_INITIALDELAY_RULES = 20  #delay for rules in minute (JOB_SCHEDULE_INITIALDELAY + JOB_SCHEDULE_INITIALDELAY_SHIPPER + 5min )
+JOB_SCHEDULE_INTERVAL = 6   #Job interval  in hrs
+JOB_SCHEDULER_NUMBER_OF_BATCHES = 20 #number of buckets for rules 
+
 
 # AWS accountId,name for multiple accounts
 AWS_ACCOUNT_DETAILS = [
@@ -121,10 +95,32 @@ AWS_ACCOUNT_DETAILS = [
     }
 ]
 
+# Settings for enabling AZURE  
+ENABLE_AZURE = False
+# Tenants should be a list of dict containing tenantId, clientId and secretValue
+AZURE_TENANTS = [
+    {
+        'tenantId': "t111",
+        'clientId': "c111",
+        'secretValue': "s111"
+    },
+    {
+        'tenantId': "t222",
+        'clientId': "c222",
+        'secretValue': "s222"
+    },
+]
+
+# Settings for enabling GCP 
+ENABLE_GCP = False
+GCP_PROJECT_IDS = []
+GCP_CREDENTIALS = {}
+
 #RDS username and password
 DB_USERNAME = "paladin" 
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
+#mandatory tags for tagging polices
 MANDATORY_TAGS = "Application,Environment"
 
 #BATCH CONFIGURATION 
