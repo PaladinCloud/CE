@@ -322,6 +322,11 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     return Math.pow(10, Math.floor(Math.log10(val))-offSet); // 10^( |_ log10(val) _| - 1 )
   }
 
+  roundToNDecimalPlaces(val, n){
+    const powN = Math.pow(10,n);
+    return Math.round((val + Number.EPSILON)*powN)/powN;
+  }
+
   getTickValuesForYAxis(){
     const roundOffMultiple = 2;
     const maxNumberOfTickValues = 6;
@@ -1154,9 +1159,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     number = parseInt(number, 10);
     number =
       number > 1000000
-        ? number / 1000000 + "M"
+        ? this.roundToNDecimalPlaces((number / 1000000), 2) + "M"
         : number > 1000
-        ? number / 1000 + "K"
+        ? this.roundToNDecimalPlaces((number / 1000), 2) + "K"
         : number;
     return number;
   }

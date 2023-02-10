@@ -324,13 +324,12 @@
             <article *ngIf="issueAudit && issueBlocks" class="details-container replace-padding">
                 <div>
                     <app-data-table (nextPageCalled)='nextPg()' (previousPageCalled)='prevPg()'
-                                    (searchRowTxt)='searchCalled($event)'
-                                    (searchTriggerred)='callNewSearch()' [allColumns]='allColumns'
+                                    [allColumns]='allColumns'
                                     [currentPointer]='currentPointer'
                                     [dataHead]="'Issue Audit Log'" [errorValue]='errorValue'
                                     [firstPaginator]='firstPaginator' [heightValue]="'27.4em'"
                                     [lastPaginator]='lastPaginator' [outerArr]='outerArr'
-                                    [searchableHeader]='true' [tableIdAppend]="'8'"
+                                    [tableIdAppend]="'8'"
                                     [totalRows]='totalRows'>
                     </app-data-table>
                 </div>

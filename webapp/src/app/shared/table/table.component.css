@@ -132,6 +132,11 @@
   gap: 16px;
 }
 
+.isDisabled{
+  pointer-events: none;
+  opacity: 50%;
+}
+
 .filter-modal-container .filters-wrapper .filter{
   gap: 8px;
   align-items: center;
