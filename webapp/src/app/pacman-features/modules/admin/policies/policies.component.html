@@ -29,7 +29,7 @@
                             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                             (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" (nextPageCalled)="nextPage($event)" [tableErrorMessage]='errorMessage'
-                            [showSearchBar]="true" [showAddRemoveCol]="false" [showFilterBtn]="false" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
+                            [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="false" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
                             [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap"
                             [rowClickable]="false">
                         </app-table>
