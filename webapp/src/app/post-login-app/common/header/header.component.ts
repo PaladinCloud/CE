@@ -53,6 +53,7 @@ export class HeaderComponent implements OnInit {
       }
       if(emailData){
         this.userEmail = emailData;
+        this.userName = this.userEmail.split("@")[0].split(".")[0];
       }
       // console.log("");
       

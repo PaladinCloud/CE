@@ -55,3 +55,9 @@
 .hover {
   transition: 0.2s ease;
 }
+
+.x-axis-text{
+  font: var(--text-caption);
+  display: flex;
+  justify-content: center;
+}
