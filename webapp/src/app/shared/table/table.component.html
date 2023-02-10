@@ -11,7 +11,7 @@
             <div class="header-left flex flex-row">
                 <div class="search-bar-wrapper flex flex-row gap-8" *ngIf="showSearchBar">
                     <img class="padding-12" src="/assets/icons/header-search.svg" matPrefix alt="" />
-                    <div class="chips-container flex gap-8">
+                    <div class="chips-container flex gap-8" *ngIf="chips?.length">
                         <div class="chip-wrapper flex flex-align-center" *ngFor="let filter of chips; let i=index">
                             <div class="chip flex flex-align-center" *ngIf="i<2 && filter.filterValue">
                                 <div class="chip-content nowrap-ellipsis capitalize" [title]="filter.filterValue">{{filter.filterValue}}</div>
@@ -37,7 +37,7 @@
                         </mat-form-field>
                     </div> -->
                     <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
-                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" *ngIf="showFilterBtn">
+                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" [class.isDisabled]="!showFilterBtn">
                         <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
                     </div>
                 <mat-menu #filterModal="matMenu">
