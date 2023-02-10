@@ -1170,4 +1170,16 @@ public class AssetServiceImpl implements AssetService {
     public Set<String> getMandatoryTags(String filterName) {
         return repository.getMandatoryTags(filterName);
     }
+
+    @Override
+    public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag) throws DataException {
+        List<String> assetList = repository.getValuesListForTag(aseetGroupName, tag);
+        List<Map<String, Object>> valueList = new ArrayList<>();
+        assetList.forEach(val -> {
+            Map<String, Object> valueMap = new HashMap<>();
+            valueMap.put(Constants.NAME, val);
+            valueList.add(valueMap);
+        });
+        return valueList;
+    }
 }

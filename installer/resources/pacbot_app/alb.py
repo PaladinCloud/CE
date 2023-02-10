@@ -68,6 +68,4 @@ class ApplicationLoadBalancer(LoadBalancerResource):
             abs_url = self._get_printable_abs_url(outputs[self.get_resource_id()]['dns_name'])
             return {
                 'Paladin Cloud URL': abs_url,
-                'Admin': Settings.PACBOT_LOGIN_CREDENTIALS['Admin'],
-                'User': Settings.PACBOT_LOGIN_CREDENTIALS['User']
             }

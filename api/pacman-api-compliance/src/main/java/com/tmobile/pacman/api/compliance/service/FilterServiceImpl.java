@@ -408,5 +408,18 @@ public class FilterServiceImpl implements FilterService, Constants {
         }});
         return listOfIssueStatus;
     }
-   
+
+    @Override
+    public List<Map<String, Object>> getFilterForTag(String assetGroup, String tag) throws ServiceException {
+        AssetCountDTO[] assetCountByApps;
+        try{
+            assetCountByApps = repository.getValueListforTag(assetGroup, tag);
+        }catch(DataException e){
+            throw new ServiceException(e);
+        }
+        noDataFoundCheck(assetCountByApps, emptyList);
+
+        return getAssetCountByAppOrEnv(assetCountByApps);
+    }
+
 }
