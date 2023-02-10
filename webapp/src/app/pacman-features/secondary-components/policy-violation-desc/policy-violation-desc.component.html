@@ -45,7 +45,7 @@
                 </div>
                 <div class="policy-violation-label-value relative" *ngIf="eachData.isAccordion == true" tabindex="1" >
                     <span class="anchor-link pointer" (click)='$event.stopPropagation(); showAccordion=!showAccordion '> View </span>
-                    <app-nested-accordion (click)='$event.stopPropagation()' (accodionClicked)="$event.stopPropagation(); closeAccordion($event)"  [nestedAccordionData]="eachData.values" class="nested-accordion-component-wrapper absolute" *ngIf="showAccordion"></app-nested-accordion>
+                    <app-nested-accordion (click)='$event.stopPropagation()' (accodionClicked)="$event.stopPropagation(); closeAccordion($event)"  [nestedAccordionData]="eachData.values" class="nested-accordion-component-wrapper" *ngIf="showAccordion"></app-nested-accordion>
                 </div>
                 <div *ngIf="eachData.isAccordion == false">
                     <div class="policy-violation-label-value" *ngIf="eachData.labelCount" title="{{eachData.labelCount}}">
