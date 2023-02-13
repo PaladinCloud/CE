@@ -90,7 +90,7 @@ public class ComplianceRepositoryImplTest implements Constants {
     ComplianceRepositoryImpl complianceRepositoryImpl;
 
     @Test
-    public void closeIssuesByRuleTest() throws Exception {
+    public void closeIssuesByPolicyTest() throws Exception {
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         Map<String, Object> issueDetailMap = new HashMap<>();
         issueDetailMap.put("resourceType", "ec2");
@@ -104,14 +104,14 @@ public class ComplianceRepositoryImplTest implements Constants {
         issueDetailMap.put(ES_DOC_ID_KEY, "678");
         issueDetails.add(issueDetailMap);
 
-        PolicyDetails ruleDetails = new PolicyDetails();
-        ruleDetails.setPolicyId("Kernel Compliance Rule");
-        ruleDetails.setReason("kernel Version Non-Compliant");
+        PolicyDetails policyDetails = new PolicyDetails();
+        policyDetails.setPolicyId("Kernel Compliance Policy");
+        policyDetails.setReason("kernel Version Non-Compliant");
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(issueDetails);
-        when(complianceRepositoryImpl.getOpenIssueDetails(ruleDetails.getPolicyId())).thenReturn(issueDetails);
-        complianceRepositoryImpl.closeIssuesByRule(ruleDetails);
+        when(complianceRepositoryImpl.getOpenIssueDetails(policyDetails.getPolicyId())).thenReturn(issueDetails);
+        complianceRepositoryImpl.closeIssuesByPolicy(policyDetails);
 
     }
 
@@ -133,13 +133,13 @@ public class ComplianceRepositoryImplTest implements Constants {
         IssueResponse issueReason = new IssueResponse();
         issueReason.setExceptionReason("exempted");
         issueReason.setIssueId("1234");
-        PolicyDetails ruleDetails = new PolicyDetails();
-        ruleDetails.setPolicyId("Kernel Compliance Rule");
-        ruleDetails.setReason("kernel Version Non-Compliant");
+        PolicyDetails policyDetails = new PolicyDetails();
+        policyDetails.setPolicyId("Kernel Compliance Policy");
+        policyDetails.setReason("kernel Version Non-Compliant");
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(issueDetails);
-        when(complianceRepositoryImpl.getOpenIssueDetails(ruleDetails.getPolicyId())).thenReturn(issueDetails);
+        when(complianceRepositoryImpl.getOpenIssueDetails(policyDetails.getPolicyId())).thenReturn(issueDetails);
         complianceRepositoryImpl.exemptAndUpdateIssueDetails(issueReason);
 
     }
@@ -161,9 +161,9 @@ public class ComplianceRepositoryImplTest implements Constants {
         IssueResponse issueReason = new IssueResponse();
         issueReason.setExceptionReason("exempted");
         issueReason.setIssueId("1234");
-        PolicyDetails ruleDetails = new PolicyDetails();
-        ruleDetails.setPolicyId("Kernel Compliance Rule");
-        ruleDetails.setReason("kernel Version Non-Compliant");
+        PolicyDetails policyDetails = new PolicyDetails();
+        policyDetails.setPolicyId("Kernel Compliance Policy");
+        policyDetails.setReason("kernel Version Non-Compliant");
         when(
                 elasticSearchRepository.getSortedDataFromES(anyString(), anyString(), anyObject(), anyObject(),
                         anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(issueDetails);
@@ -177,37 +177,37 @@ public class ComplianceRepositoryImplTest implements Constants {
     }
 
     @Test
-    public void getRuleDetailsByEnvironmentFromESTest() throws Exception {
+    public void getPolicyDetailsByEnvironmentFromESTest() throws Exception {
         String response = "{\"took\":469,\"timed_out\":false,\"_shards\":{\"total\":176,\"successful\":176,\"failed\":0},\"hits\":{\"total\":115456,\"max_score\":0,\"hits\":[]},\"aggregations\":{\"NAME\":{\"doc_count_error_upper_bound\":691,\"sum_other_doc_count\":34323,\"buckets\":["
         		+ "{\"key\":\"key\",\"doc_count\":6258},{\"key\":\"key\",\"doc_count\":3339}]}}}";
         ReflectionTestUtils.setField(complianceRepositoryImpl, "esUrl", "dummyEsURL");
         ReflectionTestUtils.setField(complianceRepositoryImpl, "mandatoryTags", "Application,Environment");
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
-        complianceRepositoryImpl.getRuleDetailsByEnvironmentFromES("aws-all", "tagging-rule", "app1", null,"test");
-        complianceRepositoryImpl.getRuleDetailsByEnvironmentFromES("aws-all", "tagging-rule", "app1", "dev","test");
+        complianceRepositoryImpl.getPolicyDetailsByEnvironmentFromES("aws-all", "tagging-policy", "app1", null,"test");
+        complianceRepositoryImpl.getPolicyDetailsByEnvironmentFromES("aws-all", "tagging-policy", "app1", "dev","test");
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenThrow(new RuntimeException());
         assertThatThrownBy(
-                () -> complianceRepositoryImpl.getRuleDetailsByEnvironmentFromES("aws-all", "tagging-rule", "app1",
+                () -> complianceRepositoryImpl.getPolicyDetailsByEnvironmentFromES("aws-all", "tagging-policy", "app1",
                         null,"test")).isInstanceOf(DataException.class);
     }
 
     @Test
-    public void getRuleDetailsByApplicationFromESTest() throws Exception {
+    public void getPolicyDetailsByApplicationFromESTest() throws Exception {
         String response = "{\"took\":469,\"timed_out\":false,\"_shards\":{\"total\":176,\"successful\":176,\"failed\":0},\"hits\":{\"total\":115456,\"max_score\":0,\"hits\":[]},\"aggregations\":{\"NAME\":{\"doc_count_error_upper_bound\":691,\"sum_other_doc_count\":34323,\"buckets\":["
         		+ "{\"key\":\"key\",\"doc_count\":6258},{\"key\":\"key\",\"doc_count\":3339}]}}}";
         ReflectionTestUtils.setField(complianceRepositoryImpl, "esUrl", "dummyEsURL");
         ReflectionTestUtils.setField(complianceRepositoryImpl, "mandatoryTags", "Application,Environment");
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
-        complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", "tagging-rule", "app1");
-        complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", "tagging-rule", null);
-        complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", CATEGORY_TAGGING, null);
-        complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", EC2_KERNEL_COMPLIANCE_RULE, null);
+        complianceRepositoryImpl.getPolicyDetailsByApplicationFromES("aws-all", "tagging-policy", "app1");
+        complianceRepositoryImpl.getPolicyDetailsByApplicationFromES("aws-all", "tagging-policy", null);
+        complianceRepositoryImpl.getPolicyDetailsByApplicationFromES("aws-all", CATEGORY_TAGGING, null);
+        complianceRepositoryImpl.getPolicyDetailsByApplicationFromES("aws-all", EC2_KERNEL_COMPLIANCE_RULE, null);
 
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenThrow(new RuntimeException());
         assertThatThrownBy(
-                () -> complianceRepositoryImpl.getRuleDetailsByApplicationFromES("aws-all", "tagging-rule", "app1"))
+                () -> complianceRepositoryImpl.getPolicyDetailsByApplicationFromES("aws-all", "tagging-policy", "app1"))
                 .isInstanceOf(DataException.class);
     }
 
@@ -240,7 +240,7 @@ public class ComplianceRepositoryImplTest implements Constants {
 
     @Test
     public void getPolicyViolationDetailsByIssueIdTest() throws Exception {
-        String response = "{\"took\":391,\"timed_out\":false,\"_shards\":{\"total\":176,\"successful\":176,\"failed\":0},\"hits\":{\"total\":5427,\"max_score\":4.344331,\"hits\":[{\"_index\":\"_index\",\"_type\":\"_type\",\"_id\":\"_id\",\"_score\":4.344331,\"_routing\":\"_routing\",\"_parent\":\"_parent\",\"_source\":{\"severity\":\"high\",\"_resourceid\":\"_resourceid\",\"ruleCategory\":\"security\",\"_docid\":\"_docid\",\"targetType\":\"ec2\",\"type\":\"issue\",\"issueDetails\":\"[{violationReason=Default target kernel criteria not maintained}]\",\"accountid\":\"123456789\",\"executionId\":\"executionId\",\"issueStatus\":\"open\",\"createdDate\":\"2018-07-03T01:00:50.820Z\",\"policyId\":\"cloud-kernel-compliance_version-1\",\"accountname\":\"account1\",\"tags.Environment\":\"env\",\"tags.Application\":\"appl\",\"pac_ds\":\"aws\",\"modifiedDate\":\"2018-07-09T23:00:50.788Z\",\"ruleId\":\"kernelcomplianceRule\",\"region\":\"region\",\"desc\":\"Target Kernerl Criteria not maintained\"}}]}}";
+        String response = "{\"took\":391,\"timed_out\":false,\"_shards\":{\"total\":176,\"successful\":176,\"failed\":0},\"hits\":{\"total\":5427,\"max_score\":4.344331,\"hits\":[{\"_index\":\"_index\",\"_type\":\"_type\",\"_id\":\"_id\",\"_score\":4.344331,\"_routing\":\"_routing\",\"_parent\":\"_parent\",\"_source\":{\"severity\":\"high\",\"_resourceid\":\"_resourceid\",\"policyCategory\":\"security\",\"_docid\":\"_docid\",\"targetType\":\"ec2\",\"type\":\"issue\",\"issueDetails\":\"[{violationReason=Default target kernel criteria not maintained}]\",\"accountid\":\"123456789\",\"executionId\":\"executionId\",\"issueStatus\":\"open\",\"createdDate\":\"2018-07-03T01:00:50.820Z\",\"policyId\":\"cloud-kernel-compliance_version-1\",\"accountname\":\"account1\",\"tags.Environment\":\"env\",\"tags.Application\":\"appl\",\"pac_ds\":\"aws\",\"modifiedDate\":\"2018-07-09T23:00:50.788Z\",\"policyId\":\"kernelcompliancePolicy\",\"region\":\"region\",\"desc\":\"Target Kernerl Criteria not maintained\"}}]}}";
         ReflectionTestUtils.setField(complianceRepositoryImpl, "esUrl", "dummyEsURL");
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
@@ -313,19 +313,19 @@ public class ComplianceRepositoryImplTest implements Constants {
     }
 
    /* @Test
-    public void getExemptedIssuesForTaggingRuleTest() throws Exception {
+    public void getExemptedIssuesForTaggingPolicyTest() throws Exception {
         String response = "{\"took\":469,\"timed_out\":false,\"_shards\":{\"count\":176,\"successful\":176,\"failed\":0},\"hits\":{\"total\":115456,\"max_score\":0,\"hits\":[]},\"aggregations\":{\"NAME\":{\"doc_count_error_upper_bound\":691,\"sum_other_doc_count\":34323,\"buckets\":["
         		+ "{\"key\":\"key\",\"doc_count\":6258},{\"key\":\"key\",\"doc_count\":3339}]}}}";
         ReflectionTestUtils.setField(complianceRepositoryImpl, "esUrl", "dummyEsURL");
         ReflectionTestUtils.setField(complianceRepositoryImpl, "mandatoryTags", "mandatoryTags");
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenReturn(response);
-        complianceRepositoryImpl.getExemptedIssuesForTaggingRule(CommonTestUtil.getRequest(), "tagging-rule", "app1", "targetType");
-        complianceRepositoryImpl.getExemptedIssuesForTaggingRule(CommonTestUtil.getRequest(), "tagging-rule", "app1", null);
-        complianceRepositoryImpl.getExemptedIssuesForTaggingRule(CommonTestUtil.getWithoutSizeRequest(), "tagging-rule", "app1", null);
+        complianceRepositoryImpl.getExemptedIssuesForTaggingPolicy(CommonTestUtil.getRequest(), "tagging-policy", "app1", "targetType");
+        complianceRepositoryImpl.getExemptedIssuesForTaggingPolicy(CommonTestUtil.getRequest(), "tagging-policy", "app1", null);
+        complianceRepositoryImpl.getExemptedIssuesForTaggingPolicy(CommonTestUtil.getWithoutSizeRequest(), "tagging-policy", "app1", null);
         when(PacHttpUtils.doHttpPost(anyString(), anyString())).thenThrow(new DataException());
         assertThatThrownBy(
-                () -> complianceRepositoryImpl.getExemptedIssuesForTaggingRule(CommonTestUtil.getRequest(), "tagging-rule", "app1",
+                () -> complianceRepositoryImpl.getExemptedIssuesForTaggingPolicy(CommonTestUtil.getRequest(), "tagging-policy", "app1",
                         null)).isInstanceOf(DataException.class);
     }
 
@@ -337,7 +337,7 @@ public class ComplianceRepositoryImplTest implements Constants {
 
         when(elasticSearchRepository.getSortedDataFromES(anyString(),anyString(),anyObject(),anyObject(),anyObject(),anyObject(),anyObject(),anyObject())).thenThrow(new RuntimeException());
         assertThatThrownBy(
-                () -> complianceRepositoryImpl.getExemptedResourceDetails("tagging-rule", "app1"))
+                () -> complianceRepositoryImpl.getExemptedResourceDetails("tagging-policy", "app1"))
                 .isInstanceOf(DataException.class);
     }*/
 

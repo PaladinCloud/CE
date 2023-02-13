@@ -84,10 +84,10 @@ public class ComplianceController implements Constants {
 
     /**
      * Gets the issues details.Request expects asssetGroup and domain as
-     * mandatory, ruleId as optional.If API receives assetGroup and domain as
-     * request parameter, it gives details of all open issues for all the rules
-     * associated to that domain. If API receives assetGroup, domain and ruleId
-     * as request parameter,it gives only open issues of that rule associated to
+     * mandatory, policyId as optional.If API receives assetGroup and domain as
+     * request parameter, it gives details of all open issues for all the policies
+     * associated to that domain. If API receives assetGroup, domain and policyId
+     * as request parameter,it gives only open issues of that policy associated to
      * that domain. SearchText is used to match any text you are looking
      * for.From and size are for the pagination
      *
@@ -116,27 +116,27 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * Gets the issues count. asssetGroup and domain are mandatory & ruleId is
-     * optional parameter, it gives issues count of all open issues for all the rules
-     * associated to that domain. If API receives assetGroup,domain and ruleId
+     * Gets the issues count. asssetGroup and domain are mandatory & policyId is
+     * optional parameter, it gives issues count of all open issues for all the policies
+     * associated to that domain. If API receives assetGroup,domain and policyId
      * as request parameter,it gives issues count of all open issues for that
-     * rule associated to that domain.
+     * policy associated to that domain.
      *
      * @param assetGroup name of the asset group
      * @param domain the domain
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @return the issues count
      */
     
     @RequestMapping(path = "/v1/issues/count", method = RequestMethod.GET)
     public ResponseEntity<Object> getIssuesCount(@RequestParam("ag") String assetGroup,
-            @RequestParam("domain") String domain, @RequestParam(name = "policyId", required = false) String ruleId) {
+            @RequestParam("domain") String domain, @RequestParam(name = "policyId", required = false) String policyId) {
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(domain)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
         Map<String, Long> response = new HashMap<>();
         try {
-            response.put("total_issues", complianceService.getIssuesCount(assetGroup, ruleId, domain));
+            response.put("total_issues", complianceService.getIssuesCount(assetGroup, policyId, domain));
         } catch (ServiceException e) {
             return ResponseUtils.buildFailureResponse(e);
         }
@@ -146,9 +146,9 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * Gets the issue distribution by ruleCategory and severity.asssetGroup
-     * is mandatory, domain is optional. API return issue distribution rule
-     * severity & rule Category for given asset group
+     * Gets the issue distribution by policyCategory and severity.asssetGroup
+     * is mandatory, domain is optional. API return issue distribution policy
+     * severity & policy Category for given asset group
      *
      * @param assetGroup name of the asset group
      * @param domain the domain
@@ -173,9 +173,9 @@ public class ComplianceController implements Constants {
 
 
     /**
-     * Gets the issue distribution by ruleCategory and severity.asssetGroup
-     * is mandatory, domain is optional. API return issue distribution rule
-     * severity & rule Category for given asset group
+     * Gets the issue distribution by policyCategory and severity.asssetGroup
+     * is mandatory, domain is optional. API return issue distribution policy
+     * severity & policy Category for given asset group
      *
      * @param assetGroup name of the asset group
      * @return ResponseEntity
@@ -272,10 +272,10 @@ public class ComplianceController implements Constants {
      * Gets the recommendations details by policy.asssetGroup is mandatory and
      * targetType is optional. If API receives assetGroup as request parameter,
      * API returns list of all the issue counts which are related to
-     * recommendations rules from the ES for the given assetGroup with all the
+     * recommendations policies from the ES for the given assetGroup with all the
      * targetTypes.If API receives both assetGroup and targetType as request
      * parameter,API returns list of all the issue counts which are related to
-     * recommendations rules from the ES for the given targetType & assetGroup.
+     * recommendations policies from the ES for the given targetType & assetGroup.
      *
      * @param assetGroup name of the asset group
      * @param targetType the target type
@@ -355,20 +355,20 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * Close issues.ruleDetails expects ruleId,reason and userId, Api returns
-     * true if its successfully closes all issues in ES for that ruleId else
+     * Close issues.policyDetails expects policyId,reason and userId, Api returns
+     * true if its successfully closes all issues in ES for that policyId else
      * false
      *
-     * @param ruleDetails the rule details
+     * @param policyDetails the policy details
      * @return ResponseEntity
      */
-    @ApiOperation(httpMethod = "PUT", value = "Close Issues by Rule Details")
+    @ApiOperation(httpMethod = "PUT", value = "Close Issues by Policy Details")
     @RequestMapping(path = "/v1/issues/close-by-policy-id", method = RequestMethod.PUT)
     @ResponseBody
     
     public ResponseEntity<Object> closeIssues(
-            @ApiParam(value = "Provide valid Rule Details ", required = true) @RequestBody(required = true) PolicyDetails ruleDetails) {
-        Map<String, Object> response = complianceService.closeIssuesByRule(ruleDetails);
+            @ApiParam(value = "Provide valid Policy Details ", required = true) @RequestBody(required = true) PolicyDetails policyDetails) {
+        Map<String, Object> response = complianceService.closeIssuesByPolicy(policyDetails);
         if (Integer.parseInt(response.get("status").toString()) == TWO_HUNDRED) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -433,9 +433,9 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * Gets the non compliance policy by rule.request expects asset group and
-     * domain as mandatory.Api returns list of all the rules associated to that
-     * domain with compliance percentage/severity/ruleCategory etc fields.
+     * Gets the non compliance policy by policy.request expects asset group and
+     * domain as mandatory.Api returns list of all the policies associated to that
+     * domain with compliance percentage/severity/policyCategory etc fields.
      *
      * @param request the request
      * @return ResponseEntity
@@ -445,7 +445,7 @@ public class ComplianceController implements Constants {
     // commenting to performance after refacoting
     // @Cacheable(cacheNames="compliance",key="#request.key")
     
-    public ResponseEntity<Object> getNonCompliancePolicyByRule(@RequestBody(required = false) Request request) {
+    public ResponseEntity<Object> getNonCompliancePolicyByPolicy(@RequestBody(required = false) Request request) {
         String assetGroup = request.getAg();
 
         Map<String, String> filters = request.getFilter();
@@ -456,7 +456,7 @@ public class ComplianceController implements Constants {
         }
         ResponseWithOrder response = null;
         try {
-            response = (complianceService.getRulecompliance(request));
+            response = (complianceService.getPolicycompliance(request));
         } catch (ServiceException e) {
            return complianceService.formatException(e);
         }
@@ -465,13 +465,13 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * Gets the policy details by application.asssetGroup and ruleId are
+     * Gets the policy details by application.asssetGroup and policyId are
      * mandatory. API returns total/application/compliant/compliantPercentage of
-     * the ruleId for given assetGroup. SearchText is used to match any text you
+     * the policyId for given assetGroup. SearchText is used to match any text you
      * are looking for
      *
      * @param assetGroup name of the asset group
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param searchText the search text
      * @return ResponseEntity
      */
@@ -480,15 +480,15 @@ public class ComplianceController implements Constants {
     // @Cacheable(cacheNames="compliance",unless="#result.status==200")
     
     public ResponseEntity<Object> getPolicydetailsbyApplication(@RequestParam("ag") String assetGroup,
-            @RequestParam("policyId") String ruleId,
+            @RequestParam("policyId") String policyId,
             @RequestParam(name = "searchText", required = false) String searchText) {
-        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(ruleId)) {
-            return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/ruleId is mandatory"));
+        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(policyId)) {
+            return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/policyId is mandatory"));
         }
         ResponseData response = null;
         try {
 
-            response = new ResponseData(complianceService.getRuleDetailsbyApplication(assetGroup, ruleId, searchText));
+            response = new ResponseData(complianceService.getPolicyDetailsbyApplication(assetGroup, policyId, searchText));
         } catch (ServiceException e) {
            return complianceService.formatException(e);
         }
@@ -496,15 +496,15 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * Gets the policy details by environment.asssetGroup,application and ruleId
+     * Gets the policy details by environment.asssetGroup,application and policyId
      * are mandatory. API returns
-     * total/environment/compliant/compliantPercentage of the ruleId for given
+     * total/environment/compliant/compliantPercentage of the policyId for given
      * assetGroup and application. SearchText is used to match any text you are
      * looking for
      *
      * @param assetGroup name of the asset group
      * @param application name of the application
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param searchText the search text
      * @return ResponseEntity
      */
@@ -512,15 +512,15 @@ public class ComplianceController implements Constants {
     @RequestMapping(path = "/v1/policydetailsbyenvironment", method = RequestMethod.GET)
     
     public ResponseEntity<Object> getpolicydetailsbyEnvironment(@RequestParam("ag") String assetGroup,
-            @RequestParam("application") String application, @RequestParam("policyId") String ruleId,
+            @RequestParam("application") String application, @RequestParam("policyId") String policyId,
             @RequestParam(name = "searchText", required = false) String searchText) {
 
-        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(application) || Strings.isNullOrEmpty(ruleId)) {
-            return ResponseUtils.buildFailureResponse(new Exception("assetgroup/application/ruleId is mandatory"));
+        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(application) || Strings.isNullOrEmpty(policyId)) {
+            return ResponseUtils.buildFailureResponse(new Exception("assetgroup/application/policyId is mandatory"));
         }
         ResponseData response = null;
         try {
-            response = new ResponseData(complianceService.getRuleDetailsbyEnvironment(assetGroup, ruleId, application,
+            response = new ResponseData(complianceService.getPolicyDetailsbyEnvironment(assetGroup, policyId, application,
                     searchText));
 
         } catch (ServiceException e) {
@@ -530,22 +530,22 @@ public class ComplianceController implements Constants {
     }
 
     /**
-     * API returns details of the given ruleId.
+     * API returns details of the given policyId.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @return ResponseEntity<Object>
      */
 
     @RequestMapping(path = "/v1/policydescription", method = RequestMethod.GET)
     
-    public ResponseEntity<Object> getPolicyDescription(@RequestParam("policyId") String ruleId) {
+    public ResponseEntity<Object> getPolicyDescription(@RequestParam("policyId") String policyId) {
 
-        if (Strings.isNullOrEmpty(ruleId)) {
+        if (Strings.isNullOrEmpty(policyId)) {
             return ResponseUtils.buildFailureResponse(new Exception("policyId Mandatory"));
         }
         PolicyDescription response = null;
         try {
-            response = new PolicyDescription(complianceService.getRuleDescription(ruleId));
+            response = new PolicyDescription(complianceService.getPolicyDescription(policyId));
 
         } catch (ServiceException e) {
            return complianceService.formatException(e);
@@ -593,13 +593,13 @@ public class ComplianceController implements Constants {
     @ResponseBody
     
     public ResponseEntity<Object> updateKernelVersion(
-            @ApiParam(value = "Provide valid Rule Details ", required = true) @RequestBody(required = true) KernelVersion kernelVersion) {
+            @ApiParam(value = "Provide valid Policy Details ", required = true) @RequestBody(required = true) KernelVersion kernelVersion) {
         Map<String, Object> response = complianceService.updateKernelVersion(kernelVersion);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
-     * API returns overall compliance based on rule category and severity weightages
+     * API returns overall compliance based on policy category and severity weightages
      * for given asset group and domain.
      *
      * @param assetGroup - String
