@@ -984,13 +984,13 @@ public class ElasticSearchRepository implements Constants {
 			if (sortFieldMapList.get("sortOrder") != null) {
 				script.put("params", paramsList);
 				inlineScript = "params.sortOrder.indexOf(doc['%s'].value)";
+				paramsList.put("sortOrder", sortFieldMapList.get("sortOrder"));
 			}
 			if(sortFieldMapList.get("fieldName").equals("_uid")){
 				inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
 			}
 			String inlineScriptString = String.format(inlineScript, fieldName);
 			script.put("inline", inlineScriptString);
-			paramsList.put("sortOrder", sortFieldMapList.get("sortOrder"));
 			sortScript.put("script", script);
 			sortScript.put("order", sortFieldMapList.get("order"));
 			Outerscript.put("_script", sortScript);

@@ -196,6 +196,12 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
       this.treemapData.push(obj);
     }
 
+    var values = this.treemapData.map(function (d) { return d.y });
+
+    var quantile = d3.scaleQuantile()
+    .domain(values)
+    .range(d3.range(values.length));
+
     let max = -1;
     max = this.awsResources[maxIndex - 1].count;
 
@@ -204,39 +210,13 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     let x = 1, prev_x = 0, curr_x, r = 0;
     let curr_min = 1, m = 0, k = 10;
 
-    for (let j = 0; j < this.treemapData.length;) {
-      while (this.treemapData[j].y < k * 10) {
-        let val = this.treemapData[j].y;
-        if (k <= 10) {
-          curr_x = (val / max);
-          countMap.push(curr_x);
-        }
-        else {
-          if (m == 0) {
-            curr_x = x + (x * 25 / 100);
-            curr_min = val;
-            m = 1;
-          }
-          x = ((val * curr_x) / curr_min);
-          x = x - curr_x;
-          x = x / 3;
-          x = x + curr_x;
-          countMap.push(x);
-        }
-        j++;
-        if (j >= this.treemapData.length) {
-          break;
-        }
-      }
-      prev_x = x;
-      m = 0;
-      k = k * 10;
-    }
 
     for (let j = 0; j < this.treemapData.length; j++) {
-      this.treemapData[j].y = countMap[j];
+      if(this.treemapData[j].y>0)
+      this.treemapData[j].y = quantile(this.treemapData[j].y);
+
     }
-    let maxVal = countMap[maxIndex - 1];
+    let maxVal = this.treemapData[maxIndex - 1].y;
     let diff = maxVal / 4;
     let from = 0, to = diff;
     for (let i = 0; i < 4; i++){
@@ -287,10 +267,20 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
       },
       dataLabels: {
         enabled: true,
-        offsetY: -3
+        offsetY: -3,
+        formatter: function (val:string, opts) {
+          let label = val;
+          if (label.length > 12) {
+              label = label.substring(0, 12) + '...';
+          }
+          return label;
+      }
       },
       plotOptions: {
         treemap: {
+          enableShades: true,
+          shadeIntensity: 0.5,
+          distributed: true,
           colorScale: {
             ranges: this.colorRanges
           }

@@ -122,11 +122,7 @@ border-left: 2px solid var(--border-200);
 }
 
 .title{
-font-family: 'Mark Pro';
-font-style: normal;
-font-weight: 700;
-font-size: 20px;
-line-height: 140%;
+font: var(--text-headline-6);
 color: var(--text-high-emphasis);
 }
 

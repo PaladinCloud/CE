@@ -102,8 +102,8 @@ border-bottom: 2px solid var(--border-200);
   border: 1px solid var(--border-200);
 }
 .sort-img{
-  width: 14px;
-  height: 14px;
+  width: 8px;
+  height: 8px;
   transform: rotate(180deg);
 }
 
@@ -149,7 +149,7 @@ border-bottom: 2px solid var(--border-200);
     color: var(--text-low-emphasis);
   }
 
-  .col-1{
+  .col{
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -157,16 +157,7 @@ border-bottom: 2px solid var(--border-200);
     gap: 12px;
     width: 50%;
     height: 100%;
-  }
-
-  .col-2{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 16px 24px;
-    gap: 12px;
-    width: 50%;
-    height: 100%;
+    cursor: pointer;
   }
 
   .asset-column{
