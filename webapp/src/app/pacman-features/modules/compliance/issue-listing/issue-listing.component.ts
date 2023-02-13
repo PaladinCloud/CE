@@ -190,26 +190,27 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   handleAddFilterClick(e){}
 
   handleHeaderColNameSelection(event: any) {
-    this.headerColName = event.headerColName?.toLowerCase();
+    this.headerColName = event.headerColName;
+    const sortColName = this.headerColName?.toLowerCase();
     this.direction = event.direction;
     this.selectedOrder = this.direction;
     this.bucketNumber = 0;
     // this.sortOrder = null;
-    if (this.headerColName === "severity") {
+    if (sortColName === "severity") {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
       this.sortOrder = ["low", "medium", "high", "critical"]
-    } else if (this.headerColName === "issue id") {
+    } else if (sortColName === "issue id") {
       this.fieldName = "_uid";
       this.fieldType = "string";
-    } else if (this.headerColName === "resource id") {
+    } else if (sortColName === "resource id") {
       this.fieldName = "_resourceid.keyword";
       this.fieldType = "string";
-    } else if (this.headerColName === "category") {
+    } else if (sortColName === "category") {
       this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
       this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
-    } else if (this.headerColName === "title") {
+    } else if (sortColName === "title") {
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
     }
@@ -391,16 +392,19 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
+      const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
+      const queryParams = {
+            ...urlObj.params,
+            ag: this.selectedAssetGroup,
+            domain: this.selectedDomain,
+          }
+      
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          {
-            ag: this.selectedAssetGroup,
-            domain: this.selectedDomain,
-          },
+          queryParams,
           environment.base +
-          this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-            .url,
+          urlObj.url,
           "GET"
         )
         .subscribe((response) => {
