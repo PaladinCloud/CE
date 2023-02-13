@@ -253,7 +253,7 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_iam_keys_should_be_rotated_every_target_period",
     "status": "ENABLED",
     "userId": "1205352",
-    "policyDisplayName": "Set Rotation Period of IAM Access Key to 90 Days",
+    "policyDisplayName": "Set the Rotation Period of IAM Access Key to 90 Days",
     "createdDate": "2017-08-30",
     "modifiedDate": "2018-01-05",
     "severity": "critical",
