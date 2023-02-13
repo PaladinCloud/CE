@@ -35,6 +35,8 @@ public class AssetApiData {
 
     private AssetCountDTO[] targettypes;
 
+    private AssetCountDTO[] assets;
+
     public String getDatasource() {
         return datasource;
     }
@@ -73,6 +75,14 @@ public class AssetApiData {
 
     public void setApplications(AssetCountDTO[] applications) {
         this.applications = applications;
+    }
+
+    public AssetCountDTO[] getAssets() {
+        return assets;
+    }
+
+    public void setAssets(AssetCountDTO[] assets) {
+        this.assets = assets;
     }
 
     @Override

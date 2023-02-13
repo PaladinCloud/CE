@@ -249,7 +249,14 @@
         <div class="article-wrapper">
             <article class="details-container replace-padding" *ngIf="issueAudit && issueBlocks">
                 <div>
-                    <app-data-table [tableIdAppend]="'8'" [errorValue]='errorValue' [allColumns]='allColumns' [outerArr]='outerArr' [heightValue]="'27.4em'" [totalRows]='totalRows' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [currentPointer]='currentPointer' (previousPageCalled)='prevPg()' (nextPageCalled)='nextPg()' [searchableHeader]='true' (searchRowTxt)='searchCalled($event)' (searchTriggerred)='callNewSearch()' [dataHead]="'Issue Audit Log'">
+                    <app-data-table (nextPageCalled)='nextPg()' (previousPageCalled)='prevPg()'
+                                    [allColumns]='allColumns'
+                                    [currentPointer]='currentPointer'
+                                    [dataHead]="'Issue Audit Log'" [errorValue]='errorValue'
+                                    [firstPaginator]='firstPaginator' [heightValue]="'27.4em'"
+                                    [lastPaginator]='lastPaginator' [outerArr]='outerArr'
+                                    [tableIdAppend]="'8'"
+                                    [totalRows]='totalRows'>
                     </app-data-table>
                 </div>
             </article>

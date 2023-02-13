@@ -23,6 +23,7 @@
 package com.tmobile.pacman.api.compliance.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -149,4 +150,7 @@ public interface AssetServiceClient {
             @RequestParam("application") String application,
             @RequestParam("type") String targetType,
             @RequestParam("domain") String domain);
+
+    @GetMapping(value = "/v1/list/valueByTag")
+    AssetApi getValuesByTag(@RequestParam("ag") String assetGroup,@RequestParam("tagValue") String tag);
 }

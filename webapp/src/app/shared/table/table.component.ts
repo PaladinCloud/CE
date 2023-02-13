@@ -419,7 +419,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
-      return (a[this.headerColName].valueText.toLowerCase()<b[this.headerColName].valueText.toLowerCase()? -1: 1)*(isAsc ? 1 : -1);
+      if(typeof a[this.headerColName].valueText == 'string'){
+        return (a[this.headerColName].valueText.toLowerCase()<b[this.headerColName].valueText.toLowerCase()? -1: 1)*(isAsc ? 1 : -1);
+      }
+      return (a[this.headerColName].valueText<b[this.headerColName].valueText? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 
