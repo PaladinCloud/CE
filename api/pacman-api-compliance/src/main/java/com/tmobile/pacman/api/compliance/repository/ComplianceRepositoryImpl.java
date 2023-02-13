@@ -417,7 +417,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         sortFilters.put("sortOrder", policyIdOrder);
                     }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
-                            mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, null);
+                            mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, sortFilters);
                     for (Map<String, Object> issueDetail : issueDetails) {
                         issueList = getIssueList(null, issueDetail, policyIdwithDisplayNameMap, issueList, domain);
                     }
