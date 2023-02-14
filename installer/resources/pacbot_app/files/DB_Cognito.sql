@@ -84,3 +84,7 @@ INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,17);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,18);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,19);
 INSERT IGNORE INTO `role_permissions`(`role_id`,`permission_id`) VALUES (2,20);
+
+
+/* testing
+*/
