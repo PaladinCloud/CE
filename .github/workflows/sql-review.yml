@@ -1,4 +1,4 @@
-on: [pull_request,sql-review]
+on: [pull_request,push]
 
 jobs:
   sql-review:
