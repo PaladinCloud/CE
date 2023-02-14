@@ -175,7 +175,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         List<Map<String, Object>> ruleSevCatDetails;
     
             ruleSevCatDetails = complianceService
-                    .getRuleSevCatDetails(ruleDetails);
+                    .getPoliciesevCatDetails(ruleDetails);
        
         
         
@@ -334,7 +334,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                 filters.put("domain", domain);
                 request.setFilter(filters);
                 ResponseWithOrder responseWithOrder = complianceService
-                        .getRulecompliance(request);
+                        .getPolicycompliance(request);
                 latestDaysTrendData.put(COMPLAINT, responseWithOrder
                         .getResponse().get(0).get("passed"));
                 latestDaysTrendData.put(NON_COMPLIANT, responseWithOrder
@@ -767,7 +767,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         Set<String> ruleSev = new HashSet<>();
         List<Map<String, Object>> ruleSevCatDetails;
             ruleSevCatDetails = complianceService
-                    .getRuleSevCatDetails(ruleDetails);
+                    .getPoliciesevCatDetails(ruleDetails);
         
         Map<String, Object> ruleSevDetails = ruleSevCatDetails.parallelStream()
                 .collect(

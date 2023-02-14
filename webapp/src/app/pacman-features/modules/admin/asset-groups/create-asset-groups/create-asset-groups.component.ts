@@ -245,7 +245,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
       this.selectedIndex = index;
       this.selectedAttributeDetails = attributeDetail.allAttributesName;
       this.selectedAttributes = attributeDetail.attributes;
-      this.selectedAttributeIndex = '/aws_' + attributeDetail.targetName + '/_search?filter_path=aggregations.alldata.buckets.key';
+      this.selectedAttributeIndex = attributeDetail['index'] + attributeDetail.targetName + '/_search?filter_path=aggregations.alldata.buckets.key';
     }
   }
 

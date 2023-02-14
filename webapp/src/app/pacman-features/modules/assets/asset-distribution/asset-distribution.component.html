@@ -37,13 +37,13 @@
             <div class="slider-content" [class.isCollapsed]="isCollapsed">
                 <div class="content-header">
                     <div class="column-wrapper-header">
-                        <div class="col-1">
+                        <div class="col" (click)="sortAssets('col-1')">
                             <span class="col-header">Name</span>
-                            <img class="sort-img" [class.sorted] = "isSortedByName" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-1')">
+                            <img class="sort-img" [class.sorted] = "isSortedByName" src='/assets/icons/arrow-down-2.svg'>
                         </div>
-                        <div class="col-2">
+                        <div class="col" (click)="sortAssets('col-2')"  >
                             <span class="col-header">Count</span>
-                            <img class="sort-img" [class.sorted] = "isSortedByAssetNo" src='/assets/icons/sort_icon.svg' (click)="sortAssets('col-2')">
+                            <img class="sort-img" [class.sorted] = "isSortedByAssetNo" src='/assets/icons/arrow-down-2.svg'>
                         </div>
                     </div>
                 </div>
@@ -51,12 +51,12 @@
                     <div class="column-wrapper"
                         *ngFor="let asset of filteredResources | searchFilter: searchText:'displayName'"
                         (click)="redirect(asset)">
-                        <div class="col-1">
+                        <div class="col">
                             <img class="asset-img" src='/assets/icons/{{asset.provider}}-color.svg'
                                 (click)="expandAsset()">
                             <span class="asset-name" title="{{asset.displayName}}">{{asset.displayName}}</span>
                         </div>
-                        <div class="col-2">
+                        <div class="col">
                             <span class="asset-count">{{asset.count}}</span>
                         </div>
                     </div>
