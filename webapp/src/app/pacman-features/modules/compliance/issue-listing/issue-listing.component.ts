@@ -195,7 +195,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.direction = event.direction;
     this.selectedOrder = this.direction;
     this.bucketNumber = 0;
-    // this.sortOrder = null;
+    this.sortOrder = null;
     if (sortColName === "severity") {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
