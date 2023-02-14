@@ -34,17 +34,14 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyCategoryWeightage` (
   PRIMARY KEY (`policyCategory`,`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+/* truncating  the policy table to ensure that existing  insert cmd changes are being reflected */
+TRUNCATE TABLE cf_PolicyTable;
 
 /* RUle Category Weightage */
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('costOptimization','Infra & Platforms',20);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('governance','Infra & Platforms',20);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('security','Infra & Platforms',50);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('tagging','Infra & Platforms',10);
-
-
-
-
-
 
 /* Delete rule record */
 delete from pac_v2_ui_options where optionName = 'Rule';
