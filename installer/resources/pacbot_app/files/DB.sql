@@ -19,7 +19,7 @@ USE `pacmandata`;
 
 /*Table structure for table `ASGC_Issues` */
 
-SET @region='$region';
+SET @region='$region'
 SET @account='$account';
 SET @eshost='$eshost';
 SET @esport='$esport';
