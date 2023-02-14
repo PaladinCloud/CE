@@ -12,3 +12,4 @@ jobs:
         uses: bytebase/sql-review-action@main
         with:
           database-type: "MYSQL"
+          template-id: "bb.sql-review.prod"
