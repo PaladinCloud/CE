@@ -146,6 +146,12 @@ export class ComplianceDashboardComponent implements OnInit {
       let bNum = parseFloat(b);
       
       return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+    Violations: (a: string, b: string, isAsc) => {
+      a = a["Violations"].valueText;
+      b = b["Violations"].valueText;
+      
+      return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
   };
   tableImageDataMap = {

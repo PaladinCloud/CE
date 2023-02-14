@@ -157,7 +157,7 @@ export class AssetSwitcherComponent implements OnInit, OnDestroy {
     const userId = this.dataCacheService.getUserDetailsValue().getUserId();
     const queryParams = {
       ag: groupName,
-      userId: userId.split(".")[0],
+      userId: userId
     };
     if (queryParams["ag"] !== undefined) {
       this.updateRecentAGSubscription = this.updateRecentAGService
