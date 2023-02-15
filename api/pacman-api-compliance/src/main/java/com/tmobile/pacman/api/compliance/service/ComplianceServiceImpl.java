@@ -389,7 +389,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     @SuppressWarnings("rawtypes")
     public ResponseWithOrder getPolicycompliance(Request request) throws ServiceException {
         // Ignoring input as we need to return all.
-        logger.debug("getPolicycompliance invoked with {}", request);
+        // logger.debug("getPolicycompliance invoked with {}", request);
         int size = 0;
         int from = 0;
         String assetGroup = request.getAg();
