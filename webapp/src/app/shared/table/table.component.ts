@@ -420,8 +420,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       }
 
       // Till we add server side sorting
-      let elementA =a[this.headerColName]&&a[this.headerColName].valueText?a[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'aaaaaa';
-      let elementB =b[this.headerColName]&&b[this.headerColName].valueText?b[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'aaaaaa';
+      let elementA =a[this.headerColName]&&a[this.headerColName].valueText?a[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+      let elementB =b[this.headerColName]&&b[this.headerColName].valueText?b[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
 
       return (elementA<elementB? -1: 1)*(isAsc ? 1 : -1);
     });
