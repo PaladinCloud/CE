@@ -2777,6 +2777,7 @@ INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qu
 -- delete configs containing http url
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
+DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
@@ -3687,8 +3688,8 @@ LOOP
   SET _value = TRIM(tag);
 
   -- insert the filters metadata for mandatory tags  compliance/v1/filters/tag?ag=aws&tag=tags.Environment.keyword
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
-  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (1,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
+  INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (2,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&type=issue&tag=tags.',_value,'.keyword'));
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (3,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (8,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
   INSERT IGNORE INTO pac_v2_ui_options (filterId,optionName,optionValue,optionURL) VALUES (9,_value,concat('tags.',_value,'.keyword'),concat('/compliance/v1/filters/tag?ag=aws&tag=tags.',_value,'.keyword'));
@@ -3701,3 +3702,5 @@ END $$
 DELIMITER ;
 
 CALL update_filter_for_tag(@MANDATORY_TAGS);
+
+update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category';
