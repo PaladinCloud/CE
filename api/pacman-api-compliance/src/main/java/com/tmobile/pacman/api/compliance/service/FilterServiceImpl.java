@@ -410,10 +410,10 @@ public class FilterServiceImpl implements FilterService, Constants {
     }
 
     @Override
-    public List<Map<String, Object>> getFilterForTag(String assetGroup, String tag) throws ServiceException {
+    public List<Map<String, Object>> getFilterForTag(String assetGroup, String tag, String type) throws ServiceException {
         AssetCountDTO[] assetCountByApps;
         try{
-            assetCountByApps = repository.getValueListforTag(assetGroup, tag);
+            assetCountByApps = repository.getValueListforTag(assetGroup, tag, type);
         }catch(DataException e){
             throw new ServiceException(e);
         }
