@@ -128,6 +128,13 @@ ACCOUNT_NAME = ""
 ACCOUNT_PLATFORM = ""
 
 #BATCH CONFIGURATION 
+#optinal configuration 
 BATCH_JOB_MEMORY = 3072
 BATCH_JOB_VCPU = 1
 BATCH_INSTANCE_TYPE = "m5.xlarge"     #m4.xlarge,m5.xlarge & c5.xlarge (follow batch upgrade document)
+
+
+#AZURE_AD_CONFIGURATION
+#optianal configuration if you would like to setup AzureAD AUTHENTICATION  
+ENABLE_AZURE_AD = False  
+MEATADATA_XML_FILE = "" 
