@@ -107,6 +107,7 @@ public final class AssetConstants {
     public static final String ISSUE_STATUS = "issueStatus";
 
     public static final String ASSET = "asset";
+    public static final String TYPE_KEYWORD = "type.keyword";
     
 }
 

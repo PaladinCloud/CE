@@ -145,5 +145,5 @@ public interface FilterRepository {
     public AssetCountDTO[] getListOfTargetTypes(String assetGroup, String domain)
             throws DataException;
 
-    public AssetCountDTO[] getValueListforTag(String assetGroup, String tag) throws DataException;
+    public AssetCountDTO[] getValueListforTag(String assetGroup, String tag, String type) throws DataException;
 }
