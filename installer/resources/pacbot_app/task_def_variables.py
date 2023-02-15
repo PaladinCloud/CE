@@ -26,8 +26,8 @@ class ContainerDefinitions:
     RDS_USERNAME = MySQLDatabase.get_input_attr('username')
     RDS_PASSWORD = MySQLDatabase.get_input_attr('password')
     RDS_URL = MySQLDatabase.get_rds_db_url()
-    CLIENT_ID = AppCLient.get_output_attr('id')
-    CLIENT_SECRET = AppCLient.get_output_attr('client_secret')
+    CLIENT_ID = Appcredentials.get_output_attr('id')
+    CLIENT_SECRET = Appcredentials.get_output_attr('client_secret')
     USERPOOL_ID = UserPool.get_output_attr('id')
     AWS_REGION = Settings.AWS_REGION #userpool id region
     REGION = Settings.AWS_REGION
