@@ -353,10 +353,11 @@ public class AssetController {
 
     @GetMapping(value = "/v1/list/valueByTag")
     public ResponseEntity<Object> getListOfValuesByTag(@RequestParam(name = "ag", required = true) String assetGroup,
-                                                        @RequestParam(name = "tagValue", required = true) String tagValue) {
+                                                        @RequestParam(name = "tagValue", required = true) String tagValue,
+                                                       @RequestParam(name = "type",defaultValue = "asset",required = false) String type) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Map<String, Object>> appNames = assetService.getValuesByTag(assetGroup, tagValue);
+            List<Map<String, Object>> appNames = assetService.getValuesByTag(assetGroup, tagValue, type);
             response.put("ag", assetGroup);
             response.put("assets", appNames);
             return ResponseUtils.buildSucessResponse(response);

@@ -149,7 +149,7 @@ export class TaggingAcrossTargetTypeComponent implements OnInit , OnDestroy {
       const apiTarget = {'TypeAsset' : 'taggable'};
 
       if ( (intanceType !== undefined) && (currentApp !== undefined) ) {
-        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, 'Tagging Compliance');
         if (intanceType === 'tagged') {
           const eachParams = {'tagged': true , resourceType: currentApp.toLowerCase()};
           let newParams = this.utils.makeFilterObj(eachParams);

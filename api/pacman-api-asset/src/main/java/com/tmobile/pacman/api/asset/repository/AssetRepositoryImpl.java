@@ -2794,16 +2794,22 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
 
     @Override
-    public List<String> getValuesListForTag(String aseetGroupName, String tagName) throws DataException {
+    public List<String> getValuesListForTag(String aseetGroupName, String tagName, String type) throws DataException {
 
         Map<String, Object> filter = new HashMap<>();
-        filter.put(Constants.LATEST, Constants.TRUE);
-        filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        if(type!=null && type.equalsIgnoreCase("issue")){
+            filter.put(AssetConstants.TYPE_KEYWORD,Constants.ISSUE);
+            filter.put(AssetConstants.ISSUE_STATUS,Constants.OPEN);
+        }else {
+            //otherwise search for assets
+            filter.put(Constants.LATEST, Constants.TRUE);
+            filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        }
         Map<String, Long> applicationMap ;
         try {
             //tagName should be in format tags.TAGNAME.keyword
             applicationMap = esRepository.getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null, null,
-                    tagName, Constants.THOUSAND, null);
+                    tagName, 0, null);
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETAPPSBYAG, e);
             throw new DataException(e);

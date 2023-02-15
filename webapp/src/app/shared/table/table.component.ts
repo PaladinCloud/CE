@@ -412,13 +412,19 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
       // this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
-    const isAsc = this.direction == 'asc';
+
+    const isAsc = this.direction=='asc';
 
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
       if (this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]) {
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
-      return (a[this.headerColName].text < b[this.headerColName].text ? -1 : 1) * (isAsc ? 1 : -1);
+
+      // Till we add server side sorting
+      let elementA =a[this.headerColName]&&a[this.headerColName].valueText?a[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+      let elementB =b[this.headerColName]&&b[this.headerColName].valueText?b[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+
+      return (elementA<elementB? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 
