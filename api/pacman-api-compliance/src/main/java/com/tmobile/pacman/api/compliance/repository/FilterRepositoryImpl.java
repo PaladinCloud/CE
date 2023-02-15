@@ -247,8 +247,8 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
     }
 
     @Override
-    public AssetCountDTO[] getValueListforTag(String assetGroup, String tag) throws DataException {
-            AssetApi asstApi = assetServiceClient.getValuesByTag(assetGroup,tag);
+    public AssetCountDTO[] getValueListforTag(String assetGroup, String tag, String type) throws DataException {
+            AssetApi asstApi = assetServiceClient.getValuesByTag(assetGroup,tag, type);
             AssetApiData data = asstApi.getData();
             return data.getAssets();
 

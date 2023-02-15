@@ -284,14 +284,15 @@ public class FilterController implements Constants {
     }
 
     @GetMapping(path = "/v1/filters/tag")
-    public ResponseEntity<Object> getListOfEnvironments(@RequestParam(name = "ag", required = true) String assetGroup,
-                                                        @RequestParam(name = "tag", required = true) String tag) {
+    public ResponseEntity<Object> getListOfEntities(@RequestParam(name = "ag", required = true) String assetGroup,
+                                                        @RequestParam(name = "tag", required = true) String tag,
+                                                    @RequestParam(name = "type", defaultValue = "asset",required = false) String type) {
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
         }
         ResponseData response = null;
         try {
-            response = new ResponseData(filterService.getFilterForTag(assetGroup, tag));
+            response = new ResponseData(filterService.getFilterForTag(assetGroup, tag, type));
 
         } catch (ServiceException e) {
             return complianceService.formatException(e);

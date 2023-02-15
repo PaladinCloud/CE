@@ -111,6 +111,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                 }
                 // if fail issue will get logged to database, hence update the
                 // category and severity
+                String tagsMandatory = policyParam.get(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
+                Map<String, String> mandatoryTag = getMandatoryTagsForAnnotation(tagsMandatory,resource);
                 if (result!= null && (PacmanSdkConstants.STATUS_FAILURE.equalsIgnoreCase(result.getStatus())
                         || PacmanSdkConstants.STATUS_UNKNOWN.equalsIgnoreCase(result.getStatus()))) {
                     if (policyParam.containsKey(PacmanSdkConstants.INVOCATION_ID)) {
@@ -130,14 +132,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                     result.getAnnotation().put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                     result.getAnnotation().put(PacmanSdkConstants.EXECUTION_ID, executionId);
                     result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get("accountname"));
-                    if (resource.containsKey(PacmanSdkConstants.APPLICATION_TAG_KEY)) {
-                        result.getAnnotation().put(PacmanSdkConstants.APPLICATION_TAG_KEY,
-                                resource.get(PacmanSdkConstants.APPLICATION_TAG_KEY));
-                    }
-                    if (resource.containsKey(PacmanSdkConstants.ENV_TAG_KEY)) {
-                        result.getAnnotation().put(PacmanSdkConstants.ENV_TAG_KEY,
-                                resource.get(PacmanSdkConstants.ENV_TAG_KEY));
-                    }
+                    mandatoryTag.forEach(result.getAnnotation()::putIfAbsent);
                 }
                 else {
                             Annotation annotation = Annotation.buildAnnotation(policyParam, Annotation.Type.ISSUE);
@@ -156,13 +151,7 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                                     resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
                             annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get("accountid"));
                             annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID)); // this is important to close the issue
-                            if (resource.containsKey(PacmanSdkConstants.APPLICATION_TAG_KEY)) {
-                                annotation.put(PacmanSdkConstants.APPLICATION_TAG_KEY,
-                                        resource.get(PacmanSdkConstants.APPLICATION_TAG_KEY));
-                            }
-                            if (resource.containsKey(PacmanSdkConstants.ENV_TAG_KEY)) {
-                                annotation.put(PacmanSdkConstants.ENV_TAG_KEY, resource.get(PacmanSdkConstants.ENV_TAG_KEY));
-                            }
+                            mandatoryTag.forEach(annotation::putIfAbsent);
                             if(null!=result){
                                 result.setAnnotation(annotation);
                             }else{
