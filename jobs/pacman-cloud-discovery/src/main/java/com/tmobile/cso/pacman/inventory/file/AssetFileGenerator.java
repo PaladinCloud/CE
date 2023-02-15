@@ -1188,6 +1188,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "securityhub", e.getMessage());
 				}
 			});
+			executor.execute(() ->
+			{
+				if (!(isTypeInScope("route53"))) {
+					return;
+				}
+				try {
+					log.info(infoPrefix + "route53");
+					FileManager.generateRoute53Files(InventoryUtil.fetchRoute53(temporaryCredentials, accountId, accountName));
+				} catch (Exception e) {
+					log.error(expPrefix + "route53\", \"cause\":\"" + e.getMessage() + "\"}");
+					ErrorManageUtil.uploadError(accountId, "", "route53", e.getMessage());
+				}
+			});
 			executor.shutdown();
 			while (!executor.isTerminated()) {
 

@@ -30,10 +30,32 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.route53.AmazonRoute53;
+import com.amazonaws.services.route53.AmazonRoute53ClientBuilder;
+import com.amazonaws.services.route53.model.GetDNSSECRequest;
+import com.amazonaws.services.route53.model.GetDNSSECResult;
+import com.amazonaws.services.route53.model.HostedZone;
+import com.amazonaws.services.route53.model.ListHostedZonesByNameRequest;
+import com.amazonaws.services.route53.model.ListHostedZonesByNameResult;
+import com.amazonaws.services.route53.model.ListQueryLoggingConfigsRequest;
+import com.amazonaws.services.route53.model.ListQueryLoggingConfigsResult;
+import com.amazonaws.services.route53.model.ListResourceRecordSetsRequest;
+import com.amazonaws.services.route53.model.ListResourceRecordSetsResult;
+import com.amazonaws.services.route53.model.ResourceRecord;
+import com.amazonaws.services.route53.model.ResourceRecordSet;
+import com.amazonaws.services.route53domains.AmazonRoute53Domains;
+import com.amazonaws.services.route53domains.AmazonRoute53DomainsClientBuilder;
+import com.amazonaws.services.route53domains.model.DomainSummary;
+import com.amazonaws.services.route53domains.model.GetDomainDetailRequest;
+import com.amazonaws.services.route53domains.model.GetDomainDetailResult;
+import com.amazonaws.services.route53domains.model.ListDomainsResult;
 import com.amazonaws.services.securityhub.AWSSecurityHub;
 import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
 import com.amazonaws.services.securityhub.model.DescribeHubRequest;
 import com.amazonaws.services.securityhub.model.DescribeHubResult;
+import com.tmobile.cso.pacman.inventory.vo.Route53HostedZoneVH;
+import com.tmobile.cso.pacman.inventory.vo.Route53ResourceRecordSetVH;
+import com.tmobile.cso.pacman.inventory.vo.Route53VH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -3149,6 +3171,103 @@ public class InventoryUtil {
 
 		}
 		return securityHubMap;
+	}
+
+	public static Map<String, List<Route53VH>> fetchRoute53(BasicSessionCredentials temporaryCredentials,
+															String account, String accountName) {
+		log.info("Fetch route53 info start");
+
+		Map<String, List<Route53VH>> domainDetailsMap = new LinkedHashMap<>();
+
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + account
+				+ "\",\"Message\": \"Exception in fetching info for resource in global region\" ,\"type\": \"route53\" , ";
+		List<Route53VH> domainDetails = new ArrayList<>();
+		try {
+			AmazonRoute53Domains amazonRoute53DomainClient = AmazonRoute53DomainsClientBuilder.standard()
+					.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).build();
+			ListDomainsResult listDomains = amazonRoute53DomainClient.listDomains();
+
+			AmazonRoute53 amazonRoute53 = AmazonRoute53ClientBuilder.standard()
+					.withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).build();
+
+			for (DomainSummary domainSummary : listDomains.getDomains()) {
+				Route53VH route53VH = new Route53VH();
+				route53VH.setDomainName(domainSummary.getDomainName());
+				GetDomainDetailResult domainDetail = amazonRoute53DomainClient
+						.getDomainDetail(new GetDomainDetailRequest().withDomainName(domainSummary.getDomainName()));
+				ListHostedZonesByNameResult zonesByNameResult =
+						amazonRoute53.listHostedZonesByName(new ListHostedZonesByNameRequest()
+								.withDNSName(domainSummary.getDomainName().concat(".")));
+
+				if (!Objects.isNull(zonesByNameResult.getHostedZones()) &&
+						zonesByNameResult.getHostedZones().size() > 0) {
+					route53VH.setRoute53HostedZoneVHList(generateHostedZone(zonesByNameResult.getHostedZones(),
+							amazonRoute53));
+				}
+				if (!Objects.isNull(domainDetail)) {
+					route53VH.setAutoRenew(domainDetail.getAutoRenew());
+					route53VH.setExpirationDate(domainDetail.getExpirationDate());
+					route53VH.setStatusList(String.join(",", domainDetail.getStatusList()));
+					route53VH.setRegistrantPrivacy(domainDetail.getRegistrantPrivacy());
+					domainDetails.add(route53VH);
+				}
+			}
+			if (!domainDetails.isEmpty()) {
+				domainDetailsMap.put(account + delimiter + accountName, domainDetails);
+			}
+		} catch (Exception e) {
+			log.warn(expPrefix + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+			ErrorManageUtil.uploadError(account, org.apache.commons.lang3.StringUtils.EMPTY, "route53",
+					e.getMessage());
+		}
+
+		return domainDetailsMap;
+	}
+
+	private static List<Route53HostedZoneVH> generateHostedZone(List<HostedZone> hostedZones, AmazonRoute53 amazonRoute53) {
+		List<Route53HostedZoneVH> hostedZoneVHList = new ArrayList<>();
+		for (HostedZone hostedZone : hostedZones) {
+			String hostedZoneId = hostedZone.getId().replace("/hostedzone/", "");
+
+			Route53HostedZoneVH hostedZoneVH = new Route53HostedZoneVH();
+			hostedZoneVH.setHostedZoneId(hostedZoneId);
+			hostedZoneVH.setName(hostedZone.getName());
+			GetDNSSECResult dnssecResult = amazonRoute53.getDNSSEC(new GetDNSSECRequest()
+					.withHostedZoneId(hostedZoneId));
+			hostedZoneVH.setServeSignatureStatus(dnssecResult.getStatus().getServeSignature());
+
+			ListQueryLoggingConfigsResult listQueryLoggingConfigsResult = amazonRoute53
+					.listQueryLoggingConfigs(new ListQueryLoggingConfigsRequest().withHostedZoneId(hostedZoneId));
+			hostedZoneVH.setQueryLoggingConfigSize(listQueryLoggingConfigsResult.getQueryLoggingConfigs().size());
+
+			ListResourceRecordSetsResult recordSetsResult = amazonRoute53.listResourceRecordSets(
+					new ListResourceRecordSetsRequest().withHostedZoneId(hostedZoneId));
+			hostedZoneVH.setResourceRecordSetVHList(generateResourceRecordSetVHList(recordSetsResult));
+			while (recordSetsResult.getIsTruncated() && hostedZoneVH.getResourceRecordSetVHList().size() > 0) {
+				recordSetsResult = amazonRoute53.listResourceRecordSets(
+						new ListResourceRecordSetsRequest().withHostedZoneId(hostedZoneId)
+								.withStartRecordName(recordSetsResult.getNextRecordName()));
+				hostedZoneVH.getResourceRecordSetVHList().addAll(generateResourceRecordSetVHList(recordSetsResult));
+			}
+
+			hostedZoneVHList.add(hostedZoneVH);
+		}
+		return hostedZoneVHList;
+	}
+
+	private static List<Route53ResourceRecordSetVH> generateResourceRecordSetVHList(ListResourceRecordSetsResult recordSetsResult) {
+		List<Route53ResourceRecordSetVH> resourceRecordSetVHList = new ArrayList<>();
+		for (ResourceRecordSet set : recordSetsResult.getResourceRecordSets()) {
+			Route53ResourceRecordSetVH resourceRecordSetVH = new Route53ResourceRecordSetVH();
+			resourceRecordSetVH.setResourceRecords(set.getResourceRecords().stream().map(ResourceRecord::getValue)
+					.collect(Collectors.joining(",")));
+			resourceRecordSetVH.setName(set.getName());
+			resourceRecordSetVH.setTtl(String.valueOf(set.getTTL()));
+			resourceRecordSetVH.setType(set.getType());
+
+			resourceRecordSetVHList.add(resourceRecordSetVH);
+		}
+		return resourceRecordSetVHList;
 	}
 	
 	/**
