@@ -1,0 +1,37 @@
+name: MYSQL-REVIEW
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7  
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: pacmandata
+        ports:
+            - '8888:3306'
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v1
+      - name: executing sql script
+        run:  |
+          echo "Fresh install"
+          echo "execute DB.sql.sql "
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB.sql
+          echo "execute DB_Policy.sql"
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB_Policy.sql
+          echo "execute DB_Cognito.sql"
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB_Cognito.sql
+          echo "execute DB_Azure_AD.sql"
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB_Azure_AD.sql
+          echo "Redeploy"
+          echo "execute DB.sql.sql "
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB.sql
+          echo "execute DB_Policy.sql"
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB_Policy.sql
+          echo "execute DB_Cognito.sql"
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB_Cognito.sql
+          echo "execute DB_Azure_AD.sql"
+          mysql -h 127.0.0.1 --port 8888 -uroot -ppassword < installer/resources/pacbot_app/files/DB_Azure_AD.sql
