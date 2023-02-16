@@ -579,5 +579,5 @@ public interface AssetRepository {
 
     public Set<String> getMandatoryTags(String serviceName);
 
-    List<String> getValuesListForTag(String aseetGroupName, String tagName) throws DataException;
+    List<String> getValuesListForTag(String aseetGroupName, String tagName,String type) throws DataException;
 }

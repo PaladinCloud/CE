@@ -250,7 +250,7 @@ export class AssetGroupsComponent implements AfterViewInit, OnDestroy {
 
     const queryParams = {
       'ag': groupName,
-      'userId': userId.split(".")[0]
+      'userId': userId
     };
 
     if (queryParams['ag'] !== undefined) {

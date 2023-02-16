@@ -30,6 +30,7 @@ import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-b
 import { AdminService } from "src/app/pacman-features/services/all-admin.service";
 import { PermissionGuardService } from "src/app/core/services/permission-guard.service";
 import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 
 @Component({
   selector: "app-policy-knowledgebase-details",
@@ -299,8 +300,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     this.createdDate = this.utils.calculateDateAndTime(data.createdDate, true);
     this.modifiedDate = this.utils.calculateDateAndTime(data.modifiedDate, true);
 
-    this.selectedCategory = data.category == "Governance" ? "Operations" : data.policyCategory;
-    this.selectedSeverity = data.severity;
+    this.selectedCategory = data.category == "Governance" ? "Operations" : this.uppercasefirst(data.category);
+    this.selectedSeverity = this.uppercasefirst(data.severity);
     this.userId = data.userId;
 
     if (policyParams.hasOwnProperty('pac_ds')) {
@@ -316,12 +317,9 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       if (policyParams.params instanceof Array) {
         for (let i = policyParams.params.length - 1; i >= 0; i -= 1) {
           if (policyParams.params[i].key == 'severity') {
-            this.selectedSeverity = this.uppercasefirst(policyParams.params[i].value);
             policyParams.params.splice(i, 1);
             continue;
           } else if (policyParams.params[i].key == 'policyCategory') {
-            this.selectedCategory = this.uppercasefirst(policyParams.params[i].value);
-            this.selectedCategory = policyParams.params[i].value == "Governance" ? "Operations" : this.selectedCategory;
             policyParams.params.splice(i, 1);
             continue;
           } else if (policyParams.params[i].key == 'policyType') {
@@ -359,7 +357,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
 
     this.policyType = this.policyDetails.policyType;
     if (this.policyDetails.assetGroup !== '') {
-      this.assetGroup = this.uppercasefirst(this.policyDetails.assetGroup);
+      this.assetGroup = DATA_MAPPING[this.policyDetails.assetGroup]?DATA_MAPPING[this.policyDetails.assetGroup]:this.uppercasefirst(this.policyDetails.assetGroup);
     }
     if (this.policyType === 'Federated') {
       this.policyJarFileName = this.policyDetails.policyExecutable;
