@@ -113,7 +113,7 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/VPC_firewall_SSH_port_22_should_not_be_publicly_accessible",
     "status": "ENABLED",
     "userId": "ASGC",
-    "policyDisplayName": "Deny Public Access to RDP Port 3389",
+    "policyDisplayName": "Deny Public Access to SSH Port 22",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
     "severity": "critical",
