@@ -31,7 +31,9 @@
                     [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                     [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
                     [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
-                    [searchQuery]="searchTxt" (downloadClicked)="handlePopClick()" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn">
+                    [searchQuery]="searchTxt" (downloadClicked)="handlePopClick()" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn"
+                    [showFilterBtn]="true" [doLocalFilter]="true" [doLocalSearch]="true"
+                    [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters">
                 </app-table>
             </mat-grid-tile>
         </mat-grid-list>

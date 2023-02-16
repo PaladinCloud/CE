@@ -34,8 +34,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() onScrollDataLoader: Subject<any>;
   @Input() totalRows = 0;
   @Input() tableScrollTop;
-  @Input() doLocalSearch = false; // should remove this once we get tiles data from backend.
+  @Input() doLocalSearch = false;
   @Input() doLocalSort = true;
+  @Input() doLocalFilter = false;
   @Input() tableDataLoaded;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() cellSelectEventEmitter = new EventEmitter();
@@ -95,8 +96,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allSelected=false;
     }
-    if(this.searchQuery && this.doLocalSearch){
-      this.customSearch(this.searchQuery);
+    if(this.doLocalSearch && this.dataSource?.data?.length){
+      this.customSearch();
     }
     if(this.onScrollDataLoader){
       this.onScrollDataLoader.subscribe(data => {
@@ -111,6 +112,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    
     if(this.customTable && changes.tableScrollTop && changes.tableScrollTop.currentValue!=undefined){      
       this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
     }
@@ -135,10 +137,16 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         this.filteredArray.splice(i, 1);
       }
     })    
+      
+      if(this.doLocalSearch && this.dataSource?.data?.length){
+      this.customSearch();
+    }else{
+
     this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
-    this.chips.splice(2);
-    this.totalChips = this.filteredArray.length;
-    this.addFilter();
+      this.chips.splice(2);
+      this.totalChips = this.filteredArray.length;
+      this.addFilter();
+    }
   }
 
   ngAfterViewInit(): void { 
@@ -222,7 +230,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
       data: this.data,
-      col: col
+      col: col,
+      filters: this.filteredArray,
+      searchTxt: this.searchQuery
     }
     this.rowSelectEventEmitter.emit(event);
   }
@@ -283,16 +293,25 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.filteredArray[currIdx].filterValue = e;  
     this.filteredArray[currIdx].value = e;  
 
-    let event = {
-      index: currIdx,
-      filterKeyDisplayValue: this.filteredArray[currIdx].keyDisplayValue,
-      filterValue: this.filteredArray[currIdx].filterValue
-    }
+    if(this.doLocalFilter){
+      this.customSearch();
+    }else{
+      let event = {
+        index: currIdx,
+        filterKeyDisplayValue: this.filteredArray[currIdx].keyDisplayValue,
+        filterValue: this.filteredArray[currIdx].filterValue
+      }
 
       this.selectedFilter.emit(event);
+    }
   }
 
-  onSelectFilterType(e, i){      
+  onSelectFilterType(e, i){  
+    if(this.doLocalFilter){
+      this.filteredArray[i].key = e;
+      this.filteredArray[i].keyDisplayValue = e; 
+      this.filteredArray[i].value = undefined;
+    }else{ 
     let key = _.find(this.filterTypeOptions, {
         optionName: e,
       })["optionValue"];
@@ -303,6 +322,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.filteredArray[i].value = undefined;
     this.filteredArray[i].filterValue = "";
     this.selectedFilterType.emit(e);
+    }
   }
 
   addFilter(){
@@ -319,6 +339,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.filteredArray.splice(i, 1);
       return;
     }
+
+    if(this.doLocalFilter){
+      this.filteredArray.splice(i, 1);
+      this.customSearch();
+      return;
+    }
     let event = {
       index: i,
     }
@@ -326,6 +352,11 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   removeAllFilters(){
+    if(this.doLocalFilter){
+      this.filteredArray = [];
+      this.customSearch();
+      return;
+    }
     let event = {
       clearAll: true,
     }
@@ -333,59 +364,81 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   customFilter(){
-
     this.tableErrorMessage = '';
-    this.dataSource.data = this.mainDataSource.data.filter((item) => {
-      for(const i in this.filteredArray){
+    this.dataSource.data = this.dataSource.data.filter((item) => {
+      for(let i=0; i<this.filteredArray.length; i++){
         const filterObj = this.filteredArray[i];
         
-        const col = filterObj.filter;
-        const searchTxt = filterObj.filterText;
+        const col = filterObj.keyDisplayValue;
+        const searchTxt = filterObj.filterValue;
         
-        if(!String(item[col]).toLowerCase().match(searchTxt.toLowerCase())){
-          return false;
+        if(col && searchTxt){
+          if(!String(item[col].valueText).toLowerCase().match(searchTxt.toLowerCase())){
+            return false;
+          }
+        }else{
+          this.filteredArray.splice(i, 1);
         }
       }
       return true;
     })
 
     if(this.dataSource.data.length==0){
-      this.tableErrorMessage = 'noSearchFound';
+      this.tableErrorMessage = 'noDataAvailable';
     }
+
+    this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
+    this.chips.splice(2);
+    this.totalChips = this.filteredArray.length;
+    this.totalRows = this.dataSource.data.length;
+    this.addFilter();
   }
 
-  customSearch(searchTxt){    
-    let columnsToSearchIN = this.searchInColumns.value;
-    if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
-      columnsToSearchIN = this.whiteListColumns;
-    }   
-    this.dataSource.data = this.mainDataSource.data.filter((item) => {
-      for(const i in columnsToSearchIN) {
-        const col = columnsToSearchIN[i];
-        if(String(item[col].valueText).toLowerCase().match(searchTxt)){
-          return true;
+  customSearch(){ 
+    const searchTxt = this.searchQuery;
+
+    // if(searchTxt){
+    
+      let columnsToSearchIN = this.searchInColumns.value;
+      if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
+        columnsToSearchIN = this.whiteListColumns;
+      }   
+      // whenever search or filter is called, we perform search first and then filter and thus we take maindatasource here for search
+      this.dataSource.data = this.mainDataSource.data.filter((item) => {
+        for(const i in columnsToSearchIN) {
+          const col = columnsToSearchIN[i];
+          if(String(item[col].valueText).toLowerCase().match(searchTxt)){
+            return true;
+          }
         }
+        return false;
+      })
+      if(this.dataSource.data.length==0){
+        this.tableErrorMessage = 'noDataAvailable';
       }
-      return false;
-    })
+      this.totalRows = this.dataSource.data.length;
+    // }
 
-    this.totalRows = this.dataSource.data.length;
 
-    if(this.dataSource.data.length==0){
-      this.tableErrorMessage = 'noSearchFound';
+    if(this.doLocalFilter){
+      this.customFilter();
     }
+
+    
   }
 
   handleSearch(event){ 
     let searchTxt = event.target.value.toLowerCase();
+    this.searchQuery = searchTxt;
     
     if (event.keyCode === 13 || searchTxt=='') {
       // this.customTable.first.nativeElement.scrollTop = 0;
       this.tableErrorMessage = '';
       if(this.doLocalSearch){
-        this.customSearch(searchTxt);
+        this.customSearch();
+      }else{
+        this.searchCalledEventEmitter.emit(searchTxt);
       }
-      this.searchCalledEventEmitter.emit(searchTxt);
     }
   }
 
@@ -393,10 +446,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.searchQuery = "";
     if(this.tableErrorMessage == 'noSearchFound') this.tableErrorMessage = "";
     if(this.doLocalSearch){
-      this.dataSource.data = this.mainDataSource.data;
-      this.totalRows = this.dataSource.data.length;
+      this.customSearch();
+    }else{
+      this.searchCalledEventEmitter.emit(this.searchQuery);
     }
-    this.searchCalledEventEmitter.emit(this.searchQuery);
   }
 
   announceSortChange(sort:any) {
@@ -404,8 +457,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.direction = sort.direction;
     if(this.doLocalSort){
       this.customSort(this.headerColName, this.direction);
+    }else{
+      this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
     }
-    this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
+      
   }
 
     customSort(columnName, direction){    

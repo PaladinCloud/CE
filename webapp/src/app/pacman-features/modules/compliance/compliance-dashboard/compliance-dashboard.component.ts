@@ -68,7 +68,7 @@ export class ComplianceDashboardComponent implements OnInit {
   complianceTableData: any = [];
   currentFilterType;
   filterTypeLabels = [];
-  filterTagLabels = [];
+  filterTagLabels = {};
   filterTypeOptions: any = [];
   filters: any = [];
   filterTagOptions: any = [];
@@ -451,6 +451,11 @@ export class ComplianceDashboardComponent implements OnInit {
     this.searchTxt = state?.searchTxt || '';
     this.tableScrollTop = state?.tableScrollTop;    
     this.totalRows = state.totalRows || 0;
+    this.filters = state?.filters || [];
+
+    if(this.filters){
+      this.getFiltersData(this.complianceTableData);
+    }
 
     if(this.complianceTableData && this.complianceTableData.length>0){        
       this.isStatePreserved = true;
@@ -930,6 +935,19 @@ export class ComplianceDashboardComponent implements OnInit {
         }
       });
   }
+  
+  getFiltersData(data){
+    this.filterTypeLabels = [];
+    this.filterTagLabels = {};
+    this.whiteListColumns.forEach(column => {
+      this.filterTypeLabels.push(column);
+      const set = new Set();
+      data.forEach(row => {
+        set.add(row[column].valueText);
+      });
+      this.filterTagLabels[column] = Array.from(set);
+    });
+  }
 
   getData() {
     if(!this.selectedAssetGroup || !this.selectedDomain){
@@ -962,6 +980,7 @@ export class ComplianceDashboardComponent implements OnInit {
             const updatedResponse = this.massageData(response.data.response);
             const processedData = this.processData(updatedResponse);
             this.complianceTableData = processedData;
+            this.getFiltersData(this.complianceTableData);
             this.tableDataLoaded = true;
             if (this.complianceTableData.length === 0) {
               this.totalRows = 0;
@@ -1034,8 +1053,9 @@ export class ComplianceDashboardComponent implements OnInit {
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
       bucketNumber: this.bucketNumber,
-      searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop
+      searchTxt: event.searchTxt,
+      tableScrollTop: event.tableScrollTop,
+      filters: event.filters
       // filterText: this.filterText
     }
     this.storeState(state);
