@@ -1,24 +1,14 @@
-/*******************************************************************************
- * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.service;
 
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.util.List;
+import java.util.Map;
 
+import com.tmobile.pacman.api.admin.domain.CognitoUserDetails;
+import com.tmobile.pacman.api.admin.domain.CreateCognitoUserDetails;
+import com.tmobile.pacman.api.admin.repository.model.CognitoUser;
+import com.tmobile.pacman.api.admin.service.AmazonCognitoConnector;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,18 +29,56 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private UserPreferencesService userPreferencesService;
-	
+
 	@Autowired
 	private UserRolesMappingRepository userRolesMappingRepository;
+
+	@Autowired
+	private AmazonCognitoConnector amazonCognitoConnector;
+
+	private static final Integer DEFAULT_CURSOR=1;
+	private static final Integer DEFAULT_LIMIT=50;
 
 	@Override
 	public List<User> getAllLoginUsers() throws PacManException {
 		return userRepository.findAll();
 	}
-	
+
+	@Override
+	public List<CognitoUser> getAllUsers(Integer cursor, Integer limit, String filter) throws PacManException {
+		if(cursor==null){
+			cursor=DEFAULT_CURSOR;
+		}
+		if(limit==null){
+			limit=DEFAULT_LIMIT;
+		}
+		return amazonCognitoConnector.listAllUsers(cursor,limit,filter);
+	}
+
+	@Override
+	public Map<String, Object> updateRoleMembership(String username, CognitoUserDetails details) {
+		return amazonCognitoConnector.updateRoleMembership(username,details);
+	}
+
+	@Override
+	public Object editStatusToUser(String username) throws PacManException {
+		return amazonCognitoConnector.enableOrDisableUser(username);
+	}
+
+	@Override
+	public Map<String, Object> createUser(CreateCognitoUserDetails details) throws PacManException {
+		return amazonCognitoConnector.createUser(details);
+	}
+
+	@Override
+	public Map<String, Object> deleteUser(String username) throws PacManException {
+		return amazonCognitoConnector.removeUser(username);
+	}
+
+
 	@Override
 	public UserDetails getUserByEmailId(final String emailId) throws PacManException {
 		User user;
@@ -90,7 +118,7 @@ public class UserServiceImpl implements UserService {
 				userDetails.setEmail(user.getEmail());
 				userDetails.setDefaultAssetGroup(userPreferences.getDefaultAssetGroup());
 			}
-		} catch (Exception eception) {
+		} catch (Exception exception) {
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED);
 		}
 		return userDetails;
