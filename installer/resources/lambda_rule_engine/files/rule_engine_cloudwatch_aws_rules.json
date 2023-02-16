@@ -36,7 +36,7 @@
     "policyDisplayName": "Enable AWS Guard Duty Service across all regions and accounts",
     "createdDate": "2018-01-19",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "operations"
   },
   {
@@ -56,7 +56,7 @@
     "policyDisplayName": "Remove inactive IAM users after 90 days",
     "createdDate": "2018-02-13",
     "modifiedDate": "2018-02-13",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -125,7 +125,7 @@
     "policyName": "Ec2StoppedInstanceForLong",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"cost\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -136,8 +136,8 @@
     "policyDisplayName": "Ensure that EC2 instances are not Left in a Stopped State",
     "createdDate": "2017-08-29",
     "modifiedDate": "2018-11-12",
-    "severity": "high",
-    "category": "cost"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "Ec2WithPublicAccessNonWebPorts80_version-1_Ec2WithPublicAccessNonWebPort80_ec2",
@@ -236,7 +236,7 @@
     "policyDisplayName": "Restrict Access to Guard Duty Findings on EC2 Instance",
     "createdDate": "2018-02-12",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -256,7 +256,7 @@
     "policyDisplayName": "Set the Rotation Period of IAM Access Key to 90 Days",
     "createdDate": "2017-08-30",
     "modifiedDate": "2018-01-05",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -316,7 +316,7 @@
     "policyDisplayName": "Deny Administrative Permissions to Lambda Functions",
     "createdDate": "2018-02-15",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -336,7 +336,7 @@
     "policyDisplayName": "Restrict full IAM Access to Non-Admin IAM Roles",
     "createdDate": "2017-08-31",
     "modifiedDate": "2018-02-09",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -345,7 +345,7 @@
     "policyName": "ApiWithNonStandardRule",
     "targetType": "api",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_ApiWithNonStandardRule_api\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"api\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_api_resource_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_ApiWithNonStandardRule_api\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"api\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_api_resource_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -356,8 +356,8 @@
     "policyDisplayName": "Assign Standard Region to API Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_AppelbWithNonStandardRule_appelb",
@@ -365,7 +365,7 @@
     "policyName": "AppelbWithNonStandardRule",
     "targetType": "appelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_AppelbWithNonStandardRule_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_app_elb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_AppelbWithNonStandardRule_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_app_elb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -376,8 +376,8 @@
     "policyDisplayName": "Assign Standard Region to Appelb Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_DynamodbWithNonStandardRule_dynamodb",
@@ -385,7 +385,7 @@
     "policyName": "DynamodbWithNonStandardRule",
     "targetType": "dynamodb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_DynamodbWithNonStandardRule_dynamodb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"dynamodb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_dynamodb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_DynamodbWithNonStandardRule_dynamodb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"dynamodb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_dynamodb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -396,8 +396,8 @@
     "policyDisplayName": "Assign Standard Region to Dynamodb",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_EfsWithNonStandardRule_efs",
@@ -405,7 +405,7 @@
     "policyName": "EfsWithNonStandardRule",
     "targetType": "efs",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_EfsWithNonStandardRule_efs\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"efs\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_efs_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_EfsWithNonStandardRule_efs\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"efs\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_efs_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -416,8 +416,8 @@
     "policyDisplayName": "Assign Standard Region to EFS Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_ElasticacheWithNonStandardRule_elasticache",
@@ -425,7 +425,7 @@
     "policyName": "ElasticacheWithNonStandardRule",
     "targetType": "elasticache",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_ElasticacheWithNonStandardRule_elasticache\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticache\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticahe_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_ElasticacheWithNonStandardRule_elasticache\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticache\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticahe_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -436,8 +436,8 @@
     "policyDisplayName": "Assign Standard Region to Elasticache Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_ElasticipWithNonStandardRule_elasticip",
@@ -445,7 +445,7 @@
     "policyName": "ElasticipWithNonStandardRule",
     "targetType": "elasticip",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-elastic-ip\",\"key\":\"policyKey\"},{\"key\":\"threadsafe\",\"value\":\"true\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"fixKey\",\"value\":\"unused-elastic-ip-fix\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticip\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticip_should_not_be_there_in_non_standard_region\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-unused-elastic-ip\",\"key\":\"policyKey\"},{\"key\":\"threadsafe\",\"value\":\"true\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"fixKey\",\"value\":\"unused-elastic-ip-fix\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"low\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticip\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticip_should_not_be_there_in_non_standard_region\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -456,8 +456,8 @@
     "policyDisplayName": "Assign Standard Region to Elasticip Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_ElasticsearchWithNonStandardRule_elasticsearch",
@@ -465,7 +465,7 @@
     "policyName": "ElasticsearchWithNonStandardRule",
     "targetType": "elasticsearch",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_ElasticsearchWithNonStandardRule_elasticsearch\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_ElasticsearchWithNonStandardRule_elasticsearch\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -476,8 +476,8 @@
     "policyDisplayName": "Assign Standard Region to Elasticsearch Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_EmrWithNonStandardRule_emr",
@@ -485,7 +485,7 @@
     "policyName": "EmrWithNonStandardRule",
     "targetType": "emr",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_EmrWithNonStandardRule_emr\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_emr_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_EmrWithNonStandardRule_emr\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"emr\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_emr_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -496,8 +496,8 @@
     "policyDisplayName": "Assign Standard Region to EMR Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_EniWithNonStandardRule_eni",
@@ -505,7 +505,7 @@
     "policyName": "EniWithNonStandardRule",
     "targetType": "eni",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_EniWithNonStandardRule_eni\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"eni\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_eni_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_EniWithNonStandardRule_eni\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"eni\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_eni_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -516,8 +516,8 @@
     "policyDisplayName": "Assign Standard Region to ENI Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms",
@@ -525,7 +525,7 @@
     "policyName": "KmsWithNonStandardRule",
     "targetType": "kms",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kms\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_kms_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_KmsWithNonStandardRule_kms\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"kms\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_kms_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -536,8 +536,8 @@
     "policyDisplayName": "Assign Standard Region to KMS Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_RdsdbWithNonStandardRule_rdsdb",
@@ -545,7 +545,7 @@
     "policyName": "RdsdbWithNonStandardRule",
     "targetType": "rdsdb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_RdsdbWithNonStandardRule_rdsdb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdsdb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rdsdb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_RdsdbWithNonStandardRule_rdsdb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdsdb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rdsdb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -556,8 +556,8 @@
     "policyDisplayName": "Assign Standard Region to RDSDB Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_RedshiftWithNonStandardRule_redshift",
@@ -565,7 +565,7 @@
     "policyName": "RedshiftWithNonStandardRule",
     "targetType": "redshift",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_RedshiftWithNonStandardRule_redshift\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"redshift\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_redshift_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_RedshiftWithNonStandardRule_redshift\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"redshift\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_redshift_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -576,8 +576,8 @@
     "policyDisplayName": "Assign Standard Region to Redshift Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_VpcWithNonStandardRule_vpc",
@@ -585,7 +585,7 @@
     "policyName": "VpcWithNonStandardRule",
     "targetType": "vpc",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_VpcWithNonStandardRule_vpc\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpc\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vpc_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_VpcWithNonStandardRule_vpc\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vpc\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_vpc_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -596,8 +596,8 @@
     "policyDisplayName": "Assign Standard Region to VPC Resource",
     "createdDate": "2018-10-03",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_AsgWithNonStandardRegion_asg",
@@ -605,7 +605,7 @@
     "policyName": "AsgWithNonStandardRegion",
     "targetType": "asg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_AsgWithNonStandardRegion_asg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_asg_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_AsgWithNonStandardRegion_asg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"asg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_asg_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -616,8 +616,8 @@
     "policyDisplayName": "Assign Standard Region to ASG Resource",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_ClassicelbWithNonStandardRegion_classicelb",
@@ -625,7 +625,7 @@
     "policyName": "ClassicelbWithNonStandardRegion",
     "targetType": "classicelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_ClassicelbWithNonStandardRegion_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classicelb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_ClassicelbWithNonStandardRegion_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classicelb_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -636,8 +636,8 @@
     "policyDisplayName": "Assign Standard Region to Classic ELB Resource",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_LambdaWithNonStandardRegion_lambda",
@@ -645,7 +645,7 @@
     "policyName": "LambdaWithNonStandardRegion",
     "targetType": "lambda",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_LambdaWithNonStandardRegion_lambda\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"lambda\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_lambda_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_LambdaWithNonStandardRegion_lambda\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"lambda\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_lambda_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -656,8 +656,8 @@
     "policyDisplayName": "Assign Standard Region to Lambda",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_LaunchconfigWithNonStandardRegion_launchconfig",
@@ -665,7 +665,7 @@
     "policyName": "LaunchconfigWithNonStandardRegion",
     "targetType": "launchconfig",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_LaunchconfigWithNonStandardRegion_launchconfig\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"launchconfig\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_launchconfig_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_LaunchconfigWithNonStandardRegion_launchconfig\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"launchconfig\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_launchconfig_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -676,8 +676,8 @@
     "policyDisplayName": "Assign Standard Region to Launchconfig",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_RdsSnapshotWithNonStandardRegion_rdssnapshot",
@@ -685,7 +685,7 @@
     "policyName": "RdsSnapshotWithNonStandardRegion",
     "targetType": "rdssnapshot",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"threadsafe\",\"value\":\"true\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_RdsSnapshotWithNonStandardRegion_rdssnapshot\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdssnapshot\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rdssnapshot_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"threadsafe\",\"value\":\"true\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_RdsSnapshotWithNonStandardRegion_rdssnapshot\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"rdssnapshot\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_rdssnapshot_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -696,8 +696,8 @@
     "policyDisplayName": "Assign Standard Region to RDS Snapshot",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_ResourceWithNonStandardRule_ec2",
@@ -705,7 +705,7 @@
     "policyName": "ResourceWithNonStandardRule",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_ResourceWithNonStandardRule_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_ResourceWithNonStandardRule_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -716,8 +716,8 @@
     "policyDisplayName": "Assign Standard Region to EC2 Instance",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_S3WithNonStandardRegion_s3",
@@ -725,7 +725,7 @@
     "policyName": "S3WithNonStandardRegion",
     "targetType": "s3",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_S3WithNonStandardRegion_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_S3WithNonStandardRegion_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -736,8 +736,8 @@
     "policyDisplayName": "Assign Standard Region to S3",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_SgWithNonStandardRegion_sg",
@@ -745,7 +745,7 @@
     "policyName": "SgWithNonStandardRegion",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SgWithNonStandardRegion_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SgWithNonStandardRegion_sg\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -756,8 +756,8 @@
     "policyDisplayName": "Assign Standard Regions to Security Groups",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_SnapshotWithNonStandardRegion_snapshot",
@@ -765,7 +765,7 @@
     "policyName": "SnapshotWithNonStandardRegion",
     "targetType": "snapshot",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SnapshotWithNonStandardRegion_snapshot\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"snapshot\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_snapshot_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SnapshotWithNonStandardRegion_snapshot\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"snapshot\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_snapshot_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -776,8 +776,8 @@
     "policyDisplayName": "Assign Standard Region to Snapshot",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_SnstopicWithNonStandardRegion_snstopic",
@@ -785,7 +785,7 @@
     "policyName": "SnstopicWithNonStandardRegion",
     "targetType": "snstopic",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SnstopicWithNonStandardRegion_snstopic\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"snstopic\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_snstopic_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SnstopicWithNonStandardRegion_snstopic\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"snstopic\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_snstopic_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -796,8 +796,8 @@
     "policyDisplayName": "Assign Standard Region to SNS Topic",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_StackWithNonStandardRegion_stack",
@@ -805,7 +805,7 @@
     "policyName": "StackWithNonStandardRegion",
     "targetType": "stack",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_StackWithNonStandardRegion_stack\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"stack\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_stack_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_StackWithNonStandardRegion_stack\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"stack\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_stack_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -816,8 +816,8 @@
     "policyDisplayName": "Assign Standard Region to Stack",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_SubnetWithNonStandardRegion_subnet",
@@ -825,7 +825,7 @@
     "policyName": "SubnetWithNonStandardRegion",
     "targetType": "subnet",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SubnetWithNonStandardRegion_subnet\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subnet\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_subnet_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_SubnetWithNonStandardRegion_subnet\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subnet\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_subnet_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -836,8 +836,8 @@
     "policyDisplayName": "Assign Standard Region to Resource",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "NonStandardRegionRule_version-1_version-1_VolumeWithNonStandardRegion_volume",
@@ -845,7 +845,7 @@
     "policyName": "VolumeWithNonStandardRegion",
     "targetType": "volume",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"governance\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_VolumeWithNonStandardRegion_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_volume_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"splitterChar\",\"value\":\",\",\"encrypt\":false},{\"key\":\"policyKey\",\"value\":\"check-for-non-standard-region-rule\",\"encrypt\":false},{\"key\":\"severity\",\"value\":\"low\",\"encrypt\":false},{\"key\":\"policyCategory\",\"value\":\"operations\",\"encrypt\":false},{\"key\":\"standardRegions\",\"value\":\"us-west-2,us-east-1,us-east-2,us-west-1\",\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"NonStandardRegionRule_version-1_version-1_VolumeWithNonStandardRegion_volume\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"volume\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_volume_should_not_be_there_in_non_standard_region\",\"policyType\":\"Manage Policy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -856,8 +856,8 @@
     "policyDisplayName": "Assign Standard Region to EBS Volume",
     "createdDate": "2018-08-30",
     "modifiedDate": "2018-10-03",
-    "severity": "critical",
-    "category": "security"
+    "severity": "low",
+    "category": "operations"
   },
   {
     "policyId": "RdsSnapshotWithPublicAccess_version-1_RdsSnapshotWithPublicAccess_rdssnapshot",
@@ -933,7 +933,7 @@
     "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/aws_sg_should_not_have_anywhere_access_with_anyport",
     "status": "ENABLED",
     "userId": "ASGC",
-    "policyDisplayName": "Restrict Inbound Rules Allowing 0.0.0.0/0 for any Port.",
+    "policyDisplayName": "Restrict Inbound Rules Allowing 0.0.0.0/0 for any Port",
     "createdDate": "2017-08-11",
     "modifiedDate": "2018-11-08",
     "severity": "critical",
@@ -956,7 +956,7 @@
     "policyDisplayName": "Restrict Internet access to Security Group with SSH Port 22",
     "createdDate": "2018-10-01",
     "modifiedDate": "2018-11-02",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -985,7 +985,7 @@
     "policyName": "ServiceLimitRule",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-service-limit\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"eW7HH0l7J9\",\"key\":\"checkId\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"ServiceLimitRule_version-1_ServiceLimitRule_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_service_limit_rule\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-service-limit\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"eW7HH0l7J9\",\"key\":\"checkId\"},{\"key\":\"esServiceURL\",\"value\":\"/aws_checks/checks_resources/_search\",\"isValueNew\":true,\"encrypt\":false}],\"environmentVariables\":[],\"policyId\":\"ServiceLimitRule_version-1_ServiceLimitRule_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_service_limit_rule\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -996,8 +996,8 @@
     "policyDisplayName": "Increase AWS service limits to meet growing Needs",
     "createdDate": "2017-10-17",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
-    "category": "security"
+    "severity": "medium",
+    "category": "operations"
   },
   {
     "policyId": "TaggingRule_version-1_AppelbTaggingRule_appelb",
@@ -1116,7 +1116,7 @@
     "policyDisplayName": "Assign Mandatory Tags to EC2 Instance",
     "createdDate": "2017-11-02",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1156,7 +1156,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Elasticache",
     "createdDate": "2018-09-10",
     "modifiedDate": "2018-09-10",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1236,7 +1236,7 @@
     "policyDisplayName": "Assign Mandatory Tags to RDS Database",
     "createdDate": "2017-11-03",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1276,7 +1276,7 @@
     "policyDisplayName": "Assign Mandatory Tags to S3",
     "createdDate": "2017-11-02",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1416,7 +1416,7 @@
     "policyDisplayName": "Assign Mandatory Tags to Elastic Search Resources",
     "createdDate": "2018-08-29",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "tagging"
   },
   {
@@ -1476,8 +1476,8 @@
     "policyDisplayName": "Check for Underutilized Amazon EBS Volumes",
     "createdDate": "2018-05-14",
     "modifiedDate": "2018-09-19",
-    "severity": "critical",
-    "category": "security"
+    "severity": "high",
+    "category": "cost"
   },
   {
     "policyId": "UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift",
@@ -1496,8 +1496,8 @@
     "policyDisplayName": "Check for Underutilized Amazon Redshift Clusters",
     "createdDate": "2018-03-14",
     "modifiedDate": "2018-09-19",
-   "severity": "high",
-    "category": "security"
+    "severity": "high",
+    "category": "cost"
   },
   {
     "policyId": "UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume",
@@ -1636,7 +1636,7 @@
     "policyDisplayName": "Enable VPC Flowlogs for all VPCs",
     "createdDate": "2017-08-11",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -1645,7 +1645,7 @@
     "policyName": "ec2deprecatedinstancetype",
     "targetType": "ec2",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"m1,m2,t1,c1,c2\",\"key\":\"deprecatedInstanceType\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":false,\"value\":\"check-for-deprecated-instance-type\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ec2deperecatedinstancetype_version-1_ec2deprecatedinstancetype_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_instances_should_not_use_deprecates_instance_types\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"m1,m2,t1,c1,c2\",\"key\":\"deprecatedInstanceType\"},{\"encrypt\":false,\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":false,\"value\":\"check-for-deprecated-instance-type\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\",\",\"key\":\"splitterChar\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"isValueNew\":true,\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ec2deperecatedinstancetype_version-1_ec2deprecatedinstancetype_ec2\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_instances_should_not_use_deprecates_instance_types\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1656,8 +1656,8 @@
     "policyDisplayName": "Do Not Use Deprecated EC2 instances types to Launch Instances",
     "createdDate": "2017-08-11",
     "modifiedDate": "2018-08-31",
-    "severity": "critical",
-    "category": "security"
+    "severity": "medium",
+    "category": "operations"
   },
   {
     "policyId": "rdsdb_version-1_RdsDbPublicAccess_rdsdb",
@@ -2005,7 +2005,7 @@
     "policyName": "ACMCertificate_Expiry",
     "targetType": "acmcertificate",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-acm-certificate-expiry\",\"encrypt\":false},{\"key\":\"targetExpireDuration\",\"value\":\"90\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ACMCertificate_Expiry_For_X_Days_version-1_ACMCertificate_Expiry_acmcertificate\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_acmcertificate_expiry\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-acm-certificate-expiry\",\"encrypt\":false},{\"key\":\"targetExpireDuration\",\"value\":\"90\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ACMCertificate_Expiry_For_X_Days_version-1_ACMCertificate_Expiry_acmcertificate\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_acmcertificate_expiry\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2017,7 +2017,7 @@
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "IAMCertificate_Expiry_For_X_Days_version-1_IAMCertificate_Expiry_For_X_Days_iamcertificate",
@@ -2025,7 +2025,7 @@
     "policyName": "IAMCertificate_Expiry_For_X_Days",
     "targetType": "iamcertificate",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-iam-certificate-expiry\",\"encrypt\":false},{\"key\":\"targetExpireDuration\",\"value\":\"90\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"IAMCertificate_Expiry_For_X_Days_version-1_IAMCertificate_Expiry_For_X_Days_iamcertificate\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"iamcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_iamcertificate_expiry\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-iam-certificate-expiry\",\"encrypt\":false},{\"key\":\"targetExpireDuration\",\"value\":\"90\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"IAMCertificate_Expiry_For_X_Days_version-1_IAMCertificate_Expiry_For_X_Days_iamcertificate\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"iamcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_iamcertificate_expiry\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2037,7 +2037,7 @@
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "ELB_Access_Logs_version-1_AppLB_Access_Logs_appelb",
@@ -2045,7 +2045,7 @@
     "policyName": "AppLB_Access_Logs",
     "targetType": "appelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-access-log-for-elb\",\"encrypt\":false},{\"key\":\"accessLogBucketName\",\"value\":\"\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ELB_Access_Logs_version-1_AppLB_Access_Logs_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_appelb_access_logs\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-access-log-for-elb\",\"encrypt\":false},{\"key\":\"accessLogBucketName\",\"value\":\"\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ELB_Access_Logs_version-1_AppLB_Access_Logs_appelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"appelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_appelb_access_logs\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2057,7 +2057,7 @@
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "ELB_Access_Logs_version-1_ClassicLB_Access_Logs_classicelb",
@@ -2065,7 +2065,7 @@
     "policyName": "ClassicLB_Access_Logs",
     "targetType": "classicelb",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-access-log-for-elb\",\"encrypt\":false},{\"key\":\"accessLogBucketName\",\"value\":\"\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ELB_Access_Logs_version-1_ClassicLB_Access_Logs_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classicelb_access_logs\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-access-log-for-elb\",\"encrypt\":false},{\"key\":\"accessLogBucketName\",\"value\":\"\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ELB_Access_Logs_version-1_ClassicLB_Access_Logs_classicelb\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"classicelb\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_classicelb_access_logs\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2077,7 +2077,7 @@
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront",
@@ -2085,7 +2085,7 @@
     "policyName": "CloudFront_AccessLogs",
     "targetType": "cloudfront",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-access-log-for-cloudfront\",\"encrypt\":false},{\"key\":\"accessLogBucketName\",\"value\":\"\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfront\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_cloudfront_accesslogs\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-access-log-for-cloudfront\",\"encrypt\":false},{\"key\":\"accessLogBucketName\",\"value\":\"\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"CloudFront_AccessLogs_version-1_CloudFront_AccessLogs_cloudfront\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfront\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_cloudfront_accesslogs\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2097,7 +2097,7 @@
     "createdDate": "2019-06-10",
     "modifiedDate": "2019-06-10",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "S3AccessLogsRule_version-1_S3AccessLogsRule_s3",
@@ -2105,7 +2105,7 @@
     "policyName": "S3AccessLogsRule",
     "targetType": "s3",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-s3-access-logs\",\"encrypt\":false},{\"key\":\"esS3PubAccessIssueUrl\",\"value\":\"/aws_s3/issue_s3/_search\",\"encrypt\":false},{\"key\":\"s3PublicAccessRuleId\",\"value\":\"S3GlobalAccess_version-1_S3BucketShouldnotpubliclyaccessble_s3\",\"encrypt\":false},{\"key\":\"splitterChar\",\"value\":\",\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"fixKey\",\"value\":\"private-s3-server-access-logs-fix\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"accessLogsEnabledRegions\",\"value\":\"\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"destinationBucketForAutofix\",\"value\":\"tmo-s3-accesslog-ACCOUNT_ID-REGION-dev\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"S3AccessLogsRule_version-1_S3AccessLogsRule_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_accesslogs\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-s3-access-logs\",\"encrypt\":false},{\"key\":\"esS3PubAccessIssueUrl\",\"value\":\"/aws_s3/issue_s3/_search\",\"encrypt\":false},{\"key\":\"s3PublicAccessRuleId\",\"value\":\"S3GlobalAccess_version-1_S3BucketShouldnotpubliclyaccessble_s3\",\"encrypt\":false},{\"key\":\"splitterChar\",\"value\":\",\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"fixKey\",\"value\":\"private-s3-server-access-logs-fix\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"accessLogsEnabledRegions\",\"value\":\"\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"destinationBucketForAutofix\",\"value\":\"tmo-s3-accesslog-ACCOUNT_ID-REGION-dev\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"S3AccessLogsRule_version-1_S3AccessLogsRule_s3\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"s3\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_s3_accesslogs\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2117,7 +2117,7 @@
     "createdDate": "2019-08-05",
     "modifiedDate": "2019-08-05",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "CloudWatchEventsForAllAccounts_version-1_CloudWatchEventsForAllAccounts_account",
@@ -2125,7 +2125,7 @@
     "policyName": "CloudWatchEventsForAllAccounts",
     "targetType": "account",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-cloudwatch-event-rule\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"role/pac_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"DO-NOT-DELETE-all-events-to-eventbus-in-ACCOUNTID\",\"key\":\"policyName\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"CloudWatchEventsForAllAccounts_version-1_CloudWatchEventsForAllAccounts_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloud_watch_events\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-cloudwatch-event-rule\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"role/pac_ro\",\"key\":\"roleIdentifyingString\"},{\"encrypt\":false,\"value\":\"DO-NOT-DELETE-all-events-to-eventbus-in-ACCOUNTID\",\"key\":\"policyName\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"CloudWatchEventsForAllAccounts_version-1_CloudWatchEventsForAllAccounts_account\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"account\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_account_cloud_watch_events\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 * * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2137,7 +2137,7 @@
     "createdDate": "2019-08-05",
     "modifiedDate": "2019-08-05",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "LowUtilizationAmazonEC2InstancesRule_version-1_LowUtilizationAmazonEC2InstancesRule_ec2",
@@ -2157,7 +2157,7 @@
     "createdDate": "2019-08-05",
     "modifiedDate": "2019-08-05",
     "severity": "high",
-    "category": "governance"
+    "category": "cost"
   },
   {
     "policyId": "TaggingRule_version-1_VPNGatewayMandatoryTagging_vpngateway",
@@ -2256,7 +2256,7 @@
     "policyDisplayName": "An Ec2 instance with remotely exploitable vulnerability (S5) should not be open to internet",
     "createdDate": "2019-09-13",
     "modifiedDate": "2019-09-13",
-    "severity": "low",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -2325,7 +2325,7 @@
     "policyName": "Sg_with_memcached_port_11211_open_to_internet_access",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"11211\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_memcached_port_11211_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_memcached_port_11211\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"11211\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_memcached_port_11211_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_memcached_port_11211\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2336,7 +2336,7 @@
     "policyDisplayName": "Deny Security Group public access on Memcached port 11211",
     "createdDate": "2022-05-19",
     "modifiedDate": "2022-05-19",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -2805,7 +2805,7 @@
     "policyName": "aws_eks_secrets_should_be_encrypted_with_kms_cmks",
     "targetType": "eks",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-eks-secrets-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_eks_secret_encryption\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-eks-secrets-encryption\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"Aws_EKS_secrets_should_be_encrypted_version-1_aws_enable_secret_encryption_eks\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"eks\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_eks_secret_encryption\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2816,7 +2816,7 @@
     "policyDisplayName": "Enable Envelope Encryption for EKS Kubernetes Secrets",
     "createdDate": "2022-06-09",
     "modifiedDate": "2022-06-09",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -2985,7 +2985,7 @@
     "policyName": "Enable_CloudTrail_Global_Services",
     "targetType": "cloudtrail",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_cloudtrail_global_services\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-cloudtrail-global-services-enabled\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_CloudTrail_Global_Services_version-1_Enable_CloudTrail_Global_Services_cloudtrail\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudtrail\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_enable_cloudtrail_global_services\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2996,7 +2996,7 @@
     "policyDisplayName": "Enable CloudTrail Global Services",
     "createdDate": "2022-05-11",
     "modifiedDate": "2022-05-11",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3025,7 +3025,7 @@
     "policyName": "AWS_ACM_Certificate_Expired",
     "targetType": "acmcertificate",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-expired-acm-certificate\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ACM_Certificate_Expired_version-1_AWS_ACM_Certificate_Expired\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_check_for_expired_acm_certificate\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-expired-acm-certificate\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ACM_Certificate_Expired_version-1_AWS_ACM_Certificate_Expired\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_check_for_expired_acm_certificate\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3036,7 +3036,7 @@
     "policyDisplayName": "Delete Expired ACM Certificates",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "medium",
+    "severity": "high",
     "category": "security"
   },
   {
@@ -3045,7 +3045,7 @@
     "policyName": "Sg_with_redis_port_6379_open_to_internet_access",
     "targetType": "sg",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6379\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6379\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6379\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6379\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3056,7 +3056,7 @@
     "policyDisplayName": "Deny Security Group public access on Redis port 6379",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "high",
+    "severity": "critical",
     "category": "security"
   },
   {
@@ -3125,7 +3125,7 @@
     "policyName": "ElasticSearchDomainNodeToNodeEncryption",
     "targetType": "elasticsearch",
     "assetGroup": "aws",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-es-node-to-node-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1_ElasticSearchDomainNodeToNodeEncryption\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_domain_node_to_node_encryption\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-es-node-to-node-encrypted\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"AWS_ElasticSearch_Domain_Node_to_Node_Encryption_version-1_ElasticSearchDomainNodeToNodeEncryption\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"elasticsearch\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_elasticsearch_domain_node_to_node_encryption\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0 1/1 * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -3136,7 +3136,7 @@
     "policyDisplayName": "Encrypt OpenSearch Data in Transit",
     "createdDate": "2022-05-12",
     "modifiedDate": "2022-05-12",
-    "severity": "critical",
+    "severity": "high",
     "category": "security"
   },
   {
