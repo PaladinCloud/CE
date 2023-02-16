@@ -39,7 +39,7 @@ TRUNCATE TABLE cf_PolicyTable;
 
 /* RUle Category Weightage */
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('cost','Infra & Platforms',20);
-INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('governance','Infra & Platforms',20);
+INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('operations','Infra & Platforms',20);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('security','Infra & Platforms',50);
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('tagging','Infra & Platforms',10);
 
