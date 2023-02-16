@@ -28,10 +28,11 @@
                             [data]="tableData" [columnWidths]="columnWidths" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                             (searchCalledEventEmitter)="callNewSearch($event)"
-                            [searchQuery]="searchTxt" (nextPageCalled)="nextPage($event)" [tableErrorMessage]='errorMessage'
-                            [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="false" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
+                            [searchQuery]="searchTxt" [tableErrorMessage]='errorMessage'
+                            [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="true" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
                             [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap"
-                            [rowClickable]="false">
+                            [rowClickable]="false" [doLocalFilter]="true" [doLocalSearch]="true"
+                            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

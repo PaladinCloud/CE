@@ -12,26 +12,28 @@ class UserPoolResoures(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user_pool"
     available_args = {
-        'name': {'required': True, 'prefix': True, 'sep': '_'},
+        'name': {'required': True, 'prefix': True, 'sep': '-'},
         'lambda_config' : {
-            'required' : False,
+            'required' : True,
             'inline_args' :{
-                'post_authentication' : {'required': False},
-                'post_confirmation' : {'required':False}
+                'post_authentication' : {'required': True},
+                'post_confirmation' : {'required':True}
                 }
         },
-        'schema' : {'required': False},
-        'account_recovery_setting' :{'required': False},
-        'auto_verified_attributes' :{'required': False},
+        'schema' : {'required': True},
+        'account_recovery_setting' :{'required': True},
+        'auto_verified_attributes' :{'required': True},
         'admin_create_user_config' : {
-            'required' : False,
+            'required' : True,
             'inline_args' :{
-                'allow_admin_create_user_only' : {'required':False},
-                'invite_message_template': {'required':False},
+                'allow_admin_create_user_only' : {'required':True},
+                'invite_message_template': {'required':True},
                 'sms_message': {'required':False},
                 }
             },
-        'tags':{'required': False}
+        'username_attributes' : {'required':False},
+        'tags':{'required': True},
+        'username_configuration' : {'required': True}
         }
     description = Settings.RESOURCE_DESCRIPTION
 
@@ -44,11 +46,11 @@ class UserPoolClientResources(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user_pool_client"
     available_args = {
-        'user_pool_id' : {'required': False},
-        'name' : {'required': False},
-        'generate_secret' : {'required': False},
+        'user_pool_id' : {'required': True},
+        'name' : {'required': True},
+        'generate_secret' : {'required': True},
         'allowed_oauth_flows_user_pool_client' :{'required': False},
-        'allowed_oauth_flows' : {'required': False},
+        'allowed_oauth_flows' : {'required': False },
         'supported_identity_providers' : {'required': False},
         'allowed_oauth_scopes' : {'required': False},
         'callback_urls' : {'required': False},
@@ -66,9 +68,9 @@ class ServerPoolResource(TerraformResource):
     """
     resource_instance_name = 'aws_cognito_resource_server'
     available_args = {
-        'user_pool_id' : {'required': False},
-        'name' : {'required': False},
-        'identifier' : {'required': False},
+        'user_pool_id' : {'required': True},
+        'name' : {'required': True},
+        'identifier' : {'required': True},
         'allowed_oauth_flows' : {'required': False},
         'scope' :{
             'required' : False,
@@ -89,8 +91,8 @@ class UserPoolDomain(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user_pool_domain"
     available_args = {
-        'user_pool_id' : {'required': False},
-        'domain' : {'required': False},
+        'user_pool_id' : {'required': True},
+        'domain' : {'required': True},
     }
 
 class CreateUserPool(TerraformResource):
@@ -103,9 +105,9 @@ class CreateUserPool(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user"
     available_args = {
-        'user_pool_id' : {'required': False},
-        'username' : {'required': False},
-        'attributes' :{'required': False},
+        'user_pool_id' : {'required': True},
+        'username' : {'required': True},
+        'attributes' :{'required': True},
         'lifecycle' : {'required': False}
     }
 
@@ -120,8 +122,8 @@ class CreateGroupPool(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user_group"
     available_args = {
-        'user_pool_id' : {'required': False},
-        'name' : {'required': False},
+        'user_pool_id' : {'required': True},
+        'name' : {'required': True},
     }
     description = Settings.RESOURCE_DESCRIPTION
 
@@ -136,9 +138,9 @@ class AddUserinGroup(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user_in_group"
     available_args = {
-        'user_pool_id' : {'required': False},
-        'username' : {'required': False},
-        'group_name' : {'required': False}
+        'user_pool_id' : {'required': True},
+        'username' : {'required': True},
+        'group_name' : {'required': True}
      }
 
 class UiCognito(TerraformResource):
@@ -151,7 +153,25 @@ class UiCognito(TerraformResource):
     """
     resource_instance_name = "aws_cognito_user_pool_ui_customization"
     available_args = {
-        'user_pool_id' : {'required': False},
+        'user_pool_id' : {'required': True},
         'css' : {'required': False},
         'image_file' : {'required': False}
+     }
+
+
+class IdentityProvider(TerraformResource):
+    """
+    Base resource class for Terraform AWS server cognito user ino cognito group resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_cognito_identity_provider"
+    available_args = {
+        'user_pool_id' : {'required': True},
+        'provider_name' : {'required': True},
+        'provider_type' : {'required': True},
+        'provider_details' : {'required': False},
+        'attribute_mapping' : {'required': False},
      }
