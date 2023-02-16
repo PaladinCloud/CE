@@ -611,9 +611,6 @@ UPDATE cf_PolicyTable SET severity = 'critical', policyParams = '{\"params\":[{\
 UPDATE cf_PolicyTable SET severity = 'critical', policyParams = '{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-security-group-global-access\",\"encrypt\":false},{\"key\":\"cidrIp\",\"value\":\"0.0.0.0/0\",\"encrypt\":false},{\"key\":\"esSgRulesUrl\",\"value\":\"/aws_sg/sg_rules/_search\",\"encrypt\":false},{\"key\":\"portToCheck\",\"value\":\"6379\",\"encrypt\":false},{\"key\":\"cidripv6\",\"value\":\"::/0\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access\",\"autofix\":false,\"alexaKeyword\":\"Sg_with_redis_port_6379_open_to_internet_access\",\"policyRestUrl\":\"\",\"targetType\":\"sg\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_sg_should_not_have_public_access_to_redis_port_6379\",\"policyType\":\"ManagePolicy\"}' WHERE policyId = 'SGWithAnywhereAccess_version-1_Sg_with_redis_port_6379_open_to_internet_access';
 
 
-UPDATE cf_PolicyCategoryWeightage set policyCategory = 'cost' where policyCategory = 'costOptimization';
-UPDATE cf_PolicyCategoryWeightage set policyCategory = 'operations' where policyCategory = 'governance';
-
 /* Updating display name can be removed in future  */
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Encryption for EKS Kubernetes Secrets using Envelope Encryption' WHERE policyId = 'AWS_eks_cluster_encryption_enabled_version-1_enable_cluster_encryption_eks';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Update EKS Cluster Version to Latest' WHERE policyId = 'AWS_eks_cluster_version_upgrade_version-1_update_cluster_version_eks';
@@ -624,11 +621,10 @@ UPDATE cf_PolicyTable SET policyDisplayName = 'Ensure that Ports associated with
 UPDATE cf_PolicyTable SET policyDisplayName = 'Ensure that Ports associated with Security Group and ELB are same' WHERE policyId = 'AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_classicelb';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Ensure encryption is enabled for AWS EFS file systems to protect your data at rest.' WHERE policyId = 'Aws_EFS_should_be_encrypted_version-1_aws_enable_encryption_efs';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to Data Migration Service' WHERE policyId = 'Aws_dms_should_not_be_publicly_accessible_version-1_aws_public_access_dms';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to Data Migration Service' WHERE policyId = 'AzureAuditStorageVnetIntegration_version-1_AuditStorageVnetIntegration_storageaccount';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to Data Migration Service' WHERE policyId = 'Azure_Account_Create_Update_Azure_SQL_Database_log_alert';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to Data Migration Service' WHERE policyId = 'Azure_Account_Delete_Azure_SQL_Database_log_alert';
-UPDATE cf_PolicyTable SET policyDisplayName = 'Deny Public Access to Data Migration Service' WHERE policyId = 'Azure_Account_Create_Update_Azure_SQL_Database_log_alert;
-UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Delete SQL Database Log Alert' WHERE policyId = 'Azure_Account_Delete_Azure_SQL_Database_log_alert';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Check Storage VNet Integration' WHERE policyId = 'AzureAuditStorageVnetIntegration_version-1_AuditStorageVnetIntegration_storageaccount';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Log Alert for Create/Update SQL DB' WHERE policyId = 'Azure_Account_Create_Update_Azure_SQL_Database_log_alert';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Log Alert for Delete SQL DB' WHERE policyId = 'Azure_Account_Delete_Azure_SQL_Database_log_alert';
+UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Log Alert for Create/Update SQL DB' WHERE policyId = 'Azure_Account_Create_Update_Azure_SQL_Database_log_alert';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Azure Storage Account Customer-Managed Key' WHERE policyId = 'Azure_Enable_CMK_Encryption_For_Storage_Account_version-1_storageaccount';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Create AWS KMS Customer Master Key for Database-Tier' WHERE policyId = 'Azure_Enable_Database_Tier_Customer_Managed_Key';
 UPDATE cf_PolicyTable SET policyDisplayName = 'Enable Web Tier Customer-Managed Key' WHERE policyId = 'Azure_Enable_Web_Tier_Customer_Managed_Key';
