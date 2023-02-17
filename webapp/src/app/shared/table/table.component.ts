@@ -370,10 +370,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         const filterObj = this.filteredArray[i];
         
         const col = filterObj.keyDisplayValue;
-        const searchTxt = filterObj.filterValue;
+        const searchTxt = String(filterObj.filterValue);
         
         if(col && searchTxt){
-          if(!String(item[col].valueText).toLowerCase().match(searchTxt.toLowerCase())){
+          if(!(String(item[col].valueText).toLowerCase()==searchTxt.toLowerCase())){
             return false;
           }
         }else{
@@ -385,19 +385,17 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
     if(this.dataSource.data.length==0){
       this.tableErrorMessage = 'noDataAvailable';
+    }else{
+      this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
+      this.chips.splice(2);
+      this.totalChips = this.filteredArray.length;
+      this.totalRows = this.dataSource.data.length;
+      this.addFilter();
     }
-
-    this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
-    this.chips.splice(2);
-    this.totalChips = this.filteredArray.length;
-    this.totalRows = this.dataSource.data.length;
-    this.addFilter();
   }
 
   customSearch(){ 
     const searchTxt = this.searchQuery;
-
-    // if(searchTxt){
     
       let columnsToSearchIN = this.searchInColumns.value;
       if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
@@ -417,8 +415,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         this.tableErrorMessage = 'noDataAvailable';
       }
       this.totalRows = this.dataSource.data.length;
-    // }
-
 
     if(this.doLocalFilter){
       this.customFilter();
@@ -474,7 +470,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
 
-      // Till we add server side sorting
       let elementA =a[this.headerColName]&&a[this.headerColName].valueText?a[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
       let elementB =b[this.headerColName]&&b[this.headerColName].valueText?b[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
 

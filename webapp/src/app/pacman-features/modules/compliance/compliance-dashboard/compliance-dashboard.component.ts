@@ -940,12 +940,14 @@ export class ComplianceDashboardComponent implements OnInit {
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
     this.whiteListColumns.forEach(column => {
-      this.filterTypeLabels.push(column);
-      const set = new Set();
-      data.forEach(row => {
-        set.add(row[column].valueText);
-      });
-      this.filterTagLabels[column] = Array.from(set);
+      if(column!='Compliance' && column!='Violations'){
+        this.filterTypeLabels.push(column);
+        const set = new Set();
+        data.forEach(row => {
+          set.add(row[column].valueText);
+        });
+        this.filterTagLabels[column] = Array.from(set);
+      }
     });
   }
 
