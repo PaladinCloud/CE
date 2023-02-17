@@ -973,3 +973,6 @@ UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wi
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#deny-public-access-to-non-allow-listed-sqs-resources' where policyId='SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AZURE-Policy#enable-trusted-microsoft-services-to-access-storage-account' where policyId='trusted_ms_services_access_storage_account';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#deny-lambda-privilege-to-non-allow-listed-iam-roles' where policyId='UnapprovedIamRoleWithLambdaAccess_version-1_UnapprovedIamRoleLambdaAccess_iamrole';
+
+UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#ensure-that-all-cloudwatch-events-from-all-accounts-are-sent-to-the-dedicated-accountid-default-event-bus' where policyId='CloudWatchEventsForAllAccounts_version-1_CloudWatchEventsForAllAccounts_account';
+UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AZURE-Policy#enable-the-vulnerability-assessment-periodic-recurring-scans' where policyId='Enable_Vulnerability_Assessment_Periodic_Recurring_Scans';
