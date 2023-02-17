@@ -945,8 +945,10 @@ UPDATE cf_PolicyTable set policyDisplayname = 'Downsize EC2 Instances with Low U
 UPDATE cf_PolicyTable set policyDisplayname = 'Deny Public access to Non-Allow listed SQS Resources' where policyId='SQS_Public_Access_Rule_version-1_SQS_Public_access_rule_sqs';
 UPDATE cf_PolicyTable set policyDisplayname = 'Configure ''Send Scan Report to'' within Vulnerability Assessment under SQL Server' where policyId='Send_Scan_Reports_Should_Be_Configured';
 UPDATE cf_PolicyTable set policyDisplayname = 'Delete Unused EBS Volumes' where policyId='UnusedEBSRule_version-1_UnusedEbsRule_volume';
+
+
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AZURE-Policy#restrict-network-ports-on-network-security-groups-associated-to-vm' where policyId='Access_Through_Internet_version-1_AIE_virtualmachine';
-UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#ensure-the-validity-of-security-group-reference-in-the-launch-config-' where policyId='AwsAsgInactiveSecurityGroup_version-1_AwsAsgInactiveSecurityGroup_asg';
+UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#ensure-the-validity-of-security-group-reference-in-the-launch-config' where policyId='AwsAsgInactiveSecurityGroup_version-1_AwsAsgInactiveSecurityGroup_asg';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#ensure-that-ports-associated-with-security-group-and-elb-are-same' where policyId='AwsElbWithUnrestrictedSecurityGroup_version-1_AwsElbWithUnrestrictedSecurityGroup_classicelb';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#configure-aws-backup-vault-access-policy' where policyId='AwsVaultMissingAccessPolicy_version-1_AwsVaultMissingAccessPolicy_backupvault';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/AWS-Policy#remove-any-vpc-peering-connections-to-non-allowlisted-aws-accounts' where policyId='AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection';
