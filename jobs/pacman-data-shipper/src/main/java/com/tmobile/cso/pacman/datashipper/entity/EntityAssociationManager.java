@@ -15,18 +15,6 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.datashipper.entity;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -41,6 +29,18 @@ import com.tmobile.cso.pacman.datashipper.config.CredentialProvider;
 import com.tmobile.cso.pacman.datashipper.error.ErrorManager;
 import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
+import com.tmobile.cso.pacman.datashipper.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The Class ChildTableDataCollector.
@@ -73,39 +73,50 @@ public class EntityAssociationManager implements Constants {
      * @return the list
      */
     public List<Map<String, String>> uploadAssociationInfo(String dataSource,String type) {
-        LOGGER.info("Started EntityAssociationDataCollector for {}",type);
-        List<Map<String,String>> errorList = new ArrayList<>();
+        LOGGER.info("Started EntityAssociationDataCollector for {}", type);
+        List<Map<String, String>> errorList = new ArrayList<>();
         AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(
-                        new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account,s3Role))).withRegion(s3Region).build();
+                new AWSStaticCredentialsProvider(new CredentialProvider().getCredentials(s3Account, s3Role))).withRegion(s3Region).build();
         ObjectMapper objectMapper = new ObjectMapper();
-      
+
+        String indexName = null;
         try {
-            String indexName = dataSource + "_" + type;
-            String filePrefix = dataSource+"-"+type+"-";
+            indexName = dataSource + "_" + type;
+            String filePrefix = dataSource + "-" + type + "-";
             List<String> childTypes = new ArrayList<>();
-            for (S3ObjectSummary objectSummary : s3Client.listObjectsV2(new ListObjectsV2Request().withBucketName(bucketName).withPrefix(dataPath+"/"+filePrefix)).getObjectSummaries()) {
-                String fileName = objectSummary.getKey().replace(dataPath+"/", "").replace(".data", "");
-            	if(fileName.chars().filter(ch -> ch == '-').count() == 2) {
-            		childTypes.add(fileName.replace(filePrefix,""));
+            for (S3ObjectSummary objectSummary : s3Client.listObjectsV2(new ListObjectsV2Request().withBucketName(bucketName).withPrefix(dataPath + "/" + filePrefix)).getObjectSummaries()) {
+                String fileName = objectSummary.getKey().replace(dataPath + "/", "").replace(".data", "");
+                if (fileName.chars().filter(ch -> ch == '-').count() == 2) {
+                    childTypes.add(fileName.replace(filePrefix, ""));
                 }
             }
             String key = ConfigManager.getKeyForType(dataSource, type);
             if (!childTypes.isEmpty()) {
                 for (String childType : childTypes) {
-                    String childTypeES = type+"_"+childType;
+                    String childTypeES = type + "_" + childType;
                     if (!childType.equalsIgnoreCase("tags")) {
                         ESManager.createType(indexName, childTypeES, type);
                         LOGGER.info("Fetching data for {}", childTypeES);
                         List<Map<String, Object>> entities = new ArrayList<>();
-                        S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, dataPath+"/"+filePrefix+childType+".data"));
-						try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
-                        	entities = objectMapper.readValue(reader.lines().collect(Collectors.joining("\n")),new TypeReference<List<Map<String, Object>>>() {});
+                        S3Object entitiesData = s3Client.getObject(new GetObjectRequest(bucketName, dataPath + "/" + filePrefix + childType + ".data"));
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(entitiesData.getObjectContent()))) {
+                            entities = objectMapper.readValue(reader.lines().collect(Collectors.joining("\n")), new TypeReference<List<Map<String, Object>>>() {
+                            });
                         }
                         String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
-                        entities.parallelStream().forEach(obj -> obj.put("_loaddate", loaddate));
+                        entities.parallelStream().forEach((obj) -> {
+
+                            obj.put("_loaddate", loaddate);
+                            obj.put("type", childTypeES);
+                            Map<String, Object> relMap = new HashMap<>();
+                            relMap.put("name", childTypeES);
+                            relMap.put("parent", Util.concatenate(obj, key.split(","), "_"));
+                            obj.put(type + "_relations", relMap);
+                        });
+
                         LOGGER.info("Collected :  {}", entities.size());
                         if (!entities.isEmpty()) {
-                        	ErrorManager.getInstance(dataSource).handleError(indexName, childTypeES, loaddate, errorList,false);
+                            ErrorManager.getInstance(dataSource).handleError(indexName, childTypeES, loaddate, errorList, false);
                             ESManager.uploadData(indexName, childTypeES, entities, key.split(","));
                             ESManager.deleteOldDocuments(indexName, childTypeES, "_loaddate.keyword",
                                     loaddate);
@@ -115,13 +126,14 @@ public class EntityAssociationManager implements Constants {
             }
         } catch (Exception e) {
             LOGGER.error("Error in populating child tables", e);
-            Map<String,String> errorMap = new HashMap<>();
+            LOGGER.error("Child tables for: ", indexName);
+            Map<String, String> errorMap = new HashMap<>();
             errorMap.put(ERROR, "Error in populating child tables");
             errorMap.put(ERROR_TYPE, WARN);
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
         }
-        LOGGER.info("Completed EntityAssociationDataCollector for {}",type);
+        LOGGER.info("Completed EntityAssociationDataCollector for {}", type);
         return errorList;
     }
 }
