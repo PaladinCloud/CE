@@ -78,14 +78,14 @@ public class AssetGroupStatsCollector implements Constants{
         }
 
         ESManager.createIndex(AG_STATS, errorList);
-        ESManager.createType(AG_STATS, "count_type", errorList);
-        ESManager.createType(AG_STATS, "count_asset", errorList);
-        ESManager.createType(AG_STATS, "issuecompliance", errorList);
-        ESManager.createType(AG_STATS, "compliance", errorList);
-        ESManager.createType(AG_STATS, "tagcompliance", errorList);
-        ESManager.createType(AG_STATS, "issues", errorList);
-        if(VULN_API_URL!=null)
-        	ESManager.createType(AG_STATS, "vulncompliance", errorList);
+//        ESManager.createType(AG_STATS, "count_type", errorList);
+//        ESManager.createType(AG_STATS, "count_asset", errorList);
+//        ESManager.createType(AG_STATS, "issuecompliance", errorList);
+//        ESManager.createType(AG_STATS, "compliance", errorList);
+//        ESManager.createType(AG_STATS, "tagcompliance", errorList);
+//        ESManager.createType(AG_STATS, "issues", errorList);
+//        if(VULN_API_URL!=null)
+//        	ESManager.createType(AG_STATS, "vulncompliance", errorList);
 
 
         List<String> assetGroups = new ArrayList<>(assetGroupMap.keySet());
