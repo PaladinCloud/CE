@@ -27,6 +27,15 @@ public class TargetTypesDetails {
 	private List<AttributeDetails> attributes;
 	private List<String> allAttributesName;
 	private boolean added;
+	private String dataSourceName;
+
+    public void setDataSourceName(String dataSourceName){
+         this.dataSourceName = dataSourceName;
+	}  
+
+	public String getDataSourceName(){
+		return dataSourceName;
+	}
 
 	public boolean isIncludeAll() {
 		return includeAll;

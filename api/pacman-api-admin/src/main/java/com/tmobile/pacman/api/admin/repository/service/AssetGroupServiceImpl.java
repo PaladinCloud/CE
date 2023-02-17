@@ -24,11 +24,14 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_UPD
 import static com.tmobile.pacman.api.admin.common.AdminConstants.DATE_FORMAT;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,6 +64,7 @@ import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
 import com.tmobile.pacman.api.admin.service.CommonService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 
 /**
  * AssetGroup Service Implementations
@@ -77,6 +81,9 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	
 	@Autowired
 	private TargetTypesRepository targetTypesRepository;
+
+	@Autowired
+	private PacmanRdsRepository rdsRepository;
 	
 	@Autowired
 	private CommonService commonService;
@@ -286,6 +293,21 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		Set<AssetGroupTargetDetails> allTargetTypeDetails = existingAssetGroupDetails.getTargetTypes();
 		Map<String, Integer> targetTypesIndex = Maps.newHashMap();
 		Set<String> selectedTargetTypes = Sets.newHashSet();
+		
+		String targetTypeNames = allTargetTypeDetails.stream()
+		.map(targetType->targetType.getTargetType())
+		.collect(Collectors.joining("','"));
+
+		targetTypeNames = "'"+targetTypeNames+"'";
+		String query = "SELECT targetName, dataSourceName FROM pacmandata.cf_Target where targetName in ("+targetTypeNames+")";
+		List<Map<String,Object>> targetNameList = rdsRepository.getDataFromPacman(query);
+		Map<String,String> targetNameMap = new HashMap<>();
+		targetNameList.stream().forEach(targetList->{
+			String targetName=(String) targetList.get("targetName");
+			String dataSourceName=(String) targetList.get("dataSourceName");
+			targetNameMap.put(targetName, dataSourceName);
+		});
+		
 		final int[] idx = { -1 };
 		allTargetTypeDetails.forEach(targetTypeDetails -> {
 			TargetTypesDetails targetTypes = new TargetTypesDetails();
@@ -301,6 +323,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				targetTypes.setAttributes(attributes);
 			} else {
 				idx[0]++;
+				targetTypes.setDataSourceName(targetNameMap.get(targetTypeDetails.getTargetType()));
 				targetTypesIndex.put(targetTypeDetails.getTargetType(), idx[0]);
 				targetTypes.setAdded(true);
 				targetTypes.setTargetName(targetTypeDetails.getTargetType());
