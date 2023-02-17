@@ -237,7 +237,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   openAttributeConfigure(attributeDetail, index) {
-    let dataSourceName = "/aws";
+    let dataSourceName = "/aws_";
     if (!attributeDetail.includeAll) {
       this.attributeValue = '';
       this.attributeName = '';
@@ -250,7 +250,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
       this.selectedAttributeIndex = attributeDetail["index"] + '/_search?filter_path=aggregations.alldata.buckets.key';
       }
       else if(!this.isCreate && attributeDetail.dataSourceName){
-        dataSourceName = attributeDetail.dataSourceName;
+        dataSourceName =  "/"+attributeDetail.dataSourceName+"_";
         this.selectedAttributeIndex = dataSourceName + attributeDetail.targetName + '/_search?filter_path=aggregations.alldata.buckets.key';
       }
       else
