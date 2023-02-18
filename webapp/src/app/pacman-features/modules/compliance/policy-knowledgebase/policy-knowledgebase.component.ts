@@ -376,12 +376,22 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
     this.whiteListColumns.forEach(column => {
+      let filterTags = [];
       this.filterTypeLabels.push(column);
-      const set = new Set();
-      data.forEach(row => {
-        set.add(row[column].valueText);
-      });
-      this.filterTagLabels[column] = Array.from(set);
+      if(column=='Severity'){
+        filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Category'){
+        filterTags = ["security", "cost", "operations", "tagging"];
+      }else{
+        const set = new Set();
+        data.forEach(row => {
+          set.add(row[column].valueText);
+        });
+        filterTags = Array.from(set);
+        filterTags.sort();
+      }
+      
+      this.filterTagLabels[column] = filterTags;
     });
   }
 

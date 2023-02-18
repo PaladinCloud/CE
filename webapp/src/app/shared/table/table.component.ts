@@ -369,11 +369,21 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       for(let i=0; i<this.filteredArray.length; i++){
         const filterObj = this.filteredArray[i];
         
-        const col = filterObj.keyDisplayValue;
-        const searchTxt = String(filterObj.filterValue);
+        const filterKey = filterObj.keyDisplayValue;
+        const filterValue = String(filterObj.filterValue);
         
-        if(col && searchTxt){
-          if(!(String(item[col].valueText).toLowerCase()==searchTxt.toLowerCase())){
+        if(filterKey && filterValue){
+          const cellValue = item[filterKey].valueText;
+          if(filterValue=="0%-25%" || filterValue=="26%-50%" || filterValue=="51%-75%" || filterValue=="76%-100%"){
+            const cv = cellValue.substring(0, cellValue.length-1);
+            const cv_f = parseFloat(cv);
+            if(isNaN(cv_f)) return false;
+            if(filterValue=="0%-25%" && !(cv_f>=0 && cv_f<=25)) return false;
+            if(filterValue=="26%-50%" && !(cv_f>=26 && cv_f<=50)) return false;
+            if(filterValue=="51%-75%" && !(cv_f>=51 && cv_f<=75)) return false;
+            if(filterValue=="76%-100%" && !(cv_f>=76 && cv_f<=100)) return false;
+          }
+          else if(!(String(cellValue).toLowerCase()==filterValue.toLowerCase())){
             return false;
           }
         }else{
@@ -383,14 +393,14 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       return true;
     })
 
+    this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
+    this.chips = this.chips.filter(obj => obj.keyDisplayValue && obj.filterValue);
+    this.totalChips = this.chips.length;
+    this.chips.splice(2);
+    this.addFilter();
+    this.totalRows = this.dataSource.data.length;
     if(this.dataSource.data.length==0){
       this.tableErrorMessage = 'noDataAvailable';
-    }else{
-      this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
-      this.chips.splice(2);
-      this.totalChips = this.filteredArray.length;
-      this.totalRows = this.dataSource.data.length;
-      this.addFilter();
     }
   }
 

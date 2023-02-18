@@ -315,11 +315,19 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
   // rounds off to nearest multiple of roundOffToVal bounding up to valToRoundOff
   roundOff(valToRoundOff, roundOffToVal){
-    return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal; 
+    if(roundOffToVal>0){
+      return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal; 
+    }else{
+      return 0;
+    }
   }
 
   getNearestPowerOf10(val, offSet=0){
-    return Math.pow(10, Math.floor(Math.log10(val))-offSet); // 10^( |_ log10(val) _| - 1 )
+    if(val>0){
+      return Math.pow(10, Math.floor(Math.log10(val))-offSet); // 10^( |_ log10(val) _| - 1 )
+    }else{
+      return 1;
+    }
   }
 
   roundToNDecimalPlaces(val, n){

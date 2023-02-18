@@ -238,14 +238,25 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
     this.whiteListColumns.forEach(column => {
-      if(column.toLowerCase()!='actions'){
-        this.filterTypeLabels.push(column);
+      if(column.toLowerCase()=='actions'){
+        return;
+      }
+      let filterTags = [];
+      this.filterTypeLabels.push(column);
+      if(column=='Severity'){
+        filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Category'){
+        filterTags = ["security", "cost", "operations", "tagging"];
+      }else{
         const set = new Set();
         data.forEach(row => {
           set.add(row[column].valueText);
         });
-        this.filterTagLabels[column] = Array.from(set);
+        filterTags = Array.from(set);
+        filterTags.sort();
       }
+      
+      this.filterTagLabels[column] = filterTags;
     });
   }
 
