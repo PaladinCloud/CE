@@ -940,15 +940,51 @@ export class ComplianceDashboardComponent implements OnInit {
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
     this.whiteListColumns.forEach(column => {
-      if(column!='Compliance' && column!='Violations'){
-        this.filterTypeLabels.push(column);
+      if(column=='Violations'){
+        return;
+      }
+      let filterTags = [];
+      this.filterTypeLabels.push(column);
+      if(column=='Severity'){
+        filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Category'){
+        filterTags = ["security", "cost", "operations", "tagging"];
+      }
+      else if(column=='Compliance'){
+        filterTags = ["0%-25%","26%-50%","51%-75%","76%-100%"];
+      }
+      else{
         const set = new Set();
         data.forEach(row => {
           set.add(row[column].valueText);
         });
-        this.filterTagLabels[column] = Array.from(set);
+        filterTags = Array.from(set);
+        this.sortFilters(filterTags, column);
       }
+      this.filterTagLabels[column] = filterTags;
     });
+  }
+
+  sortFilters(array, column){
+    if(column=='Compliance'){
+      array.sort((a, b) => {
+        const isAsc = true;
+        if(a=="NR") isAsc?a="101%":a = "-1%";
+        if(b=="NR") isAsc?b="101%":b = "-1%";
+
+        a = a.substring(0, a.length-1);
+        b = b.substring(0, b.length-1);
+
+        let aNum = parseFloat(a);
+        let bNum = parseFloat(b);
+        
+        return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
+      });
+    }else if(column=='Violations'){
+      array.sort((a, b) => a-b);
+    }else{
+      array.sort()
+    }
   }
 
   getData() {

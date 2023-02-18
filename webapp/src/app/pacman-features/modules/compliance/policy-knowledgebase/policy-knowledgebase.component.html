@@ -32,9 +32,9 @@
         <div class="policy-knowledgebase-content">
             <app-table (rowSelectEventEmitter)="goToDetails($event)" 
                 [data]="tableData" [columnWidths]="columnWidths"
-                [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
+                [columnsSortFunctionMap]="columnsSortFunctionMap"
                 [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
-                [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol"
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick()" [doLocalSearch]="doLocalSearch"
                 [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [totalRows]="totalRows" [showFilterBtn]="true" [doLocalFilter]="true"
                 [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters">
