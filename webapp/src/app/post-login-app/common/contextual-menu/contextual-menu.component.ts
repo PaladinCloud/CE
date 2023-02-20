@@ -133,7 +133,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       children: [
         {
           id: 15,
-          name: "Policies",
+          name: "Policy",
           parent: "Admin",
           route: "/pl/admin/policies",
           permissions: ["policy-management"]
