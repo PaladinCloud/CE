@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyTable` (
   `policyId` varchar(200) COLLATE utf8_bin NOT NULL,
   `policyUUID` varchar(200) COLLATE utf8_bin NOT NULL,
   `policyName` varchar(200) COLLATE utf8_bin DEFAULT NULL,
-  `policyDisplayName` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `policyDisplayName` varchar(200) COLLATE utf8_bin DEFAULT NULL,
   `policyDesc` text COLLATE utf8_bin,
   `resolution` longtext COLLATE utf8_bin,
   `resolutionUrl` varchar(500) COLLATE utf8_bin DEFAULT NULL,
