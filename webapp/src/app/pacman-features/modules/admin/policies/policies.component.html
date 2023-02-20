@@ -40,3 +40,10 @@
         </section>
     </div>
 </div>
+
+<ng-template #enableOrDisablePolicyRef>
+    <div class="dialog-body">
+       <span class="dialog-body-header">{{action}} Policy</span>
+       <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{selectedRowTitle}}"?</span>
+    </div>
+</ng-template>

@@ -46,7 +46,8 @@
                 <div class="tile-content-wrapper">
                     <img *ngIf="selectedCategory"
                         src="../../../../../assets/icons/category-{{(selectedCategory=='Governance'?'Operations':selectedCategory)?.toLowerCase()}}.svg">
-                    <span class="tile-content" title="{{selectedCategory=='Governance'?'Operations':selectedCategory}}">{{selectedCategory=='Governance'?'Operations':selectedCategory}}</span>
+                    <span class="tile-content"
+                        title="{{selectedCategory=='Governance'?'Operations':selectedCategory}}">{{selectedCategory=='Governance'?'Operations':selectedCategory}}</span>
                 </div>
             </div>
         </div>
@@ -63,8 +64,7 @@
         <div class="column">
             <div class="overview-tile">
                 <span class="tile-header capitalize">Status</span>
-                <app-chip [variant]="'variant3'">
-                    <span class="chip-content" title="{{status}}">{{status}}</span>
+                <app-chip [backgroundColor]="backgroundColor" [color]="color" [chipsList]="chipsList">
                 </app-chip>
             </div>
         </div>
@@ -134,3 +134,10 @@
         </app-table>
     </div>
 </div>
+
+<ng-template #actionRef>
+    <div class="dialog-body">
+       <span class="dialog-body-header">{{action}} Policy</span>
+       <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{policyDisplayName}}"?</span>
+    </div>
+</ng-template>

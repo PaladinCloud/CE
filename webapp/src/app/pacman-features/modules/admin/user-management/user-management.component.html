@@ -1,0 +1,50 @@
+<div class="user-management-page-wrapper">
+    <div class="page-header">
+        <h6>{{pageTitle}}</h6>
+        <app-custom-button buttonType="flat" [label]="'Add User'"
+        (click)="createEditUser(false)">
+    </app-custom-button>
+    </div>
+    <div class="data-table-container">
+        <section>
+            <ul>
+                <li class="widget-wrapper relative">
+                    <div class="relative">
+                        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+                            [headerColName]="headerColName" [direction]="direction"
+                            (selectedAction)="onSelectAction($event)" [doLocalSearch]="true"
+                            [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+                            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
+                            [showDownloadBtn]="false" [showFilterBtn]="false"
+                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="true"
+                            [rowClickable]="false">
+                        </app-table>
+                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+</div>
+
+
+<ng-template #createEditUserRef>
+    <div class="dialog-body">
+        <div [class.isDisabled]="action=='Edit'">
+            <mat-form-field appearance="outline" class="email-wrapper" [formControl]="emailControl">
+                <mat-label>Email ID</mat-label>
+                <input autocomplete="off" matInput required
+                    [(ngModel)]="emailID">
+            </mat-form-field>
+        </div>
+        <app-dropdown [items]="sampleRoles" placeholder="Role" [isChipListEnabled]="true"
+            [selectedList]="selectedRoles" (selected)="onRolesChange($event)"></app-dropdown>
+    </div>
+</ng-template>
+
+<ng-template #actionRef>
+    <div class="dialog-body">
+       <span class="dialog-body-header">{{action}} User</span>
+       <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{emailID}}"?</span>
+    </div>
+</ng-template>

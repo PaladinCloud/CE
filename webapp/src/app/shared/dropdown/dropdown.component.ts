@@ -1,12 +1,12 @@
-import { Component, Input, OnInit, EventEmitter, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { DataCacheService } from "../../core/services/data-cache.service";
+import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-dropdown',
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
 })
-export class DropdownComponent implements OnInit, OnChanges {
+export class DropdownComponent implements OnChanges,AfterViewInit {
 
   @Input() items = [];
   @Input() required = false;
@@ -15,14 +15,22 @@ export class DropdownComponent implements OnInit, OnChanges {
   @Input() requiredInfo: boolean = false;
   @Input() placeholder: string;
   @Input() selectedItem: string;
+  @Input() isChipListEnabled: boolean = false;
+  @Input() selectedList;
   @Output() selected = new EventEmitter();
   @Output() closeEventEmitter = new EventEmitter();
+  listControl = new FormControl([]);
 
   itemList = [];
   optionList = [];
-  selectedOption: any;
+  selectedOption: string = "";
   selectedOptionImage: string;
   constructor() { }
+
+  ngAfterViewInit(): void {
+    if(this.selectedList)
+    this.listControl.setValue(this.selectedList);
+  }
 
   onClose() {
     this.closeEventEmitter.emit();
@@ -58,7 +66,7 @@ export class DropdownComponent implements OnInit, OnChanges {
       if (typeof selectedOption == 'object' && selectedOption[0]) {
         this.selectedOption = selectedOption[0].text;
       }
-      else {
+      else if(selectedOption){
         this.selectedOption = selectedOption;
       }
     }
@@ -77,11 +85,14 @@ export class DropdownComponent implements OnInit, OnChanges {
     this.massageData(this.items, this.selectedItem);
   }
 
-  ngOnInit(): void {
-  }
-
   selectedValue(event: any) {
     this.selected.emit(event);
   }
+
+  updateChipsList(e:any){
+    this.listControl.setValue(e);
+    this.selected.emit(e);
+  }
+
 }
 

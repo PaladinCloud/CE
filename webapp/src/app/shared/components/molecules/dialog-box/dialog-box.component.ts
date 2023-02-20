@@ -1,11 +1,11 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import {MatDialog, MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { AfterViewInit,  Component, Inject,  OnInit, TemplateRef } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 interface DialogData {
   title: string;
-  message: string;
-  yesButtonLabel: string;
+  template: TemplateRef<any>;
   noButtonLabel: string;
+  yesButtonLabel: string;
 }
 
 @Component({
@@ -13,12 +13,16 @@ interface DialogData {
   templateUrl: './dialog-box.component.html',
   styleUrls: ['./dialog-box.component.css']
 })
-export class DialogBoxComponent implements OnInit {
+export class DialogBoxComponent implements OnInit, AfterViewInit {
 
   constructor(
     public dialogRef: MatDialogRef<DialogBoxComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {}
+  ) { }
+  
+  ngAfterViewInit(): void {
+    this.dialogRef.componentInstance.data.template = this.data.template;
+  }
 
   onNoClick(): void {
     this.dialogRef.close("no");
