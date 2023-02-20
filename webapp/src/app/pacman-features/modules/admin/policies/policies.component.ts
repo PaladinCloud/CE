@@ -37,7 +37,7 @@ import { NotificationObservableService } from "src/app/shared/services/notificat
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class PoliciesComponent implements OnInit, OnDestroy {
-  pageTitle: String = "Policies";
+  pageTitle: String = "Policy";
   allPolicies: any = [];
 
   filterTypeLabels = [];
