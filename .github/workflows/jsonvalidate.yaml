@@ -1,0 +1,14 @@
+name: Validate JSONs
+
+on: [pull_request]
+
+jobs:
+  verify-json-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Validate JSON
+        uses: docker://orrosenblatt/validate-json-action:latest
+        env:  
+          INPUT_SCHEMA: './check-schema.json'
+          INPUT_JSONS: installer/resources/lambda_rule_engine/files/rule_engine_cloudwatch_aws_rules.json,installer/resources/lambda_rule_engine/files/rule_engine_cloudwatch_azure_rules.json,installer/resources/lambda_rule_engine/files/rule_engine_cloudwatch_gcp_rules.json
