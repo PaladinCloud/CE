@@ -582,28 +582,48 @@ public class CommonUtils {
      * @param json the json
      * @return the map
      */
-    private static Map<String, String> buildMapFromJson(String json) {
-        JsonParser parser = new JsonParser();
-        String ruleUUID = "";
-        JsonElement element = parser.parse(json);
-        JsonObject obj = element.getAsJsonObject();
-        Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
-        if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
-            ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
-        }
-        Map<String, String> toReturn = new HashMap<>();
-        for (Map.Entry<String, JsonElement> entry : entries) {
-            if (entry.getValue().isJsonArray()) {
-                toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
-            } else {
-                toReturn.put(entry.getKey(), entry.getValue().getAsString());
-            }
-        }
+	private static Map<String, String> buildMapFromJson(String json) {
+		JsonParser parser = new JsonParser();
+		String ruleUUID = "";
+		JsonElement element = parser.parse(json);
+		JsonObject dataObject = element.getAsJsonObject();
+		JsonObject obj = dataObject.getAsJsonObject("data");
+		Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
+		if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+			ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
+		}
+		Map<String, String> toReturn = new HashMap<>();
+		for (Map.Entry<String, JsonElement> entry : entries) {
+			if (entry.getValue().isJsonArray()) {
+				toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
+			} else if (!obj.get(entry.getKey()).isJsonNull()) {
+				toReturn.put(entry.getKey(), entry.getValue().getAsString());
+			}
+		}
+		toReturn.put("policyCategory", toReturn.get("category"));
+		toReturn.put("autofix", toReturn.get("autoFixEnabled"));
+		toReturn.put("pac_ds", toReturn.get("assetGroup"));
+		if (!obj.get("policyParams").isJsonNull()) {
+			JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
+			if (!policyParam.isJsonNull() && policyParam.has("params")) {
+				toReturn.putAll(getMapFromArray(policyParam.getAsJsonArray("params"), ruleUUID));
+			}
+		}
+		toReturn.remove("policyDesc");
+		toReturn.remove("resolution");
+		toReturn.remove("resolutionUrl");
+		toReturn.remove("policyParams");
+		toReturn.remove("policyArn");
+		toReturn.remove("policyExecutable");
+		toReturn.remove("createdDate");
+		toReturn.remove("policyFrequency");
+		toReturn.remove("modifiedDate");
+		toReturn.remove("policyParams");
+		toReturn.remove("alexaKeyword");
+		return toReturn;
 
-        return toReturn;
-
-    }
-
+	}
+    
     /**
      * Decrypt.
      *

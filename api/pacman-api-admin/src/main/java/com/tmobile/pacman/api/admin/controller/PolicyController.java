@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
 import com.tmobile.pacman.api.admin.domain.Response;
 import com.tmobile.pacman.api.admin.repository.service.PolicyService;
@@ -61,6 +62,9 @@ public class PolicyController {
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
 			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue="", name = "searchTerm", required = false) String searchTerm) {
 		try {
+			if(searchTerm != null && AdminConstants.AUTO_FIX_KEYWORD.equalsIgnoreCase(searchTerm)) {
+				searchTerm = AdminConstants.AUTO_FIX_KEY;
+			}
 			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm.trim(), page, size));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);

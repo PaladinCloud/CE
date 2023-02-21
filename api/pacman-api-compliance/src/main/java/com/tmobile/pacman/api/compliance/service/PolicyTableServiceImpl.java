@@ -39,4 +39,9 @@ public class PolicyTableServiceImpl implements PolicyTableService, Constants {
     public PolicyTable getPolicyTableByPolicyId(String policyId) {
         return policyTableRepository.findPoicyTableByPolicyId(policyId);
     }
+    
+    @Override
+    public PolicyTable getPolicyTableByPolicyUUID(String policyUUID) {
+        return policyTableRepository.findPoicyTableByPolicyUUID(policyUUID);
+    }
 }

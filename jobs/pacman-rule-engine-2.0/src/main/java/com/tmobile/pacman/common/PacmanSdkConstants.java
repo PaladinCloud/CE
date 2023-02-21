@@ -334,8 +334,6 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The autofix exempted types key. */
     String AUTOFIX_EXEMPTED_TYPES_KEY = "pacman.autofix.exempted.types.for.cutoff.data";
 
-    /** The autofix allowlist accounts prefix. */
-    String AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX = "autofix.allowlist.accounts.";
 
     /** The mm dd yyyy. */
     String MM_DD_YYYY = "MM/dd/yyyy";
@@ -428,12 +426,10 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The send email from. */
     String SEND_EMAIL_FROM = "pacman.auto.fix.mail.from";
 
-    /** The send email fix subject prefix. */
-    String SEND_EMAIL_FIX_SUBJECT_PREFIX = "pacman.auto.fix.mail.subject.";
+  
     /** The send email fix subject prefix. */
     String SEND_EMAIL_SILENT_FIX_ADMIN = "pacman.autofix.fix.notify.";
-    /** The send email warning subject prefix. */
-    String SEND_EMAIL_WARNING_SUBJECT_PREFIX = "pacman.auto.warning.mail.subject.";
+
 
     /** The policy url prefix key. */
     String POLICY_URL_PREFIX_KEY = "pacman.autofix.policy.url.";
@@ -441,14 +437,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The email service url. */
     String EMAIL_SERVICE_URL = "pacman.api.sendmail";
 
-    /** The email violation message prefix. */
-    String EMAIL_VIOLATION_MESSAGE_PREFIX = "pacman.autofix.policy.violation.message.";
-
-    /** The email warning message prefix. */
-    String EMAIL_WARNING_MESSAGE_PREFIX = "pacman.autofix.policy.warning.message.";
-
-    /** The email fix message prefix. */
-    String EMAIL_FIX_MESSAGE_PREFIX = "pacman.autofix.policy.post.fix.message.";
+   
 
     /** The pac auto tag salt key. */
     String PAC_AUTO_TAG_SALT_KEY = "pacman.auto.fix.tag.salt";
@@ -613,5 +602,21 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String BOOLEAN_TRUE = "true";
     String SUBSCRIPTION = "subscription";
     String PROJECT_NAME = "projectName";
+    
+    String POLICY_DETAILS_URL = "POLICY_DETAILS_URL";
+    
+    /** AutoFix Properties*/
+    String AUTOFIX_POLICY_ALLOWLIST = "allowList";
+    String AUTOFIX_POLICY_WAITING_TIME = "waitingTime";
+    String AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION = "maxEmailNotification";
+    String AUTOFIX_POLICY_TEMPLATE_NAME = "templateName";
+    String AUTOFIX_POLICY_TEMPLATE_COLUMNS = "templateColumns";
+    String AUTOFIX_POLICY_FIXTYPE = "fixType";
+    String AUTOFIX_POLICY_WARNING_MAIL_SUBJECT = "warningMailSubject";
+    String AUTOFIX_POLICY_FIX_MAIL_SUBJECT = "fixMailSubject";
+    String AUTOFIX_POLICY_WARNING_MESSAGE = "warningMessage";
+    String AUTOFIX_POLICY_FIX_MESSAGE = "fixMessage";
+    String AUTOFIX_POLICY_VIOLATION_MESSAGE = "violationMessage";
+    String POLICY_STATUS_ENABLED = "ENABLED";
 
 }

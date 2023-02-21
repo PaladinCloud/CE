@@ -34,4 +34,12 @@ public interface PolicyTableRepository extends
      * @return PolicyTable
      */
     public PolicyTable findPoicyTableByPolicyId(final String policyId);
+    
+    /**
+     * Find PolicyTable by policy UUID.
+     *
+     * @param policyUUID the policy UUID
+     * @return PolicyTable
+     */
+    public PolicyTable findPoicyTableByPolicyUUID(final String policyUUID);
 }

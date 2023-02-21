@@ -772,4 +772,23 @@ public class ComplianceController implements Constants {
 			return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
 		}
 	} 
+	
+	 /**
+     * API to get policy by UUID
+     *
+     * @author 
+     * @param policyUUID - valid policy UUID
+     * @return Policies details
+     */
+	@ApiOperation(httpMethod = "GET", value = "API to get policy by UUID",  produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/v1/policy-details-by-uuid", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getPoliciesByUUID(
+			@ApiParam(value = "provide valid policy UUID", required = true) @RequestParam(defaultValue = "", name = "policyUUID", required = true) String policyUUID) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyUUID(policyUUID));
+		} catch (Exception exception) {
+			log.error("Unexpected error occurred!!", exception);
+			return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+		}
+	} 
 }

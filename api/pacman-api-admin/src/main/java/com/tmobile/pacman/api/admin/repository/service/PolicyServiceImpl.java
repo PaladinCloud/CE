@@ -261,16 +261,32 @@ public class PolicyServiceImpl implements PolicyService {
 
 				String policyParams = buildAndGetPolicyParams(policyDetails, updatePolicyDetails.getPolicyUUID(),
 						false);
-				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType())) {
-					updatePolicyDetails.setPolicyParams(policyParams);
-					updatePolicyDetails.setSeverity(policyDetails.getSeverity());
-					updatePolicyDetails.setCategory(policyDetails.getCategory());
-					updatePolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
+				updatePolicyDetails.setPolicyParams(policyParams);
+				updatePolicyDetails.setSeverity(policyDetails.getSeverity());
+				updatePolicyDetails.setCategory(policyDetails.getCategory());
+				updatePolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
+				if(policyDetails.getPolicyParams() != null && 
+						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
+					updatePolicyDetails.setAutoFixAvailable("true");
+				} else {
+					updatePolicyDetails.setAutoFixAvailable("false");
+				}
+				updatePolicyDetails.setAllowList(policyDetails.getAllowList());
+				updatePolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
+				updatePolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
+				updatePolicyDetails.setTemplateName(policyDetails.getTemplateName());
+				updatePolicyDetails.setTemplateColumns(policyDetails.getTemplateColumns());
+				updatePolicyDetails.setFixType(policyDetails.getFixType());
+				updatePolicyDetails.setWarningMailSubject(policyDetails.getWarningMailSubject());
+				updatePolicyDetails.setWarningMessage(policyDetails.getWarningMessage());
+				updatePolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
+				updatePolicyDetails.setFixMessage(policyDetails.getFixMessage());
+				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType()))
+				{
 					updateCustomEventBridgeRule(updatePolicyDetails);
 				} else {
 					policyDetails.setTargetType(updatePolicyDetails.getTargetType());
 					policyDetails.setDataSource(retrieveDataSource(updatePolicyDetails));
-					updatePolicyDetails.setPolicyParams(policyParams);
 					updatePolicyDetails.setPolicyFrequency(policyDetails.getPolicyFrequency());
 					updatePolicyDetails.setPolicyExecutable(policyDetails.getPolicyExecutable());
 					updatePolicyDetails.setUserId(userId);
@@ -280,12 +296,9 @@ public class PolicyServiceImpl implements PolicyService {
 					updatePolicyDetails.setModifiedDate(currentDate);
 					updatePolicyDetails.setPolicyType(policyDetails.getPolicyType());
 					updatePolicyDetails.setPolicyRestUrl(policyDetails.getPolicyRestUrl());
-					updatePolicyDetails.setSeverity(policyDetails.getSeverity());
-					updatePolicyDetails.setCategory(policyDetails.getCategory());
 					updatePolicyDetails.setPolicyDesc(policyDetails.getPolicyDesc());
 					updatePolicyDetails.setResolution(policyDetails.getResolution());
 					updatePolicyDetails.setResolutionUrl(policyDetails.getResolutionUrl());
-					updatePolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
 					createUpdateCloudWatchEventRule(updatePolicyDetails);
 					if (policyDetails.getIsFileChanged() && policyDetails.getPolicyType().equalsIgnoreCase("Classic")) {
 						createUpdatePolicyJartoS3Bucket(fileToUpload, updatePolicyDetails.getPolicyUUID());
@@ -343,6 +356,23 @@ public class PolicyServiceImpl implements PolicyService {
 				newPolicyDetails.setPolicyRestUrl(policyDetails.getPolicyRestUrl());
 				newPolicyDetails.setSeverity(policyDetails.getSeverity());
 				newPolicyDetails.setCategory(policyDetails.getCategory());
+				newPolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
+				if(policyDetails.getPolicyParams() != null && 
+						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
+					newPolicyDetails.setAutoFixAvailable("true");
+				} else {
+					newPolicyDetails.setAutoFixAvailable("false");
+				}
+				newPolicyDetails.setAllowList(policyDetails.getAllowList());
+				newPolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
+				newPolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
+				newPolicyDetails.setTemplateName(policyDetails.getTemplateName());
+				newPolicyDetails.setTemplateColumns(policyDetails.getTemplateColumns());
+				newPolicyDetails.setFixType(policyDetails.getFixType());
+				newPolicyDetails.setWarningMailSubject(policyDetails.getWarningMailSubject());
+				newPolicyDetails.setWarningMessage(policyDetails.getWarningMessage());
+				newPolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
+				newPolicyDetails.setFixMessage(policyDetails.getFixMessage());
 				createUpdateCloudWatchEventRule(newPolicyDetails);
 				if (policyDetails.getIsFileChanged() && policyDetails.getPolicyType().equalsIgnoreCase("Classic")) {
 					createUpdatePolicyJartoS3Bucket(fileToUpload, policyUUID);
