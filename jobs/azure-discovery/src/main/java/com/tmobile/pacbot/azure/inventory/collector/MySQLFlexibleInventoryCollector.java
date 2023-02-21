@@ -79,7 +79,7 @@ public class MySQLFlexibleInventoryCollector {
                         mySQLFlexibleVH.setResourceGroupName(resourceGroupName);
                         mySQLFlexibleVH.setId(id);
                         mySQLFlexibleVH.setSubscriptionName(subscription.getSubscriptionName());
-                        mySQLFlexibleVH.setSubscription(subscription.toString());
+                        mySQLFlexibleVH.setSubscription(subscription.getSubscriptionId());
                         break;
                     }
                 }
