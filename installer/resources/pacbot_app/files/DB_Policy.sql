@@ -70,6 +70,7 @@ IF NOT EXISTS( SELECT NULL
 
 
 ALTER TABLE cf_PolicyTable ADD COLUMN autoFixEnabled VARCHAR(20) NULL DEFAULT 'false' AFTER category;
+ALTER TABLE cf_PolicyTable ALTER COLUMN policyDisplayName VARCHAR(200);
 
 
 
