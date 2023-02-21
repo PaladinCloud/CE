@@ -28,7 +28,7 @@ public class FunctionAppInventoryCollector {
         for(FunctionApp functionApp:functionApps){
             FunctionAppVH functionAppVH=new FunctionAppVH();
             functionAppVH.setId(functionApp.id());
-            functionAppVH.setSubscription(subscription.toString());
+            functionAppVH.setSubscription(subscription.getSubscriptionId());
             functionAppVH.setSubscriptionName(subscription.getSubscriptionName());
             functionAppVH.setResourceGroupName(functionApp.resourceGroupName());
             functionAppVH.setClientCertEnabled(functionApp.clientCertEnabled());
