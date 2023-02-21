@@ -2,10 +2,18 @@
     <mat-form-field>
         <mat-label>{{placeholder}}</mat-label>
         <mat-select [disabled]="isDisabled" disableOptionCentering (closed)="onClose()" [required]="required"
-            (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption">
+            (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption"
+             [formControl]="listControl" [multiple]="isChipListEnabled">
             <mat-select-trigger>
-                <div [class.optionImage]="optionImage">
-                    <img *ngIf="optionImage" src="{{selectedOptionImage}}">
+                <div *ngIf="optionImage" [class.optionImage]="optionImage">
+                    <img src="{{selectedOptionImage}}">
+                    <span>{{selectedOption}}</span>
+                </div>
+                <div *ngIf="isChipListEnabled">
+                <app-chip [chipsList]="listControl.value" [backgroundColor]="'#F1F6FF'" [color]="'#336CC9'" (updatedChipsList)="updateChipsList($event)"
+                 [isRemovable]="true"></app-chip>
+                </div>
+                <div *ngIf="!optionImage && !isChipListEnabled">
                     <span>{{selectedOption}}</span>
                 </div>
             </mat-select-trigger>

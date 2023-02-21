@@ -535,8 +535,12 @@ export const environment = {
         method: 'POST'
     },
     listUsers: {
-        url: '{{baseUrl}}/admin/users/list-users',
+        url: '{{baseUrl}}/admin/users',
         method: 'GET'
+    },
+    editUserStatus: {
+        url: '{{baseUrl}}/admin/users/{username}/status',
+        method: 'PUT'
     },
     jobDetailsById: {
         url: '{{baseUrl}}/admin/job-execution-manager/details-by-id',
@@ -697,6 +701,18 @@ export const environment = {
     updateRole: {
         url: '{{baseUrl}}/admin/roles/update',
         method: 'POST'
+    },
+    updateUserRole: {
+        url: '{{baseUrl}}/admin/users/{username}/roles',
+        method: 'PUT'
+    },
+    addUser: {
+        url: '{{baseUrl}}/admin/users',
+        method: 'POST'
+    },
+    deleteUser: {
+        url: '{{baseUrl}}/admin/users/{username}',
+        method: 'DELETE'
     },
     rolesAllocation: {
         url: '{{baseUrl}}/admin/users-roles/list',

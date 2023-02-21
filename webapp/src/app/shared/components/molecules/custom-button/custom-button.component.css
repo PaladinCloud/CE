@@ -1,3 +1,3 @@
-.button-label{
-    padding: 8px;
+::ng-deep .button-label{
+    padding: 8px 0px !important;
 }

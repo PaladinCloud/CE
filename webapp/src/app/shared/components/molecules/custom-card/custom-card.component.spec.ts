@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
 
 import { CustomCardComponent } from './custom-card.component';
 
@@ -8,6 +9,7 @@ describe('CustomCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [ MatCardModule ],
       declarations: [ CustomCardComponent ]
     })
     .compileComponents();

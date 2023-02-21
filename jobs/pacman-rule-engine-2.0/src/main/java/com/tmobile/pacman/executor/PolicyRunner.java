@@ -16,8 +16,8 @@
 
 package com.tmobile.pacman.executor;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.PolicyResult;
@@ -38,7 +38,7 @@ public interface PolicyRunner {
      * @throws Exception the exception
      */
     public List<PolicyResult> runPolicies(List<Map<String, String>> resources, Map<String, String> policyParam,
-            String executionId) throws Exception;
+                                          String executionId) throws Exception;
     default void populateAnnotationParams(PolicyResult result,Map<String, String> resource, Map<String, String> policyParam ){
         String assetGroup=policyParam.get(PacmanSdkConstants.ASSET_GROUP_KEY);
         switch (assetGroup.toUpperCase()){
@@ -52,5 +52,19 @@ public interface PolicyRunner {
                 result.getAnnotation().put(PacmanSdkConstants.PROJECT_NAME, resource.get(PacmanSdkConstants.PROJECT_NAME));
                 break;
         }
+    }
+    default Map<String,String> getMandatoryTagsForAnnotation(String mandatoryTags, Map<String,String> resourceData){
+        if(mandatoryTags==null || mandatoryTags.isEmpty()){
+            return Collections.emptyMap();
+        }
+        Map<String,String> annotationMap=new HashMap<>();
+        Set<String> mandatoryTagSet = Arrays.stream(mandatoryTags.split(",")).map(String::trim).collect(Collectors.toSet());
+        mandatoryTagSet.stream().forEach(element->{
+            String tag="tags."+element;
+            if(resourceData.containsKey(tag)){
+                annotationMap.put(tag,resourceData.get(tag));
+            }
+        });
+        return annotationMap;
     }
 }

@@ -12,7 +12,27 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgxSelectDropdownComponent } from 'ngx-select-dropdown';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { BackNavigationComponent } from 'src/app/shared/back-navigation/back-navigation.component';
+import { FilteredSelectorComponent } from 'src/app/shared/filtered-selector/filtered-selector.component';
+import { GenericPageFilterComponent } from 'src/app/shared/generic-page-filter/generic-page-filter.component';
+import { OrderByPipe } from 'src/app/shared/pipes/order-by.pipe';
+import { SearchableDropdownComponent } from 'src/app/shared/searchable-dropdown/searchable-dropdown.component';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { FilterManagementService } from 'src/app/shared/services/filter-management.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { RecommendationsComponent } from './recommendations.component';
 
@@ -22,9 +42,30 @@ describe('RecommendationsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RecommendationsComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+      declarations: [
+        RecommendationsComponent,
+        BackNavigationComponent,
+        FilteredSelectorComponent,
+        GenericPageFilterComponent,
+        OrderByPipe,
+        NgxSelectDropdownComponent,
+        SearchableDropdownComponent,
+      ],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        DomainTypeObservableService,
+        ErrorHandlingService,
+        FilterManagementService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -13,6 +13,9 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { MultilineBrushZoomComponent } from './multiline-brush-zoom.component';
 
@@ -22,7 +25,8 @@ describe('MultilineBrushZoomComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MultilineBrushZoomComponent ]
+      declarations: [ MultilineBrushZoomComponent ],
+      providers: [LoggerService, RefactorFieldsService, UtilsService]
     })
     .compileComponents();
   }));

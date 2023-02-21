@@ -13,6 +13,8 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { NgxSelectDropdownComponent } from 'ngx-select-dropdown';
 
 import { SearchableDropdownComponent } from './searchable-dropdown.component';
 
@@ -22,7 +24,8 @@ describe('SearchableDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchableDropdownComponent ]
+      imports: [FormsModule],
+      declarations: [ SearchableDropdownComponent, NgxSelectDropdownComponent ]
     })
     .compileComponents();
   }));
@@ -30,6 +33,7 @@ describe('SearchableDropdownComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchableDropdownComponent);
     component = fixture.componentInstance;
+    component.items = [];
     fixture.detectChanges();
   });
 

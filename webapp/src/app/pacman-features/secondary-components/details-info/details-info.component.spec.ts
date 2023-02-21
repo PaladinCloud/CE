@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 
 import { DetailsInfoComponent } from './details-info.component';
 
@@ -22,7 +23,8 @@ describe('DetailsInfoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetailsInfoComponent ]
+      declarations: [ DetailsInfoComponent ],
+      providers: [RefactorFieldsService]
     })
     .compileComponents();
   }));
@@ -30,6 +32,8 @@ describe('DetailsInfoComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DetailsInfoComponent);
     component = fixture.componentInstance;
+    component.headers = 'false';
+    component.resource = {};
     fixture.detectChanges();
   });
 

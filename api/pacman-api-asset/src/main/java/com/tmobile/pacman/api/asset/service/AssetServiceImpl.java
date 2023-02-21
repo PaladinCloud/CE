@@ -1172,8 +1172,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag) throws DataException {
-        List<String> assetList = repository.getValuesListForTag(aseetGroupName, tag);
+    public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag, String type) throws DataException {
+        List<String> assetList = repository.getValuesListForTag(aseetGroupName, tag, type);
         List<Map<String, Object>> valueList = new ArrayList<>();
         assetList.forEach(val -> {
             Map<String, Object> valueMap = new HashMap<>();

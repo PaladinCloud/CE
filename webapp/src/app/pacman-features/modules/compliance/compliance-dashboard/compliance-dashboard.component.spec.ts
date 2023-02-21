@@ -41,6 +41,7 @@ import { ToastObservableService } from 'src/app/post-login-app/common/services/t
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { of } from 'rxjs';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TableStateService } from 'src/app/core/services/table-state.service';
 
 describe('ComplianceDashboardComponent', () => {
   let component: ComplianceDashboardComponent;
@@ -49,7 +50,15 @@ describe('ComplianceDashboardComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, MatSelectModule, HttpClientTestingModule, MatTableModule, BrowserAnimationsModule, FormsModule, ReactiveFormsModule],
+      imports: [
+        RouterTestingModule,
+        MatSelectModule,
+        HttpClientTestingModule,
+        MatTableModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        ReactiveFormsModule,
+      ],
       declarations: [ComplianceDashboardComponent],
       providers: [
         CommonResponseService,
@@ -67,12 +76,12 @@ describe('ComplianceDashboardComponent', () => {
         DataCacheService,
         HttpService,
         SelectComplianceDropdown,
+        TableStateService,
         ToastObservableService,
-        RouterUtilityService
+        RouterUtilityService,
       ],
       schemas: [NO_ERRORS_SCHEMA],
-    })
-      .compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -298,13 +307,13 @@ describe('ComplianceDashboardComponent', () => {
 
 
   it('shoud call updateUrl on if the searchTxt is not empty', () => {
-    component.searchCalled("admin");
+    component.callNewSearch("admin");
     expect(component.searchTxt).toEqual("admin");
     expect(component.getUpdatedUrl).toHaveBeenCalled;
   })
 
   it('should updateUrl on calling callNewSearch', () => {
-    component.callNewSearch();
+    component.callNewSearch('something');
     expect(component.getUpdatedUrl).toHaveBeenCalled;
   })
 
