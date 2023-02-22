@@ -402,6 +402,18 @@ CREATE TABLE IF NOT EXISTS `cf_Target` (
   PRIMARY KEY (`targetName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+/*Table structure for table `cf_Accounts` */
+
+CREATE TABLE IF NOT EXISTS  cf_Accounts(
+    accountName varchar(255),
+    accountId varchar(255),
+    assets varchar(100),
+    violations varchar(100),
+    accountStatus varchar(100),
+    platform varchar(255),
+    PRIMARY KEY(accountId)
+);
+
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
 CREATE PROCEDURE alter_cf_target_table_add_display_name_if_not_exists()
