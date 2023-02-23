@@ -59,6 +59,7 @@ We follow below guidelines for pull requests and commits:
     * `chore:` for chores
     * `BREAKING CHANGE:` for breaking changes
 * Use the same conventions for pull requests as well.
+* Rebase and test the code against the primary branch to be sure it works with the latest code
 
 After you have submitted your pull request, we'll try to get back to you as soon as possible. We may suggest some
 changes or improvements.
