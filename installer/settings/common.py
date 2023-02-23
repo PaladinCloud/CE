@@ -147,7 +147,9 @@ DB_USERNAME = "paladin"
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
 MANDATORY_TAGS = "Application,Environment"
-
+ACCOUNT_ID = "765245176332"
+ACCOUNT_NAME = "awsAccount"
+ACCOUNT_PLATFORM = "aws"
 try:
     from settings.local import *
 except:

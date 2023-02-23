@@ -37,11 +37,9 @@ public class RDSDBManager {
      * @throws SQLException
      *             the SQL exception
      */
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
+    private Connection getConnection() throws  SQLException {
         Connection conn = null;
-        Class.forName("com.mysql.jdbc.Driver");
         Properties props = new Properties();
-
         props.setProperty("user", dbUser);
         props.setProperty("password", dbPassword);
         conn = DriverManager.getConnection(dbUrl, props);
@@ -73,7 +71,7 @@ public class RDSDBManager {
                 results.add(data);
             }
         } catch (Exception ex) {
-            log.error("Error Executing Query",ex);
+            log.error(ex.getMessage());
         } 
         return results;
     }
@@ -87,7 +85,7 @@ public class RDSDBManager {
             }
             return preparedStatement.executeUpdate();
         } catch (Exception ex) {
-        log.error("Error Executing Query",ex);
+        log.error(ex.getMessage());
     }
         return 0;
     }

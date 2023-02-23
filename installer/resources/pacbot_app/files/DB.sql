@@ -101,6 +101,9 @@ SET @API_CLIENT_ID='$API_CLIENT_ID';
 SET @API_SCERET_ID='$API_SCERET_ID';
 SET @COGNITO_INFO='$COGNITO_INFO';
 
+SET @ACCOUNT_ID='ACCOUNT_ID';
+SET @ACCOUNT_NAME='ACCOUNT_NAME';
+SET @ACCOUNT_PLATFORM='ACCOUNT_PLATFORM';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -413,6 +416,9 @@ CREATE TABLE IF NOT EXISTS  cf_Accounts(
     platform varchar(255),
     PRIMARY KEY(accountId)
 );
+/* Insert one account */
+
+insert into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''));
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
