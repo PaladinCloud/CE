@@ -601,8 +601,13 @@ public class CommonUtils {
 			}
 		}
 		toReturn.put("policyCategory", toReturn.get("category"));
-		toReturn.put("autofix", toReturn.get("autoFixEnabled"));
 		toReturn.put("pac_ds", toReturn.get("assetGroup"));
+		if(toReturn.containsKey("autoFixEnabled")) {
+			toReturn.put("autofix", toReturn.get("autoFixEnabled"));
+		} else  {
+			toReturn.put("autofix", "false");
+		}
+		
 		if (!obj.get("policyParams").isJsonNull()) {
 			JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
 			if (!policyParam.isJsonNull() && policyParam.has("params")) {

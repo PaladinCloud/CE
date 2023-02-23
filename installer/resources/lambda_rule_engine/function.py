@@ -29,7 +29,8 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
             'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
             'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
             'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
-            'CONFIG_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest"
+            'CONFIG_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
+            'POLICY_DETAILS_URL' : ApplicationLoadBalancer.get_http_url() + "/api/compliance/v1/policy-details-by-id?policyId="
         }
     }
 

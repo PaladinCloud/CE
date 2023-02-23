@@ -550,3 +550,26 @@ UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wi
 UPDATE cf_PolicyTable SET policyDisplayName = 'Ensure that EC2 instances are not Left in a Stopped State', severity = 'high', category = 'cost', policyParams = '{\"params\":[{\"encrypt\":\"false\",\"value\":\"true\",\"key\":\"threadsafe\"},{\"encrypt\":\"false\",\"value\":\"check-for-stopped-instance-for-long\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"90\",\"key\":\"targetstoppedDuration\"},{\"encrypt\":false,\"value\":\"costOptimization\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"}],\"environmentVariables\":[{\"encrypt\":false,\"value\":\"123\",\"key\":\"abc\"}],\"policyId\":\"Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2\",\"autofix\":false,\"alexaKeyword\":\"Ec2StoppedInstanceForLong\",\"policyRestUrl\":\"\",\"targetType\":\"ec2\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_ec2_should_not_be_stopped_state_for_too_long\",\"policyType\":\"ManagePolicy\"}' WHERE policyId = 'Ec2StoppedInstanceForLong_version-1_Ec2StoppedInstanceForLong_ec2';
 
 UPDATE cf_PolicyTable SET category = 'cost' WHERE policyId IN ('UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume', 'Unused-Security-group_version-1_UnusedSecurityGroup_sg', 'UnusedApplicationElbRule_version-1_UnusedApplicationElbRule_appelb', 'UnusedClassicElbRule_version-1_UnusedClassicElbRule_classicelb', 'UnusedEBSRule_version-1_UnusedEbsRule_volume', 'UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip');
+
+
+ALTER TABLE `pacmandata`.`cf_PolicyTable` 
+ADD COLUMN `autoFixAvailable` VARCHAR(6) NULL DEFAULT 'false' AFTER `category`,
+ADD COLUMN `allowList` VARCHAR(1000) NULL AFTER `autoFixEnabled`,
+ADD COLUMN `waitingTime` INT NULL DEFAULT 24 AFTER `allowList`,
+ADD COLUMN `maxEmailNotification` INT NULL DEFAULT 1 AFTER `waitingTime`,
+ADD COLUMN `templateName` VARCHAR(100) NULL AFTER `maxEmailNotification`,
+ADD COLUMN `templateColumns` VARCHAR(500) NULL AFTER `templateName`,
+ADD COLUMN `fixType` VARCHAR(50) NULL AFTER `templateColumns`,
+ADD COLUMN `warningMailSubject` VARCHAR(1000) NULL AFTER `fixType`,
+ADD COLUMN `fixMailSubject` VARCHAR(1000) NULL AFTER `warningMailSubject`,
+ADD COLUMN `warningMessage` VARCHAR(1000) NULL AFTER `fixMailSubject`,
+ADD COLUMN `fixMessage` VARCHAR(1000) NULL AFTER `warningMessage`,
+ADD COLUMN `violationMessage` VARCHAR(1000) NULL DEFAULT NULL AFTER `fixMessage`,
+CHANGE COLUMN `autoFixEnabled` `autoFixEnabled` VARCHAR(20) NULL DEFAULT NULL ;
+
+CREATE TABLE IF NOT EXISTS `pac_policy_engine_autofix_actions` (
+  `resourceId` varchar(100) COLLATE utf8_bin NOT NULL,
+  `lastActionTime` datetime NOT NULL,
+  `action` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`resourceId`,`lastActionTime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
