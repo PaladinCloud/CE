@@ -85,7 +85,7 @@ public class GCPFetchOrchestrator {
     }
 
     private List<ProjectVH> fetchProjects() {
-        String accountQuery = "SELECT accountId,accountName,status FROM cf_Accounts where platform = 'gcp' and status='configured'";
+        String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'gcp' and accountStatus='configured'";
         List<Map<String,String>> accounts=rdsdbManager.executeQuery(accountQuery);
         List<String> projectList = new ArrayList<>();
         List<ProjectVH> projectDetails=new ArrayList<>();

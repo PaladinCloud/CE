@@ -90,7 +90,7 @@ public class AzureFetchOrchestrator {
 	private List<SubscriptionVH> fetchSubscriptions() {
 
 		List<SubscriptionVH> subscriptionList  = new ArrayList<>();
-		String accountQuery = "SELECT accountId,accountName,status FROM cf_Accounts where platform = 'azure' and status='configured'";
+		String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'azure' and accountStatus='configured'";
 		List<Map<String,String>> accounts=rdsdbManager.executeQuery(accountQuery);
 		List<String> tenantList = new ArrayList<>();
 		for (Map<String,String>account:accounts) {
