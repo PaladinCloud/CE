@@ -116,6 +116,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_MAIL_SERVER': Settings.MAIL_SERVER,
                         'ENV_PACMAN_S3': "pacman-email-templates",
                         'ENV_DATA_IN_DIR': "inventory",
+                        'ENV_CREDENTIAL_DIR': "credential",
                         'ENV_DATA_BKP_DIR': "backup",
                         'ENV_PAC_ROLE': BaseRole.get_input_attr('name'),
                         'ENV_BASE_REGION': AwsRegion.get_output_attr('name'),
