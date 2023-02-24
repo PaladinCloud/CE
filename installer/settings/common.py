@@ -138,7 +138,7 @@ AD_PUBLIC_KEY_URL = "https://login.microsoftonline.com/common/discovery/v2.0/key
 AD_PUBLIC_KEY = "ssyyssdddd" # AD public key
 AD_ADMIN_USER_ID = "adminuser" # Admin user user_id
 ENABLE_AZURE_AD = False   #Azuread configuration
-MEATADATA_XML_FILE = ""  #metadatafile
+METADATA_XML_FILE = ""  #metadatafile
 #event pattern job details
 JOB_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event" #please do not change these, as this may stop scheduling of jobs
 JOB_SOURCE = "paladincloud.jobs-scheduler"

@@ -79,7 +79,7 @@ class IdentityProviderAzure(IdentityProvider):
     provider_name = "AzureAD"
     provider_type = "SAML"
     provider_details = {
-        "MetadataFile" : Settings.MEATADATA_XML_FILE,
+        "MetadataFile" : Settings.METADATA_XML_FILE,
         "IDPSignout": True,
     }
     attribute_mapping = { 
