@@ -553,7 +553,7 @@
     "policyArn": null,
     "status": "ENABLED",
     "userId": "",
-    "policyDisplayName": "Check Storage VNet Integration",
+    "policyDisplayName": "Audit Storage VNet Integration.",
     "createdDate": "2019-11-08",
     "modifiedDate": "2019-11-23",
     "severity": "high",
@@ -645,7 +645,7 @@
     "policyName": "ConfigureActionGroupsInSQLAuditSettings",
     "targetType": "sqlserver",
     "assetGroup": "azure",
-    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-azure-policy-evaluation-results\",\"encrypt\":false},{\"key\":\"azurePolicyEvaluationResults\",\"value\":\"/azure_policyevaluationresults/_search\",\"encrypt\":false},{\"key\":\"policyDefinitionName\",\"value\":\"7ff426e2-515f-405a-91c8-4f2333442eb5\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"AzureSQLAuditLogging_version-1_ConfigureActionGroupsInSQLAuditSettings_sqlserver\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sqlserver\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"azure_ConfigureActionGroups_sqlserver\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-azure-policy-evaluation-results\",\"encrypt\":false},{\"key\":\"azurePolicyEvaluationResults\",\"value\":\"/azure_policyevaluationresults/_search\",\"encrypt\":false},{\"key\":\"policyDefinitionName\",\"value\":\"7ff426e2-515f-405a-91c8-4f2333442eb5\",\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"AzureSQLAuditLogging_version-1_ConfigureActionGroupsInSQLAuditSettings_sqlserver\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"sqlserver\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"azure_ConfigureActionGroups_sqlserver\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -657,7 +657,7 @@
     "createdDate": "2019-11-08",
     "modifiedDate": "2019-11-23",
     "severity": "high",
-    "category": "governance"
+    "category": "operations"
   },
   {
     "policyId": "AzureSQLServerAuthenticationSettings_version-1_EnableAzureADAuthentication_sqlserver",
@@ -1405,7 +1405,7 @@
     "policyName": "Azure_Account_Delete_Azure_SQL_Database_log_alert",
     "targetType": "subscription",
     "assetGroup": "azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Delete Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected alert rule is  configured to Delete Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Sql/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable  Delete Azure SQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Azure_Account_Delete_Azure_SQL_Database_log_alert\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Azure_Account_Delete_Azure_SQL_Database_log_alert\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect Delete Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected alert rule is  configured to Delete Azure SQL Database\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Sql/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable  Delete Azure SQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Azure_Account_Delete_Azure_SQL_Database_log_alert\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Azure_Account_Delete_Azure_SQL_Database_log_alert\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1417,7 +1417,7 @@
     "createdDate": "2022-05-24",
     "modifiedDate": "2022-05-24",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Azure_Account_Deallocate_Virtual_Machine_Event_log_alert",
@@ -1625,7 +1625,7 @@
     "policyName": "Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert",
     "targetType": "subscription",
     "assetGroup": "Azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect delete Postgress DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected alert rule is  configured to detect delete POstgress DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforPostgreSQL/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Delete PostgreSQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"azure_Enable_Account_Delete_PostgreSQLDatabase_log_alert\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect delete Postgress DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected alert rule is  configured to detect delete POstgress DB events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.DBforPostgreSQL/servers/databases/delete\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable Delete PostgreSQL Database log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Azure_Account_Delete_PostgreSQLDatabase_log_alert\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"azure_Enable_Account_Delete_PostgreSQLDatabase_log_alert\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1637,7 +1637,7 @@
     "createdDate": "2022-05-25",
     "modifiedDate": "2022-05-25",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Azure_Create_Network_Security_Group_log_alert",
@@ -1685,7 +1685,7 @@
     "policyName": "Enable_Azure_Account_Create_or_Update_Network_Security_Group_Rule_Event_log_alert",
     "targetType": "subscription",
     "assetGroup": "Azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect create or update Network Security Group Rule events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected alert rule is  configured to detect create or update Network Security Group Rule  events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Network/networkSecurityGroups/securityRules/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable create or update Network Security Group Rule log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Azure_Account_Create_or_Update_Network_Security_Group_Rule_Event_log_alert\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Create_or_Update_Network_Security_Group_Rule_log_alert\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-activity-log-alert\",\"key\":\"policyKey\"},{\"key\":\"failure\",\"value\":\"selected alert rule is not  configured to detect create or update Network Security Group Rule events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"selected alert rule is  configured to detect create or update Network Security Group Rule  events\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"field\",\"value\":\"operationName\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"equals\",\"value\":\"Microsoft.Network/networkSecurityGroups/securityRules/write\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Enable create or update Network Security Group Rule log alert\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Azure_Account_Create_or_Update_Network_Security_Group_Rule_Event_log_alert\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"subscription\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Create_or_Update_Network_Security_Group_Rule_log_alert\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -1697,7 +1697,7 @@
     "createdDate": "2022-07-07",
     "modifiedDate": "2022-07-07",
     "severity": "high",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Azure_Account_Delete_Network_Security_Group_Rule_Event_log_alert",
@@ -2185,7 +2185,7 @@
     "policyName": "Ensure_Web_App_Redirects_All_HTTP_traffic_to_HTTPS",
     "targetType": "webapp",
     "assetGroup": "azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-https-only-rule\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Ensure Web App Redirects All HTTP traffic to HTTPS\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"web apps does not alllow Http traffic to Https\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure Web App Redirects All HTTP traffic to HTTPS\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Ensure_Web_App_Redirects_All_HTTP_traffic_to_HTTPS\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"webapp\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Ensure_Web_App_Redirects_All_HTTP_traffic_to_HTTPS\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-https-only-rule\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Ensure Web App Redirects All HTTP traffic to HTTPS\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"web apps does not alllow Http traffic to Https\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Ensure Web App Redirects All HTTP traffic to HTTPS\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Ensure_Web_App_Redirects_All_HTTP_traffic_to_HTTPS\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"webapp\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Ensure_Web_App_Redirects_All_HTTP_traffic_to_HTTPS\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2305,7 +2305,7 @@
     "policyName": "Enable_Network_Security_for_SQLSERVER",
     "targetType": "nsg",
     "assetGroup": "Azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"policyKey\"},{\"key\":\"protocol\",\"value\":\"udp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1434\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny public access to SQL Server port 1434\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"azure_enable_network_security_SQLSERVER\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"check-for-azure-nsg-rule\",\"key\":\"policyKey\"},{\"key\":\"protocol\",\"value\":\"udp\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"port\",\"value\":\"1434\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Deny public access to SQL Server port 1434\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"critical\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Network_Security_for_SQLSERVER\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"nsg\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"azure_enable_network_security_SQLSERVER\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2585,7 +2585,7 @@
     "policyName": "Set all users option to owner in email notifications for MS defender",
     "targetType": "defender",
     "assetGroup": "azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"set-all-users-to-owner-email-notification\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"In MS defender email notifications for security alerts for a subscription, 'All users with the following roles' should be set to 'Owner'.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In MS defender email notifications for security alerts for the subscription, 'All users with following rules' is set to owner\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In MS defender email notifications for security alerts for the subscription, 'All users with following rules' is not set to owner\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Set all users option to owner in email notifications for MS defender\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Set_all_users_to_owner_email_notifications\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Set_all_users_to_owner_email_notifications\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"set-all-users-to-owner-email-notification\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"In MS defender email notifications for security alerts for a subscription, 'All users with the following roles' should be set to 'Owner'.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In MS defender email notifications for security alerts for the subscription, 'All users with following rules' is set to owner\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In MS defender email notifications for security alerts for the subscription, 'All users with following rules' is not set to owner\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Set all users option to owner in email notifications for MS defender\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Set_all_users_to_owner_email_notifications\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Set_all_users_to_owner_email_notifications\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2597,7 +2597,7 @@
     "createdDate": "2022-10-13",
     "modifiedDate": "2022-10-13",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Enable_Create_or_Update_SQL_Database_Log_Alert",
@@ -2645,7 +2645,7 @@
     "policyName": "Configure additional email address in MS defender email notifications settings",
     "targetType": "defender",
     "assetGroup": "azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"configure-additional-email-address-ms-defender\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"In MS defender email alert settings, Ensure additional email address is configured.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In MS defender email settings, additional email address is configured.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In MS defender email alert settings, additional email address is not configured.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Configure additional email address in MS defender email notifications settings\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Configure_email_in_ms_defender\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Configure_email_in_ms_defender\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"configure-additional-email-address-ms-defender\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"In MS defender email alert settings, Ensure additional email address is configured.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In MS defender email settings, additional email address is configured.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In MS defender email alert settings, additional email address is not configured.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Configure additional email address in MS defender email notifications settings\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Configure_email_in_ms_defender\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Configure_email_in_ms_defender\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2657,7 +2657,7 @@
     "createdDate": "2022-10-18",
     "modifiedDate": "2022-10-18",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Set_notify_alerts_severity_to_high",
@@ -2665,7 +2665,7 @@
     "policyName": "Set notify alerts severity to high in MS defender",
     "targetType": "defender",
     "assetGroup": "azure",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"set-notify-alerts-severity-to-high\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Set notify email alerts severity to high in MS defender.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In MS defender email settings, notify alerts severity is set to high.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In MS defender email settings, notify alerts severity is not set to high.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Set notify alerts severity to high in MS defender\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"Governance\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Set_notify_alerts_severity_to_high\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Set_notify_alerts_severity_to_high\",\"policyType\":\"ManagePolicy\"}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"set-notify-alerts-severity-to-high\",\"key\":\"policyKey\"},{\"key\":\"description\",\"value\":\"Set notify email alerts severity to high in MS defender.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"SUCCESS\",\"value\":\"In MS defender email settings, notify alerts severity is set to high.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"violationReason\",\"value\":\"In MS defender email settings, notify alerts severity is not set to high.\",\"isValueNew\":true,\"encrypt\":false},{\"key\":\"policyName\",\"value\":\"Set notify alerts severity to high in MS defender\",\"isValueNew\":true,\"encrypt\":false},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"operations\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Set_notify_alerts_severity_to_high\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"defender\",\"pac_ds\":\"azure\",\"assetGroup\":\"azure\",\"policyUUID\":\"Set_notify_alerts_severity_to_high\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
@@ -2677,7 +2677,7 @@
     "createdDate": "2022-10-18",
     "modifiedDate": "2022-10-18",
     "severity": "medium",
-    "category": "security"
+    "category": "operations"
   },
   {
     "policyId": "Send_Scan_Reports_Should_Be_Configured",
