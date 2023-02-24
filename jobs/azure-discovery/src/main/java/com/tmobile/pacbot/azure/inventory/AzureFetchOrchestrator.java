@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class AzureFetchOrchestrator {
 	
 	@Autowired
 	AzureCredentialProvider azureCredentialProvider;
+
+	@Autowired
+	RDSDBManager rdsdbManager;
 	
 	/** The s 3 uploader. */
 	@Autowired
@@ -78,7 +82,7 @@ public class AzureFetchOrchestrator {
 			
 			
 		}catch(Exception e){
-
+		log.info(e.getMessage());
 		}
 		return null;
 	}
@@ -86,10 +90,13 @@ public class AzureFetchOrchestrator {
 	private List<SubscriptionVH> fetchSubscriptions() {
 
 		List<SubscriptionVH> subscriptionList  = new ArrayList<>();
-		
-		if(tenants != null && !"".equals(tenants)){
-			String[] tenantList = tenants.split(",");
-			for(String tenant : tenantList){
+		String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'azure' and accountStatus='configured'";
+		List<Map<String,String>> accounts=rdsdbManager.executeQuery(accountQuery);
+		List<String> tenantList = new ArrayList<>();
+		for (Map<String,String>account:accounts) {
+			tenantList.add(account.get("accountId"));
+		}
+		for(String tenant : tenantList){
 				Authenticated azure = azureCredentialProvider.authenticate(tenant);
 				PagedList<Subscription> subscriptions = azure.subscriptions().list();
 				for(Subscription subscription : subscriptions) {
@@ -99,7 +106,7 @@ public class AzureFetchOrchestrator {
 					subscriptionVH.setSubscriptionName(subscription.displayName());
 					subscriptionList.add(subscriptionVH);
 				}
-			}
+
 		}
 		log.info("Total Subscription in Scope : {}",subscriptionList.size());
 		log.info("Subscriptions : {}",subscriptionList);
