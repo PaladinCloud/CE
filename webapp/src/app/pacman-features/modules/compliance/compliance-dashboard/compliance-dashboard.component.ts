@@ -126,11 +126,24 @@ export class ComplianceDashboardComponent implements OnInit {
   columnWidths = {"Title": 3, "Violations": 1, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
       
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
+      if(severeness[ASeverity] == severeness[BSeverity]){
+        return a['Violations']<b['Violations'] ? -1: 1
+      }
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+    Category: (a, b, isAsc) => {
+      let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ACategory = a["Category"].valueText??"default";
+      const BCategory = b["Category"].valueText??"default";
+      if(priority[ACategory] == priority[BCategory]){
+        return a['Violations']<b['Violations'] ? -1: 1
+      }
+      return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Compliance: (a: string, b: string, isAsc) => {
       a = a["Compliance"].valueText;
@@ -1145,7 +1158,7 @@ export class ComplianceDashboardComponent implements OnInit {
     return monthString + "-" + dayString + "-" + year;
   }
 
-  handlePopClick() {
+  handlePopClick(event) {
     const fileType = "csv";
 
     try {
@@ -1161,10 +1174,9 @@ export class ComplianceDashboardComponent implements OnInit {
         ag: this.selectedAssetGroup,
         filter: {
           domain: this.selectedDomain,
-          "policyCategory.keyword": this.ruleCatFilter,
         },
         from: 0,
-        searchtext: this.searchTxt,
+        searchtext: event.searchTxt,
         size: this.totalRows,
       };
 

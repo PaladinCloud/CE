@@ -499,6 +499,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   download(){
-    this.downloadClicked.emit();
+    const event = {
+      searchTxt: this.searchQuery,
+      filters: this.filteredArray
+    }
+    this.downloadClicked.emit(event);
   }
 }

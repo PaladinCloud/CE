@@ -45,11 +45,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   columnNamesMap = {name: "Title"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
       
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+    Category: (a, b, isAsc) => {
+      let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ACategory = a["Category"].valueText??"default";
+      const BCategory = b["Category"].valueText??"default";
+      return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
   tableImageDataMap = {
@@ -172,7 +179,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     // this.state.searchInColumns = event;
   }
 
-  handlePopClick() {
+  handlePopClick(event) {
     const fileType = "csv";
 
     try {
@@ -180,15 +187,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
       queryParams = {
         fileFormat: "csv",
-        serviceId: 1,
+        serviceId: 2,
         fileType: fileType,
       };
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
+        filter: {
+          domain: this.selectedDomain,
+        },
         from: 0,
-        searchtext: this.searchTxt,
-        size: this.typeObj['All Policies'],
+        searchtext: event.searchTxt,
+        size: this.totalRows,
       };
 
       const downloadUrl = environment.download.url;
@@ -199,8 +209,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         downloadUrl,
         downloadMethod,
         downloadRequest,
-        "Policy Knowledgebase",
-        this.typeObj['All Policies']
+        "Policy",
+        this.totalRows
       );
     } catch (error) {
       this.logger.log("error", error);
