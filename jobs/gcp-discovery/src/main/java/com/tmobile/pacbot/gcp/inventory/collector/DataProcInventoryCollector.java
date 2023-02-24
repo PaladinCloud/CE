@@ -32,7 +32,7 @@ public class DataProcInventoryCollector {
             logger.debug("Number of regions {}",regions.size());
             logger.debug("Regions are:{}",regions);
             for(String region:regions) {
-                ClusterControllerClient clusterControllerClient = gcpCredentialsProvider.getDataProcClient(region);
+                ClusterControllerClient clusterControllerClient = gcpCredentialsProvider.getDataProcClient(region,project.getProjectId());
                 ClusterControllerClient.ListClustersPagedResponse clusters = clusterControllerClient.listClusters(project.getProjectId(), region);
                 logger.debug("List populated for region {}",region);
                 for (Cluster cluster : clusters.iterateAll()) {

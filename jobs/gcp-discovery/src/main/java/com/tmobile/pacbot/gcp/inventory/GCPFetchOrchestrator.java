@@ -93,8 +93,8 @@ public class GCPFetchOrchestrator {
                 projectList.add(account.get("accountId"));
         }
         try {
-            CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager();
             for(String projectId:projectList){
+                CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager(projectId);
 
                 CloudResourceManager.Projects.Get project = resource.projects().get(projectId);
                 Project p = project.execute();

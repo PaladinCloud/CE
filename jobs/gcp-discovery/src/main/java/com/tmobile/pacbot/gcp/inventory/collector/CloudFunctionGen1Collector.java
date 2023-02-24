@@ -37,7 +37,7 @@ public class CloudFunctionGen1Collector {
             regions.remove("global");
             logger.info("fetching regions for CloudFunctionGen1Collector {} ::", regions.size());
             logger.debug("Project name: {} and id :{}", project.getProjectName(), project.getProjectId());
-            CloudFunctionsServiceClient cloudFunctionsServiceClient = gcpCredentialsProvider.getFunctionClientGen1();
+            CloudFunctionsServiceClient cloudFunctionsServiceClient = gcpCredentialsProvider.getFunctionClientGen1(project.getProjectId());
             for(String region : regions) {
                 String parent = "projects/" + project.getProjectId() + "/locations/" + region;
                 ListFunctionsRequest listFunctionsRequest = ListFunctionsRequest.newBuilder().setParent(parent).build();

@@ -110,5 +110,15 @@ public class FileGenerator {
         }
         return true;
     }
+    public static void writeToFilePath(String filename, String data, boolean appendto) throws IOException {
+        log.debug("Write to File : {}", filename);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, appendto))) {
+            bw.write(data);
+            bw.flush();
+        } catch (IOException e) {
+            log.error("Write to File :{} failed", filename, e);
+            throw e;
+        }
+    }
 
 }
