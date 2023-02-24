@@ -27,7 +27,7 @@ public class IAMUserCollector {
     public List<IAMUserVH> fetchIamUsers(ProjectVH project) throws GeneralSecurityException, IOException {
         List<IAMUserVH> iamUserVHS= new ArrayList<>();
         CloudResourceManager.Projects.GetIamPolicy iamPolicy = null;
-        iamPolicy = gcpCredentialsProvider.getCloudResourceManager().projects().getIamPolicy(project.getProjectId(), new GetIamPolicyRequest());
+        iamPolicy = gcpCredentialsProvider.getCloudResourceManager(project.getProjectId()).projects().getIamPolicy(project.getProjectId(), new GetIamPolicyRequest());
         List<Binding> binds = iamPolicy.execute().getBindings();
         if(binds!=null){
             for (com.google.api.services.cloudresourcemanager.model.Binding binding : binds) {

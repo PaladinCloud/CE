@@ -1,12 +1,15 @@
 package com.tmobile.cso.pacman.qualys.util;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.common.io.BaseEncoding;
 
@@ -44,5 +47,16 @@ public class Util {
         authToken.put("Content-Type", ContentType.APPLICATION_JSON.toString());
         authToken.put("Authorization", "Basic "+base64Creds);
         return authToken;
+    }
+    public static Map<String,String> getJsonData(String jsonString){
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map= Collections.emptyMap();
+        try {
+            // convert JSON string to Map
+            map = mapper.readValue(jsonString, Map.class);
+        } catch (IOException e) {
+            LOGGER.error("Error in parsing json data",e);
+        }
+        return map;
     }
 }

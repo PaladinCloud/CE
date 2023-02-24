@@ -28,7 +28,7 @@ public class StorageCollector {
     public List<StorageVH> fetchStorageInventory(ProjectVH project) throws IOException {
         logger.debug("StorageCollector started");
         List<StorageVH> storageList = new ArrayList<>();
-        Storage storageClient = gcpCredentialsProvider.getStorageClient();
+        Storage storageClient = gcpCredentialsProvider.getStorageClient(project.getProjectId());
 
         Page<Bucket> buckets = storageClient.list();
 

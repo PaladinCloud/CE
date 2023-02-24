@@ -23,7 +23,7 @@ public class LoadBalancerCollector {
     GCPCredentialsProvider gcpCredentialsProvider;
     private static final Logger logger = LoggerFactory.getLogger(LoadBalancerCollector.class);
     public List<LoadBalancerVH> fetchLoadBalancerInventory(ProjectVH project) throws IOException {
-       Iterable<UrlMap> urlmap= gcpCredentialsProvider.getURLMap().list(project.getProjectId()).iterateAll();
+       Iterable<UrlMap> urlmap= gcpCredentialsProvider.getURLMap(project.getProjectId()).list(project.getProjectId()).iterateAll();
        List<LoadBalancerVH> loadBalancerVHList=new ArrayList<>();
        for(UrlMap u:urlmap) {
            LoadBalancerVH loadBalancerVH = new LoadBalancerVH();
@@ -33,7 +33,7 @@ public class LoadBalancerCollector {
            loadBalancerVH.setProjectId(project.getProjectId());
            loadBalancerVH.setProjectName(project.getProjectName());
            loadBalancerVH.setRegion(u.getRegion());
-           Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient().list(project.getProjectId()).iterateAll();
+           Iterable<TargetHttpsProxy> httpsProxies = gcpCredentialsProvider.getTargetHttpsProxiesClient(project.getProjectId()).list(project.getProjectId()).iterateAll();
            List<String> targetHttpsProxyVH = new ArrayList<>();
            List<String> sslPolicyList=new ArrayList<>();
            List<HttpsProxyVH> httpProxyDetailList = new ArrayList<>();
@@ -55,14 +55,14 @@ public class LoadBalancerCollector {
            loadBalancerVH.setTargetHttpsProxy(targetHttpsProxyVH);
            loadBalancerVH.setQuicNegotiation(quicEnabledList);
 
-           Iterable<TargetSslProxy> sslProxies=gcpCredentialsProvider.getTargetSslProxiesClient().list(project.getProjectId()).iterateAll();
+           Iterable<TargetSslProxy> sslProxies=gcpCredentialsProvider.getTargetSslProxiesClient(project.getProjectId()).list(project.getProjectId()).iterateAll();
            for(TargetSslProxy targetSslProxy:sslProxies){
                sslPolicyList.add(targetSslProxy.getSslPolicy());
                targetSslProxy.getName();
            }
 
            List<SslPolicyVH>sslPolicyVHList=new ArrayList<>();
-               Iterable<SslPolicy> sslPolicies = gcpCredentialsProvider.getSslPoliciesClient().list(project.getProjectId()).iterateAll();
+               Iterable<SslPolicy> sslPolicies = gcpCredentialsProvider.getSslPoliciesClient(project.getProjectId()).list(project.getProjectId()).iterateAll();
                for (SslPolicy sslPolicy : sslPolicies) {
                    SslPolicyVH sslPolicyVH = new SslPolicyVH();
                    sslPolicyVH.setMinTlsVersion(sslPolicy.getMinTlsVersion());
@@ -76,7 +76,7 @@ public class LoadBalancerCollector {
 
            String backendServiceName=u.getDefaultService().substring(u.getDefaultService().lastIndexOf('/')+1);
            try {
-               BackendServiceLogConfig backendServiceLogConfig = gcpCredentialsProvider.getBackendServiceClient().get(project.getProjectId(), backendServiceName).getLogConfig();
+               BackendServiceLogConfig backendServiceLogConfig = gcpCredentialsProvider.getBackendServiceClient(project.getProjectId()).get(project.getProjectId(), backendServiceName).getLogConfig();
                loadBalancerVH.setLogConfigEnabled(backendServiceLogConfig.getEnable());
            }catch (Exception e)
            {

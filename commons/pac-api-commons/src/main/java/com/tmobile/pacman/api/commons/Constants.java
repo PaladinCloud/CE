@@ -314,6 +314,7 @@ public interface Constants {
     String NPE_ENV = "NPE";
     String OTHER_ENV = "Others";
     String UNTAGGED_ENV = "Untagged";
+    String QUALYS = "qualys";
     String PERCENTAGE = "percentage";
     String PROD_PATTERN = "^(((prod)(uction)?)|((prd).*))(:+(((prod)(uction)?)|((prd).*)))?";
     String STG_PATTERN = "(^(stag|stg).*)|(.*:+(stag|stg).*)";

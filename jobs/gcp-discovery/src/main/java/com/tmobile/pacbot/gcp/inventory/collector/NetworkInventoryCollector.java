@@ -21,7 +21,7 @@ public class NetworkInventoryCollector {
     private static final Logger logger = LoggerFactory.getLogger(NetworkInventoryCollector.class);
     public List<NetworkVH> fetchNetworkInventory(ProjectVH project) throws Exception {
         List<NetworkVH> networkVHList=new ArrayList<>();
-        Iterable<Network> networkList = gcpCredentialsProvider.getNetworksClient().list(project.getProjectId()).iterateAll();
+        Iterable<Network> networkList = gcpCredentialsProvider.getNetworksClient(project.getProjectId()).list(project.getProjectId()).iterateAll();
         for (Network network:networkList) {
             NetworkVH networkVH=new NetworkVH();
             networkVH.setId(String.valueOf(network.getId()));
