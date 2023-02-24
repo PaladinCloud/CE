@@ -374,4 +374,11 @@ public class AssetGroupUtil {
         JsonObject resultJson = new JsonParser().parse(issuesCountJson).getAsJsonObject();
         return  resultJson.getAsJsonObject("data").getAsJsonObject("distribution").get("total_issues").getAsString();
     }
+    @SuppressWarnings("unchecked")
+    public static String fetchAssetCount(String asstApiUri, String token, String platform, String accountId) throws Exception {
+        String assetCountJson = HttpUtil.get(asstApiUri + "/count?ag="+platform+"&accountId="+accountId,token);
+        JsonObject resultJson = new JsonParser().parse(assetCountJson).getAsJsonObject();
+        String assetCount =  resultJson.getAsJsonObject("data").get("totalassets").getAsString();
+        return assetCount;
+    }
 }

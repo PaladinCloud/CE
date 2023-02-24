@@ -64,12 +64,13 @@ public class AssetCountController {
             @RequestParam(name = "type", required = false) String type,
             @RequestParam(name = "domain", required = false) String domain,
             @RequestParam(name = "application", required = false) String application,
-            @RequestParam(name = "provider", required = false) String provider) {
+            @RequestParam(name = "provider", required = false) String provider,
+            @RequestParam(name = "accountId", required = false,defaultValue = "notSet") String accountId) {
         if (type == null) {
             type = "all";
         }
         List<Map<String, Object>> countMap = assetService.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type,
-                domain, application, provider);
+                domain, application, provider,accountId);
         LongSummaryStatistics totalCount = countMap.stream()
                 .collect(Collectors.summarizingLong(map -> (Long) map.get(Constants.COUNT)));
         Map<String, Object> response = new HashMap<>();
