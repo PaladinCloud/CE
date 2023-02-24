@@ -137,4 +137,4 @@ BATCH_INSTANCE_TYPE = "m5.xlarge"     #m4.xlarge,m5.xlarge & c5.xlarge (follow b
 #AZURE_AD_CONFIGURATION
 #optianal configuration if you would like to setup AzureAD AUTHENTICATION  
 ENABLE_AZURE_AD = False  
-MEATADATA_XML_FILE = "" 
+METADATA_XML_FILE = "" 
