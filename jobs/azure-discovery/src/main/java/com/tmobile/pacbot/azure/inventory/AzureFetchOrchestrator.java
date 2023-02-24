@@ -106,10 +106,21 @@ public class AzureFetchOrchestrator {
 					subscriptionVH.setSubscriptionName(subscription.displayName());
 					subscriptionList.add(subscriptionVH);
 				}
-
+			populateTenantsSubscription(tenant,subscriptionList);
 		}
 		log.info("Total Subscription in Scope : {}",subscriptionList.size());
 		log.info("Subscriptions : {}",subscriptionList);
 		return subscriptionList;
+	}
+
+	private void populateTenantsSubscription(String tenant, List<SubscriptionVH> subscriptionList) {
+		String query="INSERT IGNORE INTO cf_AzureTenantSubscription (tenant,subscription) VALUES(?,?)";
+		List tenantSubscription=new ArrayList<>();
+		tenantSubscription.add(tenant);
+		for(SubscriptionVH subscriptionVH:subscriptionList){
+			tenantSubscription.add(subscriptionVH.getSubscriptionId());
+			rdsdbManager.executeUpdate(query,tenantSubscription);
+			tenantSubscription.remove(subscriptionVH.getSubscriptionId());
+		}
 	}
 }
