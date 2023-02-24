@@ -122,9 +122,10 @@ DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@',
 
 #mandatory tags for tagging polices
 MANDATORY_TAGS = "Application,Environment"
-ACCOUNT_ID = "765245176332"
-ACCOUNT_NAME = "awsAccount"
-ACCOUNT_PLATFORM = "aws"
+# Add your first ACCOUNT_ID,ACCOUNT_NAME and ACCOUNT_PLATFORM here
+ACCOUNT_ID = ""
+ACCOUNT_NAME = ""
+ACCOUNT_PLATFORM = ""
 
 #BATCH CONFIGURATION 
 BATCH_JOB_MEMORY = 3072
