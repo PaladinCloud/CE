@@ -114,7 +114,7 @@ public class AzureFetchOrchestrator {
 	}
 
 	private void populateTenantsSubscription(String tenant, List<SubscriptionVH> subscriptionList) {
-		String query="INSERT INTO cf_AzureTenantSubscription (tenant,subscription) VALUES(?,?)";
+		String query="INSERT IGNORE INTO cf_AzureTenantSubscription (tenant,subscription) VALUES(?,?)";
 		List tenantSubscription=new ArrayList<>();
 		tenantSubscription.add(tenant);
 		for(SubscriptionVH subscriptionVH:subscriptionList){

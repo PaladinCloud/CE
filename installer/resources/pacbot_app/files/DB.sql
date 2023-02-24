@@ -1000,7 +1000,8 @@ TRUNCATE TABLE cf_Policy;
 /*Create table for azure tenant and subscription mapping*/
  CREATE TABLE IF NOT EXISTS cf_AzureTenantSubscription(
  tenant varchar(255),
- subscription varchar(255)
+ subscription varchar(255),
+ PRIMARY KEY(subscription)
  );
 
 /*Insert task to necessary tables*/
