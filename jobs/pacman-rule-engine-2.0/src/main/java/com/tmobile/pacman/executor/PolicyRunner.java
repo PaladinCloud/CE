@@ -50,6 +50,7 @@ public interface PolicyRunner {
                 break;
             case "GCP":
                 result.getAnnotation().put(PacmanSdkConstants.PROJECT_NAME, resource.get(PacmanSdkConstants.PROJECT_NAME));
+                result.getAnnotation().put(PacmanSdkConstants.PROJECT_ID,resource.get(PacmanSdkConstants.PROJECT_ID));
                 break;
         }
     }

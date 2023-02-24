@@ -137,11 +137,11 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public long getIssuesCount(String assetGroup, String policyId, String domain) throws ServiceException {
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws ServiceException {
         Assert.notNull(assetGroup, "asset group cannot be empty or blank");
         // transform the data here
         try {
-            return repository.getIssuesCount(assetGroup, policyId, domain);
+            return repository.getIssuesCount(assetGroup, policyId, domain,accountId);
         } catch (DataException e) {
             throw new ServiceException(e);
         }
@@ -164,7 +164,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Object> getDistribution(String assetGroup, String domain) throws ServiceException {
+    public Map<String, Object> getDistribution(String assetGroup, String domain,String accountId) throws ServiceException {
         try {
             Map<String, Object> distribution = new HashMap<>();
             // get Policies mapped to targetType
@@ -173,7 +173,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             List<Object> policies = repository.getPolicyIds(targetTypes);
             logger.info("Compliance API >> Fetched policies from repository: {}", policies);
             // get issue count
-            Long totalIssues = getIssuesCount(assetGroup, null, domain);
+            Long totalIssues = getIssuesCount(assetGroup, null, domain,accountId);
             logger.info("Compliance API >> Fetched total issues count from repository: {}", totalIssues);
             // get severity distribution
             Map<String, Long> policieseverityDistribution = repository.getPoliciesDistribution(assetGroup, domain, policies,

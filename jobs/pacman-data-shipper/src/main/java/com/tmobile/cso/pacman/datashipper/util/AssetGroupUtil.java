@@ -73,7 +73,6 @@ public class AssetGroupUtil {
         try {
             typeCounts = (List<Map<String, Object>>) ((Map<String, Object>) typeCountMap.get("data")).get("assetcount");
         } catch (Exception e) {
-            LOGGER.error("Error in fetchTypeCounts",e);
             throw e;
         }
         return typeCounts;
@@ -101,7 +100,6 @@ public class AssetGroupUtil {
             if (output != null)
                 patchingInfo.putAll(data.get(OUTPUT));
         } catch (Exception e) {
-            LOGGER.error("Error in fetchVulnCount",e);
             throw e;
         }
         return patchingInfo;
@@ -145,7 +143,6 @@ public class AssetGroupUtil {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error in fetchVulnDistribution" , e);
             throw e;
         }
         return vulnInfo;
@@ -179,7 +176,6 @@ public class AssetGroupUtil {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error in fetchComplianceInfo" , e);
             throw e;
         }
         return compInfo;
@@ -226,7 +222,6 @@ public class AssetGroupUtil {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error retrieving Policy Compliance Info" , e);
             throw e;
         }
         return ruleInfoList;
@@ -254,7 +249,6 @@ public class AssetGroupUtil {
             vulnSummary.put(NON_COMPLIANT, noncompliant);
             vulnSummary.put(COMPLIANT, total - noncompliant);
         } catch (Exception e) {
-            LOGGER.error("Error retrieving vuln sumamary " , e);
             throw e;
         }
         return vulnSummary;
@@ -284,7 +278,6 @@ public class AssetGroupUtil {
             taggingSummary.put(NON_COMPLIANT, noncompliant);
             taggingSummary.put(COMPLIANT, compliant);
         } catch (Exception e) {
-            LOGGER.error("Error retrieving tagging sumamary " , e);
             throw e;
         }
         return taggingSummary;
@@ -313,7 +306,6 @@ public class AssetGroupUtil {
             certSummary.put(NON_COMPLIANT, noncompliant);
             certSummary.put(COMPLIANT, compliant);
         } catch (Exception e) {
-            LOGGER.error("Error retrieving cert sumamary " , e);
             throw e;
         }
         return certSummary;
@@ -360,7 +352,6 @@ public class AssetGroupUtil {
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error retrieving issues info " , e);
             throw e;
         }
         return issueInfoList;
@@ -374,9 +365,13 @@ public class AssetGroupUtil {
         try {
             assetCounts=(Map<String, Object>) assetCountMap.get("data");
         } catch (Exception e) {
-            LOGGER.error("Error in fetchTypeCounts",e);
             throw e;
         }
         return assetCounts;
+    }
+    public static String fetchViolationsCount(String compApiUrl, String token, String platform, String accountId) throws Exception {
+        String issuesCountJson = HttpUtil.get(compApiUrl + "/issues/distribution?ag="+platform+"&accountId="+accountId,token);
+        JsonObject resultJson = new JsonParser().parse(issuesCountJson).getAsJsonObject();
+        return  resultJson.getAsJsonObject("data").getAsJsonObject("distribution").get("total_issues").getAsString();
     }
 }
