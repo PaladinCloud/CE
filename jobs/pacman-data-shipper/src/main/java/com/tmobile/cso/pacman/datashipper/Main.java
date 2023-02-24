@@ -15,6 +15,7 @@ import com.tmobile.cso.pacman.datashipper.es.ESManager;
 import com.tmobile.cso.pacman.datashipper.util.Constants;
 import com.tmobile.cso.pacman.datashipper.util.ErrorManageUtil;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
+import com.tmobile.cso.pacman.datashipper.entity.IssueCountManager;
 
 
 /**
@@ -65,6 +66,7 @@ public class Main implements Constants {
         ESManager.configureIndexAndTypes(ds,errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
+        errorList.addAll(new IssueCountManager().populateViolationsCount());
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ",status);
         return status;

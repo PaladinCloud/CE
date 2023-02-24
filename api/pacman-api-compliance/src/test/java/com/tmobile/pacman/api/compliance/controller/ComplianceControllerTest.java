@@ -78,11 +78,11 @@ public class ComplianceControllerTest {
     
     @Test
     public void getIssuesCountTest() throws Exception {
-        when(complianceService.getIssuesCount(anyString(),anyString(),anyString())).thenReturn(1000l);
+        when(complianceService.getIssuesCount(anyString(),anyString(),anyString(),null)).thenReturn(1000l);
         assertThat(complianceController.getIssuesCount("ag","policyId","domain"), is(notNullValue()));
         assertThat(complianceController.getIssuesCount("","",""), is(notNullValue()));
         
-        when(complianceService.getIssuesCount(anyString(),anyString(),anyString())).thenThrow(new ServiceException());
+        when(complianceService.getIssuesCount(anyString(),anyString(),anyString(),null)).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.getIssuesCount("ag","policyId","domain");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
@@ -90,13 +90,13 @@ public class ComplianceControllerTest {
     
     @Test
     public void getDistributionTest() throws Exception {
-        when(complianceService.getDistribution(anyString(),anyString())).thenReturn(new HashMap<>());
-        assertThat(complianceController.getDistribution("ag","domain"), is(notNullValue()));
-        assertThat(complianceController.getDistribution("",""), is(notNullValue()));
+        when(complianceService.getDistribution(anyString(),anyString(),null)).thenReturn(new HashMap<>());
+        assertThat(complianceController.getDistribution("ag","domain",null), is(notNullValue()));
+        assertThat(complianceController.getDistribution("","",null), is(notNullValue()));
         
-        when(complianceService.getDistribution(anyString(),anyString())).thenThrow(new ServiceException());
+        when(complianceService.getDistribution(anyString(),anyString(),null)).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
-        ResponseEntity<Object> responseObj = complianceController.getDistribution("ag","domain");
+        ResponseEntity<Object> responseObj = complianceController.getDistribution("ag","domain",null);
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
     }
     

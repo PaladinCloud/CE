@@ -122,17 +122,17 @@ public class ComplianceServiceImplTest {
         long issueCount = 100;
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
-                        anyString())).thenReturn(issueCount);
+                        anyString(),null)).thenReturn(issueCount);
         assertThat(complianceService.getIssuesCount("dummyString",
-                "dummyString", "dummyString"), is(100l));
+                "dummyString", "dummyString",null), is(100l));
 
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
-                        anyString())).thenThrow(new DataException());
+                        anyString(),null)).thenThrow(new DataException());
 
         assertThatThrownBy(
                 () -> complianceService.getIssuesCount("dummyString",
-                        "dummyString", "dummyString")).isInstanceOf(
+                        "dummyString", "dummyString",null)).isInstanceOf(
                 ServiceException.class);
     }
 
@@ -150,7 +150,7 @@ public class ComplianceServiceImplTest {
         long issueCount = 100;
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
-                        anyString())).thenReturn(issueCount);
+                        anyString(),null)).thenReturn(issueCount);
         when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
         when(
@@ -166,7 +166,7 @@ public class ComplianceServiceImplTest {
                         anyObject())).thenReturn(policyCategoryDistubutionMap);
 
         assertThat(
-                complianceService.getDistribution("dummyString", "dummyString"),
+                complianceService.getDistribution("dummyString", "dummyString",null),
                 is(notNullValue()));
     }
 

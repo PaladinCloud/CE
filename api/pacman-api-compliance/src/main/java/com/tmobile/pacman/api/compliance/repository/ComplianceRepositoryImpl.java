@@ -170,7 +170,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getIssuesCount(java.lang.String, java.lang.String, java.lang.String)
      */
-    public long getIssuesCount(String assetGroup, String policyId, String domain) throws DataException {
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws DataException {
         long totalIssueCount;
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
@@ -180,6 +180,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Object> Policies = getPolicyIds(targetTypes);
         if (!Strings.isNullOrEmpty(policyId)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyId);
+        }
+        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("aws"))
+        {
+            mustFilter.put("accountid.keyword",accountId);
+        }
+        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("azure"))
+        {
+            mustFilter.put("subscription.keyword",accountId);
+        }
+
+        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("gcp"))
+        {
+            mustFilter.put("projectId.keyword",accountId);
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), OPEN);

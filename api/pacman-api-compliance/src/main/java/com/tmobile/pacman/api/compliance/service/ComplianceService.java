@@ -51,20 +51,22 @@ public interface ComplianceService {
      * @param assetGroup the asset group
      * @param policyId the policy id
      * @param domain the domain
+     * @param accountId the account id
      * @return long
      * @throws ServiceException the service exception
      */
-    public long getIssuesCount(String assetGroup, String policyId, String domain) throws ServiceException;
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws ServiceException;
 
     /**
      * Gets Compliance distribution by policy category and severity.
      *
      * @param assetGroup the asset group
      * @param domain the domain
+     * @param accountId the account id
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    public Map<String, Object> getDistribution(String assetGroup, String domain) throws ServiceException;
+    public Map<String, Object> getDistribution(String assetGroup, String domain,String accountId) throws ServiceException;
    
    
     /**
