@@ -49,7 +49,6 @@ MAIL_SMTP_AUTH = ""
 MAIL_SMTP_SSL_ENABLE = "true"
 MAIL_SMTP_SSL_TEST_CONNECTION = "false"
 
-USER_EMAIL_ID = ""
 
 # System reads below data from user if not updated here
 # Value should be numeric 1 or 2 or 3 
@@ -127,3 +126,6 @@ MANDATORY_TAGS = "Application,Environment"
 BATCH_JOB_MEMORY = 3072
 BATCH_JOB_VCPU = 1
 BATCH_INSTANCE_TYPE = "m5.xlarge"     #m4.xlarge,m5.xlarge & c5.xlarge (follow batch upgrade document)
+
+#AutoFix Configuration
+DEFAULT_RESOURCE_OWNER = ""   #Enter Email ID, All AutoFix notification send to this mail ID.

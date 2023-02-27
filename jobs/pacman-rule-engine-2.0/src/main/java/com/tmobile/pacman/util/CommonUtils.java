@@ -561,6 +561,16 @@ public class CommonUtils {
         return Long.toString(h);
     }
 
+    public static String buildPolicyUUIDFromJson(String json) {
+		JsonElement jsonelement = new JsonParser().parse(json);
+		JsonObject jobject = jsonelement.getAsJsonObject();
+		if (!jobject.isJsonNull()) {
+			return jobject.get("policyUUID").getAsString();
+		}
+		return null;
+    }
+    
+    
     /**
      * Creates the param map.
      *
@@ -582,7 +592,51 @@ public class CommonUtils {
      * @param json the json
      * @return the map
      */
-	private static Map<String, String> buildMapFromJson(String json) {
+    private static Map<String, String> buildMapFromJson(String json) {
+        JsonParser parser = new JsonParser();
+        String ruleUUID = "";
+        JsonElement element = parser.parse(json);
+        JsonObject obj = element.getAsJsonObject();
+        Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
+        if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+            ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
+        }
+        Map<String, String> toReturn = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : entries) {
+            if (entry.getValue().isJsonArray()) {
+                toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
+            } else {
+                toReturn.put(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+
+        return toReturn;
+
+    } 
+    
+    
+    /**
+     * Creates the param map.z
+     *
+     * @param ruleParams the rule params
+     * @return the map
+     */
+    public static Map<String, String> createPolicyParamMap(String ruleParams) {
+       /* // return Splitter.on("#").withKeyValueSeparator("=").split(ruleParams);
+        if (ruleParams.contains("*")) // this is for backward compatibility
+            return buildMapFromString(ruleParams, "*", "=");
+        else {*/
+            return buildPolicyMapFromJson(ruleParams);
+       // }
+    }
+
+    /**
+     * Builds the map from json.
+     *
+     * @param json the json
+     * @return the map
+     */
+	private static Map<String, String> buildPolicyMapFromJson(String json) {
 		JsonParser parser = new JsonParser();
 		String ruleUUID = "";
 		JsonElement element = parser.parse(json);

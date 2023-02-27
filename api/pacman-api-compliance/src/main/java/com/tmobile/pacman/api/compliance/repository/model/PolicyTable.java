@@ -52,6 +52,7 @@ public class PolicyTable {
 	private String warningMessage;
 	private String fixMessage;
 	private String violationMessage;
+	private Integer elapsedTime;
 	
 	public String getPolicyId() {
 		return policyId;
@@ -262,6 +263,12 @@ public class PolicyTable {
 	}
 	public void setViolationMessage(String violationMessage) {
 		this.violationMessage = violationMessage;
+	}
+	public Integer getElapsedTime() {
+		return elapsedTime;
+	}
+	public void setElapsedTime(Integer elapsedTime) {
+		this.elapsedTime = elapsedTime;
 	}
 	
 	

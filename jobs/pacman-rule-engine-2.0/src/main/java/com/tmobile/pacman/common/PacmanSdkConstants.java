@@ -618,5 +618,6 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String AUTOFIX_POLICY_FIX_MESSAGE = "fixMessage";
     String AUTOFIX_POLICY_VIOLATION_MESSAGE = "violationMessage";
     String POLICY_STATUS_ENABLED = "ENABLED";
+    String AUTOFIX_POLICY_ELAPSED_TIME = "elapsedTime";
 
 }

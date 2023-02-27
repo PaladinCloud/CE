@@ -29,7 +29,7 @@ def get_rule_engine_cloudwatch_rules_aws_var():
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
             'policyId': variable_dict_input[index],
-            'policyParams': variable_dict_input[index],
+            'policyParams': json.dumps({ "policyUUID":variable_dict_input[index] }),
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],

@@ -130,18 +130,18 @@ public class PolicyExecutor {
         //this is elastic search type to put rule engine stats in  
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
-        if (args.length > 0) {
-            String policyID = args[0];
+        if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
+            String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
-            policyDetailsUrl += args[0];
+            policyDetailsUrl += policyUUID;
             String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
             if(Strings.isNullOrEmpty(policyDetails )) {
             	logger.error(
-                        "Policy details for the policyID {} not found ",policyID);
+                        "Policy details for the policyID {} not found ",policyUUID);
                 logger.error("exiting now..");
                 ProgramExitUtils.exitWithError();
             }
-            policyParam = CommonUtils.createParamMap(policyDetails);
+            policyParam = CommonUtils.createPolicyParamMap(policyDetails);
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
                 logger.error(

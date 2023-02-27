@@ -281,6 +281,8 @@ public class PolicyServiceImpl implements PolicyService {
 				updatePolicyDetails.setWarningMessage(policyDetails.getWarningMessage());
 				updatePolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
 				updatePolicyDetails.setFixMessage(policyDetails.getFixMessage());
+				updatePolicyDetails.setViolationMessage(policyDetails.getViolationMessage());
+				updatePolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType()))
 				{
 					updateCustomEventBridgeRule(updatePolicyDetails);
@@ -373,6 +375,8 @@ public class PolicyServiceImpl implements PolicyService {
 				newPolicyDetails.setWarningMessage(policyDetails.getWarningMessage());
 				newPolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
 				newPolicyDetails.setFixMessage(policyDetails.getFixMessage());
+				newPolicyDetails.setViolationMessage(policyDetails.getViolationMessage());
+				newPolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				createUpdateCloudWatchEventRule(newPolicyDetails);
 				if (policyDetails.getIsFileChanged() && policyDetails.getPolicyType().equalsIgnoreCase("Classic")) {
 					createUpdatePolicyJartoS3Bucket(fileToUpload, policyUUID);
