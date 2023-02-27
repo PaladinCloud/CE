@@ -19,7 +19,8 @@ jobs:
       - name: running update
         run: sudo apt update
       - name: Install maven
-        run: sudo apt install maven -y
+        run: |
+          sudo apt install maven -y
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
@@ -37,11 +38,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
-        run: sudo mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
+        run: |
+          export MAVEN_OPTS="-Xms3000M -Xmx6000M -Xss4M -XX:MaxMetaspaceSize=1024M" 
+          sudo mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
 
       - name: Build and analyze push
         if: ${{ github.event_name == 'push' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
-        run: sudo mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  
+        run: |
+          export MAVEN_OPTS="-Xms3000M -Xmx6000M -Xss4M -XX:MaxMetaspaceSize=1024M" 
+          sudo mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  
