@@ -131,7 +131,7 @@ export class ComplianceDashboardComponent implements OnInit {
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       if(severeness[ASeverity] == severeness[BSeverity]){
-        return a['Violations']<b['Violations'] ? -1: 1
+        return a['Violations'].valueText<b['Violations'].valueText ? 1: -1
       }
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
