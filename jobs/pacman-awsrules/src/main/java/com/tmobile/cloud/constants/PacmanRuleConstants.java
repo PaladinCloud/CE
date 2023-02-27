@@ -583,6 +583,14 @@ public class PacmanRuleConstants {
     public static final String LATEST_VERSION = "latestversion";
     public static final String OLD_VERSIONS = "oldVersions";
     public static final String VERSION = "version";
+    public static final String MULTI_AZ = "multiaz";
+    public static final String STORAGE_TYPE = "storagetype";
+    public static final String BACKUP_RETENTION_PERIOD = "backupretentionperiod";
+    public static final String DELETION_PROTECTION = "deletionprotection";
+    public static final String ENCRYPTED = "encrypted";
+    public static final String ENGINE = "engine";
+    public static final String DB_PARAMETER_GROUP_NAME = "dBParameterGroupName";
+    public static final String PARAMETER_NAME = "parameterName";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";
     public static final String DEFAUTL_SG_GROUP="default";

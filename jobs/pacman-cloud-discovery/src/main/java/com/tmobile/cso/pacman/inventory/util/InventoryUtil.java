@@ -28,12 +28,21 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.rds.model.DBParameterGroupStatus;
+import com.amazonaws.services.rds.model.DBSnapshotAttributesResult;
+import com.amazonaws.services.rds.model.DescribeDBParametersRequest;
+import com.amazonaws.services.rds.model.DescribeDBParametersResult;
+import com.amazonaws.services.rds.model.DescribeDBSnapshotAttributesRequest;
+import com.amazonaws.services.rds.model.Parameter;
 import com.amazonaws.services.securityhub.AWSSecurityHub;
 import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
 import com.amazonaws.services.securityhub.model.DescribeHubRequest;
 import com.amazonaws.services.securityhub.model.DescribeHubResult;
+import com.tmobile.cso.pacman.inventory.vo.DBSnapshotAttributeVH;
+import com.tmobile.cso.pacman.inventory.vo.DBSnapshotVH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -1762,6 +1771,7 @@ public class InventoryUtil {
 	public static Map<String,List<DBInstanceVH>> fetchRDSInstanceInfo(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
 		Map<String,List<DBInstanceVH>> dbInstMap =  new LinkedHashMap<>();
 		AmazonRDS rdsClient ;
+		Predicate<Parameter> filter = f -> f.getParameterName().equalsIgnoreCase("rds.force_ssl");
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"RDS Instance\" , \"region\":\"" ;
 		for(Region region : RegionUtils.getRegions()){
 			try{
@@ -1774,12 +1784,22 @@ public class InventoryUtil {
 						rslt = rdsClient.describeDBInstances(new DescribeDBInstancesRequest().withMarker(nextMarker));
 						List<DBInstance> dbInstListTemp = rslt.getDBInstances();
 						for(DBInstance db : dbInstListTemp){
+							List<Parameter> parameters = new ArrayList<>();
+
+							for (DBParameterGroupStatus param : db.getDBParameterGroups()) {
+								DescribeDBParametersResult parametersResult = rdsClient.describeDBParameters
+										(new DescribeDBParametersRequest().withDBParameterGroupName(
+												param.getDBParameterGroupName()
+										));
+								parameters.addAll(parametersResult.getParameters());
+							}
+							parameters = parameters.stream().filter(filter).collect(Collectors.toList());
 							DBInstanceVH vh = new DBInstanceVH(db, rdsClient.listTagsForResource(new ListTagsForResourceRequest().
 														withResourceName(db.getDBInstanceArn())).
 															getTagList(),
 															db.getDBSubnetGroup().getSubnets().stream().map(subnet -> subnet.getSubnetIdentifier()).collect(Collectors.joining(",")),
-															db.getVpcSecurityGroups().stream().map(group->group.getVpcSecurityGroupId()+":"+group.getStatus()).collect(Collectors.joining(","))
-											);
+															db.getVpcSecurityGroups().stream().map(group->group.getVpcSecurityGroupId()+":"+group.getStatus()).collect(Collectors.joining(",")),
+									parameters);
 							dbInstList.add(vh);
 						}
 						nextMarker = rslt.getMarker();
@@ -2367,25 +2387,42 @@ public class InventoryUtil {
 	 * @param accountName the account name
 	 * @return the map
 	 */
-	public static Map<String,List<DBSnapshot>> fetchRDSDBSnapshots(BasicSessionCredentials temporaryCredentials, String skipRegions,String accountId,String accountName){
-		Map<String,List<DBSnapshot>> snapshots =  new LinkedHashMap<>();
+	public static Map<String,List<DBSnapshotVH>> fetchRDSDBSnapshots(BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName){
+		Map<String,List<DBSnapshotVH>> snapshots =  new LinkedHashMap<>();
 		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"RDS Snapshot\" , \"region\":\"" ;
 		for(Region region : RegionUtils.getRegions()){
+			List<DBSnapshotVH> dbSnapshotVHList = new ArrayList<>();
 			try{
 				if(!skipRegions.contains(region.getName())){
 					AmazonRDS rdsClient = AmazonRDSClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
 					DescribeDBSnapshotsResult rslt ;
-					List<DBSnapshot> snapshotsTemp = new ArrayList<>();
 					String marker = null;
 					do{
 						rslt = rdsClient.describeDBSnapshots(new DescribeDBSnapshotsRequest().withIncludePublic(false).withIncludeShared(false).withMarker(marker));
-						snapshotsTemp.addAll(rslt.getDBSnapshots());
+
+						rslt.getDBSnapshots().forEach(snapshot -> {
+							DBSnapshotVH dbSnapshotVH = new DBSnapshotVH();
+							DBSnapshotAttributesResult dbSnapshotAttributes = rdsClient.describeDBSnapshotAttributes(
+									new DescribeDBSnapshotAttributesRequest()
+									.withDBSnapshotIdentifier(snapshot.getDBSnapshotIdentifier()));
+							dbSnapshotVH.setDbSnapshot(snapshot);
+							List<DBSnapshotAttributeVH> dbSnapshotAttributeVHList = new ArrayList<>();
+							dbSnapshotAttributes.getDBSnapshotAttributes().forEach(attribute -> {
+								DBSnapshotAttributeVH dbSnapshotAttributeVH = new DBSnapshotAttributeVH();
+								dbSnapshotAttributeVH.setDbSnapshotAttribute(attribute);
+								dbSnapshotAttributeVH.setDBSnapshotIdentifier(snapshot.getDBSnapshotIdentifier());
+								dbSnapshotAttributeVHList.add(dbSnapshotAttributeVH);
+							});
+							dbSnapshotVH.setDbSnapshotAttributes(dbSnapshotAttributeVHList);
+							dbSnapshotVHList.add(dbSnapshotVH);
+						});
+
 						marker = rslt.getMarker();
 					}while(marker!=null);
 
-					if(! snapshotsTemp.isEmpty() ){
-						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : RDS Snapshot" +region.getName() + " >> "+snapshotsTemp.size());
-						snapshots.put(accountId+delimiter+accountName+delimiter+region.getName(),  snapshotsTemp);
+					if(! dbSnapshotVHList.isEmpty() ){
+						log.debug(InventoryConstants.ACCOUNT + accountId +" Type : RDS Snapshot" +region.getName() + " >> "+dbSnapshotVHList.size());
+						snapshots.put(accountId+delimiter+accountName+delimiter+region.getName(),  dbSnapshotVHList);
 					}
 				}
 
