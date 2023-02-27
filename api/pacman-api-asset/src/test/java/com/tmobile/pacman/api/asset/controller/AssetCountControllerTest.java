@@ -56,7 +56,7 @@ public class AssetCountControllerTest {
         when(service.getAssetCountByAssetGroup(anyObject(), anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(tTypeList);
         ReflectionTestUtils.setField(controller, "assetService", service);
 
-        ResponseEntity<Object> responseObj3 = controller.geAssetCount("ag", "type", "domain", null, null);
+        ResponseEntity<Object> responseObj3 = controller.geAssetCount("ag", "type", "domain", null, null,null);
 
         assertTrue(responseObj3.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
 
@@ -68,12 +68,12 @@ public class AssetCountControllerTest {
         when(service.getAssetCountByAssetGroup(anyObject(), anyObject(), anyObject(), anyObject(), anyObject())).thenReturn(tTypeList);
         ReflectionTestUtils.setField(controller, "assetService", service);
 
-        ResponseEntity<Object> responseObj = controller.geAssetCount("ag", "type", "domain", null, null);
+        ResponseEntity<Object> responseObj = controller.geAssetCount("ag", "type", "domain", null, null,null);
 
         assertTrue(responseObj.getStatusCode() == HttpStatus.OK);
         assertTrue(((Map<String, Object>) responseObj.getBody()).get("data") != null);
 
-        ResponseEntity<Object> responseObj2 = controller.geAssetCount("ag", null, "domain", null, null);
+        ResponseEntity<Object> responseObj2 = controller.geAssetCount("ag", null, "domain", null, null,null );
         assertTrue(responseObj2.getStatusCode() == HttpStatus.OK);
 
     }

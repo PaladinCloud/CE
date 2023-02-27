@@ -35,7 +35,7 @@ public interface AssetService {
      * type is passed, all the assets of valid target type for the asset group
      * is considered.
      *
-     * @param aseetGroupName name of the asset group
+     * @param assetGroup name of the asset group
      * @param type target type
      * @param domain the domain of asset group
      * 
@@ -195,8 +195,6 @@ public interface AssetService {
      * @param assetGroup  name of the asset group
      * @param filter application,environment,resourceType as optional filters
      * @param searchText searchText is used to match any text you are looking for
-     * @param from for pagination
-     * @param size for pagination
      * 
      * @return list of assets and its some details.
      */
@@ -513,19 +511,19 @@ public interface AssetService {
      * type is passed, all the assets of valid target type for the asset group
      * is considered.,
      *
-     * @param aseetGroupName name of the asset group
+     * @param assetGroup name of the asset group
      * @param type target type
      * @param domain the domain of asset group
      * 
      * @return list of type, asset count and env distribution.
      */
 	public List<Map<String, Object>> getAssetCountAndEnvDistributionByAssetGroup(String assetGroup, String type, String domain,
-			String application, String provider);
+			String application, String provider,String accountId);
 
 	/**
      * Fetches the provider info for the given asset group.
      *
-     * @param Asset Group
+     * @param assetGroup
      * 
      * @return  list of provider info
      * @throws ServiceException

@@ -136,7 +136,7 @@ public class ComplianceController implements Constants {
         }
         Map<String, Long> response = new HashMap<>();
         try {
-            response.put("total_issues", complianceService.getIssuesCount(assetGroup, policyId, domain));
+            response.put("total_issues", complianceService.getIssuesCount(assetGroup, policyId, domain,null));
         } catch (ServiceException e) {
             return ResponseUtils.buildFailureResponse(e);
         }
@@ -157,13 +157,13 @@ public class ComplianceController implements Constants {
     
     @RequestMapping(path = "/v1/issues/distribution", method = RequestMethod.GET)
     public ResponseEntity<Object> getDistribution(@RequestParam("ag") String assetGroup,
-            @RequestParam(name = "domain", required = false) String domain) {
+            @RequestParam(name = "domain", required = false) String domain,@RequestParam(name = "accountId", required = false) String accountId) {
         if (Strings.isNullOrEmpty(assetGroup)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_MANDATORY));
         }
         DitributionDTO distribution = null;
         try {
-            distribution = new DitributionDTO(complianceService.getDistribution(assetGroup, domain));
+            distribution = new DitributionDTO(complianceService.getDistribution(assetGroup, domain,accountId));
         } catch (ServiceException e) {
            return complianceService.formatException(e);
         }

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ComponentScan
+@ComponentScan({"com.tmobile.pacbot.azure.inventory","com.tmobile.pacman.commons.database"})
 public class AzureDiscoveryApplication {
 
 	public static Map<String, Object> collect(String[] args) {

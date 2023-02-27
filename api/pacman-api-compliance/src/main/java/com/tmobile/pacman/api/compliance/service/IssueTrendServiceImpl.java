@@ -372,7 +372,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
 
             case "issues":
                 Map<String, Object> distroMap =  complianceService
-                        .getDistribution(ag, domain);
+                        .getDistribution(ag, domain,null);
                 Map<String, Object> distroBySev = (Map<String, Object>) distroMap
                         .get("distribution_by_severity");
                 latestDaysTrendData.put(TOTAL, distroMap.get("total_issues"));

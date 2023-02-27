@@ -1,0 +1,20 @@
+{
+    "policyId": "PolicyId",
+    "policyUUID": "policyUUID",
+    "policyName": "policyName",
+    "targetType": "targetType",
+    "assetGroup": "assetGroup",
+    "policyParams": "policyParams",
+    "policyFrequency": "policyFrequency",
+    "policyExecutable": "policyExecutable",
+    "policyRestUrl": "policyRestUrl",
+    "policyType": "policyType",
+    "policyArn": "policyType",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "policyDisplayName",
+    "createdDate": "Date",
+    "modifiedDate": "Date",
+    "severity": "high",
+    "category": "cost"
+  }

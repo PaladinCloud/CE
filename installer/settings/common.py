@@ -147,7 +147,10 @@ DB_USERNAME = "paladin"
 DB_PASSWORD = "***PALADIN***" #Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
 
 MANDATORY_TAGS = "Application,Environment"
-
+# Add your first ACCOUNT_ID,ACCOUNT_NAME and ACCOUNT_PLATFORM here
+ACCOUNT_ID = ""
+ACCOUNT_NAME = ""
+ACCOUNT_PLATFORM = ""
 try:
     from settings.local import *
 except:

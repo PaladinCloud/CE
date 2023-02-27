@@ -105,7 +105,7 @@ public class IssueTrendServiceImplTest {
         when(complianceService.getOverallComplianceByDomain(anyString(),anyString()))
         .thenReturn(CommonTestUtil.getMapObject());
         
-        when(complianceService.getDistribution(anyString(),anyString()))
+        when(complianceService.getDistribution(anyString(),anyString(),null))
         .thenReturn(CommonTestUtil.getMapObject());
         
         assertThat(issueTrendServiceImpl.getTrendProgress("ansString", "s3",LocalDate.now(),LocalDate.now(),"tagcompliance"),
@@ -145,7 +145,7 @@ public class IssueTrendServiceImplTest {
         when(repository.getTrendIssues(anyString(),anyObject(),anyObject(),anyObject(),anyObject()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
-        when(complianceService.getDistribution(anyString(),anyString()))
+        when(complianceService.getDistribution(anyString(),anyString(),null))
         .thenReturn(CommonTestUtil.getMapObject());
         
         assertThat(issueTrendServiceImpl.getTrendIssues("ansString", LocalDate.now(),LocalDate.now(),new HashMap<>(),"issues"),
