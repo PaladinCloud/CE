@@ -348,6 +348,45 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
         ]
     })
     PROCESS = need_to_deploy_vulnerability_service()
+    
+    
+class AquaImageVulnerabilityCollectorEventRule(CloudWatchEventRuleResource):
+    name = "aqua-image-vulnerability-collector"
+    schedule_expression = "cron(0 0 * * ? *)"
+    DEPENDS_ON = [SubmitJobLambdaFunction]
+    PROCESS = need_to_deploy_vulnerability_service()
+
+
+class AquaImageVulnerabilityCollectorLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromAquaImageVulnerabilityCollectorEvent"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = AquaImageVulnerabilityCollectorEventRule.get_output_attr('arn')
+    PROCESS = need_to_deploy_vulnerability_service()
+
+
+class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = AquaImageVulnerabilityCollectorEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    target_id = 'AquaImageVulnerabilityCollectorTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "aqua-image-vulnerability-collector",
+        'jobUuid': "aqua-collector",
+        'jobType': "jar",
+        'jobDesc': "Aqua Image Vulnerability Collector",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,qualys-enricher/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "job_hint", 'value': "aqua_image_vulnerability"},
+        ]
+    })
+
+    PROCESS = need_to_deploy_vulnerability_service()
 
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):

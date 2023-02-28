@@ -10,14 +10,11 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AquaDataImporter {
 
-  protected static final String BASE_API_URL ="https://api.cloudsploit.com";
-      //System.getProperty("aqua_api_url");
+  protected static final String BASE_API_URL = System.getProperty("aqua_api_url");
 
-  protected static final String userName ="mahidhar.jalumuru@zemosolabs.com";
-      //System.getProperty("aqua_username");
+  protected static final String userName = System.getProperty("aqua_username");
 
-  protected static final String password ="5761M&Mlu";
-      //System.getProperty("aqua_password");
+  protected static final String password = System.getProperty("aqua_password");
 
   abstract public Map<String, Object> execute();
 
