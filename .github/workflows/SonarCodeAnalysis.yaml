@@ -9,7 +9,7 @@ jobs:
     name: SonarCloud-Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK 11
@@ -39,8 +39,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
         run: |
-          export MAVEN_OPTS="-Xms3000M -Xmx6000M -Xss4M -XX:MaxMetaspaceSize=1024M" 
-          sudo mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
+          export MAVEN_OPTS="-Xmx3000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
+          export SONAR_SCANNER_OPTS="-Xmx3000m"
+          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar  -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  -Dsonar.pullrequest.base=master  -Dsonar.pullrequest.key=${{github.event.number}} -Dsonar.pullrequest.provider=GitHub -Dsonar.pullrequest.github.repository=PaladinCloud/CE 
 
       - name: Build and analyze push
         if: ${{ github.event_name == 'push' }}
@@ -48,5 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
         run: |
-          export MAVEN_OPTS="-Xms3000M -Xmx6000M -Xss4M -XX:MaxMetaspaceSize=1024M" 
-          sudo mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  
+          export MAVEN_OPTS="-Xmx3000m  -XX:+UnlockDiagnosticVMOptions -XX:GCLockerRetryAllocationCount=100"
+          export SONAR_SCANNER_OPTS="-Xmx3000m"
+          mvn -B -DskipTests=true -Dmaven.javadoc.skip=true -V verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PaladinCloud_CE  -Dsonar.organization=paladincloud -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN  
