@@ -75,6 +75,10 @@ public class GCPCredentialsProvider {
 
     private ApiKeysClient apiKeysClient;
 
+    private InstanceGroupsClient instanceGroupsClient;
+
+    private InstanceGroupManagersClient instanceGroupManagersClient;
+
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -311,14 +315,28 @@ public class GCPCredentialsProvider {
         return sslPoliciesClient;
     }
 
-
-
     public CloudFunctionsServiceClient getFunctionClientGen1() throws IOException {
         CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
         return CloudFunctionsServiceClient.create(functionsServiceSettings);
     }
 
+    public InstanceGroupsClient getInstanceGroupsClient() throws IOException {
+        if(instanceGroupsClient == null){
+            InstanceGroupsSettings instanceGroupsSettings=InstanceGroupsSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            instanceGroupsClient=InstanceGroupsClient.create(instanceGroupsSettings);
+        }
+        return instanceGroupsClient;
+    }
+
+    public InstanceGroupManagersClient getInstanceGroupManagersClient() throws IOException{
+        if(instanceGroupManagersClient == null){
+            InstanceGroupManagersSettings instanceGroupManagersSettings = InstanceGroupManagersSettings.newBuilder()
+                    .setCredentialsProvider((FixedCredentialsProvider.create(this.getCredentials()))).build();
+            instanceGroupManagersClient = InstanceGroupManagersClient.create(instanceGroupManagersSettings);
+        }
+        return instanceGroupManagersClient;
+    }
     // close the client in destroy method
     @PreDestroy
     public void destroy() {

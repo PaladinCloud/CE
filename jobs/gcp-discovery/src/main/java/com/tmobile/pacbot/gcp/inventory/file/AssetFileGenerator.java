@@ -77,11 +77,12 @@ public class AssetFileGenerator {
 
 	@Autowired
 	APIKeysInventoryCollector apiKeysInventoryCollector;
-
 	@Autowired
 	CloudFunctionCollector cloudFunctionCollector;
 	@Autowired
 	CloudFunctionGen1Collector cloudFunctionGen1Collector;
+	@Autowired
+	InstanceGroupsCollector instanceGroupsCollector;
 
 	public void generateFiles(List<ProjectVH> projects, String filePath) {
 
@@ -95,6 +96,18 @@ public class AssetFileGenerator {
 			log.info("Started Discovery for project {}", project);
 
 			ExecutorService executor = Executors.newCachedThreadPool();
+
+			executor.execute(() -> {
+				if (!(isTypeInScope("instancegroup"))) {
+					return;
+				}
+				try {
+					FileManager.generateInstaneGroup(instanceGroupsCollector.fetchInstanceGroupInventory(project));
+				} catch (Exception e) {
+					log.error("Error occured in generating data file for instance group {} ", e.getMessage());
+				}
+			});
+
 
 			executor.execute(() -> {
 				if (!(isTypeInScope("cloudfunction"))) {

@@ -69,6 +69,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-apikeys.data", "[", false);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "[", false);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "[", false);
+        FileGenerator.writeToFile(DataFileNamesConstants.INSTANCE_GROUP, "[", false);
     }
 
     public static void finalise() throws IOException {
@@ -95,6 +96,7 @@ public class FileManager {
         FileGenerator.writeToFile("gcp-apikeys.data", "]", true);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION, "]", true);
         FileGenerator.writeToFile(DataFileNamesConstants.CLOUD_FUNCTION_GEN1, "]", true);
+        FileGenerator.writeToFile(DataFileNamesConstants.INSTANCE_GROUP, "]", true);
 
     }
 
@@ -183,5 +185,9 @@ public class FileManager {
 
     public static void generateCloudFunctionGen1File(List<CloudFunctionVH> fetchCloudFunctionInventory) {
         FileGenerator.generateJson(fetchCloudFunctionInventory, DataFileNamesConstants.CLOUD_FUNCTION_GEN1);
+    }
+
+    public static void generateInstaneGroup(List<ManagedInstanceGroupVH> fetchInstanceGroupInventory) {
+        FileGenerator.generateJson(fetchInstanceGroupInventory, DataFileNamesConstants.INSTANCE_GROUP);
     }
 }

@@ -2099,5 +2099,25 @@
     "modifiedDate": "2023-01-27",
     "severity": "medium",
     "category": "security"
+  },
+  {
+    "policyId": "Enable_Autoheal_for_instance_group",
+    "policyUUID": "Enable_Autoheal_for_instance_group",
+    "policyName": "Enable Autoheal for instance group",
+    "targetType": "instancegroup",
+    "assetGroup": "gcp",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"Enable-Autoheal-for-instance-group\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"Enable_Autoheal_for_instance_group\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"vminstance\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"Enable_Autoheal_for_instance_group\",\"policyType\":\"ManagePolicay\",\"esUrl\":\"/gcp_instancegroup/_search\"}",
+    "policyFrequency": "0 0/6 * * ? *",
+    "policyExecutable": "",
+    "policyRestUrl": "",
+    "policyType": "ManagePolicy",
+    "policyArn": "arn:aws:events:us-east-1:***REMOVED***:rule/Enable_Autoheal_for_instance_group",
+    "status": "ENABLED",
+    "userId": "ASGC",
+    "policyDisplayName": "Enable Autoheal for instance group",
+    "createdDate": "2023-02-27",
+    "modifiedDate": "2023-02-27",
+    "severity": "medium",
+    "category": "security"
   }
 ]

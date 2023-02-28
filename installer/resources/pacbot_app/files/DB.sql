@@ -3683,6 +3683,11 @@ update cf_pac_updatable_fields set displayFields='_resourceid,tags.Application,t
 
 UPDATE `pacmandata`.`pac_config_properties` SET `value` = concat(@MANDATORY_TAGS,'') WHERE `cfkey` = 'tagging.mandatoryTags';
 
+
+INSERT IGNORE INTO cf_Target (`targetName`,`targetDesc`,`displayName`,`category`,`dataSourceName`,`targetConfig`,`status`,`userId`,`endpoint`,`createdDate`,`modifiedDate`,`domain`) VALUES ('instancegroup','GCPInstance Froup','GCP instance group','Security','gcp','{"key":"id","id":"id"}','enabled','admin',concat(@eshost,':',@esport,'/gcp_instancegroup'),'2023-02-20','2023-02-20','Infra & Platforms');
+
+INSERT IGNORE INTO cf_AssetGroupTargetDetails (`id_`, groupId, targetType, attributeName, `attributeValue`) VALUES('a1480aa8-7239-4604-9ab7-916621792f31','e0008397-f74e-4deb-9066-10bdf11202ae','instancegroup','all','all');
+
 /* Procedure to update metadata based on the mandatory tags configured */
 DELIMITER $$
 
