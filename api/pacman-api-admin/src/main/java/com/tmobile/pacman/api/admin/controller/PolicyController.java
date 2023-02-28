@@ -208,6 +208,29 @@ public class PolicyController {
 		}
 	}
 	
+	
+	/**
+     * API to enable disable policy
+     *
+     * @author 
+     * @param policyId - valid policy Id
+     * @param user - userId who performs the action
+     * @param action - valid action (disable/ enable)
+     * @return Success or Failure response
+     */
+	@ApiOperation(httpMethod = "POST", value = "API to enable disable policy", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/enable-disable-autofix", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> enableDisableAutoFix(@AuthenticationPrincipal Principal user,
+			@ApiParam(value = "provide valid policy id", required = true) @RequestParam("policyId") String policyId,
+			@ApiParam(value = "provide valid status", required = true) @RequestParam("autofixStatus") String action) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyService.enableDisableAutofix(policyId, action, user.getName()));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+	
 	/**
 	 * Gets the all Policy category.
 	 *

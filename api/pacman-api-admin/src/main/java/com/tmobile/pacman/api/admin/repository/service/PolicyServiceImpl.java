@@ -170,6 +170,24 @@ public class PolicyServiceImpl implements PolicyService {
 			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyId));
 		}
 	}
+	
+	@Override
+	public String enableDisableAutofix(final String policyId, final String action, final String userId)
+			throws PacManException {
+		if (policyRepository.existsById(policyId)) {
+			Policy existingPolicy = policyRepository.findById(policyId).get();
+			existingPolicy.setUserId(userId);
+			existingPolicy.setModifiedDate(new Date());
+			existingPolicy.setAutoFixEnabled(action);
+			policyRepository.save(existingPolicy);
+			if(action != null && "true".equalsIgnoreCase(action)) {
+				return AdminConstants.AUTOFIX_ENABLE_SUCCESS; 
+			}
+			return AdminConstants.AUTOFIX_DISABLE_SUCCESS; 
+		} else {
+			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyId));
+		}
+	}
 
 	private String getEventBus(String assetGroup) {
 		String eventBus = "default";
@@ -264,7 +282,7 @@ public class PolicyServiceImpl implements PolicyService {
 				updatePolicyDetails.setPolicyParams(policyParams);
 				updatePolicyDetails.setSeverity(policyDetails.getSeverity());
 				updatePolicyDetails.setCategory(policyDetails.getCategory());
-				updatePolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
+				updatePolicyDetails.setAutoFixEnabled(policyDetails.getAutofixEnabled());
 				if(policyDetails.getPolicyParams() != null && 
 						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
 					updatePolicyDetails.setAutoFixAvailable("true");
@@ -358,7 +376,7 @@ public class PolicyServiceImpl implements PolicyService {
 				newPolicyDetails.setPolicyRestUrl(policyDetails.getPolicyRestUrl());
 				newPolicyDetails.setSeverity(policyDetails.getSeverity());
 				newPolicyDetails.setCategory(policyDetails.getCategory());
-				newPolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
+				newPolicyDetails.setAutoFixEnabled(policyDetails.getAutofixEnabled());
 				if(policyDetails.getPolicyParams() != null && 
 						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
 					newPolicyDetails.setAutoFixAvailable("true");
@@ -593,7 +611,7 @@ public class PolicyServiceImpl implements PolicyService {
 		try {
 			newJobParams = mapper.readValue(policyDetails.getPolicyParams(), new TypeReference<Map<String, Object>>() {
 			});
-			newJobParams.put("autofix", policyDetails.getIsAutofixEnabled());
+			newJobParams.put("autofix", policyDetails.getAutofixEnabled());
 			newJobParams.put("alexaKeyword", policyDetails.getAlexaKeyword());
 			newJobParams.put("policyRestUrl", policyDetails.getPolicyRestUrl());
 			newJobParams.put("targetType", policyDetails.getTargetType());

@@ -38,6 +38,8 @@ public final class AdminConstants {
 	
 	public static final String POLICY_CREATION_SUCCESS				=	"Policy has been successfully created";
 	public static final String POLICY_DISABLE_ENABLE_SUCCESS		=	"Policy has been successfully %s !!";
+	public static final String AUTOFIX_ENABLE_SUCCESS				=	"AutoFix has been successfully Enabled !!";
+	public static final String AUTOFIX_DISABLE_SUCCESS				=	"AutoFix has been successfully Disabled !!";
 	public static final String POLICY_ID_EXITS 						= 	"Policy id %s already exists!!";
 	public static final String POLICY_ID_NOT_EXITS 					= 	"Policy id %s does not exists!!";
 	public static final String JOB_DISABLE_ENABLE_SUCCESS           =   "Job has been successfully %s !!";
