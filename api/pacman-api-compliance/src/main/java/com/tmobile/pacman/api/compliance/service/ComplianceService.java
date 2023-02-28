@@ -46,25 +46,27 @@ public interface ComplianceService {
     public ResponseWithOrder getIssues(Request request) throws ServiceException;
 
     /**
-     * Gets Issue count based on name of the asset group/ruleId/domain passed.
+     * Gets Issue count based on name of the asset group/policyId/domain passed.
      *
      * @param assetGroup the asset group
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param domain the domain
+     * @param accountId the account id
      * @return long
      * @throws ServiceException the service exception
      */
-    public long getIssuesCount(String assetGroup, String ruleId, String domain) throws ServiceException;
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws ServiceException;
 
     /**
-     * Gets Compliance distribution by rule category and severity.
+     * Gets Compliance distribution by policy category and severity.
      *
      * @param assetGroup the asset group
      * @param domain the domain
+     * @param accountId the account id
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    public Map<String, Object> getDistribution(String assetGroup, String domain) throws ServiceException;
+    public Map<String, Object> getDistribution(String assetGroup, String domain,String accountId) throws ServiceException;
    
    
     /**
@@ -114,10 +116,10 @@ public interface ComplianceService {
     /**
      * If method receives
      * assetGroup as request parameter, method returns list of all the issue
-     * counts which are related to recommendations rules from the ES for the
+     * counts which are related to recommendations policies from the ES for the
      * given assetGroup with all the targetTypes.If method receives both
      * assetGroup and targetType as request parameter,method returns list of all
-     * the issue counts which are related to recommendations rules from the ES
+     * the issue counts which are related to recommendations policies from the ES
      * for the given targetType & assetGroup.
      *
      * @param assetGroup the asset group
@@ -153,58 +155,58 @@ public interface ComplianceService {
 
     /**
      *  Returns true if its successfully closes all the issues in ES
-     *         for that ruleId else false.
+     *         for that policyId else false.
      *
-     * @param ruleDetails the rule details
+     * @param policyDetails the policy details
      * @return Map<String, Object>
      */
 
-    public Map<String, Object> closeIssuesByRule(PolicyDetails ruleDetails);
+    public Map<String, Object> closeIssuesByPolicy(PolicyDetails policyDetails);
 
     /**
-     * Gets the list of all the rules compliance mapped to that domain.
+     * Gets the list of all the policies compliance mapped to that domain.
      *
      * @param request the request
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
-    public ResponseWithOrder getRulecompliance(Request request) throws ServiceException;
+    public ResponseWithOrder getPolicycompliance(Request request) throws ServiceException;
 
     /**
-     * Gets the rule details by application.SearchText is used to match any text
+     * Gets the policy details by application.SearchText is used to match any text
      *         you are looking for.
      *
      * @param assetGroup the asset group
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param searchText the search text
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getRuleDetailsbyApplication(String assetGroup, String ruleId, String searchText)
+    public List<Map<String, Object>> getPolicyDetailsbyApplication(String assetGroup, String policyId, String searchText)
             throws ServiceException;
 
     /**
-     * Gets the rule details by environment.SearchText is used to match any
+     * Gets the policy details by environment.SearchText is used to match any
      *         text you are looking for.
      *
      * @param assetGroup the asset group
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param application the application
      * @param searchText the search text
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getRuleDetailsbyEnvironment(String assetGroup, String ruleId, String application,
+    public List<Map<String, Object>> getPolicyDetailsbyEnvironment(String assetGroup, String policyId, String application,
             String searchText) throws ServiceException;
 
     /**
-     * Gets the rule description and other details.
+     * Gets the policy description and other details.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
-    public Map<String, Object> getRuleDescription(String ruleId) throws ServiceException;
+    public Map<String, Object> getPolicyDescription(String policyId) throws ServiceException;
 
     /**
      * Gets the kernel version of an instance id from DB where the kernel version updated by web service.
@@ -225,7 +227,7 @@ public interface ComplianceService {
     public Map<String, Object> updateKernelVersion(final KernelVersion kernelVersion);
 
     /**
-     * Gets the overall compliance by domain.Over all compliance is calculated by its severity and rule category weightages.
+     * Gets the overall compliance by domain.Over all compliance is calculated by its severity and policy category weightages.
      *
      * @param assetGroup the asset group
      * @param domain the domain
@@ -246,13 +248,13 @@ public interface ComplianceService {
     public List<String> getResourceType(String assetgroup, String domain)throws ServiceException;
 
     /**
-     * Gets the rule severity and category details.
+     * Gets the policy severity and category details.
      *
-     * @param ruleDetails the rule details
+     * @param policyDetails the policy details
      * @return List<Map<String, Object>>
      * @throws ServiceException the service exception
      */
-    public List<Map<String, Object>> getRuleSevCatDetails(List<Map<String, Object>> ruleDetails) throws ServiceException;
+    public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
 
     /**
      * Gets the policy violation details by issue id.

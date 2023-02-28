@@ -30,7 +30,7 @@ import { CommonResponseService } from '../../../shared/services/common-response.
   styleUrls: ['./patching-trend.component.css'],
   providers: [AllPatchingProgressService, AutorefreshService, CommonResponseService],
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(window:resize)': 'onResize($event)'
   }

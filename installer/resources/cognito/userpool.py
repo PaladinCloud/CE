@@ -54,7 +54,7 @@ class UserPool(UserPoolResoures):
         "sms_message" : "" + ApplicationLoadBalancer.get_pacbot_domain_url() + "  with username {username} and temporary password {####}",
 
     }
-    DEPENDS_ON = [ESDomain]
+
 
 class CognitoRuleLambdaPermission(LambdaPermission):
     statement_id = "Event"
@@ -113,7 +113,7 @@ class CreateUser(CreateUserPool):
         "attributes"
         ]
     }
-    DEPENDS_ON = [UserPool]
+    DEPENDS_ON = [UserPool,ESDomain]
 
 class CreateUserGroup(CreateGroupPool):
     user_pool_id = UserPool.get_output_attr('id')

@@ -306,7 +306,6 @@ public class AssetServiceImpl implements AssetService {
     }
 
     /**
-     * @param assetGroup
      * @param instanceId
      * @return
      * @throws Exception
@@ -317,7 +316,6 @@ public class AssetServiceImpl implements AssetService {
     }
 
     /**
-     * @param assetGroup
      * @param instanceId
      * @return
      * @throws Exception
@@ -328,7 +326,6 @@ public class AssetServiceImpl implements AssetService {
     }
 
     /**
-     * @param assetGroup
      * @param instanceId
      * @return
      * @throws Exception
@@ -1007,12 +1004,12 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<Map<String, Object>> getAssetCountAndEnvDistributionByAssetGroup(String assetGroup, String type,
-            String domain, String application, String provider) {
+            String domain, String application, String provider,String accountId) {
 
         LOGGER.debug("Fetch counts from elastic search");
 
         // ES query may possibly return other types as well.
-        Map<String, Object> distribution = repository.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type, application);
+        Map<String, Object> distribution = repository.getAssetCountAndEnvDistributionByAssetGroup(assetGroup, type, application,accountId);
 
         Map<String, Long> countMap = (Map<String, Long>) distribution.get(Constants.ASSET_COUNT);
         Map<String, Object> envMap = (Map<String, Object>) distribution.get(Constants.ENV_COUNT);
@@ -1172,8 +1169,8 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag) throws DataException {
-        List<String> assetList = repository.getValuesListForTag(aseetGroupName, tag);
+    public List<Map<String, Object>> getValuesByTag(String aseetGroupName, String tag, String type) throws DataException {
+        List<String> assetList = repository.getValuesListForTag(aseetGroupName, tag, type);
         List<Map<String, Object>> valueList = new ArrayList<>();
         assetList.forEach(val -> {
             Map<String, Object> valueMap = new HashMap<>();

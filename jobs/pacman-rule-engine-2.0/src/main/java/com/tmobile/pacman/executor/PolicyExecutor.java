@@ -130,19 +130,21 @@ public class PolicyExecutor {
         //this is elastic search type to put rule engine stats in  
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
+        final String mandatoryTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
-            String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
-            String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
-            policyDetailsUrl += policyUUID;
-            String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
-            if(Strings.isNullOrEmpty(policyDetails )) {
-            	logger.error(
-                        "Policy details for the policyID {} not found ",policyUUID);
-                logger.error("exiting now..");
-                ProgramExitUtils.exitWithError();
-            }
+        	 String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
+             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
+             policyDetailsUrl += policyUUID;
+             String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
+             if(Strings.isNullOrEmpty(policyDetails )) {
+             	logger.error(
+                         "Policy details for the policyID {} not found ",policyUUID);
+                 logger.error("exiting now..");
+                 ProgramExitUtils.exitWithError();
+             }
             policyParam = CommonUtils.createPolicyParamMap(policyDetails);
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
+            policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
                 logger.error(
                         "data source is missing, will not be able to figure out the target index to post the policy evaluvation, please check rule configuration");

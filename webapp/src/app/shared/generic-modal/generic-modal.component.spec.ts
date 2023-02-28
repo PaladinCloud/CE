@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { OverlayComponent } from '../overlay/overlay.component';
 
 import { GenericModalComponent } from './generic-modal.component';
 
@@ -22,7 +23,7 @@ describe('GenericModalComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GenericModalComponent ]
+      declarations: [ GenericModalComponent, OverlayComponent ]
     })
     .compileComponents();
   }));

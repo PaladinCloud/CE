@@ -15,6 +15,10 @@ describe("HorizontalBarChartComponent", () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HorizontalBarChartComponent);
     component = fixture.componentInstance;
+    component.data = [{ asset: "asset", count: 0 }];
+    component.margin = {
+      left: 0,
+    }
     fixture.detectChanges();
   });
 

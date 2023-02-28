@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoggerService } from 'src/app/shared/services/logger.service';
 
 import { DomainDropdownComponent } from './domain-dropdown.component';
 
@@ -22,7 +23,8 @@ describe('DomainDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DomainDropdownComponent ]
+      declarations: [ DomainDropdownComponent ],
+      providers: [LoggerService]
     })
     .compileComponents();
   }));
@@ -30,6 +32,7 @@ describe('DomainDropdownComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DomainDropdownComponent);
     component = fixture.componentInstance;
+    component.dropdownDataStr = 'some~data';
     fixture.detectChanges();
   });
 

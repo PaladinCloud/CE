@@ -31,6 +31,7 @@ describe('TableListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TableListComponent);
     component = fixture.componentInstance;
+    component.DataObject = { };
     fixture.detectChanges();
   });
 

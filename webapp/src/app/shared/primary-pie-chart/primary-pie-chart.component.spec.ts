@@ -30,6 +30,9 @@ describe('PrimaryPieChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PrimaryPieChartComponent);
     component = fixture.componentInstance;
+    component.graphData = {
+      totalcount: 0,
+    }
     fixture.detectChanges();
   });
 

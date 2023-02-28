@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoggerService } from '../services/logger.service';
 
 import { FilteredSelectorComponent } from './filtered-selector.component';
 
@@ -22,7 +23,8 @@ describe('FilteredSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FilteredSelectorComponent ]
+      declarations: [ FilteredSelectorComponent ],
+      providers: [ LoggerService ]
     })
     .compileComponents();
   }));
@@ -30,6 +32,7 @@ describe('FilteredSelectorComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FilteredSelectorComponent);
     component = fixture.componentInstance;
+    component.filteredArray = [];
     fixture.detectChanges();
   });
 

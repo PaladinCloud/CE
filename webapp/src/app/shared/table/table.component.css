@@ -111,8 +111,8 @@
   right: 20px;
   top: 120px; */
   min-height: 100px;
-  min-width: 445px;
-  max-height: 212px;
+  min-width: 480px;
+  max-height: 250px;
   background-color: var(--background-white);
   border: 1px solid var(--border-200);
   padding: 20px;
@@ -176,16 +176,15 @@
 .filters-container{
   overflow-y: scroll;
   min-height: 50px;
-  max-height: 100px;
-  padding: 12px 0px;
+  max-height: 120px;
 }
 
 .filters-container ::ng-deep .mat-form-field-infix{
   min-width: 150px;
 }
 
-.filters-container ::ng-deep .mat-select-arrow-wrapper{
-  align-self: baseline;
+.filters-container ::ng-deep .mat-select-trigger{
+  height: 30px !important;
 }
 
 .table-header .search-in-columns{
@@ -255,11 +254,11 @@
     color: var(--text-high-emphasis) !important;
 }
 
-::ng-deep .mat-option{
+.more-wrapper ::ng-deep .mat-option{
     flex-direction: row-reverse !important;
 }
 
-::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
+.more-wrapper ::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
     display: none;
 }
 
@@ -337,6 +336,10 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   padding: 0px 4px 0px 12px;
   border-radius: 4px;
   font: var(--text-body-2);
+}
+
+.filter-chips-wrapper {
+  padding-right: 8px;
 }
 
 .more-filters-wrapper{

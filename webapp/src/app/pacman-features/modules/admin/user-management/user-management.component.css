@@ -1,0 +1,117 @@
+.user-management-page-wrapper{
+   padding: 32px 28px;
+   display: flex;
+   flex-direction: column;
+   gap: 28px;
+   height: 100%;
+}
+
+.page-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.floating-widgets-container {
+    overflow: hidden;
+}
+
+.floating-widgets-container:hover {
+    overflow: auto;
+    overflow: overlay;
+}
+
+h6{
+    font: var(--text-headline-6);
+    color: var(--text-medium-emphasis);
+}
+
+.details-bar[_ngcontent-c14] {
+    width: 50em !important;
+}
+
+.submit-btn {
+    border-radius: 4px;
+    background-color: var(--primary-400);
+    color: #fff;
+    font: var(--text-body-2);
+    cursor: pointer;
+    text-align: center;
+    padding: 7px 16px;
+}
+
+.submit-btn:hover {
+    background-color: var(--primary-500);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.32);
+}
+
+.header-content{
+    font: var(--text-body-2);
+    color: var(--text-high-emphasis);
+    padding: 24px 20.5px;
+    border-bottom: 1px solid var(--border-200);
+}
+
+.user-management-page-wrapper ::ng-deep .mat-standard-chip{
+    border-radius: 4px !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 10px;
+    gap: 6px;
+    background: var(--background-grey);
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.dialog-body ::ng-deep .mat-select{
+      padding: 12px 12px !important;
+}
+
+.dialog-body ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label
+{
+    margin-left: 12px !important;
+}
+.dialog-body ::ng-deep .mat-form-field-label{
+    padding: 8px 4px !important;
+    margin-left: 12px !important;
+    font: var(--text-body-2);
+}
+
+.email-wrapper ::ng-deep .mat-form-field-label{
+    padding: 6px 0px !important;
+}
+
+.email-wrapper{
+    width: 100% !important;
+}
+
+.email-wrapper ::ng-deep .mat-input-element{
+    margin-left: 12px;
+    height: 30px;
+    font: var(--text-body-1);
+    color: var(--text-medium-emphasis) !important;;
+}
+
+.dialog-body-header{
+    font: var(--text-headline-6);
+    color: var(--text-high-emphasis);
+}
+
+.dialog-body-content{
+   font: var(--text-body-2);
+   color: var(--text-medium-emphasis);
+}
+
+.dialog-body{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.isDisabled{
+    pointer-events: none;
+    opacity: 50%; 
+  }

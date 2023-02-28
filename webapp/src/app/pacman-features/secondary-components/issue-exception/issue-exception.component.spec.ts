@@ -12,7 +12,16 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { ToastObservableService } from 'src/app/post-login-app/common/services/toast-observable.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { IssueExceptionComponent } from './issue-exception.component';
 
@@ -22,9 +31,18 @@ describe('IssueExceptionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IssueExceptionComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, ReactiveFormsModule],
+      declarations: [IssueExceptionComponent],
+      providers: [
+        DataCacheService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        ToastObservableService,
+        UtilsService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

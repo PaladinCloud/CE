@@ -13,7 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ToastObservableService } from '../services/toast-observable.service';
 import { ToastNotificationComponent } from './toast-notification.component';
 
 describe('ToastNotificationComponent', () => {
@@ -22,7 +22,8 @@ describe('ToastNotificationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ToastNotificationComponent ]
+      declarations: [ ToastNotificationComponent ],
+      providers: [ ToastObservableService ]
     })
     .compileComponents();
   }));

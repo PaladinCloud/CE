@@ -30,6 +30,7 @@ describe('NestedAccordionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(NestedAccordionComponent);
     component = fixture.componentInstance;
+    component.nestedAccordionData = [];
     fixture.detectChanges();
   });
 

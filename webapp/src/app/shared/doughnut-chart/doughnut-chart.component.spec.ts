@@ -30,6 +30,11 @@ describe('DoughnutChartComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DoughnutChartComponent);
     component = fixture.componentInstance;
+    component.graphData = {
+      legend: ['legend1'],
+      legendTextColor: 'red',
+      data: []
+    }
     fixture.detectChanges();
   });
 

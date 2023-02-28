@@ -152,5 +152,5 @@ public interface AssetServiceClient {
             @RequestParam("domain") String domain);
 
     @GetMapping(value = "/v1/list/valueByTag")
-    AssetApi getValuesByTag(@RequestParam("ag") String assetGroup,@RequestParam("tagValue") String tag);
+    AssetApi getValuesByTag(@RequestParam("ag") String assetGroup,@RequestParam("tagValue") String tag, @RequestParam("type") String type);
 }

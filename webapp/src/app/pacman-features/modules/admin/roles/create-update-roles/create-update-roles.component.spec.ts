@@ -12,7 +12,18 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 import { CreateUpdateRolesComponent } from './create-update-roles.component';
 
 describe('CreateUpdateRolesComponent', () => {
@@ -21,9 +32,19 @@ describe('CreateUpdateRolesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateUpdateRolesComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+      declarations: [CreateUpdateRolesComponent],
+      providers: [
+        DataCacheService,
+        ErrorHandlingService,
+        LoggerService,
+        HttpService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

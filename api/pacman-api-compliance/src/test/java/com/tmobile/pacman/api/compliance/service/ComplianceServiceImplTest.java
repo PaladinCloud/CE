@@ -75,14 +75,14 @@ public class ComplianceServiceImplTest {
     @Test
     public void getResourceDetailsTest() throws Exception {
 
-        Map<String, Object> ruleMap = new HashMap<>();
-        ruleMap.put("policyId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
+        Map<String, Object> policyMap = new HashMap<>();
+        policyMap.put("policyId", "TaggingPolicy_version-1_Ec2TaggingPolicy_ec2");
 
-        List<Map<String, Object>> ruleList = new ArrayList<>();
-        ruleList.add(ruleMap);
+        List<Map<String, Object>> policyList = new ArrayList<>();
+        policyList.add(policyMap);
         when(
                 complianceRepository.getResourceDetailsFromES(anyString(),
-                        anyString())).thenReturn(ruleList);
+                        anyString())).thenReturn(policyList);
         assertThat(complianceService.getResourceDetails("dummyString",
                 "testString"), is(notNullValue()));
 
@@ -98,13 +98,13 @@ public class ComplianceServiceImplTest {
     @Test
     public void getRecommendationsTest() throws Exception {
 
-        Map<String, Object> ruleMap = new HashMap<>();
-        ruleMap.put("policyId", "TaggingRule_version-1_Ec2TaggingRule_ec2");
+        Map<String, Object> policyMap = new HashMap<>();
+        policyMap.put("policyId", "TaggingPolicy_version-1_Ec2TaggingPolicy_ec2");
 
-        List<Map<String, Object>> ruleList = new ArrayList<>();
-        ruleList.add(ruleMap);
+        List<Map<String, Object>> policyList = new ArrayList<>();
+        policyList.add(policyMap);
         when(complianceRepository.getRecommendations(anyString(), anyString()))
-                .thenReturn(ruleList);
+                .thenReturn(policyList);
         assertThat(complianceService.getRecommendations("dummyString",
                 "dummyString"), is(notNullValue()));
 
@@ -122,17 +122,17 @@ public class ComplianceServiceImplTest {
         long issueCount = 100;
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
-                        anyString())).thenReturn(issueCount);
+                        anyString(),null)).thenReturn(issueCount);
         assertThat(complianceService.getIssuesCount("dummyString",
-                "dummyString", "dummyString"), is(100l));
+                "dummyString", "dummyString",null), is(100l));
 
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
-                        anyString())).thenThrow(new DataException());
+                        anyString(),null)).thenThrow(new DataException());
 
         assertThatThrownBy(
                 () -> complianceService.getIssuesCount("dummyString",
-                        "dummyString", "dummyString")).isInstanceOf(
+                        "dummyString", "dummyString",null)).isInstanceOf(
                 ServiceException.class);
     }
 
@@ -142,31 +142,31 @@ public class ComplianceServiceImplTest {
         sevDistubutionMap.put("high", 100l);
         sevDistubutionMap.put("security", 200l);
 
-        Map<String, Object> ruleCategoryDistubutionMap = new HashMap<>();
-        ruleCategoryDistubutionMap.put("high", 100l);
-        ruleCategoryDistubutionMap.put("security", 200l);
+        Map<String, Object> policyCategoryDistubutionMap = new HashMap<>();
+        policyCategoryDistubutionMap.put("high", 100l);
+        policyCategoryDistubutionMap.put("security", 200l);
         when(complianceRepository.getTargetTypeForAG(anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getTargetTypes());
         long issueCount = 100;
         when(
                 complianceRepository.getIssuesCount(anyString(), anyString(),
-                        anyString())).thenReturn(issueCount);
+                        anyString(),null)).thenReturn(issueCount);
         when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
         when(
-                complianceRepository.getRulesDistribution(anyString(),
+                complianceRepository.getPoliciesDistribution(anyString(),
                         anyString(), anyObject(), anyString())).thenReturn(
                 sevDistubutionMap);
         when(
-                complianceRepository.getRulesDistribution(anyString(),
+                complianceRepository.getPoliciesDistribution(anyString(),
                         anyString(), anyObject(), anyString())).thenReturn(
                 sevDistubutionMap);
         when(
-                complianceRepository.getRuleCategoryPercentage(anyObject(),
-                        anyObject())).thenReturn(ruleCategoryDistubutionMap);
+                complianceRepository.getPolicyCategoryPercentage(anyObject(),
+                        anyObject())).thenReturn(policyCategoryDistubutionMap);
 
         assertThat(
-                complianceService.getDistribution("dummyString", "dummyString"),
+                complianceService.getDistribution("dummyString", "dummyString",null),
                 is(notNullValue()));
     }
 
@@ -295,7 +295,7 @@ public class ComplianceServiceImplTest {
     }
 
     @Test
-    public void getRulecomplianceTest() throws Exception {
+    public void getPolicycomplianceTest() throws Exception {
         when(complianceRepository.getTargetTypeForAG(anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getTargetTypes());
         when(complianceRepository.getInstanceCountForQualys(anyString(),anyString(),anyString(),anyString(),anyString()))
@@ -306,13 +306,13 @@ public class ComplianceServiceImplTest {
                         .getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
                                 anyString(), anyString())).thenReturn(
                 CommonTestUtil.getMapList());
-        when(complianceRepository.getRulesLastScanDate()).thenReturn(
+        when(complianceRepository.getPoliciesLastScanDate()).thenReturn(
                 CommonTestUtil.getMapList());
         when(complianceRepository.getTotalAssetCount(anyString(), anyString(),anyString(),anyString()))
                 .thenReturn(CommonTestUtil.getMapLong());
-        when(complianceRepository.getRuleIdDetails(anyString())).thenReturn(
+        when(complianceRepository.getPolicyIdDetails(anyString())).thenReturn(
                 CommonTestUtil.getMapList());
-        when(complianceRepository.getRuleIDsForTargetType(anyString()))
+        when(complianceRepository.getPolicyIDsForTargetType(anyString()))
                 .thenReturn(CommonTestUtil.getMapList());
 
         when(complianceRepository.getTaggingByAG(anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.
@@ -323,13 +323,13 @@ public class ComplianceServiceImplTest {
                         anyInt(), anyString())).thenReturn(
                 CommonTestUtil.getMapLong());
 
-        assertThat(complianceService.getRulecompliance(CommonTestUtil
+        assertThat(complianceService.getPolicycompliance(CommonTestUtil
                 .getRequest()), is(notNullValue()));
     }
 
     @Test
-    public void getRulecomplianceWithoutRuleIdTest() throws Exception {
-        assertThat(complianceService.getRulecompliance(CommonTestUtil
+    public void getPolicycomplianceWithoutPolicyIdTest() throws Exception {
+        assertThat(complianceService.getPolicycompliance(CommonTestUtil
                 .getRequest()), is(nullValue()));
     }
 
@@ -358,14 +358,14 @@ public class ComplianceServiceImplTest {
     }
 
     @Test
-    public void getRuleDetailsbyApplicationTest() throws Exception {
+    public void getPolicyDetailsbyApplicationTest() throws Exception {
 
         when(
-                complianceRepository.getRuleDetailsByApplicationFromES(
+                complianceRepository.getPolicyDetailsByApplicationFromES(
                         anyString(), anyString(), anyString())).thenReturn(
                 CommonTestUtil.getJsonArray());
 
-        when(complianceRepository.getTargetTypeByRuleId(anyString()))
+        when(complianceRepository.getTargetTypeByPolicyId(anyString()))
                 .thenReturn(CommonTestUtil.getMapList());
 
         when(
@@ -376,91 +376,91 @@ public class ComplianceServiceImplTest {
                 complianceRepository.getAllApplicationsAssetCountForTargetType(
                         anyString(), anyString())).thenReturn(
                 CommonTestUtil.getMapLong());
-        
+
         when(
                 complianceRepository.getInstanceCountForQualysByAppsOrEnv(
                         anyString(), anyString(),anyString(), anyString(),anyString())).thenReturn(
                 CommonTestUtil.getMapLong());
-        
+
         assertThat(
-                complianceService.getRuleDetailsbyApplication(
+                complianceService.getPolicyDetailsbyApplication(
                         "dummyString",
-                        "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Rule_ec2",
+                        "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Policy_ec2",
                         "dummyString"), is(notNullValue()));
 
         assertThat(
-                complianceService.getRuleDetailsbyApplication(
+                complianceService.getPolicyDetailsbyApplication(
                         "dummyString",
-                        "PacMan_onpremisekernelversion_version-1_onpremKernelVersionRule_onpremserver",
+                        "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
                         "dummyString"), is(notNullValue()));
-        
+
         assertThat(
-                complianceService.getRuleDetailsbyApplication(
+                complianceService.getPolicyDetailsbyApplication(
                         "dummyString",
                         "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
                         "dummyString"), is(notNullValue()));
-        assertThat(complianceService.getRuleDetailsbyApplication("dummyString",
+        assertThat(complianceService.getPolicyDetailsbyApplication("dummyString",
                 "", "dummyString"), is(notNullValue()));
-        
+
     }
 
     @Test
-    public void getRuleDetailsbyEnvironmentTest() throws Exception {
+    public void getPolicyDetailsbyEnvironmentTest() throws Exception {
 
         when(
-                complianceRepository.getRuleDetailsByEnvironmentFromES(
+                complianceRepository.getPolicyDetailsByEnvironmentFromES(
                         anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getJsonArray());
 
-        when(complianceRepository.getTargetTypeByRuleId(anyString()))
+        when(complianceRepository.getTargetTypeByPolicyId(anyString()))
                 .thenReturn(CommonTestUtil.getMapList());
 
         when(
         		complianceRepository.getTotalAssetCountByEnvironment(
                         anyString(), anyString(), anyString()))
                 .thenReturn(CommonTestUtil.getMapLong());
-        
+
         when(
         		complianceRepository.getInstanceCountForQualys(
                         anyString(), anyString(),anyString(), anyString(),anyString())).thenReturn(5000l);
 
         assertThat(
-                complianceService.getRuleDetailsbyEnvironment(
+                complianceService.getPolicyDetailsbyEnvironment(
                         "dummyString",
-                        "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Rule_ec2",
+                        "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Policy_ec2",
                         "", "dummyString"), is(notNullValue()));
 
         assertThat(
-                complianceService.getRuleDetailsbyEnvironment(
+                complianceService.getPolicyDetailsbyEnvironment(
                         "dummyString",
-                        "PacMan_onpremisekernelversion_version-1_onpremKernelVersionRule_onpremserver",
+                        "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
                         "", "dummyString"), is(notNullValue()));
-        assertThat(complianceService.getRuleDetailsbyEnvironment("dummyString",
+        assertThat(complianceService.getPolicyDetailsbyEnvironment("dummyString",
                 "", "", "dummyString"), is(notNullValue()));
-        
+
         assertThat(
-                complianceService.getRuleDetailsbyEnvironment(
+                complianceService.getPolicyDetailsbyEnvironment(
                         "dummyString",
                         "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
                         "dummyString",""), is(notNullValue()));
-        assertThat(complianceService.getRuleDetailsbyEnvironment("dummyString",
+        assertThat(complianceService.getPolicyDetailsbyEnvironment("dummyString",
                 "", "","dummyString"), is(notNullValue()));
     }
 
     @Test
-    public void getRuleDescriptionTest() throws Exception {
+    public void getPolicyDescriptionTest() throws Exception {
 
-        when(complianceRepository.getRuleDescriptionFromDb(anyString()))
+        when(complianceRepository.getPolicyDescriptionFromDb(anyString()))
                 .thenReturn(CommonTestUtil.getMapList());
 
-        assertThat(complianceService.getRuleDescription("dummyString"),
+        assertThat(complianceService.getPolicyDescription("dummyString"),
                 is(notNullValue()));
 
-        when(complianceRepository.getRuleDescriptionFromDb(anyString()))
+        when(complianceRepository.getPolicyDescriptionFromDb(anyString()))
                 .thenThrow(new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.getRuleDescription("dummyString"))
+                () -> complianceService.getPolicyDescription("dummyString"))
                 .isInstanceOf(ServiceException.class);
     }
 
@@ -505,7 +505,7 @@ public class ComplianceServiceImplTest {
         when(
                 complianceRepository.getPolicyViolationDetailsByIssueId(
                         anyString(), anyString())).thenReturn(CommonTestUtil.getMapObject());
-        when(complianceRepository.getRuleDescriptionFromDb(anyString()))
+        when(complianceRepository.getPolicyDescriptionFromDb(anyString()))
                 .thenReturn(CommonTestUtil.getMapList());
         assertThat(complianceService.getPolicyViolationDetailsByIssueId(
                 "dummyString", "dummyString"), is(notNullValue()));
@@ -528,9 +528,9 @@ public class ComplianceServiceImplTest {
                 .thenReturn(CommonTestUtil.getTargetTypes());
         when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
-        when(complianceRepository.getRuleCategoryWeightagefromDB(anyString()))
+        when(complianceRepository.getPolicyCategoryWeightagefromDB(anyString()))
                 .thenReturn(CommonTestUtil.getMapObject());
-        getRulecomplianceTest();
+        getPolicycomplianceTest();
 
         assertThat(
                 complianceService.getOverallComplianceByDomain("test", "test"),
@@ -538,7 +538,7 @@ public class ComplianceServiceImplTest {
     }
 
     @Test
-    public void getOverallComplianceByDomainRuleCategoryWeightageEmptyCheckTest()
+    public void getOverallComplianceByDomainPolicyCategoryWeightageEmptyCheckTest()
             throws Exception {
 
         when(complianceRepository.getTargetTypeForAG(anyString(), anyString()))
@@ -546,10 +546,10 @@ public class ComplianceServiceImplTest {
         when(complianceRepository.getPolicyIds(anyString())).thenReturn(
                 CommonTestUtil.getRules());
 
-        when(complianceRepository.getRuleCategoryWeightagefromDB(anyString()))
+        when(complianceRepository.getPolicyCategoryWeightagefromDB(anyString()))
                 .thenReturn(new HashMap<String, Object>());
 
-        getRulecomplianceTest();
+        getPolicycomplianceTest();
 
         assertThat(
                 complianceService.getOverallComplianceByDomain("test", "test"),
@@ -557,10 +557,10 @@ public class ComplianceServiceImplTest {
     }
 
     @Test
-    public void closeIssuesByRuleTest() throws Exception {
-        when(complianceRepository.closeIssuesByRule(anyObject())).thenReturn(
+    public void closeIssuesByPolicyTest() throws Exception {
+        when(complianceRepository.closeIssuesByPolicy(anyObject())).thenReturn(
                 true);
-        assertThat(complianceService.closeIssuesByRule(CommonTestUtil
+        assertThat(complianceService.closeIssuesByPolicy(CommonTestUtil
                 .getRuleDetails()), is(notNullValue()));
     }
 
@@ -571,10 +571,10 @@ public class ComplianceServiceImplTest {
     }
 
     @Test
-    public void closeIssuesByRuleElsePartTest() throws Exception {
-        when(complianceRepository.closeIssuesByRule(anyObject())).thenReturn(
+    public void closeIssuesByPolicyElsePartTest() throws Exception {
+        when(complianceRepository.closeIssuesByPolicy(anyObject())).thenReturn(
                 false);
-        assertThat(complianceService.closeIssuesByRule(CommonTestUtil
+        assertThat(complianceService.closeIssuesByPolicy(CommonTestUtil
                 .getRuleDetails()), is(notNullValue()));
     }
     
@@ -628,11 +628,11 @@ public class ComplianceServiceImplTest {
         ReflectionTestUtils.setField(complianceService, "projEligibletypes",
                 "ec2,onpremserver");
         ReflectionTestUtils.setField(complianceService, "mandatoryTags", "mandatoryTags");
-        when(complianceRepository.getRuleIdWithDisplayNameQuery(anyString())).thenReturn(CommonTestUtil.getListMapObject());
+        when(complianceRepository.getPolicyIdWithDisplayNameQuery(anyString())).thenReturn(CommonTestUtil.getListMapObject());
         when(rdsepository.getDataFromPacman(anyString())).thenReturn(CommonTestUtil.getListMapObject());
-        when(complianceRepository.getRuleIds(anyString())).thenReturn(new ArrayList<Object>());
+        when(complianceRepository.getPolicyIds(anyString())).thenReturn(new ArrayList<Object>());
         when(complianceRepository.getExemptedResourceDetails(anyString(),anyString())).thenReturn(CommonTestUtil.getMapOfMapObject());
-        when(complianceRepository.getExemptedIssuesForTaggingRule(anyObject(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
+        when(complianceRepository.getExemptedIssuesForTaggingPolicy(anyObject(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
         when(complianceRepository.getExemptedUntaggedCount(anyString(),anyString(),anyString(),anyObject())).thenReturn(1000);
        
         when(elasticSearchRepository.getSortedDataFromESBySize(anyString(),anyString(),anyObject(),anyObject(),anyObject(),anyObject(),anyInt(),anyInt(),anyString(),anyObject(),anyObject())).thenReturn(CommonTestUtil.getListMapObject());

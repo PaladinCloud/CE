@@ -18,7 +18,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ElementRef } from '@ang
   selector: 'app-config-history-dropdown',
   templateUrl: './config-history-dropdown.component.html',
   styleUrls: ['./config-history-dropdown.component.css'],
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(document:click)': 'onClickOutside($event)'
   }

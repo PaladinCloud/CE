@@ -1,9 +1,9 @@
-<div [class]="'snackbar flex flex-align-center flex-center gap-12 '+ data.variant" matSnackBarLabel>
+<div [class]="'snackbar flex flex-align-center flex-center gap-12 '+ (data.variant?data.variant:'success')" matSnackBarLabel>
     <img height="24px" width="24px" class="icon padding-4" [src]="'/assets/icons/' + data.iconSrc + '.svg'" alt="">
      <app-text [title]="data.message" class="message nowrap-ellipsis" classNames="body-2 secondary-700 nowrap-ellipsis" [text]="data.message"></app-text>
     <div style="margin-left: auto;" matSnackBarActions>
       <button mat-icon-button matSnackBarAction (click)="snackBarRef.dismissWithAction()">
-        <img class="icon" [src]="'/assets/icons/x-icon.svg'" alt="">
+        <img class="icon" [src]="'/assets/icons/close-green.svg'" alt="">
       </button>
     </div>
 </div>

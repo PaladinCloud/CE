@@ -73,7 +73,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
           route: "/pl/assets/asset-dashboard",
         },
         {
-          "id": 25,
+          "id": 30,
           "name": "Distribution",
           "parent": "Assets",
           "route": "/pl/assets/asset-distribution"
@@ -183,13 +183,20 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
         },
         {
           id: 23,
+          name: "User Management",
+          parent: "Admin",
+          route: "/pl/admin/user-management",
+          permissions: ["user-management"]
+        },
+        {
+          id: 24,
           name: "Configuration Management",
           parent: "Admin",
           route: "/pl/admin/config-management",
           permissions: ["configuration-management"]
         },
         {
-          id: 24,
+          id: 25,
           name: "System Management",
           parent: "Admin",
           route: "/pl/admin/system-management",

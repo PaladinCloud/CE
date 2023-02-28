@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, TemplateRef, ViewChild } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 
 import { ActivatedRoute, Router } from "@angular/router";
@@ -61,6 +61,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   whiteListColumns;
   isStatePreserved = false;
   tableScrollTop = 0;
+  @ViewChild("enableOrDisablePolicyRef") enableOrDisablePolicyRef: TemplateRef<any>;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -125,15 +126,14 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   public labels: any;
   FullQueryParams: any;
   queryParamsWithoutFilter: any;
-  private previousUrl: any = "";
   urlToRedirect: any = "";
   private pageLevel = 0;
   public backButtonRequired;
   mandatory: any;
   private routeSubscription: Subscription;
-  private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
-  private downloadSubscription: Subscription;
+  selectedRowTitle: any;
+  action: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -402,17 +402,21 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               menuItems: dropDownItems,
             };
           } else if(col.toLowerCase() == "status"){
-            let variant;
+            let chipBackgroundColor,chipTextColor;
             if(getData[row]["Status"].toLowerCase() === "enabled"){
-              variant = "variant1"
+              chipBackgroundColor = "#E6F5EC";
+              chipTextColor = "#00923f";
             }else{
-              variant = "variant2"
+              chipBackgroundColor = "#F2F3F5";
+              chipTextColor = "#73777D";
             }
             cellObj = {
               ...cellObj,
+              chipList: [getData[row][col]],
               text: getData[row][col].toLowerCase(),
               isChip: true,
-              chipVariant: variant,
+              chipBackgroundColor: chipBackgroundColor,
+              chipTextColor: chipTextColor
             };
           }
           innerArr[col] = cellObj;
@@ -462,6 +466,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         }
         const snackbarText = 'Policy "' +  event.rowSelected["Title"].text + '" ' + event.action + 'd successfully';
         this.openSnackBar(snackbarText, "check-circle");
+        this.getPolicyDetails();
         
         // this.isEnableDisableInvokeSuccess = true;
         // this.invocationId = reponse[0].data;
@@ -481,17 +486,18 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   openDialog(event): void {
     const action = event.action;
     const element = event.rowSelected;
-    let title, message;
-    if(action=="Enable"){
-      title = "Enable Policy";
-    }else if(action=="Disable"){
-      title = "Disable Policy";
-    }
-    message = 'Are you really sure you want to disable "' + element["Title"].text + '".';
+
+    this.selectedRowTitle =  element["Title"].text ;
+    this.action = action;
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       width: '500px',
-      data: {title: title, message: message, yesButtonLabel: action, noButtonLabel: "Cancel"},
-    });
+      data: { 
+        title: null,
+         yesButtonLabel: action,
+          noButtonLabel: "Cancel" ,
+          template: this.enableOrDisablePolicyRef
+        },
+      });
 
     dialogRef.afterClosed().subscribe(result => {
       if(result=="yes"){
@@ -501,7 +507,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   openSnackBar(message, iconSrc) {
-    this.notificationObservableService.postMessage(message, 3*1000, "variant1", iconSrc);
+    this.notificationObservableService.postMessage(message, 3*1000, "success", iconSrc);
     }
 
   goToCreatePolicy() {
