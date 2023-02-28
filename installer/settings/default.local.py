@@ -66,10 +66,18 @@ ENABLE_VULNERABILITY_FEATURE = False
 QUALYS_API_URL = ""  # Qualys API Url without trailing slash
 QUALYS_INFO = ""  # Base64 encoded user:password of qualys
 
+# These settings are for the enabling and using Aqua Vulnerability feature and service
+ENABLE_AQUA_VULNERABILITY_FEATURE = False
+AQUA_API_URL="" # Aqua API Url without trailing slash
+AQUA_CLIENT_DOMAIN_URL = "" # Aqua Client Domain Url without trailing slash
+AQUA_USERNAME = "" # Aqua Client User name
+AQUA_PASSWORD = "" # Aqua Client password
+
 
 #Cognito Configuration
 COGNITO_ADMIN_EMAIL_ID = "" #email_id of admin user 
 COGNITO_DOMAIN = ""       #example xyzpaladincloud
+
 
 #job/rules intervals
 JOB_SCHEDULE_INITIALDELAY = 5 #scheduling jobs initial delay in minute

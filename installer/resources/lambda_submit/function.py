@@ -12,7 +12,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
-from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids, get_aws_account_details
+from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids, get_aws_account_details, need_to_deploy_aqua_vulnerability_service
 import json
 from core.config import Settings
 
@@ -354,7 +354,7 @@ class AquaImageVulnerabilityCollectorEventRule(CloudWatchEventRuleResource):
     name = "aqua-image-vulnerability-collector"
     schedule_expression = "cron(0 0 * * ? *)"
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_deploy_vulnerability_service()
+    PROCESS = need_to_deploy_aqua_vulnerability_service()
 
 
 class AquaImageVulnerabilityCollectorLambdaPermission(LambdaPermission):
@@ -363,7 +363,7 @@ class AquaImageVulnerabilityCollectorLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = AquaImageVulnerabilityCollectorEventRule.get_output_attr('arn')
-    PROCESS = need_to_deploy_vulnerability_service()
+    PROCESS = need_to_deploy_aqua_vulnerability_service()
 
 
 class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -386,7 +386,7 @@ class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
         ]
     })
 
-    PROCESS = need_to_deploy_vulnerability_service()
+    PROCESS = need_to_deploy_aqua_vulnerability_service()
 
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):

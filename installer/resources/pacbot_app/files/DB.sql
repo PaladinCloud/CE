@@ -105,6 +105,14 @@ SET @ACCOUNT_ID='ACCOUNT_ID';
 SET @ACCOUNT_NAME='ACCOUNT_NAME';
 SET @ACCOUNT_PLATFORM='ACCOUNT_PLATFORM';
 
+SET @AQUA_API_URL='$AQUA_API_URL';
+SET @AQUA_CLIENT_DOMAIN_URL='$AQUA_CLIENT_DOMAIN_URL';
+SET @AQUA_USERNAME='$AQUA_USERNAME';
+SET @AQUA_PASSWORD='$AQUA_PASSWORD';
+SET @AQUA_API_DEFAULT_PAGE_SIZE='$AQUA_API_DEFAULT_PAGE_SIZE';
+SET @AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS='$AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS';
+
+
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
   `RESOURCE_TYPE` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2798,11 +2806,20 @@ INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('vuln
 INSERT IGNORE INTO pac_config_key_metadata (`cfkey`,`description`) VALUES ('vulnerability.application.resourcedetailsboth','Description PlaceHolder');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qualys_info','Base64 encoded user:password of qualys');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qualys_api_url','Qualys api url');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_client_domain_url','Aqua clinet domain URL');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_api_url','Aqua API URL');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_username','aqua username');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_password','aqua password');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('default_page_size','Base64 encoded user:password of qualys');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_image_vul_query_params','Base64 encoded user:password of qualys');
 
 -- delete configs containing http url
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
+DELETE IGNORE FROM pac_config_properties where cfkey in ('aqua_client_domain_url', 'aqua_api_url','aqua_username','aqua_password','default_page_size','aqua_image_vul_query_params');
+
+
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
@@ -3177,6 +3194,12 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PRIFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_client_domain_url',concat(@AQUA_CLIENT_DOMAIN_URL,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('default_page_size',concat(@AQUA_API_DEFAULT_PAGE_SIZE,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_image_vul_query_params',concat(@AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS,''),'qualys-enricher','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_api_url',concat(@AQUA_API_URL,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_username',concat(@AQUA_USERNAME,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_password',concat(@AQUA_PASSWORD,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
 
 
 INSERT IGNORE INTO `Recommendation_Mappings`(`checkId`,`type`,`resourceInfo`,`_resourceId`,`monthlySavingsField`) values ('H7IgTzjTYb','volume','Volume ID','volumeid',NULL),('DAvU99Dc4C','volume','Volume ID','volumeid','Monthly Storage Cost'),('Qch7DwouX1','ec2','Instance ID','instanceid','Estimated Monthly Savings'),('1iG5NDGVre','sg','Security Group ID','groupid',NULL),('HCP4007jGY','sg','Security Group ID','groupid',NULL),('BueAdJ7NrP','s3','Bucket Name','name',NULL),('iqdCTZKCUp','classicelb','Load Balancer Name','loadbalancername',NULL),('R365s2Qddf','s3','Bucket Name','name',NULL),('Pfx0RwqBli','s3','Bucket Name','name',NULL),('a2sEc6ILx','classicelb','Load Balancer Name','loadbalancername',NULL),('xdeXZKIUy','classicelb','Load Balancer Name','loadbalancername',NULL),('CLOG40CDO8','asg','Auto Scaling Group Name','autoscalinggroupname',NULL),('7qGXsKIUw','classicelb','Load Balancer Name','loadbalancername',NULL),('hjLMh88uM8','classicelb','Load Balancer Name','loadbalancername','Estimated Monthly Savings'),('DqdJqYeRm5','iamuser','IAM User','username',NULL),('j3DFqYTe29','ec2','Instance ID','instanceid',NULL),('f2iK5R6Dep','rdsdb','DB Instance','dbinstanceidentifier',NULL),('1MoPEMsKx6','reservedinstance','Instance Type','instancetype','Estimated Monthly Savings'),('Ti39halfu8','rdsdb','DB Instance Name','dbinstanceidentifier','Estimated Monthly Savings (On Demand)'),('Wnwm9Il5bG','ec2','Instance ID','instanceid',NULL),('V77iOLlBqz','ec2','Instance ID','instanceid',NULL),('Z4AUBRNSmz','elasticip','IP Address','publicip',NULL),('8CNsSllI5v','asg','Auto Scaling Group Name','autoscalinggroupname',NULL),('N420c450f2','cloudfront','Distribution ID','id',NULL),('TyfdMXG69d','ec2','Instance ID','instanceid',NULL),('tfg86AVHAZ','sg','Group ID','groupid',NULL),('yHAGQJV9K5','ec2','Instance ID','instanceid',NULL),('S45wrEXrLz','vpnconnection','VPN ID','vpnconnectionid',NULL),('PPkZrjsH2q','volume','Volume ID','volumeid',NULL),('opQPADkZvH','rdsdb','DB Instance','dbinstanceidentifier',NULL),('796d6f3D83','s3','Bucket Name','name',NULL),('G31sQ1E9U','redshift','Cluster','clusteridentifier','Estimated Monthly Savings'),('xSqX82fQu','classicelb','Load Balancer Name','loadbalancername',NULL),('ZRxQlPsb6c','ec2','Instance ID','instanceid',NULL),('N430c450f2','cloudfront','Distribution ID','id',NULL),('4g3Nt5M1Th','virtualinterface','Gateway ID','virtualgatewayid',NULL),('0t121N1Ty3','directconnect','Connection ID','connectionid',NULL),('N425c450f2','cloudfront','Distribution ID','id',NULL),('xuy7H1avtl','rdscluster','Cluster','dbclusteridentifier',NULL),('1e93e4c0b5','reservedinstance','Reserved Instance ID','instanceid','Estimated Monthly Savings'),('51fC20e7I2','route53','Hosted Zone ID','hostedZoneId',NULL),('cF171Db240','route53','Hosted Zone ID','hostedZoneId',NULL),('Cb877eB72b','route53','Hosted Zone ID','hostedZoneId',NULL),('b73EEdD790','route53','Hosted Zone ID','hostedZoneId',NULL),('C056F80cR3','route53','Hosted Zone ID','hostedZoneId',NULL),('B913Ef6fb4','route53','Hosted Zone ID','hostedZoneId',NULL);

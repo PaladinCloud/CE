@@ -151,6 +151,16 @@ MANDATORY_TAGS = "Application,Environment"
 ACCOUNT_ID = ""
 ACCOUNT_NAME = ""
 ACCOUNT_PLATFORM = ""
+
+# These settings are for the enabling and using Aqua Vulnerability feature and service
+ENABLE_AQUA_VULNERABILITY_FEATURE = False
+AQUA_API_URL="" # Aqua API Url without trailing slash
+AQUA_CLIENT_DOMAIN_URL = "" # Aqua Client Domain Url without trailing slash
+AQUA_USERNAME = "" # Aqua Client User name
+AQUA_PASSWORD = "" # Aqua Client password
+AQUA_API_DEFAULT_PAGE_SIZE=1000
+AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS= "include_vpatch_info=true&show_negligible=true&hide_base_image=false&severities=critical,high,medium,low,negligible"
+
 try:
     from settings.local import *
 except:

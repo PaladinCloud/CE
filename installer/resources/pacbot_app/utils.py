@@ -7,6 +7,11 @@ def need_to_deploy_vulnerability_service():
 
     return feature_status
 
+def need_to_deploy_aqua_vulnerability_service():
+    feature_status = Settings.get('ENABLE_AQUA_VULNERABILITY_FEATURE', False)
+
+    return feature_status
+
 
 def need_to_enable_azure():
     feature_status = Settings.get('ENABLE_AZURE', False)

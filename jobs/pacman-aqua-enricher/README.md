@@ -12,3 +12,4 @@ aqua_image_vul_query_params -> set based on requirements
 aqua_api_url = aqua saas URL 
 aqua_username 
 aqua_password
+ENABLE_AQUA_VULNERABILITY_FEATURE
