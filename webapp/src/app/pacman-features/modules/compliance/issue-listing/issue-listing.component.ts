@@ -199,7 +199,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     if (sortColName === "severity") {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
-      this.sortOrder = ["low", "medium", "high", "critical"]
+      this.sortOrder = ["critical", "high", "medium", "low"]
     } else if (sortColName === "issue id") {
       this.fieldName = "_uid";
       this.fieldType = "string";
