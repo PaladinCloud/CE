@@ -65,7 +65,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Title': 2, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
+  columnWidths = {'Title': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {"PolicyName": "Title"};
   fieldName: string = "policyId.keyword";
   fieldType: string = "number";
