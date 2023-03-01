@@ -1966,7 +1966,7 @@
     "policyName": "GCP_Cloud_Function_not_enabled_with_VPC_connector",
     "targetType": "cloudfunction",
     "assetGroup": "gcp",
-    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"GCP-Cloud-Function-not-enabled-with-VPC-connector\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfunction\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"policyType\":\"ManagePolicy\"f}",
+    "policyParams": "{\"params\":[{\"encrypt\":false,\"value\":\"GCP-Cloud-Function-not-enabled-with-VPC-connector\",\"key\":\"policyKey\"},{\"encrypt\":false,\"value\":\"medium\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"security\",\"key\":\"policyCategory\"},{\"encrypt\":false,\"value\":\"\",\"key\":\"policyOwner\"}],\"environmentVariables\":[],\"policyId\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"autofix\":false,\"policyRestUrl\":\"\",\"targetType\":\"cloudfunction\",\"pac_ds\":\"gcp\",\"assetGroup\":\"gcp\",\"policyUUID\":\"GCP_Cloud_Function_not_enabled_with_VPC_connector\",\"policyType\":\"ManagePolicy\"}",
     "policyFrequency": "0 0/6 * * ? *",
     "policyExecutable": "",
     "policyRestUrl": "",
