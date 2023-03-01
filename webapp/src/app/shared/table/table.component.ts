@@ -38,7 +38,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() doLocalSort = true;
   @Input() tableDataLoaded;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
-  @Output() cellSelectEventEmitter = new EventEmitter();
   @Output() selectedAction = new EventEmitter<any>();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
@@ -216,17 +215,15 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     this.getWidthFactor();
   }
 
-  handleClick(row, cell?) {
+  handleClick(row, col){
+    if(row[col].isMenuBtn){
+      return;
+    }
     let event = {
       tableScrollTop: this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
       data: this.data,
-      cell: cell
-    }
-    if (this.rowClickable) {
-      this.rowSelectEventEmitter.emit(event);
-    } else {
-      if (cell) this.cellSelectEventEmitter.emit(event);
+      col: col
     }
     this.rowSelectEventEmitter.emit(event);
   }
@@ -237,7 +234,6 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
       rowSelected: element,
     }
     this.selectedAction.emit(event);
-    this.cellSelectEventEmitter.emit(event);
   }
 
   optionClick() {
@@ -363,14 +359,16 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
     this.dataSource.data = this.mainDataSource.data.filter((item) => {
       for (const i in columnsToSearchIN) {
         const col = columnsToSearchIN[i];
-        if (String(item[col].text).toLowerCase().match(searchTxt)) {
+        if(String(item[col].valueText).toLowerCase().match(searchTxt)){
           return true;
         }
       }
       return false;
     })
 
-    if (this.dataSource.data.length == 0) {
+    this.totalRows = this.dataSource.data.length;
+
+    if(this.dataSource.data.length==0){
       this.tableErrorMessage = 'noSearchFound';
     }
   }
@@ -412,19 +410,13 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges {
       // this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
-
-    const isAsc = this.direction=='asc';
+    const isAsc = this.direction == 'asc';
 
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
       if (this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]) {
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
-
-      // Till we add server side sorting
-      let elementA =a[this.headerColName]&&a[this.headerColName].valueText?a[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
-      let elementB =b[this.headerColName]&&b[this.headerColName].valueText?b[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
-
-      return (elementA<elementB? -1: 1)*(isAsc ? 1 : -1);
+      return (a[this.headerColName].valueText.toLowerCase()<b[this.headerColName].valueText.toLowerCase()? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 

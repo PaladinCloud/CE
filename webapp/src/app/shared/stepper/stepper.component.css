@@ -3,7 +3,9 @@
 }
 
 .stepper-header-wrapper{
-    width: 20%;
+    width: 200px;
+    padding-right: 20px;
+    border-right: 1px solid var(--border-200);
 }
 
 .stepper-wrapper{

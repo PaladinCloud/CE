@@ -460,12 +460,12 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
       );
-      if (action && action === "edit") {
+      if (action && action === "Edit") {
         this.router.navigate(["/pl/admin/policies/create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            policyId: this.policyID,
+            policyId: this.policyID
           },
         });
 

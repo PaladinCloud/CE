@@ -50,11 +50,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from "@angular/material/input";
 import { UserManagementComponent } from './user-management/user-management.component';
 import { AdminService } from "../../services/all-admin.service";
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
+    MatSlideToggleModule,
     AdminRoutingModule,
     MatInputModule,
     MatDatepickerModule,
