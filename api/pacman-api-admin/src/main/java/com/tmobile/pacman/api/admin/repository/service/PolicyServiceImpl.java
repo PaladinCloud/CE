@@ -276,10 +276,7 @@ public class PolicyServiceImpl implements PolicyService {
 			if (isPolicyIdExits(policyDetails.getPolicyId())) {
 				Date currentDate = new Date();
 				Policy updatePolicyDetails = policyRepository.findById(policyDetails.getPolicyId()).get();
-
-				String policyParams = buildAndGetPolicyParams(policyDetails, updatePolicyDetails.getPolicyUUID(),
-						false);
-				updatePolicyDetails.setPolicyParams(policyParams);
+				updatePolicyDetails.setPolicyParams(policyDetails.getPolicyParams());
 				updatePolicyDetails.setSeverity(policyDetails.getSeverity());
 				updatePolicyDetails.setCategory(policyDetails.getCategory());
 				updatePolicyDetails.setAutoFixEnabled(policyDetails.getAutofixEnabled());
@@ -357,8 +354,7 @@ public class PolicyServiceImpl implements PolicyService {
 				newPolicyDetails.setPolicyId(policyDetails.getPolicyId());
 				newPolicyDetails.setPolicyName(policyDetails.getPolicyName());
 				newPolicyDetails.setTargetType(policyDetails.getTargetType());
-				String policyParams = buildAndGetPolicyParams(policyDetails, policyUUID, true);
-				newPolicyDetails.setPolicyParams(policyParams);
+				newPolicyDetails.setPolicyParams(policyDetails.getPolicyParams());
 				newPolicyDetails.setPolicyFrequency(policyDetails.getPolicyFrequency());
 				newPolicyDetails.setPolicyExecutable(policyDetails.getPolicyExecutable());
 				newPolicyDetails.setPolicyDisplayName(policyDetails.getPolicyDisplayName());

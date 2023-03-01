@@ -928,32 +928,19 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("serial")
     @Override
     public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails)
             throws ServiceException {
         List<Map<String, Object>> policiesevCatDetails = new ArrayList<>();
         for (Map<String, Object> policyDetail : policyDetails) {
             logger.debug("Fetching details for policy: {}", policyDetail);
-            JsonParser parser = new JsonParser();
-            List<Map<String, String>> paramsList;
-            JsonObject policyParamsJson;
             Map<String, Object> policiesevCatDetail = new HashMap<>();
-            logger.debug("Policy params for the policy: {}", (String) policyDetail.get(POLICY_PARAMS));
-            policyParamsJson = (JsonObject) parser.parse(policyDetail.get(POLICY_PARAMS).toString());
-            paramsList = new Gson().fromJson(policyParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
-            }.getType());
             policiesevCatDetail.put(POLICYID, policyDetail.get(POLICYID));
-            policiesevCatDetail.put("autofix", policyParamsJson.get("autofix").getAsBoolean());
-            policiesevCatDetail.put("targetType", policyDetail.get("targetType"));
+            policiesevCatDetail.put(AUTOFIX, policyDetail.get(AUTOFIX_ENABLED));
+            policiesevCatDetail.put(TARGET_TYPE, policyDetail.get(TARGET_TYPE));
             policiesevCatDetail.put(DISPLAY_NAME, policyDetail.get(DISPLAY_NAME));
-            for (Map<String, String> param : paramsList) {
-                if (param.get(KEY).equalsIgnoreCase(POLICY_CATEGORY)) {
-                    policiesevCatDetail.put(POLICY_CATEGORY, param.get(VALUE));
-                } else if (param.get(KEY).equalsIgnoreCase(SEVERITY)) {
-                    policiesevCatDetail.put(SEVERITY, param.get(VALUE));
-                }
-            }
+            policiesevCatDetail.put(POLICY_CATEGORY, policyDetail.get(CATEGORY));
+            policiesevCatDetail.put(SEVERITY, policyDetail.get(SEVERITY));
             policiesevCatDetails.add(policiesevCatDetail);
 
         }

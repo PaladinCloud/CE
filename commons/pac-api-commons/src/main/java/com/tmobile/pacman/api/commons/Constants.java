@@ -330,4 +330,6 @@ public interface Constants {
     String RESOLUTION_URL = "resolutionUrl";
     String UNABLE_TO_DETERMINE = "unable to determine";
     String STATUS_REASON = "status-reason";
+    String AUTOFIX_ENABLED = "autoFixEnabled";
+    String AUTOFIX = "autofix";
 }
