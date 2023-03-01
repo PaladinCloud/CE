@@ -562,6 +562,14 @@ export const environment = {
         url: '{{baseUrl}}/compliance/v1/policy-details-by-id',
         method: 'GET'
     },
+    getPolicyDetailsById: {
+        url: "{{baseUrl}}/admin/policy/details-by-id",
+        method: 'GET'
+    },
+    enableDisableAutofix:{
+        url: "{{baseUrl}}/admin/policy/enable-disable-autofix",
+        method: 'POST'
+    },
     policyDetails: {
         url: '{{baseUrl}}/admin/policy/list',
         method: 'GET'
@@ -598,7 +606,7 @@ export const environment = {
         url: '{{baseUrl}}/admin/job-execution-manager/create',
         method: 'POST'
     },
-    invokeRule: {
+    invokePolicy: {
         url: '{{baseUrl}}/admin/policy/invoke',
         method: 'POST'
     },
