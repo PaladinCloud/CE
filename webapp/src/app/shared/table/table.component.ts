@@ -96,6 +96,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allSelected=false;
     }
+    if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
+      this.displayedColumns.pop();
+    }
     // if(this.doLocalSearch && this.dataSource?.data?.length){
     //   this.customSearch();
     // }
