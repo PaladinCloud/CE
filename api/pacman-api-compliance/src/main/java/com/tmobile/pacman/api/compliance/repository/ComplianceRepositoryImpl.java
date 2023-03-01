@@ -1896,7 +1896,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(String targetType,
             String policyCategory) throws DataException {
         String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
-                + targetType + ") AND `category` = '" + policyCategory + "'";
+                + targetType + ")";
+        if(policyCategory != null && !"".equals(policyCategory)) {
+        	policyIdWithDisplayquery = policyIdWithDisplayquery + " AND `category` = '" + policyCategory + "'";
+        }
+        policyIdWithDisplayquery = policyIdWithDisplayquery+" ;";
         try {
             return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
         } catch (Exception e) {
