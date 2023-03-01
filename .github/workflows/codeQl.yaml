@@ -42,7 +42,7 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v3
       with:
-        java-version: '11'
+        java-version: '8'
         distribution: 'temurin'
 
     # Initializes the CodeQL tools for scanning.
@@ -68,6 +68,7 @@ jobs:
       name: Build Java
       run: |
         sudo apt install maven -y
+        export MAVEN_OPTS="-Xmx3000m"
         mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun

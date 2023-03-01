@@ -28,7 +28,7 @@ public class BigQueryInventoryCollector {
         logger.info("Running collector for bigquery inventory.");
         List<BigQueryVH> bigQueryList = new ArrayList<>();
 
-        BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions()
+        BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions(project.getProjectId())
                 .setProjectId(project.getProjectId()).build();
 
         BigQuery bigQuery = bigQueryOption.getService();
@@ -118,7 +118,7 @@ public class BigQueryInventoryCollector {
 
     public List<BigQueryTableVH> fetchBigqueryTableInventory(ProjectVH project) throws IOException {
         logger.info("Running collector for bigquery table inventory. Project Name:{}", project.getProjectName());
-        BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions()
+        BigQueryOptions bigQueryOption = gcpCredentialsProvider.getBigQueryOptions(project.getProjectId())
                 .setProjectId(project.getProjectId()).build();
 
         BigQuery bigQuery = bigQueryOption.getService();

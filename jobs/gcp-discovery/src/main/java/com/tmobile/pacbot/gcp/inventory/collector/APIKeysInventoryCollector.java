@@ -25,8 +25,8 @@ public class APIKeysInventoryCollector {
     public List<APIKeysVH> fetchApiKeys(ProjectVH projectVH) throws Exception {
         String parent = "projects/"+projectVH.getProjectId()+"/locations/global";
 
-      logger.info("services ******** {}",gcpCredentialsProvider.getApiKeysService().listKeys(parent));
-     ApiKeysClient.ListKeysPagedResponse apiKeys=  gcpCredentialsProvider.getApiKeysService().listKeys(parent);
+      logger.info("services ******** {}",gcpCredentialsProvider.getApiKeysService(projectVH.getProjectId()).listKeys(parent));
+     ApiKeysClient.ListKeysPagedResponse apiKeys=  gcpCredentialsProvider.getApiKeysService(projectVH.getProjectId()).listKeys(parent);
        List<APIKeysVH> apiKeysVHList=new ArrayList<>();
        for (Key keys:apiKeys.iterateAll() ){
            logger.info("keys list ******** {}",keys.getDisplayName());

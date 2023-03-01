@@ -15,7 +15,7 @@ spring:
       uri: ${CONFIG_SERVER_URL:http://localhost:8888/api/config/}
       enabled: true
       fail-fast: true
-      name: api,admin-service,job-scheduler
+      name: api,admin-service,job-scheduler,batch
       password: ${CONFIG_PASSWORD}
       username: user
       label: latest

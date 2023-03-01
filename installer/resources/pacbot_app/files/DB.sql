@@ -63,6 +63,7 @@ SET @VULNERABILITY_FEATURE_ENABLED='$VULNERABILITY_FEATURE_ENABLED';
 SET @MAIL_SERVER='$MAIL_SERVER';
 SET @PACMAN_S3='$PACMAN_S3';
 SET @DATA_IN_DIR='$DATA_IN_DIR';
+@CREDENTIAL_DIR='$CREDENTIAL_DIR';
 SET @DATA_BKP_DIR='$DATA_BKP_DIR';
 SET @PAC_ROLE='$PAC_ROLE';
 SET @BASE_REGION='$BASE_REGION';
@@ -3140,6 +3141,12 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.auto.fix.mail.subject.GCP_kms_public_access_rule','PaladinCloud autofix action - Public access to GCP KMS key revoked','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.autofix.fix.type.GCP_kms_public_access_rule','silent','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.autofix.contact.GCP_kms_public_access_rule','dheeraj.kholia@paladincloud.io','application','prd','latest',NULL,NULL,NULL,NULL);
+
+
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('credential.file.path','/home/ec2-user/credential','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','batch','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('s3.cred.data',concat(@CREDENTIAL_DIR,''),'batch','prd','latest',null,null,null,null);
 
 
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('autofix.allowlist.accounts.UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip','','rule','prd','latest',NULL,NULL,NULL,NULL);
