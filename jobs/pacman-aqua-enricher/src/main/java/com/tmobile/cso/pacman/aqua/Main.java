@@ -27,7 +27,7 @@ public class Main {
      */
     public static void main(String[] args) throws Exception {
         Map<String, String> params = new HashMap<>();
-        Arrays.asList(args).stream().forEach(obj -> {
+        Arrays.stream(args).forEach(obj -> {
             String[] paramArray = obj.split("[:]");
             params.put(paramArray[0], paramArray[1]);
         });
@@ -38,7 +38,7 @@ public class Main {
      * Execute.
      *
      * @param params the params
-     * @return 
+     * @return Returns map if in case of failures
      * @throws NamingException the naming exception
      */
     public static Map<String, Object> execute(Map<String, String> params) throws NamingException {

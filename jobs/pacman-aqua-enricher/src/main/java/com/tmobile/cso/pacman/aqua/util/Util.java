@@ -5,8 +5,10 @@ import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.entity.ContentType;
@@ -21,6 +23,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.tmobile.cso.pacman.aqua.Constants;
 
 
 /**
@@ -28,8 +31,11 @@ import com.google.gson.JsonParseException;
  */
 public class Util {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
-   
+    private static Logger log = LoggerFactory.getLogger(Util.class);
+
+    private static List<Map<String,String>> errorList = new ArrayList<>();
+
+
     /**
      * Base 64 decode.
      *
@@ -40,7 +46,7 @@ public class Util {
         try {
             return new String(BaseEncoding.base64().decode(encodedStr), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Error in base64Decode",e);
+            log.error("Error in base64Decode",e);
             return "";
         }
     }
@@ -64,7 +70,7 @@ public class Util {
     }
 
 
-    public static Gson getJsonBuilder() {
+    public static Gson getJsonBuilder() throws ParseException{
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -74,11 +80,12 @@ public class Util {
                 try {
                     return df.parse(json.getAsString());
                 } catch (ParseException e) {
-                    return null;
+                    log.error("Error in getting Json builder ", e);
                 }
                 catch (Exception e) {
-                    return null;
+                    log.error("Error in getting Json builder ", e);
                 }
+                return null;
             }
         });
         return gsonBuilder.setPrettyPrinting().create();
