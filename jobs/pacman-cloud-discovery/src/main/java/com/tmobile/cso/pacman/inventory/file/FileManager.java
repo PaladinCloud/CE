@@ -81,6 +81,7 @@ import com.tmobile.cso.pacman.inventory.vo.CloudTrailVH;
 import com.tmobile.cso.pacman.inventory.vo.CloudWatchLogsVH;
 import com.tmobile.cso.pacman.inventory.vo.DBClusterVH;
 import com.tmobile.cso.pacman.inventory.vo.DBInstanceVH;
+import com.tmobile.cso.pacman.inventory.vo.DBSnapshotVH;
 import com.tmobile.cso.pacman.inventory.vo.DataStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DeliveryStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.DocumentDBVH;
@@ -177,6 +178,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-rdsdb.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-rdsdb-secgroups.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-rdsdb-tags.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-rdsdb-parameters.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-s3.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-s3-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-sg.data",InventoryConstants.OPEN_ARRAY, false);
@@ -201,6 +203,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-iamuser.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-iamuser-keys.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-rdssnapshot.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-rdssnapshot-attributes.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-iamrole.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-kms.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-kms-tags.data",InventoryConstants.OPEN_ARRAY, false);
@@ -346,6 +349,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-rdsdb.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-rdsdb-secgroups.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-rdsdb-tags.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-rdsdb-parameters.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-s3.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-s3-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-sg.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -370,6 +374,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-iamuser.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-iamuser-keys.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-rdssnapshot.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-rdssnapshot-attributes.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-iamrole.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-kms.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-kms-tags.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -993,11 +998,11 @@ public class FileManager {
 		fieldNames = "cluster.DBClusterArn`cluster.AllocatedStorage`cluster.AvailabilityZones`cluster.BackupRetentionPeriod`cluster.CharacterSetName`cluster.ClusterCreateTime`cluster.DatabaseName`cluster.DBClusterIdentifier`cluster.DBClusterParameterGroup"
 				+ "`cluster.DbClusterResourceId`cluster.DBSubnetGroup`cluster.EarliestRestorableTime`cluster.Endpoint`cluster.Engine`cluster.EngineVersion`cluster.HostedZoneId`cluster.IAMDatabaseAuthenticationEnabled"
 				+ "`cluster.KmsKeyId`cluster.LatestRestorableTime`cluster.MasterUsername`cluster.MultiAZ`cluster.PercentProgress`cluster.Port`cluster.PreferredBackupWindow`cluster.PreferredMaintenanceWindow`cluster.ReaderEndpoint"
-				+ "`cluster.ReadReplicaIdentifiers`cluster.ReplicationSourceIdentifier`cluster.Status`cluster.StorageEncrypted";
+				+ "`cluster.ReadReplicaIdentifiers`cluster.ReplicationSourceIdentifier`cluster.Status`cluster.StorageEncrypted`cluster.deletionProtection";
 		keys = "discoverydate`accountid`accountname`region`dbclusterarn`allocatedstorage`availabilityzones`backupretentionperiod`charactersetname`clustercreatetime`databasename`dbclusteridentifier`dbclusterparametergroup"
 				+ "`dbclusterresourceid`dbsubnetgroup`earliestrestorabletime`endpoint`engine`engineversion`hostedzoneid`iamdatabaseauthenticationenabled"
 				+ "`kmskeyid`latestrestorabletime`masterusername`multiaz`percentprogress`port`preferredbackupwindow`preferredmaintenancewindow`readerendpoint"
-				+ "`readreplicaidentifiers`replicationsourceidentifier`status`storageencrypted";
+				+ "`readreplicaidentifiers`replicationsourceidentifier`status`storageencrypted`deletionprotection";
 		FileGenerator.generateJson(rdsclusterMap, fieldNames, "aws-rdscluster.data",keys);
 
 		fieldNames = "cluster.DBClusterArn`cluster.VpcSecurityGroups.VpcSecurityGroupId`cluster.VpcSecurityGroups.status";
@@ -1021,13 +1026,14 @@ public class FileManager {
 		fieldNames = "dbinst.DBInstanceArn`dbinst.AllocatedStorage`dbinst.AutoMinorVersionUpgrade`dbinst.AvailabilityZone`dbinst.BackupRetentionPeriod`dbinst.CACertificateIdentifier`dbinst.CharacterSetName`dbinst.CopyTagsToSnapshot"
 					+ "`dbinst.DBClusterIdentifier`dbinst.DBInstanceClass`dbinst.DBInstanceIdentifier`dbinst.DbInstancePort`dbinst.DBInstanceStatus`dbinst.DbiResourceId`dbinst.DBName`dbinst.Endpoint.Address`dbinst.Endpoint.Port`dbinst.Endpoint.HostedZoneID"
 					+ "`dbinst.Engine`dbinst.EngineVersion`dbinst.EnhancedMonitoringResourceArn`dbinst.IAMDatabaseAuthenticationEnabled`dbinst.InstanceCreateTime`dbinst.Iops`dbinst.KmsKeyId`dbinst.LatestRestorableTime`dbinst.LicenseModel`dbinst.MasterUsername`dbinst.MonitoringInterval"
-					+ "`dbinst.MonitoringRoleArn`dbinst.MultiAZ`dbinst.PreferredBackupWindow`dbinst.PreferredMaintenanceWindow`dbinst.PromotionTier`dbinst.PubliclyAccessible`dbinst.SecondaryAvailabilityZone`dbinst.StorageEncrypted`dbinst.StorageType`dbinst.TdeCredentialArn`dbinst.Timezone`dbinst.ReadReplicaDBClusterIdentifiers`dbinst.ReadReplicaDBInstanceIdentifiers`dbinst.ReadReplicaSourceDBInstanceIdentifier`dbinst.dBSubnetGroup.vpcId`subnets`securityGroups";
+					+ "`dbinst.MonitoringRoleArn`dbinst.MultiAZ`dbinst.PreferredBackupWindow`dbinst.PreferredMaintenanceWindow`dbinst.PromotionTier`dbinst.PubliclyAccessible`dbinst.SecondaryAvailabilityZone`dbinst.StorageEncrypted`dbinst.StorageType`dbinst.TdeCredentialArn`dbinst.Timezone`dbinst.ReadReplicaDBClusterIdentifiers`dbinst.ReadReplicaDBInstanceIdentifiers`dbinst.ReadReplicaSourceDBInstanceIdentifier`dbinst.dBSubnetGroup.vpcId`subnets`securityGroups`dbinst.deletionProtection`dbinst.dBParameterGroups.dBParameterGroupName";
 
 		keys = "discoverydate`accountid`accountname`region`dbclusterarn`allocatedstorage`autominorversionupgrade`availabilityzones`backupretentionperiod`cacertificateidentifier`charactersetname`copytagstosnapshot"
 				+ "`dbclusteridentifier`dbinstanceclass`dbinstanceidentifier`dbinstanceport`dbinstancestatus`dbiresourceid`dbname`endpointaddress`endpointport`endpointhostedzoneid"
 				+ "`engine`engineversion`enhancedmonitoringresourcearn`iamdatabaseauthenticationenabled`instancecreatetime`iops`kmskeyid`latestrestorabletime`licensemodel`masterusername`monitoringinterval"
 				+ "`monitoringrolearn`multiaz`preferredbackupwindow`preferredmaintenancewindow`promotiontier`publiclyaccessible`secondaryavailabilityzone`storageencrypted`storagetype`tdecredentialarn`timezone`"
-				+ "readreplicadbclusteridentifiers`readreplicadbinstanceidentifiers`readreplicasourcedbinstanceidentifier`vpcid`subnets`securitygroups";
+				+ "readreplicadbclusteridentifiers`readreplicadbinstanceidentifiers`readreplicasourcedbinstanceidentifier`vpcid`subnets`securitygroups`deletionprotection`" +
+				"dBParameterGroupName";
 		FileGenerator.generateJson(rdsIntncMap, fieldNames, "aws-rdsdb.data",keys);
 
 		fieldNames = "dbinst.DBInstanceArn`dbinst.VpcSecurityGroups.VpcSecurityGroupId`dbinst.VpcSecurityGroups.status";
@@ -1037,6 +1043,12 @@ public class FileManager {
 		fieldNames = "dbinst.DBInstanceArn`tags.key`tags.value";
 		keys = "discoverydate`accountid`accountname`region`dbclusterarn`key`value";
 		FileGenerator.generateJson(rdsIntncMap, fieldNames, "aws-rdsdb-tags.data",keys);
+
+		fieldNames = "dbinst.DBInstanceArn`dbinst.dBParameterGroups.dBParameterGroupName`parameters.parameterName`" +
+				"parameters.parameterValue";
+		keys = "discoverydate`accountid`accountname`region`dbclusterarn`dBParameterGroupName`parameterName`" +
+				"parameterValue";
+		FileGenerator.generateJson(rdsIntncMap, fieldNames, "aws-rdsdb-parameters.data",keys);
 
 	}
 
@@ -1305,19 +1317,27 @@ public class FileManager {
 	 * @param dbSnapShots the db snap shots
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void generateRDSSnapshotFiles(Map<String,List<DBSnapshot>> dbSnapShots) throws IOException {
+	public static void generateRDSSnapshotFiles(Map<String,List<DBSnapshotVH>> dbSnapShots) throws IOException {
 
 		String fieldNames;
 		String keys;
-		fieldNames = "DBSnapshotIdentifier`DBSnapshotArn`DBInstanceIdentifier`Status`snapshotCreateTime`snapshotType"
-				+ "`encrypted`engine`allocatedStorage`port`availabilityZone`vpcId`instanceCreateTime`masterUsername"
-				+ "`engineVersion`licenseModel`iops`optionGroupName`percentProgress`sourceRegion`sourceDBSnapshotIdentifier"
-				+ "`storageType`tdeCredentialArn`kmsKeyId`timezone`iAMDatabaseAuthenticationEnabled";
+		fieldNames = "dbSnapshot.DBSnapshotIdentifier`dbSnapshot.DBSnapshotArn`dbSnapshot.DBInstanceIdentifier" +
+				"`dbSnapshot.Status`dbSnapshot.snapshotCreateTime`dbSnapshot.snapshotType"
+				+ "`dbSnapshot.encrypted`dbSnapshot.engine`dbSnapshot.allocatedStorage`dbSnapshot.port" +
+				"`dbSnapshot.availabilityZone`dbSnapshot.vpcId`dbSnapshot.instanceCreateTime`dbSnapshot.masterUsername"
+				+ "`dbSnapshot.engineVersion`dbSnapshot.licenseModel`dbSnapshot.iops`dbSnapshot.optionGroupName" +
+				"`dbSnapshot.percentProgress`dbSnapshot.sourceRegion`dbSnapshot.sourceDBSnapshotIdentifier"
+				+ "`dbSnapshot.storageType`dbSnapshot.tdeCredentialArn`dbSnapshot.kmsKeyId" +
+				"`dbSnapshot.timezone`dbSnapshot.iAMDatabaseAuthenticationEnabled";
 		keys = "discoverydate`accountid`accountname`region`dbsnapshotidentifier`dbsnapshotarn`dbinstanceidentifier`status`snapshotcreatetime`snapshottype`"
 				+ "encrypted`engine`allocatedstorage`port`availabilityzone`vpcid`instancecreatetime`masterusername`engineversion`licensemodel`"
 				+ "iops`optiongroupname`percentprogress`sourceregion`sourcedbsnapshotidentifier`storagetype`tdecredentialarn`kmskeyid`timezone`"
 				+ "iamdatabaseauthenticationenabled";
 		FileGenerator.generateJson(dbSnapShots, fieldNames, "aws-rdssnapshot.data",keys);
+		fieldNames = "dbSnapshot.DBSnapshotIdentifier`dbSnapshotAttributes.dbSnapshotAttribute.attributeName" +
+				"`dbSnapshotAttributes.attributeValues";
+		keys = "discoverydate`accountid`accountname`region`dbsnapshotidentifier`attributeName`attributeValues";
+		FileGenerator.generateJson(dbSnapShots, fieldNames, "aws-rdssnapshot-attributes.data",keys);
 	}
 
 	/**

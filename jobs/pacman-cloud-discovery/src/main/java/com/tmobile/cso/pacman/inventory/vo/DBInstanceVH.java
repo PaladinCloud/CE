@@ -18,6 +18,7 @@ package com.tmobile.cso.pacman.inventory.vo;
 import java.util.List;
 
 import com.amazonaws.services.rds.model.DBInstance;
+import com.amazonaws.services.rds.model.Parameter;
 import com.amazonaws.services.rds.model.Tag;
 
 
@@ -28,6 +29,8 @@ public class DBInstanceVH {
 	
 	/** The dbinst. */
 	private DBInstance dbinst;
+
+	private List<Parameter> parameters;
 	
 	/** The tags. */
 	private List<Tag> tags;
@@ -59,11 +62,13 @@ public class DBInstanceVH {
 	 * @param dbinstance the dbinstance
 	 * @param tags the tags
 	 */
-	public DBInstanceVH(DBInstance  dbinstance, List<Tag> tags,String subnets,String securityGroups){
+	public DBInstanceVH(DBInstance  dbinstance, List<Tag> tags,String subnets,String securityGroups,
+						List<Parameter> parameters){
 		this.setDbinst(dbinstance);
 		this.setTags(tags);
 		this.subnets =subnets;
 		this.securityGroups = securityGroups;
+		this.parameters = parameters;
 	}
 	
 	/**
@@ -102,4 +107,11 @@ public class DBInstanceVH {
 		this.tags = tags;
 	}
 
+	public List<Parameter> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(List<Parameter> parameters) {
+		this.parameters = parameters;
+	}
 }
