@@ -30,6 +30,9 @@ describe('GenericSummaryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GenericSummaryComponent);
     component = fixture.componentInstance;
+    component.data = {
+      response: [],
+    }
     fixture.detectChanges();
   });
 

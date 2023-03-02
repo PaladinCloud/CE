@@ -1,4 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { SharedModule } from '../shared.module';
 
 import { FilterDropdownComponent } from './filter-dropdown.component';
 
@@ -8,7 +9,8 @@ describe('FilterDropdownComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FilterDropdownComponent ]
+      imports: [ SharedModule ],
+      declarations: [ FilterDropdownComponent ],
     })
     .compileComponents();
   }));

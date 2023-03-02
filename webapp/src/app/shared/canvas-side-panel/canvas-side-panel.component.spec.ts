@@ -13,6 +13,17 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainMappingService } from 'src/app/core/services/domain-mapping.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { RoutingService } from 'src/app/core/services/routing.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { LoggerService } from '../services/logger.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
+import { RouterUtilityService } from '../services/router-utility.service';
+import { UtilsService } from '../services/utils.service';
 
 import { CanvasSidePanelComponent } from './canvas-side-panel.component';
 
@@ -22,9 +33,21 @@ describe('CanvasSidePanelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CanvasSidePanelComponent ]
-    })
-    .compileComponents();
+      imports: [ RouterTestingModule ],
+      declarations: [CanvasSidePanelComponent],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        DomainMappingService,
+        DomainTypeObservableService,
+        LoggerService,
+        RefactorFieldsService,
+        RoutingService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

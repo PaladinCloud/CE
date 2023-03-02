@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
+import { Resolve } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { switchMap, finalize, catchError } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { AwsCognitoService } from './../core/services/aws-cognito.service';
 import { DataCacheService } from '../core/services/data-cache.service';
-import { AuthService } from '../core/services/auth.service';
 
 
 @Injectable()
@@ -13,9 +12,7 @@ export class TokenResolverService implements Resolve<any> {
 
   constructor(private location: Location,
     private awsCognitoService: AwsCognitoService,
-    private dataCacheService: DataCacheService,
-    private authService: AuthService,
-    private router: Router) { }
+    private dataCacheService: DataCacheService) { }
 
   resolve(): Observable<any | null> {
 

@@ -13,6 +13,8 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 
 import { TargetTypeTaggingTileComponent } from './target-type-tagging-tile.component';
 
@@ -22,7 +24,11 @@ describe('TargetTypeTaggingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TargetTypeTaggingTileComponent ]
+      declarations: [ TargetTypeTaggingTileComponent ],
+      providers: [
+        LoggerService,
+        RefactorFieldsService,
+      ]
     })
     .compileComponents();
   }));

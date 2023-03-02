@@ -12,7 +12,22 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { DataTableComponent } from 'src/app/shared/data-table/data-table.component';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
+import { TitleBurgerHeadComponent } from 'src/app/shared/title-burger-head/title-burger-head.component';
 import { RulesComponent } from './rules.component';
 
 describe('RulesComponent', () => {
@@ -21,9 +36,25 @@ describe('RulesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RulesComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+      declarations: [
+        RulesComponent,
+        DataTableComponent,
+        TitleBurgerHeadComponent,
+      ],
+      providers: [
+        AssetGroupObservableService,
+        CommonResponseService,
+        DataCacheService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

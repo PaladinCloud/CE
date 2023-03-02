@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatStepperModule } from '@angular/material/stepper';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { StepperComponent } from './stepper.component';
 
@@ -8,6 +10,7 @@ describe('StepperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [ MatStepperModule, NoopAnimationsModule ],
       declarations: [ StepperComponent ]
     })
     .compileComponents();

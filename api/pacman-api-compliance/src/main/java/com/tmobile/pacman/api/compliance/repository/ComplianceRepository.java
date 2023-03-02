@@ -40,37 +40,37 @@ import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 public interface ComplianceRepository {
 
     /**
-     * asssetGroup and domain are mandatory & ruleId is optional. If method
+     * asssetGroup and domain are mandatory & policyId is optional. If method
      * receives assetGroup and domain as request parameter, it gives issues
-     * count of all open issues for all the rules associated to that domain. If
-     * method receives assetGroup,domain and ruleId as request parameter,it
-     * gives issues count of all open issues for that rule associated to that
+     * count of all open issues for all the policies associated to that domain. If
+     * method receives assetGroup,domain and policyId as request parameter,it
+     * gives issues count of all open issues for that policy associated to that
      * domain.
      *
      * @param assetGroup
      *            the asset group
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param domain
      *            the domain
      * @return long
      * @throws DataException
      *             the data exception
      */
-    public long getIssuesCount(String assetGroup, String ruleId, String domain)
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId)
             throws DataException;
 
 
-    public HashMap<String,Object> getPolicyCountBySeverity(String assetGroup, List<Object> rules) throws DataException;
+    public HashMap<String,Object> getPolicyCountBySeverity(String assetGroup, List<Object> policies) throws DataException;
 
-    public HashMap<String,Object> getAssetCountBySeverity(String assetGroup, List<Object> rules) throws DataException;
+    public HashMap<String,Object> getAssetCountBySeverity(String assetGroup, List<Object> policies) throws DataException;
 
-    public HashMap<String,Object> getAverageAge(String assetGroup, List<Object> rules) throws DataException;
+    public HashMap<String,Object> getAverageAge(String assetGroup, List<Object> policies) throws DataException;
     /**
-     * This request expects asssetGroup and domain as mandatory, ruleId as
+     * This request expects asssetGroup and domain as mandatory, policyId as
      * optional. If method receives assetGroup and domain as request parameter,
-     * it gives details of all open issues for all the rules associated to that
-     * domain. If method receives assetGroup, domain and ruleId as request
-     * parameter,it gives only open issues of that rule associated to that
+     * it gives details of all open issues for all the policies associated to that
+     * domain. If method receives assetGroup, domain and policyId as request
+     * parameter,it gives only open issues of that policy associated to that
      * domain. SearchText is used to match any text you are looking for. from
      * and size are for the pagination.
      *
@@ -117,20 +117,20 @@ public interface ComplianceRepository {
      *
      * @param targetType
      *            the target type
-     * @param ruleId
-     *            the rule id
+     * @param policyId
+     *            the policy id
      * @return the map
      */
     public Map<String, Object> formatUnpatchedMustFilter(String targetType,
-            String ruleId);
+            String policyId);
 
     /**
      * asssetGroup is mandatory and targetType is optional. If method receives
      * assetGroup as request parameter, method returns list of all the issue
-     * counts which are related to recommendations rules from the ES for the
+     * counts which are related to recommendations policies from the ES for the
      * given assetGroup with all the targetTypes.If method receives both
      * assetGroup and targetType as request parameter,method returns list of all
-     * the issue counts which are related to recommendations rules from the ES
+     * the issue counts which are related to recommendations policies from the ES
      * for the given targetType & assetGroup.
      *
      * @param assetGroup the asset group
@@ -240,10 +240,10 @@ public interface ComplianceRepository {
     /**
      * Returns true if its successfully closes all issues in ES.
      *
-     * @param ruleDetails            the rule details
+     * @param policyDetails            the policy details
      * @return Boolean
      */
-    public Boolean closeIssuesByRule(PolicyDetails ruleDetails);
+    public Boolean closeIssuesByPolicy(PolicyDetails policyDetails);
 
     /**
      * Gets the total asset count for any target type.
@@ -268,7 +268,7 @@ public interface ComplianceRepository {
             String targetTypes) throws DataException;
 
     /**
-     * Gets the rule Id's for target type.
+     * Gets the policy Id's for target type.
      *
      * @param targetType
      *            the target type
@@ -276,7 +276,7 @@ public interface ComplianceRepository {
      * @throws DataException
      *             the data exception
      */
-    public List<Map<String, Object>> getRuleIDsForTargetType(String targetType)
+    public List<Map<String, Object>> getPolicyIDsForTargetType(String targetType)
             throws DataException;
 
     /**
@@ -314,66 +314,66 @@ public interface ComplianceRepository {
     public String getTargetTypeForAG(String assetGroup, String domain);
 
     /**
-     * Gets the list of all rules and its modified date.
+     * Gets the list of all policies and its modified date.
      *
      * @return List<Map<String, Object>>
      * @throws DataException             the data exception
      */
-    public List<Map<String, Object>> getRulesLastScanDate()
+    public List<Map<String, Object>> getPoliciesLastScanDate()
             throws DataException;
 
     /**
-     * Gets the modified date as string for the given ruleId.
+     * Gets the modified date as string for the given policyId.
      *
-     * @param ruleId            the rule id
+     * @param policyId            the policy id
      * @param rulidwithScanDate            the rulidwith scan date
      * @return String
      */
-    public String getScanDate(String ruleId,
+    public String getScanDate(String policyId,
             Map<String, String> rulidwithScanDate);
 
     /**
-     * Gets the rule category.
+     * Gets the policy category.
      *
-     * @param ruleId the rule id
-     * @param ruleIdwithruleParamsMap the rule idwithrule params map
+     * @param policyId the policy id
+     * @param policyIdwithpolicyParamsMap the policy idwithpolicy params map
      * @return String
      */
-    public String getRuleCategory(Object ruleId,
-            Map<String, String> ruleIdwithruleParamsMap);
+    public String getPolicyCategory(Object policyId,
+            Map<String, String> policyIdwithpolicyParamsMap);
 
     /**
-     * Gets the rule id details which are in enabled status from the DB.
+     * Gets the policy id details which are in enabled status from the DB.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getRuleIdDetails(String ruleId)
+    public List<Map<String, Object>> getPolicyIdDetails(String policyId)
             throws DataException;
 
     /**
-     * Gets array of application tags and its issue count of the ruleId for
+     * Gets array of application tags and its issue count of the policyId for
      * given assetGroup. SearchText is used to match any text you are looking
      * for.
      *
      * @param assetGroup the asset group
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @param searchText the search text
      * @return JsonArray
      * @throws DataException the data exception
      */
-    public JsonArray getRuleDetailsByApplicationFromES(String assetGroup,
-            String ruleId, String searchText) throws DataException;
+    public JsonArray getPolicyDetailsByApplicationFromES(String assetGroup,
+            String policyId, String searchText) throws DataException;
 
     /**
-     * Gets the target type by rule id which is in enabled status from the DB.
+     * Gets the target type by policy id which is in enabled status from the DB.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getTargetTypeByRuleId(String ruleId)
+    public List<Map<String, Object>> getTargetTypeByPolicyId(String policyId)
             throws DataException;
 
     /**
@@ -389,12 +389,12 @@ public interface ComplianceRepository {
             String application, String environment, String targetType);
 
     /**
-     * Gets the array of environment tags and its issue count of the ruleId for
+     * Gets the array of environment tags and its issue count of the policyId for
      * given assetGroup. SearchText is used to match any text you are looking
      * for.
      *
      * @param assetGroup            the asset group
-     * @param ruleId            the rule id
+     * @param policyId            the policy id
      * @param application            the application
      * @param searchText            the search text
      * @param targetType the target type
@@ -402,18 +402,18 @@ public interface ComplianceRepository {
      * @throws DataException the data exception
      */
 
-    public JsonArray getRuleDetailsByEnvironmentFromES(String assetGroup,
-            String ruleId, String application, String searchText,String targetType)
+    public JsonArray getPolicyDetailsByEnvironmentFromES(String assetGroup,
+            String policyId, String application, String searchText,String targetType)
             throws DataException;
 
     /**
-     * Gets the rule description from db.
+     * Gets the policy description from db.
      *
-     * @param ruleId the rule id
+     * @param policyId the policy id
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
-    public List<Map<String, Object>> getRuleDescriptionFromDb(String ruleId)
+    public List<Map<String, Object>> getPolicyDescriptionFromDb(String policyId)
             throws DataException;
 
     /**
@@ -460,7 +460,7 @@ public interface ComplianceRepository {
 
     /**
      * If method receives comma separated target types, it gives list of
-     * ruleId's for those given target types which are in enabled status from
+     * policyId's for those given target types which are in enabled status from
      * the DB.
      *
      * @param targetType the target type
@@ -470,17 +470,17 @@ public interface ComplianceRepository {
     public List<Object> getPolicyIds(String targetType) throws DataException;
 
     /**
-     * Gets the rule category weightage from DB.
+     * Gets the policy category weightage from DB.
      *
      * @param domain the domain
      * @return Map<String, Object>
      * @throws DataException the data exception
      */
-    public Map<String, Object> getRuleCategoryWeightagefromDB(String domain)
+    public Map<String, Object> getPolicyCategoryWeightagefromDB(String domain)
             throws DataException;
 
     /**
-     * Gets the tagging rules related target type and its issue count for the
+     * Gets the tagging policies related target type and its issue count for the
      * missed tag.
      *
      * @param assetGroup the asset group
@@ -521,15 +521,15 @@ public interface ComplianceRepository {
             String application, String resourceType) throws DataException;
 
     /**
-     * Gets the rule id with display name with rule category query.
+     * Gets the policy id with display name with policy category query.
      *
      * @param targetTypes the target types
-     * @param ruleCategory the rule category
+     * @param policyCategory the policy category
      * @return List<Map<String, Object>>
      * @throws DataException the data exception
      */
     public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(
-            String targetTypes, String ruleCategory) throws DataException;
+            String targetTypes, String policyCategory) throws DataException;
 
   
     /**
@@ -573,25 +573,25 @@ public interface ComplianceRepository {
             throws DataException;
 
     /**
-     * Gets the rules distribution.
+     * Gets the policies distribution.
      *
      * @param assetGroup the asset group
      * @param domain the domain
-     * @param rules the rules
+     * @param policies the policies
      * @param aggsFiltername the aggregation  filter name
-     * @return the rules distribution
+     * @return the policies distribution
      * @throws DataException the data exception
      */
-    public Map<String, Long> getRulesDistribution(String assetGroup, String domain,List<Object>rules,String aggsFiltername)throws DataException;
+    public Map<String, Long> getPoliciesDistribution(String assetGroup, String domain,List<Object>policies,String aggsFiltername)throws DataException;
 
     /**
-     * Gets the rule category percentage.
+     * Gets the policy category percentage.
      *
-     * @param ruleCategoryDistribution the rule category distribution
+     * @param policyCategoryDistribution the policy category distribution
      * @param totalIssues the total issues
-     * @return the rule category percentage
+     * @return the policy category percentage
      */
-    public Map<String, Object> getRuleCategoryPercentage(Map<String, Long> ruleCategoryDistribution, Long totalIssues);
+    public Map<String, Object> getPolicyCategoryPercentage(Map<String, Long> policyCategoryDistribution, Long totalIssues);
 
     /**
      * Gets the instance count for qualys.
@@ -661,13 +661,13 @@ public interface ComplianceRepository {
     public List<Map<String,String>> getDataSourceForTargetTypeForAG(String assetGroup, String domain, String targetType);
     
     /**
-	 * Gets the exempted assets count by rule.
+	 * Gets the exempted assets count by policy.
 	 *
 	 * @param assetGroup the asset group
-	 * @return the exempted assets count by rule
+	 * @return the exempted assets count by policy
 	 * @throws DataException the data exception
 	 */
-	public Map<String, Integer> getExemptedAssetsCountByRule(String assetGroup, String application,String type)
+	public Map<String, Integer> getExemptedAssetsCountByPolicy(String assetGroup, String application,String type)
 			throws DataException;
 
 

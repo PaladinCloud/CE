@@ -25,7 +25,7 @@ import {
   selector: 'app-nested-accordion',
   templateUrl: './nested-accordion.component.html',
   styleUrls: ['./nested-accordion.component.css'],
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(document:click)': 'onClickOutsideAccordion($event)'
   }

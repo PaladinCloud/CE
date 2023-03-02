@@ -13,12 +13,11 @@
  */
 
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ErrorHandler } from '@angular/core';
-import { RouterModule, Routes, RouterLink, RouterLinkActive } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-// import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
@@ -28,32 +27,31 @@ import { LandingPageModule } from './landing-page/landing-page.module';
 import { PostLoginAppModule } from './post-login-app/post-login-app.module';
 import { AppRoutingModule } from './app-routing.module';
 import { CoreModule } from './core/core.module';
-import { ErrorHandlingService } from './shared/services/error-handling.service';
 import { FetchResourcesService } from './pacman-features/services/fetch-resources.service';
 import { TokenResolverService } from './resolver/token-resolver.service';
+import { NgxGoogleAnalyticsModule, NgxGoogleAnalyticsRouterModule } from 'ngx-google-analytics';
+import { CONFIGURATIONS } from "src/config/configurations";
 
 @NgModule({
-    declarations: [
-        AppComponent
-    ],
-    imports: [
-        BrowserModule,
-        BrowserAnimationsModule,
-        MatSelectModule,
-        FormsModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        RouterModule,
-        // AngularFontAwesomeModule,
-        AppRoutingModule,
-        LandingPageModule,
-        PostLoginAppModule,
-        CoreModule
-    ],
-    providers: [FetchResourcesService,
-        TokenResolverService],
-    bootstrap: [AppComponent]
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    MatSelectModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    RouterModule,
+    AppRoutingModule,
+    LandingPageModule,
+    PostLoginAppModule,
+    CoreModule,
+    CONFIGURATIONS.optional.general.gaKey ? [
+      NgxGoogleAnalyticsModule.forRoot(CONFIGURATIONS.optional.general.gaKey),
+      NgxGoogleAnalyticsRouterModule,
+    ] : [],
+  ],
+  providers: [FetchResourcesService, TokenResolverService],
+  bootstrap: [AppComponent],
 })
-
-export class AppModule {
-}
+export class AppModule {}

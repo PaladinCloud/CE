@@ -1,16 +1,11 @@
 package com.tmobile.cso.pacman.qualys.jobs;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.tmobile.cso.pacman.qualys.auth.CredentialProvider;
+import com.tmobile.cso.pacman.qualys.util.Util;
+import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,9 +22,15 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.tmobile.cso.pacman.qualys.util.Util;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -37,14 +38,21 @@ import com.tmobile.cso.pacman.qualys.util.Util;
  */
 public abstract class QualysDataImporter {
 
+
+    AwsSecretManagerUtil secretManagerUtil=new AwsSecretManagerUtil();
+
+    CredentialProvider credentialProvider=new CredentialProvider();
+
+    protected String secretManagerPrefix=System.getProperty("secret.manager.path");
+
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(QualysDataImporter.class);
     
     /** The Constant DEFAULT_USER. */
-    private static final String DEFAULT_USER = Util.base64Decode(System.getProperty("qualys_info")).split(":")[0];
+    private static String DEFAULT_USER;
     
     /** The Constant DEFAULT_PASS. */
-    private static final String DEFAULT_PASS = Util.base64Decode(System.getProperty("qualys_info")).split(":")[1];
+    private static String DEFAULT_PASS;
     
     /** The Constant UTF8. */
     private static final String UTF8 = "UTF-8";
@@ -71,7 +79,11 @@ public abstract class QualysDataImporter {
     }
 
     /** The Constant BASE_API_URL. */
-    protected static final String BASE_API_URL = System.getProperty("qualys_api_url");
+    protected static String BASE_API_URL;
+
+    protected  String baseAccount =System.getProperty("base.account");
+    protected  String baseRegion =System.getProperty("base.region");
+    protected  String roleName =System.getProperty("s3.role");
 
     /**
      * Instantiates a new qualys data importer.
@@ -84,6 +96,19 @@ public abstract class QualysDataImporter {
                 "/api/2.0/fo/knowledge_base/vuln/?action=list&details=All&show_pci_reasons=1&show_supported_modules_info=1");
         apiMap.put("hostAssetSearch", "/qps/rest/2.0/search/am/hostasset");
         apiMap.put("hostassetcount", "/qps/rest/2.0/count/am/hostasset");
+        getQualysInfo();
+
+
+    }
+
+    private void getQualysInfo() {
+        BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount, baseRegion, roleName);
+        secretManagerPrefix="paladincloud/secret";
+        String secretData=secretManagerUtil.fetchSecret(secretManagerPrefix+"/qualys",credential,baseRegion);
+        Map<String, String> dataMap = Util.getJsonData(secretData);
+        DEFAULT_USER=dataMap.get("apiusername");
+        DEFAULT_PASS=dataMap.get("apipassword");
+        BASE_API_URL=dataMap.get("qualysApiUrl");
     }
 
     /**

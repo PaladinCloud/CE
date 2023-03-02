@@ -13,6 +13,13 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { LoggerService } from '../services/logger.service';
+import { RefactorFieldsService } from '../services/refactor-fields.service';
+import { RouterUtilityService } from '../services/router-utility.service';
+import { UtilsService } from '../services/utils.service';
 
 import { BackNavigationComponent } from './back-navigation.component';
 
@@ -22,9 +29,17 @@ describe('BackNavigationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BackNavigationComponent ]
-    })
-    .compileComponents();
+      imports: [ RouterTestingModule ],
+      declarations: [BackNavigationComponent],
+      providers: [
+        DataCacheService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

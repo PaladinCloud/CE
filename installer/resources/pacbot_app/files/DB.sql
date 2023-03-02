@@ -63,6 +63,7 @@ SET @VULNERABILITY_FEATURE_ENABLED='$VULNERABILITY_FEATURE_ENABLED';
 SET @MAIL_SERVER='$MAIL_SERVER';
 SET @PACMAN_S3='$PACMAN_S3';
 SET @DATA_IN_DIR='$DATA_IN_DIR';
+@CREDENTIAL_DIR='$CREDENTIAL_DIR';
 SET @DATA_BKP_DIR='$DATA_BKP_DIR';
 SET @PAC_ROLE='$PAC_ROLE';
 SET @BASE_REGION='$BASE_REGION';
@@ -101,6 +102,9 @@ SET @API_CLIENT_ID='$API_CLIENT_ID';
 SET @API_SCERET_ID='$API_SCERET_ID';
 SET @COGNITO_INFO='$COGNITO_INFO';
 
+SET @ACCOUNT_ID='ACCOUNT_ID';
+SET @ACCOUNT_NAME='ACCOUNT_NAME';
+SET @ACCOUNT_PLATFORM='ACCOUNT_PLATFORM';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -401,6 +405,21 @@ CREATE TABLE IF NOT EXISTS `cf_Target` (
   `domain` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`targetName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+/*Table structure for table `cf_Accounts` */
+
+CREATE TABLE IF NOT EXISTS  cf_Accounts(
+    accountName varchar(255),
+    accountId varchar(255),
+    assets varchar(100),
+    violations varchar(100),
+    accountStatus varchar(100),
+    platform varchar(255),
+    PRIMARY KEY(accountId)
+);
+/* Insert one account */
+
+insert ignore into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''));
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
@@ -978,6 +997,13 @@ TRUNCATE TABLE cf_Policy;
 /*changed the policyId column size*/
  ALTER TABLE cf_Policy MODIFY policyId varchar(200) ;
  ALTER TABLE cf_RuleInstance MODIFY policyId varchar(200) ;
+
+/*Create table for azure tenant and subscription mapping*/
+ CREATE TABLE IF NOT EXISTS cf_AzureTenantSubscription(
+ tenant varchar(255),
+ subscription varchar(255),
+ PRIMARY KEY(subscription)
+ );
 
 /*Insert task to necessary tables*/
 INSERT IGNORE INTO `task`(`id`,`index`,`mappings`,`data`) values (1,'exceptions','{\"mappings\":{\"sticky_exceptions\":{\"properties\":{\"assetGroup\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"dataSource\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"exceptionName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"exceptionReason\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"expiryDate\":{\"type\":\"date\"},\"targetTypes\":{\"properties\":{\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"rules\":{\"properties\":{\"ruleId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"ruleName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}}}}}}}}',NULL),(2,'faqs','{\"mappings\":{\"widgetinfo\":{\"properties\":{\"widgetid\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"widgetname\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}},\"faqinfo\":{\"properties\":{\"answer\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"faqid\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"faqname\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"tag\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"widgetid\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}}}}','{\"index\": {\"_index\": \"faqs\", \"_type\": \"widgetinfo\", \"_id\": \"w1\"}}\r{\"widgetid\":\"w1\",\"widgetname\":\"compliance overview\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"widgetinfo\", \"_id\": \"w2\"}}\r{\"widgetid\":\"w2\",\"widgetname\":\"patching\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"widgetinfo\", \"_id\": \"w3\"}}\r{\"widgetid\":\"w3\",\"widgetname\":\"tagging\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"widgetinfo\", \"_id\": \"w4\"}}\r{\"widgetid\":\"w4\",\"widgetname\":\"vulnerabilities\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"widgetinfo\", \"_id\": \"w5\"}}\r{\"widgetid\":\"w5\",\"widgetname\":\"certificates\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w2q7\"}}\r{\"faqid\":\"q7\",\"faqname\":\"How is unpatched count calculated ?\",\"answer\":\"Total assets which does not have updated kernel version.\",\"widgetid\":\"w2\",\"tag\":\"patching\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w3q4\"}}\r{\"faqid\":\"q4\",\"faqname\":\"How is tagging compliance % calculated ?\",\"answer\":\"Tagging compliance is calculated by dividing total taggable assets by total tagged assets.\",\"widgetid\":\"w3\",\"tag\":\"tagging\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w1q1\"}}\r{\"faqid\":\"q1\",\"faqname\":\"What is shown in this graph?\",\"answer\":\"This multi ring donut represents the overall compliance percentage. Policies are grouped into categories like security, governance, cost optimization and tagging. Rings in the donut represents compliance percentage for each of those categories.  The rolled up percentage value for a given category is calculated by doing a weighted average of compliance percentage values of individual policies in that category. Weights are assigned based on the importance of the policy. Overall rolled up number in the middle of the donut represents uber compliance percentage for the selected asset group. This value is calculated by doing a simple average of compliance percentage values of the four categories.\",\"widgetid\":\"w1\",\"tag\":\"over-all\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w4q5\"}}\r{\"faqid\":\"q5\",\"faqname\":\"How is vulnerabilities compliance % calculated ?\",\"answer\":\"Vulnerabilities compliance is calculated by dividing total vulnerable assets by total servers, if an asset is not scanned by qualys , then the asset is considered as vulnerable.\",\"widgetid\":\"w4\",\"tag\":\"vulnerabilities\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w5q3\"}}\r{\"faqid\":\"q3\",\"faqname\":\"How is certificates compliance % calculated ?\",\"answer\":\"Total non-expired certificates divided by total certificates\",\"widgetid\":\"w5\",\"tag\":\"certificates\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w3q8\"}}\r{\"faqid\":\"q8\",\"faqname\":\"How is untagged count calculated ?\",\"answer\":\"Total assets which is missing either application/environment tags or both tags.\",\"widgetid\":\"w3\",\"tag\":\"tagging\"}\r{\"index\": {\"_index\": \"faqs\", \"_type\": \"faqinfo\", \"_id\": \"w2q2\"}}\r{\"faqid\":\"q2\",\"faqname\":\"How is patching compliance % calculated ?\",\"answer\":\"Total patched resources divided by total running resources\",\"widgetid\":\"w2\",\"tag\":\"patching\"}');
@@ -3115,6 +3141,12 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.auto.fix.mail.subject.GCP_kms_public_access_rule','PaladinCloud autofix action - Public access to GCP KMS key revoked','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.autofix.fix.type.GCP_kms_public_access_rule','silent','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.autofix.contact.GCP_kms_public_access_rule','dheeraj.kholia@paladincloud.io','application','prd','latest',NULL,NULL,NULL,NULL);
+
+
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('credential.file.path','/home/ec2-user/credential','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','batch','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('s3.cred.data',concat(@CREDENTIAL_DIR,''),'batch','prd','latest',null,null,null,null);
 
 
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('autofix.allowlist.accounts.UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip','','rule','prd','latest',NULL,NULL,NULL,NULL);

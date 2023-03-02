@@ -13,6 +13,7 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
 
 import { LandingPageHeaderComponent } from './landing-page-header.component';
 
@@ -22,7 +23,7 @@ describe('LandingPageHeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LandingPageHeaderComponent ]
+      declarations: [ LandingPageHeaderComponent, ButtonComponent ]
     })
     .compileComponents();
   }));

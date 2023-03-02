@@ -42,7 +42,7 @@ public class SecurityContactsCollector {
             for(JsonElement securityElement:jsonArray) {
                 SecurityContactsVH securityContactsVH = new SecurityContactsVH();
                 JsonObject securityObject=securityElement.getAsJsonObject();
-                securityContactsVH.setSubscription(subscription.toString());
+                securityContactsVH.setSubscription(subscription.getSubscriptionId());
                 securityContactsVH.setSubscriptionName(subscription.getSubscriptionName());
                 securityContactsVH.setId(securityObject.get(ID).getAsString());
                 securityContactsVH.setEtag(securityObject.get("etag").getAsString());

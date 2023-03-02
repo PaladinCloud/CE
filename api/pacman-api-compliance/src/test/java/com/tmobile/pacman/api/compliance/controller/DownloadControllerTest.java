@@ -81,12 +81,12 @@ public class DownloadControllerTest {
         ReflectionTestUtils.setField(downloadController, "serviceDnsName", "serviceDnsName");
 		String response = "{\"data\":{\"response\":[{\"PolicyName\":"
 				+ "\"EC2 instance should not have guard duty findings\",\"IssueId\":\"IssueId\","
-				+ "\"ResourceId\":\"ResourceId\",\"Severity\":\"high\",\"RuleCategory\":\"security\","
+				+ "\"ResourceId\":\"ResourceId\",\"Severity\":\"high\",\"PolicyCategory\":\"security\","
 				+ "\"AccountName\":\"AccountName\",\"AccountId\":\"AccountId\",\"Region\":\"Region\","
 				+ "\"Application\":\"Application\",\"Environment\":\"Environment\",\"CreatedOn\":"
 				+ "\"2018-07-06T18:23:15.486Z\",\"ModifiedOn\":\"2018-07-10T06:23:33.911Z\","
 				+ "\"Status\":\"open\",\"resourcetType\":\"ec2\",\"description\":\"Guard Duty findings exists!!\","
-				+ "\"nonDisplayableAttributes\":{\"RuleId\":\"RuleId\","
+				+ "\"nonDisplayableAttributes\":{\"PolicyId\":\"PolicyId\","
 				+ "\"PolicyId\":\"PolicyId\"}}],\"total\":106762},\"message\":\"success\"}";
         mockStatic(PacHttpUtils.class);
         when(PacHttpUtils.getBase64AuthorizationHeader(anyObject())).thenReturn("124");

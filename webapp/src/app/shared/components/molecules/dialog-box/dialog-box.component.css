@@ -1,0 +1,33 @@
+::ng-deep .mat-dialog-container{
+    padding: 0px !important;
+}
+
+::ng-deep .mat-dialog-title{
+    padding: 20px 24px 20px 24px;
+    margin: 0px !important;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+::ng-deep .mat-dialog-content{
+    padding: 24px;
+    margin: 0px !important;
+    border-bottom: 1px solid var(--border-200);
+    border-top: 1px solid var(--border-200);
+}
+
+::ng-deep .mat-dialog-actions{
+    padding: 4px 24px;
+    margin: 0px !important;
+    gap: 8px;
+    flex-direction: row-reverse;
+}
+
+img{
+    height: 14px;
+}
+
+.hide{
+    display: none !important;
+}

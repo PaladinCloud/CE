@@ -1,0 +1,61 @@
+{
+    "root": true,
+    "ignorePatterns": ["projects/**/*"],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "overrides": [
+        {
+            "files": ["*.ts"],
+            "parserOptions": {
+                "project": ["tsconfig.json"],
+                "createDefaultProgram": true
+            },
+            "extends": [
+                "eslint:recommended",
+                "plugin:import/recommended",
+                "plugin:@angular-eslint/recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@angular-eslint/template/process-inline-templates",
+                "plugin:prettier/recommended"
+            ],
+            "rules": {
+                "@angular-eslint/directive-selector": [
+                    "error",
+                    {
+                        "type": "attribute",
+                        "prefix": "app",
+                        "style": "camelCase"
+                    }
+                ],
+                "@angular-eslint/component-selector": [
+                    "error",
+                    {
+                        "type": "element",
+                        "prefix": "app",
+                        "style": "kebab-case"
+                    }
+                ],
+                "no-empty-function": "off",
+                "@typescript-eslint/no-empty-function": "off",
+                "@angular-eslint/no-empty-lifecycle-method": "off",
+                "prettier/prettier": "warn"
+            },
+            "settings": {
+                "import/resolver": {
+                    "typescript": {
+                        "alwaysTryTypes": true
+                    },
+                    "project": ["./tsconfig.json"]
+                }
+            }
+        },
+        {
+            "files": ["*.html"],
+            "extends": ["plugin:@angular-eslint/template/recommended"],
+            "rules": {
+                "prettier/prettier": "warn"
+            }
+        }
+    ]
+}

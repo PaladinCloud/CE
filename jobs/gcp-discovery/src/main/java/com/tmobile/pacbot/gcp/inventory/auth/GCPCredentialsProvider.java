@@ -1,5 +1,10 @@
 package com.tmobile.pacbot.gcp.inventory.auth;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.google.api.apikeys.v2.ApiKeysClient;
 import com.google.api.apikeys.v2.ApiKeysSettings;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -34,16 +39,40 @@ import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
+import java.util.Map;
+
 @Component
 public class GCPCredentialsProvider {
+    @Value("${file.path}")
+    private String filePath;
+    @Value("${base.account}")
+    private String account;
+    @Value("${s3.role}")
+    private String s3Role;
+    @Value("${base.region}")
+    private String region;
+    @Value("${s3.region}")
+    private String s3Region;
+    @Value("${s3}")
+    private String s3;
+
+    @Value("${s3.cred.data}")
+    private String s3CredData;
 
     private static final Logger logger = LoggerFactory.getLogger(GCPCredentialsProvider.class);
+
+    @Autowired
+    AWSCredentialProvider credProvider;
 
     private InstancesClient instancesClient;
     private FirewallsClient firewallsClient;
@@ -80,22 +109,44 @@ public class GCPCredentialsProvider {
     // look for credentials via the environment variable
     // GOOGLE_APPLICATION_CREDENTIALS.
 
-    private GoogleCredentials getCredentials() throws IOException {
-        // You can specify a credential file by providing a path to GoogleCredentials.
-        // Otherwise, credentials are read from the GOOGLE_APPLICATION_CREDENTIALS
-        // environment variable.
+    private GoogleCredentials getCredentials(String projectId) throws IOException {
+        // Specify a credential file by providing a path to GoogleCredentials.Otherwise, credentials are read from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+        logger.info("Inside getCredential method");
+        BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        String fileName = "gcp-credential-" + projectId + ".json";
+        GetObjectRequest request=new GetObjectRequest(s3, s3CredData + File.pathSeparator + fileName);
 
-        // print the path to the credential file
-
-        String cred = System.getProperty("gcp.credentials");
-        if (cred.isEmpty()) {
-            logger.error("GCP cred string is null!!!!!!!");
+        File credFile = new File(fileName);
+        try{
+        s3client.getObject(request, credFile);
+        }catch (Exception exc){
+            logger.error("Error:: {}", exc.getMessage());
         }
 
-        return GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
-                .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
-    }
+        if(credFile.exists()){
+            logger.info("File is created!!");
+        }
 
+
+        logger.info("Setting env variable for GOOGLE_APPLICATION_CREDENTIALS. File path:{}",credFile.getPath());
+        setEnv("GOOGLE_APPLICATION_CREDENTIALS", credFile.getPath());
+        GoogleCredentials gcpcredentials = GoogleCredentials.getApplicationDefault();
+        logger.info("Credentials created: {}",credentials);
+        return  gcpcredentials;
+    }
+    public void setEnv(String key, String value) {
+        try {
+            Map<String, String> env = System.getenv();
+            Class<?> cl = env.getClass();
+            Field field = cl.getDeclaredField("m");
+            field.setAccessible(true);
+            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
+            writableEnv.put(key, value);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to set environment variable", e);
+        }
+    }
     public String getAccessToken() throws IOException {
         String cred = System.getProperty("gcp.credentials");
         String token=GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
@@ -104,9 +155,9 @@ public class GCPCredentialsProvider {
         return token.trim().replaceAll("\\.+$", "").toString();
     }
 
-    public NetworksClient getNetworksClient() throws Exception{
+    public NetworksClient getNetworksClient(String projectId) throws Exception{
         if(networksClient==null){
-            NetworksSettings networksSettings=NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            NetworksSettings networksSettings=NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             networksClient=NetworksClient.create(networksSettings);
 
         }
@@ -115,197 +166,197 @@ public class GCPCredentialsProvider {
         return networksClient;
 
     }
-    public InstancesClient getInstancesClient() throws IOException {
+    public InstancesClient getInstancesClient(String projectId) throws IOException {
 
         if (instancesClient == null) {
             // pass authentication credentials to the client
             InstancesSettings instancesSettings = InstancesSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials()))
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId)))
                     .build();
             instancesClient = InstancesClient.create(instancesSettings);
         }
         return instancesClient;
     }
 
-    public FirewallsClient getFirewallsClient() throws IOException {
+    public FirewallsClient getFirewallsClient(String projectId) throws IOException {
         if (firewallsClient == null) {
             // pass authentication credentials to the client
             FirewallsSettings firewallsSettings = FirewallsSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials()))
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId)))
                     .build();
             firewallsClient = FirewallsClient.create(firewallsSettings);
         }
         return firewallsClient;
     }
 
-    public BigQueryOptions.Builder getBigQueryOptions() throws IOException {
+    public BigQueryOptions.Builder getBigQueryOptions(String projectId) throws IOException {
         if (bigQueryBuilder == null) {
-            bigQueryBuilder = BigQueryOptions.newBuilder().setCredentials(this.getCredentials());
+            bigQueryBuilder = BigQueryOptions.newBuilder().setCredentials(this.getCredentials(projectId));
         }
         return bigQueryBuilder;
     }
 
-    public Storage getStorageClient() throws IOException {
+    public Storage getStorageClient(String projectId) throws IOException {
         if (storageClient == null) {
-            storageClient = StorageOptions.newBuilder().setCredentials(this.getCredentials()).build().getService();
+            storageClient = StorageOptions.newBuilder().setCredentials(this.getCredentials(projectId)).build().getService();
         }
 
         return storageClient;
     }
 
-    public SQLAdmin getSqlAdminService() throws IOException, GeneralSecurityException {
+    public SQLAdmin getSqlAdminService(String projectId) throws IOException, GeneralSecurityException {
         if (sqlAdmin == null) {
             HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
             sqlAdmin = new SQLAdmin.Builder(httpTransport, jsonFactory,
-                    new HttpCredentialsAdapter(this.getCredentials()))
+                    new HttpCredentialsAdapter(this.getCredentials(projectId)))
                     .build();
         }
         return sqlAdmin;
     }
 
-    public KeyManagementServiceClient getKmsKeyServiceClient() throws IOException {
+    public KeyManagementServiceClient getKmsKeyServiceClient(String projectId) throws IOException {
         if (kmsKeyServiceClient == null) {
             KeyManagementServiceSettings keyManagementServiceSettings = KeyManagementServiceSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials()))
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId)))
                     .build();
             kmsKeyServiceClient = KeyManagementServiceClient.create(keyManagementServiceSettings);
         }
         return kmsKeyServiceClient;
     }
 
-    public TopicAdminClient getTopicClient() throws IOException {
+    public TopicAdminClient getTopicClient(String projectId) throws IOException {
         if (topicAdminClient == null) {
             TopicAdminSettings topicAdminSettings = TopicAdminSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             topicAdminClient = TopicAdminClient.create(topicAdminSettings);
         }
 
         return topicAdminClient;
     }
 
-    public FunctionServiceClient getFunctionClient() throws IOException {
+    public FunctionServiceClient getFunctionClient(String projectId) throws IOException {
         FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
         return FunctionServiceClient.create(functionServiceSettings);
     }
 
-    public ClusterControllerClient getDataProcClient(String region) throws IOException {
+    public ClusterControllerClient getDataProcClient(String region, String projectId) throws IOException {
         String url = region + "-dataproc.googleapis.com:443";
         ClusterControllerSettings clusterControllerSettings = ClusterControllerSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).setEndpoint(url)
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).setEndpoint(url)
                 .build();
         return ClusterControllerClient.create(clusterControllerSettings);
     }
 
-    public CloudTasks createCloudTasksService() throws IOException, GeneralSecurityException {
+    public CloudTasks createCloudTasksService(String projectId) throws IOException, GeneralSecurityException {
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-        return new CloudTasks.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials()))
+        return new CloudTasks.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials(projectId)))
                 .build();
     }
 
-    public ZonesClient Zonesclient() throws IOException, GeneralSecurityException {
+    public ZonesClient Zonesclient(String projectId) throws IOException, GeneralSecurityException {
         if (zonesClient == null) {
             ZonesSettings zonesSettings = ZonesSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             zonesClient = ZonesClient.create(zonesSettings);
         }
 
         return zonesClient;
     }
 
-    public ClusterManagerClient getClusterManagerClient() throws IOException {
+    public ClusterManagerClient getClusterManagerClient(String projectId) throws IOException {
 
         if (clusterManagerClient == null) {
             ClusterManagerSettings clusterManagerSettings = ClusterManagerSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             clusterManagerClient = ClusterManagerClient.create(clusterManagerSettings);
 
         }
         return clusterManagerClient;
     }
-    public Dns createCloudDNSServices() throws IOException {
+    public Dns createCloudDNSServices(String projectId) throws IOException {
         if (dns == null) {
-            dns = DnsOptions.newBuilder().setCredentials(this.getCredentials()).build().getService();
+            dns = DnsOptions.newBuilder().setCredentials(this.getCredentials(projectId)).build().getService();
 
         }
         return dns;
     }
 
-    public CloudResourceManager getCloudResourceManager() throws IOException, GeneralSecurityException {
+    public CloudResourceManager getCloudResourceManager(String projectId) throws IOException, GeneralSecurityException {
         if (cloudResourceManager == null) {
             HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
             JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
             cloudResourceManager= new CloudResourceManager.Builder(httpTransport,
-                    jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+                    jsonFactory, new HttpCredentialsAdapter(this.getCredentials(projectId))).build();
         }
         return cloudResourceManager;
     }
 
-    public  Iam getIamService() throws  IOException, GeneralSecurityException{
+    public  Iam getIamService(String projectId) throws  IOException, GeneralSecurityException{
         HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         JsonFactory jsonFactory = GsonFactory.getDefaultInstance();
         if(iamService==null){
-         iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials())).build();
+         iamService = new Iam.Builder(httpTransport, jsonFactory, new HttpCredentialsAdapter(this.getCredentials(projectId))).build();
         }
        return  iamService;
     }
 
-    public ApiKeysClient getApiKeysService() throws Exception{
+    public ApiKeysClient getApiKeysService(String projectId) throws Exception{
         if(apiKeysClient==null){
             ApiKeysSettings apiKeysSettings = ApiKeysSettings.newBuilder()
-                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+                    .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
              apiKeysClient=   ApiKeysClient.create(apiKeysSettings);
         }
         return apiKeysClient;
     }
 
-    public UrlMapsClient getURLMap() throws IOException {
+    public UrlMapsClient getURLMap(String projectId) throws IOException {
         if(urlMap==null)
         {
-           UrlMapsSettings urlMapsSettings= UrlMapsSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+           UrlMapsSettings urlMapsSettings= UrlMapsSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             urlMap=UrlMapsClient.create(urlMapsSettings);
         }
         return urlMap;
     }
 
-    public TargetHttpProxiesClient getTargetHttpProxiesClient() throws IOException {
+    public TargetHttpProxiesClient getTargetHttpProxiesClient(String projectId) throws IOException {
         if (targetHttpProxiesClient == null) {
-            TargetHttpProxiesSettings targetHttpProxiesSettings = TargetHttpProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            TargetHttpProxiesSettings targetHttpProxiesSettings = TargetHttpProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             targetHttpProxiesClient = TargetHttpProxiesClient.create(targetHttpProxiesSettings);
         }
         return targetHttpProxiesClient;
     }
 
-    public BackendServicesClient getBackendServiceClient() throws IOException {
+    public BackendServicesClient getBackendServiceClient(String projectId) throws IOException {
         if(backendService==null)
         {
-           BackendServicesSettings backendServicesSettings= BackendServicesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+           BackendServicesSettings backendServicesSettings= BackendServicesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             backendService=BackendServicesClient.create(backendServicesSettings);
         }
         return backendService;
     }
 
-    public TargetSslProxiesClient getTargetSslProxiesClient() throws IOException{
+    public TargetSslProxiesClient getTargetSslProxiesClient(String projectId) throws IOException{
         if(targetSslProxiesClient == null){
-            TargetSslProxiesSettings targetSslProxiesSettings=TargetSslProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            TargetSslProxiesSettings targetSslProxiesSettings=TargetSslProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             targetSslProxiesClient=TargetSslProxiesClient.create(targetSslProxiesSettings);
         }
         return targetSslProxiesClient;
     }
 
-    public TargetHttpsProxiesClient getTargetHttpsProxiesClient() throws IOException{
+    public TargetHttpsProxiesClient getTargetHttpsProxiesClient(String projectId) throws IOException{
         if(targetHttpsProxiesClient == null){
-            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            TargetHttpsProxiesSettings targetHttpsProxiesSettings=TargetHttpsProxiesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             targetHttpsProxiesClient=TargetHttpsProxiesClient.create(targetHttpsProxiesSettings);
         }
         return  targetHttpsProxiesClient;
     }
 
-    public  SslPoliciesClient getSslPoliciesClient() throws  IOException{
+    public  SslPoliciesClient getSslPoliciesClient(String projectId) throws  IOException{
         if(sslPoliciesClient == null){
-            SslPoliciesSettings sslPoliciesSettings=SslPoliciesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+            SslPoliciesSettings sslPoliciesSettings=SslPoliciesSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             sslPoliciesClient=SslPoliciesClient.create(sslPoliciesSettings);
         }
         return sslPoliciesClient;
@@ -313,9 +364,9 @@ public class GCPCredentialsProvider {
 
 
 
-    public CloudFunctionsServiceClient getFunctionClientGen1() throws IOException {
+    public CloudFunctionsServiceClient getFunctionClientGen1(String projectId) throws IOException {
         CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
         return CloudFunctionsServiceClient.create(functionsServiceSettings);
     }
 

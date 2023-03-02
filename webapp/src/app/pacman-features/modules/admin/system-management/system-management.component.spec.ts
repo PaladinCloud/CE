@@ -12,7 +12,16 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { SystemManagementComponent } from './system-management.component';
 
@@ -22,7 +31,17 @@ describe('SystemManagementComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SystemManagementComponent ]
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      declarations: [ SystemManagementComponent ],
+      providers: [
+        CommonResponseService,
+        DataCacheService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        UtilsService,
+      ]
     })
     .compileComponents();
   }));

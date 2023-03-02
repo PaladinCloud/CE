@@ -12,7 +12,25 @@
  * limitations under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { NgxSelectDropdownComponent } from 'ngx-select-dropdown';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { BreadcrumbComponent } from 'src/app/shared/breadcrumb/breadcrumb.component';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
+import { TextComponent } from 'src/app/shared/components/atoms/text/text.component';
+import { SearchableDropdownComponent } from 'src/app/shared/searchable-dropdown/searchable-dropdown.component';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { HttpService } from 'src/app/shared/services/http-response.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { PatchingProjectionsComponent } from './patching-projections.component';
 
@@ -22,9 +40,28 @@ describe('PatchingProjectionsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PatchingProjectionsComponent ]
-    })
-    .compileComponents();
+      imports: [HttpClientTestingModule, FormsModule, RouterTestingModule],
+      declarations: [
+        PatchingProjectionsComponent,
+        BreadcrumbComponent,
+        ButtonComponent,
+        NgxSelectDropdownComponent,
+        SearchableDropdownComponent,
+        TextComponent,
+      ],
+      providers: [
+        AssetGroupObservableService,
+        DataCacheService,
+        DomainTypeObservableService,
+        ErrorHandlingService,
+        HttpService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

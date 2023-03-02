@@ -28,7 +28,7 @@ import { DomainTypeObservableService } from '../../../core/services/domain-type-
   styleUrls: ['./policy-trend.component.css'],
   providers: [ PolicyTrendService, AutorefreshService ],
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     '(window:resize)': 'onResize($event)'
   }

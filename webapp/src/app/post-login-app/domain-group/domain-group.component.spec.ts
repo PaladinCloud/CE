@@ -13,6 +13,16 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { DomainMappingService } from 'src/app/core/services/domain-mapping.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { ThemeObservableService } from 'src/app/core/services/theme-observable.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { DomainGroupComponent } from './domain-group.component';
 
@@ -22,9 +32,20 @@ describe('DomainGroupComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DomainGroupComponent ]
-    })
-    .compileComponents();
+      imports: [RouterTestingModule],
+      declarations: [DomainGroupComponent],
+      providers: [
+        DataCacheService,
+        DomainMappingService,
+        DomainTypeObservableService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        ThemeObservableService,
+        WorkflowService,
+        UtilsService,
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

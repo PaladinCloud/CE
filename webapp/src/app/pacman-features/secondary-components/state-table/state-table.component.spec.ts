@@ -13,6 +13,14 @@
  */
 
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { UtilsService } from 'src/app/shared/services/utils.service';
 
 import { StateTableComponent } from './state-table.component';
 
@@ -22,7 +30,17 @@ describe('StateTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ StateTableComponent ]
+      imports: [RouterTestingModule],
+      declarations: [ StateTableComponent ],
+      providers: [
+        DataCacheService,
+        ErrorHandlingService,
+        LoggerService,
+        RefactorFieldsService,
+        RouterUtilityService,
+        UtilsService,
+        WorkflowService,
+      ]
     })
     .compileComponents();
   }));
@@ -30,6 +48,9 @@ describe('StateTableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(StateTableComponent);
     component = fixture.componentInstance;
+    component.data = {
+      response: []
+    }
     fixture.detectChanges();
   });
 

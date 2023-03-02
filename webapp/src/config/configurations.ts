@@ -74,7 +74,8 @@ export const CONFIGURATIONS = {
         NT_PASSWORD: '' // Add respective password for e2e login
       },
       qualysEnabled: false,
-      OSS: true
+      OSS: true,
+      gaKey: '',
     }
   }
 };

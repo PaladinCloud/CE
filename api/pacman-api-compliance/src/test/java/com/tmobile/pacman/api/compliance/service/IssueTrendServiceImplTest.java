@@ -96,7 +96,7 @@ public class IssueTrendServiceImplTest {
         when(complianceService.getCertificates(anyString()))
         .thenReturn(taggingInfoMap);
         
-        when(complianceService.getRulecompliance(anyObject()))
+        when(complianceService.getPolicycompliance(anyObject()))
         .thenReturn(CommonTestUtil.getResponseWithOrder());
         
         when(complianceService.getPatching(anyString(),anyString(),anyString()))
@@ -105,7 +105,7 @@ public class IssueTrendServiceImplTest {
         when(complianceService.getOverallComplianceByDomain(anyString(),anyString()))
         .thenReturn(CommonTestUtil.getMapObject());
         
-        when(complianceService.getDistribution(anyString(),anyString()))
+        when(complianceService.getDistribution(anyString(),anyString(),null))
         .thenReturn(CommonTestUtil.getMapObject());
         
         assertThat(issueTrendServiceImpl.getTrendProgress("ansString", "s3",LocalDate.now(),LocalDate.now(),"tagcompliance"),
@@ -139,13 +139,13 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
-        when(complianceService.getRuleSevCatDetails(anyObject()))
+        when(complianceService.getPoliciesevCatDetails(anyObject()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(repository.getTrendIssues(anyString(),anyObject(),anyObject(),anyObject(),anyObject()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
-        when(complianceService.getDistribution(anyString(),anyString()))
+        when(complianceService.getDistribution(anyString(),anyString(),null))
         .thenReturn(CommonTestUtil.getMapObject());
         
         assertThat(issueTrendServiceImpl.getTrendIssues("ansString", LocalDate.now(),LocalDate.now(),new HashMap<>(),"issues"),
@@ -162,7 +162,7 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
-        when(complianceService.getRuleSevCatDetails(anyObject()))
+        when(complianceService.getPoliciesevCatDetails(anyObject()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(repository.getComplianceTrendProgress(anyString(),anyObject(),anyString(),anyObject()))

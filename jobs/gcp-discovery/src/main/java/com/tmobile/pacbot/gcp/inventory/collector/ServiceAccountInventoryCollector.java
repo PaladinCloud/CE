@@ -26,7 +26,7 @@ public class ServiceAccountInventoryCollector {
 
     public  List<ServiceAccountVH> fetchServiceAccountDetails(ProjectVH project) throws GeneralSecurityException, IOException {
 
-       Iam.Projects.ServiceAccounts.List serviceAccountList= gcpCredentialsProvider.getIamService().projects().serviceAccounts().list("projects/"+project.getProjectId());
+       Iam.Projects.ServiceAccounts.List serviceAccountList= gcpCredentialsProvider.getIamService(project.getProjectId()).projects().serviceAccounts().list("projects/"+project.getProjectId());
         List<ServiceAccountVH> serviceAccountVHList = new ArrayList<>();
 
         Map<String,ServiceAccountVH> serviceAccountMap = new HashMap<>();
@@ -60,7 +60,7 @@ public class ServiceAccountInventoryCollector {
            List<String> roles=new ArrayList<>();
             String name=serviceAccountVH.getName();
             String modifiedName=name.substring(name.indexOf(serviceAccounts)+serviceAccounts.length());
-            iamPolicy = gcpCredentialsProvider.getCloudResourceManager().projects().getIamPolicy(projectId, new GetIamPolicyRequest());
+            iamPolicy = gcpCredentialsProvider.getCloudResourceManager(projectId).projects().getIamPolicy(projectId, new GetIamPolicyRequest());
             List<com.google.api.services.cloudresourcemanager.model.Binding> binds = iamPolicy.execute().getBindings();
             if(binds!=null) {
                 for (com.google.api.services.cloudresourcemanager.model.Binding binding : binds) {
@@ -91,7 +91,7 @@ public class ServiceAccountInventoryCollector {
         String apiUrlTemplate = "projects/"+projectVH.getProjectId()+"/serviceAccounts/"+serviceAccountName;
 
         logger.info("key list type -->{}",apiUrlTemplate);
-        Iam.Projects.ServiceAccounts.Keys.List serviceAccountKeyList= gcpCredentialsProvider.getIamService().projects().serviceAccounts().keys().list( apiUrlTemplate);
+        Iam.Projects.ServiceAccounts.Keys.List serviceAccountKeyList= gcpCredentialsProvider.getIamService(projectVH.getProjectId()).projects().serviceAccounts().keys().list( apiUrlTemplate);
         List<ServiceAccountKeyVH> serviceAccountKeyVHList= new ArrayList<>();
 
         for (ServiceAccountKey serviceAccountKey:serviceAccountKeyList.execute().getKeys()) {

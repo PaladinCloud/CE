@@ -36,7 +36,7 @@ import { ActivatedRoute, Router } from "@angular/router";
   styleUrls: ["./issues-trend-history.component.css"],
   providers: [IssuesHistoryService, AutorefreshService],
   encapsulation: ViewEncapsulation.None,
-  // tslint:disable-next-line:use-host-property-decorator
+  // eslint-disable-next-line
   host: {
     "(window:resize)": "onResize($event)",
   },

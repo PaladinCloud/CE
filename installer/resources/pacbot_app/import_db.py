@@ -162,7 +162,10 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'EVENT_BRIDGE_PRIFIX' : Settings.RESOURCE_NAME_PREFIX,
                         'ENV_MANDATORY_TAGS': str(Settings.MANDATORY_TAGS),
                         'ENV_API_CLIENT_ID' : str(Appcredentials.get_output_attr('id')),
-                        'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret'))
+                        'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret'),
+                        'ENV_ACCOUNT_ID':str(Settings.ACCOUNT_ID),
+                        'ENV_ACCOUNT_NAME':str(Settings.ACCOUNT_NAME),
+                        'ENV_ACCOUNT_PLATFORM':str(Settings.ACCOUNT_PLATFORM)
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }
