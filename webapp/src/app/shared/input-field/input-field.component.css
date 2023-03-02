@@ -1,0 +1,12 @@
+.input-wrapper{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .input-wrapper ::ng-deep .mat-form-field-label{
+     padding: 5px 5px !important;
+  }
+
+  .input-wrapper ::ng-deep .mat-form-field{
+    width: 100% !important;
+  }
