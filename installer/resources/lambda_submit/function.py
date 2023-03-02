@@ -211,6 +211,8 @@ class RecommendationsCollectorCloudWatchEventTarget(CloudWatchEventTargetResourc
         ]
     })
 
+    
+
 
 class CloudNotificationCollectorEventRule(CloudWatchEventRuleResource):
     name = "AWS-CloudNotification-Collector"
