@@ -96,10 +96,9 @@ public class ExternalVpcPeeringConnections extends BasePolicy {
 		}
 
 		try {
-			List<String> accountIds = PacmanUtils.getAccountIds(accountEsURL);
-			accountIdSet.addAll(accountIds);
-			
-			if (!accountIdSet.contains(accepterOwnerId) || !accountIdSet.contains(requesterOwnerId)) {
+			int accountIdCount = PacmanUtils.getCountOfAccountIds(accountEsURL, requesterOwnerId, accepterOwnerId);
+			if ((accepterOwnerId.equals(requesterOwnerId) && accountIdCount != 1) ||
+					(!accepterOwnerId.equals(requesterOwnerId) && accountIdCount != 2)) {
 				annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
 				annotation.put(PacmanSdkConstants.DESCRIPTION, "External vpc peering connection found");
 				annotation.put(PacmanRuleConstants.SEVERITY, severity);
