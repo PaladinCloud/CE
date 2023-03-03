@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyCategoryWeightage` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* truncating  the policy table to ensure that existing  insert cmd changes are being reflected */
-TRUNCATE TABLE cf_PolicyTable;
+/*TRUNCATE TABLE cf_PolicyTable; */
 
 /* RUle Category Weightage */
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('cost','Infra & Platforms',20);
