@@ -131,48 +131,43 @@
                     <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'"
                         height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
                 </th>
-                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell
-                    *matCellDef="let element">
-                    <div class="chip-wrapper" *ngIf="element[column] && element[column].isChip; else menuBtn">
-                        <app-chip [variant]="element[column].chipVariant" [maxChips]="maxChips"
-                            [backgroundColor]="element[column].chipBackgroundColor"
-                            [color]="element[column].chipTextColor" [chipsList]="element[column].chipList">
-                        </app-chip>
+                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element"> 
+                    <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
+                        <img class="pointer menu-btn" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
+                        <mat-menu #actionMenu="matMenu">
+                            <button (click)="handleAction(element, action)" style="min-width: 156px;" *ngFor="let action of element[column].menuItems" mat-menu-item>
+                                <span >{{ action }}</span>
+                            </button>
+                        </mat-menu>
                     </div>
-                    <ng-template #menuBtn>
-                        <div *ngIf="element[column] && element[column].isMenuBtn; else textImageData"
-                            style="text-align: center;">
-                            <img class="pointer" width="20px" mat-button [matMenuTriggerFor]="actionMenu"
-                                src="/assets/icons/three-dots.svg" alt="">
-                            <mat-menu #actionMenu="matMenu">
-                                <button (click)="handleAction(element, action)" style="min-width: 156px;"
-                                    *ngFor="let action of element[column].menuItems" mat-menu-item>
-                                    <span>{{ action }}</span>
-                                </button>
-                            </mat-menu>
-                        </div>
-                    </ng-template>
-                    <ng-template #textImageData>
-                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText==0); else noData"
-                                (click)="handleClick(element, element[column])" class="nowrap-ellipsis"
-                                [class.pointer]="element[column].link" [title]="element[column].titleText">
-                                <img *ngIf="element[column].imgSrc" style="vertical-align: text-bottom;"
-                                    src="/assets/icons/{{element[column].imgSrc}}.svg">
-                                <span [class.row-title]="column=='Title'"
-                                    *ngIf="element[column].text || element[column].text==0">{{ element[column].text }}
-                                </span>
-                        </div>
-                    </ng-template>
-                    <ng-template #noData>
-                        <div class="nowrap-ellipsis">
-                            <span>No Data</span>
+                    <ng-template #clickable>
+                        <div class="clickable">
+                            <div class="chip-wrapper" *ngIf="element[column] && element[column].isChip; else textImageData" [title]="element[column].titleText">
+                                <app-chip [variant]="element[column].chipVariant" [maxChips]="maxChips"
+                                [backgroundColor]="element[column].chipBackgroundColor"
+                                [color]="element[column].chipTextColor" [chipsList]="element[column].chipList">
+                            </app-chip>
+                            </div>
+                            <ng-template #textImageData>
+                                <div *ngIf="element[column] && (element[column].valueText || element[column].valueText===0); else noData" [class.row-title]="element[column].isLink" class="nowrap-ellipsis" [class.pointer]="element[column].link" [title]="element[column].titleText">
+                                    <img *ngIf="element[column].imgSrc" [class.noImg]="element[column].imgSrc=='noImg'" style="vertical-align: text-bottom; padding-right: 8px;"
+                                         src="/assets/icons/{{element[column].imgSrc}}.svg"> 
+                                    <span *ngIf="element[column].text || element[column].text==0">{{ element[column].text }} </span>
+                                    <div *ngIf="element[column].symbol" class="symbol" [class]="element[column].symbol.type" [style.background-color]="element[column].symbol.type!='triangle'?element[column].symbol.color:''" [style.border-bottom-color]="element[column].symbol.type=='triangle'?element[column].symbol.color:''"></div>
+                                </div>
+                            </ng-template>
+                            <ng-template #noData>
+                                <div class="nowrap-ellipsis">
+                                    <span>No Data</span>
+                                </div>
+                            </ng-template>
                         </div>
                     </ng-template>
                     
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
-        <tr (click)="handleClick(row)" [class.row-hover]="rowClickable" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
+            <tr [class.row-hover]="rowClickable" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
         </table>
     </div>
     </div>

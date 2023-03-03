@@ -117,6 +117,8 @@ import { CustomCardComponent } from './components/molecules/custom-card/custom-c
 import { OverviewTileComponent } from './components/molecules/overview-tile/overview-tile.component';
 import { TextWithIconComponent } from "./components/molecules/text-with-icon/text-with-icon.component";
 import { MatChipsModule } from "@angular/material/chips";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { InputFieldComponent } from './input-field/input-field.component';
 
 @NgModule({
   imports: [
@@ -126,6 +128,7 @@ import { MatChipsModule } from "@angular/material/chips";
     MatChipsModule,
     MatSnackBarModule,
     MatGridListModule,
+    MatTooltipModule,
     MatCardModule,
     MatSelectModule,
     MatIconModule,
@@ -209,7 +212,8 @@ import { MatChipsModule } from "@angular/material/chips";
     StepperComponent,
     CustomCardComponent,
     OverviewTileComponent,
-    TextWithIconComponent
+    TextWithIconComponent,
+    InputFieldComponent
   ],
   exports: [
     TextWithIconComponent,
@@ -240,6 +244,7 @@ import { MatChipsModule } from "@angular/material/chips";
     TitleBurgerHeadComponent,
     MatSelectModule,
     OverlayComponent,
+    InputFieldComponent,
     SearchableDropdownComponent,
     FilteredSelectorComponent,
     OrderByPipe,

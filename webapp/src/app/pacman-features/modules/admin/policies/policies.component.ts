@@ -365,6 +365,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
       let cellData;
       for (var row = 0; row < getData.length; row++) {
+        const autoFixAvailable = getData[row].autoFixAvailable;
+        const autoFixEnabled = getData[row].autoFixEnabled;
         innerArr = {};
         keynames.forEach(col => {
           cellData = getData[row][col];
@@ -383,19 +385,28 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             // menuItems: [], // add this if isMenuBtn
           }
           if(col.toLowerCase()=="title"){
-            cellObj = {
+              cellObj = {
               ...cellObj,
+              imgSrc: autoFixAvailable == "true" ?autoFixEnabled == "true" ?"autofix":"no-autofix":"noImg",
               isLink: true
             };
           }
           else if (col.toLowerCase() == "actions") {
-            let dropDownItems: Array<String> = ["Edit"];
-            if (getData[row].Status.toLowerCase() === "enabled") {
-              dropDownItems.push("Disable");
-              // dropDownItems.push("Invoke");
-            } else {
-              dropDownItems.push("Enable");
+            let dropDownItems: Array<String> = ["Edit Policy"];
+          if (autoFixAvailable === "true"){ 
+             dropDownItems.push("Edit Autofix");
+             if(autoFixEnabled == "true") {
+              dropDownItems.push("Disable Autofix");
+             } else {
+              dropDownItems.push("Enable Autofix");
             }
+          }
+            if (getData[row].Status.toLowerCase() === "enabled") {
+              dropDownItems.push("Disable Policy");
+            } else {
+              dropDownItems.push("Enable Policy");
+            }
+          dropDownItems.push("Run Policy");
             cellObj = {
               ...cellObj,
               isMenuBtn: true,
@@ -435,57 +446,28 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  enableDisableRuleOrJob(event) {
-    try {      
+  enableDisableRuleOrJob(policyId,action) {
       const url = environment.enableDisableRuleOrJob.url;
       const method = environment.enableDisableRuleOrJob.method;
       const params = {};
-      params['policyId'] = event.rowSelected["Policy ID"].text;
-      
-      params['action'] = event.action;
+      params['policyId'] = policyId;
+      params['action'] = action;
 
       this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
-        // event.rowSelected["Status"].text = event.action+"d";
-        event.rowSelected["Status"] = {
-          ...event.rowSelected["Status"],
-          text: event.action+"d",
-          titleText: event.action+"d",
-          chipVariant: event.action.toLowerCase()=="enable"?"variant1":"variant2",
-        }
-
-        let dropDownItems = ["Edit"];
-        if (event.rowSelected["Status"].text.toLowerCase() === "enabled") {
-          dropDownItems.push("Disable");
-          // dropDownItems.push("Invoke");
-        } else {
-          dropDownItems.push("Enable");
-        }
-        event.rowSelected["Actions"] = {
-          ...event.rowSelected["Actions"],
-          menuItems: dropDownItems,
-        }
-        const snackbarText = 'Policy "' +  event.rowSelected["Title"].text + '" ' + event.action + 'd successfully';
+        const snackbarText = 'Policy "' +  policyId + '" ' + action + 'd successfully';
         this.openSnackBar(snackbarText, "check-circle");
         this.getPolicyDetails();
-        
-        // this.isEnableDisableInvokeSuccess = true;
-        // this.invocationId = reponse[0].data;
       },
         error => {
-          // this.isEnableDisableInvokeFailed = true;
-          // this.ruleLoader = false;
+            this.logger.log("error", error);
         });
-    } catch (error) {
-      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-
-    
   }
 
   openDialog(event): void {
     const action = event.action;
     const element = event.rowSelected;
+    const policyId = event.rowSelected["Policy ID"].text;
+    const autofix = element.autoFixEnabled.text == "true"? "disable" : "enable";
 
     this.selectedRowTitle =  element["Title"].text ;
     this.action = action;
@@ -501,7 +483,12 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if(result=="yes"){
-        this.enableDisableRuleOrJob(event);
+        if(action == "Enable Policy" || action == "Disable Policy")
+        {
+          this.enableDisableRuleOrJob(policyId,action.split(" ")[0].toLowerCase());
+        }
+        else
+        this.enabelOrDisableAutofix(policyId,autofix);
       }
     });
   }
@@ -528,7 +515,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
   goToDetails(event) {
     const action = event?.action?.toLowerCase();
-    if(action =="enable" || action =="disable"){
+    if(action == "enable policy" 
+    || action == "disable policy"
+    || action == "enable autofix"
+    || action == "disable autofix"
+     ){
       this.openDialog(event);
       return;
     }
@@ -536,6 +527,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     // store in this function    
     const row = event.rowSelected;
     const data = event.data;
+    const policyId = event.rowSelected["Policy ID"].text;
     const state = {
       totalRows: this.totalRows,
       data: data,
@@ -552,22 +544,17 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
       );
-    if (action && action === "edit") {
+    if (action && (action === "edit policy" || action === "edit autofix")) {
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            policyId: event.rowSelected["Policy ID"].text,
+            policyId: policyId,
+            showAutofix: action == "edit autofix"
           },
         });
-      
-    }else{
-      const policyParams = event?.rowSelected["policyParams"];
-      const autoFixEnabled = JSON.parse(policyParams.text)["autofix"]??false;
-      this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event?.rowSelected["Policy ID"]?.text, autoFixEnabled], {
-        relativeTo: this.activatedRoute,
-        queryParamsHandling: "merge",
-      });
+    } else if (action && (action === "Run Policy")){
+         this.invokePolicy(policyId);
     }
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -575,9 +562,38 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       }
   }
 
-  // searchCalled(search) {
-  //   this.searchTxt = search;
-  // }
+  enabelOrDisableAutofix(policyId:string,autoFix:string){
+    try{
+      const url = environment.enableDisableAutofix.url;
+      const method = environment.enableDisableAutofix.method;
+      const queryParams = {
+        policyId: policyId,
+        autofixStatus: autoFix == "enable"
+      }
+      this.adminService.executeHttpAction(url,method,{},queryParams).subscribe(response=>{
+        if(response && response[0].message=="success"){
+          const snackbarText = 'Autofix for policy "' +  policyId + '" ' + autoFix + 'd successfully';
+          this.openSnackBar(snackbarText,"green-info-circle");
+          this.getPolicyDetails();
+        }
+      })
+    }catch(error){
+       this.errorHandling.handleJavascriptError(error);
+    }
+  }
+
+  invokePolicy(policyId:string){
+    var url = environment.invokePolicy.url; 
+    var method = environment.invokePolicy.method; 
+    this.adminService.executeHttpAction(url, method, [{}], {policyId:policyId}).subscribe(response => {
+     const invocationId = response[0].data;
+      if(invocationId)
+      this.openSnackBar("Invocation Id " + invocationId + " invoked successfully!!","green-info-circle");
+    },
+    error => {
+      this.errorHandling.handleJavascriptError(error);
+    })
+  }
 
   callNewSearch(search) {
     this.searchTxt = search;
