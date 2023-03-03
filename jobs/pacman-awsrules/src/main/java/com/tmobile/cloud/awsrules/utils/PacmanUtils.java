@@ -2028,6 +2028,19 @@ public class PacmanUtils {
         return list;
     }
 
+    public static int getCountOfAccountIds(String esUrl, String requesterOwnerId, String accepterOwnerId) throws Exception {
+        String requestBody = "{\"query\":{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"accountid.keyword\":\"" + requesterOwnerId +
+                "\"}},{\"term\":{\"latest\":true}}]}},{\"bool\":{\"must\":[{\"term\":{\"accountid.keyword\":\"" + accepterOwnerId +
+                "\"}},{\"term\":{\"latest\":true}}]}}]}}}";
+        String totalStr = "0";
+        JsonObject resultJson = RulesElasticSearchRepositoryUtil.getResponse(esUrl, requestBody);
+        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+            JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
+            totalStr = hitsJson.has(PacmanRuleConstants.TOTAL) ? hitsJson.get(PacmanRuleConstants.TOTAL).toString() : "0";
+        }
+        return Integer.parseInt(totalStr);
+    }
+
     public static Set<String> getRouteTableId(String subnetId, String vpcId, String routetableEsURL, String type)
             throws Exception {
         String routetableid = null;
