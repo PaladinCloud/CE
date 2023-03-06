@@ -52,12 +52,6 @@ CREATE TABLE IF NOT EXISTS cf_PolicyPackRuleInfo (
     constraint policy_id_fkey FOREIGN KEY (policyId) REFERENCES cf_Policy (policyId) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/* Alter AssetGroupException table column */
-ALTER TABLE `pacmandata`.`cf_AssetGroupException` 
-CHANGE COLUMN `ruleName` `policyName` VARCHAR(200) NULL DEFAULT NULL ,
-CHANGE COLUMN `ruleId` `policyId` VARCHAR(200) NULL DEFAULT NULL ;
-
-
 insert into cf_PolicyPack values ('1e3dbd9a-6bce-11ed-a1eb-0242ac120002','CIS',null);
 insert into cf_PolicyPack values ('4b10600c-6bce-11ed-a1eb-0242ac120002','ISO',null);
 insert into cf_PolicyPack values ('577e4a98-6bce-11ed-a1eb-0242ac120002','NIST',null);
