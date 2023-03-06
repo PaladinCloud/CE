@@ -164,6 +164,30 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+/* Procedure to change column names for cf_AssetGroupException*/
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_AssetGroupException_table_change_column_names $$
+CREATE PROCEDURE alter_cf_AssetGroupException_table_change_column_names()
+BEGIN
+IF EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'ruleId')  THEN
+ ALTER TABLE cf_AssetGroupException change column ruleId policyId varchar(200) NULL DEFAULT NULL;
+END IF;
+IF EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'ruleName')  THEN
+ALTER TABLE cf_AssetGroupException change column ruleName policyName varchar(200) NULL DEFAULT NULL;
+END IF;
+END $$
+DELIMITER ;
+
+CALL alter_cf_AssetGroupException_table_change_column_names();
+
 /*Table structure for table `cf_AssetGroupOwnerDetails` */
 
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupOwnerDetails` (
