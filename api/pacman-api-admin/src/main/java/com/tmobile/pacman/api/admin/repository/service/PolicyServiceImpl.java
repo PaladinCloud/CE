@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -174,8 +175,9 @@ public class PolicyServiceImpl implements PolicyService {
 	@Override
 	public String enableDisableAutofix(final String policyId, final String action, final String userId)
 			throws PacManException {
-		if (policyRepository.existsById(policyId)) {
-			Policy existingPolicy = policyRepository.findById(policyId).get();
+		Optional<Policy> policyById = policyRepository.findById(policyId);
+		if (policyById.isPresent()) {
+			Policy existingPolicy = policyById.get();
 			existingPolicy.setUserId(userId);
 			existingPolicy.setModifiedDate(new Date());
 			existingPolicy.setAutoFixEnabled(action);

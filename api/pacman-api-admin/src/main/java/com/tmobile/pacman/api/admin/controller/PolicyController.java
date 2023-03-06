@@ -64,8 +64,10 @@ public class PolicyController {
 		try {
 			if(searchTerm != null && AdminConstants.AUTO_FIX_KEYWORD.equalsIgnoreCase(searchTerm)) {
 				searchTerm = AdminConstants.AUTO_FIX_KEY;
+			} else {
+				searchTerm = searchTerm.trim();
 			}
-			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm.trim(), page, size));
+			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm, page, size));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
