@@ -102,7 +102,7 @@ public class PolicyExecutor {
             new PacEventHandler().handleEvent(executionId,args[0]);
         }else
         {
-                try {   logger.info("input source detected as rule, will process rule now.");
+                try {   logger.info("input source detected as policy, will process policy now.");
                         new PolicyExecutor().run(args, executionId);
                 } catch (Exception e) {
                     logger.error("error while in run method for executionId ->" + executionId, e);

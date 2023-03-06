@@ -704,7 +704,7 @@ public class CommonUtils {
     private static Map<String, String> getMapFromArray(JsonArray jsonArray, String ruleUUID) {
         Map<String, String> toReturn = new HashMap<>();
         jsonArray.forEach(e -> {
-            if (e.getAsJsonObject().get("encrypt").getAsBoolean())
+            if (e.getAsJsonObject().has("encrypt")&& e.getAsJsonObject().get("encrypt").getAsBoolean())
                 try {
                     toReturn.put(e.getAsJsonObject().get("key").getAsString(),
                             decrypt(e.getAsJsonObject().get("value").getAsString(), ruleUUID));
