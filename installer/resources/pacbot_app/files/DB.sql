@@ -164,6 +164,30 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+/* Procedure to change column names for cf_AssetGroupException*/
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_AssetGroupException_table_change_column_names $$
+CREATE PROCEDURE alter_cf_AssetGroupException_table_change_column_names()
+BEGIN
+IF EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'ruleId')  THEN
+ ALTER TABLE cf_AssetGroupException change column ruleId policyId varchar(200) NULL DEFAULT NULL;
+END IF;
+IF EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'ruleName')  THEN
+ALTER TABLE cf_AssetGroupException change column ruleName policyName varchar(200) NULL DEFAULT NULL;
+END IF;
+END $$
+DELIMITER ;
+
+CALL alter_cf_AssetGroupException_table_change_column_names();
+
 /*Table structure for table `cf_AssetGroupOwnerDetails` */
 
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupOwnerDetails` (
@@ -2778,7 +2802,7 @@ INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('qu
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
-INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',REPLACE(TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'\n',''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.consoleLoggingLevel','INFO','application','prd','latest',NULL,NULL,NULL,NULL);

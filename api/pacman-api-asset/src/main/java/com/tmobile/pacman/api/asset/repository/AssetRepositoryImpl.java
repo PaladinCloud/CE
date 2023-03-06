@@ -1243,7 +1243,7 @@ public class AssetRepositoryImpl implements AssetRepository {
             	 assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
             }
         } else {
-            ruleIdWithTargetTypeQuery = "SELECT  p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED'";
+            ruleIdWithTargetTypeQuery = "SELECT DISTINCT p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = 'tagging'";
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             List<String> validTypes = ruleIdwithTargetType.stream()
                     .map(obj -> obj.get(Constants.TARGET_TYPE).toString()).collect(Collectors.toList());

@@ -73,9 +73,9 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
     Compliance: "#00B946", // Green
     patching: "#00569D", // Dark blue(shade)
     "other policies": "#F2425F", // Red
-    costOptimization: "#289cf7", // Light Blue
+    cost: "#289cf7", // Light Blue
     certificate: "#289CF7", // Sky Blue
-    governance: "#26ba9d", // Green
+    operations: "#26ba9d", // Green
     vulnerability: "#645EC5", // Purple
     high: "#F75C03", // Orange
     low: "#FFE00D", // Green
@@ -1501,7 +1501,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
         const rectData = {};
         const dateData = {};
         const yearData = {};
-        valueData["dx"] = mousePosition < axisRange / 4 ? "12.5em" : "-4.7em";
+        valueData["dx"] = mousePosition < axisRange / 4 ? "16.5em" : "-4.7em";
         rectText["dx"] = mousePosition < axisRange / 4 ? "6.7em" : "-14.5em";
         rectData["dx"] = mousePosition < axisRange / 4 ? "70" : "-140";
         rectCoverData["dx"] = mousePosition < axisRange / 4 ? "180" : "-45";
@@ -1513,10 +1513,10 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
             : "25";
         dateData["dx"] =
           mousePosition < axisRange / 4
-            ? "1em"
+            ? "2em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
-            : "2em";
+            ? "-17em"
+            : "3em";
         dateData["dy"] =
           mousePosition < axisRange / 4
             ? ".35em"
@@ -1525,10 +1525,10 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
             : ".35em";
         yearData["dx"] =
           mousePosition < axisRange / 4
-            ? "1em"
+            ? "2em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
-            : "2em";
+            ? "-17em"
+            : "3em";
         yearData["dy"] =
           mousePosition < axisRange / 4
             ? "1.5em"
@@ -1570,7 +1570,7 @@ export class MultilineBrushZoomComponent implements OnInit, OnChanges {
               )
               .text(dobj["value" + m])
               .attr("dx", valueData["dx"])
-              .attr("dy", 0.5 + m * 2.5 + "em");
+              .attr("dy", 0.3 + m * 2.8 + "em");
           });
 
           const legend = self.graphLinesData[numOfLines - m].key;

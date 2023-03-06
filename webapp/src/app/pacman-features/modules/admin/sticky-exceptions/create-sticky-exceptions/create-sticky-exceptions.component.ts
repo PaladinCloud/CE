@@ -234,11 +234,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     this.state = 'open';
     this.menuState = 'in';
     this.selectedallPolicies = attributeDetail.allPolicies;
-    this.selectedRules = attributeDetail.rules;
+    this.selectedRules = attributeDetail.policies;
     this.selectedIndex = index;
-
-    attributeDetail.rules;
-
   }
 
   addAttributes(attributeName, attributeValue) {
@@ -254,7 +251,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   deleteAttributes(attributeName, itemIndex) {
-    let ruleDetails = this.allAttributeDetails[this.selectedIndex].rules[itemIndex];
+    let ruleDetails = this.allAttributeDetails[this.selectedIndex].policies[itemIndex];
     this.allAttributeDetails[this.selectedIndex].policies.splice(itemIndex, 1);
     if (itemIndex !== -1) {
       this.allAttributeDetails[this.selectedIndex].allPolicies.push(ruleDetails);
