@@ -139,7 +139,7 @@ export class AuthService {
                           "expires_in": response.expires_in
                         }
                         this.dataStore.setCurrentUserLoginDetails(JSON.stringify(userLoginDetails));
-                        this.setUserFetchedInformation().subscribe(response=>{
+                        this.setUserFetchedInformationCognito().subscribe(response=>{
                             console.log("Fetched user info successfully",response);
                         })
                         observer.next(userLoginDetails.access_token);
