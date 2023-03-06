@@ -168,6 +168,11 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+/* Alter AssetGroupException table column */
+ALTER TABLE `pacmandata`.`cf_AssetGroupException`
+CHANGE COLUMN `ruleName` `policyName` VARCHAR(200) NULL DEFAULT NULL ,
+CHANGE COLUMN `ruleId` `policyId` VARCHAR(200) NULL DEFAULT NULL ;
+
 /*Table structure for table `cf_AssetGroupOwnerDetails` */
 
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupOwnerDetails` (
