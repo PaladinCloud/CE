@@ -129,8 +129,19 @@ export class AuthService {
                     if (response && response.success && response.access_token) {
                         // Successful response
                         /* Response will have user info and access tokens. */
-                        userLoginDetails = response;
+                        userLoginDetails =
+                        {
+                          "access_token": response.access_token,
+                          "refresh_token": refreshToken,
+                          "id_token": response.id_token,
+                          "success": true,
+                          "token_type": response.token_type,
+                          "expires_in": response.expires_in
+                        }
                         this.dataStore.setCurrentUserLoginDetails(JSON.stringify(userLoginDetails));
+                        this.setUserFetchedInformation().subscribe(response=>{
+                            console.log("Fetched user info successfully",response);
+                        })
                         observer.next(userLoginDetails.access_token);
                         observer.complete();
                     } else {
