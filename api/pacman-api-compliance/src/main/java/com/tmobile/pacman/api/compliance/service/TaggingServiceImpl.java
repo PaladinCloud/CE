@@ -223,8 +223,8 @@ public class TaggingServiceImpl implements TaggingService, Constants {
                 compliancePercentage = Math.floor(compliancePercentage);
 
                 data.put("name", type);
-                data.put("compliance", nonComplianceCount);
-                data.put("nonCompliance", complianceCount);
+                data.put("compliance", complianceCount);
+                data.put("nonCompliance", nonComplianceCount);
                 data.put("assetCount", assetCount);
                 data.put(COMP_PERCENTAGE, compliancePercentage);
                 unTagsList.add(data);
