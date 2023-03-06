@@ -22,6 +22,8 @@
  **/
 package com.tmobile.cloud.constants;
 
+import java.time.format.DateTimeFormatter;
+
 public class PacmanRuleConstants {
 
     public static final String UDP = "UDP";
@@ -582,6 +584,14 @@ public class PacmanRuleConstants {
     public static final String CLUSTER_SECURITY_GROUP_ID = "clustersecuritygroupid";
     public static final String LATEST_VERSION = "latestversion";
     public static final String OLD_VERSIONS = "oldVersions";
+    public static final String EXPIRATION_DATE = "expirationdate";
+    public static final String REGISTRANT_PRIVACY = "registrantprivacy";
+    public static final String AUTO_RENEW = "autorenew";
+    public static final String STATUS_LIST = "statuslist";
+    public static final String MAX_DAYS = "maxDays";
+    public static final String HOSTED_ZONE_ID = "hostedzoneid";
+    public static final String DOMAIN_NAME = "domainname";
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssZ");
     public static final String VERSION = "version";
    public static  final  String ENABLE_OS_LOGIN ="enable-oslogin";
    public static final String COMPUTE_INSTANCE_METADATA="computeInstanceMetadata";

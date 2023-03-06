@@ -101,6 +101,7 @@ import com.tmobile.cso.pacman.inventory.vo.LoadBalancerVH;
 import com.tmobile.cso.pacman.inventory.vo.PhdVH;
 import com.tmobile.cso.pacman.inventory.vo.RedshiftVH;
 import com.tmobile.cso.pacman.inventory.vo.Resource;
+import com.tmobile.cso.pacman.inventory.vo.Route53VH;
 import com.tmobile.cso.pacman.inventory.vo.SGRuleVH;
 import com.tmobile.cso.pacman.inventory.vo.SQSVH;
 import com.tmobile.cso.pacman.inventory.vo.SSLCertificateVH;
@@ -286,6 +287,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ecscluster.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-ecscluster-tags.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-securityhub.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-route53.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-route53-hostedzone.data",InventoryConstants.OPEN_ARRAY, false);
+		FileGenerator.writeToFile("aws-route53-resourcerecord.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.OPEN_ARRAY, false);
@@ -455,6 +459,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-ecscluster.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-ecscluster-tags.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-securityhub.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-route53.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-route53-hostedzone.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-route53-resourcerecord.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-findings.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-accessanalyzer-tags.data",InventoryConstants.CLOSE_ARRAY, true);
@@ -750,6 +757,33 @@ public class FileManager {
 		fieldNames = "hubArn`subscribedAt`autoEnableControls";
 		keys = "discoverydate`accountid`accountname`region`hubarn`subcribedat`autoenablecontrols";
 		FileGenerator.generateJson(securityHubMap, fieldNames, "aws-securityhub.data", keys);
+	}
+
+	/**
+	 * Generates aws route53 domain detail files.
+	 *
+	 * @param domainDetails the file info map
+	 */
+	public static void generateRoute53Files(Map<String, List<Route53VH>> domainDetails) {
+		String fieldNames;
+		String keys;
+		fieldNames = "domainName`expirationDate`registrantPrivacy`autoRenew`statusList";
+		keys = "discoverydate`accountid`accountname`domainname`expirationdate`registrantprivacy`autorenew" +
+				"`statuslist";
+		FileGenerator.generateJson(domainDetails, fieldNames, "aws-route53.data", keys);
+
+		fieldNames = "domainName`route53HostedZoneVHList.hostedZoneId`route53HostedZoneVHList.name" +
+				"`route53HostedZoneVHList.serveSignatureStatus`route53HostedZoneVHList.queryLoggingConfigSize";
+		keys = "discoverydate`accountid`accountname`domainname`hostedzoneid`name`servesignaturestatus`" +
+				"queryLoggingConfigSize";
+		FileGenerator.generateJson(domainDetails, fieldNames, "aws-route53-hostedzone.data", keys);
+
+		fieldNames = "domainName`route53HostedZoneVHList.hostedZoneId" +
+				"`route53HostedZoneVHList.resourceRecordSetVHList.name" +
+				"`route53HostedZoneVHList.resourceRecordSetVHList.type" +
+				"`route53HostedZoneVHList.resourceRecordSetVHList.resourceRecords";
+		keys = "discoverydate`accountid`accountname`domainname`hostedzoneid`name`type`resourceRecords";
+		FileGenerator.generateJson(domainDetails, fieldNames, "aws-route53-resourcerecord.data", keys);
 	}
 	
 	/**
