@@ -96,10 +96,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allSelected=false;
     }
-    if(this.doLocalSearch && this.dataSource?.data?.length){
-      this.customSearch();
+    if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
+      this.displayedColumns.pop();
     }
-    if(this.onScrollDataLoader){
+    if (this.onScrollDataLoader) {
       this.onScrollDataLoader.subscribe(data => {
       this.isDataLoading = false;
         if(data && data.length>0){
@@ -139,7 +139,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     })    
       
       if(this.doLocalSearch && this.dataSource?.data?.length){
-      this.customSearch();
+      this.filterAndSort();
     }else{
 
     this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
@@ -160,6 +160,15 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         }
       });
       this.changeDetectorRef.detectChanges();
+    }
+  }
+
+  filterAndSort(){
+    if(this.doLocalSearch && this.dataSource?.data?.length){
+      this.customSearch();
+    }
+    if(this.headerColName && this.direction && this.doLocalSort){
+      this.customSort(this.headerColName, this.direction);
     }
   }
 
@@ -294,7 +303,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.filteredArray[currIdx].value = e;  
 
     if(this.doLocalFilter){
-      this.customSearch();
+      this.filterAndSort();
     }else{
       let event = {
         index: currIdx,
@@ -342,7 +351,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
     if(this.doLocalFilter){
       this.filteredArray.splice(i, 1);
-      this.customSearch();
+      this.filterAndSort();
       return;
     }
     let event = {
@@ -354,7 +363,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   removeAllFilters(){
     if(this.doLocalFilter){
       this.filteredArray = [];
-      this.customSearch();
+      this.filterAndSort();
       return;
     }
     let event = {
@@ -441,7 +450,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       // this.customTable.first.nativeElement.scrollTop = 0;
       this.tableErrorMessage = '';
       if(this.doLocalSearch){
-        this.customSearch();
+        this.filterAndSort();
       }else{
         this.searchCalledEventEmitter.emit(searchTxt);
       }
@@ -452,7 +461,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.searchQuery = "";
     if(this.tableErrorMessage == 'noSearchFound') this.tableErrorMessage = "";
     if(this.doLocalSearch){
-      this.customSearch();
+      this.filterAndSort();
     }else{
       this.searchCalledEventEmitter.emit(this.searchQuery);
     }
