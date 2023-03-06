@@ -45,6 +45,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
@@ -457,22 +458,14 @@ public class PolicyServiceImpl implements PolicyService {
 
 	private boolean invokePolicy(AWSLambda awsLambdaClient, Policy policyDetails, String invocationId,
 			List<Map<String, Object>> additionalRuleParams) {
-		String ruleParams = policyDetails.getPolicyParams();
+
+		JsonObject inputConstant = new JsonObject();
+		inputConstant.addProperty(AdminConstants.POLICY_UUID, policyDetails.getPolicyUUID());		
 		if (invocationId != null) {
-			Map<String, Object> ruleParamDetails;
-			try {
-				ruleParamDetails = mapper.readValue(policyDetails.getPolicyParams(),
-						new TypeReference<Map<String, Object>>() {
-						});
-				ruleParamDetails.put("invocationId", invocationId);
-				ruleParamDetails.put("additionalParams", mapper.writeValueAsString(additionalRuleParams));
-				ruleParams = mapper.writeValueAsString(ruleParamDetails);
-			} catch (Exception exception) {
-				log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-			}
+			inputConstant.addProperty(AdminConstants.INVOCATION_ID, invocationId);
 		}
 		String functionName = config.getRule().getLambda().getFunctionName();
-		ByteBuffer payload = ByteBuffer.wrap(ruleParams.getBytes());
+		ByteBuffer payload = ByteBuffer.wrap(inputConstant.toString().getBytes());
 		InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(functionName).withPayload(payload);
 		InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
 		if (invokeResult.getStatusCode() == 200) {
@@ -483,8 +476,10 @@ public class PolicyServiceImpl implements PolicyService {
 	}
 
 	private boolean linkTargetWithRule(final Policy policy) {
+		JsonObject obj = new JsonObject();
+		obj.addProperty(AdminConstants.POLICY_UUID, policy.getPolicyUUID());
 		Target target = new Target().withId(config.getRule().getLambda().getTargetId())
-				.withArn(config.getRule().getLambda().getFunctionArn()).withInput(policy.getPolicyParams());
+				.withArn(config.getRule().getLambda().getFunctionArn()).withInput(obj.toString());
 
 		PutTargetsRequest targetsRequest = new PutTargetsRequest().withTargets(target).withRule(policy.getPolicyUUID());
 
@@ -498,9 +493,11 @@ public class PolicyServiceImpl implements PolicyService {
 	}
 
 	private boolean linkTargetWithRuleForManagedPolicy(final Policy policy, String eventBridge) {
+		JsonObject obj = new JsonObject();
+		obj.addProperty(AdminConstants.POLICY_UUID, policy.getPolicyUUID());
 		com.amazonaws.services.eventbridge.model.Target eventTarget = new com.amazonaws.services.eventbridge.model.Target();
 		eventTarget.withArn(config.getRule().getLambda().getFunctionArn())
-				.withId(config.getRule().getLambda().getTargetId()).withInput(policy.getPolicyParams());
+				.withId(config.getRule().getLambda().getTargetId()).withInput(obj.toString());
 		com.amazonaws.services.eventbridge.model.PutTargetsRequest targetReq = new com.amazonaws.services.eventbridge.model.PutTargetsRequest();
 		targetReq.withTargets(eventTarget).withEventBusName(eventBridge).withRule(policy.getPolicyUUID());
 
