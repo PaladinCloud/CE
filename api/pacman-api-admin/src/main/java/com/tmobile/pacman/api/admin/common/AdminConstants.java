@@ -106,5 +106,7 @@ public final class AdminConstants {
 	public static final String ERROR_CONFIG_MANDATORY				=	"Config key, Config value and application are mandatory";
     public static final String LATEST								=	"latest";
     public static final String CONFIG_ROLLBACK_MSG					=	"Rollback to an older timestamp through API invocation";
+    public static final String POLICY_UUID							= 	"policyUUID";
+    public static final String INVOCATION_ID						= 	"invocationId";
 }
 
