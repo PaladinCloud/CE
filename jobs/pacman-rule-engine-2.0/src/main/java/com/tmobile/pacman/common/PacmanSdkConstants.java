@@ -613,5 +613,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String BOOLEAN_TRUE = "true";
     String SUBSCRIPTION = "subscription";
     String PROJECT_NAME = "projectName";
+    
+    /** Compliance API to get Policy Details using UUID */
+    String POLICY_DETAILS_URL = "POLICY_DETAILS_URL";
 
 }
