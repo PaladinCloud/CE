@@ -110,5 +110,7 @@ public final class AdminConstants {
     public static final String CONFIG_ROLLBACK_MSG					=	"Rollback to an older timestamp through API invocation";
     public static final String AUTO_FIX_KEY							=   "fixKey";
     public static final String AUTO_FIX_KEYWORD						= 	"autofix";
+    public static final String POLICY_UUID							=	"policyUUID";
+    public static final String INVOCATION_ID						=	"invocationId";
 }
 
