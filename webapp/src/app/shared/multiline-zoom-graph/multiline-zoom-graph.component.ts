@@ -1392,7 +1392,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         .attr("fill", "#fff")
         // .attr("fill-opacity", "0.9")
         .attr("height", "69px")
-        .attr("width", "149px")
+        .attr("width", "169px")
         .attr("stroke", "#DFE6EE")
         .attr("display", "none")
         .attr("text-align", "middle")
@@ -1531,7 +1531,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "4em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
+            ? "-14em"
             : "5em";
         // rectData["dx"] = mousePosition < axisRange / 4 ? "70" : "-140";
         valueData["dx"] =
@@ -1550,7 +1550,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "2.1em"
             : mousePosition > axisRange * 0.75
-            ? "-7em"
+            ? "-5em"
             : "3.1em";
         rectData["dy"] =
           mousePosition < axisRange / 4
@@ -1567,7 +1567,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "15"
             : mousePosition > axisRange * 0.75
-            ? "-200"
+            ? "-198"
             : "25";
         dateData["dx"] =
           mousePosition < axisRange / 4
@@ -1585,7 +1585,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "1em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
+            ? "-14em"
             : "2em";
         yearData["dy"] =
           mousePosition < axisRange / 4
