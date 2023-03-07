@@ -100,4 +100,4 @@ class VulnerabilityALBHttpsListenerRule(ALBListenerRuleResource, BaseLR):
             "values" : ["/api/vulnerability*"]
         }
     }
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
