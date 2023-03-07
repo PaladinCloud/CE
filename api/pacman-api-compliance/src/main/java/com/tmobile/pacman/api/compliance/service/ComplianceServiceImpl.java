@@ -1035,28 +1035,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             policydetails.put(POLICY_DESC, policy.get(POLICY_DESC));
             policydetails.put(DISPLAY_NAME, policy.get(DISPLAY_NAME));
             policydetails.put(RESOLUTION_URL, policy.get(RESOLUTION_URL));
+            policydetails.put(POLICY_CATEGORY, policy.get(CATEGORY));
+            policydetails.put(SEVERITY, policy.get(SEVERITY));
             if (null != policy.get(RESOLUTION)) {
                 resolution = Arrays.asList(policy.get(RESOLUTION).toString().split(","));
                 policydetails.put(RESOLUTION, resolution);
             } else {
                 policydetails.put(RESOLUTION, resolution);
-            }
-
-            policyParams = policy.get(POLICY_PARAMS).toString();
-
-            resultJson = (JsonObject) jsonParser.parse(policyParams);
-            jsonArray = resultJson.getAsJsonObject().get(PARAMS).getAsJsonArray();
-            if (jsonArray.size() > 0) {
-
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    firstObject = (JsonObject) jsonArray.get(i);
-
-                    value = firstObject.get(VALUE).getAsString();
-                    key = firstObject.get(KEY).getAsString();
-                    if (key.equals(POLICY_CATEGORY) || key.equals(SEVERITY)) {
-                        policydetails.put(key, value);
-                    }
-                }
             }
         }
         return policydetails;
