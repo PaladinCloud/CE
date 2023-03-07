@@ -47,14 +47,14 @@ class RulesListVariableAzure(TerraformVariable):
     variable_type = "list"
     default_value = []
     variable_dict_input = get_rule_engine_cloudwatch_rules_azure_var()
-    PROCESS = need_to_enable_azure()
+   
 
 class RulesListVariableGcp(TerraformVariable):
     variable_name = "gcprules"
     variable_type = "list"
     default_value = []
     variable_dict_input = get_rule_engine_cloudwatch_rules_gcp_var()
-    PROCESS = need_to_enable_gcp()
+    
 
 class RuleEngineEventRulesAws(CloudWatchEventRuleResource):
     count = RulesListVariableAws.length()
@@ -93,7 +93,7 @@ class RuleEngineEventRulesAzure(CloudWatchEventRuleResource):
         'description': {'required': False},
         'tags' : {'required':False}
     }
-    PROCESS = need_to_enable_azure()
+    
 class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
     count = RulesListVariableGcp.length()
     name = RulesListVariableGcp.lookup('policyId')
@@ -112,7 +112,7 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
         'description': {'required': False},
         'tags' : {'required':False}
     }
-    PROCESS = need_to_enable_gcp()
+    
 
     def check_exists_before(self, input, tf_outputs):
         """
@@ -133,8 +133,8 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
                     break
 
             for rule in get_rule_engine_cloudwatch_rules_azure_var():
-                if  not need_to_enable_azure():
-                    continue
+                # if  not need_to_enable_azure():
+                #     continue
                 rule_name = rule['policyId']
                 exists = cloudwatch_event.check_rule_exists(
                     rule_name,
@@ -145,8 +145,8 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
                     break
 
             for rule in get_rule_engine_cloudwatch_rules_gcp_var():
-                if  not need_to_enable_gcp():
-                    continue
+                # if  not need_to_enable_gcp():
+                #     continue
                 rule_name = rule['policyId']
                 exists = cloudwatch_event.check_rule_exists(
                     rule_name,
@@ -179,8 +179,8 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
                 sys.exit()
 
         for rule in get_rule_engine_cloudwatch_rules_azure_var():
-            if  not need_to_enable_azure():
-                continue
+            # if  not need_to_enable_azure():
+            #     continue
             rule_name = rule['policyId']
             try:
                 cloudwatch_event.remove_all_targets_of_a_rule(
@@ -192,8 +192,8 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
                 sys.exit()
 
         for rule in get_rule_engine_cloudwatch_rules_gcp_var():
-            if  not need_to_enable_gcp():
-                continue
+            # if  not need_to_enable_gcp():
+            #     continue
             rule_name = rule['policyId']
             try:
                 cloudwatch_event.remove_all_targets_of_a_rule(
@@ -222,7 +222,7 @@ class RuleEngineCloudWatchEventTargetsAzure(CloudWatchEventTargetResource):
     target_input = RulesListVariableAzure.lookup('policyParams')
     event_bus_name = CloudWatchEventBusazure.get_output_attr('arn')
     DEPENDS_ON = [RuleEngineEventRulesAzure]
-    PROCESS = need_to_enable_azure()
+    
 class RuleEngineCloudWatchEventTargetsGcp(CloudWatchEventTargetResource):
     count = RulesListVariableGcp.length()
     rule = RulesListVariableGcp.lookup('policyId')
@@ -231,7 +231,7 @@ class RuleEngineCloudWatchEventTargetsGcp(CloudWatchEventTargetResource):
     target_input = RulesListVariableGcp.lookup('policyParams')
     event_bus_name = CloudWatchEventBusgcp.get_output_attr('arn')
     DEPENDS_ON = [RuleEngineEventRulesGcp]
-    PROCESS = need_to_enable_gcp()
+    
 
 class EventRulesLambdaPermissions(LambdaPermission):
     statement_id = "sid-" + Settings.AWS_ACCOUNT_ID
