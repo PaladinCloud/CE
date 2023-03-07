@@ -1174,32 +1174,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return rulidwithScanDate.get(policyId);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-     * getPolicyCategory(java.lang.Object, java.util.Map)
-     */
-    public String getPolicyCategory(Object policyId, Map<String, String> policyIdwithpolicyParamsMap) {
-        String policyCategory = null;
-        String policyParams = policyIdwithpolicyParamsMap.get(policyId);
-        JsonParser parser = new JsonParser();
-        List<Map<String, String>> paramsList;
-        JsonObject policyParamsJson;
-
-        policyParamsJson = (JsonObject) parser.parse(policyParams);
-        paramsList = new Gson().fromJson(policyParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
-        }.getType());
-
-        for (Map<String, String> param : paramsList) {
-            if (param.get(KEY).equalsIgnoreCase(POLICY_CATEGORY)) {
-                policyCategory = param.get(VALUE);
-                return policyCategory;
-            }
-        }
-
-        return policyCategory;
-    }
 
     /*
      * (non-Javadoc)

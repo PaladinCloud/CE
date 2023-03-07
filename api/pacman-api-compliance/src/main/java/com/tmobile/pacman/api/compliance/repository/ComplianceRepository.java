@@ -332,15 +332,6 @@ public interface ComplianceRepository {
     public String getScanDate(String policyId,
             Map<String, String> rulidwithScanDate);
 
-    /**
-     * Gets the policy category.
-     *
-     * @param policyId the policy id
-     * @param policyIdwithpolicyParamsMap the policy idwithpolicy params map
-     * @return String
-     */
-    public String getPolicyCategory(Object policyId,
-            Map<String, String> policyIdwithpolicyParamsMap);
 
     /**
      * Gets the policy id details which are in enabled status from the DB.
