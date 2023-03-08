@@ -1250,7 +1250,10 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
 
   getDateData(date: any): any {
     try {
+      const todaysDate = new Date();
       this.endDate = date;
+      this.endDate.setHours(todaysDate.getHours());
+      this.endDate.setMinutes(todaysDate.getMinutes());
     } catch (e) {
       this.logger.log('error', e);
     }

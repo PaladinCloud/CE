@@ -164,7 +164,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   filterAndSort(){
-    if(this.doLocalSearch && this.dataSource?.data?.length){
+    if(this.doLocalSearch){
       this.customSearch();
     }
     if(this.headerColName && this.direction && this.doLocalSort){
@@ -406,10 +406,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.chips = this.chips.filter(obj => obj.keyDisplayValue && obj.filterValue);
     this.totalChips = this.chips.length;
     this.chips.splice(2);
-    this.addFilter();
+    
     this.totalRows = this.dataSource.data.length;
     if(this.dataSource.data.length==0){
       this.tableErrorMessage = 'noDataAvailable';
+    }else{
+      this.addFilter();
     }
   }
 
