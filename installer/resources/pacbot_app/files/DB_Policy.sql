@@ -17,13 +17,26 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyTable` (
   `policyRestUrl` varchar(500) COLLATE utf8_bin DEFAULT NULL,
   `policyType` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `policyArn` varchar(150) COLLATE utf8_bin DEFAULT NULL,
-  `status` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `severity` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `category` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `autoFixAvailable` varchar(6) COLLATE utf8_bin DEFAULT 'false',
+  `autoFixEnabled` varchar(20) COLLATE utf8_bin DEFAULT 'false',
+  `allowList` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+  `waitingTime` int(11) DEFAULT '24',
+  `maxEmailNotification` int(11) DEFAULT '1',
+  `templateName` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  `templateColumns` varchar(500) COLLATE utf8_bin DEFAULT NULL,
+  `fixType` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `warningMailSubject` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+  `fixMailSubject` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+  `warningMessage` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+  `fixMessage` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+  `violationMessage` varchar(1000) COLLATE utf8_bin DEFAULT NULL,
+  `elapsedTime` int(11) DEFAULT '24',
   `userId` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `createdDate` date DEFAULT NULL,
   `modifiedDate` date DEFAULT NULL,
-  `severity` varchar(20) COLLATE utf8_bin DEFAULT NULL,
-  `category` varchar(50) COLLATE utf8_bin DEFAULT NULL,
-  `autoFixEnabled` VARCHAR(20) COLLATE utf8_bin DEFAULT 'false',
+  `status` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`policyId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -33,6 +46,14 @@ CREATE TABLE IF NOT EXISTS `cf_PolicyCategoryWeightage` (
   `weightage` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`policyCategory`,`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE IF NOT EXISTS `pac_policy_engine_autofix_actions` (
+  `resourceId` varchar(100) COLLATE utf8_bin NOT NULL,
+  `lastActionTime` datetime NOT NULL,
+  `action` varchar(100) COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`resourceId`,`lastActionTime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 
 /* truncating  the policy table to ensure that existing  insert cmd changes are being reflected */
 /*TRUNCATE TABLE cf_PolicyTable; */
@@ -67,19 +88,33 @@ IF NOT EXISTS( SELECT NULL
            WHERE table_name = 'cf_PolicyTable'
              AND table_schema = 'pacmandata'
              AND column_name = 'autoFixEnabled')  THEN
-
-
 ALTER TABLE cf_PolicyTable ADD COLUMN autoFixEnabled VARCHAR(20) NULL DEFAULT 'false' AFTER category;
-ALTER TABLE cf_PolicyTable MODIFY COLUMN policyDisplayName VARCHAR(200);
-
-
-
-
 END IF;
+
+IF NOT EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_PolicyTable'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'autoFixAvailable')  THEN
+ALTER TABLE cf_PolicyTable 
+ADD COLUMN `autoFixAvailable` VARCHAR(6) NULL DEFAULT 'false' AFTER `category`,
+ADD COLUMN `allowList` VARCHAR(1000) NULL AFTER `autoFixEnabled`,
+ADD COLUMN `waitingTime` INT NULL DEFAULT 24 AFTER `allowList`,
+ADD COLUMN `maxEmailNotification` INT NULL DEFAULT 1 AFTER `waitingTime`,
+ADD COLUMN `templateName` VARCHAR(100) NULL AFTER `maxEmailNotification`,
+ADD COLUMN `templateColumns` VARCHAR(500) NULL AFTER `templateName`,
+ADD COLUMN `fixType` VARCHAR(50) NULL AFTER `templateColumns`,
+ADD COLUMN `warningMailSubject` VARCHAR(1000) NULL AFTER `fixType`,
+ADD COLUMN `fixMailSubject` VARCHAR(1000) NULL AFTER `warningMailSubject`,
+ADD COLUMN `warningMessage` VARCHAR(1000) NULL AFTER `fixMailSubject`,
+ADD COLUMN `fixMessage` VARCHAR(1000) NULL AFTER `warningMessage`,
+ADD COLUMN `violationMessage` VARCHAR(1000) NULL DEFAULT NULL AFTER `fixMessage`;
+END IF;
+
+
 END $$
 DELIMITER ;
 CALL alter_cf_policytable_add_columns();
-
 
 
 
@@ -1034,3 +1069,77 @@ update cf_PolicyTable set policyParams = '{"assetGroup":"aws","policyId":"S3Glob
 update cf_PolicyTable set policyParams = '{"assetGroup":"aws","policyId":"ServiceLimitRule_version-1_ServiceLimitRule_account","policyRestUrl":"","environmentVariables":[],"policyUUID":"aws_account_service_limit_rule","policyType":"ManagePolicy","pac_ds":"aws","targetType":"account","params":[{"encrypt":false,"value":"check-for-service-limit","key":"policyKey"},{"encrypt":false,"value":"true","key":"threadsafe"},{"encrypt":false,"value":"operations","key":"policyCategory"},{"encrypt":false,"value":"medium","key":"severity"},{"isValueNew":true,"defaultVal":"eW7HH0l7J9","encrypt":false,"isEdit":true,"displayName":"Check Id","description":"Check Id Keyword,"value":"eW7HH0l7J9","key":"checkId","isMandatory":true},{"isValueNew":true,"encrypt":false,"value":"\/aws_checks\/checks_resources\/_search","key":"esServiceURL"}],"autofix":false,"alexaKeyword":"ServiceLimitRule"}' where policyId = 'ServiceLimitRule_version-1_ServiceLimitRule_account';
 update cf_PolicyTable set policyParams = '{"assetGroup":"aws","policyId":"Underutilized-Amazon-EBS-Volumes_version-1_Underutilized-EBS-Volumes_volume","policyRestUrl":"","environmentVariables":[],"policyUUID":"aws_ebs_volume_should_not_be_under_utilized","policyType":"ManagePolicy","pac_ds":"aws","targetType":"volume","params":[{"encrypt":false,"value":"check-for-underutilized-EBS-Volumes","key":"policyKey"},{"defaultVal":"DAvU99Dc4C","encrypt":false,"isEdit":true,"displayName":"Check Id","description":"Check Id Keyword,"value":"DAvU99Dc4C","key":"checkId","isMandatory":true},{"encrypt":false,"value":"high","key":"severity"},{"encrypt":false,"value":"cost","key":"policyCategory"},{"isValueNew":true,"encrypt":false,"value":"\/aws_checks\/checks_resources\/_search","key":"esServiceURL"}],"autofix":false,"alexaKeyword":"Underutilized Amazon EBS Volumes"}' where policyId = 'Underutilized-Amazon-EBS-Volumes_version-1_Underutilized-EBS-Volumes_volume';
 update cf_PolicyTable set policyParams = '{"assetGroup":"aws","policyId":"UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift","policyRestUrl":"","environmentVariables":[],"policyUUID":"aws_redshift_clusters_should_not_be_under_utilized","policyType":"ManagePolicy","pac_ds":"aws","targetType":"redshift","params":[{"encrypt":false,"value":"check-for-under-utilized-amazon-redshift-clusters","key":"policyKey"},{"encrypt":false,"value":"high","key":"severity"},{"defaultVal":"G31sQ1E9U","encrypt":false,"isEdit":true,"displayName":"Check Id","description":"Check Id Keyword,"value":"G31sQ1E9U","key":"checkId","isMandatory":true},{"isValueNew":true,"encrypt":false,"value":"cost","key":"policyCategory"},{"isValueNew":true,"encrypt":false,"value":"\/aws_checks\/checks_resources\/_search","key":"esServiceURL"}],"autofix":false,"alexaKeyword":"UnderutilizedAmazonRedshiftClustersRule"}' where policyId = 'UnderutilizedAmazonRedshiftClustersRule_version-1_UnderutilizedAmazonRedshiftClustersRule_redshift';
+
+/* By default Autofix is disabled */
+update cf_PolicyTable set autoFixEnabled = "false"; 
+
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', fixType = 'silent', elapsedTime='48',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Allocation Id',
+fixMailSubject= 'PaladinCloud autofix action - AWS Unassociated Elastic IP Addresses Auto Delete Report',
+warningMessage='The access to this Application ELB will be automatically fixed by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically deleted the following list of Unassociated Elastic IP Addresses' 
+where policyId = 'UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Attached Sg,Detached Sg',
+warningMailSubject = 'PaladinCloud autofix - Application ELB detected with public access',
+fixMailSubject= 'PaladinCloud autofix action - Application ELB with public access restored back',
+warningMessage='The access to this Application ELB will be automatically fixed by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically revoked the public access of this Application ELB created by you as it was a violation of',
+violationMessage='an Application ELB (<b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) created by you is open to internet'
+where policyId = 'ElbWithPublicAccess_version-1_ApplicationElbWithPublicAccess_appelb';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Attached Sg,Detached Sg',
+warningMailSubject = 'PaladinCloud autofix - Classic ELB detected with public access',
+fixMailSubject= 'PaladinCloud autofix action - Classic ELB with public access restored back',
+warningMessage='The access to this Classic ELB will be automatically fixed by PaladinCloud after {days} days if no exception is granted',
+fixMessage='PaladinCloud has now automatically revoked the public access of this Classic ELB created by you as it was a violation of',
+violationMessage='an Classic ELB (<b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) created by you is open to internet'
+where policyId = 'ElbWithPublicAccess_version-1_ClassicElbWithPublicAccess_classicelb';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Attached Sg,Detached Sg',
+warningMailSubject = 'PaladinCloud autofix - Ec2 instance detected with public access',
+fixMailSubject= 'PaladinCloud - autofix action - Ec2 with public access restored back',
+warningMessage='The access to this Ec2 instance will be automatically fixed by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically revoked the public access of this Ec2 instance created by you as it was a violation of',
+violationMessage='an Ec2 instance  (<b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) created by you is open to internet'
+where policyId = 'EC2WithPublicIPAccess_version-1_Ec2WithPublicAccess_ec2';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Group Name',
+warningMailSubject = 'PaladinCloud autofix - Found Unused AWS Security Group',
+fixMailSubject= 'PaladinCloud - Unused AWS Security Group Auto Deleted Report which are created by PaladinCloud',
+warningMessage='The unused Security group will be automatically deleted by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically deleted the following list of unused security group resources which are created by PaladinCloud',
+violationMessage='Security group (<b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) is unused.'
+where policyId = 'Unused-Security-group_version-1_UnusedSecurityGroup_sg';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= '',
+warningMailSubject = 'PaladinCloud autofix - S3 bucket detected with anonymous access',
+fixMailSubject= 'PaladinCloud - S3 bucket policy with anonymous read/write access restored back',
+warningMessage='The permissions for this S3 bucket will be automatically fixed by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically revoked the public permissions of s3 bucket (<b>${RESOURCE_ID}</b>) created by you as it was a violation of',
+violationMessage='a S3 bucket  (<b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) created by you is open to internet for anonymous access'
+where policyId = 'S3GlobalAccess_version-1_S3BucketShouldnotpubliclyaccessble_s3';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Attached Sg,Detached Sg',
+warningMailSubject = 'PaladinCloud autofix - Redshift detected with public access',
+fixMailSubject= 'PaladinCloud - Redshift with public access restored back',
+warningMessage='The access to this Redshift will be automatically fixed by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically revoked the public access of this Redshift created by you as it was a violation of',
+violationMessage='Redshift <b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) created by you is open to internet'
+where policyId = 'RedShiftPublicAccess_version-1_RedShiftPublicAccess_redshift';
+update cf_PolicyTable set 
+autoFixAvailable = 'true', autoFixEnabled = 'true', allowList = '', waitingTime= '24', maxEmailNotification = '2',templateName = 'commonTemplate',
+templateColumns= 'Resource Id,Account Id,Region,Attached Sg,Detached Sg',
+warningMailSubject = 'PaladinCloud autofix - Elasticsearch detected with public access',
+fixMailSubject= 'PaladinCloud - Elasticsearch with public access restored back',
+warningMessage='The access to this Elasticsearch will be automatically fixed by PaladinCloud after {days} days if no exception is granted.',
+fixMessage='PaladinCloud has now automatically revoked the public access of this Elasticsearch created by you as it was a violation of',
+violationMessage='Elasticsearch <b>${RESOURCE_ID}</b>) from account (<b>${ACCOUNT_ID}</b>) of region (<b>${REGION}</b>) created by you is open to internet'
+where policyId = 'ElasticSearchPublicAccess_version-1_ElasticSearchPublicAccessRule_elasticsearch';
