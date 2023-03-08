@@ -79,16 +79,16 @@ public class NextStepManager {
      * @return the next step
      */
     @SuppressWarnings("unchecked")
-    public AutoFixAction getNextStep(Map<String, String> ruleParam , String normalizedResourceId,  String resourceId, Map<String, Object> clientMap, 
+    public AutoFixAction getNextStep(Map<String, String> policyParam , String normalizedResourceId,  String resourceId, Map<String, Object> clientMap, 
             AWSService serviceType) {
 
         
-        String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
+        String policyId = policyParam.get(PacmanSdkConstants.POLICY_ID);
         
         try {
             
            //silent fix can only be aplied to tagging rules , where exception does not makes much sense 
-           if(isSilentFixEnabledForRule(ruleId)){
+           if(isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))){
                 return AutoFixAction.AUTOFIX_ACTION_FIX;
             }
             // if the resource was ever exempted we will send mail to CSR and
@@ -109,8 +109,8 @@ public class NextStepManager {
             }
             Map<String, Object> resourceDetailsMap = (Map<String, Object>) CommonUtils.deSerializeToObject(response);
             Double responseCode = Double.valueOf((resourceDetailsMap.get("responseCode").toString()));
-            int autoFixDelay = getAutoFixDelay(ruleId);
-            int maxEmails = getMaxNotifications(ruleId);
+            int autoFixDelay = getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
+            int maxEmails = getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION));
            
             List<String> lastActions = (List<String>) resourceDetailsMap.get("lastActions");
             
@@ -152,14 +152,13 @@ public class NextStepManager {
      * @param ruleId
      * @return
      */
-    public static int getMaxNotifications(String ruleId) {
+    public static int getMaxNotifications(String maxEmail) {
 
-        String ruleSpecificValue = CommonUtils.getPropValue(PacmanSdkConstants.AUTOFIX_MAX_EMAILS + "." + ruleId);
-        if(Strings.isNullOrEmpty(ruleSpecificValue)){
+        if(Strings.isNullOrEmpty(maxEmail)){
             return Integer.parseInt(
                     CommonUtils.getPropValue(PacmanSdkConstants.AUTOFIX_MAX_EMAILS + "." + PacmanSdkConstants.PAC_DEFAULT));
         }else{
-            return Integer.parseInt(ruleSpecificValue);
+            return Integer.parseInt(maxEmail);
             }
         }
 
@@ -188,10 +187,10 @@ public class NextStepManager {
      * @param ruleId 
      * @return
      */
-    public static int getAutoFixDelay(String ruleId) {
+    public static int getAutoFixDelay(String waitingTime) {
         Integer delay = 24;// to be safe this is initialized with 24 and not 0 , though this will be overridden by config property
         try{
-            String delayForRule = CommonUtils.getPropValue(new StringBuilder(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY).append(".").append(ruleId).toString());
+            String delayForRule = waitingTime;
             if(Strings.isNullOrEmpty(delayForRule)){
                 //get default delay
                 delayForRule =  CommonUtils.getPropValue(new StringBuilder(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY).append(".").append(PacmanSdkConstants.PAC_DEFAULT).toString());
@@ -210,8 +209,7 @@ public class NextStepManager {
      * @param ruleId the rule id
      * @return true, if is silent fix enabled for rule
      */
-    public boolean isSilentFixEnabledForRule(String ruleId) {
-        String fixType = CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_TYPE + "." +ruleId );
+    public boolean isSilentFixEnabledForRule(String fixType) {
         return !Strings.isNullOrEmpty(fixType) && PacmanSdkConstants.AUTO_FIX_TYPE_SILENT.equals(fixType);
     }
 
@@ -288,7 +286,7 @@ public class NextStepManager {
     /**
      * @return
      */
-    public long getAutoFixExpirationTimeInHours(String ruleId,String resourceId) {
+    public long getAutoFixExpirationTimeInHours(Map<String, String> policyParam,String ruleId,String resourceId) {
         String url = CommonUtils.getPropValue(PacmanSdkConstants.RESOURCE_GET_LASTACTION);
         url = url.concat("?resourceId=").concat(resourceId);
         String response=null;
@@ -300,7 +298,7 @@ public class NextStepManager {
                    }
         Map<String, Object> resourceDetailsMap = (Map<String, Object>) CommonUtils.deSerializeToObject(response);
         Double responseCode = Double.valueOf((resourceDetailsMap.get("responseCode").toString()));
-        long autoFixDelay = getAutoFixDelay(ruleId);
+        long autoFixDelay = getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
         List<String> lastActions = (List<String>) resourceDetailsMap.get("lastActions");
         Collections.sort(lastActions);//sort based on date and find the first action time
         long elapsedHours=0l;
