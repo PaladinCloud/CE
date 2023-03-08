@@ -935,25 +935,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         List<Map<String, Object>> policiesevCatDetails = new ArrayList<>();
         for (Map<String, Object> policyDetail : policyDetails) {
             logger.debug("Fetching details for policy: {}", policyDetail);
-            JsonParser parser = new JsonParser();
-            List<Map<String, String>> paramsList;
-            JsonObject policyParamsJson;
             Map<String, Object> policiesevCatDetail = new HashMap<>();
-            logger.debug("Policy params for the policy: {}", (String) policyDetail.get(POLICY_PARAMS));
-            policyParamsJson = (JsonObject) parser.parse(policyDetail.get(POLICY_PARAMS).toString());
-            paramsList = new Gson().fromJson(policyParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
-            }.getType());
             policiesevCatDetail.put(POLICYID, policyDetail.get(POLICYID));
-            policiesevCatDetail.put("autofix", policyParamsJson.get("autofix").getAsBoolean());
-            policiesevCatDetail.put("targetType", policyDetail.get("targetType"));
+            policiesevCatDetail.put(AUTOFIX, policyDetail.get(AUTOFIX_ENABLED));
+            policiesevCatDetail.put(TARGET_TYPE, policyDetail.get(TARGET_TYPE));
             policiesevCatDetail.put(DISPLAY_NAME, policyDetail.get(DISPLAY_NAME));
-            for (Map<String, String> param : paramsList) {
-                if (param.get(KEY).equalsIgnoreCase(POLICY_CATEGORY)) {
-                    policiesevCatDetail.put(POLICY_CATEGORY, param.get(VALUE));
-                } else if (param.get(KEY).equalsIgnoreCase(SEVERITY)) {
-                    policiesevCatDetail.put(SEVERITY, param.get(VALUE));
-                }
-            }
+            policiesevCatDetail.put(POLICY_CATEGORY, policyDetail.get(CATEGORY));
+            policiesevCatDetail.put(SEVERITY, policyDetail.get(SEVERITY));
             policiesevCatDetails.add(policiesevCatDetail);
 
         }
@@ -1048,28 +1036,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             policydetails.put(POLICY_DESC, policy.get(POLICY_DESC));
             policydetails.put(DISPLAY_NAME, policy.get(DISPLAY_NAME));
             policydetails.put(RESOLUTION_URL, policy.get(RESOLUTION_URL));
+            policydetails.put(POLICY_CATEGORY, policy.get(CATEGORY));
+            policydetails.put(SEVERITY, policy.get(SEVERITY));
             if (null != policy.get(RESOLUTION)) {
                 resolution = Arrays.asList(policy.get(RESOLUTION).toString().split(","));
                 policydetails.put(RESOLUTION, resolution);
             } else {
                 policydetails.put(RESOLUTION, resolution);
-            }
-
-            policyParams = policy.get(POLICY_PARAMS).toString();
-
-            resultJson = (JsonObject) jsonParser.parse(policyParams);
-            jsonArray = resultJson.getAsJsonObject().get(PARAMS).getAsJsonArray();
-            if (jsonArray.size() > 0) {
-
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    firstObject = (JsonObject) jsonArray.get(i);
-
-                    value = firstObject.get(VALUE).getAsString();
-                    key = firstObject.get(KEY).getAsString();
-                    if (key.equals(POLICY_CATEGORY) || key.equals(SEVERITY)) {
-                        policydetails.put(key, value);
-                    }
-                }
             }
         }
         return policydetails;

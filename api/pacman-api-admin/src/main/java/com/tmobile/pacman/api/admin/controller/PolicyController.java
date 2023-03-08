@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
 import com.tmobile.pacman.api.admin.domain.Response;
 import com.tmobile.pacman.api.admin.repository.service.PolicyService;
@@ -61,7 +62,12 @@ public class PolicyController {
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
 			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue="", name = "searchTerm", required = false) String searchTerm) {
 		try {
-			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm.trim(), page, size));
+			if(searchTerm != null && AdminConstants.AUTO_FIX_KEYWORD.equalsIgnoreCase(searchTerm)) {
+				searchTerm = AdminConstants.AUTO_FIX_KEY;
+			} else {
+				searchTerm = searchTerm.trim();
+			}
+			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm, page, size));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
@@ -219,5 +225,28 @@ public class PolicyController {
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
 		}
 	}
+	
+	/**
+     * API to enable disable policy
+     *
+     * @author 
+     * @param policyId - valid policy Id
+     * @param user - userId who performs the action
+     * @param action - valid action (disable/ enable)
+     * @return Success or Failure response
+     */
+	@ApiOperation(httpMethod = "POST", value = "API to enable disable policy", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/enable-disable-autofix", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> enableDisableAutoFix(@AuthenticationPrincipal Principal user,
+			@ApiParam(value = "provide valid policy id", required = true) @RequestParam("policyId") String policyId,
+			@ApiParam(value = "provide valid status", required = true) @RequestParam("autofixStatus") String action) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyService.enableDisableAutofix(policyId, action, user.getName()));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+
 }
 

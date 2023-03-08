@@ -243,7 +243,7 @@ public class PolicyControllerTest {
 		policyDetails.setStatus("status123");
 		policyDetails.setPolicyDisplayName("displayName123");
 		policyDetails.setDataSource("dataSource123");
-		policyDetails.setIsAutofixEnabled("false");
+		policyDetails.setAutofixEnabled("false");
 		policyDetails.setIsFileChanged(false);
 		return policyDetails;
 	}
