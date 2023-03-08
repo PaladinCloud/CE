@@ -65,7 +65,7 @@ public class PolicyController {
 			if(searchTerm != null && AdminConstants.AUTO_FIX_KEYWORD.equalsIgnoreCase(searchTerm)) {
 				searchTerm = AdminConstants.AUTO_FIX_KEY;
 			} else {
-				searchTerm = searchTerm.trim();
+				searchTerm = searchTerm != null ? searchTerm.trim() : "";
 			}
 			return ResponseUtils.buildSucessResponse(policyService.getPolicies(searchTerm, page, size));
 		} catch (Exception exception) {
