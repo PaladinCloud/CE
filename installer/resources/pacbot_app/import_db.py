@@ -159,7 +159,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_GCP_ENABLED' : str(need_to_enable_gcp()).lower(),
                         'ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES' : str(Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES),
                         'ENV_CURRENT_RELEASE': str(Settings.CURRENT_RELEASE),
-                        'EVENT_BRIDGE_PRIFIX' : Settings.RESOURCE_NAME_PREFIX,
+                        'ENV_EVENT_BRIDGE_PREFIX' : Settings.RESOURCE_NAME_PREFIX,
                         'ENV_MANDATORY_TAGS': str(Settings.MANDATORY_TAGS),
                         'ENV_API_CLIENT_ID' : str(Appcredentials.get_output_attr('id')),
                         'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret'))

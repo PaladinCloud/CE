@@ -95,7 +95,7 @@ SET @AWS_EVENTBRIDGE_BUS_DETAILS='$AWS_EVENTBRIDGE_BUS_DETAILS';
 SET @AZURE_ENABLED='$AZURE_ENABLED';
 SET @GCP_ENABLED='$GCP_ENABLED';
 SET @JOB_SCHEDULER_NUMBER_OF_BATCHES='$JOB_SCHEDULER_NUMBER_OF_BATCHES';
-SET @EVENT_BRIDGE_PRIFIX='$EVENT_BRIDGE_PRIFIX';
+SET @EVENT_BRIDGE_PREFIX='$EVENT_BRIDGE_PREFIX';
 SET @MANDATORY_TAGS='$MANDATORY_TAGS';
 SET @API_CLIENT_ID='$API_CLIENT_ID';
 SET @API_SCERET_ID='$API_SCERET_ID';
@@ -3173,7 +3173,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.occurance','severity,_resourceid,pciflag,_vulnage,vulntype,title,classification,_firstFound,_lastFound,qid,patchable,category','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetails','tags.Name,accountid,accountname,tags.Environment,tags.Application,privateipaddress,instanceid,region,availabilityzone,imageid,platform,privatednsname,instancetype,subnetid,_resourceid,publicipaddress,publicdnsname,vpcid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetailsboth','tags.Name,tags.Environment,tags.Application,ip_address,privateipaddress,_entitytype,_resourceid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PRIFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PREFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 
 
@@ -3728,3 +3728,5 @@ DELIMITER ;
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
 update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category';
+
+update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
