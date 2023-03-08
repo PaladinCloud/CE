@@ -143,7 +143,8 @@ public class PolicyExecutor {
                 ProgramExitUtils.exitWithError();
             }
            policyParam = CommonUtils.createPolicyParamMap(policyDetails);
-     
+            policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, "role/" +
+                    CommonUtils.getPropValue(PacmanSdkConstants.APPLICATION_PREFIX) + "_ro");
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {

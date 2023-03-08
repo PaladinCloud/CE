@@ -492,6 +492,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** application tag name*. */
     String APPLICATION_TAG_NAME = "Application";
 
+    /** application prefix name*. */
+    String APPLICATION_PREFIX = "application.prefix"   ;
 
     /** The target type alias. */
     String TARGET_TYPE_ALIAS = "pacman.target.type.alias";
