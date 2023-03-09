@@ -187,6 +187,8 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         ruleCatDetails.entrySet().parallelStream()
                 .forEach(entry -> ruleCat.add(entry.getValue().toString()));
         complianceInfoList = new ArrayList<>();
+        Set<String> ruleCategoriesSet=new HashSet<>(ruleCat);
+        ruleCategoriesSet.add("overall");
 
          try {
             inputList = repository
@@ -207,6 +209,13 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             Collections.sort(inputList, comp);
             useRealTimeDataForLatestDate(inputList, assetGroup,
                     COMPLIANCE_PERCENTAGE, null, domain);
+            try{
+                Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
+                Double sumOfAllWeightages=0d;
+                for(Object catWeightageValue : policyCatWeightageUnsortedMap.values()){
+                    sumOfAllWeightages+=Double.valueOf(catWeightageValue.toString());
+                }
+                Double weightageSum = sumOfAllWeightages;
             inputList.forEach(inputMap -> {
                 Map<String, Object> outputMap = new HashMap<>();
                 inputMap.forEach((key, value) -> {
@@ -218,10 +227,35 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                     }
                 });
 
+                inputMap.forEach((key, value) -> {
+                    // Other than the specified keys, ignore all other kv pairs
+                    List<String> missedCategoriesList = ruleCategoriesSet.stream().filter(str->!outputMap.keySet().contains(str)).collect(Collectors.toList());
+                    for(String str:missedCategoriesList){
+                        if("overall".equalsIgnoreCase(str)){
+                            Double sum=0d;
+
+                            for(String catStr:outputMap.keySet()){
+                                if(!"date".equalsIgnoreCase(catStr)){
+                                    sum+=Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString());
+                                }
+                            }
+                            outputMap.put("overall",sum/weightageSum);
+
+                        }
+                        else{
+                            outputMap.put(str,0);
+                        }
+                    }
+                });
+
                 complianceInfoList.add(outputMap);
             });
 
             Collections.sort(complianceInfoList, comp);
+            }
+            catch(Exception exception){
+                throw new ServiceException(exception);
+            }
         }
         parentMap.put("compliance_info", complianceInfoList);
         return parentMap;
