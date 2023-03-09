@@ -216,7 +216,8 @@ public class AutoFixManager {
             serviceType = AWSService.valueOf(getTargetTypeAlias(targetType).toUpperCase());
             
             // create client
-            if(isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),policyParam.get(PacmanSdkConstants.POLICY_ID))){
+            if(isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),
+            		policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_ALLOWLIST), policyParam.get(PacmanSdkConstants.POLICY_ID))){
             	clientMap = getAWSClient(getTargetTypeAlias(targetType), annotation,CommonUtils.getPropValue(PacmanSdkConstants.AUTO_FIX_ROLE_NAME));
             }else{
             	 logger.info("Account id is blacklisted {}" , annotation.get(PacmanSdkConstants.ACCOUNT_ID));
@@ -280,7 +281,8 @@ public class AutoFixManager {
                         resourcesTaggedCounter++;
                         // this means this resource was exempted after sending
                         // the violation emails and exempted afterwards
-                        if (!nextStepManager.isSilentFixEnabledForRule(policyId) && !MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
+                        if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE)) 
+                        		&& !MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
                                 exceptionExpiryDate, AutoFixAction.AUTOFIX_ACTION_EXEMPTED,addDetailsToLogTrans,annotation)) {
                             logger.error("unable to send email to {}" ,resourceOwner);
                         }
@@ -301,7 +303,8 @@ public class AutoFixManager {
                     try{
                         if(null==autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)){
                           autoFixPlan = autoFixPlanManager.createPlan(policyId, annotation.get(PacmanSdkConstants.ANNOTATION_PK), resourceId, 
-                                annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyId), NextStepManager.getAutoFixDelay(policyId));
+                                annotation.get(PacmanSdkConstants.DOC_ID), targetType, NextStepManager.getMaxNotifications(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_MAX_EMAIL_NOTIFICATION)),
+                                NextStepManager.getAutoFixDelay(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME)));
                         autoFixPlanManager.publishPlan(policyParam, autoFixPlan);autoFixPlanCreatedCounter++;
                         logger.debug("auto fix plan published with id {} " , autoFixPlan.getPlanId());
                         autoFixTrans.add(new AutoFixTransaction(AutoFixAction.CREATE_AUTO_FIX_PLAN, resourceId,policyId, executionId,
@@ -322,7 +325,8 @@ public class AutoFixManager {
                         resourceOwner.setEmailId(resourceOwner.getName());
                     }
 
-                    if (!resourceOwner.getEmailId().contains("@")) { // service
+                    if (resourceOwner == null || resourceOwner.getEmailId() == null ||
+                    		!resourceOwner.getEmailId().contains("@")) { // service
                                                                      // account
                                                                      // case, in
                                                                      // this
@@ -336,7 +340,7 @@ public class AutoFixManager {
                     }
                 } catch (Exception e) {
                     logger.error("unable to find the resource owner for {} and {} " , resourceId,e);
-                    resourceOwner = new ResourceOwner("CSO",
+                    resourceOwner = new ResourceOwner("Team",
                             CommonUtils.getPropValue(PacmanSdkConstants.ORPHAN_RESOURCE_OWNER_EMAIL));
                     resourceOwnerNotFoundCounter++;
                 }
@@ -350,8 +354,9 @@ public class AutoFixManager {
                 }
 
                 if (AutoFixAction.AUTOFIX_ACTION_EMAIL == autoFixAction
-                        && isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID), policyId)) {
-                    long autofixExpiring=nextStepManager.getAutoFixExpirationTimeInHours(policyParam.get(PacmanSdkConstants.POLICY_ID),resourceId);
+                        && isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID),
+                        		policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_ALLOWLIST), policyId)) {
+                    long autofixExpiring=nextStepManager.getAutoFixExpirationTimeInHours(policyParam,policyParam.get(PacmanSdkConstants.POLICY_ID),resourceId);
                 	/*ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(Integer.parseInt(CommonUtils.getPropValue(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY
                             +"."+ ruleParam.get(PacmanSdkConstants.RULE_ID))));*/
                     ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(autofixExpiring);
@@ -734,17 +739,16 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
      * Checks if is account allow listed for auto fix.
      *
      * @param account the account
-     * @param ruleId the rule id
+     * @param policyId the rule id
      * @return true, if is account allow listed for auto fix
      */
-    private boolean isAccountAllowListedForAutoFix(String account, String ruleId) {
+    private boolean isAccountAllowListedForAutoFix(String account, String allowList, String policyId) {
         try {
-            String allowlistStr = CommonUtils
-                    .getPropValue(PacmanSdkConstants.AUTOFIX_ALLOWLIST_ACCOUNTS_PREFIX + ruleId);
+            String allowlistStr = allowList;
             List<String> allowlist = Arrays.asList(allowlistStr.split("\\s*,\\s*"));
             return allowlist.contains(account);
         } catch (Exception e) {
-            logger.error("account is assumed allowlisted for autofix for ruleId {} and {} and {}" ,account, ruleId,e);
+            logger.error("account is assumed allowlisted for autofix for policyId {} and {} and {}" ,account, policyId,e);
             return Boolean.TRUE; // be defensive , if not able to figure out , assume deny list 
         }
     }

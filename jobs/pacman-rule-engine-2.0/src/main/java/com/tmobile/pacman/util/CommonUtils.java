@@ -561,6 +561,17 @@ public class CommonUtils {
         return Long.toString(h);
     }
 
+    
+    public static String buildPolicyUUIDFromJson(String json) {
+ 		JsonElement jsonelement = new JsonParser().parse(json);
+ 		JsonObject jobject = jsonelement.getAsJsonObject();
+ 		if (!jobject.isJsonNull()) {
+ 			return jobject.get("policyUUID").getAsString();
+ 		}
+ 		return null;
+     }
+     
+ 
     /**
      * Creates the param map.
      *
@@ -604,6 +615,76 @@ public class CommonUtils {
 
     }
 
+    
+    /**
+     * Creates the param map.z
+     *
+     * @param ruleParams the rule params
+     * @return the map
+     */
+    public static Map<String, String> createPolicyParamMap(String ruleParams) {
+       /* // return Splitter.on("#").withKeyValueSeparator("=").split(ruleParams);
+        if (ruleParams.contains("*")) // this is for backward compatibility
+            return buildMapFromString(ruleParams, "*", "=");
+        else {*/
+            return buildPolicyMapFromJson(ruleParams);
+       // }
+    }
+
+    /**
+     * Builds the map from json.
+     *
+     * @param json the json
+     * @return the map
+     */
+	private static Map<String, String> buildPolicyMapFromJson(String json) {
+		JsonParser parser = new JsonParser();
+		String ruleUUID = "";
+		JsonElement element = parser.parse(json);
+		JsonObject dataObject = element.getAsJsonObject();
+		JsonObject obj = dataObject.getAsJsonObject("data");
+		Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
+		if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+			ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
+		}
+		Map<String, String> toReturn = new HashMap<>();
+		for (Map.Entry<String, JsonElement> entry : entries) {
+			if (entry.getValue().isJsonArray()) {
+				toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
+			} else if (!obj.get(entry.getKey()).isJsonNull()) {
+				toReturn.put(entry.getKey(), entry.getValue().getAsString());
+			}
+		}
+		toReturn.put("policyCategory", toReturn.get("category"));
+		toReturn.put("pac_ds", toReturn.get("assetGroup"));
+		if(toReturn.containsKey("autoFixEnabled")) {
+			toReturn.put("autofix", toReturn.get("autoFixEnabled"));
+		} else  {
+			toReturn.put("autofix", "false");
+		}
+		
+		if (!obj.get("policyParams").isJsonNull()) {
+			JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
+			if (!policyParam.isJsonNull() && policyParam.has("params")) {
+				toReturn.putAll(getMapFromArray(policyParam.getAsJsonArray("params"), ruleUUID));
+			}
+		}
+		toReturn.remove("policyDesc");
+		toReturn.remove("resolution");
+		toReturn.remove("resolutionUrl");
+		toReturn.remove("policyParams");
+		toReturn.remove("policyArn");
+		toReturn.remove("policyExecutable");
+		toReturn.remove("createdDate");
+		toReturn.remove("policyFrequency");
+		toReturn.remove("modifiedDate");
+		toReturn.remove("policyParams");
+		toReturn.remove("alexaKeyword");
+		return toReturn;
+
+	}
+ 
+  
     /**
      * Decrypt.
      *
@@ -625,7 +706,7 @@ public class CommonUtils {
     private static Map<String, String> getMapFromArray(JsonArray jsonArray, String ruleUUID) {
         Map<String, String> toReturn = new HashMap<>();
         jsonArray.forEach(e -> {
-            if (e.getAsJsonObject().get("encrypt").getAsBoolean())
+        	if (e.getAsJsonObject().has("encrypt")&& e.getAsJsonObject().get("encrypt").getAsBoolean())
                 try {
                     toReturn.put(e.getAsJsonObject().get("key").getAsString(),
                             decrypt(e.getAsJsonObject().get("value").getAsString(), ruleUUID));

@@ -153,4 +153,18 @@ public interface PolicyService {
 	 * @return the all policy categories
 	 */
 	public List<PolicyCategory> getAllPolicyCategories() throws PacManException;
+	
+	/**
+     * Service to enable disable AutoFix
+     *
+     * @author 
+     * @param policyId - valid policy Id
+     * @param action - valid action (disable/ enable)
+     * @param userId - userId who performs the action
+     * @return Success or Failure response
+     * @throws PacManException
+     */
+	public String enableDisableAutofix(final String policyId, final String action, final String userId) throws PacManException;
+
+	
 }
