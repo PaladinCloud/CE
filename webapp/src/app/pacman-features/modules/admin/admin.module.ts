@@ -48,6 +48,7 @@ import { ConfigManagementComponent } from "./config-management/config-management
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from "@angular/material/input";
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   imports: [
@@ -57,6 +58,7 @@ import { MatInputModule } from "@angular/material/input";
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatSlideToggleModule
   ],
   declarations: [
     PoliciesComponent,

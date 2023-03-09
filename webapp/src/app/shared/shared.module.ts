@@ -116,11 +116,13 @@ import { StepperComponent } from "./stepper/stepper.component";
 import { CustomCardComponent } from './components/molecules/custom-card/custom-card.component';
 import { OverviewTileComponent } from './components/molecules/overview-tile/overview-tile.component';
 import { TextWithIconComponent } from "./components/molecules/text-with-icon/text-with-icon.component";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @NgModule({
   imports: [
     MatButtonModule,
     MatStepperModule,
+    MatTooltipModule,
     MatDialogModule,
     MatSnackBarModule,
     MatGridListModule,
