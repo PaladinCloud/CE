@@ -1164,7 +1164,6 @@ public class AssetRepositoryImpl implements AssetRepository {
         for (String tag : tags) {
             shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.trim()), AssetConstants.TAG_NOT_FOUND);
         }
-
         List<Map<String, Object>> untaggedAssets;
         List<Map<String, Object>> totalAssets;
         StringBuilder sb;
@@ -1180,6 +1179,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
         // @ToDo need to work on tagging policy
        // mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICY_CATEGORY),"tagging");
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
