@@ -179,6 +179,7 @@ public class TaggingRepositoryImpl implements TaggingRepository, Constants {
             mandatoryTagsList.add(mandatoryTag);
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICY_CATEGORY),CATEGORY_TAGGING);
         // @ToDo
  //       mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID),
  //               TAGGING_POLICY);

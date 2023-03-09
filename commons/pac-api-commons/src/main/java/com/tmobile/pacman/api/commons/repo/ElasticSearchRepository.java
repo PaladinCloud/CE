@@ -1632,8 +1632,10 @@ public class ElasticSearchRepository implements Constants {
 			Map<String, Object> mustTermsFilter,
 			Map<String, List<String>> matchPhrasePrefix) throws Exception {
 
-		String urlToQuery = buildCountURL(esUrl, index, type);
-
+		String urlToQuery = buildESURL(esUrl, index, type,0,0);
+		JsonParser parser = new JsonParser();
+		JsonObject aggregationObject = new JsonObject();
+		long totaluntagged = 0;
 		Map<String, Object> requestBody = new HashMap<String, Object>();
 		Map<String, Object> matchFilters = Maps.newHashMap();
 		if (mustFilter == null) {
@@ -1649,15 +1651,20 @@ public class ElasticSearchRepository implements Constants {
 		} else {
 			requestBody.put(QUERY, matchFilters);
 		}
+		StringBuilder aggregationQuery = new StringBuilder("{\"distinct_resourceids\": {\"cardinality\": {\"field\": \"_resourceid.keyword\"}}}");
+		aggregationObject = parser.parse(aggregationQuery.toString()).getAsJsonObject();
+		requestBody.put(AGGS,aggregationObject);
 		String responseDetails = null;
 		Gson gson = new GsonBuilder().create();
 		try {
 
 			String requestJson = gson.toJson(requestBody, Object.class);
 			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, requestJson);
-			Map<String, Object> response = (Map<String, Object>) gson.fromJson(
-					responseDetails, Object.class);
-			return (long) (Double.parseDouble(response.get(COUNT).toString()));
+			JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+			JsonObject aggs = responseJson.get(AGGREGATIONS).getAsJsonObject();
+			JsonObject resourceids = aggs.get("distinct_resourceids").getAsJsonObject();
+			totaluntagged = resourceids.get("value").getAsLong();
+			return totaluntagged;
 		} catch (Exception e) {
 			LOGGER.error(ERROR_RETRIEVING_INVENTORY_FROM_ES, e);
 			throw e;
