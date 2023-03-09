@@ -124,6 +124,7 @@ import { InputFieldComponent } from './input-field/input-field.component';
   imports: [
     MatButtonModule,
     MatStepperModule,
+    MatTooltipModule,
     MatDialogModule,
     MatChipsModule,
     MatSnackBarModule,

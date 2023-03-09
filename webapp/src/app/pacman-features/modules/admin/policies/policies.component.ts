@@ -586,7 +586,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
       );
-    if (action && (action === "edit policy" || action === "edit autofix")) {
+    // if (action && action === "edit") {
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
@@ -595,9 +595,14 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             showAutofix: action == "edit autofix"
           },
         });
-    } else if (action && (action === "Run Policy")){
-         this.invokePolicy(policyId);
-    }
+    // }else{
+    //   const policyParams = event?.rowSelected["policyParams"];
+    //   const autoFixEnabled = JSON.parse(policyParams.text)["autofix"]??false;
+    //   this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event?.rowSelected["Policy ID"]?.text, autoFixEnabled], {
+    //     relativeTo: this.activatedRoute,
+    //     queryParamsHandling: "merge",
+    //   });
+    // }
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);

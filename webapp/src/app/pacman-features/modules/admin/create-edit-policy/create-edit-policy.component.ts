@@ -80,6 +80,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allEnvParamKeys = [];
   allPolicyParams = Object();
   paramsList = [];
+  status = false;
   hideContent = false;
   ispolicyCreationFailed = false;
   ispolicyCreationSuccess = false;
@@ -308,6 +309,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyName = this.policyName;
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
+    PolicyModel.status = this.status?"ENABLED": "DISABLED";
     PolicyModel.category = this.selectedCategory;
     PolicyModel.policyDesc = this.description;
     PolicyModel.resolution = this.resolution;
@@ -486,6 +488,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
       this.policyDetails = reponse[0];
       this.selectedPolicyId = this.policyDetails.policyId;
+      this.status = this.policyDetails.status=="ENABLED";
       this.selectedSeverity = this.policyDetails.severity;
       this.selectedCategory = this.policyDetails.category;
       this.policyId = this.policyDetails.policyId;
@@ -529,27 +532,23 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
               {
               "key": this.allPolicyParams[i]["key"],
               "value": this.allPolicyParams[i]["value"],
+              "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
               "isEdit": this.allPolicyParams[i]["isEdit"] ? this.allPolicyParams[i]["isEdit"] : false,
               "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
-              "description": this.allPolicyParams[i]["description"],
-              "displayName": this.allPolicyParams[i]["displayName"]
-              }
-            )
-         }
-         
-      if (!hasEditableParameters) {
-        this.removeStepper("Policy Parameters");
-      }
-      this.stepperData.forEach((data,index)=>{
-            data.id = index;        
-      })
-      if(this.showAutofix){
-          const currentStepperIndex = this.stepperData.findIndex(data=> data.name == "Autofix");
-          this.selectedStepperIndex(currentStepperIndex);
-       }else{
-          this.currentStepperIndex = 0;
-          this.selectedStepperIndex(0);
-       }
+              "description": this.allPolicyParams[i]["description"] 
+            }
+          )
+        }
+      // this.stepperData.forEach((data,index)=>{
+      //       data.id = index;        
+      // })
+      // if(this.showAutofix){
+      //     const currentStepperIndex = this.stepperData.findIndex(data=> data.name == "Autofix");
+      //     this.selectedStepperIndex(currentStepperIndex);
+      //  }else{
+      //     this.currentStepperIndex = 0;
+      //     this.selectedStepperIndex(0);
+      //  }
       this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
       this.hideContent = false;
     },
@@ -642,6 +641,29 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
     } catch (error) {
       this.logger.log('error', error);
+    }
+  }
+
+  toggleStatus(event:any){
+      this.status = event.checked;
+  }
+
+  enableDisableRuleOrJob(action) {
+    try {      
+      const url = environment.enableDisableRuleOrJob.url;
+      const method = environment.enableDisableRuleOrJob.method;
+      const params = {};
+      params['policyId'] = this.policyId;
+      
+      params['action'] = action;
+
+      this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+          console.log(response,"response");
+      }, 
+        error => {
+        });
+    } catch (error) {
+      this.logger.log("error", error);
     }
   }
 
