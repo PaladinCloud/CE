@@ -54,7 +54,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   readonly = true;
   policyLoader = false;
   pageTitle = 'Create Policy';
-  FormHeader = "Policy Details";
+  FormHeader = "Policy Overview";
   ispolicyIdValid = -1;
   isCreate;
   allPolicies = [];
@@ -81,12 +81,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allpolicyParamKeys = [];
   allEnvParamKeys = [];
   allPolicyParams = Object();
-  paramsList = [{
-    "key": "",
-    "value": "",
-    "isEdit": false,
-    "isMandatory": false
-  }];
+  paramsList = [];
+  status = false;
   hideContent = false;
   ispolicyCreationFailed = false;
   ispolicyCreationSuccess = false;
@@ -330,8 +326,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       PolicyModel.policyName = PolicyModel.policyName.replace(/\s/g, '-');
       PolicyModel.policyId = PolicyModel.policyName;
     }
+    
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
+    PolicyModel.status = this.status?"ENABLED": "DISABLED";
     PolicyModel.category = this.selectedCategory;
     PolicyModel.policyDesc = policyForm.description;
     PolicyModel.resolution = policyForm.resolution;
@@ -366,6 +364,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   createOrUpdatepolicy(PolicyModel: any) {
     const url = this.isPolicyIdValid ? environment.updatePolicy.url : environment.createPolicy.url;
     const method = environment.createPolicy.method;
+    if(this.status){
+      this.enableDisableRuleOrJob("Enable");
+    }
+    else
+    this.enableDisableRuleOrJob("Disable");
     this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
       this.policyLoader = false;
       this.ispolicyCreationSuccess = true;
@@ -603,6 +606,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
       this.policyDetails = reponse[0];
       this.selectedPolicyId = this.policyDetails.policyId;
+      this.status = this.policyDetails.status=="ENABLED";
       this.selectedSeverity = this.policyDetails.severity;
       this.selectedCategory = this.policyDetails.category;
       this.policyId = this.policyDetails.policyId;
@@ -641,8 +645,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
             {
               "key": this.allPolicyParams[i]["key"],
               "value": this.allPolicyParams[i]["value"],
+              "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
               "isEdit": this.allPolicyParams[i]["isEdit"] ? this.allPolicyParams[i]["isEdit"] : false,
-              "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false
+              "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
+              "description": this.allPolicyParams[i]["description"] 
             }
           )
         }
@@ -704,6 +710,29 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.workflowService.goBackToLastOpenedPageAndUpdateLevel(this.router.routerState.snapshot.root);
     } catch (error) {
       this.logger.log('error', error);
+    }
+  }
+
+  toggleStatus(event:any){
+      this.status = event.checked;
+  }
+
+  enableDisableRuleOrJob(action) {
+    try {      
+      const url = environment.enableDisableRuleOrJob.url;
+      const method = environment.enableDisableRuleOrJob.method;
+      const params = {};
+      params['policyId'] = this.policyId;
+      
+      params['action'] = action;
+
+      this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+          console.log(response,"response");
+      }, 
+        error => {
+        });
+    } catch (error) {
+      this.logger.log("error", error);
     }
   }
 
