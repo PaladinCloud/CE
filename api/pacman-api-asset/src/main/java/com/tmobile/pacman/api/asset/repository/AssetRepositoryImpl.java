@@ -70,6 +70,8 @@ public class AssetRepositoryImpl implements AssetRepository {
     public static final String ASSET = "asset";
     private Map<String, String> events;
 
+    private static final String NOTSET="notSet";
+
     @Value("${tagging.mandatoryTags}")
     private String mandatoryTags;
 
@@ -2663,15 +2665,16 @@ public class AssetRepositoryImpl implements AssetRepository {
 		Map<String, Object> filter = new HashMap<>();
 		filter.put(Constants.LATEST, Constants.TRUE);
 		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-        if(aseetGroupName.equals("azure") && !accountId.equals("notSet"))
+
+        if(aseetGroupName.equals("azure") && !accountId.equals(NOTSET))
         {
             filter.put("subscription.keyword",accountId);
         }
-        if(aseetGroupName.equals("gcp") && !accountId.equals("notSet"))
+        if(aseetGroupName.equals("gcp") && !accountId.equals(NOTSET))
         {
             filter.put("projectId.keyword",accountId);
         }
-        if(aseetGroupName.equals("aws") && !accountId.equals("notSet"))
+        if(aseetGroupName.equals("aws") && !accountId.equals(NOTSET))
         {
             filter.put("accountid.keyword",accountId);
         }
