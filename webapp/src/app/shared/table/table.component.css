@@ -12,6 +12,10 @@
     overflow-y: scroll;
 }
 
+.noImg{
+  opacity: 0;
+}
+
 .table-wrapper{
   height: 100%;
   width: 100%;

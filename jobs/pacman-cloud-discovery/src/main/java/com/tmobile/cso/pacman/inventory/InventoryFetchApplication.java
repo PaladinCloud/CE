@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
  * The Class InventoryFetchApplication.
  */
 @Configuration
-@ComponentScan
+@ComponentScan({"com.tmobile.cso.pacman.inventory","com.tmobile.pacman.commons.database"})
 public class InventoryFetchApplication {
 		
 	

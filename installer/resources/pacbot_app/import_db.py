@@ -116,6 +116,7 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_MAIL_SERVER': Settings.MAIL_SERVER,
                         'ENV_PACMAN_S3': "pacman-email-templates",
                         'ENV_DATA_IN_DIR': "inventory",
+                        'ENV_CREDENTIAL_DIR': "credential",
                         'ENV_DATA_BKP_DIR': "backup",
                         'ENV_PAC_ROLE': BaseRole.get_input_attr('name'),
                         'ENV_BASE_REGION': AwsRegion.get_output_attr('name'),
@@ -159,10 +160,13 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_GCP_ENABLED' : str(need_to_enable_gcp()).lower(),
                         'ENV_JOB_SCHEDULER_NUMBER_OF_BATCHES' : str(Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES),
                         'ENV_CURRENT_RELEASE': str(Settings.CURRENT_RELEASE),
-                        'EVENT_BRIDGE_PRIFIX' : Settings.RESOURCE_NAME_PREFIX,
+                        'ENV_EVENT_BRIDGE_PREFIX' : Settings.RESOURCE_NAME_PREFIX,
                         'ENV_MANDATORY_TAGS': str(Settings.MANDATORY_TAGS),
                         'ENV_API_CLIENT_ID' : str(Appcredentials.get_output_attr('id')),
-                        'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret'))
+                        'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret')),
+                        'ENV_ACCOUNT_ID':str(Settings.ACCOUNT_ID),
+                        'ENV_ACCOUNT_NAME':str(Settings.ACCOUNT_NAME),
+                        'ENV_ACCOUNT_PLATFORM':str(Settings.ACCOUNT_PLATFORM)
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

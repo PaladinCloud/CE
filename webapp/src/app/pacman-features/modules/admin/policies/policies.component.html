@@ -24,7 +24,7 @@
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" (cellSelectEventEmitter)="goToDetails($event)"
+                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" (selectedAction)="goToDetails($event)"
                             [data]="tableData" [columnWidths]="columnWidths" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                             (searchCalledEventEmitter)="callNewSearch($event)"
@@ -43,7 +43,7 @@
 
 <ng-template #enableOrDisablePolicyRef>
     <div class="dialog-body">
-       <span class="dialog-body-header">{{action}} Policy</span>
+       <span class="dialog-body-header">{{action}}</span>
        <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{selectedRowTitle}}"?</span>
     </div>
 </ng-template>

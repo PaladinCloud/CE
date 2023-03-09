@@ -29,7 +29,7 @@ public class GCPlocationUtil {
 
     public List<String> getZoneList(String projectName) throws GeneralSecurityException, IOException {
         if (zonesList.isEmpty()) {
-            ZonesClient zoneClient = gcpCredentialsProvider.Zonesclient();
+            ZonesClient zoneClient = gcpCredentialsProvider.Zonesclient(projectName);
 
             ListPagedResponse zoneList = zoneClient.list(projectName);
             for (Zone zone : zoneList.iterateAll()) {
@@ -43,7 +43,7 @@ public class GCPlocationUtil {
 
     public List<String> getLocations(String projectName) throws GeneralSecurityException, IOException {
         if (locations.isEmpty()) {
-            CloudTasks cloudTasksService = gcpCredentialsProvider.createCloudTasksService();
+            CloudTasks cloudTasksService = gcpCredentialsProvider.createCloudTasksService(projectName);
             CloudTasks.Projects.Locations.List request = cloudTasksService.projects().locations()
                     .list(PROJECT_PREFIX + projectName);
 

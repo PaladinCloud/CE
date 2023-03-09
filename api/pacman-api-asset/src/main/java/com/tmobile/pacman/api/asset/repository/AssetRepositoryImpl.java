@@ -2658,11 +2658,23 @@ public class AssetRepositoryImpl implements AssetRepository {
     }
     
     @Override
-	public Map<String, Object> getAssetCountAndEnvDistributionByAssetGroup(String aseetGroupName, String type, String application) {
+	public Map<String, Object> getAssetCountAndEnvDistributionByAssetGroup(String aseetGroupName, String type, String application,String accountId) {
 
 		Map<String, Object> filter = new HashMap<>();
 		filter.put(Constants.LATEST, Constants.TRUE);
 		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
+        if(aseetGroupName.equals("azure") && !accountId.equals("notSet"))
+        {
+            filter.put("subscription.keyword",accountId);
+        }
+        if(aseetGroupName.equals("gcp") && !accountId.equals("notSet"))
+        {
+            filter.put("projectId.keyword",accountId);
+        }
+        if(aseetGroupName.equals("aws") && !accountId.equals("notSet"))
+        {
+            filter.put("accountid.keyword",accountId);
+        }
 		if (application != null) {
 			filter.put(Constants.TAGS_APPS, application);
 		}

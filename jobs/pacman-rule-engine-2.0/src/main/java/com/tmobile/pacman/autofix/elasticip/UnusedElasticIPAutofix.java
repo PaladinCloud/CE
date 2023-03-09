@@ -55,7 +55,6 @@ public class UnusedElasticIPAutofix extends BaseFix {
 	private static final String ELASTIC_IP_ALLOCATION_ID_RELEASE_FAILED = "The Elastic ip with allocation id [{}] [{}] release failed [{}]";
 
 	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-	private static final String ISSUE_CREATION_TIME_ELAPSED = "pacman.autofix.issue.creation.time.elapsed";
 
 	/*
 	 * (non-Javadoc)
@@ -109,8 +108,7 @@ public class UnusedElasticIPAutofix extends BaseFix {
 			Map<String, String> ruleParams, Map<String, String> issue) throws AutoFixException {
 		int hours = AUTOFIX_DEFAULT_INTERVAL;// Default
 		try {
-			hours = Integer.parseInt(CommonUtils
-					.getPropValue(ISSUE_CREATION_TIME_ELAPSED + "." + ruleParams.get(PacmanSdkConstants.POLICY_ID)));
+			hours = Integer.parseInt(ruleParams.get(PacmanSdkConstants.AUTOFIX_POLICY_ELAPSED_TIME));
 		} catch (Exception e) {
 			LOGGER.error("Exception retrieving autofix configuration[{}]", e.getMessage());
 		}

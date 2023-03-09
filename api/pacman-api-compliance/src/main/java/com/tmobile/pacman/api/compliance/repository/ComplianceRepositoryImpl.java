@@ -170,7 +170,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getIssuesCount(java.lang.String, java.lang.String, java.lang.String)
      */
-    public long getIssuesCount(String assetGroup, String policyId, String domain) throws DataException {
+    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws DataException {
         long totalIssueCount;
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
@@ -180,6 +180,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Object> Policies = getPolicyIds(targetTypes);
         if (!Strings.isNullOrEmpty(policyId)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyId);
+        }
+        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("aws"))
+        {
+            mustFilter.put("accountid.keyword",accountId);
+        }
+        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("azure"))
+        {
+            mustFilter.put("subscription.keyword",accountId);
+        }
+
+        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("gcp"))
+        {
+            mustFilter.put("projectId.keyword",accountId);
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), OPEN);
@@ -987,7 +1000,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyIdWithDisplayNameQuery(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIdWithDisplayNameQuery(String targetType) {
-        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,policyParams FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
+    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
                 + targetType + ")  ORDER BY policyDisplayName asc";
         return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
     }
@@ -999,7 +1012,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyIDsForTargetType(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIDsForTargetType(String targetType) throws DataException {
-        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,policyParams FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType ='"
+    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType ='"
                 + targetType + "'";
 
         return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
@@ -1012,8 +1025,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyIdDetails(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIdDetails(String policyId) throws DataException {
-        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,policyParams FROM cf_PolicyTable WHERE STATUS = 'ENABLED' AND policyId IN ("
-                + policyId + ")";
+    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED' AND policyId IN ("
+    	        + policyId + ")";
         try {
             return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
         } catch (Exception e) {
@@ -1174,32 +1187,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return rulidwithScanDate.get(policyId);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-     * getPolicyCategory(java.lang.Object, java.util.Map)
-     */
-    public String getPolicyCategory(Object policyId, Map<String, String> policyIdwithpolicyParamsMap) {
-        String policyCategory = null;
-        String policyParams = policyIdwithpolicyParamsMap.get(policyId);
-        JsonParser parser = new JsonParser();
-        List<Map<String, String>> paramsList;
-        JsonObject policyParamsJson;
-
-        policyParamsJson = (JsonObject) parser.parse(policyParams);
-        paramsList = new Gson().fromJson(policyParamsJson.get(PARAMS), new TypeToken<List<Object>>() {
-        }.getType());
-
-        for (Map<String, String> param : paramsList) {
-            if (param.get(KEY).equalsIgnoreCase(POLICY_CATEGORY)) {
-                policyCategory = param.get(VALUE);
-                return policyCategory;
-            }
-        }
-
-        return policyCategory;
-    }
 
     /*
      * (non-Javadoc)
@@ -1407,8 +1394,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyDescriptionFromDb(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyDescriptionFromDb(String policyId) throws DataException {
-        String policyDescQuery = "SELECT policyDisplayName,resolutionUrl,resolution,policyDesc, policyParams FROM cf_PolicyTable WHERE status = 'ENABLED' AND policyId ='"
-                + policyId + "'";
+    	String policyDescQuery = "SELECT policyDisplayName,resolutionUrl,resolution,policyDesc, targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE status = 'ENABLED' AND policyId ='"
+    	        + policyId + "'";
         return rdsepository.getDataFromPacman(policyDescQuery);
     }
 
@@ -1882,8 +1869,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      */
     public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(String targetType,
             String policyCategory) throws DataException {
-        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,policyParams FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
-                + targetType + ") AND `policyParams` LIKE '%" + policyCategory + "%'";
+    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
+                + targetType + ")";
+        if(policyCategory != null && !"".equals(policyCategory)) {
+        	policyIdWithDisplayquery = policyIdWithDisplayquery + " AND `category` = '" + policyCategory + "'";
+        }
+        policyIdWithDisplayquery = policyIdWithDisplayquery+" ;";
         try {
             return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
         } catch (Exception e) {

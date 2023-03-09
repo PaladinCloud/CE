@@ -564,7 +564,7 @@ public interface AssetRepository {
      * @return list of type and its asset count.
      */
 	public Map<String, Object> getAssetCountAndEnvDistributionByAssetGroup(String aseetGroupName, String type,
-			String application);
+			String application,String accountId);
 
 	/**
      * Fetches provider list for an asset group

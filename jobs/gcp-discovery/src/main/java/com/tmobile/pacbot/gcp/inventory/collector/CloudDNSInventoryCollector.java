@@ -23,7 +23,7 @@ public class CloudDNSInventoryCollector {
     private static final Logger logger = LoggerFactory.getLogger(CloudDNSInventoryCollector.class);
     public List<CloudDNSVH> fetchCloudDnsInventory(ProjectVH project) throws IOException {
         List<CloudDNSVH>cloudDNSVHList=new ArrayList<>();
-            Page<Zone> zonesList= gcpCredentialsProvider.createCloudDNSServices().listZones();
+            Page<Zone> zonesList= gcpCredentialsProvider.createCloudDNSServices(project.getProjectId()).listZones();
         logger.info("executing dns zone List collector");
             if(zonesList!=null) {
                 logger.info("dns zone list {}",zonesList);

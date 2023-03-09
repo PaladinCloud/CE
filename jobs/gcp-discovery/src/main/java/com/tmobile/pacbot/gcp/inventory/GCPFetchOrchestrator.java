@@ -6,6 +6,7 @@ import com.tmobile.pacbot.gcp.inventory.auth.GCPCredentialsProvider;
 import com.tmobile.pacbot.gcp.inventory.file.AssetFileGenerator;
 import com.tmobile.pacbot.gcp.inventory.file.S3Uploader;
 import com.tmobile.pacbot.gcp.inventory.vo.ProjectVH;
+import com.tmobile.pacman.commons.database.RDSDBManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,9 @@ public class GCPFetchOrchestrator {
     @Value("${s3.region}")
     private String s3Region;
 
+    @Autowired
+    RDSDBManager rdsdbManager;
+
     /**
      * The log.
      */
@@ -75,21 +79,22 @@ public class GCPFetchOrchestrator {
             log.info("End : Upload Files to S3");
 
         } catch (Exception e) {
-
+            log.info(e.getMessage());
         }
         return null;
     }
 
     private List<ProjectVH> fetchProjects() {
-
+        String accountQuery = "SELECT accountId,accountName,accountStatus FROM cf_Accounts where platform = 'gcp' and accountStatus='configured'";
+        List<Map<String,String>> accounts=rdsdbManager.executeQuery(accountQuery);
         List<String> projectList = new ArrayList<>();
         List<ProjectVH> projectDetails=new ArrayList<>();
-            if (projects != null && !"".equals(projects)) {
-            projectList = Arrays.asList(projects.split(","));
+            for (Map<String,String>account:accounts) {
+                projectList.add(account.get("accountId"));
         }
         try {
-            CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager();
             for(String projectId:projectList){
+                CloudResourceManager resource = gcpCredentialsProvider.getCloudResourceManager(projectId);
 
                 CloudResourceManager.Projects.Get project = resource.projects().get(projectId);
                 Project p = project.execute();

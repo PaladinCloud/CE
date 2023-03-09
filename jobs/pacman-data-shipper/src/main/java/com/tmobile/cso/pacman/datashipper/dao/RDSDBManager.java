@@ -48,7 +48,6 @@ public class RDSDBManager {
      */
     private static Connection getConnection() throws ClassNotFoundException, SQLException {
         Connection conn = null;
-        Class.forName("com.mysql.jdbc.Driver");
         Properties props = new Properties();
 
         props.setProperty("user", DB_USER_NAME);
@@ -86,5 +85,14 @@ public class RDSDBManager {
         } 
         return results;
     }
-
+    public static int executeUpdate(String query){
+        try (
+                Connection conn = getConnection();
+                Statement stmt = conn.createStatement();){
+            return stmt.executeUpdate(query);
+        }catch (Exception exception){
+            LOGGER.error("Error Executing Query",exception);
+        }
+        return 0;
+    }
 }
