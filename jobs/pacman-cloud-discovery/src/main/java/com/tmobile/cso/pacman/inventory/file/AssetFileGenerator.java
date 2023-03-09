@@ -131,7 +131,6 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "ecr", e.getMessage());
 				}
 			});
-/*
 			executor.execute(() ->
 			{
 			    if(!(isTypeInScope("asg"))) {

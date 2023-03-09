@@ -2066,7 +2066,7 @@ public class FileManager {
 		String fieldNames ="";
 		String keys ="";
 
-		fieldNames = "repository.repositoryArn`repository.registryId`imageDetails.imagePushedAt`imageDetails.artifactMediaType`imageDetails.imageTags";
+		fieldNames = "repository.repositoryArn`repository.registryId`imageDetail.imagePushedAt`imageDetail.artifactMediaType`imageDetail.imageTags";
 		keys = "discoverydate`accountid`accountname`region`repositoryArn`registryId`imagePushedAt`artifactMediaType`tags";
 		FileGenerator.generateJson(fetchRepositories, fieldNames, "aws-ecr.data",keys);
 	}

@@ -34,6 +34,7 @@ import com.amazonaws.services.ecr.AmazonECR;
 import com.amazonaws.services.ecr.AmazonECRClientBuilder;
 import com.amazonaws.services.ecr.model.DescribeRepositoriesRequest;
 import com.amazonaws.services.ecr.model.DescribeRepositoriesResult;
+import com.amazonaws.services.ecr.model.ImageDetail;
 import com.amazonaws.services.ecr.model.Repository;
 import com.amazonaws.services.securityhub.AWSSecurityHub;
 import com.amazonaws.services.securityhub.AWSSecurityHubClientBuilder;
@@ -3197,34 +3198,42 @@ public class InventoryUtil {
 	 * @param accountName the account name
 	 * @return the map
 	 */
-	public static Map<String,List<RegistryVH>> fetchRepositories(BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName){
-		Map<String,List<RegistryVH>> repositoryMap = new LinkedHashMap<>();
-		AmazonECR ecrClient ;
-		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE+accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ECR\" , \"region\":\"" ;
-		for(Region region : RegionUtils.getRegions()) {
-			try{
-				if(!skipRegions.contains(region.getName())){
+	public static Map<String,List<RegistryVH>> fetchRepositories(BasicSessionCredentials temporaryCredentials, String skipRegions, String accountId, String accountName) {
+		Map<String, List<RegistryVH>> repositoryMap = new LinkedHashMap<>();
+		AmazonECR ecrClient;
+		String expPrefix = InventoryConstants.ERROR_PREFIX_CODE + accountId + "\",\"Message\": \"Exception in fetching info for resource in specific region\" ,\"type\": \"ECR\" , \"region\":\"";
+		for (Region region : RegionUtils.getRegions()) {
+			try {
+				if (!skipRegions.contains(region.getName())) {
 					ecrClient = AmazonECRClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(temporaryCredentials)).withRegion(region.getName()).build();
 					List<RegistryVH> repositories = new ArrayList<>();
-					DescribeRepositoriesResult describeRepositoriesResult ;
+					DescribeRepositoriesResult describeRepositoriesResult;
 					String nextToken = null;
-					do{
-						describeRepositoriesResult =  ecrClient.describeRepositories(new DescribeRepositoriesRequest().withNextToken(nextToken));
-						for(Repository repo : describeRepositoriesResult.getRepositories()){
+					do {
+						describeRepositoriesResult = ecrClient.describeRepositories(new DescribeRepositoriesRequest().withNextToken(nextToken));
+						for (Repository repo : describeRepositoriesResult.getRepositories()) {
 							com.amazonaws.services.ecr.model.DescribeImagesResult imageData = ecrClient.describeImages
 									(new com.amazonaws.services.ecr.model.DescribeImagesRequest().withRegistryId(repo.getRegistryId()).withRepositoryName(repo.getRepositoryName()));
-							RegistryVH registryVH = new RegistryVH(repo,imageData.getImageDetails());
-							repositories.add(registryVH);
+							ImageDetail data = null;
+							if(imageData!=null & !CollectionUtils.isEmpty(imageData.getImageDetails()))
+							{
+							data	= imageData.getImageDetails().
+										stream().
+										filter(imageDetail -> !CollectionUtils.isEmpty(imageDetail.getImageTags()) && imageDetail.getImageTags().contains("latest")).
+										findFirst().get();
+							}
+								RegistryVH registryVH = new RegistryVH(repo, data);
+								repositories.add(registryVH);
 						}
-				}while(nextToken!=null);
-					if(!repositories.isEmpty() ) {
-						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ECR "+ region.getName()+" >> " + repositories.size());
-						repositoryMap.put(accountId+delimiter+accountName+delimiter+region.getName(), repositories);
+					} while (nextToken != null);
+					if (!repositories.isEmpty()) {
+						log.debug(InventoryConstants.ACCOUNT + accountId + " Type : ECR " + region.getName() + " >> " + repositories.size());
+						repositoryMap.put(accountId + delimiter + accountName + delimiter + region.getName(), repositories);
 					}
 				}
-			}catch(Exception e){
-				log.warn(expPrefix+ region.getName()+InventoryConstants.ERROR_CAUSE +e.getMessage()+"\"}");
-				ErrorManageUtil.uploadError(accountId,region.getName(),"ec2",e.getMessage());
+			} catch (Exception e) {
+				log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
+				ErrorManageUtil.uploadError(accountId, region.getName(), "ec2", e.getMessage());
 			}
 		}
 		return repositoryMap;

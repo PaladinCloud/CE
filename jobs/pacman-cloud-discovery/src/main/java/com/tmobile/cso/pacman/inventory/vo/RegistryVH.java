@@ -2,12 +2,11 @@ package com.tmobile.cso.pacman.inventory.vo;
 
 import com.amazonaws.services.ecr.model.ImageDetail;
 import com.amazonaws.services.ecr.model.Repository;
-import java.util.List;
 
 public class RegistryVH {
 
   private Repository repository;
-  private List<ImageDetail> imageDetails;
+  private ImageDetail imageDetail;
 
   public Repository getRepository() {
     return repository;
@@ -17,20 +16,20 @@ public class RegistryVH {
     this.repository = repository;
   }
 
-  public List<ImageDetail> getImageDetails() {
-    return imageDetails;
+  public ImageDetail getImageDetail() {
+    return imageDetail;
   }
 
-  public void setImageDetails(List<ImageDetail> imageDetails) {
-    this.imageDetails = imageDetails;
+  public void setImageDetail(ImageDetail imageDetail) {
+    this.imageDetail = imageDetail;
   }
 
   public RegistryVH()
   {
 
   }
-  public RegistryVH(Repository repository, List<ImageDetail> imageDetails) {
+  public RegistryVH(Repository repository, ImageDetail imageDetail) {
     this.repository = repository;
-    this.imageDetails = imageDetails;
+    this.imageDetail = imageDetail;
   }
 }
