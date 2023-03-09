@@ -64,7 +64,8 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ClipboardModule
+    ClipboardModule,
+    MatSlideToggleModule
   ],
   declarations: [
     PoliciesComponent,
