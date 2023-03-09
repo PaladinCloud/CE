@@ -7,8 +7,15 @@ def need_to_deploy_vulnerability_service():
 
     return feature_status
 
+
 def need_to_deploy_aqua_vulnerability_service():
     feature_status = Settings.get('ENABLE_AQUA_VULNERABILITY_FEATURE', False)
+
+    return feature_status
+
+
+def need_to_use_fed_identity_provider():
+    feature_status = Settings.get('ENABLE_AZURE_AD', False)
 
     return feature_status
 

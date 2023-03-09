@@ -314,6 +314,7 @@ public interface Constants {
     String NPE_ENV = "NPE";
     String OTHER_ENV = "Others";
     String UNTAGGED_ENV = "Untagged";
+    String QUALYS = "qualys";
     String PERCENTAGE = "percentage";
     String PROD_PATTERN = "^(((prod)(uction)?)|((prd).*))(:+(((prod)(uction)?)|((prd).*)))?";
     String STG_PATTERN = "(^(stag|stg).*)|(.*:+(stag|stg).*)";
@@ -330,4 +331,6 @@ public interface Constants {
     String RESOLUTION_URL = "resolutionUrl";
     String UNABLE_TO_DETERMINE = "unable to determine";
     String STATUS_REASON = "status-reason";
+    String AUTOFIX_ENABLED = "autoFixEnabled";
+    String AUTOFIX = "autofix";
 }

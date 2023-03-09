@@ -27,7 +27,7 @@ public class VMInventoryCollector {
     public List<VirtualMachineVH> fetchInstanceInventory(ProjectVH project) throws IOException {
         List<VirtualMachineVH> instanceList = new ArrayList<>();
         logger.debug("Project id:{}",project.getProjectNumber());
-        InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient();
+        InstancesClient instancesClient = gcpCredentialsProvider.getInstancesClient(project.getProjectId());
 
         AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
                 .newBuilder()

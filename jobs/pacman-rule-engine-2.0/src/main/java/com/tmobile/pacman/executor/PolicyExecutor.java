@@ -102,10 +102,10 @@ public class PolicyExecutor {
             new PacEventHandler().handleEvent(executionId,args[0]);
         }else
         {
-                try {   logger.info("input source detected as rule, will process rule now.");
+                try {   logger.info("input source detected as policy, will process policy now.");
                         new PolicyExecutor().run(args, executionId);
                 } catch (Exception e) {
-                    logger.error("error while in run method for executionId ->" + executionId, e);
+                    logger.error("error while in policy method for executionId ->" + executionId, e);
                 }
         }
     }
@@ -131,9 +131,19 @@ public class PolicyExecutor {
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         final String mandatoryTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
-        if (args.length > 0) {
-            policyParams = args[0];
-            policyParam = CommonUtils.createParamMap(policyParams);
+        if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
+          	 String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
+               String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
+               policyDetailsUrl += policyUUID;
+               String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
+               if(Strings.isNullOrEmpty(policyDetails )) {
+               	logger.error(
+                           "Policy details for the policyID {} not found ",policyUUID);
+                   logger.error("exiting now..");
+                   ProgramExitUtils.exitWithError();
+               }
+              policyParam = CommonUtils.createPolicyParamMap(policyDetails);
+        
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {

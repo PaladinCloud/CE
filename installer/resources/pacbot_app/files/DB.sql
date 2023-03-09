@@ -63,6 +63,7 @@ SET @VULNERABILITY_FEATURE_ENABLED='$VULNERABILITY_FEATURE_ENABLED';
 SET @MAIL_SERVER='$MAIL_SERVER';
 SET @PACMAN_S3='$PACMAN_S3';
 SET @DATA_IN_DIR='$DATA_IN_DIR';
+SET @CREDENTIAL_DIR='$CREDENTIAL_DIR';
 SET @DATA_BKP_DIR='$DATA_BKP_DIR';
 SET @PAC_ROLE='$PAC_ROLE';
 SET @BASE_REGION='$BASE_REGION';
@@ -95,7 +96,7 @@ SET @AWS_EVENTBRIDGE_BUS_DETAILS='$AWS_EVENTBRIDGE_BUS_DETAILS';
 SET @AZURE_ENABLED='$AZURE_ENABLED';
 SET @GCP_ENABLED='$GCP_ENABLED';
 SET @JOB_SCHEDULER_NUMBER_OF_BATCHES='$JOB_SCHEDULER_NUMBER_OF_BATCHES';
-SET @EVENT_BRIDGE_PRIFIX='$EVENT_BRIDGE_PRIFIX';
+SET @EVENT_BRIDGE_PREFIX='$EVENT_BRIDGE_PREFIX';
 SET @MANDATORY_TAGS='$MANDATORY_TAGS';
 SET @API_CLIENT_ID='$API_CLIENT_ID';
 SET @API_SCERET_ID='$API_SCERET_ID';
@@ -174,6 +175,30 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   `dataSource` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+/* Procedure to change column names for cf_AssetGroupException*/
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_AssetGroupException_table_change_column_names $$
+CREATE PROCEDURE alter_cf_AssetGroupException_table_change_column_names()
+BEGIN
+IF EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'ruleId')  THEN
+ ALTER TABLE cf_AssetGroupException change column ruleId policyId varchar(200) NULL DEFAULT NULL;
+END IF;
+IF EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'ruleName')  THEN
+ALTER TABLE cf_AssetGroupException change column ruleName policyName varchar(200) NULL DEFAULT NULL;
+END IF;
+END $$
+DELIMITER ;
+
+CALL alter_cf_AssetGroupException_table_change_column_names();
 
 /*Table structure for table `cf_AssetGroupOwnerDetails` */
 
@@ -2820,8 +2845,7 @@ DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('aqua_client_domain_url', 'aqua_api_url','aqua_username','aqua_password','default_page_size','aqua_image_vul_query_params');
 
-
-INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',REPLACE(TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'\n',''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.esLoggingLevel','WARN','application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.consoleLoggingLevel','INFO','application','prd','latest',NULL,NULL,NULL,NULL);
@@ -2852,7 +2876,8 @@ INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds','100000','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.cors.allowed.domains','all','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('monitoring.contextRootNames','asset,compliance,statistics,devstandards,auth,admin','api','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('auth.active','db','api','prd','latest',NULL,NULL,NULL,NULL);
+DELETE IGNORE FROM  pac_config_properties  where cfkey="auth.active";
+INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('auth.active','cognito','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.cache.cache-names','trends,compliance,assets,trendsvuln','api','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('spring.cache.caffeine.spec','maximumSize=500, expireAfterWrite=6h','api','prd','latest',NULL,NULL,NULL,NULL);
 DELETE IGNORE FROM pac_config_properties where cfKey in ('spring.datasource.url','spring.datasource.username','spring.datasource.password');
@@ -3160,6 +3185,12 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('pacman.autofix.contact.GCP_kms_public_access_rule','dheeraj.kholia@paladincloud.io','application','prd','latest',NULL,NULL,NULL,NULL);
 
 
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('credential.file.path','/home/ec2-user/credential','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','batch','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('s3.cred.data',concat(@CREDENTIAL_DIR,''),'batch','prd','latest',null,null,null,null);
+
+
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('autofix.allowlist.accounts.UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip','','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.autofix.contact.UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip','','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.autofix.fix.type.UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip','silent','rule','prd','latest',NULL,NULL,NULL,NULL);
@@ -3192,8 +3223,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.occurance','severity,_resourceid,pciflag,_vulnage,vulntype,title,classification,_firstFound,_lastFound,qid,patchable,category','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetails','tags.Name,accountid,accountname,tags.Environment,tags.Application,privateipaddress,instanceid,region,availabilityzone,imageid,platform,privatednsname,instancetype,subnetid,_resourceid,publicipaddress,publicdnsname,vpcid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('vulnerability.application.resourcedetailsboth','tags.Name,tags.Environment,tags.Application,ip_address,privateipaddress,_entitytype,_resourceid','vulnerability-service','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PRIFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
-
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('application.prefix',concat(@EVENT_BRIDGE_PREFIX,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_client_domain_url',concat(@AQUA_CLIENT_DOMAIN_URL,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('default_page_size',concat(@AQUA_API_DEFAULT_PAGE_SIZE,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
@@ -3201,6 +3231,9 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_api_url',concat(@AQUA_API_URL,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_username',concat(@AQUA_USERNAME,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('aqua_password',concat(@AQUA_PASSWORD,''),'aqua-enricher','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('credential.file.path','/home/ec2-user/credential','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('s3.cred.data',concat(@CREDENTIAL_DIR,''),'batch','prd','latest',null,null,null,null);
 
 
 INSERT IGNORE INTO `Recommendation_Mappings`(`checkId`,`type`,`resourceInfo`,`_resourceId`,`monthlySavingsField`) values ('H7IgTzjTYb','volume','Volume ID','volumeid',NULL),('DAvU99Dc4C','volume','Volume ID','volumeid','Monthly Storage Cost'),('Qch7DwouX1','ec2','Instance ID','instanceid','Estimated Monthly Savings'),('1iG5NDGVre','sg','Security Group ID','groupid',NULL),('HCP4007jGY','sg','Security Group ID','groupid',NULL),('BueAdJ7NrP','s3','Bucket Name','name',NULL),('iqdCTZKCUp','classicelb','Load Balancer Name','loadbalancername',NULL),('R365s2Qddf','s3','Bucket Name','name',NULL),('Pfx0RwqBli','s3','Bucket Name','name',NULL),('a2sEc6ILx','classicelb','Load Balancer Name','loadbalancername',NULL),('xdeXZKIUy','classicelb','Load Balancer Name','loadbalancername',NULL),('CLOG40CDO8','asg','Auto Scaling Group Name','autoscalinggroupname',NULL),('7qGXsKIUw','classicelb','Load Balancer Name','loadbalancername',NULL),('hjLMh88uM8','classicelb','Load Balancer Name','loadbalancername','Estimated Monthly Savings'),('DqdJqYeRm5','iamuser','IAM User','username',NULL),('j3DFqYTe29','ec2','Instance ID','instanceid',NULL),('f2iK5R6Dep','rdsdb','DB Instance','dbinstanceidentifier',NULL),('1MoPEMsKx6','reservedinstance','Instance Type','instancetype','Estimated Monthly Savings'),('Ti39halfu8','rdsdb','DB Instance Name','dbinstanceidentifier','Estimated Monthly Savings (On Demand)'),('Wnwm9Il5bG','ec2','Instance ID','instanceid',NULL),('V77iOLlBqz','ec2','Instance ID','instanceid',NULL),('Z4AUBRNSmz','elasticip','IP Address','publicip',NULL),('8CNsSllI5v','asg','Auto Scaling Group Name','autoscalinggroupname',NULL),('N420c450f2','cloudfront','Distribution ID','id',NULL),('TyfdMXG69d','ec2','Instance ID','instanceid',NULL),('tfg86AVHAZ','sg','Group ID','groupid',NULL),('yHAGQJV9K5','ec2','Instance ID','instanceid',NULL),('S45wrEXrLz','vpnconnection','VPN ID','vpnconnectionid',NULL),('PPkZrjsH2q','volume','Volume ID','volumeid',NULL),('opQPADkZvH','rdsdb','DB Instance','dbinstanceidentifier',NULL),('796d6f3D83','s3','Bucket Name','name',NULL),('G31sQ1E9U','redshift','Cluster','clusteridentifier','Estimated Monthly Savings'),('xSqX82fQu','classicelb','Load Balancer Name','loadbalancername',NULL),('ZRxQlPsb6c','ec2','Instance ID','instanceid',NULL),('N430c450f2','cloudfront','Distribution ID','id',NULL),('4g3Nt5M1Th','virtualinterface','Gateway ID','virtualgatewayid',NULL),('0t121N1Ty3','directconnect','Connection ID','connectionid',NULL),('N425c450f2','cloudfront','Distribution ID','id',NULL),('xuy7H1avtl','rdscluster','Cluster','dbclusteridentifier',NULL),('1e93e4c0b5','reservedinstance','Reserved Instance ID','instanceid','Estimated Monthly Savings'),('51fC20e7I2','route53','Hosted Zone ID','hostedZoneId',NULL),('cF171Db240','route53','Hosted Zone ID','hostedZoneId',NULL),('Cb877eB72b','route53','Hosted Zone ID','hostedZoneId',NULL),('b73EEdD790','route53','Hosted Zone ID','hostedZoneId',NULL),('C056F80cR3','route53','Hosted Zone ID','hostedZoneId',NULL),('B913Ef6fb4','route53','Hosted Zone ID','hostedZoneId',NULL);
@@ -3753,3 +3786,5 @@ DELIMITER ;
 CALL update_filter_for_tag(@MANDATORY_TAGS);
 
 update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category';
+
+update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
