@@ -3,140 +3,102 @@
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
-    <div class="page">
+    <div class="header">
+        <div class="header-text">
+            {{policyDisplayName}}
+        </div>
+          <!-- <div class="status-wrapper">
+            <mat-slide-toggle [checked]="status" (change)="toggleStatus($event)"></mat-slide-toggle>
+            <span class="subtitle-2">Status</span>
+          </div> -->
+    </div>
         <div class="stepper">
-            <!-- <app-stepper [currentStepperIndex]="currentStepperIndex"
-                (selectedStepperIndex)="selectedStepperIndex($event)">
-                <ng-template #stepsHeader>
-                    <div class="text-wrapper">
-                        <span class="title">{{pageTitle}}</span>
-                        <span class="sub-text">Follow the steps below to Edit a policy for an asset type</span>
-                    </div>
-                </ng-template> -->
-                <!-- <ng-template #stepsContent> -->
-                    <div class="left-wrapper">
-                        <div class="text-wrapper">
-                            <span class="title">{{pageTitle}}</span>
-                            <span class="sub-text">Follow the steps below to create a policy for an asset type</span>
-                        </div>
-                    </div>
                     <div class="right-wrapper">
-                        <div class="title-wrapper">
-                        <span class="form-wrapper-header">{{FormHeader}}</span>
-                        <div class="status-wrapper">
-                        <mat-slide-toggle [checked]="status" (change)="toggleStatus($event)"></mat-slide-toggle>
-                        <span class="subtitle-2">Status</span>
-                        </div>
-                    </div>
                         <form class="form-wrapper" (ngSubmit)="onSubmit(policyForm)" #policyForm="ngForm">
-                            <div class="policy-details-wrapper">
-                                <div class="header-wrapper">
-                                   <span class="table-header">Policy Details</span>
-                                </div>
-                                <div class="content-wrapper">
-                                    <div class="type-wrapper">
-                                    <div class="dropdown">
-                                        <app-dropdown [required]="isRequired" [requiredInfo]="true" [optionImage]="true"
-                                            [items]="policySeverities" placeholder="Severity"
-                                            [selectedItem]="selectedSeverity" name="severity"
-                                            (selected)="onSelectSeverity($event)">
-                                        </app-dropdown>
-                                    </div>
-                                    <div class="dropdown">
-                                        <app-dropdown [required]="isRequired" [requiredInfo]="true" [optionImage]="true"
-                                            [items]="policyCategories" placeholder="Category"
-                                            [selectedItem]="selectedCategory" name="category"
-                                            (selected)="onSelectCategory($event)">
-                                        </app-dropdown>
-                                    </div>
-                                    <div class="input-wrapper" [class.isDisabled]="isManagePolicy">
-                                        <mat-form-field appearance="outline">
-                                            <mat-label>Description</mat-label>
-                                            <textarea autocomplete="off" matInput name="description"
-                                                [(ngModel)]="description" required></textarea>
-                                        </mat-form-field>
-                                        <div class="info-img">
-                                            <img src="../../../assets/icons/info-circle.svg">
-                                        </div>
-                                    </div>
-                                    <div class="input-wrapper" [class.isDisabled]="isManagePolicy">
-                                        <mat-form-field appearance="outline">
-                                            <mat-label>Resolution</mat-label>
-                                            <input autocomplete="off" matInput name="resolution"
-                                                [(ngModel)]="resolution">
-                                        </mat-form-field>
-                                        <div class="info-img">
-                                            <img src="../../../assets/icons/info-circle.svg">
-                                        </div>
-                                    </div>
-                                    <div class="input-wrapper" [class.isDisabled]="isManagePolicy">
-                                        <mat-form-field appearance="outline">
-                                            <mat-label>Resolution Link</mat-label>
-                                            <input autocomplete="off" matInput name="resolutionUrl"
-                                                [(ngModel)]="resolutionUrl">
-                                        </mat-form-field>
-                                        <div class="info-img">
-                                            <img src="../../../assets/icons/info-circle.svg">
-                                        </div>
+                            <div class="details-wrapper">
+                                <div class="details-header">
+                                    <div class="details-header-text">
+                                        Policy Details and Parameters
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                         <div class="policy-parameters-wrapper">
-                                    <div class="header-wrapper">
-                                        <span class="table-header">Policy Parameters</span>
-                                     </div>
-                                     <div class="content-wrapper">
-                                            <div class="parameters-wrapper">
-                                                <div *ngFor="let param of paramsList;let i=index">
-                                                    <div class="parameter-wrapper" *ngIf="param.isEdit" >
-                                                        <div class="input-wrapper">
-                                                            <mat-form-field appearance="outline">
-                                                                <mat-label>{{param.displayName}}</mat-label>
-                                                                <input autocomplete="off" matInput name="resolutionUrl"
-                                                                    [(ngModel)]="param.value">
-                                                            </mat-form-field>
-                                                            <div class="info-img">
-                                                                <img src="../../../assets/icons/info-circle.svg" [matTooltip]="param.description" matTooltipPosition="right">
-                                                            </div>
-                                                        </div>
-                                                </div>
-                                                </div>
+                                <div class="details-content-wrapper">
+                                    <div class="attributes-wrapper">
+                                        <div class="row">
+                                            <div class="attribute-wrapper">
+                                                <span class="attribute-header">Policy Id</span>
+                                                <span class="attribute-value">{{policyId}}</span>
+                                            </div>
+                                            <div class="attribute-wrapper">
+                                                <span class="attribute-header">Type</span>
+                                                <span class="attribute-value">{{selectedPolicyType}}</span>
                                             </div>
                                         </div>
-                            </div>
-                            <div [hidden]="currentStepperName != 'Autofix'" class="autofix-wrapper">
-                                  <div [class.hide]="!isAutofixEnabled" class="flex flex-col gap-20">
-                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true"
-                                    [selectedList]="selectedAccounts" (selected)="onAccountsChange($event)"></app-dropdown>
-                                    <app-input-field [(value)]="fixMailSubject" placeholder="Fix Subject"></app-input-field>
-                                    <app-input-field [(value)]="postFixMessage" placeholder="Fix Message"></app-input-field>
-                                    <app-input-field [(value)]="violationMessage" placeholder="Violation Message"></app-input-field>
-                                  </div>
-                                  <div class="notification-wrapper flex flex-col gap-20" *ngIf="isAutofixEnabled">
-                                    <div class="flex gap-8">
-                                        <span class="subtitle-1">Mute Notification</span>
-                                        <mat-slide-toggle [checked]="isSilentNotificationEnabled" (change)="toggleSilentNotification($event)"></mat-slide-toggle>
+                                        <div class="row">
+                                            <div class="attribute-wrapper">
+                                                <span class="attribute-header">Asset Type</span>
+                                                <span class="attribute-value">{{selectedAssetType}}</span>
+                                            </div>
+                                            <div class="attribute-wrapper">
+                                                <span class="attribute-header">Description</span>
+                                                <span  class="attribute-value">{{description}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="attribute-wrapper">
+                                                <span class="attribute-header">Resolution Link</span>
+                                                <a target="_blank" href="{{resolutionUrl}}">
+                                                    <span class="attribute-value color-txt">{{resolutionUrl}}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="attribute-wrapper">
+                                                <div class="dropdown" [class.isEnabled]="selectedPolicyType=='ManagePolicy'">
+                                                    <app-dropdown [required]="isRequired" [optionImage]="true"
+                                                        [items]="policySeverities" placeholder="Severity"
+                                                        [selectedItem]="selectedSeverity" name="severity"
+                                                        (selected)="onSelectSeverity($event)">
+                                                    </app-dropdown>
+                                                    </div>
+                                                </div>
+                                                 <div class="attribute-wrapper">
+                                                    <div class="dropdown" [class.isEnabled]="selectedPolicyType=='ManagePolicy'">
+                                                        <app-dropdown [required]="isRequired" [optionImage]="true"
+                                                            [items]="policyCategories" placeholder="Category"
+                                                            [selectedItem]="selectedCategory" name="category"
+                                                            (selected)="onSelectCategory($event)">
+                                                        </app-dropdown>
+                                                    </div>
+                                                </div>
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col gap-20" *ngIf="!isSilentNotificationEnabled;else silent">
-                                        <app-input-field [(value)]="waitingTime" placeholder="Waiting Time"></app-input-field>
-                                        <app-input-field [(value)]="warningMailSubject" placeholder="Warning Subject"></app-input-field>
-                                        <app-input-field [(value)]="warningMessage" placeholder="Warning Message"></app-input-field>
-                                        <app-input-field [(value)]="maxEmailNotification" placeholder="Max Notification"></app-input-field>
+                                    <div class="attributes-wrapper" *ngIf="paramsList.length>0">
+                                        <div class="parameters-wrapper">
+                                            <div *ngFor="let param of paramsList;let i=index">
+                                                <div class="parameter-wrapper" *ngIf="param.isEdit" >
+                                                    <div class="input-wrapper">
+                                                        <mat-form-field appearance="outline">
+                                                            <mat-label>{{param.displayName}}</mat-label>
+                                                            <input autocomplete="off" matInput name="resolutionUrl"
+                                                                [(ngModel)]="param.value">
+                                                        </mat-form-field>
+                                                        <div class="info-img">
+                                                            <img src="../../../assets/icons/info-circle.svg" [matTooltip]="param.description" matTooltipPosition="right">
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <ng-template #silent>
-                                        <app-input-field [(value)]="elapsedTime" placeholder="Waiting Time"></app-input-field>
-                                    </ng-template>
-                                  </div>
+                                </div>
+                                <div class="details-footer">
+                                    <div class="button-wrapper">
+                                        <button class="button submit-btn" 
+                                            (click)="onSubmit(policyForm)">Update</button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
-                        <div class="button-wrapper">
-                            <button class="button next-btn" [disabled]="policyForm.form.invalid"
-                                (click)="onSubmit(policyForm)">{{submitBtn}}</button>
-                        </div>
                     </div>
-                <!-- </ng-template> -->
-            <!-- </app-stepper> -->
-        </div>
     </div>
 </div>
