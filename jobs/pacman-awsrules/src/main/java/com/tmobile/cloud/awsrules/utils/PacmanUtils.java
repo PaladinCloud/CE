@@ -2552,22 +2552,28 @@ public class PacmanUtils {
                 int count = 1;
 
                 if (!StringUtils.isEmpty(days) && "14 days".equals(days)) {
-                    for (int k = 1; k <= 14; k++) {
-
-                        day = resourceinfoJson.get("Day " + k).getAsString();
-                        cpuUtilization = StringUtils.substringBefore(day, "%");
-                        Double cpuUtilizationD = Double.parseDouble(cpuUtilization);
-                        networkIO = StringUtils.substringBetween(day, "%", "MB").trim();
-                        Double networkUtilizationD = Double.parseDouble(networkIO);
-                        if (cpuUtilizationD <= 10 && networkUtilizationD <= 5) {
-                            if (count == 4) {
-                                data.put(PacmanRuleConstants.EST_MONTHLY_SAVINGS, estimatedMonthlySavings);
-                                data.put("noOfDaysLowUtilization", days);
-                                return data;
-                            }
-                            count++;
-                        }
-                    }
+					for (int k = 1; k <= 14; k++) {
+						day = resourceinfoJson.get("Day " + k).getAsString();
+						if (day != null && !"null".equalsIgnoreCase(day)) {
+							try {
+								cpuUtilization = StringUtils.substringBefore(day, "%");
+								Double cpuUtilizationD = Double.parseDouble(cpuUtilization);
+								networkIO = StringUtils.substringBetween(day, "%", "MB").trim();
+								Double networkUtilizationD = Double.parseDouble(networkIO);
+								if (cpuUtilizationD <= 10 && networkUtilizationD <= 5) {
+									if (count == 4) {
+										data.put(PacmanRuleConstants.EST_MONTHLY_SAVINGS, estimatedMonthlySavings);
+										data.put("noOfDaysLowUtilization", days);
+										return data;
+									}
+									count++;
+								}
+							} catch (NumberFormatException e) {
+								logger.error("Parse exception occured : ", e);
+								continue;
+							}
+						}
+					}
                 }
             }
         }
