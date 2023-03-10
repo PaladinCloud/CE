@@ -307,6 +307,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyDisplayName = this.policyDisplayName;
     PolicyModel.policyId = this.policyId;
     PolicyModel.policyName = this.policyName;
+  
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
     PolicyModel.status = this.status?"ENABLED": "DISABLED";
@@ -361,7 +362,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 
   private buildpolicyParams() {
     const policyParms = Object();
@@ -525,11 +525,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.paramsList = [];
       let hasEditableParameters = false;
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
-        if(this.allPolicyParams[i]["isEdit"]){
-          hasEditableParameters = true;
-        }
-        this.paramsList.push(
-              {
+        if (this.allPolicyParams[i]["isEdit"]) {
+          this.paramsList.push(
+            {
               "key": this.allPolicyParams[i]["key"],
               "value": this.allPolicyParams[i]["value"],
               "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
@@ -539,16 +537,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
             }
           )
         }
-      // this.stepperData.forEach((data,index)=>{
-      //       data.id = index;        
-      // })
-      // if(this.showAutofix){
-      //     const currentStepperIndex = this.stepperData.findIndex(data=> data.name == "Autofix");
-      //     this.selectedStepperIndex(currentStepperIndex);
-      //  }else{
-      //     this.currentStepperIndex = 0;
-      //     this.selectedStepperIndex(0);
-      //  }
+      }
+   
+      // if (this.selectedPolicyType == "ManagePolicy") {
+      //   this.isDisabled = true;
+      // }
       this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
       this.hideContent = false;
     },
