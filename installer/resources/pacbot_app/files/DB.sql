@@ -3169,6 +3169,7 @@ INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile
 
 
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('credential.file.path','/home/ec2-user/credential','inventory','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('credential.file.path','/home/ec2-user/credential','batch','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','inventory','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','batch','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('s3.cred.data',concat(@CREDENTIAL_DIR,''),'batch','prd','latest',null,null,null,null);
