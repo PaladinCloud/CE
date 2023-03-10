@@ -12,7 +12,6 @@ from core.config import Settings
 from core.providers.aws.boto3 import cloudwatch_event
 from core.mixins import MsgMixin
 from resources.pacbot_app.alb import ApplicationLoadBalancer
-from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp
 import sys
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure, CloudWatchEventBusgcp
 
@@ -48,14 +47,14 @@ class RulesListVariableAzure(TerraformVariable):
     variable_type = "list"
     default_value = []
     variable_dict_input = get_rule_engine_cloudwatch_rules_azure_var()
-   
+    # PROCESS = need_to_enable_azure()
 
 class RulesListVariableGcp(TerraformVariable):
     variable_name = "gcprules"
     variable_type = "list"
     default_value = []
     variable_dict_input = get_rule_engine_cloudwatch_rules_gcp_var()
-    
+    # PROCESS = need_to_enable_gcp()
 
 class RuleEngineEventRulesAws(CloudWatchEventRuleResource):
     count = RulesListVariableAws.length()
@@ -94,7 +93,7 @@ class RuleEngineEventRulesAzure(CloudWatchEventRuleResource):
         'description': {'required': False},
         'tags' : {'required':False}
     }
-    
+    # PROCESS = need_to_enable_azure()
 class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
     count = RulesListVariableGcp.length()
     name = RulesListVariableGcp.lookup('policyId')
@@ -113,7 +112,7 @@ class RuleEngineEventRulesGcp(CloudWatchEventRuleResource):
         'description': {'required': False},
         'tags' : {'required':False}
     }
-    
+    # PROCESS = need_to_enable_gcp()
 
     def check_exists_before(self, input, tf_outputs):
         """
