@@ -65,8 +65,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Title': 2, 'Issue ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
-  columnNamesMap = {"PolicyName": "Title"};
+  columnWidths = {'Title': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
+  columnNamesMap = {"PolicyName": "Title","IssueId":"Violation ID"};
   fieldName: string = "policyId.keyword";
   fieldType: string = "number";
   selectedOrder: string = "asc";
@@ -131,7 +131,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
     this.assetGroupSubscription = this.assetGroupObservableService
       .getAssetGroup()
-      .subscribe((assetGroupName) => {        
+      .subscribe((assetGroupName) => {
         this.tableScrollTop = 0;
         this.searchTxt = "";
         this.backButtonRequired =
@@ -149,20 +149,20 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const state = this.tableStateService.getState("issueListing") || {};
-    if(state){      
+    if(state){
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
-      
+
       this.tableDataLoaded = true;
-      
+
       this.tableData = state?.data || [];
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
       this.tableScrollTop = state?.tableScrollTop;
-      
+
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
@@ -170,8 +170,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       }
     }
 
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -200,7 +200,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
       this.sortOrder = ["low", "medium", "high", "critical"]
-    } else if (sortColName === "issue id") {
+    } else if (sortColName === "violation id") {
       this.fieldName = "_uid";
       this.fieldType = "string";
     } else if (sortColName === "resource id") {
@@ -222,7 +222,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   storeState(state){
-    this.tableStateService.setState("issueListing", state);    
+    this.tableStateService.setState("issueListing", state);
   }
 
   clearState(){
@@ -260,7 +260,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
   getUpdatedUrl() {
-    let updatedQueryParams = {};    
+    let updatedQueryParams = {};
       this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
@@ -283,7 +283,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
-    
+
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: updatedQueryParams,
@@ -323,7 +323,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       }
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        
+
         let keyValue = _.find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
@@ -367,7 +367,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
-          
+
           if(this.filterTypeLabels.length==0){
             this.filterErrorMessage = 'noDataAvailable';
           }
@@ -398,7 +398,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             ag: this.selectedAssetGroup,
             domain: this.selectedDomain,
           }
-      
+
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
@@ -420,15 +420,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    }); 
+    });
   }
 
-  changeFilterTags(event) {    
+  changeFilterTags(event) {
     let value = event.filterValue;
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
-      });      
-    
+      });
+
     try {
       if (this.currentFilterType) {
         const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
@@ -460,7 +460,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   updateComponent() {
-    if(this.isStatePreserved){     
+    if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
     }else{
@@ -487,7 +487,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       var totalVariablesObj = {};
       var cellObj = {};
       let processedData = [];
-      var getData = data;      
+      var getData = data;
       const keynames = Object.keys(getData[0]);
 
       let cellData;
@@ -540,15 +540,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         if (!filterToBePassed["issueStatus.keyword"] && filterToBePassed.include_exempt=="yes") {
           filterToBePassed.include_exempt = "yes";
         }
-      } 
+      }
 
       const sortFilters = {
         fieldName: this.fieldName,
         fieldType: this.fieldType,
         order: this.selectedOrder,
         sortOrder: this.sortOrder
-      }    
-      
+      }
+
       const payload = {
         ag: this.selectedAssetGroup,
         filter: filterToBePassed,
@@ -613,7 +613,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -637,7 +637,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    // store in this function    
+    // store in this function
     const row = event.rowSelected;
     const data = event.data;
     const state = {
@@ -657,7 +657,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
       );
       this.router
-          .navigate(["issue-details", row["Issue ID"].valueText], {
+          .navigate(["issue-details", row["Violation ID"].valueText], {
             relativeTo: this.activatedRoute,
             queryParamsHandling: "merge",
           })
@@ -750,11 +750,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }
   }
 
-  callNewSearch(searchVal){    
+  callNewSearch(searchVal){
     this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
     this.isStatePreserved = false;
-    this.updateComponent();  
+    this.updateComponent();
     // this.getUpdatedUrl();
   }
 
