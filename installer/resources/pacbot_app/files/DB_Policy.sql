@@ -108,8 +108,8 @@ ADD COLUMN `warningMailSubject` VARCHAR(1000) NULL AFTER `fixType`,
 ADD COLUMN `fixMailSubject` VARCHAR(1000) NULL AFTER `warningMailSubject`,
 ADD COLUMN `warningMessage` VARCHAR(1000) NULL AFTER `fixMailSubject`,
 ADD COLUMN `fixMessage` VARCHAR(1000) NULL AFTER `warningMessage`,
-ADD COLUMN `violationMessage` VARCHAR(1000) NULL DEFAULT NULL AFTER `fixMessage`,
-ADD COLUMN `elapsedTime` INT NULL DEFAULT 24 AFTER `violationMessage`;
+ADD COLUMN `violationMessage` VARCHAR(1000) NULL DEFAULT NULL AFTER `fixMessage`;
+
 END IF;
 
 
@@ -117,7 +117,7 @@ END $$
 DELIMITER ;
 CALL alter_cf_policytable_add_columns();
 
-
+ALTER TABLE cf_PolicyTable modify policyDisplayName VARCHAR(200);
 
 
 INSERT  IGNORE INTO cf_PolicyTable (policyId, policyUUID, policyName, policyDisplayName, policyDesc, resolution, resolutionUrl, targetType, assetGroup, alexaKeyword, policyParams, policyFrequency, policyExecutable, policyRestUrl, policyType, policyArn, status, userId, createdDate, modifiedDate, severity, category) VALUES ('ACMCertificate_Expiry_For_X_Days_version-1_ACMCertificate_Expiry_acmcertificate','aws_acmcertificate_expiry','ACMCertificate_Expiry','Check the Expiry status of the ACM Certificate','Check expiry date of  ACM certificate on following conditions:-\n\n1. If expiry date is under 90 days from current date then it is non-compliance otherwise compliance.','Rotate the keys before the expiry',NULL,'acmcertificate','aws','ACMCertificate_Expiry','{\"params\":[{\"key\":\"policyKey\",\"value\":\"check-for-acm-certificate-expiry\",\"encrypt\":false},{\"key\":\"targetExpireDuration\",\"value\":\"90\",\"encrypt\":false,\"isEdit\":true,\"isMandatory\":true,\"description\":\"Checks if expiry date is under given number of days\",\"defaultVal\":\"90\",\"displayName\":\"Target expiration duration\"},{\"encrypt\":false,\"value\":\"high\",\"key\":\"severity\"},{\"encrypt\":false,\"value\":\"governance\",\"key\":\"policyCategory\"}],\"environmentVariables\":[],\"policyId\":\"ACMCertificate_Expiry_For_X_Days_version-1_ACMCertificate_Expiry_acmcertificate\",\"autofix\":false,\"alexaKeyword\":\"ACMCertificate_Expiry\",\"policyRestUrl\":\"\",\"targetType\":\"acmcertificate\",\"pac_ds\":\"aws\",\"assetGroup\":\"aws\",\"policyUUID\":\"aws_acmcertificate_expiry\",\"policyType\":\"ManagePolicy\"}','0 0 ? * MON *','','','ManagePolicy','arn:aws:events:us-east-1:***REMOVED***:rule/aws_acmcertificate_expiry','ENABLED','admin@paladincloud.io','2019-02-18','2023-01-05','high','operations');
