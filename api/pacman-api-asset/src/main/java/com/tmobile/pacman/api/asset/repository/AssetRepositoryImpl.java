@@ -1162,7 +1162,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         String[] tags = mandatoryTags.split(",");
         for (String tag : tags) {
-            shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.trim()), AssetConstants.TAG_NOT_FOUND);
+            shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.replaceAll("\\s", "")), AssetConstants.TAG_NOT_FOUND);
         }
 
         List<Map<String, Object>> untaggedAssets;
