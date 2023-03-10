@@ -30,6 +30,7 @@ import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
+import com.tmobile.pacman.commons.utils.Constants;
 import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,6 +132,9 @@ public class PolicyExecutor {
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         final String mandatoryTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
+        System.setProperty(Constants.RDS_DB_URL,CommonUtils.getPropValue(Constants.RDS_DB_URL));
+        System.setProperty(Constants.RDS_USER,CommonUtils.getPropValue(Constants.RDS_USER));
+        System.setProperty(Constants.RDS_PWD,CommonUtils.getPropValue(Constants.RDS_PWD));
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
           	 String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
                String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);

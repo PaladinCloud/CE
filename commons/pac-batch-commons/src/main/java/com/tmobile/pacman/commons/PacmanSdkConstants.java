@@ -66,7 +66,8 @@ public interface PacmanSdkConstants {
 
 	/** The rule id. */
 	String POLICY_ID="policyId";
-
+	/** The policy name. */
+	String POLICY_NAME="policyName";
 
 	/** The policy version. */
 	String POLICY_VERSION="policyVersion";
