@@ -187,8 +187,6 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         ruleCatDetails.entrySet().parallelStream()
                 .forEach(entry -> ruleCat.add(entry.getValue().toString()));
         complianceInfoList = new ArrayList<>();
-        Set<String> ruleCategoriesSet=new HashSet<>(ruleCat);
-        ruleCategoriesSet.add("overall");
 
          try {
             inputList = repository
@@ -197,8 +195,10 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
          } catch (DataException e) {
              throw new ServiceException(e);
            }
-       
-        if (!inputList.isEmpty()) {
+
+        try{
+            Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
+            if (!inputList.isEmpty()) {
             // Sort the list by the date in ascending order
             Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
                     m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
@@ -209,13 +209,6 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             Collections.sort(inputList, comp);
             useRealTimeDataForLatestDate(inputList, assetGroup,
                     COMPLIANCE_PERCENTAGE, null, domain);
-            try{
-                Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
-                Double sumOfAllWeightages=0d;
-                for(Object catWeightageValue : policyCatWeightageUnsortedMap.values()){
-                    sumOfAllWeightages+=Double.valueOf(catWeightageValue.toString());
-                }
-                Double weightageSum = sumOfAllWeightages;
             inputList.forEach(inputMap -> {
                 Map<String, Object> outputMap = new HashMap<>();
                 inputMap.forEach((key, value) -> {
@@ -225,37 +218,20 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
 
                         outputMap.put(key, value);
                     }
-                });
-
-                inputMap.forEach((key, value) -> {
-                    // Other than the specified keys, ignore all other kv pairs
-                    List<String> missedCategoriesList = ruleCategoriesSet.stream().filter(str->!outputMap.keySet().contains(str)).collect(Collectors.toList());
-                    for(String str:missedCategoriesList){
-                        if("overall".equalsIgnoreCase(str)){
-                            Double sum=0d;
-
-                            for(String catStr:outputMap.keySet()){
-                                if(!"date".equalsIgnoreCase(catStr)){
-                                    sum+=Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString());
-                                }
-                            }
-                            outputMap.put("overall",sum/weightageSum);
-
-                        }
-                        else{
-                            outputMap.put(str,0);
-                        }
+                    if(!outputMap.containsKey("overall")){
+                        Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->(Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d,(a,b)->a+b);
+                        Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d,(a,b)->a+b);
+                        outputMap.put("overall",weightedAvgSum/weightedSum);
                     }
                 });
 
                 complianceInfoList.add(outputMap);
             });
-
             Collections.sort(complianceInfoList, comp);
-            }
-            catch(Exception exception){
-                throw new ServiceException(exception);
-            }
+        }
+        }
+        catch (DataException e) {
+            throw new ServiceException(e);
         }
         parentMap.put("compliance_info", complianceInfoList);
         return parentMap;
