@@ -218,13 +218,14 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
 
                         outputMap.put(key, value);
                     }
-                    if(!outputMap.containsKey("overall")){
-                        Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->(Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d,(a,b)->a+b);
-                        Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d,(a,b)->a+b);
+                });
+                if(!outputMap.containsKey("overall")){
+                    Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->(Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d,(a,b)->a+b);
+                    Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d,(a,b)->a+b);
+                    if(weightedSum.doubleValue()!=0){
                         outputMap.put("overall",weightedAvgSum/weightedSum);
                     }
-                });
-
+                }
                 complianceInfoList.add(outputMap);
             });
             Collections.sort(complianceInfoList, comp);
