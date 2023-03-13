@@ -66,8 +66,15 @@ public class PacmanRuleConstants {
     public static final String GCP_NAME = "name";
     public static final String DBFLAGVALUE ="dbFlagValue" ;
     public static final String DB_TYPE = "dataBaseType";
+    public static final String ES_AQUA_IMAGE_URL = "esAquaImageUrl";
+  public static final String AQUA_SEVERITY_CLASSIFICATION = "aquaSeverityClassification";
+  public static final String AQUA_SEVERITY = "aquaSeverity";
+  public static final String CVE_NUM = "cveNumber";
+  public static final String NVD_URL = "nvdURL";
+  public static final String AQUA_SOLUTION = "aquaSolution";
+  public static final String VULNERABLE_IMAGE_DETAILS = "vulnerableImageDetails";
 
-    private PacmanRuleConstants() {
+  private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
     }
 

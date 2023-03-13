@@ -3980,4 +3980,38 @@ public class PacmanUtils {
 	}
 
 
+    public static List<JsonObject> checkImageIdFromElasticSearchForAqua(String imageId, String aquaEsAPI, String attributeName, String target) {
+        JsonParser jsonParser = new JsonParser();
+        List<JsonObject> resourceVerified = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(attributeName), imageId);
+        try {
+
+            JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(aquaEsAPI+"?size=10000", mustFilter,
+                mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+            if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+                {
+                    String hitsJsonString = resultJson.get(PacmanRuleConstants.HITS).toString();
+                    JsonObject hitsJson = (JsonObject) jsonParser.parse(hitsJsonString);
+                    JsonArray jsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+                    if (jsonArray.size() > 0) {
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            JsonObject firstObject = (JsonObject) jsonArray.get(i);
+                            JsonObject sourceJson = (JsonObject) firstObject.get(PacmanRuleConstants.SOURCE);
+                            if ((null != sourceJson) && (null != sourceJson.get(attributeName))
+                                && (!sourceJson.get(attributeName).isJsonNull())) {
+                                resourceVerified.add(sourceJson);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resourceVerified;
+    }
 }
