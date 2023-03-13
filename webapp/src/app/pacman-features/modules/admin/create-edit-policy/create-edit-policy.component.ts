@@ -78,6 +78,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allEnvironments = [];
   allpolicyParamKeys = [];
   allEnvParamKeys = [];
+  hasEditableParams = 0;
   allPolicyParams = Object();
   paramsList = [];
   status = false;
@@ -320,47 +321,37 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyRestUrl = this.policyUrl;
     PolicyModel.policyParams = this.buildpolicyParams();
     PolicyModel.policyFrequency = "0 0 ? * MON *";
-    PolicyModel.autoFixAvailable = this.isAutofixAvailable;
-    PolicyModel.autofixEnabled = this.isAutofixEnabled;
+    PolicyModel.isAutofixEnabled = false;
 
-    if(PolicyModel.autoFixAvailable){
-      PolicyModel.allowList = this.selectedAccounts;
-      PolicyModel.fixMailSubject = this.fixMailSubject;
-      PolicyModel.fixMessage = this.postFixMessage;
-      PolicyModel.violationMessage = this.violationMessage;
-      PolicyModel.waitingTime = this.waitingTime;
-      PolicyModel.maxEmailNotification = this.maxEmailNotification;
-      PolicyModel.warningMessage  = this.warningMessage;
-      PolicyModel.warningMailSubject = this.warningMailSubject;
-      PolicyModel.elapsedTime = this.elapsedTime;
-      PolicyModel. fixType = this.isSilentNotificationEnabled?"silent":"non-silent";
-    }
-
-    this.currentFileUpload = new File([''], '');
-    console.log(PolicyModel," PolicyModel ");
-    this.updatePolicy(PolicyModel);
+  this.createOrUpdatepolicy(PolicyModel);
+  
   }
 
-  updatePolicy(PolicyModel: any) {
-    const url = environment.updatePolicy.url;
+  createOrUpdatepolicy(PolicyModel: any) {
+    const url =  environment.updatePolicy.url;
     const method = environment.updatePolicy.method;
+    // if(this.status){
+    //   this.enableDisableRuleOrJob("Enable");
+    // }
+    // else
+    // this.enableDisableRuleOrJob("Disable");
     this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
       this.policyLoader = false;
       this.ispolicyCreationSuccess = true;
-      this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + " updated successfully!!", 3000, "variant1", "green-info-circle");
+      this.notificationObservableService.postMessage("Policy " + this.policyDisplayName +  "updated successfully!!", 500, "variant1", "green-info-circle");
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.clearAllLevels();
+      this.router.navigate(['../'], {
+        relativeTo: this.activatedRoute,
+        state: {
+          dataUpdated: true
+          }
+      });
     },
       error => {
         this.ispolicyCreationFailed = true;
         this.policyLoader = false;
       });
-
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-    this.workflowService.clearAllLevels();
-    this.router.navigate(['../'], {
-      relativeTo: this.activatedRoute,
-      queryParams: {
-      }
-    });
   }
 
   private buildpolicyParams() {
@@ -523,9 +514,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         }
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
       this.paramsList = [];
-      let hasEditableParameters = false;
+      
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
         if (this.allPolicyParams[i]["isEdit"]) {
+          this.hasEditableParams++;
+        }
           this.paramsList.push(
             {
               "key": this.allPolicyParams[i]["key"],
@@ -536,8 +529,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
               "description": this.allPolicyParams[i]["description"] 
             }
           )
-        }
       }
+
+      
    
       // if (this.selectedPolicyType == "ManagePolicy") {
       //   this.isDisabled = true;
@@ -607,7 +601,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result == "yes") {
-        this.updatePolicy(PolicyModel);
+        this.createOrUpdatepolicy(PolicyModel);
       }
     });
   }
