@@ -163,11 +163,16 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notificationObservableService.getMessage();
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const stateUpdated =  history.state.dataUpdated;
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    const state = this.tableStateService.getState("adminPolicies") || {};
-    if(state){
+    let state = this.tableStateService.getState("adminPolicies") || {};
+    if(stateUpdated){
+      this.clearState();
+      state = {};
+    }
+    if(state){      
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
       this.bucketNumber = state.bucketNumber || 0;
@@ -184,7 +189,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       if(this.filters){
         this.getFiltersData(this.tableData);
       }
-
+   
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
