@@ -12,7 +12,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
-from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, need_to_enable_azure, get_azure_tenants, need_to_enable_gcp, get_gcp_project_ids, get_aws_account_details, need_to_deploy_aqua_vulnerability_service
+from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, get_azure_tenants , get_gcp_project_ids, get_aws_account_details, need_to_deploy_aqua_vulnerability_service
 import json
 from core.config import Settings
 
@@ -275,7 +275,7 @@ class QualysKBCollectorEventRule(CloudWatchEventRuleResource):
     name = "qualys-kb-collector"
     schedule_expression = "cron(0 0 * * ? *)"
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class QualysKBCollectorEventRuleLambdaPermission(LambdaPermission):
@@ -284,7 +284,7 @@ class QualysKBCollectorEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = QualysKBCollectorEventRule.get_output_attr('arn')
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -307,14 +307,14 @@ class QualysKBCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
         ]
     })
 
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class QualysAssetDataImporterEventRule(CloudWatchEventRuleResource):
     name = "qualys-asset-data-importer"
     schedule_expression = "cron(0 1 * * ? *)"
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class QualysAssetDataImporterEventRuleLambdaPermission(LambdaPermission):
@@ -323,7 +323,7 @@ class QualysAssetDataImporterEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = QualysAssetDataImporterEventRule.get_output_attr('arn')
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -347,6 +347,7 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
             {'encrypt': False, 'key': "datasource", 'value': "aws"}
         ]
     })
+<<<<<<< HEAD
     PROCESS = need_to_deploy_vulnerability_service()
     
     
@@ -387,6 +388,9 @@ class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
     })
 
     PROCESS = need_to_deploy_aqua_vulnerability_service()
+=======
+    # PROCESS = need_to_deploy_vulnerability_service()
+>>>>>>> master
 
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
@@ -405,7 +409,7 @@ class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_enable_azure()
+    # PROCESS = need_to_enable_azure()
 
 
 class AzureDataCollectorEventRuleLambdaPermission(LambdaPermission):
@@ -414,7 +418,7 @@ class AzureDataCollectorEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = AzureDataCollectorEventRule.get_output_attr('arn')
-    PROCESS = need_to_enable_azure()
+    # PROCESS = need_to_enable_azure()
 
 
 class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -440,7 +444,7 @@ class AzureDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "tenants", 'value': get_azure_tenants()}
         ]
     })
-    PROCESS = need_to_enable_azure()
+    # PROCESS = need_to_enable_azure()
 
 
 class AzureDataShipperEventRule(CloudWatchEventRuleResource):
@@ -459,7 +463,7 @@ class AzureDataShipperEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
-    PROCESS = need_to_enable_azure()
+    # PROCESS = need_to_enable_azure()
 
 
 class AzureDataShipperEventRuleLambdaPermission(LambdaPermission):
@@ -468,7 +472,7 @@ class AzureDataShipperEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = AzureDataShipperEventRule.get_output_attr('arn')
-    PROCESS = need_to_enable_azure()
+    # PROCESS = need_to_enable_azure()
 
 
 class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -493,7 +497,7 @@ class AzureDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "s3.data", 'value': "azure-inventory"}
         ]
     })
-    PROCESS = need_to_enable_azure()
+    # PROCESS = need_to_enable_azure()
 
 
 class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
@@ -512,7 +516,7 @@ class GCPDataCollectorEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_enable_gcp()
+    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
@@ -521,7 +525,7 @@ class GCPDataCollectorEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = GCPDataCollectorEventRule.get_output_attr('arn')
-    PROCESS = need_to_enable_gcp()
+    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -548,7 +552,7 @@ class GCPDataCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
                 'value': get_gcp_project_ids()}
         ]
     })
-    PROCESS = need_to_enable_gcp()
+    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataShipperEventRule(CloudWatchEventRuleResource):
@@ -567,7 +571,7 @@ class GCPDataShipperEventRule(CloudWatchEventRuleResource):
         }
     }
     DEPENDS_ON = [SubmitJobLambdaFunction, ESDomainPolicy]
-    PROCESS = need_to_enable_gcp()
+    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
@@ -576,7 +580,7 @@ class GCPDataShipperEventRuleLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = GCPDataShipperEventRule.get_output_attr('arn')
-    PROCESS = need_to_enable_gcp()
+    # PROCESS = need_to_enable_gcp()
 
 
 class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -601,4 +605,4 @@ class GCPDataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
             {'encrypt': False, 'key': "s3.data", 'value': "gcp-inventory"}
         ]
     })
-    PROCESS = need_to_enable_gcp()
+    # PROCESS = need_to_enable_gcp()

@@ -113,7 +113,7 @@ class VulnerabilityEcsService(BaseEcsService, ECSServiceResource):
     load_balancer_target_group_arn = tg.VulnerabilityALBTargetGroup.get_output_attr('arn', 0)
     load_balancer_container_name = "vulnerability"
     DEPENDS_ON = [alr.VulnerabilityALBListenerRule, WaitConfigServiceToUp]
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 class Jobscheduler(ECSServiceResource):
     name = "jobscheduler"
