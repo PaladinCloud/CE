@@ -453,8 +453,8 @@ export class ComplianceDashboardComponent implements OnInit {
   ngOnInit() {
     const state = this.tableStateService.getState("dashboard") || {};    
       
-    this.headerColName = state.headerColName || '';
-    this.direction = state.direction || '';
+    this.headerColName = state.headerColName || 'Severity';
+    this.direction = state.direction || 'asc';
     // this.bucketNumber = state.bucketNumber || 0;
     
     this.displayedColumns = Object.keys(this.columnWidths);
