@@ -315,11 +315,19 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
   // rounds off to nearest multiple of roundOffToVal bounding up to valToRoundOff
   roundOff(valToRoundOff, roundOffToVal){
-    return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal; 
+    if(roundOffToVal>0){
+      return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal; 
+    }else{
+      return 0;
+    }
   }
 
   getNearestPowerOf10(val, offSet=0){
-    return Math.pow(10, Math.floor(Math.log10(val))-offSet); // 10^( |_ log10(val) _| - 1 )
+    if(val>0){
+      return Math.pow(10, Math.floor(Math.log10(val))-offSet); // 10^( |_ log10(val) _| - 1 )
+    }else{
+      return 1;
+    }
   }
 
   roundToNDecimalPlaces(val, n){
@@ -1384,7 +1392,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         .attr("fill", "#fff")
         // .attr("fill-opacity", "0.9")
         .attr("height", "69px")
-        .attr("width", "149px")
+        .attr("width", "169px")
         .attr("stroke", "#DFE6EE")
         .attr("display", "none")
         .attr("text-align", "middle")
@@ -1523,7 +1531,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "4em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
+            ? "-14em"
             : "5em";
         // rectData["dx"] = mousePosition < axisRange / 4 ? "70" : "-140";
         valueData["dx"] =
@@ -1542,7 +1550,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "2.1em"
             : mousePosition > axisRange * 0.75
-            ? "-7em"
+            ? "-5em"
             : "3.1em";
         rectData["dy"] =
           mousePosition < axisRange / 4
@@ -1559,7 +1567,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "15"
             : mousePosition > axisRange * 0.75
-            ? "-200"
+            ? "-198"
             : "25";
         dateData["dx"] =
           mousePosition < axisRange / 4
@@ -1577,7 +1585,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           mousePosition < axisRange / 4
             ? "1em"
             : mousePosition > axisRange * 0.75
-            ? "-16em"
+            ? "-14em"
             : "2em";
         yearData["dy"] =
           mousePosition < axisRange / 4
