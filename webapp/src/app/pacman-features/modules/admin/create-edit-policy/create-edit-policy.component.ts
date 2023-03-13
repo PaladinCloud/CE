@@ -315,18 +315,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   private buildCreatepolicyModel(policyForm: any) {
     const PolicyModel = Object();
     PolicyModel.policyType = this.selectedPolicyType;
-    if (this.isPolicyIdValid && policyForm.policyDisplayName == this.policyDisplayName) {
-      PolicyModel.policyDisplayName = this.policyDisplayName;
-      PolicyModel.policyId = this.policyId;
-      PolicyModel.policyName = this.policyName;
-    }
-    else {
-      PolicyModel.policyDisplayName = policyForm.policyDisplayName;
-      PolicyModel.policyName = policyForm.policyDisplayName + '_' + this.selectedAssetGroup + '_' + this.selectedAssetType;
-      PolicyModel.policyName = PolicyModel.policyName.replace(/\s/g, '-');
-      PolicyModel.policyId = PolicyModel.policyName;
-    }
-    
+    PolicyModel.policyDisplayName = this.policyDisplayName;
+    PolicyModel.policyId = this.policyId;
+    PolicyModel.policyName = this.policyName;
+  
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
     PolicyModel.status = this.status?"ENABLED": "DISABLED";
@@ -387,7 +379,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 
   private buildpolicyParams() {
     const policyParms = Object();
@@ -628,19 +619,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
       this.paramsList = [];
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
-        if (this.allPolicyParams[i]["key"] == 'severity') {
-          this.selectedSeverity = this.allPolicyParams[i]["value"];
-          this.allPolicyParams.splice(i, 1);
-        } else if (this.allPolicyParams[i]["key"] == 'policyCategory') {
-          if (this.allPolicyParams[i]["value"].toLowerCase() == "costoptimization") {
-            this.allPolicyParams[i]["value"] = "cost";
-          }
-          else if (this.allPolicyParams[i]["value"].toLowerCase() == "governance") {
-            this.allPolicyParams[i]["value"] = "operations";
-          }
-          this.selectedCategory = this.allPolicyParams[i]["value"];
-          this.allPolicyParams.splice(i, 1);
-        } else {
+        if (this.allPolicyParams[i]["isEdit"]) {
           this.paramsList.push(
             {
               "key": this.allPolicyParams[i]["key"],
@@ -653,14 +632,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           )
         }
       }
-      if (this.paramsList.length == 0) {
-        this.paramsList.push({
-          "key": "",
-          "value": "",
-          "isEdit": false,
-          "isMandatory": false
-        });
-      }
+   
       // if (this.selectedPolicyType == "ManagePolicy") {
       //   this.isDisabled = true;
       // }
