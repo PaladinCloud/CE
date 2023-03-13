@@ -80,6 +80,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allEnvironments = [];
   allpolicyParamKeys = [];
   allEnvParamKeys = [];
+  hasEditableParams = 0;
   allPolicyParams = Object();
   paramsList = [];
   status = false;
@@ -339,7 +340,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     } else {
       this.currentFileUpload = new File([''], '');
     }
-    console.log(PolicyModel, "PolicyModel");
     if (this.selectedPolicyType == "Federated") {
       const isFormValid = this.isValid(PolicyModel);
       this.openDialog(PolicyModel, isFormValid);
@@ -356,28 +356,28 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   createOrUpdatepolicy(PolicyModel: any) {
     const url = this.isPolicyIdValid ? environment.updatePolicy.url : environment.createPolicy.url;
     const method = environment.createPolicy.method;
-    if(this.status){
-      this.enableDisableRuleOrJob("Enable");
-    }
-    else
-    this.enableDisableRuleOrJob("Disable");
+    // if(this.status){
+    //   this.enableDisableRuleOrJob("Enable");
+    // }
+    // else
+    // this.enableDisableRuleOrJob("Disable");
     this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
       this.policyLoader = false;
       this.ispolicyCreationSuccess = true;
       this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + (this.isCreate ? " created" : " updated") + " successfully!!", 500, "variant1", "green-info-circle");
+      this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+      this.workflowService.clearAllLevels();
+      this.router.navigate(['../'], {
+        relativeTo: this.activatedRoute,
+        state: {
+          dataUpdated: true
+          }
+      });
     },
       error => {
         this.ispolicyCreationFailed = true;
         this.policyLoader = false;
       });
-
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-    this.workflowService.clearAllLevels();
-    this.router.navigate(['../'], {
-      relativeTo: this.activatedRoute,
-      queryParams: {
-      }
-    });
   }
 
   private buildpolicyParams() {
@@ -618,8 +618,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.resolutionUrl = this.policyDetails.resolutionUrl;
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
       this.paramsList = [];
+      
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
         if (this.allPolicyParams[i]["isEdit"]) {
+          this.hasEditableParams++;
+        }
           this.paramsList.push(
             {
               "key": this.allPolicyParams[i]["key"],
@@ -630,8 +633,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
               "description": this.allPolicyParams[i]["description"] 
             }
           )
-        }
       }
+
+      
    
       // if (this.selectedPolicyType == "ManagePolicy") {
       //   this.isDisabled = true;
