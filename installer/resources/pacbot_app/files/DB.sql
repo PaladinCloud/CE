@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ﻿/*
 SQLyog Ultimate v12.09 (32 bit)
 MySQL - 5.6.27-log : Database - pacmandata
