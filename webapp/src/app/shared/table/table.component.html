@@ -1,5 +1,5 @@
 <div #tableContainer class="table-container flex flex-col">
-    <div class="table-header">
+        <div class="table-header">
         <div class="table-title flex flex-row" *ngIf="tableTitle">
             <div class="left">
                 {{ tableTitle }}
@@ -9,27 +9,26 @@
         </div>
         <div class="table-column-modifier flex flex-row" *ngIf="showSearchBar || showAddRemoveCol">
             <div class="header-left flex flex-row">
-                <div class="search-bar-wrapper flex flex-row" *ngIf="showSearchBar">
+                <div class="search-bar-wrapper flex flex-row gap-8" *ngIf="showSearchBar">
                     <img class="padding-12" src="/assets/icons/header-search.svg" matPrefix alt="" />
-                    <div *ngIf="chips?.length>0" class="chips-container flex gap-8">
-                        <div class="filter-chips-wrapper flex flex-align-center" *ngFor="let filter of chips; let i=index">
+                    <div class="chips-container flex gap-8" *ngIf="chips?.length">
+                        <div class="chip-wrapper flex flex-align-center" *ngFor="let filter of chips; let i=index">
                             <div class="chip flex flex-align-center" *ngIf="i<2 && filter.filterValue">
-                                <div class="chip-content nowrap-ellipsis capitalize" [title]="filter.filterValue">
-                                    {{filter.filterValue}}</div>
-                                <img (click)="removeFilter(i)" class="pointer padding-12" src="/assets/icons/x-icon.svg"
-                                    alt="">
+                                <div class="chip-content nowrap-ellipsis capitalize" [title]="filter.filterValue">{{filter.filterValue}}</div>
+                                <img (click)="removeFilter(i)" class="pointer padding-12" src="/assets/icons/x-icon.svg" alt="">
                             </div>
                         </div>
-                        <div [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()"
-                            class="more-filters-btn flex flex-align-center pointer" *ngIf="totalChips > 2">
+                        <div [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" class="more-filters-btn flex flex-align-center pointer" *ngIf="totalChips > 2">
                             <div class="more-filters-wrapper flex flex-align-center pointer">
                                 +{{ (totalChips - 2) }}
                             </div>
                         </div>
                     </div>
 
+
                     <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)"
                         placeholder="Search" class="search-bar-cursor" />
+                  
                     <!-- <div class="search-in-columns" matSuffix>
                         <mat-form-field>
                             <mat-select [formControl]="searchInColumns" multiple>
@@ -40,39 +39,35 @@
                             </mat-select>
                         </mat-form-field>
                     </div> -->
-                    <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0"
-                        (click)="clearSearchText()" matPrefix alt="" />
-                    <div class="filter-wrapper flex flex-row" [class.isDisabled]="!showFilterBtn" [matMenuTriggerFor]="filterModal"
-                        (click)="scrollFilterModalToBottom()">
+                    <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
+                    <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" [class.isDisabled]="!showFilterBtn">
                         <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
                     </div>
-            <mat-menu #filterModal="matMenu">
-                <div class="filter-modal-container" (click)="$event.stopPropagation()">
-                    <div class="filter-modal-wrapper flex flex-col">
+                <mat-menu #filterModal="matMenu">
+                        <div class="filter-modal-container" (click)="$event.stopPropagation()">
+                        <div class="filter-modal-wrapper flex flex-col">
                         <div class="header flex flex-row">
                             <div class="title">Filters</div>
                             <div class="clear-all-btn" (click)="removeAllFilters()">Clear all</div>
                         </div>
                         <div class="filters-container" #filtersContainer>
                             <div class="filters-wrapper flex flex-col">
-                            <div class="filter flex flex-row"
-                                *ngFor="let filter of filteredArray; let i=index">
+                            <div class="filter flex flex-row" *ngFor="let filter of filteredArray; let i=index">
                                 <app-dropdown [items]="filterTypeLabels"
                                     (selected)='onSelectFilterType($event, i)'
                                     [selectedItem]="filter.keyDisplayValue"
                                     [placeholder]="'Select Filter Type'">
                                 </app-dropdown>
-                                <app-dropdown
-                                    [items]="filterTagLabels[filter.keyDisplayValue]?filterTagLabels[filter.keyDisplayValue]:[]"
+                                <app-dropdown [items]="filterTagLabels[filter.keyDisplayValue]?filterTagLabels[filter.keyDisplayValue]:[]"
                                     (selected)='onSelectFilter($event, i)'
-                                    [selectedItem]="filter.filterValue" [placeholder]="'Select Filter'">
+                                    [selectedItem]="filter.filterValue"
+                                    [placeholder]="'Select Filter'">
                                 </app-dropdown>
                                 <!-- <input style="width:100%; border:1px solid var(--border-100)" matInput [(ngModel)]="filterArr[i].filterText" (keyup)="changeFilterText($event, i)" type="text"> -->
-                                <img (click)="removeFilter(i)" style="cursor: pointer;"
-                                    src="/assets/icons/x-icon.svg" alt="">
+                                <img (click)="removeFilter(i)" style="cursor: pointer;" src="/assets/icons/x-icon.svg" alt="">
                             </div>
                         </div>
-                    </div>
+                        </div>
                         <div class="footer">
                             <div class="add-filter-btn" (click)="addFilter()">
                                 Add Condition
@@ -80,34 +75,30 @@
                         </div>
                     </div>
                 </div>
-            </mat-menu>
+                    </mat-menu>
                 </div>
             </div>
             <div class="table-count-info" style="margin-left: 20px;">
                 <!-- <span *ngIf="isDataLoading">Loading...</span> -->
-                <span>{{totalRows}} Results</span>
+                <span >{{totalRows}} Results</span>
             </div>
             <div class="header-right flex flex-row">
-
-
+                
+                
                 <div *ngIf="showMoreMenu" class="more-wrapper">
                     <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
                         <button *ngIf="showDownloadBtn" class="download-btn" mat-menu-item (click)="download()">
-                            <img src="/assets/icons/download-icon.svg" alt="">
-                            <span>Export</span>
+                            <img  src="/assets/icons/download-icon.svg" alt="">
+                            <span >Export</span>
                         </button>
-                        <div mat-menu-item (click)="openColumnSelectorModal()" class="add-remove-columns-wrapper"
-                            *ngIf="showAddRemoveCol">
+                        <div mat-menu-item (click)="openColumnSelectorModal()" class="add-remove-columns-wrapper" *ngIf="showAddRemoveCol">
                             <mat-form-field>
                                 <mat-select #select multiple disableOptionCentering>
-                                    <mat-option class="disabled-option" disabled="true" value="disabled">Show/hide
-                                        columns</mat-option>
-                                    <mat-option #allColumnsSelected (click)="toggleAllSelection()" value="selectAll">
-                                        Select All</mat-option>
-                                    <mat-option (click)="optionClick()" *ngFor="let column of displayedColumns"
-                                        [value]="column">
-                                        {{column}}
+                                    <mat-option class="disabled-option" disabled="true" value="disabled">Show/hide columns</mat-option>
+                                    <mat-option #allColumnsSelected (click)="toggleAllSelection()" value="selectAll">Select All</mat-option>
+                                    <mat-option (click)="optionClick()" *ngFor="let column of displayedColumns" [value]="column">
+                                    {{column}}
                                     </mat-option>
                                 </mat-select>
                             </mat-form-field>
@@ -122,57 +113,49 @@
     <div [class.loader]="!tableDataLoaded && tableErrorMessage==''"></div>
     <app-error-message *ngIf="tableErrorMessage" [selectedValue]="tableErrorMessage"></app-error-message>
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
-        <table class="table-body-wrapper" mat-table [dataSource]="dataSource" [matSortActive]="headerColName"
-            [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
+        <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
-                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell
-                    *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false">
+                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false">
                     <span> {{ column!='Actions' && column!='DetailsBtn'?column:'' }} </span>
-                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'"
-                        height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
+                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
                 </th>
-                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-cell
-                    *matCellDef="let element">
-                    <div class="chip-wrapper" *ngIf="element[column] && element[column].isChip; else menuBtn">
-                        <app-chip [variant]="element[column].chipVariant" [maxChips]="maxChips"
-                            [backgroundColor]="element[column].chipBackgroundColor"
-                            [color]="element[column].chipTextColor" [chipsList]="element[column].chipList">
-                        </app-chip>
+                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element"> 
+                    <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
+                        <img class="pointer menu-btn" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
+                        <mat-menu #actionMenu="matMenu">
+                            <button (click)="handleAction(element, action)" style="min-width: 156px;" *ngFor="let action of element[column].menuItems" mat-menu-item>
+                                <span >{{ action }}</span>
+                            </button>
+                        </mat-menu>
                     </div>
-                    <ng-template #menuBtn>
-                        <div *ngIf="element[column] && element[column].isMenuBtn; else textImageData"
-                            style="text-align: center;">
-                            <img class="pointer" width="20px" mat-button [matMenuTriggerFor]="actionMenu"
-                                src="/assets/icons/three-dots.svg" alt="">
-                            <mat-menu #actionMenu="matMenu">
-                                <button (click)="handleAction(element, action)" style="min-width: 156px;"
-                                    *ngFor="let action of element[column].menuItems" mat-menu-item>
-                                    <span>{{ action }}</span>
-                                </button>
-                            </mat-menu>
-                        </div>
-                    </ng-template>
-                    <ng-template #textImageData>
-                        <div *ngIf="element[column] && (element[column].valueText || element[column].valueText==0); else noData"
-                                (click)="handleClick(element, element[column])" class="nowrap-ellipsis"
-                                [class.pointer]="element[column].link" [title]="element[column].titleText">
-                                <img *ngIf="element[column].imgSrc" style="vertical-align: text-bottom;"
-                                    src="/assets/icons/{{element[column].imgSrc}}.svg">
-                                <span [class.row-title]="column=='Title'"
-                                    *ngIf="element[column].text || element[column].text==0">{{ element[column].text }}
-                                </span>
-                        </div>
-                    </ng-template>
-                    <ng-template #noData>
-                        <div class="nowrap-ellipsis">
-                            <span>No Data</span>
+                    <ng-template #clickable>
+                        <div class="clickable">
+                            <div class="chip-wrapper" *ngIf="element[column] && element[column].isChip; else textImageData" [title]="element[column].titleText">
+                                <app-chip [variant]="element[column].chipVariant" [maxChips]="maxChips"
+                                [backgroundColor]="element[column].chipBackgroundColor"
+                                [color]="element[column].chipTextColor" [chipsList]="element[column].chipList">
+                            </app-chip>
+                            </div>
+                            <ng-template #textImageData>
+                                <div *ngIf="element[column] && (element[column].valueText || element[column].valueText===0); else noData" [class.row-title]="element[column].isLink" class="nowrap-ellipsis" [class.pointer]="element[column].link" [title]="element[column].titleText">
+                                    <img *ngIf="element[column].imgSrc" [class.noImg]="element[column].imgSrc=='noImg'" style="vertical-align: text-bottom; padding-right: 8px;"
+                                         src="/assets/icons/{{element[column].imgSrc}}.svg"> 
+                                    <span *ngIf="element[column].text || element[column].text==0">{{ element[column].text }} </span>
+                                    <div *ngIf="element[column].symbol" class="symbol" [class]="element[column].symbol.type" [style.background-color]="element[column].symbol.type!='triangle'?element[column].symbol.color:''" [style.border-bottom-color]="element[column].symbol.type=='triangle'?element[column].symbol.color:''"></div>
+                                </div>
+                            </ng-template>
+                            <ng-template #noData>
+                                <div class="nowrap-ellipsis">
+                                    <span>No Data</span>
+                                </div>
+                            </ng-template>
                         </div>
                     </ng-template>
 
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
-        <tr (click)="handleClick(row)" [class.row-hover]="rowClickable" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
+            <tr [class.row-hover]="rowClickable" mat-row *matRowDef="let row; columns: whiteListColumns;"></tr>
         </table>
     </div>
     </div>

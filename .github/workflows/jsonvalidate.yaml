@@ -1,14 +1,41 @@
-name: Validate JSONs
-
-on: [pull_request]
+name: Json-check
+on:
+  push:
+    branches: [master, v*]
+  pull_request:
+    branches: [master, v*]
 
 jobs:
-  verify-json-validation:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Validate JSON
-        uses: docker://orrosenblatt/validate-json-action:latest
-        env:  
-          INPUT_SCHEMA: './check-schema.json'
-          INPUT_JSONS: installer/resources/lambda_rule_engine/files/rule_engine_cloudwatch_aws_rules.json,installer/resources/lambda_rule_engine/files/rule_engine_cloudwatch_azure_rules.json,installer/resources/lambda_rule_engine/files/rule_engine_cloudwatch_gcp_rules.json
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' # install the python version needed
+
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+
+
+      - name: execute aws json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python awsjsoncheckscript.py
+
+
+      - name: execute azure json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python azurejsoncheckscript.py
+
+      - name: execute gcp json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python gcpjsoncheckscript.py
+      
+

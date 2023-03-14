@@ -45,7 +45,23 @@
 		    <artifactId>azure</artifactId>
 		    <version>1.41.3</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.12.290</version>
+		</dependency>
 
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-secretsmanager</artifactId>
+			<version>1.12.413</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-core</artifactId>
+			<version>1.12.239</version>
+		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-efs</artifactId>
@@ -373,6 +389,14 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19</version>
+        <configuration>
+            <argLine>-Xmx7000m</argLine>
+        </configuration>
+      </plugin>
 			</plugins>
 		</pluginManagement>
 

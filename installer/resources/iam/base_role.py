@@ -202,3 +202,22 @@ class PaladinCognitoUserPoolFullAccessPolicy(iam.IAMRolePolicyResource):
 class PaladinCognitoUserPoolFullAccessAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = PaladinCognitoUserPoolFullAccessPolicy.get_output_attr('arn')
+
+class PaladinSecretManagerFullAccessDocument(iam.IAMPolicyDocumentData):
+	statement = [
+		{
+			"effect": "Allow",
+			"actions": ["secretsmanager:*"],
+			"resources": ["*"]
+		}
+	]
+class PaladinSecretManagerFullAccessPolicy(iam.IAMRolePolicyResource):
+	name = "PaladinSecretManagerFullAccess"
+	path = '/'
+	policy = PaladinSecretManagerFullAccessDocument.get_output_attr('json')
+
+
+
+class PaladinSecretManagerFullAccessAttach(iam.IAMRolePolicyAttachmentResource):
+	role = BaseRole.get_output_attr('name')
+	policy_arn = PaladinSecretManagerFullAccessPolicy.get_output_attr('arn')

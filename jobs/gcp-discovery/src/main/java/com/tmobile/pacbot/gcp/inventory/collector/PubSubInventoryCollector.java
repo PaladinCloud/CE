@@ -26,7 +26,7 @@ public class PubSubInventoryCollector {
         logger.debug("Before getting TopicAdminClient");
         TopicAdminClient topicAdminClient = null;
         try {
-            topicAdminClient = gcpCredentialsProvider.getTopicClient();
+            topicAdminClient = gcpCredentialsProvider.getTopicClient(project.getProjectId());
             logger.debug("After getting TopicAdminClient {}",topicAdminClient);
             TopicAdminClient.ListTopicsPagedResponse topics = topicAdminClient.listTopics(ProjectName.of(project.getProjectId()));
             logger.debug("Size of ListTopicsPagedResponse {}",topics);

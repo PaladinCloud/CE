@@ -11,17 +11,7 @@ export class StepperComponent implements OnInit {
   @Output() selectedStepperIndex = new EventEmitter<any>();
   @ContentChild('stepsHeader', { read: TemplateRef }) stepsHeader: TemplateRef<any>;
   @ContentChild('stepsContent', { read: TemplateRef }) stepsContent: TemplateRef<any>;
-
-  stepperData = [
-    {
-      name: "Policy Details",
-      icon: "form"
-    },
-    {
-      name: "Policy Parameters",
-      icon: "last"
-    }
-  ]
+  @Input()  stepperData = [];
   constructor() { }
   ngOnInit(): void {
   }

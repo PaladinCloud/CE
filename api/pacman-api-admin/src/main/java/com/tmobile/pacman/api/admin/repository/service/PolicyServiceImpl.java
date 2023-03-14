@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,6 +46,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
@@ -258,19 +260,34 @@ public class PolicyServiceImpl implements PolicyService {
 			if (isPolicyIdExits(policyDetails.getPolicyId())) {
 				Date currentDate = new Date();
 				Policy updatePolicyDetails = policyRepository.findById(policyDetails.getPolicyId()).get();
-
-				String policyParams = buildAndGetPolicyParams(policyDetails, updatePolicyDetails.getPolicyUUID(),
-						false);
-				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType())) {
-					updatePolicyDetails.setPolicyParams(policyParams);
-					updatePolicyDetails.setSeverity(policyDetails.getSeverity());
-					updatePolicyDetails.setCategory(policyDetails.getCategory());
-					updatePolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
+				updatePolicyDetails.setPolicyParams(policyDetails.getPolicyParams());
+				updatePolicyDetails.setSeverity(policyDetails.getSeverity());
+				updatePolicyDetails.setCategory(policyDetails.getCategory());
+				updatePolicyDetails.setAutoFixEnabled(policyDetails.getAutofixEnabled());
+				if(policyDetails.getPolicyParams() != null && 
+						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
+					updatePolicyDetails.setAutoFixAvailable("true");
+				} else {
+					updatePolicyDetails.setAutoFixAvailable("false");
+				}
+				updatePolicyDetails.setAllowList(policyDetails.getAllowList());
+				updatePolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
+				updatePolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
+				updatePolicyDetails.setTemplateName(policyDetails.getTemplateName());
+				updatePolicyDetails.setTemplateColumns(policyDetails.getTemplateColumns());
+				updatePolicyDetails.setFixType(policyDetails.getFixType());
+				updatePolicyDetails.setWarningMailSubject(policyDetails.getWarningMailSubject());
+				updatePolicyDetails.setWarningMessage(policyDetails.getWarningMessage());
+				updatePolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
+				updatePolicyDetails.setFixMessage(policyDetails.getFixMessage());
+				updatePolicyDetails.setViolationMessage(policyDetails.getViolationMessage());
+				updatePolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
+				if (AdminConstants.MANAGED_POLICY_TYPE.equalsIgnoreCase(policyDetails.getPolicyType()))
+				{
 					updateCustomEventBridgeRule(updatePolicyDetails);
 				} else {
 					policyDetails.setTargetType(updatePolicyDetails.getTargetType());
 					policyDetails.setDataSource(retrieveDataSource(updatePolicyDetails));
-					updatePolicyDetails.setPolicyParams(policyParams);
 					updatePolicyDetails.setPolicyFrequency(policyDetails.getPolicyFrequency());
 					updatePolicyDetails.setPolicyExecutable(policyDetails.getPolicyExecutable());
 					updatePolicyDetails.setUserId(userId);
@@ -280,12 +297,9 @@ public class PolicyServiceImpl implements PolicyService {
 					updatePolicyDetails.setModifiedDate(currentDate);
 					updatePolicyDetails.setPolicyType(policyDetails.getPolicyType());
 					updatePolicyDetails.setPolicyRestUrl(policyDetails.getPolicyRestUrl());
-					updatePolicyDetails.setSeverity(policyDetails.getSeverity());
-					updatePolicyDetails.setCategory(policyDetails.getCategory());
 					updatePolicyDetails.setPolicyDesc(policyDetails.getPolicyDesc());
 					updatePolicyDetails.setResolution(policyDetails.getResolution());
 					updatePolicyDetails.setResolutionUrl(policyDetails.getResolutionUrl());
-					updatePolicyDetails.setAutoFixEnabled(policyDetails.getIsAutofixEnabled());
 					createUpdateCloudWatchEventRule(updatePolicyDetails);
 					if (policyDetails.getIsFileChanged() && policyDetails.getPolicyType().equalsIgnoreCase("Classic")) {
 						createUpdatePolicyJartoS3Bucket(fileToUpload, updatePolicyDetails.getPolicyUUID());
@@ -324,8 +338,7 @@ public class PolicyServiceImpl implements PolicyService {
 				newPolicyDetails.setPolicyId(policyDetails.getPolicyId());
 				newPolicyDetails.setPolicyName(policyDetails.getPolicyName());
 				newPolicyDetails.setTargetType(policyDetails.getTargetType());
-				String policyParams = buildAndGetPolicyParams(policyDetails, policyUUID, true);
-				newPolicyDetails.setPolicyParams(policyParams);
+				newPolicyDetails.setPolicyParams(policyDetails.getPolicyParams());
 				newPolicyDetails.setPolicyFrequency(policyDetails.getPolicyFrequency());
 				newPolicyDetails.setPolicyExecutable(policyDetails.getPolicyExecutable());
 				newPolicyDetails.setPolicyDisplayName(policyDetails.getPolicyDisplayName());
@@ -343,6 +356,25 @@ public class PolicyServiceImpl implements PolicyService {
 				newPolicyDetails.setPolicyRestUrl(policyDetails.getPolicyRestUrl());
 				newPolicyDetails.setSeverity(policyDetails.getSeverity());
 				newPolicyDetails.setCategory(policyDetails.getCategory());
+				newPolicyDetails.setAutoFixEnabled(policyDetails.getAutofixEnabled());
+				if(policyDetails.getPolicyParams() != null && 
+						policyDetails.getPolicyParams().indexOf(AdminConstants.AUTO_FIX_KEY) >= 0) {
+					newPolicyDetails.setAutoFixAvailable("true");
+				} else {
+					newPolicyDetails.setAutoFixAvailable("false");
+				}
+				newPolicyDetails.setAllowList(policyDetails.getAllowList());
+				newPolicyDetails.setWaitingTime(policyDetails.getWaitingTime());
+				newPolicyDetails.setMaxEmailNotification(policyDetails.getMaxEmailNotification());
+				newPolicyDetails.setTemplateName(policyDetails.getTemplateName());
+				newPolicyDetails.setTemplateColumns(policyDetails.getTemplateColumns());
+				newPolicyDetails.setFixType(policyDetails.getFixType());
+				newPolicyDetails.setWarningMailSubject(policyDetails.getWarningMailSubject());
+				newPolicyDetails.setWarningMessage(policyDetails.getWarningMessage());
+				newPolicyDetails.setFixMailSubject(policyDetails.getFixMailSubject());
+				newPolicyDetails.setFixMessage(policyDetails.getFixMessage());
+				newPolicyDetails.setViolationMessage(policyDetails.getViolationMessage());
+				newPolicyDetails.setElapsedTime(policyDetails.getElapsedTime());
 				createUpdateCloudWatchEventRule(newPolicyDetails);
 				if (policyDetails.getIsFileChanged() && policyDetails.getPolicyType().equalsIgnoreCase("Classic")) {
 					createUpdatePolicyJartoS3Bucket(fileToUpload, policyUUID);
@@ -351,7 +383,7 @@ public class PolicyServiceImpl implements PolicyService {
 				throw new PacManException(String.format(AdminConstants.POLICY_ID_EXITS,
 						(policyDetails.getPolicyId() == null ? "given" : policyDetails.getPolicyId())));
 			}
-		} else {
+		}  else {
 			throw new PacManException("Invalid Policy Instance, please provide valid details.");
 		}
 		return AdminConstants.POLICY_CREATION_SUCCESS;
@@ -457,22 +489,13 @@ public class PolicyServiceImpl implements PolicyService {
 
 	private boolean invokePolicy(AWSLambda awsLambdaClient, Policy policyDetails, String invocationId,
 			List<Map<String, Object>> additionalRuleParams) {
-		String ruleParams = policyDetails.getPolicyParams();
+		JsonObject inputConstant = new JsonObject();
+		inputConstant.addProperty(AdminConstants.POLICY_UUID, policyDetails.getPolicyUUID());		
 		if (invocationId != null) {
-			Map<String, Object> ruleParamDetails;
-			try {
-				ruleParamDetails = mapper.readValue(policyDetails.getPolicyParams(),
-						new TypeReference<Map<String, Object>>() {
-						});
-				ruleParamDetails.put("invocationId", invocationId);
-				ruleParamDetails.put("additionalParams", mapper.writeValueAsString(additionalRuleParams));
-				ruleParams = mapper.writeValueAsString(ruleParamDetails);
-			} catch (Exception exception) {
-				log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-			}
+			inputConstant.addProperty(AdminConstants.INVOCATION_ID, invocationId);
 		}
 		String functionName = config.getRule().getLambda().getFunctionName();
-		ByteBuffer payload = ByteBuffer.wrap(ruleParams.getBytes());
+		ByteBuffer payload = ByteBuffer.wrap(inputConstant.toString().getBytes());
 		InvokeRequest invokeRequest = new InvokeRequest().withFunctionName(functionName).withPayload(payload);
 		InvokeResult invokeResult = awsLambdaClient.invoke(invokeRequest);
 		if (invokeResult.getStatusCode() == 200) {
@@ -483,8 +506,10 @@ public class PolicyServiceImpl implements PolicyService {
 	}
 
 	private boolean linkTargetWithRule(final Policy policy) {
+		JsonObject obj = new JsonObject();
+		obj.addProperty(AdminConstants.POLICY_UUID, policy.getPolicyUUID());
 		Target target = new Target().withId(config.getRule().getLambda().getTargetId())
-				.withArn(config.getRule().getLambda().getFunctionArn()).withInput(policy.getPolicyParams());
+				.withArn(config.getRule().getLambda().getFunctionArn()).withInput(obj.toString());
 
 		PutTargetsRequest targetsRequest = new PutTargetsRequest().withTargets(target).withRule(policy.getPolicyUUID());
 
@@ -498,9 +523,11 @@ public class PolicyServiceImpl implements PolicyService {
 	}
 
 	private boolean linkTargetWithRuleForManagedPolicy(final Policy policy, String eventBridge) {
+		JsonObject obj = new JsonObject();
+		obj.addProperty(AdminConstants.POLICY_UUID, policy.getPolicyUUID());
 		com.amazonaws.services.eventbridge.model.Target eventTarget = new com.amazonaws.services.eventbridge.model.Target();
 		eventTarget.withArn(config.getRule().getLambda().getFunctionArn())
-				.withId(config.getRule().getLambda().getTargetId()).withInput(policy.getPolicyParams());
+				.withId(config.getRule().getLambda().getTargetId()).withInput(obj.toString());
 		com.amazonaws.services.eventbridge.model.PutTargetsRequest targetReq = new com.amazonaws.services.eventbridge.model.PutTargetsRequest();
 		targetReq.withTargets(eventTarget).withEventBusName(eventBridge).withRule(policy.getPolicyUUID());
 
@@ -552,79 +579,28 @@ public class PolicyServiceImpl implements PolicyService {
 		return policyRepository.findByPolicyId(policyId) != null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private String buildAndGetPolicyParams(final CreateUpdatePolicyDetails policyDetails, final String policyUUID,
-			final boolean isCreatedNew) {
-		Map<String, Object> newJobParams;
-		try {
-			newJobParams = mapper.readValue(policyDetails.getPolicyParams(), new TypeReference<Map<String, Object>>() {
-			});
-			newJobParams.put("autofix", policyDetails.getIsAutofixEnabled());
-			newJobParams.put("alexaKeyword", policyDetails.getAlexaKeyword());
-			newJobParams.put("policyRestUrl", policyDetails.getPolicyRestUrl());
-			newJobParams.put("targetType", policyDetails.getTargetType());
-			newJobParams.put("pac_ds", policyDetails.getDataSource());
-			newJobParams.put("policyId", policyDetails.getPolicyId());
-			newJobParams.put("assetGroup", policyDetails.getAssetGroup());
-			newJobParams.put("policyUUID", policyUUID);
-			newJobParams.put("policyType", policyDetails.getPolicyType());
-			Map<String, Object> severity = new HashMap<>();
-			severity.put("key", "severity");
-			severity.put("value", policyDetails.getSeverity());
-			severity.put("encrypt", false);
-			Map<String, Object> category = new HashMap<>();
-			category.put("key", "policyCategory");
-			category.put("value", policyDetails.getCategory());
-			category.put("encrypt", false);
-			List<Map<String, Object>> environmentVariables = (List<Map<String, Object>>) newJobParams
-					.get("environmentVariables");
-			List<Map<String, Object>> params = (List<Map<String, Object>>) newJobParams.get("params");
-			params.add(severity);
-			params.add(category);
-			newJobParams.put("environmentVariables",
-					encryptDecryptValues(environmentVariables, policyUUID, isCreatedNew));
-			newJobParams.put("params", encryptDecryptValues(params, policyUUID, isCreatedNew));
-			return mapper.writeValueAsString(newJobParams);
-		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-		}
-		return policyDetails.getPolicyParams();
-	}
-
-	private List<Map<String, Object>> encryptDecryptValues(List<Map<String, Object>> ruleParams, String ruleUUID,
-			boolean isCreatedNew) {
-		for (int index = 0; index < ruleParams.size(); index++) {
-			Map<String, Object> keyValue = ruleParams.get(index);
-			if (isCreatedNew) {
-				String isToBeEncrypted = keyValue.get("encrypt").toString();
-				if (StringUtils.isNotBlank(isToBeEncrypted) && Boolean.parseBoolean(isToBeEncrypted)) {
-					try {
-						keyValue.put("value", AdminUtils.encrypt(keyValue.get("value").toString(), ruleUUID));
-					} catch (Exception exception) {
-						keyValue.put("value", keyValue.get("value").toString());
-					}
-				}
-			} else {
-				if (keyValue.get("isValueNew") != null) {
-					String isValueNew = keyValue.get("isValueNew").toString();
-					String isToBeEncrypted = keyValue.get("encrypt").toString();
-					if (StringUtils.isNotBlank(isValueNew) && Boolean.parseBoolean(isValueNew)) {
-						if (StringUtils.isNotBlank(isToBeEncrypted) && Boolean.parseBoolean(isToBeEncrypted)) {
-							try {
-								keyValue.put("value", AdminUtils.encrypt(keyValue.get("value").toString(), ruleUUID));
-							} catch (Exception exception) {
-								keyValue.put("value", keyValue.get("value").toString());
-							}
-						}
-					}
-				}
-			}
-		}
-		return ruleParams;
-	}
-
 	@Override
 	public List<PolicyCategory> getAllPolicyCategories() throws PacManException {
 		return policyCategoryRepository.findAll();
 	}
+	
+	@Override
+	public String enableDisableAutofix(final String policyId, final String action, final String userId)
+			throws PacManException {
+		Optional<Policy> policyById = policyRepository.findById(policyId);
+		if (policyById.isPresent()) {
+			Policy existingPolicy = policyById.get();
+			existingPolicy.setUserId(userId);
+			existingPolicy.setModifiedDate(new Date());
+			existingPolicy.setAutoFixEnabled(action);
+			policyRepository.save(existingPolicy);
+			if(action != null && "true".equalsIgnoreCase(action)) {
+				return AdminConstants.AUTOFIX_ENABLE_SUCCESS; 
+			}
+			return AdminConstants.AUTOFIX_DISABLE_SUCCESS; 
+		} else {
+			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyId));
+		}
+	}
+
 }

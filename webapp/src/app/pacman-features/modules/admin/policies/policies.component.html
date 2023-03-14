@@ -24,14 +24,15 @@
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" (cellSelectEventEmitter)="goToDetails($event)"
+                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)" (selectedAction)="goToDetails($event)"
                             [data]="tableData" [columnWidths]="columnWidths" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
                             [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
                             (searchCalledEventEmitter)="callNewSearch($event)"
-                            [searchQuery]="searchTxt" (nextPageCalled)="nextPage($event)" [tableErrorMessage]='errorMessage'
-                            [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="false" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
+                            [searchQuery]="searchTxt" [tableErrorMessage]='errorMessage'
+                            [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="true" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
                             [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap"
-                            [rowClickable]="false">
+                            [rowClickable]="false" [doLocalFilter]="true" [doLocalSearch]="true"
+                            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>
@@ -43,7 +44,7 @@
 
 <ng-template #enableOrDisablePolicyRef>
     <div class="dialog-body">
-       <span class="dialog-body-header">{{action}} Policy</span>
+       <span class="dialog-body-header">{{action}}</span>
        <span class="dialog-body-content">Are you really sure you want to {{action.toLowerCase()}} "{{selectedRowTitle}}"?</span>
     </div>
 </ng-template>

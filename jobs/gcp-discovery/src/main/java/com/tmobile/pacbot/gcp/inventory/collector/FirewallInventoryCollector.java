@@ -31,7 +31,7 @@ public class FirewallInventoryCollector {
 
     public List<FireWallVH> fetchFirewallInventory(ProjectVH project) throws IOException {
         List<FireWallVH> fireWallList = new ArrayList<>();
-        FirewallsClient fireWallsClient = gcpCredentialsProvider.getFirewallsClient();
+        FirewallsClient fireWallsClient = gcpCredentialsProvider.getFirewallsClient(project.getProjectId());
 
         ListPagedResponse firewallResponse = fireWallsClient.list(project.getProjectId());
         logger.info("Firewall  entry {}", firewallResponse);

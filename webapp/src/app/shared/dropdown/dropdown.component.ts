@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
 })
-export class DropdownComponent implements OnChanges,AfterViewInit {
+export class DropdownComponent implements OnChanges {
 
   @Input() items = [];
   @Input() required = false;
@@ -16,7 +16,7 @@ export class DropdownComponent implements OnChanges,AfterViewInit {
   @Input() placeholder: string;
   @Input() selectedItem: string;
   @Input() isChipListEnabled: boolean = false;
-  @Input() selectedList;
+  @Input() selectedList = [];
   @Output() selected = new EventEmitter();
   @Output() closeEventEmitter = new EventEmitter();
   listControl = new FormControl([]);
@@ -26,11 +26,6 @@ export class DropdownComponent implements OnChanges,AfterViewInit {
   selectedOption: string = "";
   selectedOptionImage: string;
   constructor() { }
-
-  ngAfterViewInit(): void {
-    if(this.selectedList)
-    this.listControl.setValue(this.selectedList);
-  }
 
   onClose() {
     this.closeEventEmitter.emit();
@@ -82,6 +77,9 @@ export class DropdownComponent implements OnChanges,AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if(this.selectedList){
+      this.listControl.setValue(this.selectedList);
+    }
     this.massageData(this.items, this.selectedItem);
   }
 
