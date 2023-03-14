@@ -38,15 +38,25 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   direction;
   showSearchBar = true;
   showAddRemoveCol = true;
+  filters = [];
+  filterTypeLabels = [];
+  filterTagLabels = {};
   columnWidths = {'Title': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
   columnNamesMap = {name: "Title"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
       
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+    Category: (a, b, isAsc) => {
+      let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ACategory = a["Category"].valueText??"default";
+      const BCategory = b["Category"].valueText??"default";
+      return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
     },
   };
   tableImageDataMap = {
@@ -128,8 +138,12 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tableData = state?.data || [];
       this.tableDataLoaded = true;
       this.tableScrollTop = state?.tableScrollTop;
+      this.filters = state?.filters || [];
       this.totalRows = this.tableData.length;
 
+      if(this.filters){
+        this.getFiltersData(this.tableData);
+      }
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
@@ -165,7 +179,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     // this.state.searchInColumns = event;
   }
 
-  handlePopClick() {
+  handlePopClick(event) {
     const fileType = "csv";
 
     try {
@@ -173,15 +187,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
       queryParams = {
         fileFormat: "csv",
-        serviceId: 1,
+        serviceId: 2,
         fileType: fileType,
       };
 
       const downloadRequest = {
         ag: this.selectedAssetGroup,
+        filter: {
+          domain: this.selectedDomain,
+        },
         from: 0,
-        searchtext: this.searchTxt,
-        size: this.typeObj['All Policies'],
+        searchtext: event.searchTxt,
+        size: this.totalRows,
       };
 
       const downloadUrl = environment.download.url;
@@ -192,8 +209,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         downloadUrl,
         downloadMethod,
         downloadRequest,
-        "Policy Knowledgebase",
-        this.typeObj['All Policies']
+        "Policy",
+        this.totalRows
       );
     } catch (error) {
       this.logger.log("error", error);
@@ -365,6 +382,29 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     return newData;
   }
 
+  getFiltersData(data){
+    this.filterTypeLabels = [];
+    this.filterTagLabels = {};
+    this.whiteListColumns.forEach(column => {
+      let filterTags = [];
+      this.filterTypeLabels.push(column);
+      if(column=='Severity'){
+        filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Category'){
+        filterTags = ["security", "cost", "operations", "tagging"];
+      }else{
+        const set = new Set();
+        data.forEach(row => {
+          set.add(row[column].valueText);
+        });
+        filterTags = Array.from(set);
+        filterTags.sort();
+      }
+      
+      this.filterTagLabels[column] = filterTags;
+    });
+  }
+
   getData() {
     this.tableDataLoaded = false;
     if (this.complianceTableSubscription) {
@@ -394,6 +434,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             this.tableDataLoaded = true;
             this.tableData = this.processData(this.tableData);
             this.getTilesData(this.tableData);
+            this.getFiltersData(this.tableData);
           } else {
             this.tableDataLoaded = true;
             this.errorMessage = 'noDataAvailable';
@@ -418,8 +459,9 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       headerColName: this.headerColName,
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
-      searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop
+      searchTxt: event.searchTxt,
+      tableScrollTop: event.tableScrollTop,
+      filters: event.filters
       // filterText: this.filterText
     }
     this.storeState(state);
