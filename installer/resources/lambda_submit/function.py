@@ -12,7 +12,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
-from resources.pacbot_app.utils import need_to_deploy_vulnerability_service, get_azure_tenants , get_gcp_project_ids, get_aws_account_details, need_to_deploy_aqua_vulnerability_service
+from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details , need_to_deploy_aqua_vulnerability_service
 import json
 from core.config import Settings
 
@@ -143,7 +143,7 @@ class DataShipperCloudWatchEventTarget(CloudWatchEventTargetResource):
         ] + ([{
             'name': "VULN_API_URL",
             'value': ApplicationLoadBalancer.get_api_version_url('vulnerability')}
-        ] if need_to_deploy_vulnerability_service() else []),
+        ]),
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
             {'encrypt': False, 'key': "datasource", 'value': "aws"},

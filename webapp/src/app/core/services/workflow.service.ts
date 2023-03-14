@@ -44,14 +44,22 @@ export class WorkflowService {
 
         this.level = this.getDetailsFromStorage();
 
+        if (!this.level['level' + currentLevel]) {
+            this.level['level' + currentLevel] = [];
+        }
+
+        const currentLevelArray = this.level['level'+currentLevel];
+
+        if(currentLevelArray.length>0 && currentLevelArray[currentLevelArray.length-1]['title']==title){
+            return;
+        }
+
         const obj = {
             "title": title,
             'url': urlPath,
             'queryParams': queryParams
         };
-        if (!this.level['level' + currentLevel]) {
-            this.level['level' + currentLevel] = [];
-        }
+        
         this.level['level' + currentLevel].push(obj);
         this.saveToStorage(this.level);
     }
