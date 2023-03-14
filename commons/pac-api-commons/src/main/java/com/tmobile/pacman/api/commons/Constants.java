@@ -333,4 +333,5 @@ public interface Constants {
     String STATUS_REASON = "status-reason";
     String AUTOFIX_ENABLED = "autoFixEnabled";
     String AUTOFIX = "autofix";
+    String AQUA = "aqua";
 }
