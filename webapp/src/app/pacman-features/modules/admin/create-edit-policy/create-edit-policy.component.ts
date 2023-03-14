@@ -511,6 +511,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
         if (this.allPolicyParams[i]["isEdit"]) {
           this.hasEditableParams++;
         }
+        if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
+        {
+          continue;
+        }
           this.paramsList.push(
             {
               "key": this.allPolicyParams[i]["key"],
