@@ -277,7 +277,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.hideContent = true;
     this.policyLoader = true;
-    console.log("Form");
     this.buildCreatepolicyModel();
   }
 
@@ -613,6 +612,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
         if (this.allPolicyParams[i]["isEdit"]) {
           this.hasEditableParams++;
+        }
+        if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
+        {
+          continue;
         }
           this.paramsList.push(
             {
