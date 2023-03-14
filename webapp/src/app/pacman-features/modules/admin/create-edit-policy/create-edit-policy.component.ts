@@ -274,11 +274,11 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSubmit(form: NgForm) {
+  onSubmit() {
     this.hideContent = true;
     this.policyLoader = true;
-    console.log(form.value, "Form");
-    this.buildCreatepolicyModel(form.value);
+    console.log("Form");
+    this.buildCreatepolicyModel();
   }
 
   ispolicyIdAvailable(policyIdKeyword) {
@@ -313,7 +313,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  private buildCreatepolicyModel(policyForm: any) {
+  private buildCreatepolicyModel() {
     const PolicyModel = Object();
     PolicyModel.policyType = this.selectedPolicyType;
     PolicyModel.policyDisplayName = this.policyDisplayName;
@@ -324,9 +324,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.severity = this.selectedSeverity;
     PolicyModel.status = this.status?"ENABLED": "DISABLED";
     PolicyModel.category = this.selectedCategory;
-    PolicyModel.policyDesc = policyForm.description;
-    PolicyModel.resolution = policyForm.resolution;
-    PolicyModel.resolutionUrl = policyForm.resolutionUrl;
+    PolicyModel.policyDesc = this.description;
+    PolicyModel.resolution = this.resolution;
+    PolicyModel.resolutionUrl = this.resolutionUrl;
     PolicyModel.assetGroup = this.selectedAssetGroup;
     PolicyModel.policyExecutable = this.policyJarFileName;
     PolicyModel.policyRestUrl = this.policyUrl;
@@ -390,15 +390,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     policyParms.params = this.paramsList;
     policyParms.environmentVariables = this.allEnvironments;
     return JSON.stringify(policyParms);
-  }
-
-  private getpolicyRestUrl(policyForm) {
-    const policyType = policyForm.policyType;
-    if (policyType === 'Serverless') {
-      return policyForm.resolutionUrl;
-    } else {
-      return '';
-    }
   }
 
   onSelectCategory(selectedCategory) {
