@@ -14,7 +14,6 @@
     </div> -->
         <div class="stepper">
                     <div class="right-wrapper">
-                        <form class="form-wrapper" (ngSubmit)="onSubmit(policyForm)" #policyForm="ngForm">
                             <div class="details-wrapper">
                                 <div class="details-header">
                                     <div class="details-header-text">
@@ -85,11 +84,10 @@
                                 <div class="details-footer">
                                     <div class="button-wrapper">
                                         <button class="button submit-btn" 
-                                            (click)="onSubmit(policyForm)">Update</button>
+                                            (click)="onSubmit()">Update</button>
                                     </div>
                                 </div>
                             </div>
-                        </form>
                     </div>
     </div>
 </div>

@@ -296,7 +296,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSubmit(form: NgForm) {
+  onSubmit() {
     this.hideContent = true;
     this.policyLoader = true;
     this.buildCreatepolicyModel();
@@ -361,14 +361,6 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     return JSON.stringify(policyParms);
   }
 
-  toggleAutofix(event:any){
-    this.isAutofixEnabled = event.checked;
-  }
-
-  toggleSilentNotification(event:any){
-    this.isSilentNotificationEnabled = event.checked;
-  }
-  
   onSelectCategory(selectedCategory) {
     this.selectedCategory = selectedCategory;
   }
