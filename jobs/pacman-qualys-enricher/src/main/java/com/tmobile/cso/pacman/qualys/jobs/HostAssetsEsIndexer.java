@@ -38,7 +38,8 @@ public class HostAssetsEsIndexer implements Constants {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HostAssetsEsIndexer.class);
-    private static final String kbGetUri = "https://qualysapi.qg1.apps.qualys.in/api/2.0/fo/knowledge_base/vuln/?action=list&ids=%s";
+    private static final String BASE_API_URL = System.getProperty("qualys_api_url");
+    private static final String kbGetUri = BASE_API_URL+"/api/2.0/fo/knowledge_base/vuln/?action=list&ids=%s";
 
     /**
      * Post host asset to ES.
