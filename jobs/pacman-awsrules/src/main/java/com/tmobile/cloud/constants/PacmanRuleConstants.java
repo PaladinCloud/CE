@@ -69,10 +69,14 @@ public class PacmanRuleConstants {
     public static final String ES_AQUA_IMAGE_URL = "esAquaImageUrl";
   public static final String AQUA_SEVERITY_CLASSIFICATION = "aquaSeverityClassification";
   public static final String AQUA_SEVERITY = "aquaSeverity";
+  public static final String AQUA_SEVERITY_KEY = "aqua_severity";
+
   public static final String CVE_NUM = "cveNumber";
   public static final String NVD_URL = "nvdURL";
   public static final String AQUA_SOLUTION = "aquaSolution";
   public static final String VULNERABLE_IMAGE_DETAILS = "vulnerableImageDetails";
+  public static final String AQUA_ENTITY_TYPE = "_type";
+  public static final String AQUA_LAST_VULN_SCAN = "last_found_date";
 
   private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");

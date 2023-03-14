@@ -2561,7 +2561,7 @@ public class PacmanUtils {
         return data;
     }
 
-    private static Long calculateDuration(String date) throws java.text.ParseException {
+    public static Long calculateDuration(String date) throws java.text.ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("M/d/yyyy H:m");
         Date givenDate = null;
@@ -3980,7 +3980,10 @@ public class PacmanUtils {
 	}
 
 
-    public static List<JsonObject> checkImageIdFromElasticSearchForAqua(String imageId, String aquaEsAPI, String attributeName, String target) {
+    public static List<JsonObject> checkImageIdFromElasticSearchForAqua(String imageId,
+                                                                        String aquaEsAPI,
+                                                                        String attributeName,
+                                                                        String severityVulnValue) {
         JsonParser jsonParser = new JsonParser();
         List<JsonObject> resourceVerified = new ArrayList<>();
         Map<String, Object> mustFilter = new HashMap<>();
@@ -3988,6 +3991,9 @@ public class PacmanUtils {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         Map<String, Object> mustTermsFilter = new HashMap<>();
         mustFilter.put(convertAttributetoKeyword(attributeName), imageId);
+        if(null!=severityVulnValue)
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.AQUA_SEVERITY_KEY), severityVulnValue);
+
         try {
 
             JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(aquaEsAPI+"?size=10000", mustFilter,

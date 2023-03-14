@@ -1,7 +1,9 @@
 package com.tmobile.cloud.awsrules.ecr;
 
 
+import com.amazonaws.util.CollectionUtils;
 import com.amazonaws.util.StringUtils;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -12,12 +14,12 @@ import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -26,8 +28,6 @@ import org.slf4j.MDC;
 public class ImagesScannedByAquaRule extends BasePolicy {
 
   private static final Logger logger = LoggerFactory.getLogger(ImagesScannedByAquaRule.class);
-
-
   /**
    * The method will get triggered from Rule Engine with following parameters.
    *
@@ -63,89 +63,69 @@ public class ImagesScannedByAquaRule extends BasePolicy {
     }
     MDC.put("executionId", ruleParam.get("executionId")); // this is the logback Mapped Diagnostic Contex
     MDC.put("ruleId", ruleParam.get(PacmanSdkConstants.POLICY_ID)); // this is the logback Mapped Diagnostic Contex
-    if (!PacmanUtils.doesAllHaveValue( category, aquaEsAPI, target, discoveredDaysRange)) {
+    if (!PacmanUtils.doesAllHaveValue(category, aquaEsAPI, discoveredDaysRange, target)) {
       logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
       throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
     }
+    List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
+    Gson gson = new Gson();
     if (resourceAttributes != null) {
       imageId = StringUtils.trim(resourceAttributes.get(PacmanRuleConstants.RESOURCE_ID));
       String imageName = buildImageNameFromResourceId(imageId);
+      String entityType = resourceAttributes.get(PacmanRuleConstants.AQUA_ENTITY_TYPE);
       List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
       if (PacmanUtils.calculateLaunchedDuration(firstDiscoveredOn) > Long.parseLong(discoveredDaysRange)) {
         try {
-          vulnerabilityInfoList = PacmanUtils.checkImageIdFromElasticSearchForAqua(imageName, aquaEsAPI, "image_name", target);
+          vulnerabilityInfoList = PacmanUtils.checkImageIdFromElasticSearchForAqua(imageName, aquaEsAPI, "image_name", null);
+          if (CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
+            annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+            annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " image not scanned  by aqua found!!");
+            annotation.put(PacmanRuleConstants.CATEGORY, category);
+            LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+            issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by aqua found");
+            issue.put(PacmanRuleConstants.SOURCE_VERIFIED, "_resourceid," + PacmanRuleConstants.AQUA_LAST_VULN_SCAN);
+            issueList.add(issue);
+            annotation.put("issueDetails", issueList.toString());
+            logger.debug("========ResourceScannedByAquaRule ended with annotation {} : =========", annotation);
+            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+          } else {
+            Optional<String> foundAny = vulnerabilityInfoList
+                .stream()
+                .map(elem -> elem.get("last_found_date").getAsString()+"T00:00:00Z")
+                .filter(lastVulnScan -> {
+                  try {
+                    return PacmanUtils.calculateDuration(lastVulnScan) < Long.parseLong(target);
+                  } catch (ParseException e) {
+                    e.printStackTrace();
+                  }
+                  return false;
+                }).findAny();
+            if (!foundAny.isPresent()) {
+              annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
+              annotation.put(PacmanSdkConstants.DESCRIPTION, "" + entityType + " aqua not scanned since "
+                  + target + " days!!");
+              annotation.put(PacmanRuleConstants.CATEGORY, category);
+              LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
+              issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by aqua found");
+              issue.put(PacmanRuleConstants.SOURCE_VERIFIED, "_resourceid," + PacmanRuleConstants.AQUA_LAST_VULN_SCAN);
+              issueList.add(issue);
+              annotation.put("issueDetails", issueList.toString());
+              logger.debug("========ResourceScannedByAquaRule ended with annotation {} : =========", annotation);
+              return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+            }
+          }
         } catch (Exception e) {
           logger.error("unable to determine", e);
           throw new RuleExecutionFailedExeption("unable to determine" + e);
         }
-        String highestSeverity = getSeverity(vulnerabilityInfoList);
-        JsonObject highestSeverityVulnerability = getHighestSeverityVulnerability(vulnerabilityInfoList, highestSeverity);
-        List<Map<String, Object>> issueDetails = buildImageIssueDetails(vulnerabilityInfoList);
-
-        if (highestSeverity != null && highestSeverityVulnerability != null) {
-          annotation = Annotation.buildAnnotation(ruleParam, Annotation.Type.ISSUE);
-          if(null!=highestSeverityVulnerability && issueDetails!=null){
-            annotation.put(PacmanSdkConstants.DESCRIPTION, highestSeverityVulnerability.get("description").getAsString());
-            annotation.put(PacmanRuleConstants.SEVERITY, highestSeverity);
-            annotation.put(PacmanRuleConstants.CATEGORY, category);
-            annotation.put(PacmanRuleConstants.NVD_URL, highestSeverityVulnerability.get("nvd_url").getAsString());
-            annotation.put("issueDetails", issueDetails.toString());
-            return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE, PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-          }
-        }
       }
     }
-    logger.debug("========ResourceScannedByQualysRule ended=========");
-    return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
-  }
-
-  private List<Map<String, Object>> buildImageIssueDetails(List<JsonObject> vulnerabilityInfoList) {
-
-    List<Map<String,Object>> issues = new ArrayList<>();
-
-    for(JsonObject elem : vulnerabilityInfoList){
-      Map<String,Object> issue = new HashMap<>();
-      issue.putIfAbsent(PacmanRuleConstants.VIOLATION_REASON,elem.get("description").getAsString());
-      issue.putIfAbsent(PacmanRuleConstants.AQUA_SEVERITY_CLASSIFICATION, elem.get("aqua_severity_classification").getAsString());
-      issue.putIfAbsent(PacmanRuleConstants.AQUA_SEVERITY, elem.get("aqua_severity").getAsString());
-      issue.putIfAbsent(PacmanRuleConstants.CVE_NUM, elem.get("name").getAsString());
-      issue.putIfAbsent(PacmanRuleConstants.AQUA_SOLUTION, elem.get("solution").getAsString());
-      issue.putIfAbsent(PacmanRuleConstants.NVD_URL, elem.get("nvd_url").getAsString());
-      issue.putIfAbsent(PacmanRuleConstants.VULNERABLE_IMAGE_DETAILS, elem.get("resource"));
-      issues.add(issue);
-    }
-    return issues;
-  }
-
-  private JsonObject getHighestSeverityVulnerability(List<JsonObject> vulnerabilityInfoList, String highestSeverity) {
-    return vulnerabilityInfoList.stream().filter(elem -> highestSeverity.equals(elem.get("aqua_severity").getAsString())).findFirst().orElse(null);
-  }
-
-  private String getSeverity(List<JsonObject> vulnerabilityInfoList) {
-    Set<String> allSeverities = vulnerabilityInfoList.stream().map(vul -> vul.get("aqua_severity").getAsString()).collect(Collectors.toSet());
-    if(allSeverities!=null){
-       if (allSeverities.contains("critical")){
-         return "critical";
-       }
-       else if (allSeverities.contains("high")){
-         return "high";
-       }
-       else if (allSeverities.contains("medium")){
-         return "medium";
-       }
-       else if (allSeverities.contains("low")){
-         return "medium";
-       }
-       else if (allSeverities.contains("negligible")){
-         return "negligible";
-       }
-    }
-    return "negligible";
+    return null;
   }
 
   private String buildImageNameFromResourceId(String imageId) {
     if(imageId!=null)
-     return imageId.split("/")[1].concat(":latest");
+      return imageId.split("/")[1].concat(":latest");
     return null;
   }
 
