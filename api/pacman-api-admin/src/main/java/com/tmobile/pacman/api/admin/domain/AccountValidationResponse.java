@@ -16,4 +16,7 @@ public class AccountValidationResponse {
     private String validationStatus;
     private String message;
     private String errorDetails;
+
+    private String qualysApiUrl;
+    private String qualysUser;
 }
