@@ -124,7 +124,7 @@ public class ImagesScannedByAquaRule extends BasePolicy {
   }
 
   private String buildImageNameFromResourceId(String imageId) {
-    if(imageId!=null)
+    if(imageId!=null && imageId.split("/").length>1)
       return imageId.split("/")[1].concat(":latest");
     return null;
   }

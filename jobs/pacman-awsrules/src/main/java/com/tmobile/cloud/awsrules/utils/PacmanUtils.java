@@ -4004,8 +4004,8 @@ public class PacmanUtils {
                     JsonObject hitsJson = (JsonObject) jsonParser.parse(hitsJsonString);
                     JsonArray jsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
                     if (jsonArray.size() > 0) {
-                        for (int i = 0; i < jsonArray.size(); i++) {
-                            JsonObject firstObject = (JsonObject) jsonArray.get(i);
+                        for (JsonElement element : jsonArray) {
+                            JsonObject firstObject = (JsonObject) element;
                             JsonObject sourceJson = (JsonObject) firstObject.get(PacmanRuleConstants.SOURCE);
                             if ((null != sourceJson) && (null != sourceJson.get(attributeName))
                                 && (!sourceJson.get(attributeName).isJsonNull())) {
@@ -4016,7 +4016,7 @@ public class PacmanUtils {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("failed to fetch data from ES");
         }
         return resourceVerified;
     }
