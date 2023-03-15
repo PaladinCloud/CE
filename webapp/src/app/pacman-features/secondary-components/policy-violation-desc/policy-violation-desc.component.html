@@ -21,15 +21,13 @@
             {{violationData.policyViolated}}
         </div>
     </div>
-    <div class="policy-violation-label flex flex-col flex-align-start" *ngIf="violationData.policyViolated">
+    <div class="policy-violation-label flex flex-col" *ngIf="Params.issueId">
         <div class="policy-violation-label-header capitalize">
-            Violation ID
-        </div>
-        <div class="policy-violation-label-content anchor-link pointer" title="{{ViolationIDParams.issueId}}" (click)="navigateTo('policy knowledgebase details',violationData.policyId)">
-            {{ViolationIDParams.issueId}}
+            violation ID</div>
+        <div class="policy-violation-label-content" [innerHTML]="Params.issueId" title="{{Params.issueId}}">
         </div>
     </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
+        <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
         <div class="policy-violation-label-header capitalize">
             Policy Description
         </div>
