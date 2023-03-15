@@ -21,10 +21,10 @@
             {{violationData.policyViolated}}
         </div>
     </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="Params.issueId">
+    <div class="policy-violation-label flex flex-col" *ngIf="violationId">
         <div class="policy-violation-label-header capitalize">
             violation ID</div>
-        <div class="policy-violation-label-content" [innerHTML]="Params.issueId" title="{{Params.issueId}}">
+        <div class="policy-violation-label-content" [title]="violationId">{{violationId}}
         </div>
     </div>
         <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
