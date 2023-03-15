@@ -38,7 +38,7 @@ export class PolicyViolationDescComponent implements OnInit {
   selectedDomain: string;
   accordionData: any;
   labelData: any;
-  ViolationIDParams: any;
+  Params: any;
   showAccordion = true;
   testData;
   public agAndDomain = {};
@@ -68,7 +68,7 @@ export class PolicyViolationDescComponent implements OnInit {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    this.ViolationIDParams = this.activatedRoute.snapshot.params;
+    this.Params = this.activatedRoute.snapshot.params;
     this.processDataForAccordion(this.violationData);
   }
   /**
