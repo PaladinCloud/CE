@@ -21,7 +21,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
 
     @Autowired
     ConfigPropertyService configPropertyService;
-    public String dateFormat = "MM/dd/yyyy HH:mm:ss";
+    public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
     @Override
     public AccountList getAllAccounts(String columnName, int page, int size, String searchTerm, String sortOrder) {
         if(sortOrder.equalsIgnoreCase("desc")) {
@@ -34,6 +34,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     private AccountList convertToMap(Page<AccountDetails> entities) {
         AccountList accountList=new AccountList();
         List accountDetailsList= entities.getContent();
+
         Long elements=entities.getTotalElements();
         List<Map<String,String>> convertAccountDetails=new ArrayList<>();
         for(int i=0;i<accountDetailsList.size();i++){
@@ -60,8 +61,8 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             case "violations":  return convertToMap(accountsRepository.findByViolations(PageRequest.of(page, size), filterValue));
             case "accountStatus":  return convertToMap(accountsRepository.findByStatus(PageRequest.of(page, size), filterValue));
             case "platform":  return convertToMap(accountsRepository.findByPlatform(PageRequest.of(page, size), filterValue));
+            default: return new AccountList();
         }
-        return new AccountList();
     }
 
     public boolean deleteAccountFromDB(String accountId) {
@@ -90,7 +91,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         configList.add(config);
         configPropertyRequest.setConfigProperties(configList);
         configPropertyService.addUpdateProperties(configPropertyRequest, "", "",
-                AdminUtils.getFormatedStringDate(dateFormat, new Date()), false);
+                AdminUtils.getFormatedStringDate(DATE_FORMAT, new Date()), false);
     }
 
 
