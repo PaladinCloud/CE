@@ -219,7 +219,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
     }
 
     private String generateCredentialJson(CreateAccountRequest details){
-
+        String ip="169.254.169.254";
         String jsonTemplate="{\n" +
                 "  \"type\": \"external_account\",\n" +
                 "  \"audience\": \"//iam.googleapis.com/projects/%s/locations/%s/workloadIdentityPools/%s/providers/%s\",\n" +
@@ -228,8 +228,8 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
                 "  \"token_url\": \"https://sts.googleapis.com/v1/token\",\n" +
                 "  \"credential_source\": {\n" +
                 "    \"environment_id\": \"aws1\",\n" +
-                "    \"region_url\": \"http://169.254.169.254/latest/meta-data/placement/availability-zone\",\n" +
-                "    \"url\": \"http://169.254.169.254/latest/meta-data/iam/security-credentials\",\n" +
+                "    \"region_url\": \"http://%s/latest/meta-data/placement/availability-zone\",\n" +
+                "    \"url\": \"http://%s/latest/meta-data/iam/security-credentials\",\n" +
                 "    \"regional_cred_verification_url\": \"https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15\"\n" +
                 "  }\n" +
                 "}";
@@ -239,7 +239,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         String workloadPoolId=details.getGetWorkloadIdentityPoolId();
         String idProvider=details.getWorkloadIdentityProviderId();
         String serviceAccountEmail=details.getServiceAccountEmail();
-        return String.format(jsonTemplate, projectNumber,location,workloadPoolId,idProvider,serviceAccountEmail);
+        return String.format(jsonTemplate, projectNumber,location,workloadPoolId,idProvider,serviceAccountEmail,ip,ip);
 
     }
     public void writeToFilePath(String filename, String data, boolean appendto) throws IOException {
@@ -276,20 +276,27 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
                     dataFolderS3, new File(filePath), false);
 
             while(!xfer.isDone()){
-                try{
-                    Thread.sleep(3000);
-                }catch(InterruptedException e){
-                    LOGGER.error("Error in uploadAllFiles",e);
-                    Thread.currentThread().interrupt();
-                }
+                delayForCompletion();
                 LOGGER.debug("Transfer % Completed :{}" ,xfer.getProgress().getPercentTransferred());
             }
             xfer.waitForCompletion();
 
             LOGGER.info("Transfer completed");
-        } catch (Exception e) {
+        } catch(InterruptedException e){
+            LOGGER.error("Error in uploadAllFiles",e);
+            Thread.currentThread().interrupt();
+        }catch (Exception e) {
             LOGGER.error("Exception in loading files to S3:{}" ,e.getMessage()) ;
         }
         xferMgr.shutdownNow();
+    }
+
+    private static void delayForCompletion() {
+        try{
+            Thread.sleep(3000);
+        }catch(InterruptedException e){
+            LOGGER.error("Error in uploadAllFiles",e);
+            Thread.currentThread().interrupt();
+        }
     }
 }
