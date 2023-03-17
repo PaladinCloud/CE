@@ -41,8 +41,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
-  columnWidths = {'Title': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
-  columnNamesMap = {name: "Title"};
+  columnWidths = {'Policy': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
+  columnNamesMap = {name: "Policy"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
@@ -294,7 +294,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
           }
-          if(col.toLowerCase()=="title"){
+          if(col.toLowerCase()=="policy"){
             cellObj = {
               ...cellObj,
               isLink: true
