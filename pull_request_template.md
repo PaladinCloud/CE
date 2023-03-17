@@ -25,7 +25,7 @@ list any relevant details for your test configuration
 
 # Checklist:
 
-- [ ] My code follows the style guidelines of this project
+- [ ] My code follows existing conventions and style in order to keep the code as readable as possible.
 - [ ] My commit message/PR follows the contribution guidelines of this project
 - [ ] I have performed a self-review of my code
 - [ ] I have commented my code, particularly in hard-to-understand areas
