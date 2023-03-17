@@ -91,6 +91,9 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         GoogleCredentials credentials = null;
         try {
             credentials = GoogleCredentials.getApplicationDefault();
+            LOGGER.info("Credentials created: {}",credentials);
+            validateResponse.setMessage("Connection to project established successfully");
+            validateResponse.setValidationStatus(SUCCESS);
         } catch (IOException e) {
             LOGGER.error("Error in connecting to project :{} ",e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
@@ -100,10 +103,16 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }finally {
             //reset environment variable
             setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", "");
+            File file=new File(credFilePath);
+            try {
+                Files.deleteIfExists(file.toPath());
+            }catch (IOException e) {
+                LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
+                validateResponse.setValidationStatus(FAILURE);
+                validateResponse.setErrorDetails(e.getMessage());
+                validateResponse.setMessage("Account validation failed");
+            }
         }
-        LOGGER.info("Credentials created: {}",credentials);
-        validateResponse.setMessage("Connection to project established successfully");
-        validateResponse.setValidationStatus("Succuss");
         return validateResponse;
     }
 

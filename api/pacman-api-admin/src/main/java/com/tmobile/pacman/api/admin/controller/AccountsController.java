@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 @Api(value = "/accounts", consumes = "application/json", produces = "application/json")
@@ -80,6 +83,19 @@ public class AccountsController {
         try{
             AccountsService accountsService= AccountFactory.getService(accountDetails.getPlatform());
             return ResponseUtils.buildSucessResponse(accountsService.validate(accountDetails));
+        }catch (Exception exception){
+            log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+            return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+        }
+    }
+    @ApiOperation(httpMethod = "GET", value = "API to fetch base account details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/baseAccount",produces =  MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getBaseAccount(){
+        try {
+            Map<String, String> baseAccount=new HashMap<>();
+            baseAccount.put("accountId", System.getenv("COGNITO_ACCOUNT"));
+            baseAccount.put("roleName", System.getenv("PALADINCLOUD_RO"));
+            return ResponseUtils.buildSucessResponse(baseAccount);
         }catch (Exception exception){
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
