@@ -70,6 +70,8 @@ public class AssetRepositoryImpl implements AssetRepository {
     public static final String ASSET = "asset";
     private Map<String, String> events;
 
+    private static final String NOTSET="notSet";
+
     @Value("${tagging.mandatoryTags}")
     private String mandatoryTags;
 
@@ -1162,9 +1164,8 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         String[] tags = mandatoryTags.split(",");
         for (String tag : tags) {
-            shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.trim()), AssetConstants.TAG_NOT_FOUND);
+            shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.replaceAll("\\s", "")), AssetConstants.TAG_NOT_FOUND);
         }
-
         List<Map<String, Object>> untaggedAssets;
         List<Map<String, Object>> totalAssets;
         StringBuilder sb;
@@ -1180,6 +1181,7 @@ public class AssetRepositoryImpl implements AssetRepository {
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.TYPE), Constants.ISSUE);
         // @ToDo need to work on tagging policy
        // mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICYID), Constants.TAGGING_POLICY);
+        mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.POLICY_CATEGORY),"tagging");
         mustFilter.put(CommonUtils.convertAttributetoKeyword(Constants.ISSUE_STATUS), Constants.OPEN);
 
         Set<String> mandatoryTagValues=getMandatoryTags(ASSET);
@@ -1243,7 +1245,9 @@ public class AssetRepositoryImpl implements AssetRepository {
             	 assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
             }
         } else {
-            ruleIdWithTargetTypeQuery = "SELECT  p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED'";
+
+            ruleIdWithTargetTypeQuery = "SELECT DISTINCT p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = 'tagging'";
+
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             List<String> validTypes = ruleIdwithTargetType.stream()
                     .map(obj -> obj.get(Constants.TARGET_TYPE).toString()).collect(Collectors.toList());
@@ -2663,15 +2667,16 @@ public class AssetRepositoryImpl implements AssetRepository {
 		Map<String, Object> filter = new HashMap<>();
 		filter.put(Constants.LATEST, Constants.TRUE);
 		filter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
-        if(aseetGroupName.equals("azure") && !accountId.equals("notSet"))
+
+        if(aseetGroupName.equals("azure") && !accountId.equals(NOTSET))
         {
             filter.put("subscription.keyword",accountId);
         }
-        if(aseetGroupName.equals("gcp") && !accountId.equals("notSet"))
+        if(aseetGroupName.equals("gcp") && !accountId.equals(NOTSET))
         {
             filter.put("projectId.keyword",accountId);
         }
-        if(aseetGroupName.equals("aws") && !accountId.equals("notSet"))
+        if(aseetGroupName.equals("aws") && !accountId.equals(NOTSET))
         {
             filter.put("accountid.keyword",accountId);
         }

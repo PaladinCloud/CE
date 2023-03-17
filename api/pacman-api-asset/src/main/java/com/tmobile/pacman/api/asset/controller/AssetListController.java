@@ -157,7 +157,7 @@ public class AssetListController {
 
     /**
      * Fetches the taggable assets for the given assetgroup.If tagged filter is false it returns the untagged assets
-     * and if tagged is true returns the tagged assets.It also filters the the list based on resource type passed in filter 
+     * and if tagged is true returns the tagged assets.It also filters the list based on resource type passed in filter
      * else returns all the assets of the asset group
      *
      * @param request This request expects assetGroup as mandatory and
@@ -208,6 +208,7 @@ public class AssetListController {
         List<Map<String, Object>> masterList;
         try {
             masterList = assetService.getListAssetsTaggable(assetGroup, filter);
+            LOGGER.info("masterList {} "+ masterList.size());
         } catch (Exception e) {
             LOGGER.error("Error in listTaggableAssets ",e);
             return ResponseUtils.buildFailureResponse(e);

@@ -72,7 +72,7 @@ class VulnerabilityEcsTaskDefinition(ECSTaskDefinitionResource, BaseTaskDefiniti
     family = "vulnerability"
     container_definitions = container_def.get_container_definitions('vulnerability')
     DEPENDS_ON = [APIDockerImageBuild]
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 

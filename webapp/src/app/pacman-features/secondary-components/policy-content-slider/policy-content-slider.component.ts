@@ -151,9 +151,8 @@ export class PolicyContentSliderComponent implements OnInit, OnDestroy {
     */
 
     progressDataProcess(data) {
-
-    this.title = data.displayName;
-    this.titleDesc = data.ruleDescription;
+    this.title = data.policyDisplayName;
+    this.titleDesc = data.policyDesc;
     /*
         * This is to make the required json structure
     */

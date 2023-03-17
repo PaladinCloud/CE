@@ -488,7 +488,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         AssetCount assetCount;
         AssetCountByAppEnvDTO[] assetcountCount;
         StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
-                .append(UNDERSCORE_COUNT);
+                .append(SEARCH);
         StringBuilder requestBody = null;
         List<String> tagsList = new ArrayList<>(Arrays.asList(mandatoryTags.split(",")));
 
@@ -507,9 +507,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }
             body = body.substring(0, body.length() - 1);
             body = body + "]";
-            body = body + ",\"minimum_should_match\":1";
+            body = body + ",\"minimum_should_match\":1}}";
+            body = body + ",\"aggs\":{\"distinct_resourceids\":{\"cardinality\":{\"field\":\"_resourceid.keyword\"}}}";
         }
-        body = body + "}}}";
+        body = body + "}";
         requestBody = new StringBuilder(body);
         try {
             responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
@@ -517,7 +518,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             throw new DataException(e);
         }
         JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
-        totaluntagged = responseJson.get(COUNT).getAsLong();
+        JsonObject aggs = responseJson.get(AGGREGATIONS).getAsJsonObject();
+        JsonObject resourceids = aggs.get("distinct_resourceids").getAsJsonObject();
+        totaluntagged = resourceids.get("value").getAsLong();
         policyIdWithTargetTypeQuery = "SELECT  p.targetType FROM cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = '"+Constants.CATEGORY_TAGGING+"'";
         policyIdwithTargetType = rdsepository.getDataFromPacman(policyIdWithTargetTypeQuery);
         if (Strings.isNullOrEmpty(targetType)) {

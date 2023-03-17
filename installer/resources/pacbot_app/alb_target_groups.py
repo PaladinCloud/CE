@@ -62,7 +62,7 @@ class AuthALBTargetGroup(ALBTargetGroupResource, BaseTG):
 class VulnerabilityALBTargetGroup(ALBTargetGroupResource, BaseTG):
     name = "vulnerability"
     path = PATH_PREFIX + "vulnerability/api.html"
-    PROCESS = need_to_deploy_vulnerability_service()
+    # PROCESS = need_to_deploy_vulnerability_service()
 
 
 class NginxALBTargetGroup(ALBTargetGroupResource, BaseTG):

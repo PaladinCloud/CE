@@ -34,6 +34,9 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
+    public static final String GCP_CREDENTIAL = "gcp-credential-";
+    public static final String JSON = ".json";
+    public static final String ERROR_WHILE_CREATING_CREDENTIAL_FILE = "Error while creating credential file";
 
     @Value("${credential.file.path}")
     private String credentialFilePath;
@@ -54,13 +57,16 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
     @Override
     public AccountValidationResponse validate(CreateAccountRequest accountData) {
         LOGGER.info("Inside validate method of GcpAccountServiceImpl");
-        AccountValidationResponse validateResponse=validateRequest(accountData);
-        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
-            LOGGER.info("Validation failed due to missing parameters");
+        AccountValidationResponse validateResponse=new AccountValidationResponse();
+        validateResponse.setValidationStatus(SUCCESS);
+        if(StringUtils.isEmpty(accountData.getProjectId())) {
+            validateResponse.setErrorDetails("Missing mandatory parameter- projectId");
+            validateResponse.setValidationStatus(FAILURE);
             return validateResponse;
         }
+
         String credJson=generateCredentialJson(accountData);
-        String fileName="gcp-credential-"+accountData.getProjectId()+".json";
+        String fileName= GCP_CREDENTIAL +accountData.getProjectId()+ JSON;
         new File(credentialFilePath).mkdirs();
         String credFilePath = credentialFilePath + File.separator + fileName;
         //create credential json file
@@ -72,7 +78,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
                 LOGGER.error("Error in generating credential file:{} ",e.getMessage());
                 validateResponse.setValidationStatus(FAILURE);
                 validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage("Error while creating credential file");
+                validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
                 return validateResponse;
             }
         }else{
@@ -89,7 +95,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             LOGGER.error("Error in connecting to project :{} ",e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setErrorDetails(e.getMessage());
-            validateResponse.setMessage("Error while creating credential file");
+            validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
             return validateResponse;
         }finally {
             //reset environment variable
@@ -110,7 +116,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             return validateResponse;
         }
         String credJson=generateCredentialJson(accountData);
-        String fileName="gcp-credential-"+accountData.getProjectId()+".json";
+        String fileName= GCP_CREDENTIAL +accountData.getProjectId()+ JSON;
         new File(credentialFilePath).mkdirs();
         String credFilePath = credentialFilePath + File.separator + fileName;
         //create credential json file
@@ -122,7 +128,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
                 LOGGER.error("Error in generating credential file:{} ",e.getMessage());
                 validateResponse.setValidationStatus(FAILURE);
                 validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage("Error while creating credential file");
+                validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
                 return validateResponse;
             }
         }else{
@@ -130,7 +136,11 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
         uploadFileToS3(s3Bucket,s3CredData,s3Region,credFilePath);
         createAccountInDb(accountData.getProjectId(),accountData.getProjectName(), Constants.GCP);
-
+        //update gcp enable flag for scheduler job
+        String key="gcp.enabled";
+        String value = "true";
+        String application = "job-scheduler";
+        updateConfigProperty(key, value, application);
         validateResponse.setValidationStatus(SUCCESS);
         validateResponse.setMessage("Account added successfully");
         return validateResponse;
@@ -189,7 +199,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         response.setMessage("Account deleted successfully");
 
         //find and delete cred file for account
-        String fileName="gcp-credential-"+projectId+".json";
+        String fileName= GCP_CREDENTIAL +projectId+ JSON;
         String credFilePath = credentialFilePath + File.separator + fileName;
         File file=new File(credFilePath);
         try {
@@ -209,7 +219,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
     }
 
     private String generateCredentialJson(CreateAccountRequest details){
-
+        String ip="169.254.169.254";
         String jsonTemplate="{\n" +
                 "  \"type\": \"external_account\",\n" +
                 "  \"audience\": \"//iam.googleapis.com/projects/%s/locations/%s/workloadIdentityPools/%s/providers/%s\",\n" +
@@ -218,8 +228,8 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
                 "  \"token_url\": \"https://sts.googleapis.com/v1/token\",\n" +
                 "  \"credential_source\": {\n" +
                 "    \"environment_id\": \"aws1\",\n" +
-                "    \"region_url\": \"http://169.254.169.254/latest/meta-data/placement/availability-zone\",\n" +
-                "    \"url\": \"http://169.254.169.254/latest/meta-data/iam/security-credentials\",\n" +
+                "    \"region_url\": \"http://%s/latest/meta-data/placement/availability-zone\",\n" +
+                "    \"url\": \"http://%s/latest/meta-data/iam/security-credentials\",\n" +
                 "    \"regional_cred_verification_url\": \"https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15\"\n" +
                 "  }\n" +
                 "}";
@@ -229,7 +239,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         String workloadPoolId=details.getGetWorkloadIdentityPoolId();
         String idProvider=details.getWorkloadIdentityProviderId();
         String serviceAccountEmail=details.getServiceAccountEmail();
-        return String.format(jsonTemplate, projectNumber,location,workloadPoolId,idProvider,serviceAccountEmail);
+        return String.format(jsonTemplate, projectNumber,location,workloadPoolId,idProvider,serviceAccountEmail,ip,ip);
 
     }
     public void writeToFilePath(String filename, String data, boolean appendto) throws IOException {
@@ -266,20 +276,27 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
                     dataFolderS3, new File(filePath), false);
 
             while(!xfer.isDone()){
-                try{
-                    Thread.sleep(3000);
-                }catch(InterruptedException e){
-                    LOGGER.error("Error in uploadAllFiles",e);
-                    Thread.currentThread().interrupt();
-                }
+                delayForCompletion();
                 LOGGER.debug("Transfer % Completed :{}" ,xfer.getProgress().getPercentTransferred());
             }
             xfer.waitForCompletion();
 
             LOGGER.info("Transfer completed");
-        } catch (Exception e) {
-            LOGGER.error("{\"errcode\": \"S3_UPLOAD_ERR\" ,\"account\": \"ANY\",\"Message\": \"Exception in loading files to S3\", \"cause\":\"" +e.getMessage()+"\"}") ;
+        } catch(InterruptedException e){
+            LOGGER.error("Error in uploadAllFiles",e);
+            Thread.currentThread().interrupt();
+        }catch (Exception e) {
+            LOGGER.error("Exception in loading files to S3:{}" ,e.getMessage()) ;
         }
         xferMgr.shutdownNow();
+    }
+
+    private static void delayForCompletion() {
+        try{
+            Thread.sleep(3000);
+        }catch(InterruptedException e){
+            LOGGER.error("Error in uploadAllFiles",e);
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -13,12 +13,19 @@ import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.config.CredentialProvider;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @Service
@@ -40,7 +47,42 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
 
     @Override
     public AccountValidationResponse validate(CreateAccountRequest accountData) {
-        return null;
+
+        LOGGER.info("Inside validate method of QualysAccountServiceImpl");
+        AccountValidationResponse validateResponse=validateRequest(accountData);
+        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+            LOGGER.info("Validation failed due to missing parameters");
+            return validateResponse;
+        }
+        String uri=accountData.getQualysApiUrl();
+        String user=accountData.getQualysApiUser();
+        String pass=accountData.getQualysApiPassword();
+        validateResponse.setQualysUser(user);
+        validateResponse.setQualysApiUrl(uri);
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        String apiUrl=uri+"/api/2.0/fo/knowledge_base/vuln/?action=list&ids=00";
+        HttpGet httpGet = new HttpGet(apiUrl);
+        httpGet.addHeader("content-type", "application/xml");
+        httpGet.addHeader("cache-control", "no-cache");
+        httpGet.addHeader("Accept", "application/json");
+        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(user, pass);
+        httpGet.addHeader(BasicScheme.authenticate(credentials, "UTF-8", false));
+        httpGet.addHeader("X-Requested-With", "DEFAULT_USER");
+        try {
+            HttpResponse httpResponse = httpClient.execute(httpGet);
+            if(httpResponse.getStatusLine().getStatusCode()!=200){
+                validateResponse.setMessage("Account validation failed");
+                validateResponse.setErrorDetails("API returned status code : "+httpResponse.getStatusLine().getStatusCode());
+            }else{
+                validateResponse.setValidationStatus(SUCCESS);
+                validateResponse.setMessage("Qualys validation successful");
+            }
+        } catch (IOException e) {
+            validateResponse.setMessage("Account validation failed");
+            validateResponse.setErrorDetails(e.getMessage());
+        }
+        return validateResponse;
     }
 
     @Override
@@ -113,7 +155,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
         String secretId=secretManagerPrefix+"/qualys";
-        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId);
+        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 

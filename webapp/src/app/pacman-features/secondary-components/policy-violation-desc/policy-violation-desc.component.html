@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -21,7 +21,13 @@
             {{violationData.policyViolated}}
         </div>
     </div>
-    <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
+    <div class="policy-violation-label flex flex-col" *ngIf="violationId">
+        <div class="policy-violation-label-header capitalize">
+            Violation ID</div>
+        <div class="policy-violation-label-content" [title]="violationId">{{violationId}}
+        </div>
+    </div>
+        <div class="policy-violation-label flex flex-col" *ngIf="violationData.policyDescription">
         <div class="policy-violation-label-header capitalize">
             Policy Description
         </div>
@@ -53,7 +59,7 @@
                     </div>
                     <br>
                     <span *ngFor="let item of eachData.data">
-                        <a class="anchor-link" [href]="item.link" target="_blank">{{item.cveNumber}}</a><span>: {{ item.displayName }}</span>, 
+                        <a class="anchor-link" [href]="item.link" target="_blank">{{item.cveNumber}}</a><span>: {{ item.displayName }}</span>,
                     </span>
                 </div>
             </div>

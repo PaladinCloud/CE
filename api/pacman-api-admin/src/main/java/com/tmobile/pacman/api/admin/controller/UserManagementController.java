@@ -34,7 +34,7 @@ public class UserManagementController {
     @GetMapping( produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getUsers(@RequestParam(defaultValue = "1", required = false) Integer cursor,
                                            @RequestParam(defaultValue = "50", required = false)  Integer limit,
-                                           @RequestParam (defaultValue = "status = \""+"Enabled"+"\"", required = false) String filter){
+                                           @RequestParam(required = false) String filter){
         try {
             if(cursor<1 || limit<1){
                 String errorMsg="Cursor and limit can't be less than 1";

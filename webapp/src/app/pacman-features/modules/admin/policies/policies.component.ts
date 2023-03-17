@@ -37,8 +37,11 @@ import { NotificationObservableService } from "src/app/shared/services/notificat
   providers: [LoggerService, ErrorHandlingService, AdminService],
 })
 export class PoliciesComponent implements OnInit, OnDestroy {
-  pageTitle: String = "Policies";
+  pageTitle: String = "Policy";
   allPolicies: any = [];
+
+  filterTypeLabels = [];
+  filterTagLabels = {};
 
   outerArr: any = [];
   dataLoaded: boolean = false;
@@ -65,12 +68,19 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
+      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
       
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
-    }
+    },
+    Category: (a, b, isAsc) => {
+      let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+      const ACategory = a["Category"].valueText??"default";
+      const BCategory = b["Category"].valueText??"default";
+      return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
   }
   tableImageDataMap = {
       security:{
@@ -107,7 +117,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       },
   }
 
-  paginatorSize: number = 25;
+  paginatorSize: number = 1000;
   isLastPage: boolean;
   isFirstPage: boolean;
   totalPages: number;
@@ -169,6 +179,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.tableData = state?.data || [];
       this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
       this.tableScrollTop = state?.tableScrollTop;
+      this.filters = state?.filters || [];
+
+      if(this.filters){
+        this.getFiltersData(this.tableData);
+      }
       
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
@@ -226,6 +241,32 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     return newData;
   }
 
+  getFiltersData(data){
+    this.filterTypeLabels = [];
+    this.filterTagLabels = {};
+    this.whiteListColumns.forEach(column => {
+      if(column.toLowerCase()=='actions'){
+        return;
+      }
+      let filterTags = [];
+      this.filterTypeLabels.push(column);
+      if(column=='Severity'){
+        filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Category'){
+        filterTags = ["security", "cost", "operations", "tagging"];
+      }else{
+        const set = new Set();
+        data.forEach(row => {
+          set.add(row[column].valueText);
+        });
+        filterTags = Array.from(set);
+        filterTags.sort();
+      }
+      
+      this.filterTagLabels[column] = filterTags;
+    });
+  }
+
   getPolicyDetails(isNextPageCalled?) {
     var url = environment.policyDetails.url;
     var method = environment.policyDetails.method;
@@ -261,6 +302,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               this.errorMessage = "noDataAvailable";
             }
           }
+          this.getFiltersData(this.tableData);
           this.totalRows = data.totalElements;
           this.dataLoaded = true;
         }
@@ -535,8 +577,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       direction: this.direction,
       whiteListColumns: this.whiteListColumns,
       bucketNumber: this.bucketNumber,
-      searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop
+      searchTxt: event.searchTxt,
+      tableScrollTop: event.tableScrollTop,
+      filters: event.filters
       // filterText: this.filterText
     }
     this.storeState(state);
