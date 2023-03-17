@@ -108,7 +108,8 @@ ADD COLUMN `warningMailSubject` VARCHAR(1000) NULL AFTER `fixType`,
 ADD COLUMN `fixMailSubject` VARCHAR(1000) NULL AFTER `warningMailSubject`,
 ADD COLUMN `warningMessage` VARCHAR(1000) NULL AFTER `fixMailSubject`,
 ADD COLUMN `fixMessage` VARCHAR(1000) NULL AFTER `warningMessage`,
-ADD COLUMN `violationMessage` VARCHAR(1000) NULL DEFAULT NULL AFTER `fixMessage`;
+ADD COLUMN `violationMessage` VARCHAR(1000) NULL DEFAULT NULL AFTER `fixMessage`,
+ADD COLUMN `elapsedTime` INT NULL DEFAULT 24 AFTER `violationMessage`;
 
 END IF;
 
