@@ -7,6 +7,11 @@ def need_to_deploy_vulnerability_service():
 
     return feature_status
 
+def need_to_use_fed_identity_provider():
+    feature_status = Settings.get('ENABLE_AZURE_AD', False)
+
+    return feature_status
+
 
 def need_to_enable_azure():
     feature_status = Settings.get('ENABLE_AZURE', False)

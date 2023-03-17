@@ -38,7 +38,7 @@ public class KmsKeyInventoryCollector {
         HashSet<KMSKeyVH> kmsKeyVHHashSet=new HashSet<>();
 
         try {
-            KeyManagementServiceClient kmsKeyClient = gcpCredentialsProvider.getKmsKeyServiceClient();
+            KeyManagementServiceClient kmsKeyClient = gcpCredentialsProvider.getKmsKeyServiceClient(project.getProjectId());
 
             List<String>locations=new ArrayList<>(gcPlocationUtil.getLocations(project.getProjectId()));
             logger.info("Fetched GCP locations: {}", locations);

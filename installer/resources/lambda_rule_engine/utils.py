@@ -1,7 +1,7 @@
 from os import defpath
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusazure,  CloudWatchEventBusgcp
 from resources.iam.base_role import BaseRole
-from resources.pacbot_app.utils import need_to_enable_azure, need_to_enable_gcp, need_to_deploy_vulnerability_service
+from resources.pacbot_app.utils import  need_to_deploy_vulnerability_service
 import json
 from core.config import Settings
 
@@ -24,12 +24,12 @@ def get_rule_engine_cloudwatch_rules_aws_var():
         #     continue
         # elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
         #     continue
-        if variable_dict_input[index]['policyUUID'] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
-            continue
+        # if variable_dict_input[index] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
+        #     continue
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
-            'policyId': variable_dict_input[index]['policyUUID'],
-            'policyParams': variable_dict_input[index]['policyParams'],
+            'policyId': variable_dict_input[index],
+            'policyParams': json.dumps({ "policyUUID":variable_dict_input[index] }),
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],
@@ -63,14 +63,14 @@ def get_rule_engine_cloudwatch_rules_azure_var():
     variable_dict_input = json.loads(data)
     required_rules = []
     for index in range(len(variable_dict_input)):
-        if  not need_to_enable_azure():
-            continue
+        # if  not need_to_enable_azure():
+        #     continue
         # elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
         #     continue
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
-            'policyId': variable_dict_input[index]['policyUUID'],
-            'policyParams': variable_dict_input[index]['policyParams'],
+            'policyId': variable_dict_input[index],
+            'policyParams': json.dumps({ "policyUUID":variable_dict_input[index] }),
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],
@@ -106,12 +106,12 @@ def get_rule_engine_cloudwatch_rules_gcp_var():
     for index in range(len(variable_dict_input)):
         # if variable_dict_input[index]['assetGroup'] == "azure" and not need_to_enable_azure():
         #     continue
-        if not need_to_enable_gcp():
-            continue
+        # if not need_to_enable_gcp():
+        #     continue
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
-            'policyId': variable_dict_input[index]['policyUUID'],
-            'policyParams': variable_dict_input[index]['policyParams'],
+            'policyId': variable_dict_input[index],
+            'policyParams': json.dumps({ "policyUUID":variable_dict_input[index] }),
             'event' : json.dumps({
                     "detail-type": [Settings.JOB_DETAIL_TYPE],
                     "source": [Settings.JOB_SOURCE],

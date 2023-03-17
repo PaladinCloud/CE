@@ -35,6 +35,23 @@
 	    <artifactId>commons-httpclient</artifactId>
 	    <version>3.1</version>
 	</dependency>
+	  <dependency>
+		  <groupId>com.amazonaws</groupId>
+		  <artifactId>aws-java-sdk</artifactId>
+		  <version>1.12.290</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>com.amazonaws</groupId>
+		  <artifactId>aws-java-sdk-secretsmanager</artifactId>
+		  <version>1.12.413</version>
+	  </dependency>
+
+	  <dependency>
+		  <groupId>com.amazonaws</groupId>
+		  <artifactId>aws-java-sdk-core</artifactId>
+		  <version>1.12.239</version>
+	  </dependency>
 	
 	<dependency>
        <groupId>com.paladincloud</groupId>

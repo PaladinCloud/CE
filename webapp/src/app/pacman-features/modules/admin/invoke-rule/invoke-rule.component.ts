@@ -129,8 +129,8 @@ export class InvokeRuleComponent implements OnInit, OnDestroy {
   invokeRule() {
     this.hideContent = true;
     this.ruleLoader = true;
-    var url = environment.invokeRule.url; 
-    var method = environment.invokeRule.method; 
+    var url = environment.invokePolicy.url; 
+    var method = environment.invokePolicy.method; 
     this.adminService.executeHttpAction(url, method, this.allOptionalRuleParams, {policyId:this.policyId}).subscribe(reponse => {
       this.ruleLoader = false;
       this.isRuleInvokeSuccess = true;

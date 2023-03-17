@@ -46,9 +46,9 @@ public class GKEClusterInventoryCollector {
 
             for (String region : regions) {
                 logger.info("### GKe cluster  clusterList  inside region {}", region);
-                ClusterManagerClient clusterManagerClient = gcpCredentialsProvider.getClusterManagerClient();
-                String parent = "projects/" + project.getProjectId() + "/locations/" + region;
-                ListClustersResponse clusterList = null;
+                ClusterManagerClient clusterManagerClient = gcpCredentialsProvider.getClusterManagerClient(project.getProjectId());
+                String parent="projects/"+project.getProjectId()+"/locations/"+region;
+                ListClustersResponse clusterList=null;
                 try {
                     clusterList = clusterManagerClient.listClusters(parent);
                     logger.info("cluster Size {}", clusterManagerClient.listClusters(parent).getClustersList());

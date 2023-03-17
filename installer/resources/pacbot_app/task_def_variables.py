@@ -7,7 +7,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.datastore.db import MySQLDatabase
 from core.config import Settings
-from resources.cognito.userpool import UserPool, AppCLient, Appcredentials
+from resources.cognito.userpool import UserPool, AppCLient
 import json
 
 

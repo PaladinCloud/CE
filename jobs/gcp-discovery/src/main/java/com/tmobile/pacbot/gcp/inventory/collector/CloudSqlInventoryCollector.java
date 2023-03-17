@@ -31,7 +31,7 @@ public class CloudSqlInventoryCollector {
         logger.info("Running collector for cloud SQL inventory.");
         List<CloudSqlVH> cloudSqlList = new ArrayList<>();
         try {
-            SQLAdmin sqlAdmin = gcpCredentialsProvider.getSqlAdminService();
+            SQLAdmin sqlAdmin = gcpCredentialsProvider.getSqlAdminService(project.getProjectId());
             InstancesListResponse response = sqlAdmin.instances().list(project.getProjectId()).execute();
             logger.info("SQL admin list api response: {}", response);
             if (response != null && !response.isEmpty()) {

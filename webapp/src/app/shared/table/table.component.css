@@ -12,6 +12,10 @@
     overflow-y: scroll;
 }
 
+.noImg{
+  opacity: 0;
+}
+
 .table-wrapper{
   height: 100%;
   width: 100%;
@@ -138,7 +142,7 @@
 }
 
 .filter-modal-container .filters-wrapper .filter{
-  gap: 8px;
+  gap: 16px;
   align-items: center;
 }
 
@@ -176,7 +180,8 @@
 .filters-container{
   overflow-y: scroll;
   min-height: 50px;
-  max-height: 120px;
+  max-height: 121px;
+  padding: 12px 0px;
 }
 
 .filters-container ::ng-deep .mat-form-field-infix{
@@ -254,11 +259,11 @@
     color: var(--text-high-emphasis) !important;
 }
 
-.more-wrapper ::ng-deep .mat-option{
+::ng-deep .mat-option{
     flex-direction: row-reverse !important;
 }
 
-.more-wrapper ::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
+::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
     display: none;
 }
 

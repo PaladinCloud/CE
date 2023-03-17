@@ -39,6 +39,20 @@ public class PolicyTable {
 	private Date modifiedDate;
 	private String severity;
 	private String category;
+	private String autoFixEnabled;
+	private String autoFixAvailable;
+	private String allowList;
+	private Integer waitingTime;
+	private Integer maxEmailNotification;
+	private String templateName;
+	private String templateColumns;
+	private String fixType;
+	private String warningMailSubject;
+	private String fixMailSubject;
+	private String warningMessage;
+	private String fixMessage;
+	private String violationMessage;
+	private Integer elapsedTime;
 	
 	public String getPolicyId() {
 		return policyId;
@@ -172,6 +186,91 @@ public class PolicyTable {
 	public void setCategory(String category) {
 		this.category = category;
 	}
+	public String getAutoFixEnabled() {
+		return autoFixEnabled;
+	}
+	public void setAutoFixEnabled(String autoFixEnabled) {
+		this.autoFixEnabled = autoFixEnabled;
+	}
+	public String getAutoFixAvailable() {
+		return autoFixAvailable;
+	}
+	public void setAutoFixAvailable(String autoFixAvailable) {
+		this.autoFixAvailable = autoFixAvailable;
+	}
+	public String getAllowList() {
+		return allowList;
+	}
+	public void setAllowList(String allowList) {
+		this.allowList = allowList;
+	}
+	public Integer getWaitingTime() {
+		return waitingTime;
+	}
+	public void setWaitingTime(Integer waitingTime) {
+		this.waitingTime = waitingTime;
+	}
+	public Integer getMaxEmailNotification() {
+		return maxEmailNotification;
+	}
+	public void setMaxEmailNotification(Integer maxEmailNotification) {
+		this.maxEmailNotification = maxEmailNotification;
+	}
+	public String getTemplateName() {
+		return templateName;
+	}
+	public void setTemplateName(String templateName) {
+		this.templateName = templateName;
+	}
+	public String getTemplateColumns() {
+		return templateColumns;
+	}
+	public void setTemplateColumns(String templateColumns) {
+		this.templateColumns = templateColumns;
+	}
+	public String getFixType() {
+		return fixType;
+	}
+	public void setFixType(String fixType) {
+		this.fixType = fixType;
+	}
+	public String getWarningMailSubject() {
+		return warningMailSubject;
+	}
+	public void setWarningMailSubject(String warningMailSubject) {
+		this.warningMailSubject = warningMailSubject;
+	}
+	public String getFixMailSubject() {
+		return fixMailSubject;
+	}
+	public void setFixMailSubject(String fixMailSubject) {
+		this.fixMailSubject = fixMailSubject;
+	}
+	public String getWarningMessage() {
+		return warningMessage;
+	}
+	public void setWarningMessage(String warningMessage) {
+		this.warningMessage = warningMessage;
+	}
+	public String getFixMessage() {
+		return fixMessage;
+	}
+	public void setFixMessage(String fixMessage) {
+		this.fixMessage = fixMessage;
+	}
+	public String getViolationMessage() {
+		return violationMessage;
+	}
+	public void setViolationMessage(String violationMessage) {
+		this.violationMessage = violationMessage;
+	}
+	public Integer getElapsedTime() {
+		return elapsedTime;
+	}
+	public void setElapsedTime(Integer elapsedTime) {
+		this.elapsedTime = elapsedTime;
+	}
+	
 
 	
 }

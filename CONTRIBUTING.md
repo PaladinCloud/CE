@@ -42,7 +42,7 @@ In general, the contribution workflow looks like this:
 - Open a new issue in the [Issue tracker](https://github.com/PaladinCloud/CE/issues).
 - Fork the repo.
 - Create a new feature branch based off the `master` branch.
-- Make sure to add tests.
+- Make sure to add/update tests.
 - Submit a pull request, referencing any issues it addresses.
 
 Please try to keep your pull request focused in scope and avoid including unrelated commits.
