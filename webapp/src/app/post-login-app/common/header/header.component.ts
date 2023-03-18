@@ -1,18 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Apollo, gql } from 'apollo-angular';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { DataCacheService } from '../../../core/services/data-cache.service';
 import { PermissionGuardService } from '../../../core/services/permission-guard.service';
 import { LoggerService } from '../../../shared/services/logger.service';
+
+const NOTIFICATIONS_SUBSCRIPTION = gql`
+    subscription mySub {
+        addedPost {
+            id
+        }
+    }
+`;
 
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
     showUserInfo = false;
     haveAdminPageAccess = false;
     userName: string;
@@ -21,7 +32,10 @@ export class HeaderComponent implements OnInit {
 
     haveNewNotification = false;
 
+    private destroy$ = new Subject<void>();
+
     constructor(
+        private apollo: Apollo,
         private authenticateService: AuthService,
         private dataCacheService: DataCacheService,
         private domSanitizer: DomSanitizer,
@@ -57,6 +71,21 @@ export class HeaderComponent implements OnInit {
         } catch (error) {
             this.loggerService.log('error', 'JS Error' + error);
         }
+
+        this.apollo
+            .subscribe({
+                query: NOTIFICATIONS_SUBSCRIPTION,
+            })
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => (this.haveNewNotification = true),
+                error: (err) => this.loggerService.log('error', 'GraphQL error' + err),
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     handleSearch() {
