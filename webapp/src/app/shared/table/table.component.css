@@ -188,10 +188,6 @@
   min-width: 150px;
 }
 
-.filters-container ::ng-deep .mat-select-trigger{
-  height: 30px !important;
-}
-
 .table-header .search-in-columns{
     margin-left: auto;
 }

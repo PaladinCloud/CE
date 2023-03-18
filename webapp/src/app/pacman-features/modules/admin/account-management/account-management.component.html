@@ -1,33 +1,28 @@
-<div class="compliance-dashboard-wrapper flex flex-between">
-    <div class="floating-widgets-section-full flex flex-col">
-        <div class="padding-top"></div>
-        <div class="floating-widgets-header flex flex-between">
-            <div>
-                <!-- <img *ngIf="backButtonRequired" class="arrow-img" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
-                <h1 class="title-text">{{pageTitle}}</h1>
-            </div>
-            <app-button (click)='goToCreate()'>CREATE</app-button>
-        </div>
-        <div class="floating-widgets-section-full issue-listing-wrapper ac-man-wrap flex flex-col">
-            <section class='flex flex-col full-height'>
-                <ul class='flex flex-col full-height'>
-                    <li class="widget-wrapper flex flex-col full-height">
-                        <div class="widget flex flex-col full-height">
-                            <div class="relative flex flex-col full-height">
-                                <app-data-table class="flex flex-col full-height" [errorValue]='errorValue' [outerArr]='outerArr' [allColumns]='allColumns'
-                                    [dataHead]="'Account Management'" [parentName]='errorMessage'
-                                    [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows'
-                                    [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)' (searchTriggerred)='callNewSearch()'
-                                    [searchPassed]='searchPassed' (menuClick)='handleDropdown($event);' [searchableHeader]='true'
-                                    [buttonsArr]='actionsArr' [buttonColumn]="'Action'">
-                                </app-data-table>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </section>
-        </div>
+<div class="account-management-page-wrapper">
+    <div class="page-header">
+        <h6>{{pageTitle}}</h6>
+       <button class="button btn"
+        (click)="createAccount()">Add Account</button>
+    </div>
+    <div class="data-table-container">
+        <section>
+            <ul>
+                <li class="widget-wrapper relative">
+                    <div class="relative">
+                        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+                            [headerColName]="headerColName" [direction]="direction" (actionSelected)="goToDetails($event)"
+                            [doLocalSearch]="true" [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+                            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true" [showAddRemoveCol]="true"
+                            [showDownloadBtn]="false" [showFilterBtn]="true" (selectedFilterType)='changeFilterType($event)'
+                            (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
+                             [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
+                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="true"
+                            [rowClickable]="false">
+                        </app-table>
+                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                    </div>
+                </li>
+            </ul>
+        </section>
     </div>
 </div>
-<app-confirmation-box *ngIf='showConfBox' [text]="deleteCondition()" (emitConfirm)='confirmBox();' (emitClose)='showConfBox = false;'
-    [errorValue]="errorValue"></app-confirmation-box>

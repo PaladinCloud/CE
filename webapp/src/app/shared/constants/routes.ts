@@ -71,6 +71,7 @@ import { RecommendationsComponent } from "../../pacman-features/modules/complian
 import { RecommendationsDetailsComponent } from "../../pacman-features/modules/compliance/recommendations-details/recommendations-details.component";
 import { AssetDistributionComponent } from "src/app/pacman-features/modules/assets/asset-distribution/asset-distribution.component";
 import { UserManagementComponent } from "src/app/pacman-features/modules/admin/user-management/user-management.component";
+import { AddAccountComponent } from "src/app/pacman-features/modules/admin/account-management/add-account/add-account.component";
 
 export const COMPLIANCE_ROUTES = [
   {
@@ -360,6 +361,16 @@ export const ADMIN_ROUTES = [
     canActivate: [AuthGuardService, PermissionGuardService]
   },
   {
+    path: "account-management/add-account",
+    component: AddAccountComponent,
+    data: {
+      title: "Add Account",
+      roles: ["ROLE_ADMIN"],
+      capabilities: ["account-management"]
+    },
+    canActivate: [AuthGuardService, PermissionGuardService]
+  },
+  {
     path: "job-execution-manager",
     component: JobExecutionManagerComponent,
     data: {
@@ -539,15 +550,18 @@ export const ADMIN_ROUTES = [
     },
     canActivate: [AuthGuardService, PermissionGuardService]
   },
-  /*{
+  {
         path: 'account-management',
         component: AccountManagementComponent,
         data: {
             title: 'Account Management',
-            roles: ['ROLE_ADMIN']
-        }
+            roles: ['ROLE_ADMIN'],
+            pageLevel: 0,
+            capabilities: ["account-management"]
+          },
+          canActivate: [AuthGuardService, PermissionGuardService]
     },
-    {
+  /*  {
         path: 'account-management-details/:id',
         component: AccountManagementDetailsComponent,
         data: {

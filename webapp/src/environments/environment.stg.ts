@@ -842,16 +842,28 @@ export const environment = {
         url: '{{baseUrl}}/admin/plugin/v1/plugins',
         method: 'GET'
     },
-    getAccounts: {
-        url: '{{baseUrl}}/admin/awsaccounts',
-        method: 'GET'
-    },
     updateAccount: {
         url: '{{baseUrl}}/admin/awsaccounts',
         method: 'PUT'
     },
+    getAccounts: {
+        url: '{{baseUrl}}/admin/accounts',
+        method: 'GET'
+    },
+    validateAccount: {
+        url: '{{baseUrl}}/admin/accounts/validate',
+        method: 'POST'
+    },
+    deleteAccount:{
+        url: '{{baseUrl}}/admin/accounts',
+        method: 'DELETE'
+    },
+    getBaseAccount: {
+        url: '{{baseUrl}}/admin/accounts/baseAccount',
+        method: 'GET'
+    },
     createAccount: {
-        url: '{{baseUrl}}/admin/awsaccounts',
+        url: '{{baseUrl}}/admin/accounts',
         method: 'POST'
     },
     deleteAccounts: {
