@@ -7,9 +7,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class InputFieldComponent implements OnInit {
 
-  @Input() placeholder: string;
-  @Input() description: string;
-  @Input() value: string;
+  @Input() placeholder: string = "";
+  @Input() description: string = "";
+  @Input() value: string = "";
   @Output() valueChange = new EventEmitter<string>();
 
   onInputChange(){

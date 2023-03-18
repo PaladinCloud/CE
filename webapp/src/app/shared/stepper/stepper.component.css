@@ -8,6 +8,10 @@
     border-right: 1px solid var(--border-200);
 }
 
+::ng-deep .mat-step-header{
+    pointer-events: none !important;
+}
+
 .stepper-wrapper{
     height: 100%;
     display: flex;
@@ -27,6 +31,10 @@
 
 .stepper{
     width: 20%;
+}
+
+::ng-deep .mat-vertical-content{
+    padding: 0px !important;
 }
 
 ::ng-deep .mat-vertical-content-container{
@@ -51,3 +59,26 @@
     top: 70px;
     right: 48px;
 }
+
+.text-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.title{
+    font-family: 'Mark Pro';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 140%;
+    color: var(--text-high-emphasis);
+    }
+    
+    .sub-text{
+    font: var(--text-body-1);
+    color: var(--text-medium-emphasis);
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    }

@@ -13,7 +13,9 @@ import { UtilsService } from '../../../../shared/services/utils.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { RefactorFieldsService } from '../../../../shared/services/refactor-fields.service';
-
+import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
+import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-account-management',
@@ -44,6 +46,36 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
   allColumns = [];
   lastPaginator: number;
   currentPointer = 0;
+  
+  tableData = [];
+  headerColName;
+  direction;
+  columnNamesMap = {"accountName": "Account Name","accountId":"Account ID", "assets": "Assets",  "violations": "Violations", "accountStatus": "Status","platform":"Platform"};
+  columnWidths = {"Account Name": 1, "Account ID": 1, "Assets": 1, "Violations": 1, "Status": 1, "Platform": 1,"Actions":0.5};
+  whiteListColumns;
+  tableScrollTop = 0;
+  dataTableDesc: String = "";
+  tableImageDataMap = {
+    aws:{
+        image: "aws-color",
+        imageOnly: true
+    },
+    azure:{
+      image: "azure-color",
+      imageOnly: true
+   }, gcp:{
+    image: "gcp-color",
+    imageOnly: true
+  }
+    }
+
+  filterTypeOptions: any = [];
+  filterTagOptions: any = {};
+  currentFilterType;
+  filterTypeLabels = [];
+  filterTagLabels = {};
+  filters: any = [];
+  filterText : any;
   actionsArr = ['Edit', 'Delete'];
   paginatorSize = 25;
   searchTxt = '';
@@ -59,6 +91,10 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
   };
   filterArray = []; /* Stores the page applied filter array */
   routeSubscription: Subscription;
+  baseAccountId: string = "";
+  filterErrorMessage: string;
+  FullQueryParams: any;
+  queryParamsWithoutFilter: any;
 
   constructor(private router: Router,
     private activatedRoute: ActivatedRoute,
@@ -70,19 +106,32 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
     private errorHandling: ErrorHandlingService,
     private utils: UtilsService,
     private routerUtilityService: RouterUtilityService,
-    private refactorFieldsService: RefactorFieldsService) {
-
-    /* Check route parameter */
-    this.routeSubscription = this.activatedRoute.params.subscribe(params => {
-      // Fetch the required params from this object.
-    });
-
+    private refactorFieldsService: RefactorFieldsService,
+    private notificationObservableService: NotificationObservableService) {
+    this.getFilters();
   }
 
   ngOnInit() {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
+    this.whiteListColumns = Object.keys(this.columnWidths);
     this.reset();
     this.init();
+  }
+
+  createAccount(){
+    try {
+      this.workflowService.addRouterSnapshotToLevel(
+        this.router.routerState.snapshot.root, 0, this.pageTitle
+      );
+      this.router.navigate(["add-account"], {
+        relativeTo: this.activatedRoute,
+        queryParamsHandling: "merge",
+        queryParams: {},
+      });
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
   }
 
   reset() {
@@ -100,8 +149,23 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
 
   init() {
     /* Initialize */
+    this.getBaseAccount();
     this.routerParam();
     this.updateComponent();
+  }
+
+  getBaseAccount(){
+    const url = environment.getBaseAccount.url;
+    const method = environment.getBaseAccount.method;
+
+    this.commonResponseService.getData(url,method,{},{})
+    .subscribe(response=>{
+      try{
+        this.baseAccountId = response.accountId;
+      }catch(err){
+        this.logger.log("error JS",err);
+      }
+    })
   }
 
   updateComponent() {
@@ -111,54 +175,28 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
 
   }
 
-  routerParam() {
+   /*
+   * This function gets the urlparameter and queryObj
+   *based on that different apis are being hit with different queryparams
+   */
+   routerParam() {
     try {
-
-      const currentQueryParams = this.routerUtilityService.getQueryParametersFromSnapshot(this.router.routerState.snapshot.root);
-
+      const currentQueryParams =
+        this.routerUtilityService.getQueryParametersFromSnapshot(
+          this.router.routerState.snapshot.root
+        );
       if (currentQueryParams) {
-
-        this.appliedFilters.queryParamsWithoutFilter = JSON.parse(JSON.stringify(currentQueryParams));
-        delete this.appliedFilters.queryParamsWithoutFilter['filter'];
-
-        this.appliedFilters.pageLevelAppliedFilters = this.utils.processFilterObj(currentQueryParams);
-
-        this.filterArray = this.filterManagementService.getFilterArray(this.appliedFilters.pageLevelAppliedFilters);
+        this.FullQueryParams = currentQueryParams;
+        this.queryParamsWithoutFilter = JSON.parse(
+          JSON.stringify(this.FullQueryParams)
+        );
+        delete this.queryParamsWithoutFilter["filter"];
+        this.filterText = this.utils.processFilterObj(this.FullQueryParams);
       }
     } catch (error) {
-      this.errorMessage = 'jsError';
-      this.logger.log('error', error);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
-  }
-
-  updateUrlWithNewFilters(filterArr) {
-    this.appliedFilters.pageLevelAppliedFilters = this.utils.arrayToObject(
-      this.filterArray,
-      'filterkey',
-      'value'
-    ); // <-- TO update the queryparam which is passed in the filter of the api
-    this.appliedFilters.pageLevelAppliedFilters = this.utils.makeFilterObj(this.appliedFilters.pageLevelAppliedFilters);
-
-    /**
-     * To change the url
-     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
-     */
-
-    const updatedFilters = Object.assign(
-      this.appliedFilters.pageLevelAppliedFilters,
-      this.appliedFilters.queryParamsWithoutFilter
-    );
-
-    /*
-     Update url with new filters
-     */
-
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: updatedFilters
-    }).then(success => {
-      this.routerParam();
-    });
   }
 
   navigateBack() {
@@ -171,115 +209,84 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
   }
 
   getData() {
-
     try {
       if (this.tableSubscription) {
         this.tableSubscription.unsubscribe();
       }
+      let queryParams;
+      if(this.filters.length>0){
+        queryParams = {
+            page: 0,                                                                      
+            size: 100,
+            filterName: this.filters[0].key.toLowerCase(),
+            filterValue: this.filters[0].value
+          };
+      }
+      else{
+       queryParams = {
+          page: 0,                                                                      
+          size: 100,
+        };
+      }
+ 
       const payload = {};
-      const queryParams = {};
       this.errorValue = 0;
-      const accountUrl = environment.getAccounts.url;
-      const allVulnerabilityMethod = environment.getAccounts.method;
+      const url = environment.getAccounts.url;
+      const method = environment.getAccounts.method;
       this.tableSubscription = this.commonResponseService
-        .getData(accountUrl, allVulnerabilityMethod, payload, queryParams)
+        .getData(url, method, payload, queryParams)
         .subscribe(
-          response => {
+          responseData => {
             try {
-              this.errorValue = 1;
-              let data = response;
-              if (response.length === 0) {
-                this.errorValue = -1;
-                this.outerArr = [];
+              let data = responseData.response;
+              if (data.length === 0) {
                 this.errorMessage = 'noDataAvailable';
-                this.allColumns = [];
                 this.totalRows = 0;
               }
               if (data.length > 0) {
-                this.totalRows = data.length;
-                this.firstPaginator =
-                  this.bucketNumber * this.paginatorSize + 1;
-                this.lastPaginator = data.length;
-                this.currentPointer = this.bucketNumber;
-                if (this.lastPaginator > this.totalRows) {
-                  this.lastPaginator = this.totalRows;
-                }
-                this.currentBucket[this.bucketNumber] = data;
                 data = this.massageData(data);
-                this.processData(data);
+                this.tableData = this.processData(data);
               }
             } catch (e) {
-              this.errorValue = 0;
-              this.errorValue = -1;
-              this.outerArr = [];
               this.errorMessage = 'jsError';
             }
           },
           error => {
-            this.errorValue = -1;
-            this.outerArr = [];
             this.errorMessage = 'apiResponseError';
           }
         );
     } catch (error) {
-
       this.logger.log('error', error);
     }
   }
 
-  massageData(data) {
-
+  massageData(data){
     const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
     const newData = [];
-    data.map(function (responseData) {
-      const KeysTobeChanged = Object.keys(responseData);
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
       let newObj = {};
-      KeysTobeChanged.forEach(element => {
-        const elementnew =
+      KeysTobeChanged.forEach((element) => {
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        else {
+        elementnew =
           refactoredService.getDisplayNameForAKey(
             element.toLocaleLowerCase()
           ) || element;
-        newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
+      newObj["Actions"] = "";
       newData.push(newObj);
     });
     return newData;
-  }
-
-  confirmBox() {
-    // user selects delete here
-    try {
-      this.errorValue = 0;
-      if (this.tableSubscription) {
-        this.tableSubscription.unsubscribe();
-      }
-      const payload = {};
-      const queryParams = {};
-      this.errorValue = 0;
-      let accountUrl = environment.deleteAccounts.url;
-      accountUrl = accountUrl.replace('{{accountId}}', this.currentId);
-      const allVulnerabilityMethod = environment.deleteAccounts.method;
-      this.tableSubscription = this.commonResponseService
-        .getData(accountUrl, allVulnerabilityMethod, payload, queryParams)
-        .subscribe(
-          response => {
-            try {
-              this.showConfBox = false;
-              this.updateComponent();
-            } catch (e) {
-
-            }
-          },
-          error => {
-            this.errorValue = -1;
-            this.errorMessage = 'apiResponseError';
-          }
-        );
-    } catch (error) {
-
-      this.logger.log('error', error);
-    }
-
   }
 
   handleDropdown(event) {
@@ -300,43 +307,78 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
 
   processData(data) {
     try {
-      let innerArr = {};
-      const totalVariablesObj = {};
-      let cellObj = {};
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
 
-      this.outerArr = [];
-      const getData = data;
-      let getCols;
-      if (getData.length) {
-        getCols = Object.keys(getData[0]);
-      }
-      for (let row = 0; row < getData.length; row++) {
+      let cellData;
+      for (var row = 0; row < getData.length; row++) {
         innerArr = {};
-        for (let col = 0; col < getCols.length; col++) {
+        keynames.forEach(col => {
+          cellData = getData[row][col];
           cellObj = {
-            link: '',
-            properties: {
-              color: ''
-            },
-            colName: getCols[col],
-            hasPreImg: false,
-            imgLink: '',
-            text: getData[row][getCols[col]],
-            valText: getData[row][getCols[col]]
-          };
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = '';
-        }
-        this.outerArr.push(innerArr);
+            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
+            titleText: cellData, // text to show on hover
+            valueText: cellData?.toLowerCase(),
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            isLink: false
+            // chipVariant: "", // this value exists if isChip is true,
+            // menuItems: [], // add this if isMenuBtn
+          }
+          if(col.toLowerCase()=="account name"){
+            cellObj = {
+              ...cellObj,
+              isLink: true
+            };
+          }
+          else if (col.toLowerCase() == "actions") {
+            let dropdownItems: Array<String> = ["Delete"];
+            if(getData[row]["Account ID"]==this.baseAccountId)
+                 dropdownItems = [];
+            cellObj = {
+              ...cellObj,
+              isMenuBtn: true,
+              menuItems: dropdownItems,
+            };
+          } else if(col.toLowerCase() == "status"){
+            let chipBackgroundColor,chipTextColor;
+            if(getData[row]["Status"].toLowerCase() === "configured"){
+              chipBackgroundColor = "#E6F5EC";
+              chipTextColor = "#00923f";
+            }else{
+              chipBackgroundColor = "#F2F3F5";
+              chipTextColor = "#73777D";
+            }
+            cellObj = {
+              ...cellObj,
+              chipList: [getData[row][col]],
+              text: getData[row][col].toLowerCase(),
+              isChip: true,
+              chipBackgroundColor: chipBackgroundColor,
+              chipTextColor: chipTextColor
+            };
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
       }
-      if (this.outerArr.length > getData.length) {
-        const halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
       }
-      this.allColumns = Object.keys(totalVariablesObj);
+      return processedData;
     } catch (error) {
-      this.errorMessage = 'jsError';
-      this.logger.log('error', error);
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
   }
 
@@ -357,22 +399,237 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
     }
   }
 
-  callNewSearch() {
+  callNewSearch(e:any) {
     this.searchPassed = this.searchTxt;
   }
-  deleteCondition() {
-    if (this.errorValue === 0) {
-      // loader
-      return 'Your Account is being deleted';
-    } else {
-      if (this.errorValue === 1) {
-        return 'Are you sure you want to delete this account?';
-      } else {
-        return 'An error occured while deleting your account';
+
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+  }
+
+  deleteAccount(accountId:string,provider:string){
+    const url = environment.deleteAccount.url;
+    const method = environment.deleteAccount.method;
+    const queryParams = {
+      accountId : accountId,
+      provider: provider
+    }
+    let nofificationMessage = "";
+    this.commonResponseService.getData(url,method,{},queryParams).subscribe(responseData=>{
+      try{
+        const response = responseData.data;
+        const status =response.validationStatus;
+        if(status.toLowerCase() == "success"){
+          nofificationMessage = "Account "+ accountId +" has been deleted successfully";
+          this.notificationObservableService.postMessage(nofificationMessage,3000,"","check-circle");
+          this.updateComponent();
+        }
       }
+      catch(error) {
+      this.logger.log('error', 'JS Error - ' + error);
+      }
+    })
+  }
+
+  goToDetails(event:any){
+    const action = event.action;
+    const rowSelected = event.rowSelected;
+    const accountId = rowSelected["Account ID"].valueText;
+    const provider = rowSelected["Platform"].valueText;
+    if(action.toLowerCase() == "delete"){
+      this.deleteAccount(accountId,provider);
+     }
+  }
+
+
+  getUpdatedUrl() {
+    let updatedQueryParams = {};    
+      this.filterText = this.utils.arrayToObject(
+      this.filters,
+      "filterkey",
+      "value"
+    ); // <-- TO update the queryparam which is passed in the filter of the api
+    this.filterText = this.utils.makeFilterObj(this.filterText);
+
+    /**
+     * To change the url
+     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+     */
+
+    updatedQueryParams = {
+      filter: this.filterText.filter,
+    }
+
+
+    /**
+     * Finally after changing URL Link
+     * api is again called with the updated filter
+     */
+    this.filterText = this.utils.processFilterObj(this.filterText);
+    
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+  });
+  }
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+      } else {
+        if (event.clearAll) {
+          this.filters = [];
+        } else {
+          this.filters.splice(event.index, 1);
+        }
+        this.getUpdatedUrl();
+        this.updateComponent();
+      }
+    } catch (error) { }
+    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  }
+  /*
+   * this functin passes query params to filter component to show filter
+   */
+  getFilterArray() {
+    try {
+      // let labelsKey = Object.keys(this.labels);
+      const filterObjKeys = Object.keys(this.filterText);
+      const dataArray = [];
+      for (let i = 0; i < filterObjKeys.length; i++) {
+        let obj = {};
+        obj = {
+          name: filterObjKeys[i],
+        };
+        dataArray.push(obj);
+      }
+      const formattedFilters = dataArray;
+      for (let i = 0; i < formattedFilters.length; i++) {
+        
+        let keyValue = _.find(this.filterTypeOptions, {
+          optionValue: formattedFilters[i].name,
+        })["optionName"];
+        
+        this.changeFilterType(keyValue).then(() => {
+            let filterValue = _.find(this.filterTagOptions[keyValue], {
+              id: this.filterText[filterObjKeys[i]],
+            })["name"];
+          const eachObj = {
+            keyDisplayValue: keyValue,
+            filterValue: filterValue,
+            key: keyValue, // <-- displayKey-- Resource Type
+            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
+            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
+            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+          };
+          this.filters.push(eachObj);
+          this.filters = [...this.filters];
+        })
+      }
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
   }
 
+  /**
+   * This function get calls the keyword service before initializing
+   * the filter array ,so that filter keynames are changed
+   */
+
+  getFilters() {
+    this.filterErrorMessage = '';
+    let isApiError = true;
+    try {
+      this.filterTypeLabels.push("Platform");
+      this.filterTypeOptions.push({
+        optionName: 'Platform',
+        optionValue: 'Platform'
+      })
+      this.routerParam();
+      this.getFilterArray();
+      this.updateComponent();
+    } catch (error) {
+      this.filterErrorMessage = 'apiResponseError';
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    if(isApiError) this.filterErrorMessage = 'apiResponseError';
+  }
+
+  changeFilterType(value) {
+    return new Promise((resolve) => {
+      this.filterErrorMessage = '';
+    try {
+      this.currentFilterType = _.find(this.filterTypeOptions, {
+        optionName: value,
+      });
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        if(value.toLowerCase()=="platform"){
+        this.filterTagLabels[value] = ["aws", "azure","gcp"];
+        this.filterTagOptions[value] = [
+          {
+            id: "aws",
+            name: "aws"
+          },
+          {
+            id: "azure",
+            name: "azure"
+          },
+          {
+            id: "gcp",
+            name: "gcp"
+          }
+        ]
+        resolve(this.filterTagLabels[value]);
+        return;
+      }
+      }
+    } catch (error) {
+      this.filterErrorMessage = 'apiResponseError';
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    }); 
+  }
+
+  changeFilterTags(event) {    
+    let value = event.filterValue;
+    this.currentFilterType =  _.find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });  
+    try {
+      if (this.currentFilterType) {
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });   
+        this.utils.addOrReplaceElement(
+          this.filters,
+          {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: value,
+            key: this.currentFilterType.optionName,
+            value: filterTag["id"],
+            filterkey: this.currentFilterType.optionValue.trim(),
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
+          },
+          (el) => {
+            return (
+              el.compareKey ===
+              this.currentFilterType.optionValue.toLowerCase().trim()
+            );
+          }
+        );
+      }
+      this.getUpdatedUrl();
+      this.utils.clickClearDropdown();
+      this.updateComponent();
+    } catch (error) {
+      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+  
   ngOnDestroy() {
     try {
 

@@ -1,7 +1,35 @@
-.full-height {
+.account-management-page-wrapper{
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
     height: 100%;
+ }
+
+ .page-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-::ng-deep .ac-man-wrap .data-table-inner-wrap:hover {
-    overflow-y: hidden!important;
+.body-2{
+    color: white;
 }
+
+.btn{
+    color: white;
+    background: var(--primary-400);
+  }
+
+
+  .button {
+    display: flex;
+    flex-direction: row;
+    padding: 8px 16px;
+    font: var(--text-body-2);
+    border-radius: 4px;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+    border: none;
+  }

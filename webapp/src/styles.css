@@ -174,34 +174,86 @@ td.hide.table-cells {
 }
 
 h1 {
-  font-size: 2em;
-  font-family: var(--text-font-family);
-  font-weight: 500;
-  padding-bottom: 2px;
+  font: var(--text-headline-1);
+  color: var(--text-high-emphasis);
 }
 
 h2 {
-  font-size: 1.8em;
+  font: var(--text-headline-2);
+  color: var(--text-high-emphasis);
 }
 
 h3 {
-  font-size: 1.6em;
+  font: var(--text-headline-3);
+  color: var(--text-high-emphasis);
+}
+
+.subtitle-2{
+  font: var(--text-subtitle-2);
+  color: var(--text-medium-emphasis);
+}
+
+.subtitle-1{
+  font: var(--text-subtitle-1);
+  color: var(--text-medium-emphasis);
+}
+
+.primary-400{
+  color: var(--primary-400);
 }
 
 h4 {
-  font-size: 1.4em;
-  font-family: var(--text-font-family);
-  font-weight: 500;
+  font: var(--text-headline-4);
+  color: var(--text-high-emphasis);
 }
 
 h5 {
-  font-size: 1.2em;
+  font: var(--text-headline-5);
+  color: var(--text-medium-emphasis);
 }
 
-h6 {
-  font-size: 1em;
-  font-family: ex2-medium;
-  letter-spacing: 0.1px;
+h6{
+    font: var(--text-headline-6);
+    color: var(--text-medium-emphasis);
+}
+
+.page-layout{
+  padding: 28px;
+  height: 100%;
+}
+
+.stepper{
+   height: 100%;
+}
+
+.body-1{
+  font: var(--text-body-1);
+  color: var(--text-medium-emphasis);
+}
+
+.body-2{
+  font: var(--text-body-2);
+  color: var(--text-medium-emphasis);
+}
+
+.high-emphasis{
+  color: var(--text-high-emphasis);
+}
+
+.medium-emphasis{
+  color: var(--text-medium-emphasis);
+}
+
+.low-emphasis{
+  color: var(--text-low-emphasis);
+}
+
+.page-content{
+  background-color: var(--background-white);
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 b {

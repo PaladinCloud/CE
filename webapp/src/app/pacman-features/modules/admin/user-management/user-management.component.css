@@ -73,7 +73,9 @@ h6{
 .dialog-body ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label
 {
     margin-left: 12px !important;
+    display: block !important;
 }
+
 .dialog-body ::ng-deep .mat-form-field-label{
     padding: 8px 4px !important;
     margin-left: 12px !important;
@@ -88,11 +90,15 @@ h6{
     width: 100% !important;
 }
 
+.dialog-body ::ng-deep .mat-form-field-wrapper{
+    padding: 0px !important;
+}
+
 .email-wrapper ::ng-deep .mat-input-element{
     margin-left: 12px;
     height: 30px;
     font: var(--text-body-1);
-    color: var(--text-medium-emphasis) !important;;
+    color: var(--text-medium-emphasis) !important;
 }
 
 .dialog-body-header{
