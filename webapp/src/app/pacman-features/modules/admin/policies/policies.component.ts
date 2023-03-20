@@ -59,8 +59,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
   headerColName;
   direction;
-  columnNamesMap = {"policyDisplayName": "Title","targetType": "Asset",  "severity": "Severity", "category":"Category", "status": "Status"};
-  columnWidths = {"Title": 2.4, "Asset": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Actions": 0.8}
+  columnNamesMap = {"policyDisplayName": "Policy","targetType": "Asset Type",  "severity": "Severity", "category":"Category", "status": "Status"};
+  columnWidths = {"Policy": 2.4, "Asset Type": 1, "Severity": 0.5, "Category": 0.5, "Status": 0.8, "Actions": 0.8}
   whiteListColumns;
   isStatePreserved = false;
   tableScrollTop = 0;
@@ -69,14 +69,14 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Category: (a, b, isAsc) => {
       let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
       return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
@@ -167,15 +167,15 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.pageLevel
     );
     const state = this.tableStateService.getState("adminPolicies") || {};
-    if(state){      
+    if(state){
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
-      
+
       this.tableDataLoaded = true;
-      
+
       this.tableData = state?.data || [];
       this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
       this.tableScrollTop = state?.tableScrollTop;
@@ -184,7 +184,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       if(this.filters){
         this.getFiltersData(this.tableData);
       }
-      
+
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
@@ -216,8 +216,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row); 
-           
+      const KeysTobeChanged = Object.keys(row);
+
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -262,7 +262,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         filterTags = Array.from(set);
         filterTags.sort();
       }
-      
+
       this.filterTagLabels[column] = filterTags;
     });
   }
@@ -366,7 +366,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
-    if(this.isStatePreserved){   
+    if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
     }else{
@@ -378,7 +378,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   storeState(state){
-    this.tableStateService.setState("adminPolicies", state);    
+    this.tableStateService.setState("adminPolicies", state);
   }
 
   clearState(){
@@ -402,7 +402,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       var totalVariablesObj = {};
       var cellObj = {};
       let processedData = [];
-      var getData = data;      
+      var getData = data;
       const keynames = Object.keys(getData[0]);
 
       let cellData;
@@ -426,7 +426,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
           }
-          if(col.toLowerCase()=="title"){
+          if(col.toLowerCase()=="policy"){
               cellObj = {
               ...cellObj,
               imgSrc: autoFixAvailable == "true" ?autoFixEnabled == "true" ?"autofix":"no-autofix":"noImg",
@@ -435,7 +435,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
           }
           else if (col.toLowerCase() == "actions") {
             let dropDownItems: Array<String> = ["Edit Policy"];
-          if (autoFixAvailable === "true"){ 
+          if (autoFixAvailable === "true"){
              dropDownItems.push("Edit Autofix");
              if(autoFixEnabled == "true") {
               dropDownItems.push("Disable Autofix");
@@ -510,12 +510,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     const element = event.rowSelected;
     const policyId = event.rowSelected["Policy ID"].text;
     const autofix = element.autoFixEnabled.text == "true"? "disable" : "enable";
-
-    this.selectedRowTitle =  element["Title"].text ;
+    this.selectedRowTitle =  element["Policy"].text ;
     this.action = action;
     const dialogRef = this.dialog.open(DialogBoxComponent, {
       width: '500px',
-      data: { 
+      data: {
         title: null,
          yesButtonLabel: action,
           noButtonLabel: "Cancel" ,
@@ -557,7 +556,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
   goToDetails(event) {
     const action = event?.action?.toLowerCase();
-    if(action == "enable policy" 
+    if(action == "enable policy"
     || action == "disable policy"
     || action == "enable autofix"
     || action == "disable autofix"
@@ -565,8 +564,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.openDialog(event);
       return;
     }
-    
-    // store in this function    
+
+    // store in this function
     const row = event.rowSelected;
     const data = event.data;
     const policyId = event.rowSelected["Policy ID"].text;
@@ -626,8 +625,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   }
 
   invokePolicy(policyId:string){
-    var url = environment.invokePolicy.url; 
-    var method = environment.invokePolicy.method; 
+    var url = environment.invokePolicy.url;
+    var method = environment.invokePolicy.method;
     this.adminService.executeHttpAction(url, method, [{}], {policyId:policyId}).subscribe(response => {
      const invocationId = response[0].data;
       if(invocationId)
@@ -641,7 +640,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   callNewSearch(search) {
     this.searchTxt = search;
     this.isStatePreserved = false;
-    this.updateComponent();  
+    this.updateComponent();
   }
 
   ngOnDestroy() {
