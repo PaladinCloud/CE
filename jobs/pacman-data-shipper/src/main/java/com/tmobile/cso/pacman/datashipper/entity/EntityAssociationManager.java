@@ -107,7 +107,7 @@ public class EntityAssociationManager implements Constants {
                         entities.parallelStream().forEach((obj) -> {
 
                             obj.put("_loaddate", loaddate);
-                            obj.put("type", childTypeES);
+                            obj.put(Constants.DOC_TYPE, childTypeES);
                             Map<String, Object> relMap = new HashMap<>();
                             relMap.put("name", childTypeES);
                             relMap.put("parent", Util.concatenate(obj, key.split(","), "_"));
