@@ -20,13 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.util.CommonUtils;
@@ -41,7 +40,7 @@ import com.tmobile.pacman.util.ESUtils;
 public class AnnotationPublisher {
 
     /** The Constant BULK_INDEX_REQUEST_TEMPLATE. */
-    private static final String BULK_INDEX_REQUEST_TEMPLATE = "{ \"index\" : { \"_index\" : \"%s\", \"parent\" : \"%s\",  \"_type\" : \"%s\", \"_id\" : \"%s\" } }%n";
+    private static final String BULK_INDEX_REQUEST_TEMPLATE = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\", \"_id\" : \"%s\" } }%n";
 
     /** The Constant BULK_WITH_REFRESH_TRUE. */
     public static final String BULK_WITH_REFRESH_TRUE = "/_bulk?refresh=true";
@@ -66,7 +65,8 @@ public class AnnotationPublisher {
 
     /** The Constant logger. */
     private static final Logger logger = LoggerFactory.getLogger(AnnotationPublisher.class);
-    
+    private static final String DOC_TYPE = "docType";
+
     /** The bulk upload bucket. */
     private List<Annotation> bulkUploadBucket;
     
@@ -191,12 +191,21 @@ public class AnnotationPublisher {
             annotationId = CommonUtils.getUniqueAnnotationId(_annotation);
             _annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
             issueAttributes = getExistingIssuesMapWithAnnotationIdAsKey().get(annotationId);
+            // add relations to annotation
+            _annotation.put(DOC_TYPE, getTypeFromAnnotation(_annotation));
+            Map<String, Object> relMap = new HashMap<>();
+            relMap.put("name", getTypeFromAnnotation(_annotation));
+            relMap.put("parent", _annotation.get(PacmanSdkConstants.DOC_ID));
+            logger.info("Printing relations: {}", serializer.toJson(relMap));
+            _annotation.put(_annotation.get(TARGET_TYPE) + "_relations", serializer.toJson(relMap));
             if (null != issueAttributes) {
                 // now we are using this to modify and post hence remove all ES
                 // specific fields
                 issueAttributes.remove(ROUTING);
                 issueAttributes.remove(PARENT);
                 issueAttributes.remove(ID);
+                issueAttributes.remove(_annotation.get(TARGET_TYPE) + "_relations");
+                issueAttributes.remove(DOC_TYPE);
                 actualCreatedDate = issueAttributes.get(PacmanSdkConstants.CREATED_DATE);
                 currentIssueStatus = issueAttributes.get(PacmanSdkConstants.ISSUE_STATUS_KEY);
                 issueAttributes.putAll(_annotation);
@@ -213,9 +222,30 @@ public class AnnotationPublisher {
                 issueAttributes = _annotation;
             }
             bulkRequestBody.append(String.format(BULK_INDEX_REQUEST_TEMPLATE, indexName,
-                    _annotation.get(PacmanSdkConstants.DOC_ID), getTypeFromAnnotation(_annotation), annotationId));
-            bulkRequestBody.append(serializer.toJson(issueAttributes));
+                    _annotation.get(PacmanSdkConstants.DOC_ID), annotationId));
+            // covert relations object to json
+            // Your input JSON string
+            String inputStr = serializer.toJson(issueAttributes);
+            // Convert the input JSON string to a map object
+            Gson gson = new Gson();
+            Map<String, Object> inputObj = gson.fromJson(inputStr, Map.class);
+
+            // Convert the "_relations" string value to a JSON object
+            String sgRelationsStr = (String) inputObj.get(_annotation.get(TARGET_TYPE) + "_relations");
+            Map<String, String> sgRelationsObj = gson.fromJson(sgRelationsStr, Map.class);
+
+            // Update the "_relations" key with the JSON object
+            inputObj.put(_annotation.get(TARGET_TYPE) + "_relations", sgRelationsObj);
+
+            // Convert the updated map object back to JSON string
+            String updatedInputStr = gson.toJson(inputObj);
+
+            System.out.println(updatedInputStr);
+
+            bulkRequestBody.append(updatedInputStr);
             bulkRequestBody.append("\n");
+            logger.info("************************ Printing Annotation****************** : {}", updatedInputStr);
+            logger.info("************************ Bulk POst url****************** : {}", bulkPostUrl);
             if (bulkRequestBody.toString().getBytes().length
                     / (1024 * 1024) >= PacmanSdkConstants.ES_MAX_BULK_POST_SIZE) {
                 response = CommonUtils.doHttpPost(bulkPostUrl, bulkRequestBody.toString(),new HashMap<>());

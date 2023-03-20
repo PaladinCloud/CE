@@ -78,8 +78,11 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The staging env prefix. */
     String STAGING_ENV_PREFIX = "stg";
 
-    /** The type. */
+    /**
+     * The type.
+     */
     String TYPE = "type";
+    String DOC_TYPE = "docType";
 
     /** The tz utc. */
     String TZ_UTC = "UTC";

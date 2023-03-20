@@ -220,7 +220,7 @@ public class ESManager implements Constants {
             int i = 0;
             for (Map<String, Object> doc : docs) {
                 String id = doc.get(idKey).toString();
-                doc.put("type", type);
+                doc.put(Constants.DOC_TYPE, type);
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
 
                 if (_doc != null) {
@@ -403,7 +403,7 @@ public class ESManager implements Constants {
                 StringBuilder payLoad = new StringBuilder(_payLoad);
                 payLoad.append("\"dynamic\": true,");
                 payLoad.append("\"properties\": {");
-                payLoad.append("\"type\": {");
+                payLoad.append("\"docType\": {");
                 payLoad.append("\"type\": \"keyword\",");
                 payLoad.append("\"index\": true");
                 payLoad.append("},");
@@ -723,19 +723,11 @@ public class ESManager implements Constants {
                 String parent = Util.concatenate(doc, parentKey, "_");
                 bulkRequest.append(String.format(actionTemplate, index, parent)).append("\n");
                 bulkRequest.append(_doc).append("\n");
-                if(index.equals("aws_internetgateway")) {
-                    LOGGER.info("Printing _doc here:  {}", _doc);
-                    LOGGER.info("Printing doc here:  {}", doc);
-                    LOGGER.info("Printing string format here:  {}", String.format(actionTemplate, index, parent));
-                }
                 i++;
                 if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
                     bulkUpload(bulkRequest);
                     bulkRequest = new StringBuilder();
                 }
-            }
-            if(index.equals("aws_internetgateway")) {
-                LOGGER.info("Printing bulkrequest here:  {}", bulkRequest);
             }
             if (bulkRequest.length() > 0) {
                 bulkUpload(bulkRequest);

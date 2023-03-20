@@ -92,18 +92,25 @@ import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.config.ConfigManager;
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Class CommonUtils.
  */
 public class CommonUtils {
 
-    /** The Constant TLS. */
+    /**
+     * The Constant TLS.
+     */
     private static final String TLS = "TLS";
 
-    /** The Constant BOOL. */
+    /**
+     * The Constant BOOL.
+     */
     private static final String BOOL = "bool";
 
-    /** The Constant SHOULD. */
+    /**
+     * The Constant SHOULD.
+     */
     private static final String SHOULD = "should";
 
     /**
@@ -116,34 +123,46 @@ public class CommonUtils {
 
     private static final String MUST_NOT = "must_not";
 
-    /** The Constant MUST. */
+    /**
+     * The Constant MUST.
+     */
     private static final String MUST = "must";
 
-    /** The Constant APPLICATION_JSON. */
+    /**
+     * The Constant APPLICATION_JSON.
+     */
     private static final String APPLICATION_JSON = "application/json";
 
-    /** The Constant CONTENT_TYPE. */
+    /**
+     * The Constant CONTENT_TYPE.
+     */
     private static final String CONTENT_TYPE = "Content-Type";
 
-    /** The Constant HTTPS. */
+    /**
+     * The Constant HTTPS.
+     */
     private static final String HTTPS = "https";
 
-    /** The Constant LOGGER. */
+    /**
+     * The Constant LOGGER.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(CommonUtils.class);
 
-    /** The prop. */
+    /**
+     * The prop.
+     */
     static Properties prop;
-    static {
-    	prop = new Properties();
-    	Hashtable<String, Object> configMap = ConfigManager.getConfigurationsMap();
-    	if (configMap != null && !configMap.isEmpty()) {
-    	   prop.putAll(configMap);
-    	}else{
-    	          LOGGER.info("unable to load configuration, exiting now");
-    	          throw new RuntimeException("unable to load configuration");
-    	      }
-    	  }
 
+    static {
+        prop = new Properties();
+        Hashtable<String, Object> configMap = ConfigManager.getConfigurationsMap();
+        if (configMap != null && !configMap.isEmpty()) {
+            prop.putAll(configMap);
+        } else {
+            LOGGER.info("unable to load configuration, exiting now");
+            throw new RuntimeException("unable to load configuration");
+        }
+    }
 
 
     /**
@@ -169,12 +188,12 @@ public class CommonUtils {
     /**
      * Do http post.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
      * @return String
      * @throws Exception the exception
      */
-    public static String doHttpPost(final String url,  String requestBody) throws Exception {
+    public static String doHttpPost(final String url, String requestBody) throws Exception {
         CloseableHttpClient httpclient = null;
         try {
 
@@ -197,8 +216,9 @@ public class CommonUtils {
                 LOGGER.error(requestBody);
                 throw new Exception(
                         "unable to execute post request because " + httpresponse.getStatusLine().getReasonPhrase());
-            */}
-            
+            */
+            }
+
             try {
 
                 if (url.contains(HTTPS)) {
@@ -209,11 +229,10 @@ public class CommonUtils {
                     httpclient = HttpClients.custom().build();
                 }
                 HttpPost httppost1 = new HttpPost(url);
-                if(AuthManager.getToken()!=null){
-                    String accessToken =  AuthManager.getToken();
-                    if(!Strings.isNullOrEmpty(accessToken))
-                    {
-                    	httppost1.setHeader(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
+                if (AuthManager.getToken() != null) {
+                    String accessToken = AuthManager.getToken();
+                    if (!Strings.isNullOrEmpty(accessToken)) {
+                        httppost1.setHeader(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
                     }
                 }
                 httppost1.setHeader(CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
@@ -253,7 +272,7 @@ public class CommonUtils {
     /**
      * Do http put.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
      * @return String
      * @throws Exception the exception
@@ -274,21 +293,20 @@ public class CommonUtils {
             if (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 return EntityUtils.toString(httpresponse.getEntity());
             } else {
-            	 if(AuthManager.getToken()!=null){
-                     String accessToken =  AuthManager.getToken();
-                     if(!Strings.isNullOrEmpty(accessToken))
-                     {
-                     	httpPut.setHeader(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
-                     }
-                 }
-                 httpPut.setEntity(jsonEntity);
-                 HttpResponse httpresponse1 = client.execute(httpPut);
-                 if (httpresponse1.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                     return EntityUtils.toString(httpresponse1.getEntity());
-                 } else {
-                     throw new Exception(
-                             "unable to execute put request caused by" + EntityUtils.toString(httpresponse1.getEntity()));
-                 }
+                if (AuthManager.getToken() != null) {
+                    String accessToken = AuthManager.getToken();
+                    if (!Strings.isNullOrEmpty(accessToken)) {
+                        httpPut.setHeader(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
+                    }
+                }
+                httpPut.setEntity(jsonEntity);
+                HttpResponse httpresponse1 = client.execute(httpPut);
+                if (httpresponse1.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                    return EntityUtils.toString(httpresponse1.getEntity());
+                } else {
+                    throw new Exception(
+                            "unable to execute put request caused by" + EntityUtils.toString(httpresponse1.getEntity()));
+                }
             }
         } catch (ParseException parseException) {
             LOGGER.error("ParseException in getHttpPut :" + parseException.getMessage());
@@ -322,13 +340,13 @@ public class CommonUtils {
     /**
      * Builds the query.
      *
-     * @param mustFilter the must filter
+     * @param mustFilter    the must filter
      * @param mustNotFilter the must not filter
-     * @param shouldFilter the should filter
+     * @param shouldFilter  the should filter
      * @return elastic search query details
      */
     static Map<String, Object> buildQuery(final Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
-            final HashMultimap<String, Object> shouldFilter) {
+                                          final HashMultimap<String, Object> shouldFilter) {
         Map<String, Object> queryFilters = Maps.newHashMap();
         Map<String, Object> boolFilters = Maps.newHashMap();
         if (isNotNullOrEmpty(mustFilter)) {
@@ -461,7 +479,7 @@ public class CommonUtils {
     /**
      * Flat nested map.
      *
-     * @param notation the notation
+     * @param notation  the notation
      * @param nestedMap the nested map
      * @return nestedMap
      */
@@ -505,7 +523,7 @@ public class CommonUtils {
      * Gets the unique annotation id.
      *
      * @param parentId the parent id
-     * @param ruleId the rule id
+     * @param ruleId   the rule id
      * @return the unique annotation id
      */
     public static String getUniqueAnnotationId(String parentId, String ruleId) {
@@ -517,6 +535,7 @@ public class CommonUtils {
     // ASCII,
     // you need something higher than 128. So instead of 31, use 131 (the next
     // prime number after 128).
+
     /**
      * This is inspired by java hash function.
      *
@@ -561,17 +580,17 @@ public class CommonUtils {
         return Long.toString(h);
     }
 
-    
+
     public static String buildPolicyUUIDFromJson(String json) {
- 		JsonElement jsonelement = new JsonParser().parse(json);
- 		JsonObject jobject = jsonelement.getAsJsonObject();
- 		if (!jobject.isJsonNull()) {
- 			return jobject.get("policyUUID").getAsString();
- 		}
- 		return null;
-     }
-     
- 
+        JsonElement jsonelement = new JsonParser().parse(json);
+        JsonObject jobject = jsonelement.getAsJsonObject();
+        if (!jobject.isJsonNull()) {
+            return jobject.get("policyUUID").getAsString();
+        }
+        return null;
+    }
+
+
     /**
      * Creates the param map.
      *
@@ -583,8 +602,8 @@ public class CommonUtils {
         if (ruleParams.contains("*")) // this is for backward compatibility
             return buildMapFromString(ruleParams, "*", "=");
         else {*/
-            return buildMapFromJson(ruleParams);
-       // }
+        return buildMapFromJson(ruleParams);
+        // }
     }
 
     /**
@@ -615,7 +634,7 @@ public class CommonUtils {
 
     }
 
-    
+
     /**
      * Creates the param map.z
      *
@@ -627,8 +646,8 @@ public class CommonUtils {
         if (ruleParams.contains("*")) // this is for backward compatibility
             return buildMapFromString(ruleParams, "*", "=");
         else {*/
-            return buildPolicyMapFromJson(ruleParams);
-       // }
+        return buildPolicyMapFromJson(ruleParams);
+        // }
     }
 
     /**
@@ -637,54 +656,54 @@ public class CommonUtils {
      * @param json the json
      * @return the map
      */
-	private static Map<String, String> buildPolicyMapFromJson(String json) {
-		JsonParser parser = new JsonParser();
-		String ruleUUID = "";
-		JsonElement element = parser.parse(json);
-		JsonObject dataObject = element.getAsJsonObject();
-		JsonObject obj = dataObject.getAsJsonObject("data");
-		Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
-		if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
-			ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
-		}
-		Map<String, String> toReturn = new HashMap<>();
-		for (Map.Entry<String, JsonElement> entry : entries) {
-			if (entry.getValue().isJsonArray()) {
-				toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
-			} else if (!obj.get(entry.getKey()).isJsonNull()) {
-				toReturn.put(entry.getKey(), entry.getValue().getAsString());
-			}
-		}
-		toReturn.put("policyCategory", toReturn.get("category"));
-		toReturn.put("pac_ds", toReturn.get("assetGroup"));
-		if(toReturn.containsKey("autoFixEnabled")) {
-			toReturn.put("autofix", toReturn.get("autoFixEnabled"));
-		} else  {
-			toReturn.put("autofix", "false");
-		}
-		
-		if (!obj.get("policyParams").isJsonNull()) {
-			JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
-			if (!policyParam.isJsonNull() && policyParam.has("params")) {
-				toReturn.putAll(getMapFromArray(policyParam.getAsJsonArray("params"), ruleUUID));
-			}
-		}
-		toReturn.remove("policyDesc");
-		toReturn.remove("resolution");
-		toReturn.remove("resolutionUrl");
-		toReturn.remove("policyParams");
-		toReturn.remove("policyArn");
-		toReturn.remove("policyExecutable");
-		toReturn.remove("createdDate");
-		toReturn.remove("policyFrequency");
-		toReturn.remove("modifiedDate");
-		toReturn.remove("policyParams");
-		toReturn.remove("alexaKeyword");
-		return toReturn;
+    private static Map<String, String> buildPolicyMapFromJson(String json) {
+        JsonParser parser = new JsonParser();
+        String ruleUUID = "";
+        JsonElement element = parser.parse(json);
+        JsonObject dataObject = element.getAsJsonObject();
+        JsonObject obj = dataObject.getAsJsonObject("data");
+        Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
+        if (obj.has(PacmanSdkConstants.POLICY_UUID_KEY)) {
+            ruleUUID = obj.get(PacmanSdkConstants.POLICY_UUID_KEY).getAsString();
+        }
+        Map<String, String> toReturn = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : entries) {
+            if (entry.getValue().isJsonArray()) {
+                toReturn.putAll(getMapFromArray(entry.getValue().getAsJsonArray(), ruleUUID));
+            } else if (!obj.get(entry.getKey()).isJsonNull()) {
+                toReturn.put(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+        toReturn.put("policyCategory", toReturn.get("category"));
+        toReturn.put("pac_ds", toReturn.get("assetGroup"));
+        if (toReturn.containsKey("autoFixEnabled")) {
+            toReturn.put("autofix", toReturn.get("autoFixEnabled"));
+        } else {
+            toReturn.put("autofix", "false");
+        }
 
-	}
- 
-  
+        if (!obj.get("policyParams").isJsonNull()) {
+            JsonObject policyParam = parser.parse(obj.get("policyParams").getAsString()).getAsJsonObject();
+            if (!policyParam.isJsonNull() && policyParam.has("params")) {
+                toReturn.putAll(getMapFromArray(policyParam.getAsJsonArray("params"), ruleUUID));
+            }
+        }
+        toReturn.remove("policyDesc");
+        toReturn.remove("resolution");
+        toReturn.remove("resolutionUrl");
+        toReturn.remove("policyParams");
+        toReturn.remove("policyArn");
+        toReturn.remove("policyExecutable");
+        toReturn.remove("createdDate");
+        toReturn.remove("policyFrequency");
+        toReturn.remove("modifiedDate");
+        toReturn.remove("policyParams");
+        toReturn.remove("alexaKeyword");
+        return toReturn;
+
+    }
+
+
     /**
      * Decrypt.
      *
@@ -700,13 +719,13 @@ public class CommonUtils {
      * Gets the map from array.
      *
      * @param jsonArray the json array
-     * @param ruleUUID the rule UUID
+     * @param ruleUUID  the rule UUID
      * @return the map from array
      */
     private static Map<String, String> getMapFromArray(JsonArray jsonArray, String ruleUUID) {
         Map<String, String> toReturn = new HashMap<>();
         jsonArray.forEach(e -> {
-        	if (e.getAsJsonObject().has("encrypt")&& e.getAsJsonObject().get("encrypt").getAsBoolean())
+            if (e.getAsJsonObject().has("encrypt") && e.getAsJsonObject().get("encrypt").getAsBoolean())
                 try {
                     toReturn.put(e.getAsJsonObject().get("key").getAsString(),
                             decrypt(e.getAsJsonObject().get("value").getAsString(), ruleUUID));
@@ -723,8 +742,8 @@ public class CommonUtils {
     /**
      * Builds the map from string.
      *
-     * @param input the input
-     * @param splitOn the split on
+     * @param input             the input
+     * @param splitOn           the split on
      * @param keyValueSeparator the key value separator
      * @return the map
      */
@@ -747,7 +766,7 @@ public class CommonUtils {
      * Gets the current date string with format.
      *
      * @param timeZone the time zone
-     * @param format the format
+     * @param format   the format
      * @return the current date string with format
      */
     public static String getCurrentDateStringWithFormat(String timeZone, String format) {
@@ -765,7 +784,7 @@ public class CommonUtils {
      * Gets the date from string.
      *
      * @param dateInString the date in string
-     * @param format the format
+     * @param format       the format
      * @return the date from string
      * @throws ParseException the parse exception
      */
@@ -783,8 +802,8 @@ public class CommonUtils {
      * Date format.
      *
      * @param dateInString the date in string
-     * @param formatFrom the format from
-     * @param formatTo the format to
+     * @param formatFrom   the format from
+     * @param formatTo     the format to
      * @return the date
      * @throws ParseException the parse exception
      */
@@ -806,7 +825,7 @@ public class CommonUtils {
      * Compare date.
      *
      * @param firstDate the first date
-     * @param lastDate the last date
+     * @param lastDate  the last date
      * @return the int
      */
     public static int compareDate(final Date firstDate, final Date lastDate) {
@@ -840,14 +859,18 @@ public class CommonUtils {
     /**
      * Do http post.
      *
-     * @param url the url
+     * @param url         the url
      * @param requestBody the request body
-     * @param headers the headers
+     * @param headers     the headers
      * @return the string
      */
     public static String doHttpPost(final String url, final String requestBody, final Map<String, String> headers) {
+        System.out.println("URL:  " + url);
+        System.out.println("requestBody:  " + requestBody);
+        System.out.println("**************************************");
+
         CloseableHttpClient httpclient = null;
-        if(Strings.isNullOrEmpty(url)){
+        if (Strings.isNullOrEmpty(url)) {
             return "";
         }
         try {
@@ -867,46 +890,45 @@ public class CommonUtils {
             StringEntity jsonEntity = new StringEntity(requestBody);
             httppost.setEntity(jsonEntity);
             HttpResponse httpresponse = httpclient.execute(httppost);
-           if(httpresponse.getStatusLine().getStatusCode()!=HttpStatus.SC_OK){
-               throw new IOException("non 200 code from rest call--->" + url);
-           }
+            if (!((httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) || (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK))) {
+                throw new IOException("non 200 code from rest call--->" + url);
+            }
             String responseStr = EntityUtils.toString(httpresponse.getEntity());
             return responseStr;
         } catch (org.apache.http.ParseException parseException) {
             LOGGER.error("ParseException : " + parseException.getMessage());
         } catch (IOException ioException) {
-        	try{
-        		if(AuthManager.getToken()!=null){
-                    String accessToken =  AuthManager.getToken();
-                 if(!Strings.isNullOrEmpty(accessToken))
-                 {
-                     headers.put(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
-                 }
-             }
-        	 if (url.contains(HTTPS)) {
+            try {
+                if (AuthManager.getToken() != null) {
+                    String accessToken = AuthManager.getToken();
+                    if (!Strings.isNullOrEmpty(accessToken)) {
+                        headers.put(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
+                    }
+                }
+                if (url.contains(HTTPS)) {
 
-                 SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(createNoSSLContext());
-                 httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
-             } else {
-                 httpclient = HttpClients.custom().build();
-             }
+                    SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(createNoSSLContext());
+                    httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+                } else {
+                    httpclient = HttpClients.custom().build();
+                }
 
-             HttpPost httppost = new HttpPost(url);
-             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                 httppost.addHeader(entry.getKey(), entry.getValue());
-             }
-             httppost.setHeader(CONTENT_TYPE, APPLICATION_JSON);
-             StringEntity jsonEntity = new StringEntity(requestBody);
-             httppost.setEntity(jsonEntity);
-             HttpResponse httpresponse = httpclient.execute(httppost);
-            if(httpresponse.getStatusLine().getStatusCode()!=HttpStatus.SC_OK){
-                throw new IOException("non 200 code from rest call--->" + url);
+                HttpPost httppost = new HttpPost(url);
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    httppost.addHeader(entry.getKey(), entry.getValue());
+                }
+                httppost.setHeader(CONTENT_TYPE, APPLICATION_JSON);
+                StringEntity jsonEntity = new StringEntity(requestBody);
+                httppost.setEntity(jsonEntity);
+                HttpResponse httpresponse = httpclient.execute(httppost);
+                if (!((httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) || (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK))) {
+                    throw new IOException("non 200 code from rest call--->" + url + "StatusCode: " + httpresponse.getStatusLine().getStatusCode());
+                }
+                String responseStr = EntityUtils.toString(httpresponse.getEntity());
+                return responseStr;
+            } catch (Exception e) {
+                LOGGER.error("Exception in isResourceDateExpired: " + e.getMessage());
             }
-             String responseStr = EntityUtils.toString(httpresponse.getEntity());
-             return responseStr;
-        }catch(Exception e){
-        	LOGGER.error("Exception in isResourceDateExpired: " + e.getMessage());
-        }
         }
         return null;
     }
@@ -929,14 +951,13 @@ public class CommonUtils {
                 httpclient = HttpClients.custom().build();
             }
             HttpGet httpGet = new HttpGet(url);
-            if(AuthManager.getToken()!=null){
-                String accessToken =  AuthManager.getToken();
-                if(!Strings.isNullOrEmpty(accessToken))
-                {
+            if (AuthManager.getToken() != null) {
+                String accessToken = AuthManager.getToken();
+                if (!Strings.isNullOrEmpty(accessToken)) {
                     httpGet.setHeader(PacmanSdkConstants.AUTH_HEADER, "Bearer " + accessToken);
                 }
             }
-            
+
             httpGet.setHeader(CONTENT_TYPE, APPLICATION_JSON);
             CloseableHttpResponse response = httpclient.execute(httpGet);
             return EntityUtils.toString(response.getEntity());
@@ -967,7 +988,7 @@ public class CommonUtils {
             ssl_ctx = SSLContext.getInstance(TLS);
         } catch (NoSuchAlgorithmException e) {
         }
-        TrustManager[] trust_mgr = new TrustManager[] { new X509TrustManager() {
+        TrustManager[] trust_mgr = new TrustManager[]{new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
                 return null;
             }
@@ -983,9 +1004,9 @@ public class CommonUtils {
                  * no implementation required
                  * **/
             }
-        } };
+        }};
         try {
-            if(null!=ssl_ctx){
+            if (null != ssl_ctx) {
                 ssl_ctx.init(null, trust_mgr, new SecureRandom());
             }
         } catch (KeyManagementException e) {
@@ -1008,7 +1029,9 @@ public class CommonUtils {
         return null;
     }
 
-    /** The random. */
+    /**
+     * The random.
+     */
     private static Random random = new Random((new Date()).getTime());
 
     /**
@@ -1044,7 +1067,7 @@ public class CommonUtils {
      * Encrypt.
      *
      * @param plainText the plain text
-     * @param key the key
+     * @param key       the key
      * @return the string
      * @throws Exception the exception
      */
@@ -1062,7 +1085,7 @@ public class CommonUtils {
      * Decrypt.
      *
      * @param encryptedText the encrypted text
-     * @param key the key
+     * @param key           the key
      * @return the string
      * @throws Exception the exception
      */
@@ -1154,45 +1177,45 @@ public class CommonUtils {
         Gson serializer = new GsonBuilder().create();
         return serializer.fromJson(jsonString, Object.class);
     }
-    
+
     /**
      * Does all have value.
      *
      * @param strings the strings
      * @return the boolean
      */
-    public static Boolean doesAllHaveValue(String...strings ){
-        if(null==strings || strings.length==0){
+    public static Boolean doesAllHaveValue(String... strings) {
+        if (null == strings || strings.length == 0) {
             return Boolean.FALSE;
         }
-        for(String str:strings){
-            if(Strings.isNullOrEmpty(str)){
+        for (String str : strings) {
+            if (Strings.isNullOrEmpty(str)) {
                 LOGGER.error("Blank value found for param" + str);
-                return Boolean.FALSE; 
+                return Boolean.FALSE;
             }
         }
         return Boolean.TRUE;
     }
 
-    public static String postUrlEncoded(String url, String requestBody,String token,String tokeType) throws Exception {
+    public static String postUrlEncoded(String url, String requestBody, String token, String tokeType) throws Exception {
         try {
             CloseableHttpClient httpClient = getHttpClient();
-            if(httpClient!=null){
+            if (httpClient != null) {
                 HttpPost httppost = new HttpPost(url);
                 httppost.setHeader("Content-Type", ContentType.APPLICATION_FORM_URLENCODED.toString());
 
-                if(!Strings.isNullOrEmpty(token)){
-                    httppost.addHeader("Authorization", tokeType+" "+token);
+                if (!Strings.isNullOrEmpty(token)) {
+                    httppost.addHeader("Authorization", tokeType + " " + token);
                 }
                 httppost.setEntity(new StringEntity(requestBody));
                 HttpResponse httpresponse = httpClient.execute(httppost);
-                if( httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
+                if (httpresponse.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
                     throw new IOException("non 200 code from rest call--->" + url);
                 }
                 return EntityUtils.toString(httpresponse.getEntity());
             }
         } catch (Exception e) {
-            LOGGER.error("Error getting the data " , e);
+            LOGGER.error("Error getting the data ", e);
             throw e;
         }
         return null;
@@ -1211,7 +1234,7 @@ public class CommonUtils {
                         }
                     }).build()).build();
         } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-            LOGGER.error("Error getting getHttpClient " , e);
+            LOGGER.error("Error getting getHttpClient ", e);
         }
         return httpClient;
     }
