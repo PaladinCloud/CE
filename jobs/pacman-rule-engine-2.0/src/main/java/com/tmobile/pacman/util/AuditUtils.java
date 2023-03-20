@@ -16,10 +16,12 @@
 package com.tmobile.pacman.util;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
+
+import static com.tmobile.pacman.common.PacmanSdkConstants.TARGET_TYPE;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -45,19 +49,19 @@ public class AuditUtils {
      */
     public static void postAuditTrail(List<Annotation> annotations, String status) {
         String esUrl = ESUtils.getEsUrl();
-        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"routing\" : \"%s\" } }%n";
         StringBuilder requestBody = new StringBuilder();
         String requestUrl = esUrl + "/_bulk";
 
         for (Annotation annotation : annotations) {
             String datasource = annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY);
             String _id = CommonUtils.getUniqueAnnotationId(annotation);
-            String type = annotation.get(PacmanSdkConstants.TARGET_TYPE);
+            String type = annotation.get(TARGET_TYPE);
 
             String _index = datasource + "_" + type;
             String _type = "issue_" + type + "_audit";
 
-            requestBody.append(String.format(actionTemplate, _index, _type, _id))
+            requestBody.append(String.format(actionTemplate, _index, _id))
                     .append(createAuditTrail(datasource, type, status, _id) + "\n");
             try {
                 if (requestBody.toString().getBytes("UTF-8").length >= 5 * 1024 * 1024) { // 5
@@ -95,11 +99,18 @@ public class AuditUtils {
      */
 
     private static String createAuditTrail(String ds, String type, String status, String id) {
+        String _type = "issue_" + type + "_audit";
         String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         Map<String, String> auditTrail = new LinkedHashMap<>();
+        auditTrail.put(PacmanSdkConstants.TYPE,_type);
+        // add relations to annotation
+        Map<String, Object> relMap = new HashMap<>();
+        relMap.put("name",_type);
+        relMap.put("parent", id);
+        auditTrail.put( type + "_relations", new Gson().toJson(relMap));
         auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, ds);
-        auditTrail.put(PacmanSdkConstants.TARGET_TYPE, type);
+        auditTrail.put(TARGET_TYPE, type);
         auditTrail.put(PacmanSdkConstants.ANNOTATION_PK, id);
         auditTrail.put(PacmanSdkConstants.STATUS_KEY, status);
         auditTrail.put(PacmanSdkConstants.AUDIT_DATE, date);
