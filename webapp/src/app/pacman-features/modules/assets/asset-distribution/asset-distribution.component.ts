@@ -107,8 +107,8 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
 
 
   ngOnInit() {
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -193,6 +193,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         x: this.awsResources[i].displayName,
         y: this.awsResources[i].count
       }
+      obj.x=this.awsResources[i].displayName.split(" ");
       this.treemapData.push(obj);
     }
 
@@ -226,7 +227,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         "color": this.colors[r++].color
       })
       from = to;
-      to = to + diff; 
+      to = to + diff;
     }
 
     this.buildTreeMap();
@@ -267,14 +268,10 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
       },
       dataLabels: {
         enabled: true,
-        offsetY: -3,
-        formatter: function (val:string, opts) {
-          let label = val;
-          if (label.length > 12) {
-              label = label.substring(0, 12) + '...';
-          }
-          return label;
-      }
+        offsetY: -6,
+        style:{
+            fontSize:'13%',
+        }
       },
       plotOptions: {
         treemap: {
