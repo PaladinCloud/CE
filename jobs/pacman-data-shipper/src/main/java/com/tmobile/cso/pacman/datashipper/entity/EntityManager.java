@@ -202,7 +202,7 @@ public class EntityManager implements Constants {
                 entityInfo.put("accountid",entityInfo.get("projectId"));
             }
 
-            entityInfo.put("type", _type);
+            entityInfo.put(Constants.DOC_TYPE, _type);
             entityInfo.put(_type + "_relations", _type);
             if (currentInfo != null && !currentInfo.isEmpty()) {
                 Map<String, String> _currInfo = currentInfo.get(docId);
