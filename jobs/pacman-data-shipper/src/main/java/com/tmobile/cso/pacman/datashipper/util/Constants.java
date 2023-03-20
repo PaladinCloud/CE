@@ -53,6 +53,7 @@ public interface Constants {
     String SOURCE = "source";
     
     String NAME = "name";
-    
+
+    String DOC_TYPE = "docType";
    
 }
