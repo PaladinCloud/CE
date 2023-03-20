@@ -126,10 +126,15 @@ public class ESUtils {
 
         Map<String, Object> requestBody = new HashMap<String, Object>();
         Map<String, Object> matchFilters = Maps.newHashMap();
-        if (filter == null) {
-            matchFilters.put("match_all", new HashMap<String, String>());
-        } else {
-            matchFilters.putAll(filter);
+        if (type != null) {
+            if (filter == null) {
+                Map<String, String> typeFilter = new HashMap<String, String>();
+                typeFilter.put(PacmanSdkConstants.DOC_TYPE, type);
+                matchFilters.put("match", typeFilter);
+            } else {
+                filter.put(PacmanSdkConstants.DOC_TYPE, type);
+                matchFilters.putAll(filter);
+            }
         }
         if (null != filter) {
             requestBody.put(QUERY, CommonUtils.buildQuery(matchFilters, mustNotFilter, shouldFilter));
@@ -161,9 +166,9 @@ public class ESUtils {
     private static String buildURL(String url, String index, String type) {
 
         StringBuilder urlToQuery = new StringBuilder(url).append("/").append(index);
-        if (!Strings.isNullOrEmpty(type)) {
-            urlToQuery.append("/").append(type);
-        }
+//        if (!Strings.isNullOrEmpty(type)) {
+//            urlToQuery.append("/").append(type);
+//        }
         urlToQuery.append("/").append(COUNT);
         return urlToQuery.toString();
     }
@@ -280,9 +285,9 @@ public class ESUtils {
         }
 
         String parentType, type;
-        if (!Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TARGET_TYPE))
-                && !Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TYPE))) {
-            parentType = annotation.get(PacmanSdkConstants.TARGET_TYPE);
+        if (!Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TARGET_TYPE).toString())
+                && !Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TYPE).toString())) {
+            parentType = annotation.get(PacmanSdkConstants.TARGET_TYPE).toString();
             type = getIssueTypeFromAnnotation(annotation);
         } else
             throw new Exception("targetType name cannot be null or blank");
@@ -295,6 +300,7 @@ public class ESUtils {
         }
 
     }
+
 
     /**
      * Builds the index name from annotation.
@@ -314,7 +320,7 @@ public class ESUtils {
      * @return the issue type from annotation
      */
     public static String getIssueTypeFromAnnotation(Annotation annotation) {
-        return new StringBuilder(annotation.get(PacmanSdkConstants.TYPE)).append("_")
+        return new StringBuilder(annotation.get(PacmanSdkConstants.TYPE).toString()).append("_")
                 .append(annotation.get(PacmanSdkConstants.TARGET_TYPE)).toString();
     }
 
@@ -347,12 +353,13 @@ public class ESUtils {
             throw new Exception("url parameter cannot be empty or null");
         }
         StringBuilder urlToQueryBuffer = new StringBuilder(url).append("/").append(dataSource);
-        if (!Strings.isNullOrEmpty(entityType)) {
-            urlToQueryBuffer.append("/").append(entityType);
-        }
+//        if (!Strings.isNullOrEmpty(entityType)) {
+//            urlToQueryBuffer.append("/").append(entityType);
+//        }
         urlToQueryBuffer.append("/").append("_search").append("?scroll=").append(PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
 
         String urlToQuery = urlToQueryBuffer.toString();
+        logger.info("Querying ES with URL1: {}", urlToQuery);
         String urlToScroll = new StringBuilder(url).append("/").append("_search").append("/scroll").toString();
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         // paginate for breaking the response into smaller chunks
@@ -371,6 +378,7 @@ public class ESUtils {
                     request = buildScrollRequest(_scroll_id, PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
                     urlToQuery = urlToScroll;
                 }
+                logger.info("Querying ES with URL2: {}", urlToQuery);
                 responseDetails = CommonUtils.doHttpPost(urlToQuery, request,new HashMap<>());
                 _scroll_id = processResponseAndSendTheScrollBack(responseDetails, results);
             } catch (Exception e) {
@@ -551,10 +559,10 @@ public class ESUtils {
             if (!ESUtils.isValidIndex(url, indexName)) {
                 ESUtils.createIndex(url, indexName);
             }
-            if (!ESUtils.isValidType(url, indexName, type)) {
-                ESUtils.createMapping(url, indexName, type);
-            }
-            String esUrl = new StringBuilder(url).append("/").append(indexName).append("/").append(type).append("/")
+//            if (!ESUtils.isValidType(url, indexName, type)) {
+//                ESUtils.createMapping(url, indexName, type);
+//            }
+            String esUrl = new StringBuilder(url).append("/").append(indexName).append("/_doc/")
                     .append(executionId).toString();
             if(isUpdate){
                 esUrl += "/_update";
