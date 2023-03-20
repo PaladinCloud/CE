@@ -187,11 +187,13 @@ public class PolicyExecutor {
         policyEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_RUNNING);
         policyEngineStats.put(PacmanSdkConstants.EXECUTION_ID, executionId);
         policyEngineStats.put(PacmanSdkConstants.POLICY_ID, policyParam.get(PacmanSdkConstants.POLICY_ID));
+        policyEngineStats.put(PacmanSdkConstants.DOC_TYPE, type);
         long startTime = resetStartTime();
         policyEngineStats.put("startTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
         // publish the stats once to let ES know rule engine has started.
         ESUtils.publishMetrics(policyEngineStats,type);
+        logger.info("Published stats to ES.");
         policyEngineStats.put("timeTakenToFindExecutable", CommonUtils.getElapseTimeSince(startTime));
         // get the resources based on Type
         // List<Map<String, String>> resources =
@@ -299,7 +301,7 @@ public class PolicyExecutor {
             }
             
             List<String> allEvaluvatedResources = evaluations.stream()
-                    .map(obj -> obj.getAnnotation().get(PacmanSdkConstants.DOC_ID)).collect(Collectors.toList());
+                    .map(obj -> obj.getAnnotation().get(PacmanSdkConstants.DOC_ID).toString()).collect(Collectors.toList());
             logger.debug("all evaluated resource count" + allEvaluvatedResources.size());
             allEvaluvatedResources.stream().forEach(obj -> {
                 resourceIdToResourceMap.remove(obj);
