@@ -237,6 +237,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     FormInputComponent,
     LinkComponent,
     SubFooterComponent,
+    MatTooltipModule,
     TitleBurgerHeadComponent,
     MatSelectModule,
     OverlayComponent,
