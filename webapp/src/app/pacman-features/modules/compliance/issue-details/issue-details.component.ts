@@ -425,13 +425,13 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                                         const iconKeys = Object.keys(ICONS.awsResources);
                                         if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
                                             obj = {
-                                                header: 'Target Type',
+                                                header: 'Asset Type',
                                                 footer: this.issueBlocks.resourceType,
                                                 img: ICONS.awsResources[this.issueBlocks.resourceType]
                                             };
                                         } else {
                                             obj = {
-                                                header: 'Target Type',
+                                                header: 'Asset Type',
                                                 footer: this.issueBlocks.resourceType,
                                                 img: ICONS.awsResources[`unknown`]
                                             };
@@ -1069,13 +1069,13 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 const iconKeys = Object.keys(ICONS.awsResources);
                 if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
                     obj = {
-                        header: 'Target Type',
+                        header: 'Asset Type',
                         footer: this.issueBlocks.resourceType,
                         img: ICONS.awsResources[this.issueBlocks.resourceType]
                     };
                 } else {
                     obj = {
-                        header: 'Target Type',
+                        header: 'Asset Type',
                         footer: this.issueBlocks.resourceType,
                         img: ICONS.awsResources[`unknown`]
                     };
@@ -1183,7 +1183,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                     statusFooter: this.issueBlocks.status,
                     severityName: 'Severity',
                     severityFooter: this.issueBlocks.severity,
-                    targetTypeName: 'Target Type',
+                    targetTypeName: 'Asset Type',
                     targetTypeFooter: this.issueBlocks.resourceType,
                     policyCategoryName: 'Rule Category',
                     policyCategoryFooter: this.issueBlocks.policyCategory,
