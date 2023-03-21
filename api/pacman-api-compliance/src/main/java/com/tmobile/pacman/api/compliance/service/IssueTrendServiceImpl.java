@@ -195,8 +195,10 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
          } catch (DataException e) {
              throw new ServiceException(e);
            }
-       
-        if (!inputList.isEmpty()) {
+
+        try{
+            Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
+            if (!inputList.isEmpty()) {
             // Sort the list by the date in ascending order
             Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
                     m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
@@ -217,11 +219,21 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                         outputMap.put(key, value);
                     }
                 });
-
+                if(!outputMap.containsKey("overall")){
+                    Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->(Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d,(a,b)->a+b);
+                    Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d,(a,b)->a+b);
+                    if(weightedSum.doubleValue()!=0){
+                        outputMap.put("overall",weightedAvgSum/weightedSum);
+                    }
+                }
                 complianceInfoList.add(outputMap);
             });
-
             Collections.sort(complianceInfoList, comp);
+
+        }
+        }
+        catch (DataException e) {
+            throw new ServiceException(e);
         }
         parentMap.put("compliance_info", complianceInfoList);
         return parentMap;

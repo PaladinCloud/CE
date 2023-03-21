@@ -24,8 +24,11 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)" placeholder="Search" />
+
+
+                    <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)"
+                        placeholder="Search" class="search-bar-cursor" />
+                  
                     <!-- <div class="search-in-columns" matSuffix>
                         <mat-form-field>
                             <mat-select [formControl]="searchInColumns" multiple>
@@ -148,7 +151,7 @@
                             </ng-template>
                         </div>
                     </ng-template>
-                    
+
                 </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>

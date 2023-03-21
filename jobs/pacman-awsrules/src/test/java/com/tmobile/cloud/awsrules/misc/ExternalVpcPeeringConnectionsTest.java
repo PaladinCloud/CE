@@ -23,9 +23,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -52,30 +50,47 @@ public class ExternalVpcPeeringConnectionsTest {
         
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         
-        when(PacmanUtils.getAccountIds(anyString())).thenReturn(getListAccountId());
-        assertThat(externalVpcPeeringConnections.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
+        when(PacmanUtils.getCountOfAccountIds(anyString(), anyString(), anyString())).thenReturn(1);
+        assertThat(externalVpcPeeringConnections.execute(getSameAccountIdMap("r_123 "), getSameAccountIdMap("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getAccountIds(anyString())).thenReturn(getListAccountId());
-        assertThat(externalVpcPeeringConnections.execute(getMapNotExistString("r_123 "),getMapNotExistString("r_123 ")), is(notNullValue()));
+        when(PacmanUtils.getCountOfAccountIds(anyString(), anyString(), anyString())).thenReturn(0);
+        assertThat(externalVpcPeeringConnections.execute(getDifferentAccountIdMap("r_123 "), getDifferentAccountIdMap("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.getAccountIds(anyString())).thenThrow(new Exception());
+        when(PacmanUtils.getCountOfAccountIds(anyString(), anyString(), anyString())).thenThrow(new Exception());
         assertThatThrownBy( 
-                () -> externalVpcPeeringConnections.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
+                () -> externalVpcPeeringConnections.execute(getSameAccountIdMap("r_123 "), getSameAccountIdMap("r_123 "))).isInstanceOf(RuleExecutionFailedExeption.class);
         
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(false);
         assertThatThrownBy(
-                () -> externalVpcPeeringConnections.execute(getMapString("r_123 "),getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
+                () -> externalVpcPeeringConnections.execute(getSameAccountIdMap("r_123 "), getSameAccountIdMap("r_123 "))).isInstanceOf(InvalidInputException.class);
         
     }
     
-    public static Map<String, String> getMapString(String passRuleResourceId) {
+    public static Map<String, String> getSameAccountIdMap(String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("executionId", "1234");
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "critical");
         commonMap.put("ruleCategory", "security");
         commonMap.put("type", "Task");
-        commonMap.put("accountid", "12345");
+        commonMap.put("accountid", "6453991268547126");
+        commonMap.put("ruleId", "PacMan_AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection");
+        commonMap.put("policyId", "PacMan_AwsVpcExternalPeeringConnection_version-1");
+        commonMap.put("policyVersion", "version-1");
+        commonMap.put("accountEsURL", "accountEsURL");
+        commonMap.put("acceptervpcownerid", "6453991268547126");
+        commonMap.put("requestervpcownerid", "6453991268547126");
+        return commonMap;
+    }
+    
+    public static Map<String, String> getDifferentAccountIdMap(String passRuleResourceId) {
+        Map<String, String> commonMap = new HashMap<>();
+        commonMap.put("executionId", "1234");
+        commonMap.put("_resourceid", passRuleResourceId);
+        commonMap.put("severity", "critical");
+        commonMap.put("ruleCategory", "security");
+        commonMap.put("type", "Task");
+        commonMap.put("accountid", "4564534234112323");
         commonMap.put("ruleId", "PacMan_AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection");
         commonMap.put("policyId", "PacMan_AwsVpcExternalPeeringConnection_version-1");
         commonMap.put("policyVersion", "version-1");
@@ -83,30 +98,6 @@ public class ExternalVpcPeeringConnectionsTest {
         commonMap.put("acceptervpcownerid", "6453991268547126");
         commonMap.put("requestervpcownerid", "4564534234112323");
         return commonMap;
-    }
-    
-    public static Map<String, String> getMapNotExistString(String passRuleResourceId) {
-        Map<String, String> commonMap = new HashMap<>();
-        commonMap.put("executionId", "1234");
-        commonMap.put("_resourceid", passRuleResourceId);
-        commonMap.put("severity", "critical");
-        commonMap.put("ruleCategory", "security");
-        commonMap.put("type", "Task");
-        commonMap.put("accountid", "12345");
-        commonMap.put("ruleId", "PacMan_AwsVpcExternalPeeringConnection_version-1_AwsVpcExternalPeeringConnection_peeringconnection");
-        commonMap.put("policyId", "PacMan_AwsVpcExternalPeeringConnection_version-1");
-        commonMap.put("policyVersion", "version-1");
-        commonMap.put("accountEsURL", "accountEsURL");
-        commonMap.put("acceptervpcownerid", "4564534234112323");
-        commonMap.put("requestervpcownerid", "233441233556676");
-        return commonMap;
-    }
-    
-    public static List<String> getListAccountId() {
-        List<String> accountIds = new ArrayList<>();
-        accountIds.add("6453991268547126");
-        accountIds.add("4564534234112323");
-        return accountIds;
     }
     
     @Test

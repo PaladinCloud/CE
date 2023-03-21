@@ -246,6 +246,10 @@
     height: 100% !important;
 }
 
+.search-bar-cursor{
+    cursor: text;
+}
+
 .add-remove-columns-wrapper ::ng-deep .mat-select-arrow {
     width: 10px !important;
     height: 10px !important;

@@ -1164,7 +1164,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
         String[] tags = mandatoryTags.split(",");
         for (String tag : tags) {
-            shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.trim()), AssetConstants.TAG_NOT_FOUND);
+            shouldFilter.put(CommonUtils.convertAttributetoKeyword(tag.replaceAll("\\s", "")), AssetConstants.TAG_NOT_FOUND);
         }
         List<Map<String, Object>> untaggedAssets;
         List<Map<String, Object>> totalAssets;
@@ -1245,7 +1245,9 @@ public class AssetRepositoryImpl implements AssetRepository {
             	 assetDetails = getAssetsByAssetGroup(assetGroup, targetType, new HashMap(), null, fieldNames);
             }
         } else {
+
             ruleIdWithTargetTypeQuery = "SELECT DISTINCT p.targetType FROM  cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = 'tagging'";
+
             ruleIdwithTargetType = rdsRepository.getDataFromPacman(ruleIdWithTargetTypeQuery);
             List<String> validTypes = ruleIdwithTargetType.stream()
                     .map(obj -> obj.get(Constants.TARGET_TYPE).toString()).collect(Collectors.toList());

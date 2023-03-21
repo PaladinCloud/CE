@@ -32,6 +32,7 @@ public class ConfigManager {
 		JsonArray propertySourcesArray = new JsonArray();
 		Hashtable<String, Object> appPropsHashtable = new Hashtable<>();
 		Hashtable<String, Object> rulePropsHashtable = new Hashtable<>();
+		Hashtable<String, Object> batchPropsHashtable = new Hashtable<>();
 		Hashtable<String, Object> configHashtable = new Hashtable<>();
 		
 		String configServerURL = CommonHttpUtils.getEnvironmentVariable(PacmanSdkConstants.CONFIG_SERVICE_URL);
@@ -63,6 +64,10 @@ public class ConfigManager {
 					JsonObject ruleProps = propertySource.get(PacmanSdkConstants.SOURCE).getAsJsonObject();
 					rulePropsHashtable = new Gson().fromJson(ruleProps,new TypeToken<Hashtable<String, Object>>() {}.getType());
 				}
+				if (propertySource.get(PacmanSdkConstants.NAME).toString().contains("batch")) {
+					JsonObject batchProps = propertySource.get(PacmanSdkConstants.SOURCE).getAsJsonObject();
+					batchPropsHashtable = new Gson().fromJson(batchProps,new TypeToken<Hashtable<String, Object>>() {}.getType());
+				}
 			}
 		} else {
 			logger.info(PacmanSdkConstants.MISSING_DB_CONFIGURATION);
@@ -72,6 +77,7 @@ public class ConfigManager {
 		
 		configHashtable.putAll(appPropsHashtable);
 		configHashtable.putAll(rulePropsHashtable);
+		configHashtable.putAll(batchPropsHashtable);
 		return configHashtable;
 	}
 	

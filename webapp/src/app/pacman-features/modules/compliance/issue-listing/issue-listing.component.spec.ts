@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -103,7 +103,7 @@ describe('IssueListingComponent', () => {
     // service2.getDomainType().subscribe(val => {
     // console.log(val);
     // });
-    
+
 
     // fixture.detectChanges();
   });
@@ -136,11 +136,11 @@ describe('IssueListingComponent', () => {
   it('should tell ROUTER to navigate when row clicked', fakeAsync(() => {
     const router = TestBed.inject(Router);
     spyOn(router, 'navigate').and.stub();
-    let tile = {"Issue ID": 'e022bb6348a055c42b8f22e2cbab01ad'};
+    let tile = {"Violation ID": 'e022bb6348a055c42b8f22e2cbab01ad'};
     component.goToDetails(tile);
     tick();
     expect(router.navigate).toHaveBeenCalledWith(['issue-details', tile["Rule ID"]],
-        { 
+        {
         //   relativeTo: {
         //   url: '',
         //   path: ''

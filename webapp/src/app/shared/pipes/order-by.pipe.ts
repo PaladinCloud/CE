@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -48,8 +48,18 @@ export class OrderByPipe implements PipeTransform {
         } catch (e) {
           return 0;
         }
-      });
-    } else if (args.childProperty && args.property) {
+      });   //sorting dates by time,day,months,year
+    } else if(args.childProperty && args.property.includes("Time")){
+        return records.sort(function (a, b){
+          try{
+              var dateA = new Date(a[args.property].text.replace(",","").slice(0, -3));
+              var dateB = new Date(b[args.property].text.replace(",","").slice(0, -3));
+              return dateA > dateB ? 1 * args.direction : dateA < dateB ? -1 * args.direction : 0 * args.direction;
+          }catch(e){
+            return 0;
+          }
+        });
+      } else if (args.childProperty && args.property) {
       return records.sort(function(a, b) {
         try {
           if (
