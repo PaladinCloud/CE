@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -13,57 +13,81 @@
  -->
 
 <div class="contextual-menu-wrapper" [ngStyle]="theme">
-  <!-- asset-switcher -->
-  <div class="asset-switcher-container">
-    <app-asset-switcher [isExpanded]="expanded"></app-asset-switcher>
-  </div>
-  <div class="tree-component">
-    <tree-root [nodes]="nodes" class="tree">
-      <ng-template #treeNodeWrapperTemplate let-node let-index="index">
-        <!-- <div *ngIf="
-          (haveAdminPageAccess || (node.data.name!='Admin'))
-        "> -->
-        <div *ngIf="hasRequiredPermission(node)">
-          <div *ngIf="!(node.data.notDisplayIfAzure == true && agAndDomain.ag == 'azure')" class="node-wrapper"
-            [class.wrapper]="currentParentId == node.id && node.hasChildren" [class.node-wrapper-active]="
-          node.id == currentNodeId && !node.hasChildren
-        " [class.wrapper-collapsed]="!expanded" [style.padding-left]="node.getNodePadding()">
-            <div *ngIf="node.data?.image" class="icon">
-              <img class="node-img" src="/assets/icons/{{ node.data?.image }}.svg" alt="" />
-            </div>
-            <div class="node-content-wrapper" [class.node-content-wrapper-focused]="node.isFocused"
-              [class.isCollapsed]="!expanded" (click)="selectNode(node,$event)"
-              (dblclick)="node.mouseAction('dblClick', $event)" (contextmenu)="node.mouseAction('contextMenu', $event)"
-              (treeDrop)="node.onDrop($event)" [treeAllowDrop]="node.allowDrop" [treeDrag]="node"
-              [treeDragEnabled]="node.allowDrag()" [class.node-content-wrapper-expanded]="node.isExpanded" [routerLink]="!node.hasChildren? 
-              node.data?.overlay
-                ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
-                : [node.data?.route]
-                :
-                null
-            " [queryParams]="agAndDomain">
-              <tree-node-content class="{{ node.data.name }}" [node]="node" [index]="index"
-                title="{{ node.data.name }}">
-              </tree-node-content>
-              <tree-node-expander (click)="node.toggleExpanded()" [node]="node"></tree-node-expander>
-            </div>
-          </div>
+    <!-- asset-switcher -->
+    <div class="asset-switcher-container">
+        <app-asset-switcher [isExpanded]="expanded"></app-asset-switcher>
+    </div>
+    <div class="tree-component">
+        <tree-root [nodes]="nodes" class="tree" #treeMenu>
+            <ng-template #treeNodeWrapperTemplate let-node let-index="index">
+                <div *ngIf="hasRequiredPermission(node)">
+                    <div
+                        *ngIf="!(node.data.notDisplayIfAzure && agAndDomain.ag === 'azure')"
+                        class="node-wrapper"
+                        [class.wrapper]="currentParentId === node.id && node.hasChildren"
+                        [class.node-wrapper-active]="node.id === currentNodeId && !node.hasChildren"
+                        [class.wrapper-collapsed]="!expanded"
+                        [style.padding-left]="node.getNodePadding()"
+                    >
+                        <div *ngIf="node.data?.image" class="icon">
+                            <img
+                                class="node-img"
+                                src="/assets/icons/{{ node.data?.image }}.svg"
+                                alt=""
+                            />
+                        </div>
+                        <div
+                            class="node-content-wrapper"
+                            [class.node-content-wrapper-focused]="node.isFocused"
+                            [class.isCollapsed]="!expanded"
+                            (click)="selectNode(node, $event)"
+                            (dblclick)="node.mouseAction('dblClick', $event)"
+                            (contextmenu)="node.mouseAction('contextMenu', $event)"
+                            (treeDrop)="node.onDrop($event)"
+                            [treeAllowDrop]="node.allowDrop"
+                            [treeDrag]="node"
+                            [treeDragEnabled]="node.allowDrag()"
+                            [class.node-content-wrapper-expanded]="node.isExpanded"
+                            [routerLink]="
+                                !node.hasChildren
+                                    ? node.data?.overlay
+                                        ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
+                                        : [node.data?.route]
+                                    : null
+                            "
+                            [queryParams]="agAndDomain"
+                        >
+                            <tree-node-content
+                                [class]="node.data.name"
+                                [node]="node"
+                                [index]="index"
+                                [title]="node.data.name"
+                            >
+                            </tree-node-content>
+                            <tree-node-expander
+                                (click)="node.toggleExpanded()"
+                                [node]="node"
+                            ></tree-node-expander>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </tree-root>
+    </div>
+    <div
+        class="know-your-app-wrapper"
+        [queryParams]="agAndDomain"
+        [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]"
+    >
+        <div class="icon icon-wrapper">
+            <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
         </div>
-
-      </ng-template>
-    </tree-root>
-  </div>
-  <div class="know-your-app-wrapper" [queryParams]="agAndDomain"
-    [routerLink]="[{ outlets: { kydModal: ['know-your-dashboard'] } }]">
-    <div class="icon icon-wrapper">
-      <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
+        <div class="app-wrapper" [class.isCollapsed]="!expanded">
+            <div class="know-your-app-content">Getting Started</div>
+        </div>
     </div>
-    <div class="app-wrapper" [class.isCollapsed]="!expanded">
-      <div class="know-your-app-content">Getting Started</div>
+    <div class="version-wrapper" [class.collapsed]="!expanded">
+        <span class="version-text" [class.collapsed]="!expanded">Version</span>
+        <span class="version-number">{{ current_version }}</span>
     </div>
-  </div>
-  <div class="version-wrapper" [class.collapsed]="!expanded">
-    <span class="version-text" [class.collapsed]="!expanded">Version</span>
-    <span class="version-number">{{current_version}}</span>
-  </div>
 </div>
