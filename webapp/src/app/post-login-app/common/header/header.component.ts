@@ -11,9 +11,10 @@ import { PermissionGuardService } from '../../../core/services/permission-guard.
 import { LoggerService } from '../../../shared/services/logger.service';
 
 const NOTIFICATIONS_SUBSCRIPTION = gql`
-    subscription mySub {
-        addedPost {
-            id
+    subscription SubscribeToData($name: String!) {
+        subscribe(name: $name) {
+            name
+            data
         }
     }
 `;
@@ -75,11 +76,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.apollo
             .subscribe({
                 query: NOTIFICATIONS_SUBSCRIPTION,
+                variables: {
+                    name: 'channel',
+                },
             })
             .pipe(takeUntil(this.destroy$))
             .subscribe({
                 next: () => (this.haveNewNotification = true),
-                error: (err) => this.loggerService.log('error', 'GraphQL error' + err),
+                error: (errors: Error[]) =>
+                    this.loggerService.log('error', 'GraphQL error: ' + JSON.stringify(errors)),
             });
     }
 
@@ -121,10 +126,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
 
     openNotification() {
-        if (!this.haveNewNotification) {
-            return;
+        if (this.haveNewNotification) {
+            this.haveNewNotification = false;
         }
-        this.haveNewNotification = false;
         this.router.navigate(['pl/compliance/health-notifications'], {
             queryParams: this.route.snapshot.queryParams,
         });
