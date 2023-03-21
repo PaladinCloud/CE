@@ -181,6 +181,10 @@
     color: var(--icons-300);
 }
 
+.header-user-notification:hover {
+    cursor: pointer;
+}
+
 .header-user-notification.active::after {
     width: 7px;
     height: 7px;
@@ -192,6 +196,3 @@
     background: var(--vizualization-significant-color);
 }
 
-.header-user-notification.active:hover {
-    cursor: pointer;
-}

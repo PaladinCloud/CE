@@ -1,31 +1,28 @@
 import { NgModule } from '@angular/core';
+import { ApolloClientOptions, ApolloLink, InMemoryCache } from '@apollo/client/core';
 import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
-import { ApolloClientOptions, InMemoryCache, ApolloLink } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
-import { AUTH_TYPE, createAuthLink, AuthOptions } from 'aws-appsync-auth-link';
+import { AuthOptions, AUTH_TYPE, createAuthLink } from 'aws-appsync-auth-link';
 import { createSubscriptionHandshakeLink } from 'aws-appsync-subscription-link';
 import { CONFIGURATIONS } from 'src/config/configurations';
+import { environment } from 'src/environments/environment';
 
-const uri = 'configurations.appsyncGraphqlEndpoint'; // <-- add the URL of the GraphQL server here
-const region = 'configurations.appsyncRegion';
+const { url, region, apiKey } = CONFIGURATIONS.optional.general.notifications;
 
 const auth: AuthOptions = {
-    type: AUTH_TYPE.AMAZON_COGNITO_USER_POOLS,
-    jwtToken: () =>
-        `Basic ${btoa(
-            `${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_username}:${CONFIGURATIONS.optional.auth.cognitoConfig.sso_api_pwd}`,
-        )}`,
+    type: AUTH_TYPE.API_KEY,
+    apiKey,
 };
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
-    const linkParams = { url: uri, region, auth };
+    const linkParams = { url, region, auth };
     return {
         link: ApolloLink.from([
             createAuthLink(linkParams),
-            createSubscriptionHandshakeLink(linkParams, httpLink.create({ uri })),
+            createSubscriptionHandshakeLink(linkParams, httpLink.create({ uri: url })),
         ]),
         cache: new InMemoryCache(),
-        connectToDevTools: true,
+        connectToDevTools: !environment.production,
     };
 }
 
