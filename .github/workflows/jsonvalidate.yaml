@@ -1,0 +1,40 @@
+name: Json-check
+on:
+  push:
+    branches: [master, v*]
+  pull_request:
+    branches: [master, v*]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' # install the python version needed
+
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+
+
+      - name: execute aws json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python awsjsoncheckscript.py
+
+
+      - name: execute azure json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python azurejsoncheckscript.py
+
+      - name: execute gcp json file
+        run: |
+          cd installer/resources/lambda_rule_engine/files/
+          python gcpjsoncheckscript.py
+      
