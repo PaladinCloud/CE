@@ -687,7 +687,7 @@ export const environment = {
         method: 'GET'
     },
     createAssetGroups: {
-        url: '{{baseUrl}}/admin/asset-group/create',
+        url: '{{baseUrl}}/admin/asset-group/createAssetGroup',
         method: 'POST'
     },
     listTargetTypeAttributeValues: {
@@ -952,6 +952,10 @@ export const environment = {
     },
     getAllAssetTypes: {
         url: '{{baseUrl}}/asset/v1/list/targettype?ag=ds-all',
+        method: 'GET'
+    },
+    getCloudTypeObject: {
+        url: '{{baseUrl}}/admin/asset-group/cloud-type-object',
         method: 'GET'
     }
 };

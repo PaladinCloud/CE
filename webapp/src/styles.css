@@ -247,6 +247,11 @@ h6{
   flex-direction: column;
 }
 
+h6 {
+  font: var(--text-headline-6);
+  color: var(--text-high-emphasis);
+}
+
 b {
   font-family: var(--text-medium-font-family);
   font-family: ex2-medium;
@@ -2017,4 +2022,72 @@ g.arc .bubble-text {
 .validation-error-message{
   padding: 10px 0px;
   color: red;
+}
+
+.mat-flat-button.mat-primary{
+  background-color: var(--primary-400);
+  pointer-events: all;
+}
+
+.mat-primary .mat-pseudo-checkbox-checked{
+  background-color: var(--primary-400);
+}
+
+.mat-flat-button.mat-primary.mat-button-disabled{
+  background-color: var(--primary-100);
+  pointer-events: none;
+}
+
+.page-layout{
+  padding: 28px;
+  height: 100%;
+}
+
+.page{
+  background-color: var(--background-white);
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepper-right-wrapper{
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 200px);
+  padding-left:24px;
+  overflow: scroll;
+  }
+
+.button-wrapper{
+  padding-top: 24px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.button-wrapper .button {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 16px;
+  font: var(--text-body-2);
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  border: none;
+}
+
+.stepper{
+  height: 100%;
+}
+
+.next-btn,.submit-button{
+  color: white; 
+  background: var(--primary-400);
+}
+
+.back-btn{
+  color: var(--primary-400);
+  background-color: var(--background-white);
 }

@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
 import { Subject, Subscription } from "rxjs";
 import * as _ from "lodash";
 import { UtilsService } from "../../../../shared/services/utils.service";
@@ -25,6 +25,7 @@ import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
 
 @Component({
   selector: "app-asset-groups",
@@ -142,6 +143,7 @@ export class AssetGroupsComponent implements OnInit {
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  assetGroupList: any[];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -153,7 +155,8 @@ export class AssetGroupsComponent implements OnInit {
     private refactorFieldsService: RefactorFieldsService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private notificationObservableService: NotificationObservableService
   ) {
     this.getFilters();
   }
@@ -166,6 +169,27 @@ export class AssetGroupsComponent implements OnInit {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
+  }
+
+  getFiltersData(data){
+    this.filterTypeLabels = [];
+    this.filterTagLabels = {};
+    this.whiteListColumns.forEach(column => {
+      if(column.toLowerCase()=='number of assets' || column.toLowerCase()=='actions'){
+        return;
+      }
+      let filterTags = [];
+      this.filterTypeLabels.push(column);
+      const set = new Set();
+      data.forEach(row => {
+        if(row[column])
+        set.add(row[column].valueText.toLowerCase());
+      });
+      filterTags = Array.from(set);
+      filterTags.sort();
+      
+      this.filterTagLabels[column] = filterTags;
+    });
   }
 
   getAssetGroupsDetails(isNextPageCalled?) {
@@ -207,6 +231,7 @@ export class AssetGroupsComponent implements OnInit {
             this.pageNumber = data.number;
             this.totalRows = data.totalElements;
             let updatedResponse = this.massageData(data.content);
+            this.assetGroupList = updatedResponse;
             const processData = this.processData(updatedResponse);
             if(isNextPageCalled){
               this.onScrollDataLoader.next(processData)
@@ -384,40 +409,45 @@ export class AssetGroupsComponent implements OnInit {
       this.logger.log("error", error);
     }
   }
+  deleteAssetGroup(groupId:string) {
+    let url = environment.deleteAssetGroups.url; 
+    let method = environment.deleteAssetGroups.method; 
+    this.adminService.executeHttpAction(url, method, {groupId: groupId}, {}).subscribe(response => {
+      if(response){
+        const data = response[0]?.data;
+        this.updateComponent();
+        this.notificationObservableService.postMessage(data,3000,"","check-circle");
+      }
+    },
+    error => {
+      this.logger.log("Error in Js",error);
+    })
+  }
 
   onSelectAction(event) {
     const action = event.action.toLowerCase();
     const rowSelected = event.rowSelected;
     if (action === "delete") {
-      try {
-        this.workflowService.addRouterSnapshotToLevel(
-          this.router.routerState.snapshot.root, 0, this.pageTitle
-        );
-        this.router.navigate(["delete-asset-groups"], {
-          relativeTo: this.activatedRoute,
-          queryParamsHandling: "merge",
-          queryParams: {
-            groupId: rowSelected["Group Id"].valueText,
-            groupName: rowSelected["Name"].valueText,
-          },
-        });
-      } catch (error) {
-        this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
-        this.logger.log("error", error);
-      }
+       this.deleteAssetGroup(rowSelected["Group Id"].valueText);
     } else if (action === "edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle
         );
-        this.router.navigate(["create-asset-groups"], {
+          let currentAG: any;
+          this.assetGroupList.forEach(assetGroup=>{
+                    if(assetGroup["Group Id"] == rowSelected["Group Id"].valueText){
+                      currentAG = assetGroup;
+                    }
+          })
+        const navigationExtras: NavigationExtras = {
           relativeTo: this.activatedRoute,
-          queryParamsHandling: "merge",
-          queryParams: {
-            groupId: rowSelected["Group Id"].valueText,
-            groupName: rowSelected["Name"].valueText,
-          },
-        });
+          queryParamsHandling: 'merge',
+          state: {
+            data: currentAG
+          }
+        };
+        this.router.navigate(["create-asset-groups"],navigationExtras);
       } catch (error) {
         this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);

@@ -12,12 +12,12 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { trigger, state, style, transition, animate } from "@angular/animations";
 import { environment } from './../../../../../../environments/environment';
 
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import { UtilsService } from '../../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../../shared/services/logger.service';
@@ -28,6 +28,17 @@ import { WorkflowService } from '../../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
 import { UploadFileService } from '../../../../services/upload-file-service';
+import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
+
+interface ICondition{
+    keyList: string[];
+    valueList: string[];
+    isDisabled: boolean;
+    selectedValue: string;
+    selectedKey: string;
+};
+
+type ICriteria = ICondition[];
 
 @Component({
   selector: 'app-admin-create-asset-groups',
@@ -68,6 +79,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   progressText;
   outerArr = [];
   filters = [];
+  selectedCriteriaKeyList = [];
   isGroupNameValid = -1;
   targetTypeValue: string = "";
   assetForm = {
@@ -110,6 +122,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   targetTypeAttributeValues = [];
   errorMessage;
   searchTerm = '';
+  submitBtn = "Confirm and Create";
 
   hideContent = false;
   pageContent = [
@@ -191,12 +204,47 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   mandatory;
   private pageLevel = 0;
 
+
+  currentStepperIndex = 0;
+  cloudsData = [];
+  criterias =  [];
+  criteriaKeys = [];
+  criteriasKeyValues = {};
+  currentStepperName: string ="Asset Group Details";
+  assetGroupName = "";
+  assetGroupDesc = "";
+  createdBy = "";
+  selectedAccountType = "";
+  typeList = ["Admin"];
+  currentTemplateRef : TemplateRef<any>;
+  @ViewChild('assetGroupRef') assetGroupRef: TemplateRef<any>;
+  @ViewChild('configurationRef') configurationRef: TemplateRef<any>;
+  @ViewChild('reviewRef') reviewRef: TemplateRef<any>;
+
+  stepperData = [
+    {
+      id: 0,
+      name: "Asset Group Details"
+    },
+    {
+      id: 1,
+      name: "Configuration"
+    },
+    {
+      id: 2,
+      name: "Review"
+    }
+  ]
+
   public labels;
   private previousUrl = '';
   private routeSubscription: Subscription;
   private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
+  selectedCriteriaValues = [];
+  selectedValue = "";
+  selectedKey = "";
 
   constructor(
     private router: Router,
@@ -205,9 +253,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private notificationObservableService: NotificationObservableService,
+    private activatedRoute: ActivatedRoute
   ) {
-
     this.routerParam();
     this.updateComponent();
   }
@@ -223,6 +272,131 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
+    const stateUpdated =  history.state.data;
+    if(stateUpdated){
+    this.getAttributesData(stateUpdated);
+    this.submitBtn = "Confirm and Update";
+    }
+    else
+      this.getAttributesData();
+  }
+
+
+  getDetails(stateUpdated){
+    this.assetGroupName = stateUpdated["Name"]?stateUpdated["Name"]:"";
+    this.selectedAccountType = stateUpdated["Type"]?stateUpdated["Type"]:"";
+    this.createdBy = stateUpdated["Created By"]?stateUpdated["Created By"]:"";
+    const criteriaDetails = stateUpdated["criteriaDetails"];
+    const criteriaMap = criteriaDetails.reduce((acc, criteria) => {
+      if (!acc[criteria.groupId]) {
+        acc[criteria.groupId] = [];
+      }
+      acc[criteria.groupId].push(criteria);
+      return acc;
+    }, {});
+
+    this.createCriteriaList(criteriaMap);
+  }
+
+  createCriteriaList(criteriaMap){
+    let conditionList = [];
+    let k = 0;
+    for(const criteria in criteriaMap){
+      this.criterias.push([
+        {
+          valueList: [],
+          keyList: this.criteriaKeys,
+          isDisabled: false,
+          selectedValue: "",
+          selectedKey: "",
+        }
+        ]);
+      conditionList = criteriaMap[criteria];
+      for(let j=0;j<conditionList.length;j++){
+          this.addEmptyCondition(k,conditionList[j]["attributeName"],conditionList[j]["attributeValue"]);
+      }
+      this.deleteCondition(k,0);
+      k++;
+    }
+  }
+
+  getAttributesData(stateUpdated=null){
+    const url = environment.getCloudTypeObject.url;
+    const method = environment.getCloudTypeObject.method;
+
+    this.adminService.executeHttpAction(url,method,{},{}).subscribe(response=>{
+      this.cloudsData = response[0];
+      this.criteriaKeys = Object.keys(response[0][0]); 
+      if(stateUpdated){
+        this.getDetails(stateUpdated);
+      }
+      else{
+        this.criterias.push([
+          {
+            valueList: [],
+            keyList: this.criteriaKeys,
+            isDisabled: false,
+            selectedValue: "",
+            selectedKey: "",
+          }
+          ]);
+      }
+    })
+  }
+
+  addEmptyCondition(criteriaIdx,selectedKey="",selectedValue=""){
+    let selectedKeyList = [];
+    this.criterias[criteriaIdx].forEach(condition=>{
+       selectedKeyList.push(condition.selectedKey);
+    })
+
+    this.selectedCriteriaKeyList[criteriaIdx] = selectedKeyList;
+    const newKeyList = this.criteriaKeys.filter(key=>{
+          return !selectedKeyList.includes(key);
+    })
+    const valueList = [].concat(...this.cloudsData.map(cloud => cloud[selectedKey]));
+    const condition: ICondition = {
+      keyList: newKeyList,
+      valueList: valueList,
+      isDisabled: false,
+      selectedValue: selectedValue,
+      selectedKey: selectedKey
+    }
+
+    this.criterias[criteriaIdx].push(condition)
+  }
+
+  onKeySelect(condition:ICondition,selectedKey:string){
+    this.selectedCriteriaValues = [];
+    let selectedValues = [];
+    selectedValues = [].concat(...this.cloudsData.map(cloud => cloud[selectedKey]));
+    condition.selectedKey = selectedKey;
+    condition.valueList = selectedValues;
+    this.criterias = [...this.criterias];
+  }
+
+  onValueSelect(condition:ICondition,selectedValue:string){
+    condition.selectedValue = selectedValue;
+    this.criterias = [...this.criterias];
+  }
+
+  deleteCondition(criteriaIdx,conditionIdx){
+    this.criterias[criteriaIdx].splice(conditionIdx,1);
+  }
+
+  deleteCriteria(criteriaIdx){
+    this.criterias.splice(criteriaIdx,1);
+  }
+
+  addEmptyCriteria(){
+    const condition: ICondition = {
+      keyList: this.criteriaKeys,
+      valueList: [],
+      isDisabled: false,
+      selectedValue: '',
+      selectedKey: ''
+    }
+    this.criterias.push([condition]);
   }
 
   isNumber(val){
@@ -570,48 +744,41 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.pageContent[this.stepIndex].hide = false;
   }
 
-  update(newAssetGroupDetails) {
-    this.showWidget = false;
-    newAssetGroupDetails.targetTypes = this.allAttributeDetails;
-    this.highlightedText = newAssetGroupDetails.groupName;
-    this.progressText = 'Updating Asset Group';
-    this.hideContent = true;
-    this.assetGroupLoader = true;
-    this.isAssetGroupFailed = false;
-    this.isAssetGroupSuccess = false;
-    const url = environment.updateAssetGroups.url;
-    const method = environment.updateAssetGroups.method;
-    this.adminService.executeHttpAction(url, method, newAssetGroupDetails, {}).subscribe(reponse => {
-      this.assetGroupLoader = false;
-      this.isAssetGroupSuccess = true;
-      this.successTitleStart = 'Asset Group';
-      this.successTitleEnd = 'has been successfully updated !!!';
-    },
-      error => {
-        this.assetGroupLoader = false;
-        this.isAssetGroupFailed = true;
-        this.failedTitleStart = 'Failed in updating Asset Group';
-        this.failedTitleEnd = '!!!';
-      });
-  }
-
-  create(newAssetGroupDetails) {
-    this.showWidget = false;
-    newAssetGroupDetails.targetTypes = this.allAttributeDetails;
-    this.highlightedText = newAssetGroupDetails.groupName;
-    this.progressText = 'Creating Asset Group';
-    this.hideContent = true;
-    this.assetGroupLoader = true;
-    this.isAssetGroupFailed = false;
-    this.isAssetGroupSuccess = false;
-    const url = environment.createAssetGroups.url;
+  submit() {
+    const url = this.submitBtn =="Confirm and Create"?
+    environment.createAssetGroups.url:environment.updateAssetGroups.url;
     const method = environment.createAssetGroups.method;
-    this.adminService.executeHttpAction(url, method, newAssetGroupDetails, {}).subscribe(reponse => {
-      this.assetGroupLoader = false;
-      this.isAssetGroupSuccess = true;
-      this.successTitleStart = 'Asset Group';
-      this.successTitleEnd = 'has been successfully created !!!';
-    },
+  
+    let criteriaList: object[] = [];
+    this.criterias.forEach(criteria=>{
+      let obj = {};
+      criteria.forEach(condition=>{
+        if(condition.selectedKey == "CloudType" || condition.selectedKey == "TargetType"){
+          obj[condition.selectedKey] = [condition.selectedValue];
+        }
+        else
+         obj[condition.selectedKey] = condition.selectedValue;
+      })
+      criteriaList.push(obj);
+    })
+    const payload = {
+      "type": this.selectedAccountType,
+      "groupName": this.assetGroupName,
+      "description": this.assetGroupDesc,
+      "createdBy": this.createdBy,
+      "configuration": criteriaList
+    }
+    this.adminService.executeHttpAction(url, method, payload, {}).subscribe(response => {
+      if(response && response[0]){
+         const data = response[0].data;
+         this.notificationObservableService.postMessage(data,3000,"","check-circle");
+         this.router.navigate(['../'], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: 'merge',
+          queryParams: {}
+        });
+      }
+    },  
       error => {
         this.assetGroupLoader = false;
         this.isAssetGroupFailed = true;
@@ -1066,5 +1233,55 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.logger.log('error', '--- Error while unsubscribing ---');
     }
+  }
+  
+  pageCounter(clickedButton: string) {
+    if (clickedButton == 'back') {
+      this.currentStepperIndex--;
+    } else
+      this.currentStepperIndex++;
+    if(this.currentStepperIndex==2){
+      this.filterConfigureData();
+    }
+    this.selectedStepperIndex(this.currentStepperIndex);
+  }
+
+  selectedStepperIndex(event: any) {
+    const index = this.stepperData.findIndex(element => element.id == event);
+    this.currentStepperIndex = event;
+    this.currentStepperName = this.stepperData[index].name;
+  }
+
+  getCurrentTemplate(){
+    if(this.currentStepperName == "Asset Group Details"){
+      this.currentTemplateRef = this.assetGroupRef;
+    } else if(this.currentStepperName == "Configuration"){
+      this.currentTemplateRef = this.configurationRef;
+    } else{
+      this.currentTemplateRef = this.reviewRef;
+    }
+    return this.currentTemplateRef;
+  }
+  
+  filterConfigureData(){
+    let deleteIndexes = [];
+    this.criterias.forEach((criteria,index)=>{
+      if(!criteria[0].selectedKey){
+        deleteIndexes.push(index);
+      } else{
+        const size = criteria.length-1;
+        if(!criteria[size].selectedKey){
+          this.deleteCondition(index,size);
+        }
+      }
+    })
+
+    deleteIndexes.forEach(id=>{
+      this.deleteCriteria(id);
+    })
+  }
+
+  onSelectType(event:any){
+    this.selectedAccountType = event;
   }
 }

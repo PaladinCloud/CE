@@ -13,8 +13,8 @@ export class DropdownComponent implements OnChanges {
   @Input() isDisabled: boolean = false;
   @Input() optionImage = false;
   @Input() requiredInfo: boolean = false;
-  @Input() placeholder: string;
-  @Input() selectedItem: string;
+  @Input() placeholder: string = "";
+  @Input() selectedItem: string = "";
   @Input() isChipListEnabled: boolean = false;
   @Input() selectedList = [];
   @Output() selected = new EventEmitter();
@@ -24,8 +24,8 @@ export class DropdownComponent implements OnChanges {
   itemList = [];
   optionList = [];
   selectedOption: string = "";
-  selectedOptionImage: string;
   applyClick: any;
+  selectedOptionImage: string = "";
   constructor() { }
 
   onClose() {
@@ -99,10 +99,12 @@ export class DropdownComponent implements OnChanges {
   }
 
   isFirstCharNumber(option:string){
+      if(!option) return "";
       return /^\d/.test(option);
   }
 
   capitalizeFirstLetter(option: string | unknown[]) {
+    if(!option) return "";
     if (typeof option === 'string') {
       return option.charAt(0).toUpperCase() + option.slice(1);
     }

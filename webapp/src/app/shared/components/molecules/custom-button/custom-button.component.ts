@@ -9,7 +9,7 @@ declare type ButtonType = "stroked" | "flat" | "raised" | "default";
 })
 export class CustomButtonComponent implements OnInit {
 
-  @Input() buttonType: ButtonType;
+  @Input() buttonType: ButtonType = "default";
   @Input() disabled;
   @Input() label;
 
