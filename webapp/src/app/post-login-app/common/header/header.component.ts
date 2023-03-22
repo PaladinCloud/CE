@@ -2,22 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Apollo, gql } from 'apollo-angular';
+import { Apollo } from 'apollo-angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NOTIFICATIONS_SUBSCRIPTION } from 'src/app/core/graphql/subscriptions/notifications.gql';
 import { AuthService } from '../../../core/services/auth.service';
 import { DataCacheService } from '../../../core/services/data-cache.service';
 import { PermissionGuardService } from '../../../core/services/permission-guard.service';
 import { LoggerService } from '../../../shared/services/logger.service';
-
-const NOTIFICATIONS_SUBSCRIPTION = gql`
-    subscription SubscribeToData($name: String!) {
-        subscribe(name: $name) {
-            name
-            data
-        }
-    }
-`;
 
 @Component({
     selector: 'app-header',
@@ -33,6 +25,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     haveNewNotification = false;
 
+    private readonly NOTIFICATIONS_CHANNEL = 'InAppNotification';
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -77,7 +70,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             .subscribe({
                 query: NOTIFICATIONS_SUBSCRIPTION,
                 variables: {
-                    name: 'channel',
+                    name: this.NOTIFICATIONS_CHANNEL,
                 },
             })
             .pipe(takeUntil(this.destroy$))
