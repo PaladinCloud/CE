@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { trigger, state, style, transition, animate } from "@angular/animations";
 import { environment } from './../../../../../../environments/environment';
 
@@ -190,6 +190,35 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   urlToRedirect = '';
   mandatory;
   private pageLevel = 0;
+
+
+  currentStepperIndex = 0;
+  paramsList = [[1,2],[3,4]];
+  currentStepperName: string ="Asset Group Details";
+  assetGroupName = "";
+  assetGroupDesc = "";
+  createdBy = "";
+  selectedAccountType = "";
+  typeList = ["Admin","User"];
+  currentTemplateRef : TemplateRef<any>;
+  @ViewChild('assetGroupRef') assetGroupRef: TemplateRef<any>;
+  @ViewChild('configurationRef') configurationRef: TemplateRef<any>;
+  @ViewChild('reviewRef') reviewRef: TemplateRef<any>;
+
+  stepperData = [
+    {
+      id: 0,
+      name: "Asset Group Details"
+    },
+    {
+      id: 1,
+      name: "Configuration"
+    },
+    {
+      id: 2,
+      name: "Review"
+    }
+  ]
 
   public labels;
   private previousUrl = '';
@@ -1057,5 +1086,36 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.logger.log('error', '--- Error while unsubscribing ---');
     }
+  }
+  
+  pageCounter(clickedButton: string) {
+    if (clickedButton == 'back') {
+      this.currentStepperIndex--;
+    } else
+      this.currentStepperIndex++;
+
+    this.selectedStepperIndex(this.currentStepperIndex);
+  }
+
+  selectedStepperIndex(event: any) {
+    const index = this.stepperData.findIndex(element => element.id == event);
+    this.currentStepperIndex = event;
+    this.currentStepperName = this.stepperData[index].name;
+  }
+
+  getCurrentTemplate(){
+    if(this.currentStepperName == "Asset Group Details"){
+      this.currentTemplateRef = this.assetGroupRef;
+    } else if(this.currentStepperName == "Configuration"){
+      this.currentTemplateRef = this.configurationRef;
+    } else{
+      this.currentTemplateRef = this.reviewRef;
+    }
+    console.log(this.currentTemplateRef," ref ");
+    return this.currentTemplateRef;
+  }
+  
+  onSelectType(event:any){
+    this.selectedAccountType = event;
   }
 }

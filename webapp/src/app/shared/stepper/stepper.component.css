@@ -3,7 +3,7 @@
 }
 
 .stepper-header-wrapper{
-    width: 200px;
+    width: 250px;
     padding-right: 20px;
     border-right: 1px solid var(--border-200);
 }
@@ -25,10 +25,6 @@
     background: none !important;
 }
 
-.stepper{
-    width: 20%;
-}
-
 ::ng-deep .mat-vertical-content-container{
     margin-left: 8px !important;
 }
@@ -44,10 +40,4 @@
 
 ::ng-deep .mat-step-icon-state-edit{
     background-color: var(--primary-100) !important;
-}
-
-.stepper-wrapper .right-wrapper{
-    position: absolute;
-    top: 70px;
-    right: 48px;
 }
