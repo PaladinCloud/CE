@@ -164,10 +164,13 @@ public class HttpUtil {
         }
         try {
             httpClient = getHttpClient();
-            CloseableHttpResponse res = httpClient.execute(get);
-            if (res.getStatusLine().getStatusCode() == 200) {
-                json = EntityUtils.toString(res.getEntity());
+            if(httpClient!=null){
+                CloseableHttpResponse res = httpClient.execute(get);
+                if (res.getStatusLine().getStatusCode() == 200) {
+                    json = EntityUtils.toString(res.getEntity());
+                }
             }
+
         } finally {
             if (httpClient != null) {
                 httpClient.close();

@@ -494,10 +494,6 @@ public class FileManager {
 				+ "`monitoringstate`affinity`availabilityzone`groupname`hostid`tenancy`statename`statecode`statereasonmessage`statereasoncode";
 		FileGenerator.generateJson(instanceMap, fieldNames, "aws-ec2.data",keys);
 
-		String s = "";
-		s.equals("abc");
-		"abc".equals(s);
-
 		fieldNames = "instanceId`tags.key`tags.value";
 		keys = "discoverydate`accountid`accountname`region`instanceid`key`value";
 		FileGenerator.generateJson(instanceMap, fieldNames, "aws-ec2-tags.data",keys);

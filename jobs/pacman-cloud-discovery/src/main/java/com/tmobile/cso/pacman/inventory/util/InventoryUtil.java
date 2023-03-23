@@ -3220,7 +3220,7 @@ public class InventoryUtil {
 							data	= imageData.getImageDetails().
 										stream().
 										filter(imageDetail -> !CollectionUtils.isEmpty(imageDetail.getImageTags()) && imageDetail.getImageTags().contains("latest")).
-										findFirst().get();
+										findFirst().orElse(null);
 							}
 								RegistryVH registryVH = new RegistryVH(repo, data);
 								repositories.add(registryVH);
@@ -3233,7 +3233,7 @@ public class InventoryUtil {
 				}
 			} catch (Exception e) {
 				log.warn(expPrefix + region.getName() + InventoryConstants.ERROR_CAUSE + e.getMessage() + "\"}");
-				ErrorManageUtil.uploadError(accountId, region.getName(), "ec2", e.getMessage());
+				ErrorManageUtil.uploadError(accountId, region.getName(), "ecr", e.getMessage());
 			}
 		}
 		return repositoryMap;
