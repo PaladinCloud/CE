@@ -29,7 +29,7 @@ import com.tmobile.cso.pacman.qualys.util.ErrorManageUtil;
  * The Class HostAssetDataImporter.
  */
 public class HostAssetDataImporter extends QualysDataImporter implements Constants {
-    
+
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HostAssetDataImporter.class);
     
@@ -58,15 +58,16 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     
     /** The Constant VPC_ID. */
     private static final String VPC_ID = "vpcid";
+    public static final String PRIVATEIPADDRESS = "privateipaddress";
 
     /** The vuln info map. */
-    private Map<String, Map<String, String>> vulnInfoMap;
+    private Map<String, Map<String, Object>> vulnInfoMap;
     
     /** The current info. */
-    private Map<String, Map<String, String>> currentInfo;
+    private Map<String, Map<String, Object>> currentInfo;
     
     /** The current qualys info. */
-    private Map<String, Map<String, String>> currentQualysInfo;
+    private Map<String, Map<String, Object>> currentQualysInfo;
     
     /** The vpc nat ip assets. */
     private Map<String, List<Map<String, Map<String, Object>>>> vpcNatIpAssets = new HashMap<>();// vpciid<natip<ip<qid>>>
@@ -95,7 +96,9 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     private String lastVulnDate = LocalDate.now().minusDays(scanThreshold).toString();
     
     private static List<Map<String,String>> errorList = new ArrayList<>();
-   
+//    String limit=System.getenv("Limit");
+
+
     /**
      * Execute.
      * @return 
@@ -152,16 +155,18 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         String indexName = ds+"_" + type;
         List<String> filters = new ArrayList<>();
         if ("ec2".equals(type)) {
-            filters = Arrays.asList("_docid", "privateipaddress", "tags.Name", RESOURCE_ID, "tags.Application",
+            filters = Arrays.asList("_docid", PRIVATEIPADDRESS, "tags.Name", RESOURCE_ID, "tags.Application",
                     "accountid", "accountname", "statename", "platform", VPC_ID, "publicipaddress", "imageid");
         } else if ("onpremserver".equals(type)) {
             filters = Arrays.asList("_docid", "name", "fqdn", "ip_address", RESOURCE_ID);
         }else if("virtualmachine".equals(type)){
             filters = Arrays.asList("_docid", "computerName", "privateIpAddress","primaryNCIMacAddress", RESOURCE_ID);
         }
+
         currentInfo = ElasticSearchManager.getExistingInfo(indexName, type, filters, true);
 
-       
+
+
         filters = Arrays.asList(RESOURCE_ID, "id");
         currentQualysInfo = ElasticSearchManager.getExistingInfo(indexName, "qualysinfo", filters, true);
 
@@ -170,6 +175,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         if ("ec2".equals(type)) {
             currentInfo = currentInfo.entrySet().stream()
                     .filter(entry -> "running".equals(entry.getValue().get("statename")))
+                    //.limit(Integer.parseInt(limit)) //adding limit to fetch ony 50 EC2 instances
                     .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
             LOGGER.info("Total current resources  Running : {}", currentInfo.size());
@@ -179,6 +185,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             Set<String> ec2EniList = ec2EniMap.entrySet().stream().flatMap(entry -> entry.getValue().stream())
                     .collect(Collectors.toSet());
             eniMacMap = Util.fetchEniMacInfo();
+            LOGGER.debug("eniMacMap size: {}",eniMacMap.size());
             Set<String> eniList = eniMacMap.keySet();
 
             Set<String> missingEniMappings = ec2EniList.stream().filter(ec2Eni -> !eniList.contains(ec2Eni))
@@ -188,16 +195,20 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             Map<String, List<String>> VpcPublicIpInfo = Util.fetchVPCtoNatIPInfo();
 
             Set<String> vpcList = currentInfo.entrySet().stream().map(entry -> entry.getValue().get(VPC_ID))
+                    .map(Object::toString)
                     .collect(Collectors.toSet());
             VpcPublicIpInfo = VpcPublicIpInfo.entrySet().stream().filter(entry -> vpcList.contains(entry.getKey()))
                     .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-            vpcNatIpAssets = fetchAssetsWithNatIpAsAddress(VpcPublicIpInfo);          
+            LOGGER.debug("vpcPublicIpInfo after filtering out: {}",VpcPublicIpInfo.size());
+            vpcNatIpAssets = fetchAssetsWithNatIpAsAddress(VpcPublicIpInfo);
             LOGGER.debug("Initialisation Complete");
         }
 
         filters = Arrays.asList("qid", "vulntype", "severitylevel", "title", "category", "patchable", "pciflag",
-                "classification");
+                "classification","cvelist");
         vulnInfoMap = ElasticSearchManager.getExistingInfo("qualys-kb", "kb", filters, true);
+        LOGGER.debug("VulnInfoMap: {}",vulnInfoMap.size());
+        LOGGER.debug("VulnInfoMap data: {}",vulnInfoMap);
     }
 
     /**
@@ -213,31 +224,34 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 
         List<Map<String, Object>> processList = new ArrayList<>();
         List<String> uploadList = new ArrayList<>();
-        List<Map<String, String>> noPrfileList = new ArrayList<>();
+        List<Map<String, Object>> noPrfileList = new ArrayList<>();
 
         procssInfo.put(PROCESSED, processList);
         procssInfo.put(UPLOADED, uploadList);
         procssInfo.put(FAILED, noPrfileList);
 
         Map<String, Map<String, Object>> hostAssets = new HashMap<>();
-
+        LOGGER.info("Executing fetchHostAssets");
         currentInfo.entrySet().stream().forEach(entry -> {
+
 	        try {
 	            String docid = entry.getKey();
-	            String resouceId = entry.getValue().get(RESOURCE_ID);
+	            String resouceId = entry.getValue().get(RESOURCE_ID).toString();
 	            String name = "";
 	            String ip = "";
 	            String vmMac="";
+                LOGGER.info("Processsing hostAssetSearch for resource, ResourceId: {}", resouceId);
+                LOGGER.info("Server type: {}", type);
 	            if ("onpremserver".equals(type)) {
-	                name = entry.getValue().get("name");
-	                ip = entry.getValue().get("ip_address");
+	                name = entry.getValue().get("name").toString();
+	                ip = entry.getValue().get("ip_address").toString();
 	            } else if("ec2".equals(type)) {
-	                name = entry.getValue().get("tags.Name");
-	                ip = entry.getValue().get("privateipaddress");
+	                name = entry.getValue().get("tags.Name")!=null ? entry.getValue().get("tags.Name").toString() : "";
+	                ip = entry.getValue().get(PRIVATEIPADDRESS)!=null ? entry.getValue().get(PRIVATEIPADDRESS).toString() : "";
 	            }else if("virtualmachine".equals(type)){
-	                name = entry.getValue().get("computerName");
-	                ip = entry.getValue().get("privateIpAddress");
-	                vmMac = entry.getValue().get("primaryNCIMacAddress");
+	                name = entry.getValue().get("computerName").toString();
+	                ip = entry.getValue().get("privateIpAddress").toString();
+	                vmMac = entry.getValue().get("primaryNCIMacAddress").toString();
 	            }
 	
 	            Map<String, Object> processinfo = new LinkedHashMap<>();
@@ -256,6 +270,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	            }
 	            
 	            if(hostAsset==null){ // For ec2, instancedid based lookup fails
+                    LOGGER.info("Host data not found from instance based lookup. Fetching by IP: {}",ip);
 	                String inputXml = "<ServiceRequest> " + "<preferences><limitResults>100</limitResults></preferences>"
 	                        + "<filters>" + "<Criteria field=\"address\" operator=\"EQUALS\">%s</Criteria>"
 	                        + "<Criteria field=\"lastVulnScan\" operator=\"GREATER\">%s</Criteria>" + "</filters>"
@@ -267,7 +282,9 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	     
 	                    respData = getHostData(uriPost, _inputXml);
 	       
-	                }
+	                }else{
+                        LOGGER.info("IP is null or empty:{}", ip);
+                    }
 	
 	                if (respData == null)
 	                    respData = new ArrayList<>();
@@ -276,7 +293,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	                processinfo.put("profiles", Util.fetchTrackinMethodAndQids(respData));
 	
 	                List<Map<String, Object>> _respData = Util.sortOnLastVulnScan(respData);
-	
+	                LOGGER.info("_respData :{}",_respData);
 	                if ("ec2".equals(type)) {
 	                    for (int i = 0; i < _respData.size(); i++) {
 	                        Map<String, Object> host = _respData.get(i);
@@ -301,6 +318,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	                    }
 	
 	                    if (hostAsset == null) {
+                            LOGGER.info("hostAsset is null,fetch through fallbackNameBasedMatch");
 	                        hostAsset = fallbackNameBasedMatch(name, ip);
 	                        if (hostAsset != null) {
 	                            processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
@@ -309,6 +327,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	                        }
 	                    }
 	                    if (hostAsset == null) {
+                            LOGGER.info("hostAsset is null,fetch through fallbackNatIpBasedMatch");
 	                        hostAsset = fallbackNatIpBasedMatch(docid, ip);
 	                        if (hostAsset != null) {
 	                            processinfo.put(TRACKING_METHOD, hostAsset.get(TRACKING_METHOD).toString());
@@ -358,10 +377,12 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	                }
 	
 	                if (hostAsset == null) {
+                        LOGGER.info("hostAsset is null,fetch through fallbackIdBasedMatch");
 	                    hostAsset = fallbackIdBasedMatch(resouceId, processinfo);
 	                }
 	                
 	                if (hostAsset == null) {
+                        LOGGER.info("hostAsset is null,fetch through fallbackToCurrentInfo");
 	                    hostAsset = fallbackToCurrentInfo(resouceId, processinfo);
 	                }
 	            }
@@ -391,6 +412,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 	                }
 	            }
 	            if (_hostAssets != null) {
+                    LOGGER.debug("Processing _hostAssets, size: {}",_hostAssets.size());
 	                Util.processAndTransform(_hostAssets, vulnInfoMap, CURR_DATE);
 	                new HostAssetsEsIndexer().postHostAssetToES(_hostAssets, ds,type,errorList);
 	            }
@@ -410,6 +432,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     }
     
     private Map<String, Object> fetchBasedOnInstanceID(String resouceId, Map<String, Object> processinfo) {
+        LOGGER.debug("Fetching host data based on instance Id, resourceId:{} ",resouceId);
         Map<String, Object> hostAsset = null;
         String inputXmlWithInstanceId = "<ServiceRequest> " + "<preferences><limitResults>100</limitResults></preferences>"
                 + "<filters>" + "<Criteria field=\"instanceId\" operator=\"EQUALS\">%s</Criteria>"
@@ -430,8 +453,9 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
         Map<String, Object> hostAsset = null;
         try {
             if (currentQualysInfo.get(resouceId) != null) {
-                String strQid = currentQualysInfo.get(resouceId).get("id");
+                String strQid = currentQualysInfo.get(resouceId).get("id").toString();
                 Long qualysId = Double.valueOf(strQid).longValue();
+                LOGGER.debug("fallbackToCurrentInfo with resourceId:{}",resouceId);
                 hostAsset = Util.fetchCurretQualysInfo(type,resouceId);    
                 if (hostAsset != null && Util.isScanInfoAvailable(hostAsset,scanThreshold)) {
                     processinfo.put("fallbackInfo", "Existing Match, Id:" + qualysId);
@@ -464,7 +488,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
 
         Map<String, Object> host = hostAsset;
         if (host != null && host.get("vuln") == null) {
-
+            LOGGER.debug("Host asset vuln info is missing. Fetching data from fetchhostAssetWithID");
             processinfo.put(VULN_MISSING, "true");
             // Retry with the current matched ID
             host = fetchhostAssetWithID(Double.valueOf(host.get("id").toString()).longValue());
@@ -472,6 +496,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             if (host != null && host.get("vuln") != null) {
                 processinfo.put(VULN_MISSING, "FetchedInRetry");
             } else {
+                LOGGER.info("Host data is null, fetching it from current qualys info");
                 try {
                     Map<String, Object> _hostAsset = null;
                     if (currentQualysInfo.get(resouceId) != null) {
@@ -549,10 +574,10 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
      * @return the map
      */
     private Map<String, Object> fallbackNatIpBasedMatch(String resouceId, String ip) {
-
+        LOGGER.info("Fetch host data through fallbackNatIpBasedMatch. ResourceID:{}, IP:{}",resouceId,ip);
         Map<String, Object> hostAsset = null;
 
-        String vpcid = currentInfo.get(resouceId).get(VPC_ID);
+        String vpcid = currentInfo.get(resouceId).get(VPC_ID).toString();
         List<Map<String, Map<String, Object>>> natIpAssets = vpcNatIpAssets.get(vpcid);
         if (natIpAssets != null) {
             List<Map<String, Object>> idList = natIpAssets.stream().filter(obj -> obj.get(ip) != null)
@@ -564,6 +589,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                     .collect(Collectors.toList());
             if (!idList.isEmpty()) {
                 Long qualysId = Double.valueOf(idList.get(0).get("id").toString()).longValue();
+                LOGGER.info("QualysId for hostasset search:{}", qualysId);
                 hostAsset = fetchhostAssetWithID(qualysId);
             }
         }
@@ -585,7 +611,10 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                 + "<Criteria field=\"lastVulnScan\" operator=\"GREATER\">%s</Criteria>" + "</filters>"
                 + "</ServiceRequest>";
         String _inputXml = String.format(inputXml, name, lastVulnDate);
+        LOGGER.debug("fetching host asset with fallbackNameBasedMatch, name:{} ,ip:{} ", name,ip);
+        LOGGER.debug("Request xml:{}",_inputXml);
         List<Map<String, Object>> hosts = getHostData(uriPost, _inputXml);
+        LOGGER.debug("Host:{}",hosts);
         if (hosts != null && !hosts.isEmpty()) {
             String _ip = ip;
             hosts = hosts.stream().filter(host -> {
@@ -604,7 +633,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                     .parse(obj2.get("lastVulnScan").toString(), DateTimeFormatter.ISO_DATE_TIME).compareTo(
                             LocalDateTime.parse(obj1.get("lastVulnScan").toString(), DateTimeFormatter.ISO_DATE_TIME)))
                     .collect(Collectors.toList());
-
+            LOGGER.info("Hosts data after filtering out networkinterface IP addresses:{} ",hosts);
             if (hosts != null && !hosts.isEmpty()) {
                 hostAsset = hosts.get(0);
             }
@@ -624,8 +653,9 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     private Map<String, Object> fallbackIdBasedMatch(String resouceId, Map<String, Object> processinfo) {
         Map<String, Object> hostAsset = null;
         if (currentQualysInfo.get(resouceId) != null) {
-            String strQid = currentQualysInfo.get(resouceId).get("id");
+            String strQid = currentQualysInfo.get(resouceId).get("id").toString();
             Long qualysId = Double.valueOf(strQid).longValue();
+            LOGGER.info("fallbackIdBasedMatch, ResourceId:{}, qualysId :{} ", resouceId,qualysId);
             hostAsset = fetchhostAssetWithID(qualysId);
             if (hostAsset != null && Util.isScanInfoAvailable(hostAsset,scanThreshold)) {
                 processinfo.put("fallbackInfo", "Id Match, Id:" + qualysId);
@@ -652,9 +682,9 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                 + "<Criteria field=\"lastVulnScan\" operator=\"GREATER\">%s</Criteria>" + "</filters>"
                 + "</ServiceRequest>";
         _inputXml = String.format(inputXml, qualysId, lastVulnDate);
-
+        LOGGER.debug("Fetching hostdata from qualys id: {}, request XML:{}",qualysId,inputXml);
         hosts = getHostData(uriPost, _inputXml);
-
+        LOGGER.debug("Host data response:{}",hosts);
         if (hosts != null && !hosts.isEmpty()) {
             hostAsset = hosts.get(0);
         }
@@ -673,7 +703,8 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             Map<String, List<String>> vpcIpInfo) {
         
         Map<String, List<Map<String, Map<String, Object>>>> vpcAssets = new HashMap<>(); // vpciid-natip-ip-qid
-        
+        LOGGER.debug("fetchAssetsWithNatIpAsAddress input vpcIpInfo:{}",vpcIpInfo.size());
+
         vpcIpInfo.entrySet().forEach(entry -> {
             String vpcId = entry.getKey();
             List<String> ipList = entry.getValue();
@@ -685,7 +716,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                         + "<Criteria field=\"lastVulnScan\" operator=\"GREATER\">%s</Criteria>" + "</filters>"
                         + "</ServiceRequest>";
                 String _inputXml = String.format(inputXml, natIp, lastVulnDate);
-             
+                LOGGER.debug("fetchAssetsWithNatIpAsAddress >> getHostdata");
                 List<Map<String, Object>> hosts = getHostData(uriPost+"?fields=id,modified,networkInterface.list", _inputXml);
                 Map<String, Map<String, Object>> ipQidInfo = new HashMap<>();
                 if (hosts != null && !hosts.isEmpty()) {
@@ -718,6 +749,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
             }
             vpcAssets.put(vpcId, natIpQidInfo);
         });
+        LOGGER.debug("fetchAssetsWithNatIpAsAddress result :{}", vpcAssets);
         return vpcAssets;
     }
 

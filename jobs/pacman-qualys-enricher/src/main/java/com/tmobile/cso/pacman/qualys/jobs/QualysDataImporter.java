@@ -135,7 +135,9 @@ public abstract class QualysDataImporter {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(DEFAULT_USER, DEFAULT_PASS);
             httpGet.addHeader(BasicScheme.authenticate(credentials, UTF8, false));
             httpGet.addHeader("X-Requested-With", "DEFAULT_USER");
+            LOGGER.debug("GET API call URL:{}", uri);
             HttpResponse httpResponse = httpClient.execute(httpGet);
+            LOGGER.debug("Response code:{}",httpResponse.getStatusLine().getStatusCode());
             return EntityUtils.toString(httpResponse.getEntity());
         } else if ("POST".equals(httpMethod)) {
 
@@ -153,7 +155,9 @@ public abstract class QualysDataImporter {
             if (parameters != null) {
                 post.setEntity(new UrlEncodedFormEntity(parameters));
             }
+            LOGGER.debug("POST API call URL:{}, input XML:{}", uri, xmlToPost);
             HttpResponse response = httpClient.execute(post);
+            LOGGER.debug("Response code:{}",response.getStatusLine().getStatusCode());
             return EntityUtils.toString(response.getEntity());
         } else {
             throw new UnsupportedOperationException();
@@ -197,11 +201,13 @@ public abstract class QualysDataImporter {
      */
     @SuppressWarnings("unchecked")
     protected List<Map<String, Object>> getHostData(String uriPost, String inputXml) {
+        LOGGER.debug("getHostdata API URL:{}, RequestXML:{}",uriPost,inputXml);
         String resultJson = null;
         int retryCnt = 3;
         for (int i = 1; i <= retryCnt; i++) { // Retry 2 times if error occurs
             try {
                 resultJson = callApi(uriPost, "POST", inputXml, null);
+                LOGGER.debug("Response JSON: {}",resultJson);
             } catch (IOException e) {
                 if (i == retryCnt) {
                     LOGGER.error("Error in fetching host info: Request :{}", inputXml);
@@ -209,6 +215,7 @@ public abstract class QualysDataImporter {
             }
             if (resultJson != null) {
                 Map<String, Object> resp = getServiceResponse(resultJson);
+                LOGGER.debug("Service response from resultJaon:{}",resp);
                 if (resp != null && "SUCCESS".equals(resp.get("responseCode"))) {
                     List<Map<String, Object>> data = (List<Map<String, Object>>) resp.get("data");
                     if (data != null) {
