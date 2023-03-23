@@ -65,8 +65,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Title': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
-  columnNamesMap = {"PolicyName": "Title","IssueId":"Violation ID"};
+  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
+  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID"};
   fieldName: string = "policyId.keyword";
   fieldType: string = "number";
   selectedOrder: string = "asc";
@@ -210,7 +210,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
       this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
-    } else if (sortColName === "title") {
+    } else if (sortColName === "policy") {
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
     }
@@ -507,7 +507,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             properties: "",
             isLink: false
           }
-          if(col.toLowerCase()=="title"){
+          if(col.toLowerCase()=="policy"){
             cellObj = {
               ...cellObj,
               isLink: true
