@@ -83,7 +83,6 @@ public class HttpUtil {
                 return EntityUtils.toString(httpResponse.getEntity());
             } catch (Exception e) {
                 LOGGER.error("Error getting the data " , e);
-                throw e;
             }
         }
         return "{}";
@@ -117,7 +116,6 @@ public class HttpUtil {
             }
         } catch (Exception e) {
             LOGGER.error("Error getting the data " , e);
-            throw e;
         }
         return null;
 

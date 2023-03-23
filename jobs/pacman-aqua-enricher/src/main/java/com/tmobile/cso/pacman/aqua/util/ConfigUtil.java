@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cso.pacman.aqua.Constants;
+import com.tmobile.cso.pacman.aqua.exception.AquaDataImportException;
 
 /**
  * The Class ConfigUtil.
@@ -83,11 +84,10 @@ public class ConfigUtil {
                 properties.putAll(invProps);
             }
         } catch (Exception e) {
-            LOGGER.error("Error in fetchConfigProperties",e);
             throw e;
         }
         if(properties.isEmpty()){
-        	throw new Exception("No config properties fetched from "+configUrl);
+        	throw new AquaDataImportException("No config properties fetched from "+configUrl);
         }
         LOGGER.info("Config are fetched from {}",configUrl);
         properties.forEach((k,v)-> LOGGER.debug("{} : {} ",k,v));

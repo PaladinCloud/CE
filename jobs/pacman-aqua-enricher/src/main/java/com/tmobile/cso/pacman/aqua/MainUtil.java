@@ -34,7 +34,7 @@ public class MainUtil {
     public static void setup(Map<String, String> params) throws Exception {
      	ConfigUtil.setConfigProperties(params.get(Constants.CONFIG_CREDS));
     	
-        if( !(params==null || params.isEmpty())){
+        if( null!= params &&  !params.isEmpty()){
 			params.forEach((k,v) -> System.setProperty(k, v));
 		}
       

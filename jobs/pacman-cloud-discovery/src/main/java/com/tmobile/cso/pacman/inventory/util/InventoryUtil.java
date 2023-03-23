@@ -3215,7 +3215,7 @@ public class InventoryUtil {
 							com.amazonaws.services.ecr.model.DescribeImagesResult imageData = ecrClient.describeImages
 									(new com.amazonaws.services.ecr.model.DescribeImagesRequest().withRegistryId(repo.getRegistryId()).withRepositoryName(repo.getRepositoryName()));
 							ImageDetail data = null;
-							if(imageData!=null & !CollectionUtils.isEmpty(imageData.getImageDetails()))
+							if(imageData!=null && !CollectionUtils.isEmpty(imageData.getImageDetails()))
 							{
 							data	= imageData.getImageDetails().
 										stream().

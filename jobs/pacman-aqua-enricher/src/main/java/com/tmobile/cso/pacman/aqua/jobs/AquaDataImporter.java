@@ -25,7 +25,7 @@ public abstract class AquaDataImporter {
   private static final Logger LOGGER = LoggerFactory.getLogger(AquaDataImporter.class);
 
 
-  public AquaDataImporter() {
+  protected AquaDataImporter() {
     apiMap = new HashMap<String, String>();
     apiMap.put("signIn",
         "/v2/signin");
@@ -43,10 +43,9 @@ public abstract class AquaDataImporter {
     String input = inputObject.toString();
     try {
       String response = HttpUtil.post(tokenUri,input,null , null);
-      Map data = (Map) Util.getJsonAttribute(response, "data");
+      Map<String,Object> data = (Map) Util.getJsonAttribute(response, "data");
       token = (String) data.get("token");
     } catch (Exception e) {
-      LOGGER.error("error in fetching aqua bearer token {}",e);
       throw new AquaDataImportException(e.getMessage());
     }
     return token;

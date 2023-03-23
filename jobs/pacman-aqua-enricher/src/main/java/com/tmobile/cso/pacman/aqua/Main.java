@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.naming.NamingException;
 import com.tmobile.cso.pacman.aqua.jobs.AquaFunctionVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.jobs.AquaImageVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.jobs.AquaVMVulnerabilityDataImporter;
@@ -23,9 +22,9 @@ public class Main {
      * The main method.
      *
      * @param args the arguments
-     * @throws Exception the exception
+     *
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Map<String, String> params = new HashMap<>();
         Arrays.stream(args).forEach(obj -> {
             String[] paramArray = obj.split("[:]");
@@ -39,9 +38,9 @@ public class Main {
      *
      * @param params the params
      * @return Returns map if in case of failures
-     * @throws NamingException the naming exception
+     *
      */
-    public static Map<String, Object> execute(Map<String, String> params) throws NamingException {
+    public static Map<String, Object> execute(Map<String, String> params) {
 
         Map<String, Object> errorInfo = new HashMap<>() ;
         List<Map<String,String>> errorList = new ArrayList<>();

@@ -21,9 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.tmobile.cso.pacman.aqua.Constants;
 
 
 /**
@@ -32,9 +30,6 @@ import com.tmobile.cso.pacman.aqua.Constants;
 public class Util {
     
     private static Logger log = LoggerFactory.getLogger(Util.class);
-
-    private static List<Map<String,String>> errorList = new ArrayList<>();
-
 
     /**
      * Base 64 decode.

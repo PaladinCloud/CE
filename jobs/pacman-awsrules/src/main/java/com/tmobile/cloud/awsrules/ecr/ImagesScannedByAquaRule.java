@@ -96,7 +96,7 @@ public class ImagesScannedByAquaRule extends BasePolicy {
                   try {
                     return PacmanUtils.calculateDuration(lastVulnScan) < Long.parseLong(target);
                   } catch (ParseException e) {
-                    e.printStackTrace();
+                    logger.error("Exception while parsing last scan date",e);
                   }
                   return false;
                 }).findAny();

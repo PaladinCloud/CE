@@ -232,7 +232,7 @@ public class ElasticSearchManager {
         try {
             Response refrehsResponse = invokeAPI("POST", indexName + "/" + "_refresh", null);
             if (refrehsResponse != null && HttpStatus.SC_OK != refrehsResponse.getStatusLine().getStatusCode()) {
-                LOGGER.error("Refreshing index {} failed", index, refrehsResponse);
+                LOGGER.error("Refreshing index {} failed", index);
             }
         } catch (IOException e) {
             LOGGER.error("Error refresh ", e);
@@ -395,7 +395,6 @@ public class ElasticSearchManager {
                     scroll = false;
             } while (scroll);
         }
-        // invokeAPI("DELETE", "/_search/scroll?scroll_id="+scrollId, null);
         return _data;
     }
 
