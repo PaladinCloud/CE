@@ -347,10 +347,8 @@ class QualysAssetDataImporterCloudWatchEventTarget(CloudWatchEventTargetResource
             {'encrypt': False, 'key': "datasource", 'value': "aws"}
         ]
     })
-<<<<<<< HEAD
-    PROCESS = need_to_deploy_vulnerability_service()
-    
-    
+    # PROCESS = need_to_deploy_vulnerability_service()
+
 class AquaImageVulnerabilityCollectorEventRule(CloudWatchEventRuleResource):
     name = "aqua-image-vulnerability-collector"
     schedule_expression = "cron(0 0 * * ? *)"
@@ -386,11 +384,8 @@ class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
             {'encrypt': False, 'key': "job_hint", 'value': "aqua_image_vulnerability"},
         ]
     })
-
     PROCESS = need_to_deploy_aqua_vulnerability_service()
-=======
-    # PROCESS = need_to_deploy_vulnerability_service()
->>>>>>> master
+
 
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
