@@ -289,11 +289,25 @@ th.mat-sort-header-sorted {
 }
 
 tr.mat-row, tr.mat-footer-row {
-  height: 62px;
-  padding: 12px 0px;
   align-items: center;
   font: var(--text-body-2);
   color: var(--text-high-emphasis);
+}
+
+tr.mat-footer-row {
+    height: 62px;
+}
+
+tr.mat-row.lg {
+    height: 62px;
+}
+
+tr.mat-row.md {
+    height: 48px;
+}
+
+tr.mat-row.sm {
+    height: 36px;
 }
 
 th.mat-header-cell, td.mat-cell, td.mat-footer-cell{

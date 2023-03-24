@@ -38,6 +38,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() doLocalSort = true;
   @Input() doLocalFilter = false;
   @Input() tableDataLoaded;
+  @Input() rowSize: 'SM' | 'MD' | 'LG' = 'LG';
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() actionSelected = new EventEmitter();
   @Output() headerColNameSelected = new EventEmitter<any>();
@@ -52,7 +53,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   mainDataSource;
   dataSource;
-  
+
   @Input() displayedColumns;
   @Input() whiteListColumns = [];
   searchInColumns = new FormControl();
@@ -75,11 +76,11 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() filterTypeOptions;
   totalChips;
   chips;
-  
+
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
     private windowExpansionService: WindowExpansionService,
-    ) { 
+    ) {
       this.windowExpansionService.getExpansionStatus().subscribe((res) => {
         this.waitAndResizeTable();
       });
@@ -112,8 +113,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    
-    if(this.customTable && changes.tableScrollTop && changes.tableScrollTop.currentValue!=undefined){      
+
+    if(this.customTable && changes.tableScrollTop && changes.tableScrollTop.currentValue!=undefined){
       this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
     }
     if(!this.tableDataLoaded && this.customTable){
@@ -122,13 +123,13 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.data = [];
       this.dataSource = new MatTableDataSource(this.data);
       this.mainDataSource = new MatTableDataSource(this.data);
-      
+
       this.waitAndResizeTable();
     }
     if(!this.doLocalSearch || (changes.data && changes.data.currentValue && changes.data.currentValue.length>0)){
       this.mainDataSource = new MatTableDataSource(this.data);
       this.dataSource = new MatTableDataSource(this.data);
-      
+
       this.waitAndResizeTable();
       // handles when pagesize is small and screen height is large
       // if(window.innerHeight>1800 && this.data.length>0){
@@ -140,8 +141,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(item.filterValue.length==0){
         this.filteredArray.splice(i, 1);
       }
-    })    
-      
+    })
+
       if(this.doLocalSearch && this.dataSource?.data?.length){
       this.filterAndSort();
     }else{
@@ -153,9 +154,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
-  ngAfterViewInit(): void { 
+  ngAfterViewInit(): void {
     this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
-    this.waitAndResizeTable();    
+    this.waitAndResizeTable();
 
     if(this.select){
       this.select.options.forEach((item: MatOption) => {
@@ -185,7 +186,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   waitAndResizeTable(){
-    setTimeout(() => {      
+    setTimeout(() => {
       this.screenWidth = parseInt(window.getComputedStyle(this.tableContainer.nativeElement, null).getPropertyValue('width'), 10);
       this.getWidthFactor();
     }, 1000);
@@ -216,8 +217,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   handleSearchInColumnsChange(){
     this.searchInColumnsChanged.emit(this.searchInColumns.value);
   }
-  
-  toggleAllSelection() {    
+
+  toggleAllSelection() {
     this.whiteListColumns = [];
     this.allSelected = !this.allSelected;
     if (this.allSelected) {
@@ -288,7 +289,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       );
     });
     let currIdx = i;
-    
+
     if(filterIndex>=0 && filterIndex!=i){
       if(filterIndex>i){
         this.filteredArray.splice(filterIndex, 1);
@@ -298,9 +299,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         currIdx = filterIndex;
       }
     }
-    
-    this.filteredArray[currIdx].filterValue = e;  
-    this.filteredArray[currIdx].value = e;  
+
+    this.filteredArray[currIdx].filterValue = e;
+    this.filteredArray[currIdx].value = e;
 
     if(this.doLocalFilter){
       this.filterAndSort();
@@ -315,19 +316,19 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
-  onSelectFilterType(e, i){  
+  onSelectFilterType(e, i){
     if(this.doLocalFilter){
       this.filteredArray[i].key = e;
-      this.filteredArray[i].keyDisplayValue = e; 
+      this.filteredArray[i].keyDisplayValue = e;
       this.filteredArray[i].value = undefined;
-    }else{ 
+    }else{
     let key = _.find(this.filterTypeOptions, {
         optionName: e,
       })["optionValue"];
     this.filteredArray[i].compareKey = key.toLowerCase().trim();
     this.filteredArray[i].filterkey = key.trim();
     this.filteredArray[i].key = e;
-    this.filteredArray[i].keyDisplayValue = e; 
+    this.filteredArray[i].keyDisplayValue = e;
     this.filteredArray[i].value = undefined;
     this.filteredArray[i].filterValue = "";
     this.selectedFilterType.emit(e);
@@ -377,10 +378,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.dataSource.data = this.dataSource.data.filter((item) => {
       for(let i=0; i<this.filteredArray.length; i++){
         const filterObj = this.filteredArray[i];
-        
+
         const filterKey = filterObj.keyDisplayValue;
         const filterValue = String(filterObj.filterValue);
-        
+
         if(filterKey && filterValue){
           const cellValue = item[filterKey].valueText;
           if(filterValue=="0%-25%" || filterValue=="26%-50%" || filterValue=="51%-75%" || filterValue=="76%-100%"){
@@ -406,7 +407,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.chips = this.chips.filter(obj => obj.keyDisplayValue && obj.filterValue);
     this.totalChips = this.chips.length;
     this.chips.splice(2);
-    
+
     this.totalRows = this.dataSource.data.length;
     if(this.dataSource.data.length==0){
       this.tableErrorMessage = 'noDataAvailable';
@@ -415,13 +416,13 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
-  customSearch(){ 
+  customSearch(){
     const searchTxt = this.searchQuery;
-    
+
       let columnsToSearchIN = this.searchInColumns.value;
       if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
         columnsToSearchIN = this.whiteListColumns;
-      }   
+      }
       // whenever search or filter is called, we perform search first and then filter and thus we take maindatasource here for search
       this.dataSource.data = this.mainDataSource.data.filter((item) => {
         for(const i in columnsToSearchIN) {
@@ -441,13 +442,13 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.customFilter();
     }
 
-    
+
   }
 
-  handleSearch(event){ 
+  handleSearch(event){
     let searchTxt = event.target.value.toLowerCase();
     this.searchQuery = searchTxt;
-    
+
     if (event.keyCode === 13 || searchTxt=='') {
       // this.customTable.first.nativeElement.scrollTop = 0;
       this.tableErrorMessage = '';
@@ -477,10 +478,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
     }
-      
+
   }
 
-    customSort(columnName, direction){    
+    customSort(columnName, direction){
     if (!columnName || direction === '') {
       // this.dataSource.data = this.mainDataSource.data.slice();
       return;
@@ -499,10 +500,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   onScroll(event: any) {
-    // visible height + pixel scrolled >= total height 
+    // visible height + pixel scrolled >= total height
     if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight - 10) {
       if(this.data.length<this.totalRows && !this.isDataLoading && this.data.length>0) {
-        this.tableScrollTop = event.target.scrollTop;        
+        this.tableScrollTop = event.target.scrollTop;
         this.nextPageCalled.emit(this.tableScrollTop);
         this.isDataLoading = true;
       }
