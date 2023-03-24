@@ -542,7 +542,7 @@ public class ESUtils {
     
     /**
      * 
-     * @param evalResults
+     *
      * @param indexName
      * @param type
      * @param postBody
