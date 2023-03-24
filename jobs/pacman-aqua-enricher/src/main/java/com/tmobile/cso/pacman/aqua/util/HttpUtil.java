@@ -45,6 +45,7 @@ import com.tmobile.cso.pacman.aqua.exception.UnAuthorisedException;
 /**
  * The Class HttpUtil.
  */
+@SuppressWarnings("unchecked")
 public class HttpUtil {
 
     /** The log. */

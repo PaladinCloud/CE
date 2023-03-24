@@ -4,6 +4,8 @@ package com.tmobile.cso.pacman.aqua;
 /**
  * The Interface Constants.
  */
+
+@SuppressWarnings("unchecked")
 public interface Constants {
 
     /** The aws ec2. */

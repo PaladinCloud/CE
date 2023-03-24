@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The Class ElasticSearchManager.
  */
+@SuppressWarnings("unchecked")
 public class ElasticSearchManager {
     
     /** The Constant LOGGER. */
