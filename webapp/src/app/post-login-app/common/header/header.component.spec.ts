@@ -187,5 +187,53 @@ describe('HeaderComponent', () => {
             const op = controller.expectOne(NOTIFICATIONS_SUBSCRIPTION);
             op.flush(null);
         });
+
+        it('renders red dot on the bell icon when received notification', () => {
+            const { debugElement } = fixture;
+            const notificationEl = debugElement.query(By.css('.header-user-notification'));
+
+            expect(notificationEl.classes.active).toBeFalsy();
+
+            const op = controller.expectOne(NOTIFICATIONS_SUBSCRIPTION);
+
+            expect(op.operation.variables.name).toEqual('InAppNotification');
+
+            op.flush({});
+
+            fixture.detectChanges();
+
+            expect(notificationEl.classes.active).toBeTruthy();
+        });
+
+        it('removes red dot icon and navigates to health notifications upon bell click', fakeAsync(() => {
+            const { debugElement } = fixture;
+            const notificationEl = debugElement.query(By.css('.header-user-notification'));
+            const spy = spyOn(debugElement.componentInstance, 'openNotification').and.callThrough();
+
+            expect(notificationEl.classes.active).toBeFalsy();
+
+            const op = controller.expectOne(NOTIFICATIONS_SUBSCRIPTION);
+
+            op.flush({});
+
+            fixture.detectChanges();
+
+            expect(notificationEl.classes.active).toBeTruthy();
+
+            notificationEl.triggerEventHandler('click', null);
+
+            expect(spy).toHaveBeenCalled();
+
+            fixture.detectChanges();
+
+            expect(notificationEl.classes.active).toBeFalsy();
+
+            tick();
+            expect(router.url)
+                .withContext('navigates to health notifications')
+                .toEqual('/pl/compliance/health-notifications');
+
+            flush();
+        }));
     });
 });
