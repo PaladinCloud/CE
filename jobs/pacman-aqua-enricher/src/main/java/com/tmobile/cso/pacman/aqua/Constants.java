@@ -8,24 +8,7 @@ package com.tmobile.cso.pacman.aqua;
 @SuppressWarnings("unchecked")
 public interface Constants {
 
-    /** The aws ec2. */
-    String AWS_EC2 = "aws_ec2";
-    
-    /** The resource id. */
-    String RESOURCE_ID = "_resourceid";
-    
-    /** The doc id. */
-    String DOC_ID = "_docid";
-    
-    /** The vuln missing. */
-    String VULN_MISSING = "vulnInfoMissing";
-    
-    /** The processed. */
-    String PROCESSED = "processed";
-    
-    /** The uploaded. */
-    String UPLOADED = "uploaded";
-    
+
     /** The failed. */
     String FAILED = "failed";
     
