@@ -15,18 +15,16 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Subscription } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import * as _ from "lodash";
 import { UtilsService } from "../../../../shared/services/utils.service";
 import { LoggerService } from "../../../../shared/services/logger.service";
 import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
-import { NavigationStart } from "@angular/router";
-import { Event, NavigationEnd } from "@angular/router";
-import { RoutesRecognized } from "@angular/router";
 import { RefactorFieldsService } from "./../../../../shared/services/refactor-fields.service";
 import { WorkflowService } from "../../../../core/services/workflow.service";
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { AdminService } from "../../../services/all-admin.service";
+import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 
 @Component({
   selector: "app-asset-groups",
@@ -41,32 +39,93 @@ export class AssetGroupsComponent implements OnInit {
   breadcrumbArray: any = ["Admin"];
   breadcrumbLinks: any = ["policies"];
   breadcrumbPresent: any;
-  outerArr: any = [];
-  dataLoaded: boolean = false;
-  errorMessage: any;
-  showingArr: any = ["policyName", "policyId", "policyDesc"];
-  allColumns: any = [];
-  totalRows: number = 0;
-  currentBucket: any = [];
-  bucketNumber: number = 0;
-  firstPaginator: number = 1;
-  lastPaginator: number;
-  currentPointer: number = 0;
-  seekdata: boolean = false;
-  showLoader: boolean = true;
 
+  tableTitle = "All Asset Groups";
+  onScrollDataLoader: Subject<any> = new Subject<any>();
+  headerColName: string;
+  direction: string;
+  bucketNumber: number = 0;
+  totalRows: number = 0;
+  tableDataLoaded: boolean = false;
+  tableData: any = [];
+  displayedColumns: string[] = [];
+  whiteListColumns: any = [];
+  tableScrollTop: any;
+  columnWidths = {'Name': 1, "Type": 1, "Created By": 1, "Number of assets": 1.5, "Actions": 0.5};
+  columnNamesMap = {"groupName": "Name", "type": "Type", "createdBy": "Created By", "assetCount": "Number of assets"};
+  columnsSortFunctionMap = {
+    Severity: (a, b, isAsc) => {
+      let severeness = {"low":1, "medium":2, "high":3, "critical":4}
+      return (severeness[a["Severity"]] < severeness[b["Severity"]] ? -1 : 1) * (isAsc ? 1 : -1);
+    },
+  };
+
+  tableImageDataMap = {
+      security:{
+          image: "category-security",
+          imageOnly: true
+      },
+      governance:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      operations:{
+          image: "category-operations",
+          imageOnly: true
+      },
+      cost:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      costOptimization:{
+          image: "category-cost",
+          imageOnly: true
+      },
+      tagging:{
+          image: "category-tagging",
+          imageOnly: true
+      },
+      low: {
+          image: "violations-low-icon",
+          imageOnly: true
+      },
+      medium: {
+          image: "violations-medium-icon",
+          imageOnly: true
+      },
+      high: {
+          image: "violations-high-icon",
+          imageOnly: true
+      },
+      critical: {
+          image: "violations-critical-icon",
+          imageOnly: true
+      },
+  }
+
+  card = {
+      id: 3,
+      header: "Total Compliance Trend",
+    }
+  
+  isStatePreserved: boolean;
+  selectedDomain: any;
   paginatorSize: number = 25;
-  isLastPage: boolean;
-  isFirstPage: boolean;
+  tableErrorMessage: string;
+
   totalPages: number;
   pageNumber: number = 0;
 
-  searchTxt: String = "";
-  dataTableData: any = [];
-  tableDataLoaded: boolean = false;
+  searchTxt = "";
+  filterTypeOptions: any = [];
+  filterTagOptions: any = {};
+  currentFilterType;
+  filterTypeLabels = [];
+  filterTagLabels = {};
   filters: any = [];
+  filterText: any;
+
   searchCriteria: any;
-  filterText: any = {};
   errorValue: number = 0;
   showGenericMessage: boolean = false;
   dataTableDesc: String = "";
@@ -96,11 +155,12 @@ export class AssetGroupsComponent implements OnInit {
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService
   ) {
-    this.routerParam();
-    this.updateComponent();
+    this.getFilters();
   }
 
   ngOnInit() {
+    this.displayedColumns = Object.keys(this.columnWidths);
+    this.whiteListColumns = this.displayedColumns;
     this.urlToRedirect = this.router.routerState.snapshot.url;
     this.breadcrumbPresent = "Asset Groups";
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
@@ -108,94 +168,57 @@ export class AssetGroupsComponent implements OnInit {
     );
   }
 
-  nextPage() {
-    try {
-      if (!this.isLastPage) {
-        this.pageNumber++;
-        this.showLoader = true;
-        this.getAssetGroupsDetails();
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
-
-  prevPage() {
-    try {
-      if (!this.isFirstPage) {
-        this.pageNumber--;
-        this.showLoader = true;
-        this.getAssetGroupsDetails();
-      }
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
-  }
-
-  getAssetGroupsDetails() {
+  getAssetGroupsDetails(isNextPageCalled?) {
     var url = environment.assetGroups.url;
     var method = environment.assetGroups.method;
 
-    var queryParams = {
+    const filterToBePassed = this.filterText;
+
+    const queryParams = {
       page: this.pageNumber,
+      searchTerm: this.searchTxt,
       size: this.paginatorSize,
+    }
+    
+    const payload = {
+      ...filterToBePassed,
     };
+
+    this.tableData = [];
+    this.tableDataLoaded = false;
+    this.tableErrorMessage = "";
 
     if (this.searchTxt !== undefined && this.searchTxt !== "") {
       queryParams["searchTerm"] = this.searchTxt;
     }
 
-    this.adminService.executeHttpAction(url, method, {}, queryParams).subscribe(
+    this.adminService.executeHttpAction(url, method, payload, queryParams).subscribe(
       (reponse) => {
-        this.showLoader = false;
-        if (reponse[0].content !== undefined) {
-          this.allAssetGroups = reponse[0].content;
-          this.errorValue = 1;
-          this.searchCriteria = undefined;
-          var data = reponse[0];
+        const data = reponse[0].data;
+        if (data.content !== undefined) {
           this.tableDataLoaded = true;
-          this.dataTableData = reponse[0].content;
-          this.dataLoaded = true;
-          if (reponse[0].content.length == 0) {
-            this.errorValue = -1;
-            this.outerArr = [];
-            this.allColumns = [];
+          if (data.content.length == 0) {
+            this.tableErrorMessage = "noDataAvialable";
+            this.totalRows = 0;
           }
 
           if (data.content.length > 0) {
-            this.isLastPage = data.last;
-            this.isFirstPage = data.first;
             this.totalPages = data.totalPages;
             this.pageNumber = data.number;
-
-            this.seekdata = false;
-
             this.totalRows = data.totalElements;
-
-            this.firstPaginator = data.number * this.paginatorSize + 1;
-            this.lastPaginator =
-              data.number * this.paginatorSize + this.paginatorSize;
-
-            this.currentPointer = data.number;
-
-            if (this.lastPaginator > this.totalRows) {
-              this.lastPaginator = this.totalRows;
-            }
             let updatedResponse = this.massageData(data.content);
-            this.processData(updatedResponse);
+            const processData = this.processData(updatedResponse);
+            if(isNextPageCalled){
+              this.onScrollDataLoader.next(processData)
+            }else{
+              this.tableData = processData;
+            }
           }
         }
       },
       (error) => {
-        this.showGenericMessage = true;
-        this.errorValue = -1;
-        this.outerArr = [];
-        this.dataLoaded = true;
-        this.seekdata = true;
-        this.errorMessage = "apiResponseError";
-        this.showLoader = false;
+        this.tableDataLoaded = true;
+        this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       }
     );
   }
@@ -233,7 +256,7 @@ export class AssetGroupsComponent implements OnInit {
         }
       }
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
@@ -244,17 +267,9 @@ export class AssetGroupsComponent implements OnInit {
    */
 
   updateComponent() {
-    this.outerArr = [];
     this.searchTxt = "";
-    this.currentBucket = [];
     this.bucketNumber = 0;
-    this.firstPaginator = 1;
-    this.showLoader = true;
-    this.currentPointer = 0;
-    this.dataTableData = [];
     this.tableDataLoaded = false;
-    this.dataLoaded = false;
-    this.seekdata = false;
     this.errorValue = 0;
     this.showGenericMessage = false;
     this.getAssetGroupsDetails();
@@ -270,19 +285,30 @@ export class AssetGroupsComponent implements OnInit {
     }
   }
 
-  massageData(data) {
-    let refactoredService = this.refactorFieldsService;
-    let newData = [];
-    let formattedFilters = data.map(function (data) {
-      let keysTobeChanged = Object.keys(data);
+  massageData(data){
+    const refactoredService = this.refactorFieldsService;
+    const columnNamesMap = this.columnNamesMap;
+    const newData = [];
+    data.map(function (row) {
+      const KeysTobeChanged = Object.keys(row);      
       let newObj = {};
-      keysTobeChanged.forEach((element) => {
-        var elementnew =
-          refactoredService.getDisplayNameForAKey(element) || element;
-        newObj = Object.assign(newObj, { [elementnew]: data[element] });
+      KeysTobeChanged.forEach((element) => {
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        else {
+        elementnew =
+          refactoredService.getDisplayNameForAKey(
+            element.toLocaleLowerCase()
+          ) || element;
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }
+        // change data value
+        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newObj["Actions"] = "";
-      newObj["No of Target Types"] = "";
       newData.push(newObj);
     });
     return newData;
@@ -293,102 +319,52 @@ export class AssetGroupsComponent implements OnInit {
       var innerArr = {};
       var totalVariablesObj = {};
       var cellObj = {};
-      var blue = "#336cc9";
-      var green = "#26ba9d";
-      var red = "#f2425f";
-      var orange = "#ffb00d";
-      var yellow = "yellow";
-      this.outerArr = [];
-      var getData = data;
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
 
-      if (getData.length) {
-        var getCols = Object.keys(getData[0]);
-      } else {
-        this.seekdata = true;
-      }
-
+      let cellData;
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
-        for (var col = 0; col < getCols.length; col++) {
-          if (getCols[col].toLowerCase() == "actions") {
+        keynames.forEach(col => {
+          cellData = getData[row][col];
+          cellObj = {
+            text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
+            titleText: cellData, // text to show on hover
+            valueText: cellData,
+            hasPostImage: false,
+            imgSrc: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.image,  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            isLink: false
+          }
+          if(col.toLowerCase()=="name"){
+            cellObj = {
+              ...cellObj,
+              isLink: true
+            };
+          } else if (col.toLowerCase() == "actions") {
             let dropDownItems: Array<String> = ["Edit", "Delete"];
             cellObj = {
-              properties: {
-                "text-shadow": "0.33px 0",
-                color: "#0047bb",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              dropDownEnabled: true,
-              dropDownItems: dropDownItems,
-              statusProp: {
-                color: "#0047bb",
-              },
-            };
-          } else if (getCols[col].toLowerCase() === "no of target types") {
-            let targetTypeName = getData[row]["Asset Types"].map(
-              (target) => target.targetType
-            );
-            targetTypeName = _.uniq(targetTypeName);
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: "No of Target Types",
-              hasPreImg: false,
-              imgLink: "",
-              text: targetTypeName.length,
-              valText: targetTypeName.length,
-            };
-          } else if (getCols[col].toLowerCase() == "asset types") {
-            let targetTypeName = getData[row][getCols[col]].map(
-              (target) => target.targetType
-            );
-            targetTypeName = _.uniq(targetTypeName);
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: targetTypeName,
-              valText: targetTypeName,
-            };
-          } else {
-            cellObj = {
-              link: "",
-              properties: {
-                color: "",
-              },
-              colName: getCols[col],
-              hasPreImg: false,
-              imgLink: "",
-              text: getData[row][getCols[col]],
-              valText: getData[row][getCols[col]],
+              ...cellObj,
+              isMenuBtn: true,
+              menuItems: dropDownItems,
             };
           }
-          innerArr[getCols[col]] = cellObj;
-          totalVariablesObj[getCols[col]] = "";
-        }
-        this.outerArr.push(innerArr);
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
       }
-      if (this.outerArr.length > getData.length) {
-        var halfLength = this.outerArr.length / 2;
-        this.outerArr = this.outerArr.splice(halfLength);
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
       }
-      this.allColumns = Object.keys(totalVariablesObj);
-      this.allColumns = [
-        "Group Name",
-        "No of Target Types",
-        "Asset Types",
-        "Actions",
-      ];
+      return processedData;
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
@@ -404,13 +380,15 @@ export class AssetGroupsComponent implements OnInit {
         queryParams: {},
       });
     } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
   }
 
-  goToDetails(row) {
-    if (row.col === "Delete") {
+  onSelectAction(event) {
+    const action = event.action.toLowerCase();
+    const rowSelected = event.rowSelected;
+    if (action === "delete") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -419,15 +397,15 @@ export class AssetGroupsComponent implements OnInit {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            groupId: row.row.groupId.text,
-            groupName: row.row["Group Name"].text,
+            groupId: rowSelected["Group Id"].valueText,
+            groupName: rowSelected["Name"].valueText,
           },
         });
       } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
       }
-    } else if (row.col === "Edit") {
+    } else if (action === "edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -436,27 +414,208 @@ export class AssetGroupsComponent implements OnInit {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
-            groupId: row.row.groupId.text,
-            groupName: row.row["Group Name"].text,
+            groupId: rowSelected["Group Id"].valueText,
+            groupName: rowSelected["Name"].valueText,
           },
         });
       } catch (error) {
-        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
       }
     }
   }
 
-  searchCalled(search) {
+  callNewSearch(search) {
     this.searchTxt = search;
+    this.pageNumber = 0;
+    this.bucketNumber = 0;
+    this.isStatePreserved = false;
+    this.updateComponent();
   }
 
-  callNewSearch() {
-    this.bucketNumber = 0;
-    this.currentBucket = [];
-    this.pageNumber = 0;
-    this.paginatorSize = 25;
-    this.getAssetGroupsDetails();
+  nextPg(e) {
+    try {
+      this.tableScrollTop = e;
+        this.bucketNumber++;
+        this.pageNumber++;
+        this.getAssetGroupsDetails(true);
+    } catch (error) {
+      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+  }
+
+  getUpdatedUrl() {
+    let updatedQueryParams = {};    
+      this.filterText = this.utils.arrayToObject(
+      this.filters,
+      "filterkey",
+      "value"
+    ); // <-- TO update the queryparam which is passed in the filter of the api
+    this.filterText = this.utils.makeFilterObj(this.filterText);
+
+    /**
+     * To change the url
+     * with the deleted filter value along with the other existing paramter(ex-->tv:true)
+     */
+
+    updatedQueryParams = {
+      filter: this.filterText.filter,
+    }
+
+
+    /**
+     * Finally after changing URL Link
+     * api is again called with the updated filter
+     */
+    this.filterText = this.utils.processFilterObj(this.filterText);
+    
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: updatedQueryParams,
+      queryParamsHandling: 'merge',
+  });
+  }
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+      } else {
+        if (event.clearAll) {
+          this.filters = [];
+        } else {
+          this.filters.splice(event.index, 1);
+        }
+        this.getUpdatedUrl();
+        this.updateComponent();
+      }
+    } catch (error) { }
+    /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
+  }
+  /*
+   * this functin passes query params to filter component to show filter
+   */
+  getFilterArray() {
+    try {
+      // let labelsKey = Object.keys(this.labels);
+      const filterObjKeys = Object.keys(this.filterText);
+      const dataArray = [];
+      for (let i = 0; i < filterObjKeys.length; i++) {
+        let obj = {};
+        obj = {
+          name: filterObjKeys[i],
+        };
+        dataArray.push(obj);
+      }
+      const formattedFilters = dataArray;
+      for (let i = 0; i < formattedFilters.length; i++) {
+        
+        let keyValue = _.find(this.filterTypeOptions, {
+          optionValue: formattedFilters[i].name,
+        })["optionName"];
+        
+        this.changeFilterType(keyValue).then(() => {
+            let filterValue = _.find(this.filterTagOptions[keyValue], {
+              id: this.filterText[filterObjKeys[i]],
+            })["name"];
+          const eachObj = {
+            keyDisplayValue: keyValue,
+            filterValue: filterValue,
+            key: keyValue, // <-- displayKey-- Resource Type
+            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
+            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
+            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+          };
+          this.filters.push(eachObj);
+          this.filters = [...this.filters];
+        })
+      }
+    } catch (error) {
+      this.logger.log("error", error);
+    }
+  }
+
+  /**
+   * This function get calls the keyword service before initializing
+   * the filter array ,so that filter keynames are changed
+   */
+
+  getFilters() {
+    try {
+          this.filterTypeLabels.push("Type");
+          this.filterTypeOptions.push({
+            optionName: 'Type',
+            optionValue: 'type'
+          })
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.updateComponent();
+    } catch (error) {
+      this.logger.log("error", error);
+    }
+  }
+
+  changeFilterType(value) {
+    return new Promise((resolve) => {
+    try {
+      this.currentFilterType = _.find(this.filterTypeOptions, {
+        optionName: value,
+      });
+      if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+        if(value.toLowerCase()=="type"){
+        this.filterTagLabels[value] = ["admin", "admin"];
+        this.filterTagOptions[value] = [
+          {
+            id: "admin",
+            name: "admin"
+          }
+        ]
+        resolve(this.filterTagLabels[value]);
+        return;
+      }
+
+      }
+    } catch (error) {
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
+    }); 
+  }
+
+  changeFilterTags(event) {        
+    let value = event.filterValue;
+    this.currentFilterType =  _.find(this.filterTypeOptions, {
+        optionName: event.filterKeyDisplayValue,
+      });          
+    try {
+      if (this.currentFilterType) {
+        const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });        
+        this.utils.addOrReplaceElement(
+          this.filters,
+          {
+            keyDisplayValue: event.filterKeyDisplayValue,
+            filterValue: value,
+            key: this.currentFilterType.optionName,
+            value: filterTag["id"],
+            filterkey: this.currentFilterType.optionValue.trim(),
+            compareKey: this.currentFilterType.optionValue.toLowerCase().trim(),
+          },
+          (el) => {
+            return (
+              el.compareKey ===
+              this.currentFilterType.optionValue.toLowerCase().trim()
+            );
+          }
+        );
+      }
+      this.getUpdatedUrl();
+      this.utils.clickClearDropdown();
+      this.updateComponent();
+    } catch (error) {
+      this.tableErrorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
+    }
   }
 
   ngOnDestroy() {

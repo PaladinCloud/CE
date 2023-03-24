@@ -628,7 +628,7 @@ export const environment = {
     },
     assetGroups: {
         url: '{{baseUrl}}/admin/asset-group/list',
-        method: 'GET'
+        method: 'POST'
     },
     domains: {
         url: '{{baseUrl}}/admin/domains/list',

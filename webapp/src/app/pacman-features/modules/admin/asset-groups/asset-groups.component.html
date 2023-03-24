@@ -12,30 +12,26 @@
  * limitations under the License.
  -->
 
- <div class="asset-groups-wrapper floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
-    <div class="padding-top"></div>
-    <div class="floating-widgets-header flex flex-between">
+ <div class="asset-groups-wrapper flex flex-col padding-28 gap-24" [class.filter-absent]='filters.length == 0'>
+    <div class="flex flex-between flex-align-center">
         <div>
-            <h6 class="title-text">{{pageTitle}}</h6>
+            <app-text classNames="page-title" [text]="pageTitle"></app-text>
         </div>
-        <div class="flex relative z-index textarea-button">
-
-            <button class="submit-btn uppercase" type="button" (click)='goToCreateAssetGroup()'><i class="fa fa-plus"></i> Create Asset Group</button>
-        </div>
+        <app-custom-button buttonType="flat" label="Create Asset Group" (onclick)='goToCreateAssetGroup()'></app-custom-button>
     </div>
-    <div class="floating-widgets-container data-table-container data-table-container">
-        <section>
-            <ul>
-                <li class="widget-wrapper relative">
-                    <div class="relative">
-                        <app-data-table [searchTextValues]='searchTxt' [showGenericMessage]='showGenericMessage' [errorValue]='errorValue' [parentName]="'taggingTargetMessage'" [showingArr]='showingArr' [outerArr]='outerArr' [searchableHeader]='true' [allColumns]='allColumns'
-                            [dataHead]="'All Asset Groups'" (selectedRow)='goToDetails($event)' [firstPaginator]='firstPaginator' [lastPaginator]='lastPaginator' [totalRows]='totalRows' [currentPointer]='currentPointer' (searchRowTxt)='searchCalled($event)'
-                            (previousPageCalled)='prevPage()' (nextPageCalled)='nextPage()' (searchTriggerred)='callNewSearch()'>
-                        </app-data-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
-                    </div>
-                </li>
-            </ul>
-        </section>
+
+    <div class="relative table-wrapper">
+        <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+            [headerColName]="headerColName" [direction]="direction"
+            (actionSelected)="onSelectAction($event)" [doLocalSearch]="false"
+            [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+            [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
+            [showDownloadBtn]="false" [showFilterBtn]="false" (nextPageCalled)="nextPg($event)"
+            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
+            [rowClickable]="false" [showAddRemoveCol]="true" [showDownloadBtn]="false"  [tableErrorMessage]="tableErrorMessage"
+            (selectedFilterType)='changeFilterType($event)' [onScrollDataLoader]="onScrollDataLoader"
+            (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
+            [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions">
+        </app-table>
     </div>
 </div>

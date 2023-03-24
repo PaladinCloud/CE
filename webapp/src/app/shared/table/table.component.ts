@@ -218,8 +218,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   handleSearchInColumnsChange(){
     this.searchInColumnsChanged.emit(this.searchInColumns.value);
   }
-
-  toggleAllSelection() {
+  
+  toggleAllSelection() {  
+    const shouldIncludeActions = this.whiteListColumns.includes("Actions");
     this.whiteListColumns = [];
     this.allSelected = !this.allSelected;
     if (this.allSelected) {
@@ -233,6 +234,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.whiteListColumns = [];
       this.select.options.forEach((item: MatOption) => item.deselect());
     }
+    if(shouldIncludeActions) this.whiteListColumns.push("Actions");
     this.whitelistColumnsChanged.emit(this.whiteListColumns);
     this.getWidthFactor();
   }
@@ -261,6 +263,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
    optionClick() {
+    const shouldIncludeActions = this.whiteListColumns.includes("Actions");
     this.whiteListColumns = [];
     let newStatus = true;
     this.select.options.forEach((item: MatOption) => {
@@ -278,6 +281,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allColumnsSelected.deselect();
     }
+    if(shouldIncludeActions) this.whiteListColumns.push("Actions");
     this.getWidthFactor();
     this.whitelistColumnsChanged.emit(this.whiteListColumns);
   }

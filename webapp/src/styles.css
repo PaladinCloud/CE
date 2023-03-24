@@ -175,27 +175,22 @@ td.hide.table-cells {
 
 h1 {
   font: var(--text-headline-1);
-  color: var(--text-high-emphasis);
 }
 
 h2 {
   font: var(--text-headline-2);
-  color: var(--text-high-emphasis);
 }
 
 h3 {
   font: var(--text-headline-3);
-  color: var(--text-high-emphasis);
 }
 
 .subtitle-2{
   font: var(--text-subtitle-2);
-  color: var(--text-medium-emphasis);
 }
 
 .subtitle-1{
   font: var(--text-subtitle-1);
-  color: var(--text-medium-emphasis);
 }
 
 .primary-400{
@@ -204,12 +199,10 @@ h3 {
 
 h4 {
   font: var(--text-headline-4);
-  color: var(--text-high-emphasis);
 }
 
 h5 {
   font: var(--text-headline-5);
-  color: var(--text-medium-emphasis);
 }
 
 h6{
@@ -228,12 +221,10 @@ h6{
 
 .body-1{
   font: var(--text-body-1);
-  color: var(--text-medium-emphasis);
 }
 
 .body-2{
   font: var(--text-body-2);
-  color: var(--text-medium-emphasis);
 }
 
 .high-emphasis{
@@ -1300,6 +1291,14 @@ body {
 
 .gap-16{
   gap: 16px;
+}
+
+.gap-20{
+  gap: 20px;
+}
+
+.gap-24{
+  gap: 24px;
 }
 
 .padding-2{
