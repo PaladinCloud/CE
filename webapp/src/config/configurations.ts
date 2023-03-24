@@ -51,7 +51,9 @@
  
          cognitoTokenURL: '',
  
-         logout: ''
+         logout: '',
+         
+         CloudformationTemplateUrl: ''
        }
      },
      pacmanIssue: {

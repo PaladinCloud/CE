@@ -40,6 +40,7 @@ class Buildpacbot(object):
         self.domain_cognito_url = domain_cognito_url
         self.cognito_callback_url = cognito_callback_url
         self.cognito_logout_url = cognito_logout_url
+        self.cloudformation_template_url = cloudformation_template_url
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -196,8 +197,9 @@ class Buildpacbot(object):
                 if "cognitoTokenURL: '" in line:
                     lines[idx] = "cognitoTokenURL: '" + self.domain_cognito_url + "/oauth2/token""'\n,"
                 if "logout: '" in line:
-                    lines[idx] = "logout: '" +  self.domain_cognito_url + "/logout?" + "client_id="  + self.client_cognito_id+ "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url +"'"
-
+                    lines[idx] = "logout: '" +  self.domain_cognito_url + "/logout?" + "client_id="  + self.client_cognito_id+ "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url +"'\n,"
+                if "CloudformationTemplateUrl: '" in line:
+                    lines[idx] = "CloudformationTemplateUrl:'" + self.cloudformation_template_url +"'\n"
                 
         with open(config_file, 'w') as f:
             f.writelines(lines)
@@ -254,6 +256,7 @@ if __name__ == "__main__":
     domain_cognito_url = "https://"+ str(os.getenv('COGNITO_DOMAIN')) + ".auth." + str(os.getenv('AWS_REGION')) + ".amazoncognito.com"
     cognito_callback_url = os.getenv('APPLICATION_DOMAIN')+"/callback"
     cognito_logout_url = "https://"+os.getenv('APPLICATION_DOMAIN')+"/home"
+    cloudformation_template_url = "https://"+ os.getenv('S3_BUCKET') + ".s3." + os.getenv('AWS_REGION') + ".amazonaws.com/deployment.yaml"
     Buildpacbot(
         aws_details,
         api_domain_url,
