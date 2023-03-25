@@ -17,10 +17,7 @@ import {
     ],
 })
 export class DateSelectionComponent implements OnInit {
-    today = new Date();
-
-    fromDate: Date = new Date();
-    toDate: Date = new Date();
+    readonly today = new Date();
 
     selectedRange?: DateRange<Date>;
 
