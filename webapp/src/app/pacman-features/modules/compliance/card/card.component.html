@@ -3,13 +3,17 @@
     {{ card.header }}
     <div class="graph-dropdown-container" (blur)="test()" *ngIf="card.id == 3">
       <div class="graph-dropdown-wrapper">
+        <div
+            class="date-selection-trigger"
+            #menuTrigger="matMenuTrigger"
+            [matMenuTriggerFor]="menu"
+        ></div>
         <app-dropdown (closeEventEmitter)="onDropdownClose()" (click)="ifCustomSelected()" [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']" [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)"></app-dropdown>
-        <div mat-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"></div>
-          <mat-menu #menu="matMenu">
-              <div class="date-selection-modal" >
-                  <app-date-selection (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
-              </div>
-          </mat-menu>
+        <mat-menu #menu="matMenu" xPosition="before">
+            <div class="date-selection-modal" >
+                <app-date-selection (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+            </div>
+        </mat-menu>
       </div>
     </div>
   </mat-card-header>

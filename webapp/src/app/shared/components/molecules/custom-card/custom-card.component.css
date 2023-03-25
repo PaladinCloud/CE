@@ -72,6 +72,13 @@ mat-card-content {
 .chart {
   height: 100%;
   width: 100%;
+  overflow-y: scroll;
+}
+
+.chart-wrapper {
+    height: 100%;
+    width: 100%;
+    background-color: white;
 }
 
 .date-dropdown-container{
@@ -89,4 +96,8 @@ mat-card-content {
 
 .date-dropdown-container ::ng-deep .mat-form-field-infix{
   width: 150px;
+}
+
+.date-selection-trigger {
+    margin-right: 150px;
 }
