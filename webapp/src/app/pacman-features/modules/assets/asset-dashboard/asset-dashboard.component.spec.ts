@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -30,7 +30,7 @@ import { TextComponent } from 'src/app/shared/components/atoms/text/text.compone
 import { CustomCardComponent } from 'src/app/shared/components/molecules/custom-card/custom-card.component';
 import { OverviewTileComponent } from 'src/app/shared/components/molecules/overview-tile/overview-tile.component';
 import { TextWithIconComponent } from 'src/app/shared/components/molecules/text-with-icon/text-with-icon.component';
-import { DateSelection } from 'src/app/shared/date-selection/date-selection.component';
+import { DateSelectionComponent } from 'src/app/shared/date-selection/date-selection.component';
 import { DropdownComponent } from 'src/app/shared/dropdown/dropdown.component';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
@@ -59,7 +59,7 @@ describe('AssetDashboardComponent', () => {
       ],
       declarations: [
         AssetDashboardComponent,
-        DateSelection,
+        DateSelectionComponent,
         DropdownComponent,
         TextComponent,
         TextWithIconComponent,

@@ -114,3 +114,7 @@ mat-card-actions img {
   right: 20px;
   z-index: 99;
 }
+
+.date-selection-trigger {
+    margin-right: 150px;
+}
