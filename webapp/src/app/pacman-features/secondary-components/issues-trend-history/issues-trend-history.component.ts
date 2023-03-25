@@ -21,7 +21,7 @@ import {
   ElementRef,
   AfterViewInit,
 } from "@angular/core";
-import { IssuesHistoryService } from "../../services/issues-history.service";
+import { IssueHistoryItem, IssuesHistoryService } from "../../services/issues-history.service";
 import { Subscription } from "rxjs";
 import { AssetGroupObservableService } from "../../../core/services/asset-group-observable.service";
 import { SelectComplianceDropdown } from "../../services/select-compliance-dropdown.service";
@@ -29,6 +29,22 @@ import { environment } from "../../../../environments/environment";
 import { AutorefreshService } from "../../services/autorefresh.service";
 import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
+
+enum Severity {
+    LOW = 'low',
+    MEDIUM = 'medium',
+    HIGH = 'high',
+    CRITICAL = 'critical',
+    TOTAL = 'total',
+}
+
+const severityOrder = {
+    [Severity.CRITICAL]: 1,
+    [Severity.HIGH]: 2,
+    [Severity.MEDIUM]: 3,
+    [Severity.LOW]: 4,
+    [Severity.TOTAL]: 5,
+};
 
 @Component({
   selector: "app-issues-trend-history",
@@ -57,8 +73,7 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
     Environments: "",
   };
 
-  private graphWidth: any;
-  private graphData: any;
+  graphData: IssueHistoryItem[];
   public dataLoaded: any = false;
   public error: any = false;
   private loading: any = false;
@@ -66,9 +81,11 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
   private distributedFiltersObject: any = {};
 
   // Graph customization variables
-  private yAxisLabel = "Violations";
-  private showGraphLegend = true;
-  private showArea = true;
+  yAxisLabel = "Violations";
+  showGraphLegend = true;
+  showArea = true;
+  graphWidth: number;
+
   private autorefreshInterval;
 
   durationParams: any;
@@ -106,7 +123,7 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
       });
   }
 
-  closeOverallComplianceTrendModal(value: String) {
+  closeOverallComplianceTrendModal(value: string) {
     const navigationParams = {
       relativeTo: this.activatedRoute.parent, // <-- Parent activated route
     };
@@ -155,8 +172,7 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
       const method = environment.issueOverviewTrend.method;
       const prevDate = new Date();
       prevDate.setMonth(prevDate.getMonth() - 1);
-      let fromDay;
-      fromDay = prevDate.toISOString().split("T")[0];
+      const fromDay = prevDate.toISOString().split("T")[0];
 
       const payload = {
         ag: this.selectedAssetGroup,
@@ -169,10 +185,12 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
       this.issuesSubscription = this.issuesHistoryService
         .getData(url, method, payload, {})
         .subscribe(
-          (response) => {
+          (response: IssueHistoryItem[]) => {
             try {
               this.setDataLoaded();
-              this.graphData = response;
+              this.graphData = response.sort(
+                (a, b) => severityOrder[a.key] - severityOrder[b.key],
+              );
               if (
                 this.graphData.constructor.name === "Object" ||
                 this.graphData.length === 0
@@ -239,8 +257,6 @@ export class IssuesTrendHistoryComponent implements OnInit, OnDestroy, AfterView
       }
     }
 
-    
-    // this.init();
   }
 
   ngAfterViewInit(): void {
