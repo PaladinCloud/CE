@@ -57,6 +57,7 @@ import com.amazonaws.services.ec2.model.Volume;
 import com.amazonaws.services.ec2.model.VpcPeeringConnection;
 import com.amazonaws.services.ec2.model.VpnConnection;
 import com.amazonaws.services.ec2.model.VpnGateway;
+import com.amazonaws.services.ecr.model.Repository;
 import com.amazonaws.services.ecs.model.TaskDefinition;
 import com.amazonaws.services.elasticloadbalancingv2.model.LoadBalancer;
 import com.amazonaws.services.elasticmapreduce.model.Cluster;
@@ -109,6 +110,7 @@ import com.tmobile.cso.pacman.inventory.vo.TargetGroupVH;
 import com.tmobile.cso.pacman.inventory.vo.UserVH;
 import com.tmobile.cso.pacman.inventory.vo.VideoStreamVH;
 import com.tmobile.cso.pacman.inventory.vo.VpcVH;
+import com.tmobile.cso.pacman.inventory.vo.RegistryVH;
 
 /**
  * The Class FileManager.
@@ -297,7 +299,9 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-cloudwatchlogs.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data",InventoryConstants.OPEN_ARRAY, false);
 		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.OPEN_ARRAY, false);
-		
+		FileGenerator.writeToFile("aws-ecr.data",InventoryConstants.OPEN_ARRAY, false);
+
+
 	}
 
 	public static void finalise() throws IOException{
@@ -466,6 +470,7 @@ public class FileManager {
 		FileGenerator.writeToFile("aws-cloudwatchlogs.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-cloudwatchlogs-metric.data",InventoryConstants.CLOSE_ARRAY, true);
 		FileGenerator.writeToFile("aws-cloudwatchalarm.data",InventoryConstants.CLOSE_ARRAY, true);
+		FileGenerator.writeToFile("aws-ecr.data",InventoryConstants.CLOSE_ARRAY, true);
 
 	}
 
@@ -2050,5 +2055,15 @@ public class FileManager {
 		fieldNames = "policyName`policyId`arn`defaultVersionId`createDate";
 		keys = "discoverydate`accountid`accountname`policyname`policyid`policyarn`defaultversionid`createdate";
 		FileGenerator.generateJson(map, fieldNames, "aws-iampolicies.data", keys);
+	}
+
+	public static void generateRepositoryFiles(Map<String, List<RegistryVH>> fetchRepositories) {
+
+		String fieldNames ="";
+		String keys ="";
+
+		fieldNames = "repository.repositoryArn`repository.registryId`imageDetail.imagePushedAt`imageDetail.artifactMediaType`imageDetail.imageTags";
+		keys = "discoverydate`accountid`accountname`region`repositoryArn`registryId`imagePushedAt`artifactMediaType`tags";
+		FileGenerator.generateJson(fetchRepositories, fieldNames, "aws-ecr.data",keys);
 	}
 }

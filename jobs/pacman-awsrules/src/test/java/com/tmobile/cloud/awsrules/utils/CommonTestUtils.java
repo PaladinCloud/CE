@@ -658,6 +658,10 @@ public class CommonTestUtils {
         return new HashMap<>();
     }
 
+    public static List<JsonObject> getEmptyList() {
+        return new ArrayList<>();
+    }
+
     public static List<Map<Object, Map<String, Object>>> getListMapOfMap(
             String resourceId) {
         List<Map<Object, Map<String, Object>>> list = new ArrayList<>();
@@ -1127,6 +1131,65 @@ public class CommonTestUtils {
         commonMap.put("discoveredDaysRange", "7");
         commonMap.put("vpc", "vpc");
         commonMap.put("securitygroups", "securitygroups");
+        return commonMap;
+    }
+
+    public static List<JsonObject> getListObject(String s) {
+        List<JsonObject> list = new ArrayList<>();
+        JsonObject elem = new JsonObject();
+        elem.addProperty("name", "CVE-2022-3643");
+        elem.addProperty("description", "Guests can trigger NIC interface reset/abort/crash via netback It is possible for a guest to trigger a NIC interface reset/abort/crash in a Linux based network backend by sending certain kinds of packets. It appears to be an (unwritten?) assumption in the rest of the Linux network stack that packet protocol headers are all contained within the linear section of the SKB and some NICs behave badly if this is not the case. This has been reported to occur with Cisco (enic) and Broadcom NetXtrem II BCM5780 (bnx2x) though it may be an issue with other NICs/drivers as well. In case the frontend is sending requests with split headers, netback will forward those violating above mentioned assumption to the networking core, resulting in said misbehavior.");
+        elem.addProperty( "aqua_severity", "critical");
+        elem.addProperty("nvd_url", "https://nvd.nist.gov/vuln/detail/CVE-2022-3643");
+        elem.addProperty("solution", "Upgrade package linux-libc-dev to version 5.10.158-1 or above.");
+        elem.addProperty("last_found_date","2023-03-06");
+        elem.addProperty("aqua_severity_classification","NVD CVSS V3 Score: 9.8");
+
+
+
+        JsonObject elem2 = new JsonObject();
+        elem2.addProperty("name", "CVE-2022-37434");
+        elem2.addProperty("description", "zlib through 1.2.12 has a heap-based buffer over-read or buffer overflow in inflate in inflate.c via a large gzip header extra field. NOTE: only applications that call inflateGetHeader are affected. Some common applications bundle the affected zlib source code but may be unable to call inflateGetHeader (e.g., see the nodejs/node reference).");
+        elem2.addProperty( "aqua_severity", "critical");
+        elem2.addProperty("nvd_url", "https://nvd.nist.gov/vuln/detail/CVE-2022-37434");
+        elem2.addProperty("solution", "Upgrade package zlib1g-dev to version 1:1.2.11.dfsg-2+deb11u2 or above.");
+        elem2.addProperty("last_found_date","2023-03-06");
+        elem2.addProperty("aqua_severity_classification","NVD CVSS V3 Score: 9.8");
+
+
+        list.add(elem);
+        list.add(elem2);
+        return list;
+    }
+
+    public static List<JsonObject> getListObjectWithExpiredScan(String s) {
+        List<JsonObject> list = new ArrayList<>();
+        JsonObject elem = new JsonObject();
+        elem.addProperty("name", "CVE-2022-3643");
+        elem.addProperty("description", "Guests can trigger NIC interface reset/abort/crash via netback It is possible for a guest to trigger a NIC interface reset/abort/crash in a Linux based network backend by sending certain kinds of packets. It appears to be an (unwritten?) assumption in the rest of the Linux network stack that packet protocol headers are all contained within the linear section of the SKB and some NICs behave badly if this is not the case. This has been reported to occur with Cisco (enic) and Broadcom NetXtrem II BCM5780 (bnx2x) though it may be an issue with other NICs/drivers as well. In case the frontend is sending requests with split headers, netback will forward those violating above mentioned assumption to the networking core, resulting in said misbehavior.");
+        elem.addProperty( "nvd_cvss3_severity", "critical");
+        elem.addProperty("nvd_url", "https://nvd.nist.gov/vuln/detail/CVE-2022-3643");
+        elem.addProperty("solution", "Upgrade package linux-libc-dev to version 5.10.158-1 or above.");
+        elem.addProperty("last_found_date","2022-03-06");
+
+        JsonObject elem2 = new JsonObject();
+        elem2.addProperty("name", "CVE-2022-37434");
+        elem2.addProperty("description", "zlib through 1.2.12 has a heap-based buffer over-read or buffer overflow in inflate in inflate.c via a large gzip header extra field. NOTE: only applications that call inflateGetHeader are affected. Some common applications bundle the affected zlib source code but may be unable to call inflateGetHeader (e.g., see the nodejs/node reference).");
+        elem2.addProperty( "nvd_cvss3_severity", "critical");
+        elem2.addProperty("nvd_url", "https://nvd.nist.gov/vuln/detail/CVE-2022-37434");
+        elem2.addProperty("solution", "Upgrade package zlib1g-dev to version 1:1.2.11.dfsg-2+deb11u2 or above.");
+        elem2.addProperty("last_found_date","2022-03-06");
+
+        list.add(elem);
+        list.add(elem2);
+        return list;
+    }
+
+    public static Map<String, String> getAquaResource() {
+
+        Map<String, String> commonMap = new HashMap<>();
+        commonMap.put("_resourceId", "image:latest");
+
         return commonMap;
     }
 }

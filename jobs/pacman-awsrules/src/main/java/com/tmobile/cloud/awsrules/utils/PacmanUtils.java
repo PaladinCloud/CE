@@ -2574,7 +2574,7 @@ public class PacmanUtils {
         return data;
     }
 
-    private static Long calculateDuration(String date) throws java.text.ParseException {
+    public static Long calculateDuration(String date) throws java.text.ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("M/d/yyyy H:m");
         Date givenDate = null;
@@ -3993,4 +3993,44 @@ public class PacmanUtils {
 	}
 
 
+    public static List<JsonObject> checkImageIdFromElasticSearchForAqua(String imageId,
+                                                                        String aquaEsAPI,
+                                                                        String attributeName,
+                                                                        String severityVulnValue) {
+        JsonParser jsonParser = new JsonParser();
+        List<JsonObject> resourceVerified = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(attributeName), imageId);
+        if(null!=severityVulnValue)
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.AQUA_SEVERITY_KEY), severityVulnValue);
+
+        try {
+
+            JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(aquaEsAPI+"?size=10000", mustFilter,
+                mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+            if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+                {
+                    String hitsJsonString = resultJson.get(PacmanRuleConstants.HITS).toString();
+                    JsonObject hitsJson = (JsonObject) jsonParser.parse(hitsJsonString);
+                    JsonArray jsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+                    if (jsonArray.size() > 0) {
+                        for (JsonElement element : jsonArray) {
+                            JsonObject firstObject = (JsonObject) element;
+                            JsonObject sourceJson = (JsonObject) firstObject.get(PacmanRuleConstants.SOURCE);
+                            if ((null != sourceJson) && (null != sourceJson.get(attributeName))
+                                && (!sourceJson.get(attributeName).isJsonNull())) {
+                                resourceVerified.add(sourceJson);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("failed to fetch data from ES");
+        }
+        return resourceVerified;
+    }
 }

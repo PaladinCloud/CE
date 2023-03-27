@@ -43,7 +43,7 @@ public class InventoryFetchOrchestrator {
 	private String accountInfo;
 	
 	@Value("${region.ignore}")
-    private String skipRegions;
+	private String skipRegions;
 	
 	@Value("${s3}")
 	private String s3Bucket ;

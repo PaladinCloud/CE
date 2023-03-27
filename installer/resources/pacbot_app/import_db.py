@@ -166,7 +166,14 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_API_SCERET_ID' : str(Appcredentials.get_output_attr('client_secret')),
                         'ENV_ACCOUNT_ID':str(Settings.ACCOUNT_ID),
                         'ENV_ACCOUNT_NAME':str(Settings.ACCOUNT_NAME),
-                        'ENV_ACCOUNT_PLATFORM':str(Settings.ACCOUNT_PLATFORM)
+                        'ENV_ACCOUNT_PLATFORM':str(Settings.ACCOUNT_PLATFORM),
+                        'ENV_AQUA_API_URL': Settings.get('AQUA_API_URL', ""),
+                        'ENV_AQUA_CLIENT_DOMAIN_URL': Settings.get('AQUA_CLIENT_DOMAIN_URL', ""),
+                        'ENV_AQUA_USERNAME': Settings.get('AQUA_USERNAME', ""),
+                        'ENV_AQUA_PASSWORD': Settings.get('AQUA_PASSWORD', ""),
+                        'ENV_AQUA_API_DEFAULT_PAGE_SIZE': Settings.get('AQUA_API_DEFAULT_PAGE_SIZE', ""),
+                        'ENV_AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS': Settings.get('AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS', ""),
+
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

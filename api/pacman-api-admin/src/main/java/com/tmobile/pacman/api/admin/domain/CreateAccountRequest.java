@@ -24,5 +24,10 @@ public class CreateAccountRequest {
     private String qualysApiUser;
     private String qualysApiPassword;
 
+    private String aquaApiUrl;
+    private String aquaClientDomainUrl;
+    private String aquaApiUser;
+    private String aquaApiPassword;
+
 
 }
