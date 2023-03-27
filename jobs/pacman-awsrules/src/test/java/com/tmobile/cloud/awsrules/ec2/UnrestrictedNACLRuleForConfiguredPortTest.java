@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -12,6 +13,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,7 +31,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class , Annotation.class})
 public class UnrestrictedNACLRuleForConfiguredPortTest {
 
 	@InjectMocks
@@ -47,7 +49,8 @@ public class UnrestrictedNACLRuleForConfiguredPortTest {
 		Map<String, String> resourceAttribute = getResourceData("acl-123456789");
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
-		
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 		PolicyResult ruleResult = unrestrictedNACLRuleForConfiguredPort.execute(ruleParam,resourceAttribute);
 		
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
@@ -127,5 +130,15 @@ public class UnrestrictedNACLRuleForConfiguredPortTest {
 		resObj.put("_resourceid", id);
 		resObj.put("networkaclid", id);
 		return resObj;
+	}
+
+	private Annotation getMockAnnotation() {
+		Annotation annotation=new Annotation();
+		annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+		annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+		annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+		annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+		annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+		return annotation;
 	}
 }

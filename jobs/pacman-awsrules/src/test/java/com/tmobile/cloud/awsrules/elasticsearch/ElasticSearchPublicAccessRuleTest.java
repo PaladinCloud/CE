@@ -24,6 +24,8 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +38,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class})
+@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class, Annotation.class})
 public class ElasticSearchPublicAccessRuleTest {
 
     @InjectMocks
@@ -45,6 +47,8 @@ public class ElasticSearchPublicAccessRuleTest {
     @Test
     public void executeTest() throws Exception {
         mockStatic(PacmanUtils.class);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(
                 true);
         
@@ -52,7 +56,7 @@ public class ElasticSearchPublicAccessRuleTest {
         when(PacmanUtils.isHavingPublicAccess(anyObject(),anyString())).thenReturn(
                 true);
         
-        when(PacmanUtils.createAnnotation(anyString(),anyObject(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
+//        when(PacmanUtils.createAnnotation(anyString(),anyObject(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         assertThat(elasticSearchPublicAccessRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
         
         when(PacmanUtils.isHavingPublicAccess(anyObject(),anyString())).thenReturn(
@@ -64,7 +68,7 @@ public class ElasticSearchPublicAccessRuleTest {
         when(PacmanUtils.isIgwFound(anyString(),anyString(),anyString(),anyObject(),anyObject(),anyString(),anyString(),anyString())).thenReturn(true);
         when(PacmanUtils.getSecurityGrouplist(anyString(),anyString(),anyObject())).thenReturn(CommonTestUtils.getListSecurityGroupId());
         when(PacmanUtils.checkAccessibleToAll(anyObject(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getMapBoolean("123"));
-        when(PacmanUtils.setAnnotation(anyObject(),anyObject(),anyString(),anyString(),anyObject())).thenReturn(CommonTestUtils.getAnnotation("123"));
+//        when(PacmanUtils.setAnnotation(anyObject(),anyObject(),anyString(),anyString(),anyObject())).thenReturn(CommonTestUtils.getAnnotation("123"));
         assertThat(elasticSearchPublicAccessRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getWithOutEndPointMoreMapString("r_123 ")), is(notNullValue()));
         
         when(PacmanUtils.getSecurityGrouplist(anyString(),anyString(),anyObject())).thenReturn(CommonTestUtils.getListSecurityGroupId());
@@ -85,5 +89,14 @@ public class ElasticSearchPublicAccessRuleTest {
     @Test
     public void getHelpTextTest(){
         assertThat(elasticSearchPublicAccessRule.getHelpText(), is(notNullValue()));
+    }
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }

@@ -3,6 +3,7 @@ package com.tmobile.cloud.awsrules.eks;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
@@ -19,14 +20,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyObject;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, Annotation.class})
 public class CheckEKSClusterVersionIsUpdatedRuleTest {
 
     Map<String, String> ruleParam;
@@ -57,7 +58,8 @@ public class CheckEKSClusterVersionIsUpdatedRuleTest {
 
     @Test
     public void executeFailTest() throws Exception {
-
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         ruleParam.put(PacmanRuleConstants.LATEST_VERSION, "1.13");
         PolicyResult ruleResult = checkEKSClusterVersionIsUpdatedRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
@@ -92,5 +94,15 @@ public class CheckEKSClusterVersionIsUpdatedRuleTest {
         resObj.put(PacmanRuleConstants.CLUSTER_NAME, "test");
         resObj.put(PacmanRuleConstants.VERSION, "1.11");
         return resObj;
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }
