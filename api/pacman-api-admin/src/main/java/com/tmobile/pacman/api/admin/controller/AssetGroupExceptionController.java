@@ -133,7 +133,7 @@ public class AssetGroupExceptionController {
 	@RequestMapping(path = "/delete", method = RequestMethod.POST,  produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createAssetGroupDetails(@AuthenticationPrincipal Principal user, @RequestBody DeleteAssetGroupExceptionRequest assetGroupDetails) {
 		try {
-			return ResponseUtils.buildSucessResponse(assetGroupExceptionService.deleteAssetGroupExceptions(assetGroupDetails, user.getName()));
+			return ResponseUtils.buildSucessResponse(assetGroupExceptionService.deleteAssetGroupExceptions(assetGroupDetails, user.getName(),"delete"));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

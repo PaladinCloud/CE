@@ -50,5 +50,21 @@ public interface Constants {
 
     String NAME = "name";
 
+    enum NotificationTypes {
+        EXEMPTIONS,
+        VIOLATIONS,
+        AUTOFIX
+    }
+
+    enum Actions {
+        CREATE,
+        REVOKE,
+        DELETE,
+        UPDATE,
+        CLOSE
+    }
+    String EVENT_SOURCE = "paladinCloud";
+    String EVENT_SOURCE_NAME = "PaladinCloud";
+
 
 }

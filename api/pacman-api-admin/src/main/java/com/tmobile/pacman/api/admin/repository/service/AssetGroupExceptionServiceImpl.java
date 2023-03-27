@@ -15,10 +15,8 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.service;
 
-import static com.tmobile.pacman.api.admin.common.AdminConstants.CONFIG_STICKY_EXCEPTION_SUCCESS;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.EXCEPTION_DELETEION_FAILURE;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.EXCEPTION_DELETEION_SUCCESS;
-import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
+import static com.tmobile.pacman.api.admin.common.AdminConstants.*;
+import static com.tmobile.pacman.api.commons.Constants.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,6 +81,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 
 	@Autowired
 	private PolicyService policyService;
+
+	@Autowired
+	private NotificationService notificationService;
 	
 	private static RestClient restClient;
 	
@@ -163,7 +164,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 		List<String> policyIds = Lists.newArrayList();
 		try {
 			List<TargetTypePolicyDetails> targetTypes = assetGroupExceptionDetails.getTargetTypes();
-			deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetails.getExceptionName().trim(), assetGroupExceptionDetails.getAssetGroup().trim()), userId);	
+			String status = deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetails.getExceptionName().trim(), assetGroupExceptionDetails.getAssetGroup().trim()), userId,"create");
+			String notificationSubject = EXCEPTION_DELETEION_SUCCESS.equalsIgnoreCase(status)? UPDATE_STICKY_EXCEPTION_SUBJECT : CREATE_STICKY_EXCEPTION_SUBJECT;
+			Actions action = EXCEPTION_DELETEION_SUCCESS.equalsIgnoreCase(status)? Actions.UPDATE : Actions.CREATE;
 			if (updateExceptionToES(assetGroupExceptionDetails)) {
 				try {
 					boolean haveNoRules = true;
@@ -200,6 +203,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 					}
 
 					assetGroupExceptionRepository.saveAll(allAssetGroupExceptions);
+					notificationService.triggerNotificationForCreateStickyEx(assetGroupExceptionDetails, userId, notificationSubject, policyIds, action);
 					if(targetTypes.size()!=0 && !haveNoRules) {
 						invokeAllPolices(policyIds);
 					}
@@ -228,7 +232,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	@Override
 	public String updateAssetGroupExceptions(final AssetGroupExceptionDetailsRequest assetGroupExceptionDetailsRequest, String userId) throws PacManException {
 		try {
-			deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetailsRequest.getExceptionName(), assetGroupExceptionDetailsRequest.getAssetGroup()), userId);
+			deleteAssetGroupExceptions(new DeleteAssetGroupExceptionRequest(assetGroupExceptionDetailsRequest.getExceptionName(), assetGroupExceptionDetailsRequest.getAssetGroup()), userId,"update");
 			return createAssetGroupExceptions(assetGroupExceptionDetailsRequest, userId);
 		} catch (Exception exception) {
 			throw new PacManException("Exception while deleteing the exception "+exception.getMessage());
@@ -236,7 +240,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 	}
 
 	@Override
-	public String deleteAssetGroupExceptions(final DeleteAssetGroupExceptionRequest assetGroupExceptionRequest, String userId) throws PacManException {
+	public String deleteAssetGroupExceptions(final DeleteAssetGroupExceptionRequest assetGroupExceptionRequest, String userId, String action) throws PacManException {
 		try {
 			Response exceptionResponse = invokeAPI("GET","/exceptions/sticky_exceptions/" + assetGroupExceptionRequest.getExceptionName().replaceAll(" ", "_")+"/_source", null);
 			if(exceptionResponse != null) {
@@ -248,6 +252,9 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 							List<AssetGroupException> assetGroupExceptions = assetGroupExceptionRepository.findByGroupNameAndExceptionName(assetGroupExceptionRequest.getGroupName(), assetGroupExceptionRequest.getExceptionName());
 							for (AssetGroupException assetGroupException : assetGroupExceptions) {
 								assetGroupExceptionRepository.delete(assetGroupException);
+								if("delete".equalsIgnoreCase(action)){
+									notificationService.triggerNotificationForDelStickyException(assetGroupException, userId, DELETE_STICKY_EXCEPTION_SUBJECT);
+								}
 							}
 						} catch (Exception exception) {
 							Response exceptionBackUpResponse = invokeAPI("POST", "/exceptions/sticky_exceptions/"+ assetGroupExceptionRequest.getExceptionName().trim().replaceAll(" ", "_"), exceptionBackUp);
