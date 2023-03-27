@@ -19,6 +19,9 @@ package com.tmobile.pacman.common;
 
 
 // TODO: Auto-generated Javadoc
+
+import java.io.File;
+
 /**
  * The Interface PacmanSdkConstants.
  */
@@ -599,7 +602,6 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String BOOLEAN_TRUE = "true";
     String SUBSCRIPTION = "subscription";
     String PROJECT_NAME = "projectName";
-    
     /** Compliance API to get Policy Details using UUID */
     String POLICY_DETAILS_URL = "POLICY_DETAILS_URL";
 
@@ -617,4 +619,21 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String AUTOFIX_POLICY_VIOLATION_MESSAGE = "violationMessage";
     String POLICY_STATUS_ENABLED = "ENABLED";
     String AUTOFIX_POLICY_ELAPSED_TIME = "elapsedTime";
+
+    String NOTIFICATION_URL  = "notification.lambda.function.url";
+    String  HOSTNAME = "pacman.host";
+
+    String ISSUE_ID_UI_PATH  = "/pl/compliance/issue-listing/issue-details/";
+
+    String POLICY_DETAILS_UI_PATH  = "/pl/compliance/policy-knowledgebase-details/";
+
+    String ASSET_DETAILS_UI_PATH  = "/pl/assets/asset-list/";
+
+    String OPEN_VIOLATIONS_SUBJECT = "Policy Violation Created";
+    String CLOSE_VIOLATIONS_SUBJECT = "Policy Violation Closed";
+    String VIOLATION_CATEGORY_NAME  = "Violation";
+
+    String CREATE_VIOLATION_EVENT_NAME  = "Violation for policy - %s";
+
+    String CLOSE_VIOLATION_EVENT_NAME   = "Violation closed for policy - %s";
 }

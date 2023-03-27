@@ -85,7 +85,7 @@ public interface AssetGroupExceptionService {
      * @return Success or Failure response
      * @throws PacManException
      */
-	public String deleteAssetGroupExceptions(final DeleteAssetGroupExceptionRequest assetGroupExceptionRequest, String userId) throws PacManException;
+	public String deleteAssetGroupExceptions(final DeleteAssetGroupExceptionRequest assetGroupExceptionRequest, String userId, String action) throws PacManException;
 
 	/**
      * Service to get all exception names

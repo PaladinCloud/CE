@@ -214,7 +214,7 @@ public class AssetGroupExceptionServiceImplTest {
         when(sl.getStatusCode()).thenReturn(200);
  	    when(response.getStatusLine()).thenReturn(sl);
 		when(assetGroupExceptionRepository.findByGroupNameAndExceptionName(anyString(), anyString())).thenThrow(Exception.class);
-		assertThatThrownBy(() -> assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123")).isInstanceOf(PacManException.class);
+		assertThatThrownBy(() -> assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123", null)).isInstanceOf(PacManException.class);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -232,21 +232,21 @@ public class AssetGroupExceptionServiceImplTest {
         ReflectionTestUtils.setField(assetGroupExceptionServiceImpl, "restClient", restClient);
         when(sl.getStatusCode()).thenReturn(200);
  	    when(response.getStatusLine()).thenReturn(sl);
-		assertThat(assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123"), is(notNullValue()));
+		assertThat(assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123", null), is(notNullValue()));
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void deleteAssetGroupExceptionsExceptionThrowsTest1() throws PacManException, IOException {
 		when(assetGroupExceptionRepository.findByGroupNameAndExceptionName(anyString(), anyString())).thenThrow(Exception.class);
-		assertThatThrownBy(() -> assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123")).isInstanceOf(PacManException.class);
+		assertThatThrownBy(() -> assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123", null)).isInstanceOf(PacManException.class);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void deleteAssetGroupExceptionsExceptionThrowsTest2() throws PacManException, IOException {
 		when(assetGroupExceptionRepository.findByGroupNameAndExceptionName(anyString(), anyString())).thenThrow(Exception.class);
-		assertThatThrownBy(() -> assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123")).isInstanceOf(PacManException.class);
+		assertThatThrownBy(() -> assetGroupExceptionService.deleteAssetGroupExceptions(geDeleteAssetGroupExceptionDetailsRequest(), "userId123", null)).isInstanceOf(PacManException.class);
 	}
 
 	private DeleteAssetGroupExceptionRequest geDeleteAssetGroupExceptionDetailsRequest() {

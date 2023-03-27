@@ -158,7 +158,7 @@ public class AssetGroupExceptionControllerTest
 	@Test
 	public void deleteAssetGroupExceptionsTest() throws Exception {
 		byte[] assetGroupDetailsContent = toJson(getDeleteAssetGroupExceptionRequest());
-		when(assetGroupExceptionService.deleteAssetGroupExceptions(any(), any())).thenReturn(AdminConstants.CONFIG_STICKY_EXCEPTION_SUCCESS);
+		when(assetGroupExceptionService.deleteAssetGroupExceptions(any(), any(), any())).thenReturn(AdminConstants.CONFIG_STICKY_EXCEPTION_SUCCESS);
 		mockMvc.perform(post("/asset-group-exception/delete").principal(principal)
 				.content(assetGroupDetailsContent)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
@@ -171,7 +171,7 @@ public class AssetGroupExceptionControllerTest
 	@SuppressWarnings("unchecked")
 	public void deleteAssetGroupExceptionsExceptionTest() throws Exception {
 		byte[] assetGroupDetailsContent = toJson(getDeleteAssetGroupExceptionRequest());
-		when(assetGroupExceptionService.deleteAssetGroupExceptions(any(), any())).thenThrow(Exception.class);
+		when(assetGroupExceptionService.deleteAssetGroupExceptions(any(), any(), any())).thenThrow(Exception.class);
 		mockMvc.perform(post("/asset-group-exception/delete").principal(principal)
 				.content(assetGroupDetailsContent)
 				.contentType(MediaType.APPLICATION_JSON)

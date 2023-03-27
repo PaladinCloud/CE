@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.*;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
@@ -31,8 +30,29 @@ import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.CommonUtils;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
-import com.tmobile.pacman.api.compliance.domain.*;
 import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -53,11 +73,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.tmobile.pacman.api.compliance.domain.AssetApi;
+import com.tmobile.pacman.api.compliance.domain.AssetApiData;
+import com.tmobile.pacman.api.compliance.domain.AssetCount;
+import com.tmobile.pacman.api.compliance.domain.AssetCountByAppEnvDTO;
+import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
+import com.tmobile.pacman.api.compliance.domain.AssetCountData;
+import com.tmobile.pacman.api.compliance.domain.AssetCountEnvCount;
+import com.tmobile.pacman.api.compliance.domain.ExemptedAssetByPolicy;
+import com.tmobile.pacman.api.compliance.domain.ExemptedAssetByPolicyData;
+import com.tmobile.pacman.api.compliance.domain.IssueExceptionResponse;
+import com.tmobile.pacman.api.compliance.domain.IssueResponse;
+import com.tmobile.pacman.api.compliance.domain.IssuesException;
+import com.tmobile.pacman.api.compliance.domain.KernelVersion;
+import com.tmobile.pacman.api.compliance.domain.Request;
+import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
+import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
+import com.tmobile.pacman.api.compliance.service.NotificationService;
+
+import static com.tmobile.pacman.api.compliance.util.Constants.*;
 
 /**
  * The Class ComplianceRepositoryImpl.
@@ -189,6 +229,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return "pacman.kernel.compliance.map".concat(".").concat(String.valueOf(year)).concat(".q")
                 .concat(String.valueOf(currentQuarter));
     }
+
+
+    @Autowired
+    NotificationService notificationService;
 
     /**
      * Inits the.
@@ -2129,6 +2173,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             }
             failedIssueIds.addAll(revokeException(assetGroup, issueIds));
 
+
             if (failedIssueIds.isEmpty()) {
                 System.out.println("exception size" + failedIssueIds);
                 i = 0;
@@ -2172,6 +2217,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     }
                 }
             });
+            notificationService.triggerCreateExemptionNotification(issueDetails, failedIssueIds, issuesException);
 
         } else {
             failedIssueIds.addAll(issueIds);
@@ -2264,8 +2310,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
-
-            failedIssueIds.addAll(revokeException(assetGroup, issueIds));
+            failedIssueIds.addAll(revokeException(assetGroup,issueIds));
+            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT);
         } else {
             failedIssueIds.addAll(issueIds);
         }

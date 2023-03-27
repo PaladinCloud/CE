@@ -350,4 +350,26 @@ public interface Constants {
     String AUTOFIX_AVAILABLE = "autoFixAvailable";
     String AUTOFIX = "autofix";
     String AQUA = "aqua";
+    String ISSUE_ID_UI_PATH  = "/pl/compliance/issue-listing/issue-details/";
+
+    String POLICY_DETAILS_UI_PATH  = "/pl/compliance/policy-knowledgebase-details/";
+
+    String ASSET_DETAILS_UI_PATH  = "/pl/assets/asset-list/";
+
+    String DATA_SOURCE_KEY = "pac_ds";
+
+    enum NotificationTypes {
+        EXEMPTIONS,
+        VIOLATIONS,
+        AUTOFIX
+    }
+
+    enum Actions {
+        CREATE,
+        REVOKE,
+        DELETE,
+        UPDATE
+    }
+    String EVENT_SOURCE = "paladinCloud";
+    String EVENT_SOURCE_NAME = "PaladinCloud";
 }
