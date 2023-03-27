@@ -4,6 +4,7 @@ package com.tmobile.cloud.awsrules.eks;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
@@ -20,13 +21,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, Annotation.class})
 public class CheckEKSClusterLoggingEnabledRuleTest {
 
     Map<String, String> ruleParam;
@@ -53,7 +55,8 @@ public class CheckEKSClusterLoggingEnabledRuleTest {
 
     @Test
     public void executeFailTest() throws Exception {
-
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         resourceAttribute.put(PacmanRuleConstants.CLUSTER_LOGGING_ENABLED, "false");
         PolicyResult ruleResult = checkEKSClusterLoggingEnabledRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
@@ -83,5 +86,15 @@ public class CheckEKSClusterLoggingEnabledRuleTest {
         resObj.put(PacmanRuleConstants.CLUSTER_NAME, "test");
         resObj.put(PacmanRuleConstants.CLUSTER_LOGGING_ENABLED, "true");
         return resObj;
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }

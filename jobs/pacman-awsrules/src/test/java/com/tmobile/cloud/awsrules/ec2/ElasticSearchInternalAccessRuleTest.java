@@ -29,6 +29,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -53,7 +55,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 @PowerMockIgnore("javax.net.ssl.*")
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,HttpClientBuilder.class})
+@PrepareForTest({ PacmanUtils.class,HttpClientBuilder.class, Annotation.class})
 public class ElasticSearchInternalAccessRuleTest {
 
     @InjectMocks
@@ -93,7 +95,9 @@ public class ElasticSearchInternalAccessRuleTest {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(
                 true);
-        
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
+
         PowerMockito.when(closeableHttpClient.execute((HttpGet) any())).thenReturn(httpResponse);
         assertThat(elasticSearchInternalAccessRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
         
@@ -113,5 +117,14 @@ public class ElasticSearchInternalAccessRuleTest {
     @Test
     public void getHelpTextTest(){
         assertThat(elasticSearchInternalAccessRule.getHelpText(), is(notNullValue()));
+    }
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }

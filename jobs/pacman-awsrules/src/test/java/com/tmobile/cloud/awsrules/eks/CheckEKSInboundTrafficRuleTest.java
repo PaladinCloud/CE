@@ -3,6 +3,7 @@ package com.tmobile.cloud.awsrules.eks;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.junit.Before;
@@ -20,15 +21,14 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyObject;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, Annotation.class})
 public class CheckEKSInboundTrafficRuleTest {
 
 
@@ -91,7 +91,8 @@ public class CheckEKSInboundTrafficRuleTest {
 
     @Test
     public void executeFromPortAndToPortFailTest() throws Exception {
-
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + SG_RULES_URL), any(), any(),
                 any(), eq(PacmanRuleConstants.ES_SG_FROM_PORT_ATTRIBUTE),
                 any())).thenReturn(new HashSet<>(Collections.singletonList("22")));
@@ -104,7 +105,8 @@ public class CheckEKSInboundTrafficRuleTest {
 
     @Test
     public void executeFromPortFailTest() throws Exception {
-
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + SG_RULES_URL), any(), any(),
                 any(), eq(PacmanRuleConstants.ES_SG_FROM_PORT_ATTRIBUTE),
                 any())).thenReturn(new HashSet<>(Collections.singletonList("22")));
@@ -114,7 +116,8 @@ public class CheckEKSInboundTrafficRuleTest {
 
     @Test
     public void executeToPortFailTest() throws Exception {
-
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + SG_RULES_URL), any(), any(),
                 any(), eq(PacmanRuleConstants.ES_SG_TO_PORT_ATTRIBUTE),
                 any())).thenReturn(new HashSet<>(Collections.singletonList("22")));
@@ -124,7 +127,8 @@ public class CheckEKSInboundTrafficRuleTest {
 
     @Test
     public void executeFailTest() {
-
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         resourceAttribute.remove(PacmanRuleConstants.CLUSTER_SECURITY_GROUP_ID);
         PolicyResult PolicyResult = checkEKSInboundTrafficRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, PolicyResult.getStatus());
@@ -154,5 +158,15 @@ public class CheckEKSInboundTrafficRuleTest {
         resObj.put(PacmanRuleConstants.CLUSTER_NAME, "test");
         resObj.put(PacmanRuleConstants.CLUSTER_SECURITY_GROUP_ID, "sg-test");
         return resObj;
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }
