@@ -54,6 +54,50 @@ CREATE TABLE IF NOT EXISTS `pac_policy_engine_autofix_actions` (
   PRIMARY KEY (`resourceId`,`lastActionTime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE IF NOT EXISTS cf_NotificationTypes (
+  notificationTypeId varchar(200) COLLATE utf8_bin NOT NULL,
+  notificationType varchar(200) COLLATE utf8_bin NOT NULL,
+  createdBy varchar(200) COLLATE utf8_bin NOT NULL,
+  creationDate DATETIME DEFAULT current_timestamp(),
+  PRIMARY KEY (notificationTypeId),
+  unique (notificationType)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE IF NOT EXISTS cf_NotificationChannels (
+  notificationChannelId varchar(200) COLLATE utf8_bin NOT NULL,
+  channelName varchar(200) COLLATE utf8_bin NOT NULL,
+  createdBy varchar(200) COLLATE utf8_bin NOT NULL,
+  creationDate DATETIME DEFAULT current_timestamp(),
+  PRIMARY KEY (notificationChannelId),
+  unique (channelName)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS cf_NotificationTypeChannelMapping (
+  notificationMappingId varchar(200) COLLATE utf8_bin NOT NULL,
+  notificationTypeId varchar(200) COLLATE utf8_bin NOT NULL,
+  notificationChannelId varchar(200) COLLATE utf8_bin NOT NULL,
+  createdBy varchar(200) COLLATE utf8_bin NOT NULL,
+  creationDate DATETIME DEFAULT current_timestamp(),
+  PRIMARY KEY (notificationMappingId),
+  unique (notificationTypeId,notificationChannelId),
+  constraint notification_type_id_fkey FOREIGN KEY (notificationTypeId) REFERENCES cf_NotificationTypes (notificationTypeId) ON DELETE CASCADE ON UPDATE CASCADE,
+  constraint notification_channel_id_fkey FOREIGN KEY (notificationChannelId) REFERENCES cf_NotificationChannels (notificationChannelId) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+insert ignore into cf_NotificationChannels values ('6a7e6590-bd06-11ed-afa1-0242ac120002','email','admin@paladincloud.io',current_timestamp());
+
+
+ insert ignore into cf_NotificationTypes values ('42ffd1d8-bd07-11ed-afa1-0242ac120002','violations','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypes values ('5bf94e30-bd07-11ed-afa1-0242ac120002','asset groups','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypes values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemptions','admin@paladincloud.io',current_timestamp());
+
+ insert ignore into cf_NotificationTypeChannelMapping values ('467710fe-be2b-11ed-afa1-0242ac120002','42ffd1d8-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypeChannelMapping values ('5bf94e30-bd07-11ed-afa1-0242ac120002','5bf94e30-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypeChannelMapping values ('63a2d98a-bd07-11ed-afa1-0242ac120002','63a2d98a-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());
+
 
 /* truncating  the policy table to ensure that existing  insert cmd changes are being reflected */
 /*TRUNCATE TABLE cf_PolicyTable; */
