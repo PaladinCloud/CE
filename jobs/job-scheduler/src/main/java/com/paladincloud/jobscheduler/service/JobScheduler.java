@@ -4,6 +4,7 @@ package com.paladincloud.jobscheduler.service;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.directory.model.AuthenticationFailedException;
 import com.paladincloud.jobscheduler.auth.CredentialProvider;
+import com.paladincloud.jobscheduler.config.ConfigUtil;
 import com.paladincloud.jobscheduler.schema.jobs_and_rule_scheduling.Event;
 import com.paladincloud.jobscheduler.schema.jobs_and_rule_scheduling.marshaller.Marshaller;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ public class JobScheduler {
 
     private static final String EVENT_SOURCE = "paladincloud.jobs-scheduler";
     private static final String EVENT_DETAIL_TYPE = "Paladin Cloud Job Scheduling Event";
+    public static final String AZURE_ENABLED = "azure.enabled";
+    public static final String GCP_ENABLED = "gcp.enabled";
 
     @Autowired
     CredentialProvider credentialProvider;
@@ -44,10 +47,7 @@ public class JobScheduler {
     @Value("${azure.eventbridge.bus.details}")
     private String azureBusDetails;
 
-    @Value("${azure.enabled}")
     private boolean azureEnabled;
-
-    @Value("${gcp.enabled}")
     private boolean gcpEnabled;
 
     @Value("${scheduler.total.batches}")
@@ -72,7 +72,10 @@ public class JobScheduler {
         List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
 
         try {
+            ConfigUtil.setConfigProperties();
             addCollectorEvent(putEventsRequestEntries, awsBusDetails);
+            azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
+            gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
 
             if (azureEnabled) {
                 addCollectorEvent(putEventsRequestEntries, azureBusDetails);
@@ -96,6 +99,9 @@ public class JobScheduler {
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            System.exit(1);
         }
         eventBrClient.close();
     }
@@ -111,6 +117,9 @@ public class JobScheduler {
 
         try {
             addShipperEvent(putEventsRequestEntries, awsBusDetails);
+            ConfigUtil.setConfigProperties();
+            azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
+            gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
             if (gcpEnabled) {
                 addShipperEvent(putEventsRequestEntries, gcpBusDetails);
             }
@@ -133,6 +142,9 @@ public class JobScheduler {
         } catch (EventBridgeException e) {
             logger.error(e.awsErrorDetails().errorMessage());
             System.exit(1);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            System.exit(1);
         }
         eventBrClient.close();
     }
@@ -151,6 +163,10 @@ public class JobScheduler {
         try {
             int totBatches = Integer.parseInt(this.noOfBatches);
             logger.info("No of batches: {}", noOfBatches);
+
+            ConfigUtil.setConfigProperties();
+            azureEnabled=Boolean.parseBoolean(System.getProperty(AZURE_ENABLED));
+            gcpEnabled=Boolean.parseBoolean(System.getProperty(GCP_ENABLED));
 
             for (int i = 0; i < totBatches; i++) {
                 List<PutEventsRequestEntry> putEventsRequestEntries = new ArrayList<>();
@@ -186,6 +202,9 @@ public class JobScheduler {
             System.exit(1);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            System.exit(1);
         }
         eventBrClient.close();
     }

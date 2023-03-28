@@ -35,6 +35,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
+    public static final String QUALYS_CONNECTOR = "Qualys-Connector";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -109,10 +110,9 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}",createResponse);
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountId,"Qualys-Connector", Constants.QUALYS);
-
-        validateResponse.setValidationStatus(SUCCESS);
-        validateResponse.setMessage("Account added successfully. Account id: "+accountId);
+        validateResponse=createAccountInDb(accountId, QUALYS_CONNECTOR, Constants.QUALYS);
+        validateResponse.setAccountId(accountId);
+        validateResponse.setValidationStatus(QUALYS_CONNECTOR);
         return validateResponse;
     }
 
@@ -162,12 +162,10 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 
         //delete entry from db
-        deleteAccountFromDB(accountId);
+        response=deleteAccountFromDB(accountId);
 
         response.setType(Constants.QUALYS);
         response.setAccountId(accountId);
-        response.setValidationStatus(SUCCESS);
-        response.setMessage("Account deleted successfully");
 
         return response;
     }
