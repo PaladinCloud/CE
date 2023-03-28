@@ -81,7 +81,7 @@ public class ESEncryptionUsingKMSCMKsRule extends BasePolicy {
 			String eskmsKey = StringUtils.trim(resourceAttributes.get(ES_PROP_KMS_KEY));
 			String issueDescription = "ES domain are not encrypted. OpenSearch domain should be encrypted with CMKs for version 5.1 or greater !!";
 
-			if (Double.parseDouble(resourceAttributes.get(ES_PROP_VERSION)) >= 5.1 &&
+			if (checkIfVersionIsCorrect(resourceAttributes.get(ES_PROP_VERSION))  &&
 					(esEncryEnable == null || "".equals(esEncryEnable) || eskmsKey == null || "".equals(eskmsKey)
 					|| ES_PROP_KMS_DEFAULT_VALUE.equalsIgnoreCase(eskmsKey))) {
 				if (PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(esEncryEnable)
@@ -109,7 +109,13 @@ public class ESEncryptionUsingKMSCMKsRule extends BasePolicy {
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
 	}
-
+	private boolean checkIfVersionIsCorrect(String version) {
+		if(version.startsWith("OpenSearch"))
+			return true;
+		if(Double.parseDouble(version) >= 5.1)
+			return true;
+		return false;
+	}
 	@Override
 	public String getHelpText() {
 		return "This rule checks for AWS ElasticSearch domains are encrypted with KMS Customer Master Keys.";
