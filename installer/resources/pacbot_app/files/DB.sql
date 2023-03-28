@@ -3188,7 +3188,7 @@ INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','inventory','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('secret.manager.path','paladincloud/secret','batch','prd','latest',null,null,null,null);
 INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('s3.cred.data',concat(@CREDENTIAL_DIR,''),'batch','prd','latest',null,null,null,null);
-INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('cloud-provider','aws,azure,gcp','application','prd','latest',null,null,null,null);
+INSERT IGNORE INTO pac_config_properties (cfkey,value,application,profile,label,createdBy,createdDate,modifiedBy,modifiedDate) VALUES ('cloud-provider','aws','admin-service','prd','latest',null,null,null,null);
 
 
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('autofix.allowlist.accounts.UnusedElasticIpRule_version-1_UnusedElasticIpRule_elasticip','','rule','prd','latest',NULL,NULL,NULL,NULL);
