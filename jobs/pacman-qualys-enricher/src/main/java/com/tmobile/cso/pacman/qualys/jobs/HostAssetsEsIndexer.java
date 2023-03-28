@@ -38,6 +38,7 @@ public class HostAssetsEsIndexer implements Constants {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HostAssetsEsIndexer.class);
+
     private static final String BASE_API_URL = System.getProperty("qualys_api_url");
     private static final String kbGetUri = BASE_API_URL+"/api/2.0/fo/knowledge_base/vuln/?action=list&ids=%s";
 
@@ -103,8 +104,10 @@ public class HostAssetsEsIndexer implements Constants {
      */
     private void bulkUpload(String bulkRequest,List<Map<String,String>> errorList) {
         try {
+            LOGGER.debug("BulkUpload with request:{}",bulkRequest);
             Response resp = ElasticSearchManager.invokeAPI("POST", "/_bulk", bulkRequest);
             String responseStr = EntityUtils.toString(resp.getEntity());
+            LOGGER.debug("BulkUpload response:{}",resp);
             if (responseStr.contains("\"errors\":true")) {
                 LOGGER.error(responseStr);
             }
@@ -146,52 +149,83 @@ public class HostAssetsEsIndexer implements Constants {
      * @return the list
      */
     private List<Map<String, Object>> fetchVulnInfo(Map<String, Object> asset,List<Map<String,String>> errorList) {
+        LOGGER.debug("fetching vulnInfo, asset Map:{}", asset);
         List<Map<String, Object>> vulnInfoList = new ArrayList<>();
+        Map<String, Integer> vulnerablityCount=new HashMap<>();
         try {
+            /*JAXBContext jaxbContext = JAXBContext.newInstance(KNOWLEDGEBASEVULNLISTOUTPUT.class);
+            LOGGER.debug("JAXBContext created: {}",jaxbContext);
+            LOGGER.debug("JAXBContext class Name:{}",jaxbContext.getClass().getPackage().getName()+jaxbContext.getClass().getName());*/
             Map<String, Map<String, Object>> vulnMap = (Map<String, Map<String, Object>>) asset.get("vuln");
             if (vulnMap != null) {
+                LOGGER.debug("fetching vulnInfo, vuln Map:{}", vulnMap);
                 List<Map<String, Object>> vulnList = (List<Map<String, Object>>) vulnMap.get("list");
                 if (vulnList != null) {
+                    LOGGER.debug("fetching vulnInfo, vuln list:{}", vulnList);
                     for (Map<String, Object> hostvuln : vulnList) {
+                        LOGGER.debug("fetching vulnInfo, host vuln map:{}", hostvuln);
                         Map<String, Object> vuln = new HashMap<>((Map<String, Object>) hostvuln.get("HostAssetVuln"));
-                        List<String> kbaseDetailsList = getKbDetailsOfQid(vuln.get("qid").toString());
-                        if(!kbaseDetailsList.isEmpty() && kbaseDetailsList.get(0)!=null &&  Long.valueOf(kbaseDetailsList.get(0))>=3 && "Vulnerability".equals(kbaseDetailsList.get(1))) {
+                        LOGGER.debug("fetching vulnInfo, host asset vuln map:{}", vuln);
+
+
+                        String qidStr=vuln.get("qid").toString();
+                        double dblValue = Double.valueOf(qidStr);
+                        long longValue=(long)dblValue;
+                        String qid=Long.toString(longValue);
+
+                        String severitylevel =vuln.get("severitylevel")!=null?vuln.get("severitylevel").toString():null;
+                        String vulntype =vuln.get("vulntype")!=null?(String) vuln.get("vulntype"):null;
+                        LOGGER.debug("Vulnerablity, QID:{}, severirty level :{}, Type:{}", qid,severitylevel, vulntype);
+                        if(vulnerablityCount.containsKey(severitylevel)){
+                            vulnerablityCount.put(severitylevel,vulnerablityCount.get(severitylevel)+1);
+                        }else if(severitylevel!=null){
+                            vulnerablityCount.put(severitylevel,1);
+                        }
+
+                        if(vuln.containsKey("severitylevel") && vuln.containsKey("vulntype")) {
+                            if (Long.valueOf(vuln.get("severitylevel").toString()) >= 3 && "Vulnerability".equals(vuln.get("vulntype"))) {
+
                                 vuln.put(DOC_ID, asset.get(DOC_ID));
                                 vuln.put("discoverydate", asset.get("discoverydate"));
-                                vuln.put("severity", "S" + kbaseDetailsList.get(0));
+                                vuln.put("severity", "S" + vuln.get("severitylevel"));
                                 vuln.put("@id", asset.get(DOC_ID).toString() + "_" + vuln.get("qid").toString());
                                 vuln.put("latest", true);
                                 vuln.put("_resourceid", asset.get("_resourceid"));
 
-                                vuln.put("title", kbaseDetailsList.get(3)+";"+kbaseDetailsList.get(4)+";"+kbaseDetailsList.get(2));
+                                vuln.put("title", vuln.get("title"));
+                                vuln.put("cvelist",vuln.get("cvelist"));
                                 Object firstFound = vuln.get("firstFound");
                                 Object lastFound = vuln.get("lastFound");
-        
+
                                 Object _firstFound = null;
                                 Object _lastFound = null;
                                 vuln.put("_vulnage", Util.calculteAgeInDays(firstFound, lastFound));
-        
+
                                 if (firstFound != null) {
                                     _firstFound = firstFound;
                                 }
-        
+
                                 if (lastFound != null) {
                                     _lastFound = lastFound;
                                 } else {
                                     _lastFound = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(new java.util.Date());
                                 }
-        
+
                                 if (_firstFound == null) {
                                     _firstFound = _lastFound;
                                 }
                                 vuln.put("_firstFound", _firstFound);
                                 vuln.put("_lastFound", _lastFound);
-        
+
                                 vulnInfoList.add(vuln);
+                            }
                         }
                     }    
                 }
             }
+            String id=(String) asset.get("_resourceid");
+            LOGGER.debug("VulnerablityCount for hostId: {}",id);
+            LOGGER.debug("VulnerablityCount Map: {}",vulnerablityCount);
         } catch (Exception e) {
             LOGGER.error("fetchVulnInfo Failed", e);
             Map<String,String> errorMap = new HashMap<>();
@@ -200,6 +234,7 @@ public class HostAssetsEsIndexer implements Constants {
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
         }
+        LOGGER.debug("vulnInfoList:{}",vulnInfoList);
         return vulnInfoList;
     }
 
@@ -210,45 +245,65 @@ public class HostAssetsEsIndexer implements Constants {
      * @return  list, first element of list will be severity level, second element will be vulnerability type
      * and third element will be violation title.
      */
-    private List<String> getKbDetailsOfQid(String qid) {
+    private List<String> getKbDetailsOfQid(String qid,JAXBContext jaxbContext) {
+        LOGGER.debug("getKbDetailsOfQid with API URL:{}, QID:{}",kbGetUri,qid);
         List<String> kbDetailsList = new ArrayList<>();
         try {
             double dblValue = Double.valueOf(qid);
             long longValue=(long)dblValue;
             String resultXML = callApi(String.format(kbGetUri,String.valueOf(longValue)), "GET", null, null);
+            LOGGER.debug("Result XML from API call: {}",resultXML);
             final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            LOGGER.debug("XMlFactory created: {}",inputFactory);
             final StringReader reader = new StringReader(resultXML);
             XMLStreamReader xreader = inputFactory.createXMLStreamReader(reader);
-            JAXBContext jaxbContext = JAXBContext.newInstance(KNOWLEDGEBASEVULNLISTOUTPUT.class);
+            LOGGER.debug("XMLStreamReader created: {}",xreader);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            LOGGER.debug("JAXBUnmarshaller created: {}",jaxbUnmarshaller);
             KNOWLEDGEBASEVULNLISTOUTPUT resp = (KNOWLEDGEBASEVULNLISTOUTPUT) jaxbUnmarshaller.unmarshal(xreader);
+            LOGGER.debug("Response from unmarshaller: {}",resp);
             KNOWLEDGEBASEVULNLISTOUTPUT.RESPONSE.VULNLIST vulnList = resp.getRESPONSE().getVULNLIST();
+            LOGGER.debug("VULNLIST from response: {}",vulnList);
             if (vulnList != null && vulnList.getVULN() != null && vulnList.getVULN().get(0) != null) {
                 KNOWLEDGEBASEVULNLISTOUTPUT.RESPONSE.VULNLIST.VULN vulnInfo = vulnList.getVULN().get(0);
+                LOGGER.debug("vulnInfo from vulnList: {}",vulnInfo);
+                LOGGER.debug("vulnInfo-severity level:{},  vulnInfo-type: {}, vulnInfo-title: {}, vulnInfo-CVE list:{}",
+                        vulnInfo.getSEVERITYLEVEL(),vulnInfo.getVULNTYPE(),vulnInfo.getTITLE(),vulnInfo.getCVELIST());
                 kbDetailsList.add(String.valueOf(vulnInfo.getSEVERITYLEVEL()));
                 kbDetailsList.add(vulnInfo.getVULNTYPE());
                 kbDetailsList.add(vulnInfo.getTITLE());
-                kbDetailsList.add(vulnInfo.getCVELIST().getCVE().get(0).getID());
-                kbDetailsList.add(vulnInfo.getCVELIST().getCVE().get(0).getURL());
+                if(vulnInfo.getCVELIST()!=null && !vulnInfo.getCVELIST().getCVE().isEmpty()) {
+                    kbDetailsList.add(vulnInfo.getCVELIST().getCVE().get(0).getID());
+                    kbDetailsList.add(vulnInfo.getCVELIST().getCVE().get(0).getURL());
+                }else{
+                    LOGGER.info("Vuln CVE List is not found!!!");
+                }
             } else {
+                LOGGER.info("No KB data found for qid:{}",qid);
                 return Collections.emptyList();
             }
         } catch (XMLStreamException exception) {
             LOGGER.debug("XMLStreamException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            LOGGER.error("Error Details:{}",exception);
             return Collections.emptyList();
         } catch (JAXBException e) {
             LOGGER.debug("JAXBException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            LOGGER.error("Error Details:{}",e);
             return Collections.emptyList();
         } catch (ClientProtocolException e) {
             LOGGER.debug("ClientProtocolException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            LOGGER.error("Error Details:{}",e);
             return Collections.emptyList();
         } catch (IOException e) {
             LOGGER.debug("IOException occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            LOGGER.error("Error Details:{}",e);
             return Collections.emptyList();
         } catch (Exception e) {
             LOGGER.debug("Exception occurred in getKbDetailsOfQid method of HostAssetsEsIndexer");
+            LOGGER.error("Error Details:{}",e);
             return Collections.emptyList();
         }
+        LOGGER.info("KB data size:{}",kbDetailsList.size());
         return kbDetailsList;
     }
 

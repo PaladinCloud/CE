@@ -3,7 +3,7 @@
         <mat-label>{{placeholder}}</mat-label>
         <input autocomplete="off" matInput [(ngModel)]="value" (ngModelChange)="onInputChange()">
     </mat-form-field>
-    <div class="info-img">
+    <div class="info-img" *ngIf="description.length>0">
         <img src="../../../assets/icons/info-circle.svg" [matTooltip]="description" matTooltipPosition="right">
     </div>
 </div>

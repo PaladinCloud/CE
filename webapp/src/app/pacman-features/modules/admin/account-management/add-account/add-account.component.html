@@ -1,0 +1,292 @@
+<div class="page-layout" >
+    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+    </div>
+    <div class="page-content" [class.hide]="isValidating || isValidated">
+          <div class="stepper" [hidden]="isValidating || isValidated">
+            <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
+                (selectedStepperIndex)="selectedStepperIndex($event)">
+                <ng-template #stepsHeader>
+                    <div class="text-wrapper">
+                        <h4 class="high-emphasis">{{pageTitle}}</h4>
+                        <span class="sub-text">Follow the steps below to add cloud accounts to your paladin</span>
+                    </div>
+                </ng-template>
+                <ng-template #stepsContent>
+                    <div class="right-wrapper">
+                        <div class="configuration-header" [class.hideDiv]="currentStepperIndex==0">
+                            <img class="cloud-header" src="../../../../../../assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                            <span class="body-1 medium-emphasis">
+                                {{selectedAccount}} Account Configuration
+                            </span>
+                        </div>
+                        <ng-container [ngTemplateOutlet]="currentTemplateRef">
+                        </ng-container>
+                        <div class="button-wrapper" [hidden]="isValidating || isValidated">
+                            <button class="button btn" [class.hide]="currentStepperIndex<3"
+                                (click)="onSubmit()">
+                                Submit</button>
+                            <button class="button btn" [class.hide]="currentStepperIndex<2 || currentStepperIndex>2"
+                                (click)="validateAccount()">
+                                Validate</button>
+                            <button class="button btn" [class.hide]="currentStepperIndex==0 || currentStepperIndex>1"
+                                (click)="pageCounter('next')">
+                                Next</button>
+                            <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
+                                (click)="pageCounter('back')">Back</button>
+                        </div>
+                    </div>
+                </ng-template>
+            </app-stepper>
+        </div>
+    </div>
+    <div *ngIf="!isValidated && isValidating" class="validation-wrapper">
+        <div class="validation-inner-wrapper">
+            <div class="validation-image-wrapper">
+                <img class="validate-cloud-img" src="/assets/icons/paladin-logo.svg">
+                <img src="/assets/icons/arrows.svg">
+                <img class="validate-cloud-img" src="/assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+            </div>
+            <div class="validation-text-wrapper">
+                <h5 class="high-emphasis">Validating Your {{selectedAccount}} Account</h5>
+                <span class="validation-sub-text">Please wait for few minutes till the validation is done. Do not press back button.</span>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isValidated && !isValidating" class="validation-wrapper">
+        <div class="validation-inner-wrapper" *ngIf="isValid">
+            <div class="configuration-header">
+                <img class="cloud-header" src="../../../../../../assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                <span class="body-1 medium-emphasis">
+                    {{selectedAccount}} Account Configuration
+                </span>
+            </div>
+            <div class="validation-image-wrapper">
+                <img src="/assets/icons/validation-success.svg">
+            </div>
+            <div class="validation-text-wrapper">
+                <h5 class="high-emphasis">Account Validated Successfully</h5>
+                <span class="validation-sub-text">Role-based-access {{roleName}} generated Successfully for aws account.</span>
+            </div>
+            <button class="button btn" style="width: 185px;" (click)="goToReview()">Review</button>
+        </div>
+        <div class="validation-inner-wrapper" *ngIf="!isValid">
+            <div class="configuration-header">
+                <img class="cloud-header" src="../../../../../../assets/icons/{{selectedAccount.toLowerCase()}}-color.svg">
+                <span class="body-1 medium-emphasis">
+                    {{selectedAccount}} Account Configuration
+                </span>
+            </div>
+            <div class="validation-image-wrapper">
+                <img src="/assets/icons/validation-failed.svg">
+            </div>
+            <div class="validation-text-wrapper">
+                <h5 class="high-emphasis">Account Validation Failed</h5>
+                <div *ngFor="let error of errorList">
+                    <span class="validation-sub-text">{{error}}</span>
+                    </div>
+            </div>
+            <button class="button btn" style="width: 185px;" (click)="goToConfigure()">Reconfigure</button>
+            <button class="button cancel-btn" style="width: 185px;" (click)="redirectTo()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #selectAccountRef>
+    <div class="configuration-body">
+        <h6>Select Account</h6>
+        <span class="subtext">
+            Select the account below that you want to add to your Paladin account.
+        </span>
+        <div class="tile-wrapper">
+            <div class="tile flex flex-col" *ngFor="let account of accountsList">
+                <img class="account-img" src="../../../../../../assets/icons/{{account.img}}-color.svg">
+                <div class="tile-text-wrapper">
+                    <span class="body-2 high-emphasis">{{account.name}}</span>
+                    <span>{{account.FullName}}</span>
+                </div>
+                <button class="button btn" (click)="selectAccount(account)">Select</button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #configureAccountRef>
+    <div class="configuration-body">
+        <h6>Configure Access</h6>
+        <span class="subtext">
+            Follow the instructions below to setup your account.
+        </span>
+          <div  class="configure-wrapper" *ngIf="selectedAccount.toLowerCase()=='aws'">
+            <div class="download-template">
+                <a [href]="downloadUrl">
+                    <img class="download-icon" src="/assets/icons/download-blue.svg">
+                </a>
+                <span class="subtitle-2 primary-400">Click here to download the CloudFormation template</span>
+            </div>
+            <div class="steps-wrapper" >
+                <div *ngFor="let step of configureSteps;let i=index">
+                    <div class="flex flex-row gap-12">
+                        <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
+                        <span class="body-2 medium-emphasis">{{step}}</span>
+                    </div>
+                </div>
+            </div>
+           </div>
+            <div class="configure-wrapper" *ngIf="selectedAccount.toLowerCase()=='gcp'">
+                <div class="script-wrapper">
+                    <div class="steps-wrapper" >
+                        <div *ngFor="let step of configureSteps;let i=index">
+                            <div class="flex flex-row gap-12">
+                                <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
+                                <span class="body-2 medium-emphasis">{{step}}</span>
+                            </div>
+                        </div>
+                    </div>
+                       <div class="script-text">
+                            <span class="copy-text body-1 medium-emphasis">
+                                {{firstGcpCommand}}
+                            </span>
+                            <img class="copy-icon" [cdkCopyToClipboard]="firstGcpCommand" src="/assets/icons/files.svg">
+                        </div>
+                        <div class="script-text">
+                            <span class="copy-text body-1 medium-emphasis">
+                                {{secondGcpCommand}}
+                            </span>
+                            <img class="copy-icon" [cdkCopyToClipboard]="secondGcpCommand" src="/assets/icons/files.svg">
+                        </div>
+                        <div class="script-text">
+                            <span class="copy-text body-1 medium-emphasis">
+                                {{thirdGcpCommand}}
+                            </span>
+                            <img class="copy-icon" [cdkCopyToClipboard]="thirdGcpCommand" src="/assets/icons/files.svg">
+                        </div>
+                </div>
+            </div>
+            <div class="configure-wrapper" *ngIf="selectedAccount.toLowerCase()=='azure'">
+                <div class="steps-wrapper" >
+                    <div *ngFor="let step of configureSteps;let i=index">
+                        <div class="flex flex-row gap-12">
+                            <span class="index-wrapper body-2 medium-emphasis">Step {{i+1}}</span>
+                            <span class="body-2 medium-emphasis">{{step}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</ng-template>
+
+<ng-template #addDetailsRef>
+    <div class="configuration-body">
+        <h6>Add Details</h6>
+        <span class="subtext">
+            Fill account details below to configure your account.
+        </span>
+        <form class="form-wrapper" #accountForm="ngForm">
+            <div *ngIf="selectedAccount.toLowerCase()=='aws'" class="details-wrapper"> 
+                <app-input-field [placeholder]="'Account ID'" [(value)]="accountId" [name]="accountId"></app-input-field>
+                <app-input-field [placeholder]="'Account Name'" [(value)]="accountName" [name]="accountName"></app-input-field>
+            </div>
+            <div *ngIf="selectedAccount.toLowerCase()=='azure'" class="details-wrapper">
+                <app-input-field [placeholder]="'Tenant ID'" [(value)]="tenantId"></app-input-field>
+                <app-input-field [placeholder]="'Tenant Name'" [(value)]="tenantName"></app-input-field>
+                <app-input-field [placeholder]="'Tenant Secret'" [(value)]="tenantSecretData"></app-input-field>
+            </div>
+            <div *ngIf="selectedAccount.toLowerCase()=='gcp'" class="details-wrapper">
+                <app-input-field [placeholder]="'Poject ID'" [(value)]="projectId"></app-input-field>
+                <app-input-field [placeholder]="'Poject Name'" [(value)]="projectName"></app-input-field>
+                <app-input-field [placeholder]="'Poject Number'" [(value)]="gcpProjectNumber"></app-input-field>
+                <app-input-field [placeholder]="'Location'" [(value)]="location"></app-input-field>
+                <app-input-field [placeholder]="'Workload Identity Pool ID'" [(value)]="workloadIdentityPoolId"></app-input-field>
+                <app-input-field [placeholder]="'Provider ID'" [(value)]="providerId"></app-input-field>
+                <app-input-field [placeholder]="'Service Account'" [(value)]="serviceAccount"></app-input-field>
+            </div>
+     </form>
+    </div>
+</ng-template>
+
+<ng-template #reviewRef>
+    <div class="configuration-body">
+        <h6>Review</h6>
+        <span class="subtext">
+            Review the below details and configure your account.
+        </span>
+        <div class="review-wrapper">
+            <div class="account-details-wrapper">
+            <span class="details-header">Account Details</span>
+            <div class="details-content">
+                <div *ngIf="selectedAccount.toLowerCase()=='aws'"> 
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Account ID</span>
+                        <span class="value-wrapper">{{accountId}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Account Name</span>
+                        <span class="value-wrapper">{{accountName}}</span>
+                    </div>
+                </div>
+                <div *ngIf="selectedAccount.toLowerCase()=='azure'"> 
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Tenant ID</span>
+                        <span class="value-wrapper">{{tenantId}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Tenant Name</span>
+                        <span class="value-wrapper">{{tenantName}}</span>
+                    </div>
+                </div>
+                <div *ngIf="selectedAccount.toLowerCase()=='gcp'"> 
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Project ID</span>
+                        <span class="value-wrapper">{{projectId}}</span>
+                    </div>
+                    <div class="flex flex-row gap-12">
+                        <span class="key-wrapper">Project Name</span>
+                        <span class="value-wrapper">{{projectName}}</span>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="configure-access-wrapper">
+                <span class="configure-header">Configure Access</span>
+                <div class="configure-content">
+                    <div *ngIf="selectedAccount.toLowerCase()=='aws'"> 
+                        <div class="flex flex-row gap-12">
+                            <span class="key-wrapper">Role Arn</span>
+                            <span class="value-wrapper">{{roleArn}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="selectedAccount.toLowerCase()=='azure'"> 
+                        <div class="flex flex-row">
+                            <span class="key-wrapper">Secret Data</span>
+                            <span class="value-wrapper">{{tenantSecretData}}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="selectedAccount.toLowerCase()=='gcp'"> 
+                        <div class="flex flex-row gap-12">
+                            <span class="key-wrapper">Project Number</span>
+                            <span class="value-wrapper">{{gcpProjectNumber}}</span>
+                        </div>
+                        <div class="flex flex-row gap-12">
+                            <span class="key-wrapper">Location</span>
+                            <span class="value-wrapper">{{location}}</span>
+                        </div>
+                        <div class="flex flex-row gap-12">
+                            <span class="key-wrapper">Workload Identity Pool Id</span>
+                            <span class="value-wrapper">{{workloadIdentityPoolId}}</span>
+                        </div>
+                        <div class="flex flex-row gap-12">
+                            <span class="key-wrapper">Workload Identity Provider Id</span>
+                            <span class="value-wrapper">{{providerId}}</span>
+                        </div>
+                        <div class="flex flex-row gap-12">
+                            <span class="key-wrapper">Service Account</span>
+                            <span class="value-wrapper">{{serviceAccount}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

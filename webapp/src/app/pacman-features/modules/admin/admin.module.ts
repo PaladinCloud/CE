@@ -51,6 +51,9 @@ import { MatInputModule } from "@angular/material/input";
 import { UserManagementComponent } from './user-management/user-management.component';
 import { AdminService } from "../../services/all-admin.service";
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { AddAccountComponent } from './account-management/add-account/add-account.component';
+import {ClipboardModule} from '@angular/cdk/clipboard';
+
 
 @NgModule({
   imports: [
@@ -61,6 +64,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    ClipboardModule
   ],
   declarations: [
     PoliciesComponent,
@@ -93,6 +97,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     SystemManagementComponent,
     ConfigManagementComponent,
     UserManagementComponent,
+    AddAccountComponent
   ],
   providers: [AdminService]
 })

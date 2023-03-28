@@ -319,6 +319,7 @@ public class ElasticSearchManager {
     private static int getTypeCount(String indexName, String type) {
 
         try {
+            LOGGER.debug("Fetching type count with endpoint:{} ",indexName + "/" + type + "/_count?filter_path=count");
             Response response = invokeAPI("GET", indexName + "/" + type + "/_count?filter_path=count", null);
             String rspJson = EntityUtils.toString(response.getEntity());
             return new ObjectMapper().readTree(rspJson).at("/count").asInt();
@@ -352,14 +353,15 @@ public class ElasticSearchManager {
      * Gets the existing info.
      *
      * @param indexName the index name
-     * @param type the type
-     * @param filters the filters
-     * @param latest the latest
+     * @param type      the type
+     * @param filters   the filters
+     * @param latest    the latest
      * @return the existing info
      */
-    public static Map<String, Map<String, String>> getExistingInfo(String index, String type, List<String> filters,
-            boolean latest) {
+    public static Map<String, Map<String, Object>> getExistingInfo(String index, String type, List<String> filters,
+                                                                   boolean latest) {
     	String indexName = "/"+index;
+        LOGGER.info("Fetching existing info from indexName: {}",indexName);
         int count = getTypeCount(indexName, type);
         int _count = count;
         boolean scroll = false;
@@ -384,7 +386,8 @@ public class ElasticSearchManager {
 
         String endPoint = indexName + "/" + type + "/_search?scroll=1m" + filter_path + "&size=" + _count;
 
-        Map<String, Map<String, String>> _data = new HashMap<>();
+        LOGGER.info("getExistingInfo endpoint: {}",endPoint);
+        Map<String, Map<String, Object>> _data = new HashMap<>();
         String scrollId = fetchDataAndScrollId(endPoint, _data, keyField, payLoad.toString());
 
         if (scroll) {
@@ -410,8 +413,9 @@ public class ElasticSearchManager {
      * @param payLoad the pay load
      * @return the string
      */
-    private static String fetchDataAndScrollId(String endPoint, Map<String, Map<String, String>> _data, String keyField,
+    private static String fetchDataAndScrollId(String endPoint, Map<String, Map<String, Object>> _data, String keyField,
             String payLoad) {
+        LOGGER.debug("fetchDataAndScrollId >> endpoint :{}, payload: {} ", endPoint,payLoad);
         try {
             ObjectMapper objMapper = new ObjectMapper();
             Response response = invokeAPI("GET", endPoint, payLoad);
@@ -421,10 +425,10 @@ public class ElasticSearchManager {
             Iterator<JsonNode> it = _info.elements();
             while (it.hasNext()) {
                 String doc = it.next().fields().next().getValue().toString();
-                Map<String, String> docMap = new ObjectMapper().readValue(doc,
-                        new TypeReference<Map<String, String>>() {
+                Map<String, Object> docMap = new ObjectMapper().readValue(doc,
+                        new TypeReference<Map<String, Object>>() {
                         });
-                _data.put(docMap.get(keyField), docMap);
+                _data.put(docMap.get(keyField).toString(), docMap);
                 docMap.remove(keyField);
             }
             return scrollId;

@@ -135,7 +135,7 @@ app-inventory-container{
 }
 
 ::ng-deep .mat-form-field-wrapper {
-  padding-bottom: 0px;
+  padding-bottom: 0px !important;
 }
 
 .mat-form-field{

@@ -21,7 +21,7 @@ export class RequestInterceptorService implements HttpInterceptor {
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any> | HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
-        if (req.url.includes('/oauth2/token')) {
+        if (req.url.includes('/oauth2/token') || req.url.includes('aws-account-configure.template')) {
            return next.handle(req);
        }
         const authService = this.injector.get(AuthService);

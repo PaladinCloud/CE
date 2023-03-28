@@ -41,19 +41,19 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
-  columnWidths = {'Title': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
-  columnNamesMap = {name: "Title"};
+  columnWidths = {'Policy': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
+  columnNamesMap = {name: "Policy"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Category: (a, b, isAsc) => {
       let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
       return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
@@ -114,19 +114,19 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
     private downloadService: DownloadService) {
-      
+
       this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
         this.selectedAssetGroup = assetGroupName;
         this.searchTxt = "";
       });
-      this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {  
+      this.domainSubscription = this.domainObservableService.getDomainType().subscribe(domain => {
         this.selectedDomain = domain;
       });
     }
 
     ngOnInit(): void {
       const state = this.tableStateService.getState("policyKnowledgebase") || {};
-      
+
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
 
@@ -261,7 +261,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.clearState();
     }else{
       this.tableDataLoaded = false;
-      this.getData();      
+      this.getData();
     }
     // this.typeObj = undefined;
   }
@@ -294,7 +294,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
           }
-          if(col.toLowerCase()=="title"){
+          if(col.toLowerCase()=="policy"){
             cellObj = {
               ...cellObj,
               isLink: true
@@ -359,7 +359,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -400,7 +400,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         filterTags = Array.from(set);
         filterTags.sort();
       }
-      
+
       this.filterTagLabels[column] = filterTags;
     });
   }
@@ -430,7 +430,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             this.errorMessage = '';
             this.totalRows = response.data.total;
             this.tableData = this.massageData(response.data.response);
-            
+
             this.tableDataLoaded = true;
             this.tableData = this.processData(this.tableData);
             this.getTilesData(this.tableData);
@@ -451,7 +451,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     */
 
   goToDetails(event) {
-    // store in this function    
+    // store in this function
     const tileData = event.rowSelected;
     const data = event.data;
     const state = {

@@ -50,36 +50,36 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
   @Input() expanded;
   nodes = [
     {
-      id: 1,
+      id: "Dashboard",
       name: "Dashboard",
       image: "dashboard-icon",
       route: "/pl/compliance/compliance-dashboard",
     },
     {
-      id: 2,
+      id: "Violations",
       name: "Violations",
       image: "violations-icon",
       route: "/pl/compliance/issue-listing"
     },
     {
-      id: 3,
+      id: "Assets",
       name: "Assets",
       image: "assets-icon",
       children: [
         {
-          id: 4,
+          id: "Summary",
           name: "Summary",
           parent: "Assets",
           route: "/pl/assets/asset-dashboard",
         },
         {
-          "id": 30,
+          "id": "Distribution",
           "name": "Distribution",
           "parent": "Assets",
           "route": "/pl/assets/asset-distribution"
         },
         {
-          id: 5,
+          id: "List",
           name: "List",
           parent: "Assets",
           route: "/pl/assets/asset-list",
@@ -87,7 +87,7 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       ],
     },
     {
-      id: 6,
+      id: "Policy",
       name: "Policy",
       image: "policy-icon",
       route: "/pl/compliance/policy-knowledgebase",
@@ -99,19 +99,19 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       route: "/pl/compliance/tagging-compliance",
     },
     {
-      id: 8,
+      id: "Fix Central",
       name: "Fix Central",
       image: "fix-central-icon",
       children: [
         {
-          id: 9,
+          id: "Health Notifications",
           name: "Health Notifications",
           parent: "Fix Central",
           route: "/pl/compliance/health-notifications",
           notDisplayIfAzure: true,
         },
         {
-          id: 10,
+          id: "Recommendations",
           name: "Recommendations",
           parent: "Fix Central",
           route: "/pl/compliance/recommendations",
@@ -120,19 +120,19 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
       ],
     },
     {
-      id: 13,
+      id: "Statistics",
       name: "Statistics",
       image: "statistics-icon",
       route: "stats-overlay",
       overlay: true,
     },
     {
-      id: 14,
+      id: "Admin",
       name: "Admin",
       image: "admin-icon",
       children: [
         {
-          id: 15,
+          id: "admin-policy",
           name: "Policy",
           parent: "Admin",
           route: "/pl/admin/policies",
@@ -140,63 +140,70 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
 
         },
         {
-          id: 17,
+          id: "Job Execution Manager",
           name: "Job Execution Manager",
           parent: "Admin",
           route: "/pl/admin/job-execution-manager",
           permissions: ["job-execution-management"]
         },
         {
-          id: 18,
+          id: "Domains",
           name: "Domains",
           parent: "Admin",
           route: "/pl/admin/domains",
           permissions: ["domain-management"]
         },
         {
-          id: 19,
+          id: "Asset Types",
           name: "Asset Types",
           parent: "Admin",
           route: "/pl/admin/target-types",
           permissions: ["target-type-management"]
         },
         {
-          id: 20,
+          id: "Asset Groups",
           name: "Asset Groups",
           parent: "Admin",
           route: "/pl/admin/asset-groups",
           permissions: ["asset-group-management"]
         },
         {
-          id: 21,
+          id: "Sticky Exceptions",
           name: "Sticky Exceptions",
           parent: "Admin",
           route: "/pl/admin/sticky-exceptions",
           permissions: ["exemption-management"]
         },
         {
-          id: 22,
+          id: "Roles",
           name: "Roles",
           parent: "Admin",
           route: "/pl/admin/roles",
           permissions: ["user-management"]
         },
         {
-          id: 23,
+          id: "User Management",
           name: "User Management",
           parent: "Admin",
           route: "/pl/admin/user-management",
           permissions: ["user-management"]
         },
         {
-          id: 24,
+          id: "Account Management",
+          name: "Account Management",
+          parent: "Admin",
+          route: "/pl/admin/account-management",
+          permissions: ["account-management"]
+        },
+        {
+          id: "Configuration Management",
           name: "Configuration Management",
           parent: "Admin",
           route: "/pl/admin/config-management",
           permissions: ["configuration-management"]
         },
         {
-          id: 25,
+          id: "System Management",
           name: "System Management",
           parent: "Admin",
           route: "/pl/admin/system-management",

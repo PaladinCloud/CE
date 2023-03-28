@@ -46,7 +46,7 @@ public class Util {
      * @param discoveryDate the discovery date
      */
     public static void processAndTransform(Map<String, Map<String, Object>> hostAssets,
-            Map<String, Map<String, String>> vulnInfoMap, String discoveryDate) {
+                                           Map<String, Map<String, Object>> vulnInfoMap, String discoveryDate) {
         if (null != hostAssets && !hostAssets.isEmpty()) {
             hostAssets.entrySet().forEach(entry -> {
                 Map<String, Object> assetMap = entry.getValue();
@@ -66,7 +66,7 @@ public class Util {
      * @param vulnInfoMap the vuln info map
      */
     @SuppressWarnings("unchecked")
-    public static void appendVulnInfo(Map<String, Object> assetMap, Map<String, Map<String, String>> vulnInfoMap) {
+    public static void appendVulnInfo(Map<String, Object> assetMap, Map<String, Map<String, Object>> vulnInfoMap) {
         Map<String, Map<String, Object>> vulnMap = (Map<String, Map<String, Object>>) assetMap.get("vuln");
         if (vulnMap != null) {
             List<Map<String, Object>> vulnList = (List<Map<String, Object>>) vulnMap.get("list");
@@ -183,6 +183,7 @@ public class Util {
     public static Map<String, List<String>> fetchVPCtoNatIPInfo() {
         String endPoint = "/aws_nat/nat/_search?filter_path=hits.hits._source.vpcid,hits.hits.inner_hits.nat_addresses.hits.hits._source.publicip";
         String payLoad = "{\"size\":10000,\"_source\":\"vpcid\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"has_child\":{\"type\":\"nat_addresses\",\"query\":{\"match_all\":{}},\"inner_hits\":{\"size\":100,\"_source\":\"publicip\"}}}]}}}{\"size\":10000,\"_source\":\"vpcid\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"has_child\":{\"type\":\"nat_addresses\",\"query\":{\"match_all\":{}},\"inner_hits\":{\"size\":100,\"_source\":\"publicip\"}}}]}}}";
+        LOGGER.info("fetchVPCtoNatIPInfo endpoint: {}, payLoad: {}",endPoint,payLoad);
         Map<String, List<String>> VpcPublicIpInfo = new HashMap<>();
         try {
             Response response = ElasticSearchManager.invokeAPI("GET", endPoint, payLoad);
@@ -211,6 +212,7 @@ public class Util {
         } catch (Exception e) {
            LOGGER.error("Error in fetchVPCtoNatIPInfo",e);
         }
+        LOGGER.info("fetchVPCtoNatIPInfo >> VpcPublicIpInfo size :{}", VpcPublicIpInfo.size());
         return VpcPublicIpInfo;
     }
 
@@ -228,6 +230,8 @@ public class Util {
             String responseJson;
 
             responseJson = EntityUtils.toString(response.getEntity());
+            LOGGER.debug("fetchDataAndScrollId endpoint: {}, payload:{}",endPoint,payLoad);
+            LOGGER.debug("fetchDataAndScrollId response: {}",responseJson);
             JsonParser jsonParser = new JsonParser();
             JsonObject resultJson = (JsonObject) jsonParser.parse(responseJson);
             String scrollId = resultJson.get("_scroll_id").getAsString();
@@ -304,8 +308,11 @@ public class Util {
      * @return the map
      */
     public static Map<String, List<String>> fetchEc2EniInfo() {
+
         String endPoint = "/aws_ec2/ec2_nwinterfaces/_search?scroll=2m&size=10000";
         String payLoad = "{\"_source\":[\"instanceid\",\"networkinterfaceid\"],\"query\":{\"has_parent\":{\"parent_type\":\"ec2\",\"query\":{\"match\":{\"latest\":\"true\"}}}}}";
+        LOGGER.info("fetchEc2EniInfo endpoint: {}",endPoint);
+        LOGGER.info("fetchEc2EniInfo payLoad: {}",payLoad);
         List<Map<String, String>> data = new ArrayList<>();
         String scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
         do {
@@ -321,6 +328,7 @@ public class Util {
                             .map(obj -> obj.get("networkinterfaceid").toLowerCase()).collect(Collectors.toList());
                     ec2EniMap.put(key, value);
                 });
+        LOGGER.info("fetchEc2EniInfo ec2EniMap: {}",ec2EniMap.size());
         return ec2EniMap;
     }
 
@@ -332,6 +340,8 @@ public class Util {
     public static Map<String, String> fetchEniMacInfo() {
         String endPoint = "/aws_eni/eni/_search?scroll=2m&size=10000";
         String payLoad = "{\"_source\":[\"_resourceid\",\"macaddress\"],\"query\":{\"match\":{\"latest\":\"true\"}}}";
+        LOGGER.info("fetchEniMacInfo endpoint: {}",endPoint);
+        LOGGER.info("fetchEniMacInfo payLoad: {}",payLoad);
         List<Map<String, String>> data = new ArrayList<>();
         String scrollId = fetchDataAndScrollId(endPoint, data, payLoad);
         do {
@@ -392,7 +402,9 @@ public class Util {
         String endPoint = "/aws_" + type + "/qualysinfo/_search";
         String payLoad = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"_resourceid.keyword\":\""
                 + resourceId + "\"}},{\"exists\":{\"field\":\"vuln\"}}]}}}";
+        LOGGER.debug("fetchCurretQualysInfo, endpoint:{}, payLoad:{}",endPoint,payLoad);
         Response response = ElasticSearchManager.invokeAPI("GET", endPoint, payLoad);
+        LOGGER.debug("fetchCurretQualysInfo, response JSON:{}", response);
         String responseJson = EntityUtils.toString(response.getEntity());
         JsonParser jsonParser = new JsonParser();
         JsonObject resultJson = (JsonObject) jsonParser.parse(responseJson);

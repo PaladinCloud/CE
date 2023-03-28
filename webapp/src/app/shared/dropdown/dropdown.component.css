@@ -22,12 +22,12 @@
   color: var(--text-low-emphasis) !important;
 }
 
-::ng-deep .mat-form-field-wrapper{
-  padding: 0px !important;
-}
-
 ::ng-deep .mat-form-field-label-wrapper{
   width: calc(100% - 30px) !important;
+}
+
+::ng-deep .mat-form-field-wrapper{
+  padding: 0px !important;
 }
 
 ::ng-deep .mat-select-arrow{
@@ -38,18 +38,8 @@ height: 8px !important;
 width: 14px !important;
 }
 
-::ng-deep .mat-form-field-type-mat-select .mat-form-field-label{
-  padding: 8px 12px;
-}
-
 ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
-  width: auto !important;
-  padding: 2px 8px !important;
-  margin-left: 4px !important;
-  font: var(--text-body-1);
-  color: var(--text-low-emphasis);
-  background-color: white;
-  display: block !important;
+  display: none !important;
 }
 
 .dropdown-wrapper ::ng-deep .mat-select{
@@ -61,7 +51,10 @@ width: 14px !important;
 .dropdown-wrapper ::ng-deep .mat-select-value{
   color: var(--text-high-emphasis);
   font: var(--text-body-2);
-  padding: 0px 12px;
+}
+
+::ng-deep .mat-form-field-type-mat-select .mat-form-field-label{
+  padding: 3px 12px;
 }
 
 img{

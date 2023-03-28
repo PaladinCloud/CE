@@ -241,6 +241,7 @@ import { InputFieldComponent } from './input-field/input-field.component';
     FormInputComponent,
     LinkComponent,
     SubFooterComponent,
+    MatTooltipModule,
     TitleBurgerHeadComponent,
     MatSelectModule,
     OverlayComponent,

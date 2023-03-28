@@ -835,7 +835,19 @@ export const environment = {
         method: 'GET'
     },
     getAccounts: {
-        url: '{{baseUrl}}/admin/awsaccounts',
+        url: '{{baseUrl}}/admin/accounts',
+        method: 'GET'
+    },
+    validateAccount: {
+        url: '{{baseUrl}}/admin/accounts/validate',
+        method: 'POST'
+    },
+    deleteAccount:{
+        url: '{{baseUrl}}/admin/accounts',
+        method: 'DELETE'
+    },
+    getBaseAccount: {
+        url: '{{baseUrl}}/admin/accounts/baseAccount',
         method: 'GET'
     },
     updateAccount: {
@@ -843,7 +855,7 @@ export const environment = {
         method: 'PUT'
     },
     createAccount: {
-        url: '{{baseUrl}}/admin/awsaccounts',
+        url: '{{baseUrl}}/admin/accounts',
         method: 'POST'
     },
     deleteAccounts: {
@@ -868,6 +880,10 @@ export const environment = {
     },
     getConfigProperties: {
         url: '{{baseUrl}}/admin/config-properties',
+        method: 'GET'
+    },
+    getRoleName: {
+        url: '{{baseUrl}}/config/rule,batch,inventory,gcp-discovery,data-shipper,azure-discovery/prd/latest',
         method: 'GET'
     },
     getCurrentVersion: {
