@@ -48,6 +48,7 @@
 		<module>pacman-cloud-notifications</module>
 		<module>recommendation-enricher</module>
 		<module>pacman-qualys-enricher</module>
+		<module>pacman-aqua-enricher</module>
 		<module>azure-discovery</module>
         <module>gcp-discovery</module>
         <module>job-scheduler</module>

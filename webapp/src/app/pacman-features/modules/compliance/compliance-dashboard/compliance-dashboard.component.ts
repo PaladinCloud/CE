@@ -45,7 +45,7 @@ import { RouterUtilityService } from "src/app/shared/services/router-utility.ser
     IssueFilterService,
     LoggerService,
     ErrorHandlingService,
-    OverallComplianceService, 
+    OverallComplianceService,
     MultilineChartService
   ],
 })
@@ -122,12 +122,12 @@ export class ComplianceDashboardComponent implements OnInit {
   breadcrumbArray = [];
   breadcrumbLinks = [];
   breadcrumbPresent = "Dashboard";
-  columnNamesMap = {name: "Title", failed: "Violations", provider: "Cloud", severity:"Severity",policyCategory: "Category"}
-  columnWidths = {"Title": 3, "Violations": 1, "Cloud": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  columnNamesMap = {name: "Policy", failed: "Violations", provider: "Cloud Type", severity:"Severity",policyCategory: "Category"}
+  columnWidths = {"Policy": 3, "Violations": 1, "Cloud Type": 1, "Severity": 1, "Category": 1, "Compliance":1};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       if(severeness[ASeverity] == severeness[BSeverity]){
@@ -137,7 +137,7 @@ export class ComplianceDashboardComponent implements OnInit {
     },
     Category: (a, b, isAsc) => {
       let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
       if(priority[ACategory] == priority[BCategory]){
@@ -157,13 +157,13 @@ export class ComplianceDashboardComponent implements OnInit {
 
       let aNum = parseFloat(a);
       let bNum = parseFloat(b);
-      
+
       return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Violations: (a: string, b: string, isAsc) => {
       a = a["Violations"].valueText;
       b = b["Violations"].valueText;
-      
+
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
   };
@@ -204,7 +204,7 @@ export class ComplianceDashboardComponent implements OnInit {
   state: any = {};
   whiteListColumns;
   displayedColumns;
-  
+
   totalAssetsCountData = [];
   totalAssetsCountDataError = '';
   isStatePreserved = false;
@@ -224,12 +224,12 @@ export class ComplianceDashboardComponent implements OnInit {
             'value':e.totalassets,
             'zero-value':e.totalassets==0
         });
-      })   
+      })
       data[i].values.sort(function(a,b){
         return new Date(a.date).valueOf() - new Date(b.date).valueOf();
       });
       }
-       
+
 
     data[0].info = {
       id: "TotalAssetsCountTrend",
@@ -306,7 +306,7 @@ export class ComplianceDashboardComponent implements OnInit {
     private pacmanIssuesService: PacmanIssuesService,
     private refactorFieldsService: RefactorFieldsService,
     private domainObservableService: DomainTypeObservableService,
-    private overallComplianceService: OverallComplianceService, 
+    private overallComplianceService: OverallComplianceService,
     private tableStateService: TableStateService,
     private multilineChartService: MultilineChartService,
     private routerUtilityService: RouterUtilityService,
@@ -323,7 +323,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   storeState(state){
-    this.tableStateService.setState("dashboard", state);    
+    this.tableStateService.setState("dashboard", state);
   }
 
   getDistributionBySeverity(){
@@ -358,7 +358,7 @@ export class ComplianceDashboardComponent implements OnInit {
         }
       })
     } catch (error) {
-      
+
     }
   }
 
@@ -451,18 +451,18 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    const state = this.tableStateService.getState("dashboard") || {};    
-      
+    const state = this.tableStateService.getState("dashboard") || {};
+
     this.headerColName = state.headerColName || 'Severity';
     this.direction = state.direction || 'asc';
     // this.bucketNumber = state.bucketNumber || 0;
-    
+
     this.displayedColumns = Object.keys(this.columnWidths);
     this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
     this.complianceTableData = state?.data || [];
     this.tableDataLoaded = true;
     this.searchTxt = state?.searchTxt || '';
-    this.tableScrollTop = state?.tableScrollTop;    
+    this.tableScrollTop = state?.tableScrollTop;
     this.totalRows = state.totalRows || 0;
     this.filters = state?.filters || [];
 
@@ -470,7 +470,7 @@ export class ComplianceDashboardComponent implements OnInit {
       this.getFiltersData(this.complianceTableData);
     }
 
-    if(this.complianceTableData && this.complianceTableData.length>0){        
+    if(this.complianceTableData && this.complianceTableData.length>0){
       this.isStatePreserved = true;
     }else{
       this.isStatePreserved = false;
@@ -480,14 +480,14 @@ export class ComplianceDashboardComponent implements OnInit {
     this.assetGroupSubscription = this.subscriptionToAssetGroup =
       this.assetGroupObservableService
         .getAssetGroup()
-        .subscribe((assetGroupName) => {  
+        .subscribe((assetGroupName) => {
           this.selectedAssetGroup = assetGroupName;
           this.updateComponent();
         });
 
     this.subscriptionDomain = this.domainObservableService
       .getDomainType()
-      .subscribe((domain) => {        
+      .subscribe((domain) => {
         this.selectedDomain = domain;
         if(this.selectedAssetGroup){
           this.updateComponent();
@@ -495,8 +495,8 @@ export class ComplianceDashboardComponent implements OnInit {
       });
 
 
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -539,7 +539,7 @@ export class ComplianceDashboardComponent implements OnInit {
     }
   }
   getUpdatedUrl() {
-    let updatedQueryParams = {};    
+    let updatedQueryParams = {};
       this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
@@ -562,7 +562,7 @@ export class ComplianceDashboardComponent implements OnInit {
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
-    
+
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: updatedQueryParams,
@@ -602,7 +602,7 @@ export class ComplianceDashboardComponent implements OnInit {
       }
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        
+
         let keyValue = _.find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
@@ -644,7 +644,7 @@ export class ComplianceDashboardComponent implements OnInit {
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
           this.filterTypeOptions = response[0].response;
-          
+
           this.routerParam();
           // this.deleteFilters();
           this.getFilterArray();
@@ -685,15 +685,15 @@ export class ComplianceDashboardComponent implements OnInit {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
     }
-    }); 
+    });
   }
 
-  changeFilterTags(event) {    
+  changeFilterTags(event) {
     let value = event.filterValue;
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
-      });      
-    
+      });
+
     try {
       if (this.currentFilterType) {
         const filterTag = _.find(this.filterTagOptions[event.filterKeyDisplayValue], { name: value });
@@ -724,7 +724,7 @@ export class ComplianceDashboardComponent implements OnInit {
     }
   }
 
-  updateComponent() {    
+  updateComponent() {
     if (this.complianceTableSubscription) {
       this.complianceTableSubscription.unsubscribe();
     }
@@ -736,16 +736,16 @@ export class ComplianceDashboardComponent implements OnInit {
     this.noMinHeight = false;
     // this.bucketNumber = 0;
     // this.currentPointer = 0;
-    
+
     this.assetsCountData = [];
     this.assetsCountDataError = '';
     this.complianceData = [];
     this.complianceDataError = '';
     this.policyDataError = '';
-    if(this.isStatePreserved){      
+    if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
-    }else{      
+    }else{
       this.tableScrollTop = 0;
       this.searchTxt = "";
       this.tableErrorMessage = '';
@@ -754,7 +754,7 @@ export class ComplianceDashboardComponent implements OnInit {
       this.bucketNumber = 0;
       this.complianceTableData = [];
       this.getData();
-      
+
     }
     this.getDistributionBySeverity();
     this.getPacmanIssues();
@@ -841,7 +841,7 @@ export class ComplianceDashboardComponent implements OnInit {
       var totalVariablesObj = {};
       var cellObj = {};
       let processedData = [];
-      var getData = data;      
+      var getData = data;
       const keynames = Object.keys(getData[0]);
 
       let cellData;
@@ -861,7 +861,7 @@ export class ComplianceDashboardComponent implements OnInit {
             properties: "",
             isLink: false
           }
-          if(col.toLowerCase()=="title"){
+          if(col.toLowerCase()=="policy"){
             cellObj = {
               ...cellObj,
               isLink: true
@@ -883,7 +883,7 @@ export class ComplianceDashboardComponent implements OnInit {
     }
   }
 
-  private getComplianceData() {    
+  private getComplianceData() {
     if(!this.selectedAssetGroup || !this.selectedDomain){
       return;
     }
@@ -900,7 +900,7 @@ export class ComplianceDashboardComponent implements OnInit {
         overallComplianceUrl,
         overallComplianceMethod
       )
-      .subscribe((response) => {  
+      .subscribe((response) => {
         try {
           if(response[0].error){
             throw response[0];
@@ -938,17 +938,17 @@ export class ComplianceDashboardComponent implements OnInit {
             } else {
               this.complianceData[index].class = "gr";
             }
-          });          
+          });
           if(this.complianceData.length==0){
             this.complianceDataError = 'noDataAvailable';
-          }          
+          }
         } catch (error) {
           this.complianceDataError = 'apiResponseError';
           this.logger.log("error", error);
         }
       });
   }
-  
+
   getFiltersData(data){
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
@@ -990,7 +990,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
         let aNum = parseFloat(a);
         let bNum = parseFloat(b);
-        
+
         return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
       });
     }else if(column=='Violations'){
@@ -1070,7 +1070,7 @@ export class ComplianceDashboardComponent implements OnInit {
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -1094,7 +1094,7 @@ export class ComplianceDashboardComponent implements OnInit {
     return newData;
   }
 
-  goToDetails(event) {    
+  goToDetails(event) {
     const selectedRow = event.rowSelected;
     const data = event.data;
     const state = {
@@ -1128,11 +1128,11 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
 
-  callNewSearch(searchVal){    
+  callNewSearch(searchVal){
     this.searchTxt = searchVal;
     this.isStatePreserved = false;
     this.tableDataLoaded = false;
-    this.getData();  
+    this.getData();
   }
 
   calculateDate(_JSDate) {

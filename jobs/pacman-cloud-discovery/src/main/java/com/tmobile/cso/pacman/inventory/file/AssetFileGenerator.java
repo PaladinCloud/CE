@@ -118,7 +118,19 @@ public class AssetFileGenerator {
 					ErrorManageUtil.uploadError(accountId, "", "ec2", e.getMessage());
 				}
 			});
-
+			executor.execute(() ->
+			{
+				if(!(isTypeInScope("ecr"))) {
+					return;
+				}
+				try{
+					log.info(infoPrefix + "ECR");
+				FileManager.generateRepositoryFiles(InventoryUtil.fetchRepositories(temporaryCredentials,skipRegions,accountId,accountName));
+				}catch(Exception e){
+					log.error(expPrefix+ "ECR\", \"cause\":\"" +e.getMessage()+"\"}");
+					ErrorManageUtil.uploadError(accountId, "", "ecr", e.getMessage());
+				}
+			});
 			executor.execute(() ->
 			{
 			    if(!(isTypeInScope("asg"))) {
@@ -1160,7 +1172,7 @@ public class AssetFileGenerator {
 				}
 			});
 			/**
-			 * This will collect all the customer managed policy details. 
+			 * This will collect all the customer managed policy details.
 			 */
 			executor.execute(() ->
 			{
