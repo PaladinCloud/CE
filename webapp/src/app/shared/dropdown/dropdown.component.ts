@@ -25,6 +25,7 @@ export class DropdownComponent implements OnChanges {
   optionList = [];
   selectedOption: string = "";
   selectedOptionImage: string;
+  applyClick: any;
   constructor() { }
 
   onClose() {
@@ -67,11 +68,11 @@ export class DropdownComponent implements OnChanges {
     }
     if (this.optionImage) {
       if (this.placeholder == "Category") {
-        this.selectedOptionImage = "../../../../assets/icons/category-" + this.selectedOption + ".svg";
+        this.selectedOptionImage = "../../../../assets/icons/category-" + this.selectedOption.toLowerCase() + ".svg";
       } else if (this.placeholder == "Severity") {
-        this.selectedOptionImage = "../../../../assets/icons/violations-" + this.selectedOption + "-icon.svg";
+        this.selectedOptionImage = "../../../../assets/icons/violations-" + this.selectedOption.toLowerCase() + "-icon.svg";
       } else if (this.placeholder == "Asset Group") {
-        this.selectedOptionImage = "../../../../assets/icons/" + this.selectedOption + "-color.svg";
+        this.selectedOptionImage = "../../../../assets/icons/" + this.selectedOption.toLowerCase() + "-color.svg";
       }
     }
   }
@@ -92,5 +93,17 @@ export class DropdownComponent implements OnChanges {
     this.selected.emit(e);
   }
 
+  handleSelection(e){
+    e.stopPropagation()
+    this.applyClick.emit(this.listControl.value);
+  }
+
+  isFirstCharNumber(option:string){
+      return /^\d/.test(option);
+  }
+
+  capitalizeFirstLetter(option:string){
+      return option.charAt(0).toUpperCase() + option.slice(1);
+  }
 }
 
