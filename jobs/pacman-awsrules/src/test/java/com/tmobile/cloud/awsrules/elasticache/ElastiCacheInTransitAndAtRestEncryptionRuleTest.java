@@ -60,9 +60,6 @@ public class ElastiCacheInTransitAndAtRestEncryptionRuleTest {
 		ruleParam.put(PacmanRuleConstants.SEVERITY,PacmanSdkConstants.SEV_HIGH);
 		ruleParam.put("engineType","redis");
 		ruleParam.put("engineVersion","3.2.6");
-//		System.setProperty(Constants.RDS_USER,"paladin");
-//		System.setProperty(Constants.RDS_PWD,"***REMOVED***");
-//		System.setProperty(Constants.RDS_DB_URL,"jdbc:mysql://paladincloud-data.ca1f8qf1livk.us-east-1.rds.amazonaws.com:3306/pacmandata?autoReconnect=true&useSSL=false");
 		Map<String, String> resourceAttribute =  getResourceForWithOutEncryption("ESCACHE1234");
 		mockStatic(Annotation.class);
 		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
