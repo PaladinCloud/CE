@@ -190,5 +190,8 @@
 	"aws_cloudfront_shouldnothave_unauthorized_html_content",
 	"aws_iamuser_shouldnothave_corenetwork_privileges",
 	"aws_image_aqua_scanned_rule",
-	"aws_image_vulnerabilities_aqua_scanned_rule"
+	"aws_image_critical_vulnerabilities_aqua_scanned_rule",
+	"aws_image_high_vulnerabilities_aqua_scanned_rule",
+	"aws_image_medium_vulnerabilities_aqua_scanned_rule"
+
 ]
