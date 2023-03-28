@@ -17,6 +17,7 @@ import { DomainTypeObservableService } from "../../../../core/services/domain-ty
 import { RouterUtilityService } from "../../../../shared/services/router-utility.service";
 import { TableStateService } from "src/app/core/services/table-state.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 
 @Component({
   selector: "app-asset-list",
@@ -128,8 +129,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   private issueListingSubscription: Subscription;
   private issueFilterSubscription: Subscription;
   private previousUrlSubscription: Subscription;
-  private downloadSubscription: Subscription;
   private subscriptionDomain: Subscription;
+  assetTypeMap: any;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -141,12 +142,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private logger: LoggerService,
     private errorHandling: ErrorHandlingService,
     private downloadService: DownloadService,
-    private toastObservableService: ToastObservableService,
     private refactorFieldsService: RefactorFieldsService,
     private workflowService: WorkflowService,
     private domainObservableService: DomainTypeObservableService,
     private routerUtilityService: RouterUtilityService,
-    private tableStateService: TableStateService
+    private tableStateService: TableStateService,
+    private assetTypeMapService:AssetTypeMapService
   ) { 
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
@@ -505,6 +506,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
             cellObj = {
               ...cellObj,
               isLink: true
+            };
+          } else if(col.toLowerCase()=="asset type"){
+            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+              this.assetTypeMap = assetTypeMap;
+            });
+            const currentAssetType = this.assetTypeMap.get(cellData);
+              cellObj = {
+              ...cellObj,
+              text: currentAssetType?currentAssetType:cellData,
+              titleText:  currentAssetType?currentAssetType:cellData, // text to show on hover
+              valueText:  currentAssetType?currentAssetType:cellData
             };
           }
           innerArr[col] = cellObj;

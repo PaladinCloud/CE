@@ -7,21 +7,30 @@
             <mat-select-trigger>
                 <div *ngIf="optionImage" [class.optionImage]="optionImage">
                     <img src="{{selectedOptionImage}}">
-                    <span>{{selectedOption}}</span>
+                    <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>
+                    <ng-template #isNotNumber>
+                        <span>{{capitalizeFirstLetter(selectedOption)}}</span>
+                    </ng-template>
                 </div>
                 <div *ngIf="isChipListEnabled">
                 <app-chip [chipsList]="listControl.value" [backgroundColor]="'#F1F6FF'" [color]="'#336CC9'" (updatedChipsList)="updateChipsList($event)"
                  [isRemovable]="true"></app-chip>
                 </div>
                 <div *ngIf="!optionImage && !isChipListEnabled">
-                    <span>{{selectedOption}}</span>
+                    <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>
+                    <ng-template #isNotNumber>
+                        <span>{{capitalizeFirstLetter(selectedOption)}}</span>
+                    </ng-template>
                 </div>
             </mat-select-trigger>
             <mat-option [class.optionImage]="optionImage" *ngFor="let item of optionList" [value]="item.text">
                 <div [class.optionImage]="optionImage">
                     <img *ngIf="optionImage" src="{{item.img}}">
-                    {{item.text}}
-                </div>
+                    <span *ngIf="isFirstCharNumber(item.text); else isNotNumber;">{{item.text}}</span>
+                    <ng-template #isNotNumber>
+                        <span>{{capitalizeFirstLetter(item.text)}}</span>
+                    </ng-template>
+                    </div>
             </mat-option>
         </mat-select>
     </mat-form-field>

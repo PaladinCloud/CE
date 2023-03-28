@@ -945,5 +945,9 @@ export const environment = {
     roleMappingUrl: {
         url: '{{baseUrl}}/admin/rolemapping',
         method: 'GET'
+    },
+    getAllAssetTypes: {
+        url: '{{baseUrl}}/asset/v1/list/targettype?ag=ds-all',
+        method: 'GET'
     }
 };

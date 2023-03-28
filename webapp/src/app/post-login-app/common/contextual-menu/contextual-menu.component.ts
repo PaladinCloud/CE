@@ -34,13 +34,13 @@ import { NavigationEnd, Router } from "@angular/router";
 import { CommonResponseService } from "src/app/shared/services/common-response.service";
 import { environment } from "src/environments/environment";
 import * as _ from 'lodash';
+import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 
 
 @Component({
   selector: "app-contextual-menu",
   templateUrl: "./contextual-menu.component.html",
   styleUrls: ["./contextual-menu.component.css"],
-  providers: [],
 })
 export class ContextualMenuComponent implements OnInit, OnDestroy {
   currentParentId: number = 1;
@@ -222,8 +222,10 @@ export class ContextualMenuComponent implements OnInit, OnDestroy {
     private downloadService: DownloadService,
     private dataCacheService: DataCacheService,
     private router: Router,
-    private commonResponseService: CommonResponseService
+    private commonResponseService: CommonResponseService,
+    private assetTypeMapService:AssetTypeMapService
   ) {
+    this.assetTypeMapService.fetchAssetTypes(); 
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         const currentRoute = this.router.url
