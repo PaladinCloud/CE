@@ -124,6 +124,15 @@ export class ComplianceDashboardComponent implements OnInit {
   breadcrumbPresent = "Dashboard";
   columnNamesMap = {name: "Policy", failed: "Violations", provider: "Source", severity:"Severity",policyCategory: "Category"}
   columnWidths = {"Policy": 3, "Violations": 1, "Source": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  centeredColumns = {
+      Policy: false,
+      Violations: true,
+      Source: true,
+      Severity: true,
+      Category: true,
+      Compliance: true,
+  };
+
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       const severeness = { low: 4, medium: 3, high: 2, critical: 1, default: 5 * (isAsc ? 1 : -1) };

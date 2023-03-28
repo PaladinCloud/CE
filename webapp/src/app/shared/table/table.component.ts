@@ -17,6 +17,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() data = [];
   @Input() columnWidths;
   @Input() columnsSortFunctionMap;
+  @Input() centeredColumns: { [key: string]: boolean } = {};
   @Input() headerColName;
   @Input() direction;
   @Input() searchQuery = "";

@@ -115,10 +115,31 @@
     <div class="table-wrapper" *ngIf="!tableErrorMessage && data.length>0">
         <table mat-table [dataSource]="dataSource" [matSortActive]="headerColName" [matSortDirection]="direction" matSortDisableClear matSort (matSortChange)="announceSortChange($event)">
             <ng-container *ngFor="let column of whiteListColumns;" [matColumnDef]="column">
-                <th [style.width]="columnWidths[column]*screenWidthFactor+'px'" class="capitalize" mat-header-cell *matHeaderCellDef [mat-sort-header]="column!='Actions' && column!='DetailsBtn'?column:false">
-                    <span> {{ column!='Actions' && column!='DetailsBtn'?column:'' }} </span>
-                    <img *ngIf="column!='Actions'" [class.rotate-180]="headerColName==column && direction=='asc'" height="12" width="12" style="padding: 2px;" src="/assets/icons/arrow-down-2.svg" alt="">
-                </th>
+                    <th
+                        [style.width]="columnWidths[column] * screenWidthFactor + 'px'"
+                        class="capitalize"
+                        [ngClass]="{
+                            centered: centeredColumns[column]
+                        }"
+                        mat-header-cell
+                        *matHeaderCellDef
+                        [mat-sort-header]="
+                            column !== 'Actions' && column !== 'DetailsBtn' ? column : false
+                        "
+                    >
+                        <span>
+                            {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
+                        </span>
+                        <img
+                            *ngIf="column !== 'Actions'"
+                            [class.rotate-180]="headerColName === column && direction === 'asc'"
+                            height="12"
+                            width="12"
+                            style="padding: 2px"
+                            src="/assets/icons/arrow-down-2.svg"
+                            alt=""
+                        />
+                    </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="element[column].isCentered">
                     <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
                         <img class="pointer menu-btn" *ngIf="element[column].menuItems.length>0" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
