@@ -80,7 +80,7 @@ public class ESNodetoNodeEncryptionRule extends BasePolicy {
 		if (resourceAttributes != null) {
 			String nodeEncy = StringUtils.trim(resourceAttributes.get(ES_PROP_NODE_ENCRYPTION));
 
-				if (Double.parseDouble(resourceAttributes.get(ES_PROP_VERSION)) >= 6.0 &&
+				if (checkIfVersionIsCorrect(resourceAttributes.get(ES_PROP_VERSION)) &&
 						(nodeEncy == null || "".equals(nodeEncy) 
 						|| !PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(nodeEncy)) ) {
 					List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
@@ -103,6 +103,13 @@ public class ESNodetoNodeEncryptionRule extends BasePolicy {
 		logger.debug("========ESNodetoNodeEncryptionRule ended=========");
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
+	}
+	private boolean checkIfVersionIsCorrect(String version) {
+		if(version.startsWith("OpenSearch"))
+			return true;
+		if(Double.parseDouble(version) >= 6.0)
+			return true;
+		return false;
 	}
 
 	@Override
