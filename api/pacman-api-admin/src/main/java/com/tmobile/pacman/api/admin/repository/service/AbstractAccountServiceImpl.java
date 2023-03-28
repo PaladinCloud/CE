@@ -1,12 +1,16 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
 import com.tmobile.pacman.api.admin.domain.AccountList;
+import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyItem;
 import com.tmobile.pacman.api.admin.domain.ConfigPropertyRequest;
 import com.tmobile.pacman.api.admin.repository.AccountsRepository;
 import com.tmobile.pacman.api.admin.repository.model.AccountDetails;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,6 +26,10 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     @Autowired
     ConfigPropertyService configPropertyService;
     public static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
+    public static final String FAILURE = "Failure";
+    public static final String SUCCESS = "Success";
+
+    private static final Logger logger=LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
     @Override
     public AccountList getAllAccounts(String columnName, int page, int size, String searchTerm, String sortOrder) {
         if(sortOrder.equalsIgnoreCase("desc")) {
@@ -65,12 +73,23 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         }
     }
 
-    public boolean deleteAccountFromDB(String accountId) {
-         accountsRepository.deleteById(accountId);
-         return true;
+    public AccountValidationResponse deleteAccountFromDB(String accountId) {
+        AccountValidationResponse response=new AccountValidationResponse();
+        response.setAccountId(accountId);
+        try {
+            accountsRepository.deleteById(accountId);
+            response.setMessage("Account deleted successfully");
+            response.setValidationStatus(SUCCESS);
+        }catch (EmptyResultDataAccessException exception){
+            logger.error("Error in deleting account:{}",exception.getMessage());
+            response.setValidationStatus(FAILURE);
+            response.setErrorDetails("Account doesn't exists");
+            response.setMessage("Account deletion failed");
+        }
+         return response;
     }
 
-    public boolean createAccountInDb(String accountId, String accountName, String platform) {
+    public AccountValidationResponse createAccountInDb(String accountId, String accountName, String platform) {
         AccountDetails accountDetails=new AccountDetails();
         accountDetails.setAccountId(accountId);
         accountDetails.setViolations("0");
@@ -78,8 +97,22 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         accountDetails.setAccountName(accountName);
         accountDetails.setPlatform(platform);
         accountDetails.setAccountStatus("configured");
-        accountsRepository.save(accountDetails);
-        return true;
+
+        AccountValidationResponse response=new AccountValidationResponse();
+        response.setType(platform);
+
+        Optional<AccountDetails> account = accountsRepository.findById(accountId);
+        if(account.isPresent()){
+            logger.error("Account already present:{}",account.get().getAccountId());
+            response.setErrorDetails("Account already exists.");
+            response.setValidationStatus(FAILURE);
+            response.setMessage("Account already exists.");
+        }else {
+            accountsRepository.save(accountDetails);
+            response.setValidationStatus(SUCCESS);
+            response.setMessage("Account added successfully.");
+        }
+        return response;
     }
     public void updateConfigProperty(String key, String value, String application) {
         ConfigPropertyRequest configPropertyRequest=new ConfigPropertyRequest();

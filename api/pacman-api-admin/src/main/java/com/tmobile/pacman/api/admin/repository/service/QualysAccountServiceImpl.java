@@ -72,6 +72,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         try {
             HttpResponse httpResponse = httpClient.execute(httpGet);
             if(httpResponse.getStatusLine().getStatusCode()!=200){
+                validateResponse.setValidationStatus(FAILURE);
                 validateResponse.setMessage("Account validation failed");
                 validateResponse.setErrorDetails("API returned status code : "+httpResponse.getStatusLine().getStatusCode());
             }else{
@@ -79,6 +80,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
                 validateResponse.setMessage("Qualys validation successful");
             }
         } catch (IOException e) {
+            validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage("Account validation failed");
             validateResponse.setErrorDetails(e.getMessage());
         }

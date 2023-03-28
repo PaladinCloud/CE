@@ -9,7 +9,11 @@ import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
 import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
 import com.microsoft.azure.AzureEnvironment;
+import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.Azure.Authenticated;
+import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -60,20 +64,33 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             response.setErrorDetails("Missing mandatory parameter- secretData or Tenant Id");
             return response;
         }
+        try {
+            Map<String,Map<String,String>> credsMap = new HashMap<>();
+            Arrays.asList(secretData.split("##")).stream().forEach(cred-> {
+                Map<String,String> credInfoMap = new HashMap<>();
+                Arrays.asList(cred.split(",")).stream().forEach(str-> credInfoMap.put(str.split(":")[0],str.split(":")[1]));
+                credsMap.put(credInfoMap.get("tenant"), credInfoMap);
+            });
 
-        Map<String,Map<String,String>> credsMap = new HashMap<>();
-        Arrays.asList(secretData.split("##")).stream().forEach(cred-> {
-            Map<String,String> credInfoMap = new HashMap<>();
-            Arrays.asList(cred.split(",")).stream().forEach(str-> credInfoMap.put(str.split(":")[0],str.split(":")[1]));
-            credsMap.put(credInfoMap.get("tenant"), credInfoMap);
-        });
+            String clientId = credsMap.get(tenant).get("clientId");
+            String secret = credsMap.get(tenant).get("secretId");
 
-        String clientId = credsMap.get(tenant).get("clientId");
-        String secret = credsMap.get(tenant).get("secretId");
-        ApplicationTokenCredentials applicationCreds = new ApplicationTokenCredentials(clientId, tenant, secret, AzureEnvironment.AZURE);
-        LOGGER.debug("Application creds:{}",applicationCreds);
-        response.setValidationStatus(SUCCESS);
-        response.setMessage("Azure account validation successful");
+            ApplicationTokenCredentials applicationCreds = new ApplicationTokenCredentials(clientId, tenant, secret, AzureEnvironment.AZURE);
+            LOGGER.debug("Application creds:{}", applicationCreds);
+
+            Authenticated azureAuthenticated = Azure.authenticate(applicationCreds);
+
+            LOGGER.debug("Azure authenticated :{}", azureAuthenticated);
+            PagedList<Subscription> subscriptions = azureAuthenticated.subscriptions().list();
+            LOGGER.debug("Subscriptions fetched :{}", subscriptions);
+            response.setValidationStatus(SUCCESS);
+            response.setMessage("Azure account validation successful");
+        }catch (Exception e){
+            LOGGER.error("Tenant Id or secretData missing");
+            response.setValidationStatus(FAILURE);
+            response.setMessage("Account validation failed.");
+            response.setErrorDetails(e.getMessage()!=null?e.getMessage():"Account validation failed.");
+        }
         return response;
     }
 
@@ -100,7 +117,6 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
 
         CreateSecretResult createResponse = secretClient.createSecret(createRequest);
         LOGGER.info("Create secret response: {}",createResponse);
-        createAccountInDb(tenantId,tenantName, Constants.AZURE);
 
         //update azure enable flag for scheduler job
         String key="azure.enabled";
@@ -108,7 +124,9 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
         String application = "job-scheduler";
         updateConfigProperty(key, value, application);
 
-        validateResponse.setValidationStatus(SUCCESS);
+        AccountValidationResponse response=createAccountInDb(tenantId,tenantName, Constants.AZURE);
+        response.setTenantId(tenantId);
+        response.setAccountName(tenantName);
         validateResponse.setMessage("Account added successfully. Tenant id: "+tenantId);
         return validateResponse;
     }
@@ -161,12 +179,10 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 
         //delete entry from db
-        deleteAccountFromDB(tenantId);
+        response=deleteAccountFromDB(tenantId);
 
         response.setAccountId(tenantId);
         response.setType(Constants.AZURE);
-        response.setMessage("Account deleted successfully");
-        response.setValidationStatus(SUCCESS);
         return response;
     }
     private String getAzureSecretData(String secret){
