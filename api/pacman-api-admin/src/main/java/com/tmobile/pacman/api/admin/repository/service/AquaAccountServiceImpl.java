@@ -52,14 +52,11 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-
-
         validateAquaAccount(accountData, validateResponse);
-
-        return null;
+        return validateResponse;
     }
 
-    private boolean validateAquaAccount(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
+    private void validateAquaAccount(CreateAccountRequest accountData, AccountValidationResponse validateResponse) {
 
 
         validateResponse.setAquaUser(accountData.getQualysApiUser());
@@ -98,7 +95,6 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
             validateResponse.setMessage("Aqua validation successful: "+e.getMessage());
 
         }
-        return false;
     }
 
     @Override
