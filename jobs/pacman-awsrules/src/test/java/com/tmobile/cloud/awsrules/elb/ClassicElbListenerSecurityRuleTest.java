@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -13,6 +14,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,7 +30,7 @@ import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class})
+@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class, Annotation.class})
 public class ClassicElbListenerSecurityRuleTest {
 
     @InjectMocks
@@ -36,8 +39,9 @@ public class ClassicElbListenerSecurityRuleTest {
     @Test
     public void executeTest() throws Exception {
         mockStatic(PacmanUtils.class);
+        mockStatic(Annotation.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString())).thenReturn(true);
-        
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(PacmanUtils.checkClassicElbUsingSecuredProtocol(anyString(),anyString(),anyString(),anyString())).thenReturn(geValidSetString("r_123 "));
         assertThat(classicElbListenerSecurityRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
@@ -59,7 +63,15 @@ public class ClassicElbListenerSecurityRuleTest {
     public void getHelpTextTest(){
         assertThat(classicElbListenerSecurityRule.getHelpText(), is(notNullValue()));
     }
-    
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     public static Map<String, String> getMapString(String passRuleResourceId) {
         Map<String, String> commonMap = new HashMap<>();
         commonMap.put("executionId", "1234");
