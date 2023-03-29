@@ -22,6 +22,10 @@
     gap: 16px;
 }
 
+.violations-img {
+    min-width: 32px;
+}
+
 .violations-content .violations-title {
     color: var(--text-high-emphasis);
     font: var(--text-body-2);
