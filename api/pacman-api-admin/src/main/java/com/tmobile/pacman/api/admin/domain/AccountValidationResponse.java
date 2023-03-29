@@ -19,4 +19,7 @@ public class AccountValidationResponse {
 
     private String qualysApiUrl;
     private String qualysUser;
+
+    private String aquaApiUrl;
+    private String aquaUser;
 }
