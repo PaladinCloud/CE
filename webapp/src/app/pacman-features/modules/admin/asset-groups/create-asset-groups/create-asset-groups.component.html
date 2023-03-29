@@ -183,7 +183,7 @@
                                     <div class="attribute-contents asset-formctn">
                                         <div class="outer-div">
                                             <div class="list-select inner-div attrlist">
-                                                <h1>Available Domains</h1>
+                                                <h6>Available Domains</h6>
                                                 <button class="move-btn move-btn-first" type="button"
                                                     (click)="moveAllItemsToRight()"
                                                     [disabled]="availableItems.length==0"><i
@@ -219,7 +219,7 @@
                                             </div>
 
                                             <div class="list-select inner-div attrlist">
-                                                <h1>Selected Domains</h1>
+                                                <h6>Selected Domains</h6>
                                                 <button class="move-btn move-btn-first" type="button"
                                                     (click)="moveAllItemsToLeft()"
                                                     [disabled]="selectedItems.length==0"><i
@@ -263,7 +263,7 @@
                                     <div class="attribute-contents asset-formctn">
                                         <div class="outer-div">
                                             <div class="list-select inner-div attrlist">
-                                                <h1>Available Targets</h1>
+                                                <h6>Available Targets</h6>
                                                 <button class="move-btn move-btn-first" type="button"
                                                     (click)="moveTdAllItemsToRight()"
                                                     [disabled]="availableTdItems.length==0"><i
@@ -299,7 +299,7 @@
                                             </div>
 
                                             <div class="list-select inner-div attrlist">
-                                                <h1>Selected Targets</h1>
+                                                <h6>Selected Targets</h6>
                                                 <button class="move-btn move-btn-first" type="button"
                                                     (click)="moveTdAllItemsToLeft()"
                                                     [disabled]="selectedTdItems.length==0"><i
@@ -344,7 +344,7 @@
                                             <div class="inner-div attrlist" 
                                                 *ngFor="let attributeDetail of allAttributeDetails; let idx = index;"
                                                 [class.hide]="searchTerm != '' && !MatchAttribute(attributeDetail)">
-                                                <h1>{{attributeDetail.targetName}}</h1>
+                                                <h6>{{attributeDetail.targetName}}</h6>
                                                 <div class="attrspacer"></div>
                                                 <h3 class="added" *ngIf="!attributeDetail.includeAll">
                                                     {{attributeDetail.attributes.length}}</h3>

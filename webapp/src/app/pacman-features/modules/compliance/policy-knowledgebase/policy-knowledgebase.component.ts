@@ -13,6 +13,7 @@ import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.s
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -101,6 +102,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   isStatePreserved = false;
   doLocalSearch = true; // should be removed once tiles data is available from backend
   totalRows = 0;
+  assetTypeMap: any;
 
   constructor(private assetGroupObservableService: AssetGroupObservableService,
     private router: Router,
@@ -113,7 +115,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     private routerUtilityService: RouterUtilityService,
     private refactorFieldsService: RefactorFieldsService,
     private tableStateService: TableStateService,
-    private downloadService: DownloadService) {
+    private downloadService: DownloadService,
+    private assetTypeMapService: AssetTypeMapService) {
 
       this.subscriptionToAssetGroup = this.assetGroupObservableService.getAssetGroup().subscribe(assetGroupName => {
         this.selectedAssetGroup = assetGroupName;
@@ -275,6 +278,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       var cellObj = {};
       const keynames = Object.keys(getData[0]);
 
+      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+        this.assetTypeMap = assetTypeMap;
+      });
+
       let cellData;
       for (var row = 0; row < getData.length; row++) {
         innerArr = {};
@@ -298,6 +305,14 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             cellObj = {
               ...cellObj,
               isLink: true
+            };
+          } else if(col.toLowerCase()=="asset type"){
+              const currentAssetType = this.assetTypeMap.get(cellData);
+              cellObj = {
+              ...cellObj,
+              text: currentAssetType?currentAssetType:cellData,
+              titleText:  currentAssetType?currentAssetType:cellData, // text to show on hover
+              valueText:  currentAssetType?currentAssetType:cellData
             };
           }
           innerArr[col] = cellObj;

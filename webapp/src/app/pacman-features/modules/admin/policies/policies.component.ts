@@ -413,6 +413,10 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       var getData = data;
       const keynames = Object.keys(getData[0]);
 
+      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+        this.assetTypeMap = assetTypeMap;
+      });
+
       let cellData;
       for (var row = 0; row < getData.length; row++) {
         const autoFixAvailable = getData[row].autoFixAvailable;
@@ -441,10 +445,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               isLink: true
             };
           }
-          else if(col.toLowerCase()=="asset"){
-            this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
-              this.assetTypeMap = assetTypeMap;
-            });
+          else if(col.toLowerCase()=="asset type"){
             const currentAssetType = this.assetTypeMap.get(cellData);
               cellObj = {
               ...cellObj,
@@ -618,7 +619,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             policyId: policyId,
           },
         });
-
+      }
     if (action && action === "edit") {
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
@@ -630,7 +631,6 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     } else if (action && (action === "run policy")){
          this.invokePolicy(policyId);
      }
-    }
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
