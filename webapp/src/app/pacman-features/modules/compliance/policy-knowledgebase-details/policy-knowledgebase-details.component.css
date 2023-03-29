@@ -3,217 +3,165 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
- .header{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+.header {
+    justify-content: space-between;
+    align-items: center;
 }
 
-.header-text{
-  font: var(--text-headline-6);
-  color: var(--text-medium-emphasis);
+.header-text {
+    font: var(--text-headline-6);
+    color: var(--text-medium-emphasis);
 }
 
-.overview-wrapper{
-  display: flex;
-  width: 100%;
-  border-radius: 8px;
-  border: 1px solid var(--border-200);
-  border-right: none;
-  background-color: var(--background-white);
+.details-wrapper {
+    border: 1px solid var(--border-200);
+    border-radius: 8px;
+    background-color: var(--background-white);
 }
 
-.overview-tile{
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 0px 12px 24px;    
+.details-header-text {
+    padding: 20px 0 20px 24px;
 }
 
-.column{
-  width: 20%;
-  border-right: 1px solid var(--border-200);
+.details-footer-text {
+    padding: 20px 0 20px 24px;
+    font: var(--text-body-2);
+    color: var(--primary-500);
+    gap: 4px;
+    align-items: center;
 }
 
-.tile-header{
-  font: var(--text-body-2);
-  color: var(--text-medium-emphasis);
-}
-
-.tile-content{
-  font: var(--text-headline-5);
-  color: var(--text-high-emphasis);
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.header ::ng-deep  mat-form-field{
-  background: var(--primary-400) ;
-  border: 1px solid var(--primary-400);
-}
-
-.policy-knowledgebase-wrapper ::ng-deep .mat-select-arrow{
-  background-image: url("../../../../../assets/icons/white-arrow.svg") !important;
-}
-
-.details-wrapper{
-  border: 1px solid var(--border-200);
-  border-radius: 8px;
-  background-color: white;
-}
-
-.details-header-text{
-padding: 20px 0px 20px 24px;
-font: var(--text-body-2);
-color: var(--text-high-emphasis);
-}
-
-.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-label{
-    font: var(--text-body-2) !important;
-    color: white !important;
-    padding: 0px 12px !important ;
-    display: flex;
-    align-items: center !important;
-}
-
-.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-infix{
-  width: 112px !important;
-}
-
-.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-appearance-legacy{
-  padding: 0px !important;
-}
-
-.color-txt{
-  color: var(--primary-400) !important;
-}
-
-.details-footer-text{
-  padding: 20px 0px 20px 24px;
-  font: var(--text-body-2);
-  color: var(--primary-500);
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-#right-arrow-icon{
-  width: 12px;
-  height: 12px;
+.right-arrow-icon {
+    width: 12px;
+    height: 12px;
 }
 
 .policy-knowledgebase-wrapper {
-  overflow: scroll;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 28px;
+    overflow: scroll;
+    height: 100%;
+    flex-direction: column;
+    gap: 20px;
+    padding: 28px;
 }
 
-img{
-  height: 20px;
-  width: 20px;
+img {
+    height: 20px;
+    width: 20px;
 }
 
-.details-content-wrapper{
-padding: 24px;
-display: flex;
-flex-direction: column;
-height: calc(100% - 117px);
-border-bottom: 2px solid var(--border-100);
-border-top: 2px solid var(--border-100);
-gap: 32px;
+.details-content-wrapper {
+    padding: 24px;
+    flex-direction: column;
+    height: calc(100% - 117px);
+    border-bottom: 2px solid var(--border-100);
+    border-top: 2px solid var(--border-100);
+    gap: 32px;
 }
 
-.tile-content-wrapper{
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.description-wrapper {
+    flex-direction: column;
+    gap: 12px;
 }
 
-.description-wrapper{
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.attributes-wrapper {
+    gap: 20px;
 }
 
-.attributes-wrapper{
-display: flex;
-flex-direction: column;
-gap: 20px;
+.attribute-wrapper {
+    flex-direction: column;
+    width: 33%;
+    gap: 4px;
 }
 
-.attribute-header{
-  font: var(--text-body-2);
-  color: var(--text-low-emphasis);
+.attribute-header, .desc-header {
+    font: var(--text-body-2);
+    color: var(--text-low-emphasis);
 }
 
-.attribute-value{
-  font: var(--text-body-2);
-  color: var(--text-high-emphasis);
+.attribute-value,
+.details-header-text {
+    font: var(--text-body-2);
+    color: var(--text-high-emphasis);
 }
 
-.desc-header{
-  font: var(--text-body-2);
-  color: var(--text-low-emphasis);
+.attribute-value > img {
+    margin-left: 6px;
 }
 
-.desc{
-  font: var(--text-body-1);
-  color: var(--text-high-emphasis);
+.desc {
+    font: var(--text-body-1);
+    color: var(--text-high-emphasis);
 }
 
-.row{
-  display: flex;
-  width: 100%;
+.table-wrapper {
+    height: 300px;
 }
 
-.attribute-wrapper{
-  display: flex;
-  flex-direction: column;
-  width: 33%;
-}
-
-.table-wrapper{
-  height: 300px;
-}
-
-.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-label-wrapper{
-  top: -13px !important;
-}
-
-.dialog-body-header{
+.dialog-body-header {
     font: var(--text-headline-6);
     color: var(--text-high-emphasis);
 }
 
-.dialog-body-content{
-   font: var(--text-body-2);
-   color: var(--text-medium-emphasis);
+.dialog-body-content {
+    font: var(--text-body-2);
+    color: var(--text-medium-emphasis);
 }
 
-.dialog-body{
-    display: flex;
+.dialog-body {
     flex-direction: column;
     gap: 4px;
 }
 
-.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{
-  display: none !important;
+/* TODO: cursed ng-deep usage */
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-label-wrapper {
+    top: -13px !important;
 }
 
-.policy-knowledgebase-wrapper ::ng-deep .mat-select-value{
-  color: white !important;
-  padding: 0 4px !important;
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-label {
+    font: var(--text-body-2) !important;
+    color: white !important;
+    padding: 0 12px !important ;
+    display: flex;
+    align-items: center !important;
+}
+
+.header ::ng-deep mat-form-field {
+    background: var(--primary-400);
+    border: 1px solid var(--primary-400);
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-select-arrow {
+    background-image: url('../../../../../assets/icons/white-arrow.svg') !important;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-form-field-infix {
+    width: 112px !important;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep
+    .mat-form-field-appearance-legacy
+    .mat-form-field-appearance-legacy {
+    padding: 0 !important;
+}
+
+.policy-knowledgebase-wrapper
+    ::ng-deep
+    .mat-form-field-can-float.mat-form-field-should-float
+    .mat-form-field-label {
+    display: none !important;
+}
+
+.policy-knowledgebase-wrapper ::ng-deep .mat-select-value {
+    color: white !important;
+    padding: 0 4px !important;
 }
