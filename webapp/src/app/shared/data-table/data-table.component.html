@@ -102,12 +102,6 @@
           class="data-table-rows flex flex-around flex-align-center" *ngFor="
            let row of currentTableData
              | searchFilter: searchPassed
-             | orderBy
-               : {
-                   property: headerColName,
-                   direction: direction,
-                   childProperty: 'valText'
-                 };
            let i = index
          ">
           <div class="flex flex-align-center checkbox" *ngIf="checkBox">

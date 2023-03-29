@@ -12,7 +12,7 @@
  * limitations under the License.
  -->
 
-<div class="policy-knowledgebase-wrapper">
+ <div class="policy-knowledgebase-wrapper">
     <div *ngIf="backButtonRequired" class="breadcrumb-container">
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
@@ -37,7 +37,7 @@
         <div class="column">
             <div class="overview-tile">
                 <span class="tile-header">Asset Type</span>
-                <span class="tile-content" title="{{assetType}}">{{assetType}}</span>
+                <span class="tile-content" [title]="assetType">{{assetType}}</span>
             </div>
         </div>
         <div class="column">

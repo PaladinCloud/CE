@@ -56,26 +56,26 @@
                                         <span class="subtitle-2">Autofix</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle [class.isDisabled]="!status" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
                                         </div>
                                      </div>
-                                  <div class="autofix-wrapper" *ngIf="isAutofixEnabled">
-                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true"
+                                  <div class="autofix-wrapper">
+                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true" [class.isDisabled]="!status || !isAutofixEnabled"
                                     [selectedList]="selectedAccounts" (selected)="onAccountsChange($event)"></app-dropdown>
                                     <div class="header">
                                         <span class="subtitle-2">Warning Notification</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
                                         </div>
                                       </div>
                                      <div class="notifications-wrapper">
                                             <div class="parameters-wrapper">
                                                 <div class="parameter-wrapper">
-                                                    <div class="input-wrapper">
+                                                    <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled">
                                                         <mat-form-field appearance="outline">
                                                             <mat-label>Duration</mat-label>
-                                                            <input autocomplete="off" matInput name="waitingTime"
+                                                            <input autocomplete="off" matInput name="waitingTime" 
                                                                 [(ngModel)]="waitingTime">
                                                         </mat-form-field>
                                                         <div class="info-img">
@@ -84,11 +84,11 @@
                                                     </div>
                                                     </div>
                                                     <div class="parameter-wrapper">
-                                                    <div class="input-wrapper">
+                                                    <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification">
                                                         <mat-form-field appearance="outline">
                                                             <mat-label>Count</mat-label>
                                                             <input autocomplete="off" matInput name="maxEmailNotification" [class.hideInput]="warningNotification"
-                                                                [(ngModel)]="maxEmailNotification">
+                                                             [(ngModel)]="maxEmailNotification">
                                                         </mat-form-field>
                                                         <div class="info-img">
                                                             <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">

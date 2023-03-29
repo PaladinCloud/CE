@@ -30,6 +30,7 @@ import { AdminService } from "src/app/pacman-features/services/all-admin.service
 import { PermissionGuardService } from "src/app/core/services/permission-guard.service";
 import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
+import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 
 @Component({
   selector: "app-policy-knowledgebase-details",
@@ -104,6 +105,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   @ViewChild("actionRef") actionRef: TemplateRef<any>;
   chipsList = [];
   action: any;
+  assetTypeMap: any;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -119,6 +121,7 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     private adminService: AdminService,
     private permissions: PermissionGuardService,
     private notificationObservableService: NotificationObservableService,
+    private assetTypeMapService:AssetTypeMapService
   ) {
     this.subscriptionToAssetGroup = this.assetGroupObservableService
       .getAssetGroup()
@@ -169,8 +172,8 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * this funticn gets the policyid from the url
-   */
+  * this funticn gets the policyid from the url
+  */
   getpolicyId() {
     /*  TODO:Trinanjan Wrong way of doing it */
     this.routeSubscription = this.activatedRoute.params.subscribe((params) => {
@@ -353,7 +356,10 @@ export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
       dropDownItems.push("Enable");
     }
     this.actionItems = dropDownItems;
-    this.assetType = this.uppercasefirst(this.policyDetails.targetType);
+    this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+      this.assetTypeMap = assetTypeMap;
+      this.assetType = this.assetTypeMap.get(this.policyDetails.targetType);
+    });
 
     this.policyType = this.policyDetails.policyType;
     if (this.policyDetails.assetGroup !== '') {

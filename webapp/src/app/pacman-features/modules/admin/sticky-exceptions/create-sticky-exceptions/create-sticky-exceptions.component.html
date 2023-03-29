@@ -154,7 +154,7 @@
                                             <div class="inner-div attrlist"
                                                 *ngFor="let attributeDetail of allAttributeDetails; let idx = index;"
                                                 [ngClass]="attributeDetail.added? 'added-target-types':''">
-                                                <h1>{{attributeDetail.targetName}}</h1>
+                                                <h6>{{attributeDetail.targetName}}</h6>
                                                 <div class="attrspacer"></div>
                                                 <h3 class="added">{{attributeDetail.policies.length}}</h3>
                                                 <h2 class="text">Policies added</h2>
