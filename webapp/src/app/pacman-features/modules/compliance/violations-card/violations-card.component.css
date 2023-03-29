@@ -42,22 +42,23 @@
     color: var(--border-200);
 }
 
+.violations-info-container {
+    justify-content: space-between;
+}
+
 .violations-info-item {
     gap: 8px;
     overflow: hidden;
 }
 
-.violations-info-container .name {
+.violations-info-item .name {
     font: var(--text-caption);
     font-family: var(--text-light-font-family);
     color: var(--text-medium-emphasis);
 }
 
-.violations-info-container .count {
+.violations-info-item .count {
     font: var(--text-headline-6);
     color: var(--text-medium-emphasis);
 }
 
-.violations-info-container {
-    justify-content: space-between;
-}

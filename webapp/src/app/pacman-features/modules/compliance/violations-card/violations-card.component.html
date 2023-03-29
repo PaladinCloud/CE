@@ -18,12 +18,9 @@
     </div>
     <hr class="violations-card-divider" width="100%" />
     <div class="violations-info-container flex flex-row">
-        <div
-            class="{{ item }}-count flex flex-col violations-info-item"
-            *ngFor="let item of getKeys(card.subInfo)"
-        >
+        <div class="violations-info-item flex flex-col" *ngFor="let item of getKeys(card.subInfo)">
             <div class="name nowrap-ellipsis">{{ item }}</div>
-            <div class="count">{{ card.subInfo[item] }}</div>
+            <div class="count center">{{ card.subInfo[item] }}</div>
         </div>
     </div>
 </div>
