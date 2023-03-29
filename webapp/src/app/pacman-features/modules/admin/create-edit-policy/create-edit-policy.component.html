@@ -66,13 +66,13 @@
                                         <span class="subtitle-2">Warning Notification</span>
                                         <div class="status-wrapper">
                                           <span class="body-1">Enabled</span>
-                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
+                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled || !status" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
                                         </div>
                                       </div>
                                      <div class="notifications-wrapper">
                                             <div class="parameters-wrapper">
                                                 <div class="parameter-wrapper">
-                                                    <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled">
+                                                    <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
                                                         <mat-form-field appearance="outline">
                                                             <mat-label>Duration</mat-label>
                                                             <input autocomplete="off" matInput name="waitingTime" 
@@ -84,7 +84,7 @@
                                                     </div>
                                                     </div>
                                                     <div class="parameter-wrapper">
-                                                    <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification">
+                                                    <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
                                                         <mat-form-field appearance="outline">
                                                             <mat-label>Count</mat-label>
                                                             <input autocomplete="off" matInput name="maxEmailNotification" [class.hideInput]="warningNotification"
