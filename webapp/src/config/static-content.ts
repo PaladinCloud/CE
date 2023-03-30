@@ -25,7 +25,7 @@ export const CONTENT = {
     'awsLogo': '/assets/icons/aws-color.svg',
     'azureLogo': '/assets/icons/azure-color.svg',
     'gcpLogo': '/assets/icons/gcp-color.svg',
-    'productBrief': 'A platform for continuous monitoring of cloud services to help developers and security teams identify and remediate security risks in their cloud environments to protect their applications.',
+    'productBrief': 'A platform for continuous monitoring of cloud services to help developers and security teams identify and remediate security risks in their cloud environments to protect their&nbsp;applications.',
     'applicationCore': [
       {
         'title': 'Assess',
