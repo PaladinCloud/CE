@@ -12,62 +12,23 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { environment } from './../../../../../environments/environment';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AutorefreshService } from '../../../services/autorefresh.service';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import { WorkflowService } from '../../../../core/services/workflow.service';
-import { CommonResponseService } from '../../../../shared/services/common-response.service';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
-import { AdminService } from 'src/app/pacman-features/services/all-admin.service';
-import { PermissionGuardService } from 'src/app/core/services/permission-guard.service';
-import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
-import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
-
-interface PolicyData {
-    alexaKeyword: string;
-    allowList: any;
-    assetGroup: string;
-    autoFixAvailable: string;
-    autoFixEnabled: string;
-    category: string;
-    createdDate: Date;
-    elapsedTime: number;
-    fixMailSubject: string;
-    fixMessage: string;
-    fixType: string;
-    maxEmailNotification: number;
-    modifiedDate: Date;
-    policyArn: string;
-    policyDesc: string;
-    policyDisplayName: string;
-    policyExecutable: string;
-    policyFrequency: string;
-    policyId: string;
-    policyName: string;
-    policyParams: string;
-    policyRestUrl: string;
-    policyType: string;
-    policyUUID: string;
-    resolution: string;
-    resolutionUrl: string;
-    severity: string;
-    status: string;
-    targetType: string;
-    templateColumns: any;
-    templateName: string;
-    userId: string;
-    violationMessage: string;
-    waitingTime: number;
-    warningMailSubject: string;
-    warningMessage: string;
-}
+import { PermissionGuardService } from 'src/app/core/services/permission-guard.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { AdminService } from 'src/app/pacman-features/services/all-admin.service';
+import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
+import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { PolicyData } from 'src/app/shared/models/policy-data.model';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
+import { environment } from 'src/environments/environment';
 
 interface PolicyParams {
     key: string;
@@ -91,13 +52,7 @@ enum ActionType {
     selector: 'app-policy-knowledgebase-details',
     templateUrl: './policy-knowledgebase-details.component.html',
     styleUrls: ['./policy-knowledgebase-details.component.css'],
-    providers: [
-        LoggerService,
-        ErrorHandlingService,
-        CommonResponseService,
-        AutorefreshService,
-        AdminService,
-    ],
+    providers: [LoggerService, ErrorHandlingService, CommonResponseService, AdminService],
 })
 export class PolicyKnowledgebaseDetailsComponent implements OnInit, OnDestroy {
     @ViewChild('actionRef') actionRef: TemplateRef<any>;

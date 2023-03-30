@@ -23,6 +23,14 @@
     </div>
     <div class="header flex">
         <div class="header-text">
+            <img
+                class="header-autofix-icon"
+                *ngIf="policyDetails?.autoFixAvailable === 'true'"
+                alt="Autofix state"
+                src="/assets/icons/{{
+                    policyDetails?.autoFixEnabled === 'true' ? '' : 'no-'
+                }}autofix.svg"
+            />
             {{ policyDisplayName }}
         </div>
         <app-dropdown
