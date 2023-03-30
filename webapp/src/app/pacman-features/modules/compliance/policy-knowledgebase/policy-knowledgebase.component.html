@@ -20,10 +20,14 @@
     </div>
     <div class="type-count-container">
         <div class="type-count-wrapper flex flex-row">
-            <div class="type-count-content-container" *ngFor="let tab of tabName">
+            <div
+                class="type-count-content-container"
+                *ngFor="let category of policyCategories"
+                (click)="applyFilterByCategory(category)"
+            >
                 <div class="type-count-content-wrapper flex flex-col">
-                    <div class="type-name capitalize">{{ tab }}</div>
-                    <div class="type-count">{{ typeObj[tab] }}</div>
+                    <div class="type-name capitalize">{{ category }}</div>
+                    <div class="type-count">{{ policyCategoryDic[category] }}</div>
                 </div>
             </div>
         </div>
