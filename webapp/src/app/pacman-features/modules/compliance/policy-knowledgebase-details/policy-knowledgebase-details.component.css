@@ -67,34 +67,49 @@ img {
     gap: 32px;
 }
 
+.policy-parameters-wrapper,
 .description-wrapper {
     flex-direction: column;
     gap: 12px;
 }
 
+
 .attributes-wrapper {
     gap: 20px;
 }
 
-.attribute-wrapper {
+.policy-parameters-items {
+    gap: 6px 20px;
+}
+
+.attribute-wrapper,
+.policy-parameters-item
+ {
     flex-direction: column;
-    width: 33%;
     gap: 4px;
 }
 
-.attribute-header, .desc-header {
+.attribute-wrapper {
+    width: 33%;
+}
+
+.attribute-header,
+.desc-header,
+.policy-parameters-header,
+.policy-parameters-key {
     font: var(--text-body-2);
     color: var(--text-low-emphasis);
 }
 
 .attribute-value,
-.details-header-text {
+.details-header-text,
+.policy-parameters-value {
     font: var(--text-body-2);
     color: var(--text-high-emphasis);
 }
 
-.attribute-value > img {
-    margin-left: 6px;
+.attribute-value {
+    gap: 6px;
 }
 
 .desc {
@@ -148,7 +163,8 @@ img {
     width: 112px !important;
 }
 
-.policy-knowledgebase-wrapper ::ng-deep
+.policy-knowledgebase-wrapper
+    ::ng-deep
     .mat-form-field-appearance-legacy
     .mat-form-field-appearance-legacy {
     padding: 0 !important;
