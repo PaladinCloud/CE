@@ -57,7 +57,7 @@ export class CustomCardComponent implements OnInit {
         date.setFullYear(date.getFullYear() - 1);
         break;
     }
-    this.dateIntervalSelected(date, this.toDate); 
+    this.dateIntervalSelected(date, this.toDate);
   }
 
   dateIntervalSelected(from?, to?){
@@ -67,6 +67,7 @@ export class CustomCardComponent implements OnInit {
       selectedItem: this.selectedItem
     }
     this.graphIntervalSelected.emit(event);
+    this.matMenuTrigger.closeMenu();
   }
 
   onDropdownClose(){
