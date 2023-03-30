@@ -9,7 +9,7 @@ def create_template(base_role,template_file,TenantRoleName):
 
     
 
-    old_value = 'arn:aws:iam::xxxxx:role/tenant_ro'
+    old_value = 'arn:aws:iam::xxxxxxxx:role/tenant_ro'
     new_value = base_role
     # template['Resources']['paladincloudAgentRole']['Properties']['AssumeRolePolicyDocument']['Statement'][0]['Principal']['AWS'][0]=new_value
     statements = template['Resources']['paladincloudAgentRole']['Properties']['AssumeRolePolicyDocument']['Statement']
