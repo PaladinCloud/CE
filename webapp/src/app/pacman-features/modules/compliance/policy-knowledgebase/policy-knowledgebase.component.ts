@@ -42,8 +42,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
-  columnWidths = {'Policy': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
-  columnNamesMap = {name: "Policy"};
+  columnWidths = { Policy: 3, 'Source': 1, Severity: 1, Category: 1, 'Asset Type': 1 };
+  columnNamesMap = { name: 'Policy', provider: 'Source' };
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
