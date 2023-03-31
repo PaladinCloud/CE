@@ -47,6 +47,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -467,18 +468,18 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
 
                 if (!policies.isEmpty()) {
                     // Make map of policy severity, category
-                    List<Map<String, Object>> policiesevCatDetails = getPoliciesCatDetails(policies);
-                    Map<String, Object> policyCatDetails = policiesevCatDetails.parallelStream().collect(
-                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(POLICY_CATEGORY), (oldvalue, newValue) -> newValue));
+                    List<Map<String, Object>> policiesCatDetails = getPoliciesCatDetails(policies);
+                    Map<String, Object> policyCatDetails = policiesCatDetails.parallelStream().collect(
+                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(POLICY_CATEGORY), (oldValue, newValue) -> newValue));
 
-                    Map<String, Object> policiesevDetails = policiesevCatDetails.parallelStream().collect(
-                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(SEVERITY), (oldvalue, newValue) -> newValue));
+                    Map<String, Object> policiesDetails = policiesCatDetails.parallelStream().collect(
+                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(SEVERITY), (oldValue, newValue) -> newValue));
 
-                    Map<String, Object> policyAutoFixDetails = policiesevCatDetails.parallelStream().collect(
-                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(AUTOFIX), (oldvalue, newValue) -> newValue));
+                    Map<String, Object> policyAutoFixDetails = policiesCatDetails.parallelStream().collect(
+                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> Boolean.parseBoolean(c.get(AUTOFIX).toString()), (oldValue, newValue) -> newValue));
 
-                    Map<String, Object> policyAutoFixAvailableDetails = policiesevCatDetails.parallelStream().collect(
-                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> c.get(AUTOFIX_AVAILABLE), (oldvalue, newValue) -> newValue));
+                    Map<String, Object> policyAutoFixAvailableDetails = policiesCatDetails.parallelStream().collect(
+                            Collectors.toMap(c -> c.get(POLICYID).toString(), c -> Boolean.parseBoolean(c.get(AUTOFIX_AVAILABLE).toString()), (oldValue, newValue) -> newValue));
 
                     ExecutorService executor = Executors.newCachedThreadPool();
                     Map<String, Long> totalAssetCount = new HashMap<>();
@@ -532,8 +533,10 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     });
 
                     executor.shutdown();
-
-                    while (!executor.isTerminated()) {
+                    try {
+                        executor.awaitTermination(30, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        logger.error("Error @ getPolicyCompliance terminating executor", e);
                     }
 
                     policies.forEach(policyIdDetails -> {
@@ -604,7 +607,7 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                             contributionPercentage = 0.0;
                         }
 
-                        openIssuesByPolicy.put(SEVERITY, policiesevDetails.get(policyId));
+                        openIssuesByPolicy.put(SEVERITY, policiesDetails.get(policyId));
                         openIssuesByPolicy.put(NAME, policyIdDetails.get(DISPLAY_NAME).toString());
                         openIssuesByPolicy.put(COMPLIANCE_PERCENT, compliancePercentage);
 
