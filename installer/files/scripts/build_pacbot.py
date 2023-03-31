@@ -1,12 +1,10 @@
-from utils import get_provider_details, prepare_aws_client_with_given_aws_details, get_provider_details
-from datetime import datetime
 import os
-import subprocess
 import shutil
+import subprocess
 import time
-import boto3
 
-
+from datetime import datetime
+from utils import prepare_aws_client_with_given_aws_details, get_provider_details
 
 class Buildpacbot(object):
     """
@@ -23,7 +21,8 @@ class Buildpacbot(object):
     archive_type = "zip"  # What type of archive is required
     issue_email_template = ''
 
-    def __init__(self, aws_details, api_domain_url, upload_dir, log_dir, pacbot_code_dir, enable_vulnerability_feautre, auth_type, tenant_id, client_id):
+    def __init__(self, aws_details, api_domain_url, upload_dir, log_dir, pacbot_code_dir, enable_vulnerability_feature,
+                 auth_type, tenant_id, client_id):
         self.api_domain_url = api_domain_url
         self.cwd = pacbot_code_dir
         self.codebase_root_dir = pacbot_code_dir
@@ -31,12 +30,12 @@ class Buildpacbot(object):
         self.maven_build_log = os.path.join(log_dir, "maven_build.log")
         self.upload_dir = upload_dir
         self.s3_client = prepare_aws_client_with_given_aws_details('s3', aws_details)
-        self.enable_vulnerability_feautre = enable_vulnerability_feautre
+        self.enable_vulnerability_feature = enable_vulnerability_feature
         self.auth_type = auth_type
         self.tenant_id = tenant_id
         self.client_id = client_id
         self.client_cognito_id = client_cognito_id
-        self.client_cognito_secert = client_cognito_secert
+        self.client_cognito_secret = client_cognito_secret
         self.domain_cognito_url = domain_cognito_url
         self.cognito_callback_url = cognito_callback_url
         self.cognito_logout_url = cognito_logout_url
@@ -49,12 +48,12 @@ class Buildpacbot(object):
         self.upload_ui_files_to_s3(bucket)
 
         print("Maven build started...\n")
+
         self.build_jar_and_ui_from_code(bucket, s3_key_prefix)
-
         self.archive_ui_app_build(bucket, s3_key_prefix)
-
         self.write_to_debug_log("Maven build completed!!!")
         print("Maven build completed!!!\n")
+
         self._clean_up_all()
 
     def upload_ui_files_to_s3(self, bucket):
@@ -65,7 +64,7 @@ class Buildpacbot(object):
             bucket (str): S3 bucket name
         """
         print("Uploading Email templates to S3...............\n")
-        self.write_to_debug_log("Uploading email teamplate files to S3...")
+        self.write_to_debug_log("Uploading email template files to S3...")
         folder_to_upload = "pacman-v2-email-template"
         local_folder_path = os.path.join(self.codebase_root_dir, 'emailTemplates', folder_to_upload)
         files_to_upload = []
@@ -74,15 +73,15 @@ class Buildpacbot(object):
             files_to_upload = file_names
 
         if not files_to_upload:
-            raise Exception("Email teamplate files are not found in %s" % str(local_folder_path))
+            raise Exception("Email template files are not found in %s" % str(local_folder_path))
 
         for file_name in files_to_upload:
             file_path = os.path.join(local_folder_path, file_name)
             extra_args = {'ACL': 'public-read'}  # To make this public
             key = folder_to_upload + '/' + file_name
 
-            self.issue_email_template = '%s/%s/%s' % (self.s3_client.meta.endpoint_url, bucket, folder_to_upload)  # To be added in config.ts
-
+            # To be added in config.ts
+            self.issue_email_template = '%s/%s/%s' % (self.s3_client.meta.endpoint_url, bucket, folder_to_upload)
             self.s3_client.upload_file(file_path, bucket, key, ExtraArgs=extra_args)
 
         self.write_to_debug_log("Email templates upload to S3 completed!!!")
@@ -122,13 +121,15 @@ class Buildpacbot(object):
         """
         webapp_dir = self._get_web_app_directory()
         self._update_variables_in_ui_config(webapp_dir)
+
         self.build_api_job_jars(self.codebase_root_dir)
         self._replace_webapp_new_config_with_original(webapp_dir)
         self.upload_jar_files(self.codebase_root_dir, bucket, s3_key_prefix)
 
     def build_api_job_jars(self, working_dir):
         print("Started building the jar...............\n")
-        self.write_to_debug_log("Maven build started...(Please check %s log for more details)" % str(self.maven_build_log))
+        self.write_to_debug_log(
+            "Maven build started...(Please check %s log for more details)" % str(self.maven_build_log))
 
         stdout, stderr = self.run_bash_command(self.mvn_clean_command, working_dir)
         stdout, stderr = self.run_bash_command(self.mvn_build_command, working_dir)
@@ -166,20 +167,22 @@ class Buildpacbot(object):
                 lines[idx] = lines[idx].replace("AD_AUTHENTICATION: false", "AD_AUTHENTICATION: true")
 
             if "qualysEnabled: false" in line:
-                lines[idx] = lines[idx].replace("qualysEnabled: false", "qualysEnabled: %s" % self.enable_vulnerability_feautre)
+                lines[idx] = lines[idx].replace("qualysEnabled: false",
+                                                "qualysEnabled: %s" % self.enable_vulnerability_feature)
 
             if "ISSUE_MAIL_TEMPLATE_URL: ''" in line:
-                lines[idx] = lines[idx].replace("ISSUE_MAIL_TEMPLATE_URL: ''", "ISSUE_MAIL_TEMPLATE_URL: '" + self.issue_email_template + "'")
-            
-            if  self.auth_type == "AZURE_AD":
+                lines[idx] = lines[idx].replace("ISSUE_MAIL_TEMPLATE_URL: ''",
+                                                "ISSUE_MAIL_TEMPLATE_URL: '" + self.issue_email_template + "'")
+
+            if self.auth_type == "AZURE_AD":
                 if "AUTH_TYPE: DB" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: AZURE_SSO")
                 if "tenant: '" in line:
-                    lines[idx] = "tenant: '"+self.tenant_id+"' \n,"
+                    lines[idx] = "tenant: '" + self.tenant_id + "',\n"
                 if "clientId: '" in line:
-                    lines[idx] = "clientId: '"+self.client_id+"'"
-                    
-            if  self.auth_type == "DB":
+                    lines[idx] = "clientId: '" + self.client_id + "'"
+
+            if self.auth_type == "DB":
                 if "AUTH_TYPE: AZURE_SSO" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: AZURE_SSO", "AUTH_TYPE: DB")
 
@@ -187,20 +190,22 @@ class Buildpacbot(object):
                 if "AUTH_TYPE: DB" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: COGNITO")
                 if "sso_api_username: '" in line:
-                    lines[idx] = "sso_api_username: '"+self.client_cognito_id+"' \n,"
+                    lines[idx] = "sso_api_username: '" + self.client_cognito_id + "',\n"
                 if "sso_api_pwd: '" in line:
-                    lines[idx] = "sso_api_pwd: '" + self.client_cognito_secert+"'\n,"
+                    lines[idx] = "sso_api_pwd: '" + self.client_cognito_secret + "',\n"
                 if "loginURL: '" in line:
-                    lines[idx] = "loginURL: '" + self.domain_cognito_url + "/login?" + "client_id="  + self.client_cognito_id+ "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url +"'\n,"
+                    lines[
+                        idx] = "loginURL: '" + self.domain_cognito_url + "/login?" + "client_id=" + self.client_cognito_id + "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url + "',\n"
                 if "redirectURL: '" in line:
-                    lines[idx] = "redirectURL: '"+ self.cognito_callback_url +"'\n,"
+                    lines[idx] = "redirectURL: '" + self.cognito_callback_url + "',\n"
                 if "cognitoTokenURL: '" in line:
-                    lines[idx] = "cognitoTokenURL: '" + self.domain_cognito_url + "/oauth2/token""'\n,"
+                    lines[idx] = "cognitoTokenURL: '" + self.domain_cognito_url + "/oauth2/token" + "',\n"
                 if "logout: '" in line:
-                    lines[idx] = "logout: '" +  self.domain_cognito_url + "/logout?" + "client_id="  + self.client_cognito_id+ "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url +"'\n,"
+                    lines[
+                        idx] = "logout: '" + self.domain_cognito_url + "/logout?" + "client_id=" + self.client_cognito_id + "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url + "',\n"
                 if "CloudformationTemplateUrl: '" in line:
-                    lines[idx] = "CloudformationTemplateUrl:'" + self.cloudformation_template_url +"'\n"
-                
+                    lines[idx] = "CloudformationTemplateUrl:'" + self.cloudformation_template_url + "'\n"
+
         with open(config_file, 'w') as f:
             f.writelines(lines)
 
@@ -234,7 +239,6 @@ class Buildpacbot(object):
         with open(self.debug_log, 'a+') as logfile:
             logfile.write("%s: %s\n" % (now, msg))
 
-
 if __name__ == "__main__":
     """
     This script is executed from the provisioner of terraform resource to build pacbot app
@@ -246,24 +250,26 @@ if __name__ == "__main__":
     provider_json_file = os.getenv('PROVIDER_FILE')
     s3_bucket = os.getenv('S3_BUCKET')
     s3_key_prefix = os.getenv('S3_KEY_PREFIX')
-    enable_vulnerability_feautre = os.getenv('ENABLE_VULNERABILITY_FEATURE')
+    enable_vulnerability_feature = os.getenv('ENABLE_VULNERABILITY_FEATURE')
     aws_details = get_provider_details("aws", provider_json_file)
     auth_type = os.getenv('AUTHENTICATION_TYPE')
     tenant_id = os.getenv('AD_TENANT_ID')
     client_id = os.getenv('AD_CLIENT_ID')
     client_cognito_id = os.getenv('COGNITO_CLIENT_ID')
-    client_cognito_secert = os.getenv('COGNITO_CLIENT_SECRET')
-    domain_cognito_url = "https://"+ str(os.getenv('COGNITO_DOMAIN')) + ".auth." + str(os.getenv('AWS_REGION')) + ".amazoncognito.com"
-    cognito_callback_url = os.getenv('APPLICATION_DOMAIN')+"/callback"
-    cognito_logout_url = "https://"+os.getenv('APPLICATION_DOMAIN')+"/home"
-    cloudformation_template_url = "https://"+ os.getenv('S3_BUCKET') + ".s3." + os.getenv('AWS_REGION') + ".amazonaws.com/deployment.yaml"
+    client_cognito_secret = os.getenv('COGNITO_CLIENT_SECRET')
+    domain_cognito_url = "https://" + str(os.getenv('COGNITO_DOMAIN')) + ".auth." + str(
+        os.getenv('AWS_REGION')) + ".amazoncognito.com"
+    cognito_callback_url = os.getenv('APPLICATION_DOMAIN') + "/callback"
+    cognito_logout_url = "https://" + os.getenv('APPLICATION_DOMAIN') + "/home"
+    cloudformation_template_url = "https://" + os.getenv('S3_BUCKET') + ".s3." + os.getenv(
+        'AWS_REGION') + ".amazonaws.com/deployment.yaml"
     Buildpacbot(
         aws_details,
         api_domain_url,
         dist_files_upload_dir,
         log_dir,
         pacbot_code_dir,
-        enable_vulnerability_feautre,auth_type,tenant_id,client_id).build_api_and_ui_apps(
-            s3_bucket,
-            s3_key_prefix
+        enable_vulnerability_feature, auth_type, tenant_id, client_id).build_api_and_ui_apps(
+        s3_bucket,
+        s3_key_prefix
     )
