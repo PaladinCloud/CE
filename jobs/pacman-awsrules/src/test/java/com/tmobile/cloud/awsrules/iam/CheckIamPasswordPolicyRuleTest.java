@@ -27,6 +27,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +51,7 @@ import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,IAMUtils.class})
+@PrepareForTest({ PacmanUtils.class,IAMUtils.class, Annotation.class})
 public class CheckIamPasswordPolicyRuleTest {
 
     @InjectMocks
@@ -87,7 +89,8 @@ public class CheckIamPasswordPolicyRuleTest {
         CheckIamPasswordPolicyRule spy = Mockito.spy(new CheckIamPasswordPolicyRule());
         
         Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
-        
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(identityManagementClient.getAccountPasswordPolicy()).thenReturn(result);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));
         
@@ -108,8 +111,16 @@ public class CheckIamPasswordPolicyRuleTest {
         assertThatThrownBy(
                 () -> iamPasswordPolicyRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
-  
-    
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     @Test
     public void getHelpTextTest(){
         assertThat(iamPasswordPolicyRule.getHelpText(), is(notNullValue()));
