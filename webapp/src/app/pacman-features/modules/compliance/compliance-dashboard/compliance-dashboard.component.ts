@@ -869,13 +869,8 @@ export class ComplianceDashboardComponent implements OnInit {
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            isLink: false
+            isLink: isPolicyCol
           }
-          cellObj = {
-            ...cellObj,
-            isLink: isPolicyCol,
-            isCentered: !isPolicyCol,
-          };
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
         });

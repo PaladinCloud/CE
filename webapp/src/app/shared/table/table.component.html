@@ -140,7 +140,7 @@
                             alt=""
                         />
                     </th>
-                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="element[column].isCentered">
+                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="centeredColumns[column]">
                     <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
                         <img class="pointer menu-btn" *ngIf="element[column].menuItems.length>0" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
                         <mat-menu #actionMenu="matMenu">

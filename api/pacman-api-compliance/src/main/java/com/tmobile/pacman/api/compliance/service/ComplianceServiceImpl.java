@@ -47,7 +47,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -533,11 +532,13 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     });
 
                     executor.shutdown();
-                    try {
-                        executor.awaitTermination(30, TimeUnit.SECONDS);
-                    } catch (InterruptedException e) {
-                        logger.error("Error @ getPolicyCompliance terminating executor", e);
-                    }
+
+                    //try {
+                    //    executor.awaitTermination(30, TimeUnit.SECONDS);
+                    //} catch (InterruptedException e) {
+                    //    logger.error("Error @ getPolicyCompliance terminating executor", e);
+
+                    while (!executor.isTerminated()) { }
 
                     policies.forEach(policyIdDetails -> {
                         Map<String, String> policyIdwithsScanDateMap = new HashMap<>();

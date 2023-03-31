@@ -102,8 +102,11 @@ export class DropdownComponent implements OnChanges {
       return /^\d/.test(option);
   }
 
-  capitalizeFirstLetter(option:string){
+  capitalizeFirstLetter(option: string | unknown[]) {
+    if (typeof option === 'string') {
       return option.charAt(0).toUpperCase() + option.slice(1);
+    }
+    return option;
   }
 }
 
