@@ -6,24 +6,19 @@ import com.tmobile.cso.pacman.aqua.util.HttpUtil;
 import com.tmobile.cso.pacman.aqua.util.Util;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AquaDataImporter {
 
   protected static final String BASE_API_URL = System.getProperty("aqua_api_url");
 
-  protected static final String userName = System.getProperty("aqua_username");
+  protected static final String AQUA_USERNAME = System.getProperty("aqua_username");
 
-  protected static final String password = System.getProperty("aqua_password");
+  protected static final String AQUA_PASSWORD = System.getProperty("aqua_password");
 
   abstract public Map<String, Object> execute();
 
   /** The api map. */
   Map<String, String> apiMap = null;
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AquaDataImporter.class);
-
 
   protected AquaDataImporter() {
     apiMap = new HashMap<String, String>();
@@ -38,8 +33,8 @@ public abstract class AquaDataImporter {
     String token = null;
     String tokenUri = BASE_API_URL + apiMap.get("signIn");
     JsonObject inputObject = new JsonObject();
-      inputObject.addProperty("email", userName);
-    inputObject.addProperty("password", password);
+      inputObject.addProperty("email", AQUA_USERNAME);
+    inputObject.addProperty("password", AQUA_PASSWORD);
     String input = inputObject.toString();
     try {
       String response = HttpUtil.post(tokenUri,input,null , null);

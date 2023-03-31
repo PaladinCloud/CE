@@ -32,12 +32,10 @@ public class MainUtil {
      * @throws Exception the exception
      */
     public static void setup(Map<String, String> params) throws Exception {
-     	ConfigUtil.setConfigProperties(params.get(Constants.CONFIG_CREDS));
-    	
-        if( null!= params &&  !params.isEmpty()){
-			params.forEach((k,v) -> System.setProperty(k, v));
-		}
-      
+      ConfigUtil.setConfigProperties(params.get(Constants.CONFIG_CREDS));
+      if (!params.isEmpty()) {
+        params.forEach(System::setProperty);
+      }
     }
 
 }
