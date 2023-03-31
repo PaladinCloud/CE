@@ -4,8 +4,8 @@
     width: 300px;
 }
 
-.date-selection-header,
 .date-selection-actions {
+    border-top: 2px solid var(--border-100);
     display: flex;
     margin: 0;
     height: 42px;
@@ -14,21 +14,10 @@
     padding: 0 24px;
 }
 
-.date-selection-header {
-    border-bottom: 2px solid var(--border-100);
-    border-radius: 16px 16px 0 0;
-    font: var(--text-body-2);
-    color: var(--text-high-emphasis);
-}
-
 .date-selection-content {
     padding: 0 16px;
     margin: 0;
     background: var(--background-white);
-}
-
-.date-selection-actions {
-    border-top: 2px solid var(--border-100);
 }
 
 .apply-btn {
