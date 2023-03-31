@@ -31,12 +31,12 @@ Paladin Data Management              : AWS ElasticSearch, RDS, S3
 
 ### Region-Specific AMI IDs
 
-|Region | AMI ID |
-|:----: | :---:  |
-| Us-east-1(N. Virginia) | ami-08fe6537d003e100d |
-| Us-east-2(Ohio) | ami-0c72761d90a289a72 |
+|          Region          |        AMI ID         |
+|:------------------------:|:---------------------:|
+|  Us-east-1(N. Virginia)  | ami-08fe6537d003e100d |
+|     Us-east-2(Ohio)      | ami-0c72761d90a289a72 |
 | Us-west-1(N. California) | ami-0a27b07625c74cf3c |
-| Us-west-2(Oregon) | ami-03e2babb4296bdd60 |
+|    Us-west-2(Oregon)     | ami-03e2babb4296bdd60 |
 
 * Use the following configuration:
 
@@ -55,7 +55,7 @@ Paladin Data Management              : AWS ElasticSearch, RDS, S3
 * The installer box or machine from where the installation is happening should be on the same VPC or should be able to
   connect to MySQL DB.
 
-**Note:** Our AMI is in AWS Linux and we continuously test our application using Amazon AWS Linux-based installer
+**Note:** Our AMI is in AWS Linux, and we continuously test our application using Amazon AWS Linux-based installer
 boards. If you want any other OS flavor, please raise a
 ticket [here](https://github.com/PaladinCloud/CE/issues/new/choose).
 
@@ -64,7 +64,7 @@ Our Installation Guide is available in two formats: Quick Installation and Stand
 ## Quick Installation Guide
 
 Click [here](https://github.com/PaladinCloud/CE/wiki/Quick-Installation-Guide#quick-installation-guide) for the Quick
-Installation Guide with minimal instructions for those already comfortable with performing such installations.
+Installation Guide with minimal instructions for those already comfortable performing such installations.
 
 ## Standard Installation Guide
 
@@ -75,13 +75,13 @@ Standard Installation Guide with detailed step-by-step instructions to install P
 
 If you need to check the status after deployment, use the following command:
 
-`Sudo python3 manager.py status`
+`sudo python3 manager.py status`
 
 This command gives the list of resources deployed in AWS. It also gives DB details, user, password, and ALB URL.
 
 ## Redeploy Paladin
 
-Please use the redeploy option to make changes and rerun the Install.
+Please use the `redeploy` option to make changes and rerun the installer.
 Click [here](https://github.com/PaladinCloud/CE/wiki/How-to-Upgrade-Redeploy-Paladin#upgraderedeploy-paladin) for steps
 to Redeploy Paladin.
 
@@ -89,7 +89,7 @@ to Redeploy Paladin.
 
 If you need to remove Paladin, run the following command to uninstall Paladin.
 
-`Sudo python3 manager.py destroy`
+`sudo python3 manager.py destroy`
 
 **Note:** This command will terminate all the AWS resources created during installation.
 
@@ -120,7 +120,7 @@ information on AWS regions and services.
 
 ## Important Links
 
-* [How to Setup SSL](https://github.com/PaladinCloud/CE/wiki/How-to-Setup-SSL#how-to-setup-ssl)
+* [How to Set up SSL](https://github.com/PaladinCloud/CE/wiki/How-to-Setup-SSL#how-to-setup-ssl)
 * [Upgrade Redeploy Paladin](https://github.com/PaladinCloud/CE/wiki/How-to-Upgrade-Redeploy-Paladin#upgraderedeploy-paladin)
 * [Scale Up Paladin Infrastructure](https://github.com/PaladinCloud/CE/wiki/How-to-Scale-Paladin-Infrastructure#how-to-scale-paladin-infrastructure)
 * [List of AWS Resources Created by the Installer](https://github.com/PaladinCloud/CE/wiki/List-of-AWS-Resources-Created-by-the-Installer#list-of-aws-resources-created-by-the-installer)
