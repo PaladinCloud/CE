@@ -74,7 +74,7 @@ public class ImagesScannedByAquaRule extends BasePolicy {
       String imageName = buildImageNameFromResourceId(imageId);
       String entityType = resourceAttributes.get(PacmanRuleConstants.AQUA_ENTITY_TYPE);
       List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
-      if (PacmanUtils.calculateLaunchedDuration(discoveryDate) >= Long.parseLong(discoveredDaysRange)) {
+      if (PacmanUtils.calculateLaunchedDuration(discoveryDate) > Long.parseLong(discoveredDaysRange)) {
         try {
           vulnerabilityInfoList = PacmanUtils.checkImageIdFromElasticSearchForAqua(imageName, aquaEsAPI, "image_name", null);
           if (CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
