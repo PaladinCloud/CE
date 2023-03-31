@@ -45,10 +45,6 @@
             <div class="details-header-text">Policy Details</div>
         </div>
         <div class="details-content-wrapper flex">
-            <div class="description-wrapper flex">
-                <span class="desc-header">Description</span>
-                <span class="desc">{{ policyDescription }}</span>
-            </div>
             <div class="attributes-wrapper flex">
                 <div class="attribute-wrapper flex">
                     <span class="attribute-header">Cloud</span>
@@ -92,7 +88,12 @@
                     </span>
                 </div>
             </div>
-            <div class="policy-parameters-wrapper flex">
+            <div class="description-wrapper flex">
+                <span class="desc-header">Description</span>
+                <span class="desc">{{ policyDescription }}</span>
+            </div>
+            <!-- TODO: make params as talble-list -->
+            <!-- <div class="policy-parameters-wrapper flex">
                 <span class="policy-parameters-header">Parameters</span>
                 <div class="policy-parameters-items flex flex-wrap">
                     <div
@@ -103,7 +104,7 @@
                         <div class="policy-parameters-value">{{ policyParam.value }}</div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         <div class="details-footer">
             <a class="details-footer-text flex" target="_blank" [href]="resolutionUrl">
