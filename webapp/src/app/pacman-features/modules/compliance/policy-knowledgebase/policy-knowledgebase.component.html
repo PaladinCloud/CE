@@ -33,6 +33,7 @@
     <div class="policy-knowledgebase-content-wrapper">
         <div class="policy-knowledgebase-content">
             <app-table
+                [centeredColumns]="centeredColumns"
                 [columnsSortFunctionMap]="columnsSortFunctionMap"
                 [columnWidths]="columnWidths"
                 [data]="tableData"
@@ -43,6 +44,7 @@
                 [filterTagLabels]="filterTagLabels"
                 [filterTypeLabels]="filterTypeLabels"
                 [headerColName]="headerColName"
+                [rowSize]="'SM'"
                 [searchQuery]="searchTxt"
                 [showAddRemoveCol]="showAddRemoveCol"
                 [showDownloadBtn]="true"

@@ -62,6 +62,13 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
+  centeredColumns = {
+    Policy: false,
+    Source: true,
+    Severity: true,
+    Category: true,
+    'Asset Type': false,
+  };
   columnWidths = { Policy: 3, Source: 1, Severity: 1, Category: 1, 'Asset Type': 1 };
   columnNamesMap = { name: 'Policy', provider: 'Source' };
   columnsSortFunctionMap = {
