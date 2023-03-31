@@ -18,15 +18,19 @@
             {{ breadcrumbPresent }}
         </div>
     </div>
-    <div class="type-count-container">
-        <div class="type-count-wrapper flex flex-row">
-            <div class="type-count-content-container" *ngFor="let category of policyCategories">
-                <div class="type-count-content-wrapper flex flex-col flex-start">
-                    <div class="type-name capitalize">{{ category }}</div>
-                    <div class="type-count" (click)="applyFilterByCategory(category)">
-                        {{ policyCategoryDic[category] }}<mat-icon>chevron_right</mat-icon>
-                    </div>
-                </div>
+    <div class="policy-categories-container flex flex-row">
+        <div
+            class="policy-category-item flex flex-align-center"
+            *ngFor="let category of policyCategories"
+            (click)="applyFilterByCategory(category)"
+        >
+            <img
+                class="policy-category-icon"
+                [src]="'/assets/icons/' + tableImageDataMap[category].image + '.svg'"
+            />
+            <div class="policy-category-name capitalize">{{ category }}</div>
+            <div class="policy-category-count">
+                {{ policyCategoryDic[category] }}
             </div>
         </div>
     </div>

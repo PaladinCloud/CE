@@ -120,13 +120,11 @@ import { PacmanIssuesService } from "../../services/pacman-issues.service";
 import { ProgressBarChartComponent } from "./progress-bar-chart/progress-bar-chart.component";
 import { HorizontalBarChartComponent } from "./horizontal-bar-chart/horizontal-bar-chart.component";
 import { MatMenuModule } from "@angular/material/menu";
-import { MatIconModule } from "@angular/material/icon";
 
 @NgModule({
   imports: [
     MatMenuModule,
     MatCardModule,
-    MatIconModule,
     MatGridListModule,
     MatProgressBarModule,
     CommonModule,

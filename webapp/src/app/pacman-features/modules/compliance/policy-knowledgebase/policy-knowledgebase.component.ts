@@ -88,6 +88,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     },
   };
   tableImageDataMap = {
+      [PolicyCategory.ALL_POLICIES]: {
+        image: 'policy-icon',
+        imageOnly: true
+      },
       security:{
           image: "category-security",
           imageOnly: true
