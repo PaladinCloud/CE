@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class, Annotation.class })
 public class AWSSupportAccessRoleTest {
 
 	@InjectMocks
@@ -74,7 +75,8 @@ public class AWSSupportAccessRoleTest {
 		when(IAMUtils.getSupportRoleByPolicyArn(anyString(),anyObject())).thenReturn(mockRoleIds());
 		when(PacmanUtils.getAssumedRolePolicies(anySetOf(String.class),anyString())).thenReturn(mockAssumedPolicies());
 		when(IAMUtils.isSupportRoleAssumedByUserOrGroup(anySetOf(String.class), anyObject())).thenReturn(false);
-
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
@@ -166,12 +168,21 @@ public class AWSSupportAccessRoleTest {
 		
 		when(IAMUtils.getAwsManagedPolicyArnByName(anyString(),anyObject())).thenReturn("arn:aws:iam::aws:policy/AWSSupportAccess");
 		when(IAMUtils.getSupportRoleByPolicyArn(anyString(),anyObject())).thenReturn(null);
-
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
 	}
-	
+	private Annotation getMockAnnotation() {
+		Annotation annotation=new Annotation();
+		annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+		annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+		annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+		annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+		annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+		return annotation;
+	}
 	@Test
 	public void getHelpTextTest() {
 		assertThat(awsSupportAccessRole.getHelpText(), is(notNullValue()));
