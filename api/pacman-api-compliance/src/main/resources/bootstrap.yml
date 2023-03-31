@@ -12,19 +12,20 @@ spring:
       password: ${CONFIG_PASSWORD}
       username: user
       label: latest
-       
   profiles:
     active: ${ENVIRONMENT:prd}
-   
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
-security: 
+security:
   oauth2:
     resource:
       jwk:
         key-set-uri: https://cognito-idp.${AWS_USERPOOL_REGION}.amazonaws.com/${USERPOOL_ID}/.well-known/jwks.json
       client:
         clientId: ${CLIENT_ID}
+
 query:
-    assetGroupQuery: SELECT groupName, targetType, attributeName, attributeValue, dataSource, aliasQuery FROM cf_AssetGroups
-    
+  assetGroupQuery: SELECT groupName, targetType, attributeName, attributeValue, dataSource, aliasQuery FROM cf_AssetGroups
+
 spring.jpa.hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
