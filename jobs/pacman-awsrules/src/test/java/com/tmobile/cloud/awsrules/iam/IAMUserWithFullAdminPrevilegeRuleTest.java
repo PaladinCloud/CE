@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,7 +46,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, IAMUtils.class, Annotation.class })
 public class IAMUserWithFullAdminPrevilegeRuleTest {
 
 	@InjectMocks
@@ -83,7 +84,8 @@ public class IAMUserWithFullAdminPrevilegeRuleTest {
 		when(IAMUtils.isPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 		when(IAMUtils.isInlineUserPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
 		when(IAMUtils.isInlineGroupPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
-		
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
@@ -183,7 +185,8 @@ public class IAMUserWithFullAdminPrevilegeRuleTest {
 		
 		when(IAMUtils.getAttachedPolicyOfIAMUser(anyString(),anyObject())).thenReturn(new ArrayList<>());
 		when(IAMUtils.isInlineUserPolicyWithFullAdminAccess(anyString(), anyObject())).thenReturn(true);
-
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 		PolicyResult ruleResult = spy.execute(ruleParam, resourceAttribute);
 
 		assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
@@ -193,7 +196,15 @@ public class IAMUserWithFullAdminPrevilegeRuleTest {
 	public void getHelpTextTest() {
 		assertThat(iamUserWithFullAdminPrevilegeRule.getHelpText(), is(notNullValue()));
 	}
-
+	private Annotation getMockAnnotation() {
+		Annotation annotation=new Annotation();
+		annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+		annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+		annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+		annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+		annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+		return annotation;
+	}
 	private Map<String, String> getInputParamMap() {
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");
