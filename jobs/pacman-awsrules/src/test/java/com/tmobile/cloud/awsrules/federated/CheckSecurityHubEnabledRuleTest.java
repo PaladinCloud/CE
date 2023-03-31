@@ -3,6 +3,7 @@ package com.tmobile.cloud.awsrules.federated;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
@@ -28,7 +29,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, Annotation.class})
 public class CheckSecurityHubEnabledRuleTest {
 
     @InjectMocks
@@ -60,15 +61,27 @@ public class CheckSecurityHubEnabledRuleTest {
     public void executeFailTest() throws Exception {
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + SECURITY_HUB_URL), any(), any(),
                 any(), any(), any())).thenReturn(null);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         PolicyResult ruleResult = checkSecurityHubEnabledRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
     }
-
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     @Test
     public void regionParamNotPresentTest() throws Exception {
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + SECURITY_HUB_URL), any(), any(),
                 any(), any(), any())).thenReturn(null);
-        ruleParam.remove(PacmanRuleConstants.REGIONS);
+        ruleParam.put(PacmanRuleConstants.REGIONS,"");
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         PolicyResult ruleResult = checkSecurityHubEnabledRule.execute(ruleParam, resourceAttribute);
         assertEquals(PacmanSdkConstants.STATUS_FAILURE, ruleResult.getStatus());
     }
