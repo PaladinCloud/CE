@@ -75,8 +75,9 @@ public class PacmanRuleConstants {
   public static final String NVD_URL = "nvdURL";
   public static final String AQUA_SOLUTION = "aquaSolution";
   public static final String VULNERABLE_IMAGE_DETAILS = "vulnerableImageDetails";
-  public static final String AQUA_ENTITY_TYPE = "_type";
+  public static final String AQUA_ENTITY_TYPE = "_entitytype";
   public static final String AQUA_LAST_VULN_SCAN = "last_found_date";
+  public static final String AQUA_MORE_INFO = "More Info";
 
   private PacmanRuleConstants() {
         throw new IllegalAccessError("Constant class");
@@ -343,6 +344,7 @@ public class PacmanRuleConstants {
     public static final String MATCH_PHRASE = "match_phrase";
     public static final String REGION_AND_COUNT = "regionAndCount";
     public static final String FIRST_DISCOVERED_ON = "firstdiscoveredon";
+    public static final String DISCOVEREY_DATE = "discoverydate";
     public static final String FAILED_MESSAGE = "failed";
     public static final String DISCOVERED_DAYS_RANGE = "discoveredDaysRange";
     public static final String ES_URI = "ES_URI";
