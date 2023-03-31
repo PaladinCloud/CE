@@ -24,6 +24,8 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +38,7 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class OnpremScannedByQualysRuleTest {
 
     @InjectMocks
@@ -48,6 +50,8 @@ public class OnpremScannedByQualysRuleTest {
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString(), anyString())).thenReturn(
                 true);
         when(PacmanUtils.formatUrl(anyObject(),anyString())).thenReturn("host");
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.checkInstanceIdFromElasticSearchForQualys(anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getMapObject("r_123 "));
         assertThat(onpremScannedByQualysRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
         
@@ -63,7 +67,15 @@ public class OnpremScannedByQualysRuleTest {
         assertThatThrownBy(
                 () -> onpremScannedByQualysRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
-    
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     @Test
     public void getHelpTextTest(){
         assertThat(onpremScannedByQualysRule.getHelpText(), is(notNullValue()));
