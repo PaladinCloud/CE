@@ -15,29 +15,55 @@
 <div class="policy-knowledgebase-wrapper flex flex-between flex-col">
     <div class="policy-header">
         <div class="title">
-            {{breadcrumbPresent}}
+            {{ breadcrumbPresent }}
         </div>
     </div>
-    <div class="type-count-container">
-        <div class="type-count-wrapper flex flex-row">
-            <div class="type-count-content-container" *ngFor="let tab of tabName">
-                <div class="type-count-content-wrapper flex flex-col">
-                    <div class="type-name capitalize">{{tab}}</div>
-                    <div class="type-count">{{ typeObj[tab] }}</div>
-                </div>
+    <div class="policy-categories-container flex flex-row">
+        <div
+            class="policy-category-item flex flex-align-center"
+            *ngFor="let category of policyCategories"
+            (click)="applyFilterByCategory(category)"
+        >
+            <img
+                class="policy-category-icon"
+                [src]="'/assets/icons/' + tableImageDataMap[category].image + '.svg'"
+            />
+            <div class="policy-category-name capitalize">{{ category }}</div>
+            <div class="policy-category-count">
+                {{ policyCategoryDic[category] }}
             </div>
         </div>
     </div>
-    <div class='policy-knowledgebase-content-wrapper'>
+    <div class="policy-knowledgebase-content-wrapper">
         <div class="policy-knowledgebase-content">
-            <app-table (rowSelectEventEmitter)="goToDetails($event)" 
-                [data]="tableData" [columnWidths]="columnWidths"
+            <app-table
+                [centeredColumns]="centeredColumns"
                 [columnsSortFunctionMap]="columnsSortFunctionMap"
-                [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
-                [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol"
-                (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick($event)" [doLocalSearch]="doLocalSearch"
-                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [totalRows]="totalRows" [showFilterBtn]="true" [doLocalFilter]="true"
-                [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters" [showDownloadBtn]="true">
+                [columnWidths]="columnWidths"
+                [data]="tableData"
+                [direction]="direction"
+                [doLocalFilter]="true"
+                [doLocalSearch]="doLocalSearch"
+                [filteredArray]="filters"
+                [filterTagLabels]="filterTagLabels"
+                [filterTypeLabels]="filterTypeLabels"
+                [headerColName]="headerColName"
+                [rowSize]="'SM'"
+                [searchQuery]="searchTxt"
+                [showAddRemoveCol]="showAddRemoveCol"
+                [showDownloadBtn]="true"
+                [showFilterBtn]="true"
+                [showSearchBar]="showSearchBar"
+                [tableDataLoaded]="tableDataLoaded"
+                [tableErrorMessage]="errorMessage"
+                [tableScrollTop]="tableScrollTop"
+                [totalRows]="totalRows"
+                [whiteListColumns]="whiteListColumns"
+                (downloadClicked)="handlePopClick($event)"
+                (rowSelectEventEmitter)="goToDetails($event)"
+                (searchCalledEventEmitter)="callNewSearch($event)"
+                (searchInColumnsChanged)="handleSearchInColumnsChange($event)"
+            >
             </app-table>
         </div>
     </div>
