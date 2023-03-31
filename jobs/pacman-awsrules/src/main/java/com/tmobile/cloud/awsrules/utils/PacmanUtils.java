@@ -2340,7 +2340,7 @@ public class PacmanUtils {
 
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get(PacmanRuleConstants.HITS).toString());
-            Long total = hitsJson.get(PacmanRuleConstants.TOTAL).getAsLong();
+            Long total = hitsJson.get(PacmanRuleConstants.TOTAL).getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsLong();
             if (total > 0) {
                 return true;
             }
