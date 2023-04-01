@@ -461,12 +461,13 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
-  clearSearchText(){
-    this.searchQuery = "";
-    if(this.tableErrorMessage == 'noDataAvailable') this.tableErrorMessage = "";
-    if(this.doLocalSearch){
-      this.filterAndSort();
-    }else{
+  clearSearchTextAndFilters() {
+    this.searchQuery = '';
+    if (this.tableErrorMessage === 'noDataAvailable') {
+      this.tableErrorMessage = '';
+    }
+    this.removeAllFilters();
+    if (!this.doLocalSearch) {
       this.searchCalledEventEmitter.emit(this.searchQuery);
     }
   }
