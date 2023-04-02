@@ -226,7 +226,7 @@ public class ESUtilsTest {
      */
     @Test
   	public void convertAttributetoKeyword() throws Exception {
-    	assertEquals(ESUtils.convertAttributetoKeyword("attributeName"), "attributeName.keyword");
+    	assertEquals(ESUtils.convertAttributeToKeyword("attributeName"), "attributeName.keyword");
     }
     
     
