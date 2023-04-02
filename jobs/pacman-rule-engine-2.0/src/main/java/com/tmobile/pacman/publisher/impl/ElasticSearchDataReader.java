@@ -25,19 +25,19 @@ package com.tmobile.pacman.publisher.impl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.rest.RestStatus;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.opensearch.action.get.GetRequest;
+import org.opensearch.action.get.GetResponse;
+import org.opensearch.action.search.SearchRequest;
+import org.opensearch.action.search.SearchResponse;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.index.query.QueryBuilder;
+import org.opensearch.index.query.QueryBuilders;
+import org.opensearch.rest.RestStatus;
+import org.opensearch.search.SearchHits;
+import org.opensearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.tmobile.pacman.commons.autofix.AutoFixPlan;
 import com.tmobile.pacman.util.ESUtils;
 
 
@@ -70,9 +70,9 @@ public class ElasticSearchDataReader extends ElasticSearchDataInterface {
      * @throws IOException
      */
     public String getDocumentById(String index,String type, String id,String parentId) throws IOException{
-        GetRequest req = new GetRequest(index,type,id);
+        GetRequest req = new GetRequest(index, id);
         req.routing(parentId);
-        GetResponse response =    client.get(req);
+        GetResponse response = client.get(req, RequestOptions.DEFAULT);
         return response.getSourceAsString();
     }
     
@@ -85,22 +85,25 @@ public class ElasticSearchDataReader extends ElasticSearchDataInterface {
      * @throws IOException 
      */
     public String searchDocument(String indexNameFromRuleParam, String autoFixPlanType, String resourceId) throws IOException {
-        
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder(); 
-        sourceBuilder.query(QueryBuilders.termQuery(ESUtils.convertAttributetoKeyword("resourceId"), resourceId)); 
-        SearchRequest searchRequest = new SearchRequest(indexNameFromRuleParam);
-        searchRequest.types(autoFixPlanType);
-        searchRequest.source(sourceBuilder);
-       
-        logger.debug("searching auto fix plan with query " ,searchRequest.toString());
 
-        SearchResponse response  = client.search(searchRequest);
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        QueryBuilder termQuery1 = QueryBuilders.termQuery(ESUtils.convertAttributeToKeyword("resourceId"), resourceId);
+        QueryBuilder termQuery2 = QueryBuilders.termQuery(ESUtils.convertAttributeToKeyword("docType"), autoFixPlanType);
+        QueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
+                .must(termQuery1)
+                .must(termQuery2);
+        sourceBuilder.query(boolQueryBuilder);
+        SearchRequest searchRequest = new SearchRequest(indexNameFromRuleParam);
+        searchRequest.source(sourceBuilder);
+
+        logger.debug("searching auto fix plan with query ", searchRequest.toString());
+
+        SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
         SearchHits hits = response.getHits();
-        if(RestStatus.OK==response.status() && hits.totalHits>0){
-          return  hits.getAt(0).getSourceAsString();
-        }else{
-            throw new IOException(String.format("no plan found for resource %s",resourceId));
+        if (RestStatus.OK == response.status() && hits.getTotalHits().value > 0) {
+            return hits.getAt(0).getSourceAsString();
+        } else {
+            throw new IOException(String.format("no plan found for resource %s", resourceId));
         }
     }
-    
 }

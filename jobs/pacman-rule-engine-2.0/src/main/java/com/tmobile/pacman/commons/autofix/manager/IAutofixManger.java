@@ -203,7 +203,7 @@ public interface IAutofixManger {
             logger.debug("not exempted by conditions --> {} ", resourceId);
 
             try {
-                autoFixPlan = autoFixPlanManager.getAutoFixPalnForResource(resourceId, policyParam); // find plan associates with resource and issue
+                autoFixPlan = autoFixPlanManager.getAutoFixPlanForResource(resourceId, policyParam); // find plan associates with resource and issue
             } catch (Exception e) {
                 logger.error("no plan found for resource {} {}", e, resourceId);
             }
@@ -740,14 +740,14 @@ public interface IAutofixManger {
         String esUrl = ESUtils.getEsUrl();
         String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         String indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
-        String attributeToQuery = ESUtils.convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID);
+        String attributeToQuery = ESUtils.convertAttributeToKeyword(PacmanSdkConstants.POLICY_ID);
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(attributeToQuery, ruleId);
         mustFilter.put("type.keyword", "issue");
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
-        shouldFilter.put(ESUtils.convertAttributetoKeyword(PacmanSdkConstants.ISSUE_STATUS_KEY),
+        shouldFilter.put(ESUtils.convertAttributeToKeyword(PacmanSdkConstants.ISSUE_STATUS_KEY),
                 PacmanSdkConstants.STATUS_OPEN);
-        shouldFilter.put(ESUtils.convertAttributetoKeyword(PacmanSdkConstants.ISSUE_STATUS_KEY),
+        shouldFilter.put(ESUtils.convertAttributeToKeyword(PacmanSdkConstants.ISSUE_STATUS_KEY),
                 PacmanSdkConstants.STATUS_EXEMPTED);
         List<String> fields = new ArrayList<>();
         Long totalDocs = ESUtils.getTotalDocumentCountForIndexAndType(esUrl, indexName, null, mustFilter, null,
