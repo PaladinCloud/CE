@@ -140,7 +140,7 @@ public class AnnotationPublisher {
         String ruleId = ruleParam.get(PacmanSdkConstants.POLICY_ID);
         String indexName = CommonUtils.getIndexNameFromRuleParam(ruleParam);
         Map<String, Object> mustFilter = new HashMap<>();
-        String attributeToQuery = ESUtils.convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID); //actual attribute will be  tokenized hence querying on keyword
+        String attributeToQuery = ESUtils.convertAttributeToKeyword(PacmanSdkConstants.POLICY_ID); //actual attribute will be  tokenized hence querying on keyword
         mustFilter.put(attributeToQuery, ruleId);
         List<String> fields = new ArrayList<String>();
         Map<String, Object> mustNotFilter = new HashMap<>();
