@@ -86,30 +86,30 @@ public class EntityManager implements Constants {
             try {
                 type = itr.next();
                 Map<String, Object> stats = new LinkedHashMap<>();
-            	String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
+                String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
                 stats.put("datasource", datasource);
-                stats.put("type", type);
-                stats.put("start_time",  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
-                LOGGER.info("Fetching {}" , type);
+                stats.put("docType", type);
+                stats.put("start_time", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date()));
+                LOGGER.info("Fetching {}", type);
                 String indexName = datasource + "_" + type;
                 Map<String, Map<String, String>> currentInfo = ESManager.getExistingInfo(indexName, type, filters);
-                LOGGER.info("Existing no of docs : {}" , currentInfo.size());
-                
-                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource,type,errorList);
+                LOGGER.info("Existing no of docs : {}", currentInfo.size());
+
+                List<Map<String, Object>> entities = fetchEntitiyInfoFromS3(datasource, type, errorList);
                 List<Map<String, String>> tags = fetchTagsForEntitiesFromS3(datasource, type);
-                
+
                 LOGGER.info("Fetched from S3");
-                if(!entities.isEmpty()){
-	                List<Map<String, String>> overridableInfo = RDSDBManager.executeQuery(
-	                        "select updatableFields  from cf_pac_updatable_fields where resourceType ='" + type + "'");
-	                List<Map<String, String>> overrides = RDSDBManager.executeQuery(
-	                        "select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '"
-	                                + type + "'");
-	                Map<String, List<Map<String, String>>> overridesMap = overrides.parallelStream()
-	                        .collect(Collectors.groupingBy(obj -> obj.get("_resourceid")));
-	                
-	                String keys = ConfigManager.getKeyForType(datasource, type); 
-	                String idColumn = ConfigManager.getIdForType(datasource, type);
+                if (!entities.isEmpty()) {
+                    List<Map<String, String>> overridableInfo = RDSDBManager.executeQuery(
+                            "select updatableFields  from cf_pac_updatable_fields where resourceType ='" + type + "'");
+                    List<Map<String, String>> overrides = RDSDBManager.executeQuery(
+                            "select _resourceid,fieldname,fieldvalue from pacman_field_override where resourcetype = '"
+                                    + type + "'");
+                    Map<String, List<Map<String, String>>> overridesMap = overrides.parallelStream()
+                            .collect(Collectors.groupingBy(obj -> obj.get("_resourceid")));
+
+                    String keys = ConfigManager.getKeyForType(datasource, type);
+                    String idColumn = ConfigManager.getIdForType(datasource, type);
 	                String[] keysArray = keys.split(",");
 	                
 	                prepareDocs(currentInfo, entities, tags, overridableInfo, overridesMap, idColumn, keysArray, type);
