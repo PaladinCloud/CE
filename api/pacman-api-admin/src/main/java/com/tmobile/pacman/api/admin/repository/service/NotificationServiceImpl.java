@@ -47,7 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
                 String combinedPolicyNameStr = policyIdPolicyNameList.stream().map(obj -> (String) obj.get("policyDisplayName")).collect(Collectors.joining(","));
 
                 List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
-                NotificationBaseRequest notificationBaseRequest = action==Actions.CREATE?getNotificationBaseRequestObj( EXCEPTION, String.format(CREATE_EXCEPTION_EVENT_NAME,assetGroupExceptionDetails.getExceptionName().trim()), CREATE_STICKY_EXCEPTION_SUBJECT):getNotificationBaseRequestObj( EXCEPTION, String.format(UPDATE_EXCEPTION_EVENT_NAME,assetGroupExceptionDetails.getExceptionName().trim()), UPDATE_STICKY_EXCEPTION_SUBJECT);
+                NotificationBaseRequest notificationBaseRequest = action==Actions.CREATE?getNotificationBaseRequestObj( String.format(CREATE_EXCEPTION_EVENT_NAME,assetGroupExceptionDetails.getExceptionName().trim()), CREATE_STICKY_EXCEPTION_SUBJECT):getNotificationBaseRequestObj( String.format(UPDATE_EXCEPTION_EVENT_NAME,assetGroupExceptionDetails.getExceptionName().trim()), UPDATE_STICKY_EXCEPTION_SUBJECT);
                 StickyExNotificationRequest stickyExNotificationRequest = new StickyExNotificationRequest();
                 stickyExNotificationRequest.setExceptionName(assetGroupExceptionDetails.getExceptionName().trim());
                 stickyExNotificationRequest.setAssetGroup(assetGroupExceptionDetails.getAssetGroup().trim());
@@ -81,7 +81,7 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             Gson gson = new Gson();
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
-            NotificationBaseRequest notificationBaseRequest = getNotificationBaseRequestObj( EXCEPTION, String.format(DELETE_EXCEPTION_EVENT_NAME,assetGroupException.getExceptionName().trim()), DELETE_STICKY_EXCEPTION_SUBJECT);
+            NotificationBaseRequest notificationBaseRequest = getNotificationBaseRequestObj( String.format(DELETE_EXCEPTION_EVENT_NAME,assetGroupException.getExceptionName().trim()), DELETE_STICKY_EXCEPTION_SUBJECT);
             StickyExNotificationRequest stickyExNotificationRequest = new StickyExNotificationRequest();
             stickyExNotificationRequest.setExceptionName(assetGroupException.getExceptionName().trim());
             stickyExNotificationRequest.setUserId(userId);
@@ -100,10 +100,10 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private static NotificationBaseRequest getNotificationBaseRequestObj(String eventCategoryName, String eventName, String subject){
+    private static NotificationBaseRequest getNotificationBaseRequestObj( String eventName, String subject){
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
         notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTIONS);
-        notificationBaseRequest.setEventCategoryName(eventCategoryName);
+        notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTIONS.getValue());
         notificationBaseRequest.setEventName(eventName);
         notificationBaseRequest.setEventDescription(eventName);
         notificationBaseRequest.setSubject(subject);

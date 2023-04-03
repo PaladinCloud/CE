@@ -91,7 +91,7 @@ insert ignore into cf_NotificationChannels values ('6a7e6590-bd06-11ed-afa1-0242
 
 
  insert ignore into cf_NotificationTypes values ('42ffd1d8-bd07-11ed-afa1-0242ac120002','violations','admin@paladincloud.io',current_timestamp());
- insert ignore into cf_NotificationTypes values ('5bf94e30-bd07-11ed-afa1-0242ac120002','asset groups','admin@paladincloud.io',current_timestamp());
+ insert ignore into cf_NotificationTypes values ('5bf94e30-bd07-11ed-afa1-0242ac120002','autofix','admin@paladincloud.io',current_timestamp());
  insert ignore into cf_NotificationTypes values ('63a2d98a-bd07-11ed-afa1-0242ac120002','exemptions','admin@paladincloud.io',current_timestamp());
 
  insert ignore into cf_NotificationTypeChannelMapping values ('467710fe-be2b-11ed-afa1-0242ac120002','42ffd1d8-bd07-11ed-afa1-0242ac120002','6a7e6590-bd06-11ed-afa1-0242ac120002','admin@paladincloud.io',current_timestamp());

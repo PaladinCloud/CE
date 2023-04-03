@@ -112,7 +112,6 @@ public final class AdminConstants {
 	public static final String AUTOFIX_DISABLE_SUCCESS				=	"AutoFix has been successfully Disabled !!";
     public static final String AUTO_FIX_KEY							=   "fixKey";
     public static final String AUTO_FIX_KEYWORD						= 	"autofix";
-	public static final String EXCEPTION  							= 	"Sticky Exceptions";
 	public static final String CREATE_EXCEPTION_EVENT_NAME 			=	"Sticky exception %s is created";
 	public static final String UPDATE_EXCEPTION_EVENT_NAME 			=	"Sticky exception %s is updated";
 
