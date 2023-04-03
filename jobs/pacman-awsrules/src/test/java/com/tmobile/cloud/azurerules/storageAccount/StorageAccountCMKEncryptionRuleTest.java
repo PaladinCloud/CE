@@ -14,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import org.junit.Test;
@@ -29,7 +30,7 @@ import com.tmobile.cloud.azurerules.StorageAccount.StorageAccountCMKEncryptionRu
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class, Annotation.class})
 public class StorageAccountCMKEncryptionRuleTest {
         @InjectMocks
         StorageAccountCMKEncryptionRule storageAccountCMKEncryptionRule;
@@ -37,13 +38,13 @@ public class StorageAccountCMKEncryptionRuleTest {
         public JsonObject getFailureJsonArrayForStorageAccountCMKEncryption(){
                 Gson gson=new Gson();
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n        {\n            \"_source\": {\n                \"discoverydate\":\"2022-07-03 11:00:00+0000\",\n                \"_cloudType\": \"Azure\",\n                \"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n                \"region\":\"null\",\n                \"subscriptionName\": \"dev-paladincloud\",\n                \"resourceGroupName\": \"dev-paladincloud\",\n                \"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n                \"key\": \"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\n                \"canAccessFromAzureServices\":\"true\",\n                \"name\":\"sqlvaisndaov4vhjgg\",\n                \"regionName\":\"eastus\",\n                \"customerManagedKey\":\"null\",\n                \"systemAssignedManagedServiceIdentityPrincipalId\":\"null\",\n                \"systemAssignedManagedServiceIdentityTenantId\":\"null\",\n                \"endPoints\":\"null\",\n                \"ipAddressesWithAccess\":[],\n                \"ipAddressRangesWithAccess\":[],\n                \"networkSubnetsWithAccess\":[],\n                \"tags\":{},\n                \"kind\":\"StorageV2\"\n            }\n        }\n    ]\n\n}\n}", JsonElement.class));
+                jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n        {\n            \"_source\": {\n                \"discoverydate\":\"2022-07-03 11:00:00+0000\",\n                \"_cloudType\": \"Azure\",\n                \"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n                \"region\":\"null\",\n                \"subscriptionName\": \"dev-paladincloud\",\n                \"resourceGroupName\": \"dev-paladincloud\",\n                \"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n                \"key\": \"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\n                \"canAccessFromAzureServices\":\"true\",\n                \"name\":\"sqlvaisndaov4vhjgg\",\n                \"regionName\":\"eastus\",\n    \"systemAssignedManagedServiceIdentityPrincipalId\":\"null\",\n                \"systemAssignedManagedServiceIdentityTenantId\":\"null\",\n                \"endPoints\":\"null\",\n                \"ipAddressesWithAccess\":[],\n                \"ipAddressRangesWithAccess\":[],\n                \"networkSubnetsWithAccess\":[],\n                \"tags\":{},\n                \"kind\":\"StorageV2\"\n            }\n        }\n    ]\n}", JsonElement.class));
                 return jsonObject;
         }
         public  JsonObject getHitJsonArrayForStorageAccountCMKEncryption() {
                 Gson gson = new Gson();
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n        {\n            \"_source\": {\n                \"discoverydate\":\"2022-07-03 11:00:00+0000\",\n                \"_cloudType\": \"Azure\",\n                \"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n                \"region\":\"null\",\n                \"subscriptionName\": \"dev-paladincloud\",\n                \"resourceGroupName\": \"dev-paladincloud\",\n                \"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n                \"key\": \"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\n                \"canAccessFromAzureServices\":\"true\",\n                \"name\":\"sqlvaisndaov4vhjgg\",\n                \"regionName\":\"eastus\",\n                \"customerManagedKey\":\"ddsd123\",\n                \"systemAssignedManagedServiceIdentityPrincipalId\":\"null\",\n                \"systemAssignedManagedServiceIdentityTenantId\":\"null\",\n                \"endPoints\":\"null\",\n                \"ipAddressesWithAccess\":[],\n                \"ipAddressRangesWithAccess\":[],\n                \"networkSubnetsWithAccess\":[],\n                \"tags\":{},\n                \"kind\":\"StorageV2\"\n            }\n        }\n    ]\n\n}\n}", JsonElement.class));
+                jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n        {\n            \"_source\": {\n                \"discoverydate\":\"2022-07-03 11:00:00+0000\",\n                \"_cloudType\": \"Azure\",\n                \"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n                \"region\":\"null\",\n                \"subscriptionName\": \"dev-paladincloud\",\n                \"resourceGroupName\": \"dev-paladincloud\",\n                \"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n                \"key\": \"ccb7e20e-47c3-478b-a960-580c7a6b9d1e\",\n                \"canAccessFromAzureServices\":\"true\",\n                \"name\":\"sqlvaisndaov4vhjgg\",\n                \"regionName\":\"eastus\",\n                \"customerManagedKey\":\"ddsd123\",\n                \"systemAssignedManagedServiceIdentityPrincipalId\":\"null\",\n                \"systemAssignedManagedServiceIdentityTenantId\":\"null\",\n                \"endPoints\":\"null\",\n                \"ipAddressesWithAccess\":[],\n                \"ipAddressRangesWithAccess\":[],\n                \"networkSubnetsWithAccess\":[],\n                \"tags\":{},\n                \"kind\":\"StorageV2\"\n            }\n        }\n    ]\n}", JsonElement.class));
                 return jsonObject;
         }
         @Test
@@ -70,8 +71,19 @@ public class StorageAccountCMKEncryptionRuleTest {
                 when(RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(anyString(),anyObject(),
                         anyObject(),
                         anyObject(), anyObject(), anyInt(), anyObject(), anyObject(), anyObject())).thenReturn(getFailureJsonArrayForStorageAccountCMKEncryption());
+                mockStatic(Annotation.class);
+                when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
                 assertThat(storageAccountCMKEncryptionRule.execute(CommonTestUtils.getMapString("r_123 "),
                         CommonTestUtils.getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+        }
+        private Annotation getMockAnnotation() {
+                Annotation annotation=new Annotation();
+                annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+                annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+                annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+                annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+                annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+                return annotation;
         }
 
         @Test

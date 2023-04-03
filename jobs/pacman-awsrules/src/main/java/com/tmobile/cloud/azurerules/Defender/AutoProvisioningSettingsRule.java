@@ -100,6 +100,10 @@ public class AutoProvisioningSettingsRule extends BasePolicy {
                         }
                     }
                 }
+                else{
+                    logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
+                    validationResult=false;
+                }
             }
         }else {
             logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
