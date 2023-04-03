@@ -1,11 +1,13 @@
 package com.tmobile.cso.pacman.aqua.util;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,6 +47,18 @@ public class Util {
             log.error("Error in base64Decode",e);
             return "";
         }
+    }
+
+    public static Map<String,String> getJsonData(String jsonString){
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map= Collections.emptyMap();
+        try {
+            // convert JSON string to Map
+            map = mapper.readValue(jsonString, Map.class);
+        } catch (IOException e) {
+            log.error("Error in parsing json data",e);
+        }
+        return map;
     }
     
     /**
