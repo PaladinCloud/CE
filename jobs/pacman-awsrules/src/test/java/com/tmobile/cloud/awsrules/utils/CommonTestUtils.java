@@ -187,6 +187,18 @@ public class CommonTestUtils {
         commonMap.put("vpc", "vpc");
         commonMap.put("securitygroups", "securitygroups");
         commonMap.put("minimumTlsVersion", "TLS1_2");
+        commonMap.put("minTlsVersion","1.2");
+        commonMap.put("adminForKeys","Get,Delete");
+        commonMap.put("adminForSecrets","Recover");
+        commonMap.put("adminForCertificates","Recover,GetIssuers");
+        commonMap.put("keyValutName","testing-nsg");
+        commonMap.put("keyVaultKey","Environment");
+        commonMap.put("keyVaultValue","qa");
+        commonMap.put("tlsVersion","TLSV1.2");
+        commonMap.put("protocol","*");
+        commonMap.put("name","VirtualMachines");
+        commonMap.put("pricingTier","Free");
+
         return commonMap;
     }
 

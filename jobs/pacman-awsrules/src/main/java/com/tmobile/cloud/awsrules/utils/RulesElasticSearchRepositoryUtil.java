@@ -393,9 +393,11 @@ public class RulesElasticSearchRepositoryUtil {
             matchFilters.put(PacmanRuleConstants.MATCH_ALL, new HashMap<String, String>());
         } else {
             String extractIndex=urlToQuery.substring(urlToQuery.indexOf(".com")+5,urlToQuery.indexOf("/_search"));
+            String cloudType=extractIndex.substring(0,extractIndex.indexOf("_"));
             String extractType=extractIndex.substring(extractIndex.indexOf("/")+1);
             urlToQuery=urlToQuery.replace("/"+extractType,"");
-            mustFilter.put("docType",extractType);
+            if(cloudType.equalsIgnoreCase("aws")){
+            mustFilter.put("docType",extractType);}
             matchFilters.putAll(mustFilter);
         }
         if (null != mustFilter) {

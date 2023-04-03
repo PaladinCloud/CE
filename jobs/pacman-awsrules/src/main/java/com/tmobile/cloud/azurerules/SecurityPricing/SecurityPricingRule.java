@@ -105,9 +105,9 @@ public class SecurityPricingRule extends BasePolicy {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
                 if (jsonDataItem != null && jsonDataItem.get(PacmanRuleConstants.NAME) != null
-                        && jsonDataItem.get(PacmanRuleConstants.PROPERTIES) != null) {
+                        && jsonDataItem.get(PacmanRuleConstants.PROPERTIESMAP) != null) {
                     String jsonName = jsonDataItem.get(PacmanRuleConstants.NAME).getAsString();
-                    JsonObject propertiesMap = jsonDataItem.get(PacmanRuleConstants.PROPERTIES).getAsJsonObject();
+                    JsonObject propertiesMap = jsonDataItem.get(PacmanRuleConstants.PROPERTIESMAP).getAsJsonObject();
                     if (propertiesMap.get(PacmanRuleConstants.PRICING_TIER) != null) {
                         String jsonPricingTier = propertiesMap.get(PacmanRuleConstants.PRICING_TIER).getAsString();
                         if (jsonName.equalsIgnoreCase(name) && jsonPricingTier.equalsIgnoreCase(pricingTier)) {

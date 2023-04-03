@@ -33,7 +33,7 @@ public class IncomingClientCertificateShouldBeEnabled extends BasePolicy {
         String failureMsg = ruleParam.get(PacmanRuleConstants.FAILURE);
 
 
-        if (!PacmanUtils.doesAllHaveValue(severity, category)) {
+        if (Boolean.FALSE.equals(PacmanUtils.doesAllHaveValue(severity, category))) {
             logger.info(PacmanRuleConstants.MISSING_CONFIGURATION);
             throw new InvalidInputException(PacmanRuleConstants.MISSING_CONFIGURATION);
         }
