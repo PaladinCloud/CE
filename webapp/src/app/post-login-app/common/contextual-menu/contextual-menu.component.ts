@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TreeComponent, TreeNode } from '@circlon/angular-tree-component';
 import { Subscription } from 'rxjs';
