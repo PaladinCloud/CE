@@ -109,10 +109,7 @@ public class EncryptionforDatainRedisCache extends BasePolicy {
                     validationResult = false;
                 } else {
                     logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-
                 }
-
-
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
             }
