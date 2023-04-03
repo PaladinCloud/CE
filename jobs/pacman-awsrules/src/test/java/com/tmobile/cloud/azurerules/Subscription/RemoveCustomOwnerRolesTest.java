@@ -7,6 +7,7 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import org.junit.Test;
@@ -26,13 +27,13 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class, Annotation.class })
 public class RemoveCustomOwnerRolesTest {
 
     @InjectMocks
     RemoveCustomOwnerRoles removeCustomOwnerRoles;
 
-    public JsonObject getFailureForCustomOwnerRoles(){
+    public JsonObject getSuccessForCustomOwnerRoles(){
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson(
@@ -58,13 +59,15 @@ public class RemoveCustomOwnerRolesTest {
                         "          \"_resourceid\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
                         "          \"_docid\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
                         "          \"roleDefinitionList\":[\n" +
+                        "    {\n" +
                         "          \"assignableScopes\":[\n" +
-                        "          \" *** \",\n" +
-                        "           ]\n" +
+                        "          \" *** \" \n" +
+                        "           ],\n" +
                         "          \"actions\":[\n" +
-                        "          \"  *  \",\n"+
+                        "          *\n"+
                         "           ]\n" +
-                        "           ]\n" +
+                        "        }\n" +
+                        "           ],\n" +
                         "          \"_entity\": \"true\",\n" +
                         "          \"_entitytype\": \"subscription\",\n" +
                         "          \"firstdiscoveredon\": \"2022-09-04 16:00:00+0000\",\n" +
@@ -79,7 +82,7 @@ public class RemoveCustomOwnerRolesTest {
         return jsonObject;
     }
 
-    public JsonObject getSuccessForCustomOwnerRoles() {
+    public JsonObject getFailureForCustomOwnerRoles() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson(
@@ -105,13 +108,15 @@ public class RemoveCustomOwnerRolesTest {
                         "          \"_resourceid\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
                         "          \"_docid\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
                         "          \"roleDefinitionList\":[\n" +
+                        "    {\n" +
                         "          \"assignableScopes\":[\n" +
-                        "          \" /subscriptions/abcdabcd-1234-1234-1234-abcdabcdabcd \",\n" +
-                        "           ]\n" +
+                        "           \"/subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81\" \n" +
+                        "           ],\n" +
                         "          \"actions\":[\n" +
-                        "          \"  *  \",\n"+
+                        "          *\n"+
                         "           ]\n" +
-                        "           ]\n" +
+                        "        }\n" +
+                        "           ],\n" +
                         "          \"_entity\": \"true\",\n" +
                         "          \"_entitytype\": \"subscription\",\n" +
                         "          \"firstdiscoveredon\": \"2022-09-04 16:00:00+0000\",\n" +
@@ -152,8 +157,20 @@ public class RemoveCustomOwnerRolesTest {
                 anyObject(),
                 anyObject(), anyObject(), anyInt(), anyObject(), anyObject(), anyObject()))
                 .thenReturn(getFailureForCustomOwnerRoles());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(removeCustomOwnerRoles.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 
     @Test
