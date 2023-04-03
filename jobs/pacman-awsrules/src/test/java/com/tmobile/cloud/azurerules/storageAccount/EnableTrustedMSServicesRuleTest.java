@@ -14,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.azurerules.StorageAccount.EnableTrustedMSServices;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import org.junit.Test;
@@ -28,7 +29,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.azurerules.StorageAccount.StorageAccountCMKEncryptionRule;
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class, Annotation.class })
 public class EnableTrustedMSServicesRuleTest {
     @InjectMocks
     EnableTrustedMSServices enableTrustedMSServices;
@@ -36,13 +37,100 @@ public class EnableTrustedMSServicesRuleTest {
     public JsonObject getFailureJsonArrayForStorageAccountTrustMSServices(){
         Gson gson=new Gson();
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n        {\n            \"_source\": {\"discoverydate\":\"2022-08-0912:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":null,\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"databricks-rg-dev-paladin-wdjpyrqd4kvis\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/databricks-rg-dev-paladin-wdjpyrqd4kvis/providers/Microsoft.Storage/storageAccounts/dbstorageviepucpkuuclc\",\\\"canAccessFromAzureServices\\\":true,\\\"name\\\":\\\"dbstorageviepucpkuuclc\\\",\\\"regionName\\\":\\\"eastus\\\",\\\"customerManagedKey\\\":null,\\\"systemAssignedManagedServiceIdentityPrincipalId\\\":null,\\\"systemAssignedManagedServiceIdentityTenantId\\\":null,\\\"endPoints\\\":null,\\\"ipAddressesWithAccess\\\":[],\\\"ipAddressRangesWithAccess\\\":[],\\\"networkSubnetsWithAccess\\\":[],\\\"tags\\\":{\\\"Environment\\\":\\\"qa\\\",\\\"application\\\":\\\"Jupiter\\\",\\\"Application\\\":\\\"Jupiter\\\",\\\"databricks-environment\\\":\\\"true\\\"},\\\"kind\\\":\\\"BlobStorage\\\",\\\"endpointsMap\\\":{\\\"webEndPoint\\\":null,\\\"dfsEndPoint\\\":\\\"https://dbstorageviepucpkuuclc.dfs.core.windows.net/\\\",\\\"queueEndPoint\\\":null,\\\"tableEndPoint\\\":\\\"https://dbstorageviepucpkuuclc.table.core.windows.net/\\\",\\\"blobEndPoint\\\":\\\"https://dbstorageviepucpkuuclc.blob.core.windows.net/\\\",\\\"fileEndPoint\\\":null},\\\"accessAllowedFromAllNetworks\\\":true,\\\"azureFilesAadIntegrationEnabled\\\":false,\\\"hnsEnabled\\\":false,\\\"blobPublicAccessAllowed\\\":false,\\\"networkRuleBypass\\\":\\\"None\\\"} ]\n\n}\n}", JsonElement.class));
+        jsonObject.add("hits", gson.fromJson("{\n" +
+                "    \"hits\": [\n" +
+                "        {\n" +
+                "            \"_source\": {\n" +
+                "                \"discoverydate\": \"2022-08-0912:00:00+0000\",\n" +
+                "                \"_cloudType\": \"Azure\",\n" +
+                "                \"subscription\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
+                "                \"region\": null,\n" +
+                "                \"subscriptionName\": \"dev-paladincloud\",\n" +
+                "                \"resourceGroupName\": \"databricks-rg-dev-paladin-wdjpyrqd4kvis\",\n" +
+                "                \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/databricks-rg-dev-paladin-wdjpyrqd4kvis/providers/Microsoft.Storage/storageAccounts/dbstorageviepucpkuuclc\",\n" +
+                "                \"canAccessFromAzureServices\": true,\n" +
+                "                \"name\": \"dbstorageviepucpkuuclc\",\n" +
+                "                \"regionName\": \"eastus\",\n" +
+                "                \"customerManagedKey\": null,\n" +
+                "                \"systemAssignedManagedServiceIdentityPrincipalId\": null,\n" +
+                "                \"systemAssignedManagedServiceIdentityTenantId\": null,\n" +
+                "                \"endPoints\": null,\n" +
+                "                \"ipAddressesWithAccess\": [],\n" +
+                "                \"ipAddressRangesWithAccess\": [],\n" +
+                "                \"networkSubnetsWithAccess\": [],\n" +
+                "                \"tags\": {\n" +
+                "                    \"Environment\": \"qa\",\n" +
+                "                    \"application\": \"Jupiter\",\n" +
+                "                    \"databricks-environment\": \"true\"\n" +
+                "                },\n" +
+                "                \"kind\": \"BlobStorage\",\n" +
+                "                \"endpointsMap\": {\n" +
+                "                    \"webEndPoint\": null,\n" +
+                "                    \"dfsEndPoint\": \"https://dbstorageviepucpkuuclc.dfs.core.windows.net/\",\n" +
+                "                    \"queueEndPoint\": null,\n" +
+                "                    \"tableEndPoint\": \"https://dbstorageviepucpkuuclc.table.core.windows.net/\",\n" +
+                "                    \"blobEndPoint\": \"https://dbstorageviepucpkuuclc.blob.core.windows.net/\",\n" +
+                "                    \"fileEndPoint\": null\n" +
+                "                },\n" +
+                "                \"accessAllowedFromAllNetworks\": true,\n" +
+                "                \"azureFilesAadIntegrationEnabled\": false,\n" +
+                "                \"hnsEnabled\": false,\n" +
+                "                \"blobPublicAccessAllowed\": false,\n" +
+                "                \"networkRuleBypass\": \"None\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}\n", JsonElement.class));
         return jsonObject;
     }
     public  JsonObject getHitJsonrrayForStorageAccountTrustMSServices() {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
-        jsonObject.add("hits", gson.fromJson("{\n    \"hits\": [\n        {\n            \"_source\": {\"discoverydate\":\"2022-08-0912:00:00+0000\",\"_cloudType\":\"Azure\",\"subscription\":\"f4d319d8-7eac-4e15-a561-400f7744aa81\",\"region\":null,\"subscriptionName\":\"dev-paladincloud\",\"resourceGroupName\":\"databricks-rg-dev-paladin-wdjpyrqd4kvis\",\"id\":\"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/databricks-rg-dev-paladin-wdjpyrqd4kvis/providers/Microsoft.Storage/storageAccounts/dbstorageviepucpkuuclc\",\\\"canAccessFromAzureServices\\\":true,\\\"name\\\":\\\"dbstorageviepucpkuuclc\\\",\\\"regionName\\\":\\\"eastus\\\",\\\"customerManagedKey\\\":null,\\\"systemAssignedManagedServiceIdentityPrincipalId\\\":null,\\\"systemAssignedManagedServiceIdentityTenantId\\\":null,\\\"endPoints\\\":null,\\\"ipAddressesWithAccess\\\":[],\\\"ipAddressRangesWithAccess\\\":[],\\\"networkSubnetsWithAccess\\\":[],\\\"tags\\\":{\\\"Environment\\\":\\\"qa\\\",\\\"application\\\":\\\"Jupiter\\\",\\\"Application\\\":\\\"Jupiter\\\",\\\"databricks-environment\\\":\\\"true\\\"},\\\"kind\\\":\\\"BlobStorage\\\",\\\"endpointsMap\\\":{\\\"webEndPoint\\\":null,\\\"dfsEndPoint\\\":\\\"https://dbstorageviepucpkuuclc.dfs.core.windows.net/\\\",\\\"queueEndPoint\\\":null,\\\"tableEndPoint\\\":\\\"https://dbstorageviepucpkuuclc.table.core.windows.net/\\\",\\\"blobEndPoint\\\":\\\"https://dbstorageviepucpkuuclc.blob.core.windows.net/\\\",\\\"fileEndPoint\\\":null},\\\"accessAllowedFromAllNetworks\\\":true,\\\"azureFilesAadIntegrationEnabled\\\":false,\\\"hnsEnabled\\\":false,\\\"blobPublicAccessAllowed\\\":false,\\\"networkRuleBypass\\\":\\\"AzureServices\\\"} ]\n\n}\n}", JsonElement.class));
+        jsonObject.add("hits", gson.fromJson("{\n" +
+                "    \"hits\": [\n" +
+                "        {\n" +
+                "            \"_source\": {\n" +
+                "                \"discoverydate\": \"2022-08-0912:00:00+0000\",\n" +
+                "                \"_cloudType\": \"Azure\",\n" +
+                "                \"subscription\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
+                "                \"region\": null,\n" +
+                "                \"subscriptionName\": \"dev-paladincloud\",\n" +
+                "                \"resourceGroupName\": \"databricks-rg-dev-paladin-wdjpyrqd4kvis\",\n" +
+                "                \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/databricks-rg-dev-paladin-wdjpyrqd4kvis/providers/Microsoft.Storage/storageAccounts/dbstorageviepucpkuuclc\",\n" +
+                "                \"canAccessFromAzureServices\": true,\n" +
+                "                \"name\": \"dbstorageviepucpkuuclc\",\n" +
+                "                \"regionName\": \"eastus\",\n" +
+                "                \"customerManagedKey\": null,\n" +
+                "                \"systemAssignedManagedServiceIdentityPrincipalId\": null,\n" +
+                "                \"systemAssignedManagedServiceIdentityTenantId\": null,\n" +
+                "                \"endPoints\": null,\n" +
+                "                \"ipAddressesWithAccess\": [],\n" +
+                "                \"ipAddressRangesWithAccess\": [],\n" +
+                "                \"networkSubnetsWithAccess\": [],\n" +
+                "                \"tags\": {\n" +
+                "                    \"Environment\": \"qa\",\n" +
+                "                    \"application\": \"Jupiter\",\n" +
+                "                    \"Application\": \"Jupiter\",\n" +
+                "                    \"databricks-environment\": \"true\"\n" +
+                "                },\n" +
+                "                \"kind\": \"BlobStorage\",\n" +
+                "                \"endpointsMap\": {\n" +
+                "                    \"webEndPoint\": null,\n" +
+                "                    \"dfsEndPoint\": \"https://dbstorageviepucpkuuclc.dfs.core.windows.net/\",\n" +
+                "                    \"queueEndPoint\": null,\n" +
+                "                    \"tableEndPoint\": \"https://dbstorageviepucpkuuclc.table.core.windows.net/\",\n" +
+                "                    \"blobEndPoint\": \"https://dbstorageviepucpkuuclc.blob.core.windows.net/\",\n" +
+                "                    \"fileEndPoint\": null\n" +
+                "                },\n" +
+                "                \"accessAllowedFromAllNetworks\": true,\n" +
+                "                \"azureFilesAadIntegrationEnabled\": false,\n" +
+                "                \"hnsEnabled\": false,\n" +
+                "                \"blobPublicAccessAllowed\": false,\n" +
+                "                \"networkRuleBypass\": \"AzureServices\"\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}\n", JsonElement.class));
         return jsonObject;
     }
     @Test
@@ -69,8 +157,20 @@ public class EnableTrustedMSServicesRuleTest {
         when(RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(anyString(),anyObject(),
                 anyObject(),
                 anyObject(), anyObject(), anyInt(), anyObject(), anyObject(), anyObject())).thenReturn(getFailureJsonArrayForStorageAccountTrustMSServices());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(enableTrustedMSServices.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 
     @Test

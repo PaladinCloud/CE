@@ -101,7 +101,7 @@ public class CheckFtpStateRule extends BasePolicy {
             if (hitsJsonArray.size() > 0) {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                logger.debug("Validating the data item: {}", jsonDataItem.toString());
+                logger.debug("Validating the data item: {}", jsonDataItem);
 
                 String ftpState=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.FTP_STATE).getAsString();
                 logger.info("ftpState Value{} "+ ftpState);
