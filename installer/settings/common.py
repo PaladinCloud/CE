@@ -49,6 +49,7 @@ PROCESS_RESOURCES = {
     'datastore.es': {'tags': ["es", "datastore"]},
     'pacbot_app.alb': {'tags': ["infra"]},
     'pacbot_app.alb_target_groups': {'tags': ["infra", "deploy"]},
+    'pacbot_app.create_template': {'tags': ["deploy", "infra"]},
     'pacbot_app.alb_listener_rules': {'tags': ["infra", "deploy"]},
     'pacbot_app.ecr': {'tags': ["infra"]},
     'pacbot_app.cloudwatch_log_groups': {'tags': ["infra"]},

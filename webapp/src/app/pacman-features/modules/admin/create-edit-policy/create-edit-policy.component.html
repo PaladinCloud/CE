@@ -3,103 +3,112 @@
         <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks"
             [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
     </div>
-    <div class="page">
-        <div class="stepper">
-            <app-stepper [currentStepperIndex]="currentStepperIndex" [stepperData]="stepperData"
-                (selectedStepperIndex)="selectedStepperIndex($event)">
-                <ng-template #stepsHeader>
-                    <div class="text-wrapper">
-                        <span class="title">{{pageTitle}}</span>
-                        <span class="sub-text">Follow the steps below to Edit a policy for an asset type</span>
+    <div class="header" style="padding-bottom: 24px;">
+          <h6>{{policyDisplayName}}</h6>
+          <div class="status-wrapper">
+            <span class="body-1">Enabled</span>
+            <mat-slide-toggle [checked]="status" (change)="toggleStatus($event)"></mat-slide-toggle>
+          </div>
+    </div>
+    <div class="right-wrapper">
+            <div class="details-wrapper">
+                <div class="details-header">
+                    <div class="details-header-text">
+                        Policy Details
                     </div>
-                </ng-template>
-                <ng-template #stepsContent>
-                    <div class="right-wrapper">
-                        <div class="flex gap-8">
-                        <span class="subtitle-1">{{FormHeader}}</span>
-                        <mat-slide-toggle *ngIf="currentStepperName=='Autofix'" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
-                        </div>
-                        <form class="form-wrapper" (ngSubmit)="onSubmit(policyForm)" #policyForm="ngForm">
-                            <div [hidden]="currentStepperName != 'Policy Details'">
-                                <app-input-field class="isDisabled" [(value)]="selectedPolicyType" placeholder="Policy Type"></app-input-field>
-                                <div class="details-wrapper">
-                                    <app-input-field class="isDisabled" [(value)]="policyDisplayName" placeholder="Policy Name"></app-input-field>
-                                    <app-input-field class="isDisabled" [(value)]="selectedAssetGroup" placeholder="Asset Group"></app-input-field>
-                                    <app-input-field class="isDisabled" [(value)]="selectedAssetType" placeholder="Asset Type"></app-input-field>
-                                    <div class="dropdown">
-                                        <app-dropdown [required]="isRequired" [requiredInfo]="true" [optionImage]="true"
-                                            [items]="policySeverities" placeholder="Severity"
-                                            [selectedItem]="selectedSeverity" name="severity"
-                                            (selected)="onSelectSeverity($event)">
-                                        </app-dropdown>
+                </div>
+                <div class="details-content-wrapper">
+                    <div class="description-wrapper">
+                        <span class="desc-header">Description</span>
+                        <span class="desc">{{description}}</span>
+                    </div>
+                    <a class="resolution-wrapper" target="_blank" href="{{resolutionUrl}}">
+                        <span class="resolution-link">More Information</span>
+                        <img  style="height: 14px;width: 12px;" src="../../../../../assets/icons/right-arrow-icon.svg">
+                    </a>    
+                    <div class="description-wrapper">
+                        <span class="desc-header">Asset Type</span>
+                        <span class="desc">{{selectedAssetType}}</span>
+                    </div>
+                    <form #policyForm="ngForm" class="form-wrapper">
+                        <div class="attributes-wrapper" *ngIf="hasEditableParams>0">
+                            <div class="divide-content">
+                                <span class="subtitle-2">Policy Parameters</span>
+                                 <div class="parameters-wrapper">
+                                    <div class="parameter-wrapper" *ngFor="let param of paramsList;let i=index" [class.hide]="!param.isEdit">
+                                            <div class="input-wrapper">
+                                                <mat-form-field appearance="outline">
+                                                    <mat-label>{{param.displayName}}</mat-label>
+                                                    <input autocomplete="off" matInput [name]="param.key" [required]="param.isMandatory"
+                                                        [(ngModel)]="param.value">
+                                                </mat-form-field>
+                                                <div class="info-img">
+                                                    <img src="../../../assets/icons/info-circle.svg" [matTooltip]="param.description" matTooltipPosition="right">
+                                                </div>
+                                            </div>
                                     </div>
-                                    <div class="dropdown">
-                                        <app-dropdown [required]="isRequired" [requiredInfo]="true" [optionImage]="true"
-                                            [items]="policyCategories" placeholder="Category"
-                                            [selectedItem]="selectedCategory" name="category"
-                                            (selected)="onSelectCategory($event)">
-                                        </app-dropdown>
-                                    </div>
-                                    <app-input-field class="isDisabled" [(value)]="description" placeholder="Description"></app-input-field>
-                                    <app-input-field class="isDisabled" [(value)]="resolution" placeholder="Resolution"></app-input-field>
-                                    <app-input-field class="isDisabled" [(value)]="resolutionUrl" placeholder="Resolution Link"></app-input-field>
                                 </div>
                             </div>
-                            <div [hidden]="currentStepperName != 'Policy Parameters'">
-                                <div class="header-wrapper">
-                                    <span class="params-header">Select Key</span>
-                                    <span class="params-header">Enter Value</span>
-                                </div>
-                                <div class="parameters-wrapper">
-                                    <div *ngFor="let param of paramsList;let i=index">
-                                        <div class="parameter-wrapper"  *ngIf="param.isEdit" >
-                                            <mat-form-field class="isDisabled" appearance="outline">
-                                                <input autocomplete="off" matInput name="key-{{i}}" 
-                                                    [(ngModel)]="param.displayName">
-                                            </mat-form-field>
-                                         <app-input-field [(value)]="param.value" [required]="param.isMandatory" [description]="param.description"></app-input-field>
+                            </div>
+                            <div class="attributes-wrapper" *ngIf="isAutofixAvailable">
+                                <div class="divide-content">
+                                    <div class="header">
+                                        <span class="subtitle-2">Autofix</span>
+                                        <div class="status-wrapper">
+                                          <span class="body-1">Enabled</span>
+                                          <mat-slide-toggle [class.isDisabled]="!status" [checked]="isAutofixEnabled" (change)="toggleAutofix($event)"></mat-slide-toggle>
                                         </div>
-                                    </div>
+                                     </div>
+                                  <div class="autofix-wrapper">
+                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true" [class.isDisabled]="!status || !isAutofixEnabled"
+                                    [selectedList]="selectedAccounts" (selected)="onAccountsChange($event)"></app-dropdown>
+                                    <div class="header">
+                                        <span class="subtitle-2">Warning Notification</span>
+                                        <div class="status-wrapper">
+                                          <span class="body-1">Enabled</span>
+                                          <mat-slide-toggle  [disabled]="!isAutofixEnabled || !status" [checked]="warningNotification" (change)="toggleWarningNotification($event)"></mat-slide-toggle>
+                                        </div>
+                                      </div>
+                                     <div class="notifications-wrapper">
+                                            <div class="parameters-wrapper">
+                                                <div class="parameter-wrapper">
+                                                    <div class="input-wrapper" [class.isDisabled]="!isAutofixEnabled || !status">
+                                                        <mat-form-field appearance="outline">
+                                                            <mat-label>Duration</mat-label>
+                                                            <input autocomplete="off" matInput name="waitingTime" 
+                                                                [(ngModel)]="waitingTime">
+                                                        </mat-form-field>
+                                                        <div class="info-img">
+                                                            <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                    <div class="parameter-wrapper">
+                                                    <div class="input-wrapper"  [class.isDisabled]="!isAutofixEnabled || !warningNotification || !status">
+                                                        <mat-form-field appearance="outline">
+                                                            <mat-label>Count</mat-label>
+                                                            <input autocomplete="off" matInput name="maxEmailNotification" [class.hideInput]="warningNotification"
+                                                             [(ngModel)]="maxEmailNotification">
+                                                        </mat-form-field>
+                                                        <div class="info-img">
+                                                            <img src="../../../assets/icons/info-circle.svg" [matTooltip]="" matTooltipPosition="right">
+                                                        </div>
+                                                    </div>
+                                                 </div>
+                                              </div>
+                                        </div>
                                 </div>
                             </div>
-                            <div [hidden]="currentStepperName != 'Autofix'" class="autofix-wrapper">
-                                  <div [class.hide]="!isAutofixEnabled" class="flex flex-col gap-20">
-                                    <app-dropdown [items]="accountList" placeholder="Accounts" [isChipListEnabled]="true"
-                                    [selectedList]="selectedAccounts" (selected)="onAccountsChange($event)"></app-dropdown>
-                                    <app-input-field [(value)]="fixMailSubject" placeholder="Fix Subject"></app-input-field>
-                                    <app-input-field [(value)]="postFixMessage" placeholder="Fix Message"></app-input-field>
-                                    <app-input-field [(value)]="violationMessage" placeholder="Violation Message"></app-input-field>
-                                  </div>
-                                  <div class="notification-wrapper flex flex-col gap-20" *ngIf="isAutofixEnabled">
-                                    <div class="flex gap-8">
-                                        <span class="subtitle-1">Mute Notification</span>
-                                        <mat-slide-toggle [checked]="isSilentNotificationEnabled" (change)="toggleSilentNotification($event)"></mat-slide-toggle>
-                                    </div>
-                                    <div class="flex flex-col gap-20" *ngIf="!isSilentNotificationEnabled;else silent">
-                                        <app-input-field [(value)]="waitingTime" placeholder="Waiting Time"></app-input-field>
-                                        <app-input-field [(value)]="warningMailSubject" placeholder="Warning Subject"></app-input-field>
-                                        <app-input-field [(value)]="warningMessage" placeholder="Warning Message"></app-input-field>
-                                        <app-input-field [(value)]="maxEmailNotification" placeholder="Max Notification"></app-input-field>
-                                    </div>
-                                    <ng-template #silent>
-                                        <app-input-field [(value)]="elapsedTime" placeholder="Waiting Time"></app-input-field>
-                                    </ng-template>
-                                  </div>
-                            </div>
-                        </form>
-                        <div class="button-wrapper">
-                            <button class="button next-btn" [class.hide]="currentStepperIndex+1<stepperData.length"
-                                (click)="onSubmit(policyForm)">
-                                {{submitBtn}}</button>
-                            <button class="button next-btn" [class.hide]="currentStepperIndex+1==stepperData.length"
-                                (click)="pageCounter('next')">
-                                Next</button>
-                            <button class=" button back-btn" [class.hide]="currentStepperIndex==0"
-                                (click)="pageCounter('back')">Back</button>
                         </div>
-                    </div>
-                </ng-template>
-            </app-stepper>
-        </div>
+                    </form>
+            </div>
+            <div class="details-footer">
+                <div class="button-wrapper">
+                    <button class="button cancel-btn" 
+                        (click)="onReset()">Cancel</button>
+                    <button class="button submit-btn" 
+                        (click)="onSubmit()">Update</button>
+                </div>
+            </div>
     </div>
 </div>

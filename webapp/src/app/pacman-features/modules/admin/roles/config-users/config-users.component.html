@@ -42,7 +42,7 @@
                                         <div class="attribute-contents asset-formctn" *ngIf="!isCreate">
                                             <div class="outer-div">
                                                 <div class="list-select inner-div attrlist">
-                                                    <h1>Available Users</h1>
+                                                    <h6>Available Users</h6>
                                                     <button class="move-btn move-btn-first" type="button" (click)="moveAllItemsToRight()" [disabled]="availableItems.length==0"><i class="fa fa-chevron-right"></i><i class="fa fa-chevron-right"></i></button>
                                                     <button class="move-btn" type="button" (click)="moveItemToRight()" [disabled]="availChoosedItemsCount==0"><i class="fa fa-chevron-right"></i></button>
                                                     <input type="text" class="filter-box" placeholder="Filter Values" [(ngModel)]="searchAvailableUsersTerms" (ngModelChange)="searchAvailableUsers()">
@@ -66,7 +66,7 @@
                                                 </div>
 
                                                 <div class="list-select inner-div attrlist">
-                                                    <h1>Selected Users</h1>
+                                                    <h6>Selected Users</h6>
                                                     <button class="move-btn move-btn-first" type="button" (click)="moveAllItemsToLeft()" [disabled]="selectedItems.length==0"><i class="fa fa-chevron-left"></i><i class="fa fa-chevron-left"></i></button>
                                                     <button class="move-btn" type="button" (click)="moveItemToLeft()" [disabled]="selectChoosedItemsCount==0"><i class="fa fa-chevron-left"></i></button>
                                                     <input class="filter-box" placeholder="Filter Values" [(ngModel)]="searchSelectedUsersTerms" (ngModelChange)="searchSelectedUsers()">

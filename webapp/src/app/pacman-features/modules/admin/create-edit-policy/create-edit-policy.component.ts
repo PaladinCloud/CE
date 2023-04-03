@@ -31,7 +31,8 @@ import { UploadFileService } from '../../../services/upload-file-service';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxComponent } from 'src/app/shared/components/molecules/dialog-box/dialog-box.component';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
-import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+import { reject } from 'lodash';
 
 @Component({
   selector: 'app-admin-create-edit-policy',
@@ -78,8 +79,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   allEnvironments = [];
   allpolicyParamKeys = [];
   allEnvParamKeys = [];
+  hasEditableParams = 0;
   allPolicyParams = Object();
   paramsList = [];
+  status = false;
   hideContent = false;
   ispolicyCreationFailed = false;
   ispolicyCreationSuccess = false;
@@ -92,6 +95,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   isFirstPage;
   totalPages: number;
   pageNumber = 0;
+  @ViewChild('policyForm') policyForm!: NgForm;
 
   searchTxt = '';
   dataTableData = [];
@@ -168,26 +172,26 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       name: "Autofix"
     }
   ]
-  isSilentNotificationEnabled = false;                                                                                                                                                                                                                                                        
+  warningNotification = false;                                                                                                                                                                                                                                                        
   isAutofixAvailable = false;
-  updatedAccounts: string[];
   attributeList : string[] = ["A","V"];
   selectedAttributes: string[];
   updatedAttributes: string[];
-  selectedAccounts: string[];
+  selectedAccounts: string[] = [];
   accountList: string[] = [];
-  fixMailSubject: string;
-  postFixMessage: string;
-  violationMessage: string;
-  warningMessage: any;
-  warningMailSubject: any;
-  index: string;
+  fixMailSubject: string = "";
+  postFixMessage: string = "";
+  violationMessage: string = "";
+  warningMessage: any = "";
+  warningMailSubject: any = "";
+  index: string = "";
   waitingTime: any;
   maxEmailNotification: any;
   elapsedTime: any;
   fixType: any;
   showAutofix = false;
-
+  assetMap: any;
+  assetTypeSubscription: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -200,12 +204,13 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private assetTypeMapService: AssetTypeMapService
   ) {
-
-    this.routerParam();
-    this.updateComponent();
+      this.routerParam();
   }
+
+  formData = {};
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
@@ -218,6 +223,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
+  }
+
+  onReset() {
+    this.policyForm.reset(this.formData);
   }
 
   selectedType(event: any) {
@@ -294,7 +303,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       });
   }
 
-  onSubmit(form: NgForm) {
+  onSubmit() {
     this.hideContent = true;
     this.policyLoader = true;
     this.buildCreatepolicyModel();
@@ -306,8 +315,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyDisplayName = this.policyDisplayName;
     PolicyModel.policyId = this.policyId;
     PolicyModel.policyName = this.policyName;
+  
     PolicyModel.targetType = this.selectedAssetType;
     PolicyModel.severity = this.selectedSeverity;
+    PolicyModel.status = this.status?"ENABLED": "DISABLED";
     PolicyModel.category = this.selectedCategory;
     PolicyModel.policyDesc = this.description;
     PolicyModel.resolution = this.resolution;
@@ -317,10 +328,10 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     PolicyModel.policyRestUrl = this.policyUrl;
     PolicyModel.policyParams = this.buildpolicyParams();
     PolicyModel.policyFrequency = "0 0 ? * MON *";
-    PolicyModel.autoFixAvailable = this.isAutofixAvailable;
-    PolicyModel.autofixEnabled = this.isAutofixEnabled;
+    PolicyModel.autoFixAvailable = this.isAutofixAvailable?"true":"false";
+    PolicyModel.autofixEnabled = this.isAutofixEnabled?"true":"false";
 
-    if(PolicyModel.autoFixAvailable){
+    if(this.isAutofixAvailable){
       PolicyModel.allowList = this.selectedAccounts;
       PolicyModel.fixMailSubject = this.fixMailSubject;
       PolicyModel.fixMessage = this.postFixMessage;
@@ -330,36 +341,36 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       PolicyModel.warningMessage  = this.warningMessage;
       PolicyModel.warningMailSubject = this.warningMailSubject;
       PolicyModel.elapsedTime = this.elapsedTime;
-      PolicyModel. fixType = this.isSilentNotificationEnabled?"silent":"non-silent";
+      PolicyModel.fixType = this.warningNotification?"silent":"non-silent";
     }
-
-    this.currentFileUpload = new File([''], '');
-    console.log(PolicyModel," PolicyModel ");
-    this.updatePolicy(PolicyModel);
+  this.createOrUpdatepolicy(PolicyModel);
   }
 
-  updatePolicy(PolicyModel: any) {
-    const url = environment.updatePolicy.url;
-    const method = environment.updatePolicy.method;
-    this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
-      this.policyLoader = false;
-      this.ispolicyCreationSuccess = true;
-      this.notificationObservableService.postMessage("Policy " + this.policyDisplayName + " updated successfully!!", 3000, "variant1", "green-info-circle");
-    },
-      error => {
-        this.ispolicyCreationFailed = true;
+  createOrUpdatepolicy(PolicyModel: any) {
+    this.enableDisableRuleOrJob(this.status?"enable":"disable").then(data=>{
+      const url =  environment.updatePolicy.url;
+      const method = environment.updatePolicy.method;
+      this.uploadService.pushFileToStorage(url, method, this.currentFileUpload, PolicyModel).subscribe(event => {
         this.policyLoader = false;
-      });
-
-    this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
-    this.workflowService.clearAllLevels();
-    this.router.navigate(['../'], {
-      relativeTo: this.activatedRoute,
-      queryParams: {
-      }
-    });
+        this.ispolicyCreationSuccess = true;
+        const notificationMessage = "Policy " + this.policyDisplayName + " updated successfully!!";
+        this.notificationObservableService.postMessage(notificationMessage,3000,"","check-circle");
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
+        this.workflowService.clearAllLevels();
+        this.router.navigate(['../'], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: "merge",
+          state: {
+            dataUpdated: true
+            }
+        });
+      },
+        error => {
+          this.ispolicyCreationFailed = true;
+          this.policyLoader = false;
+        });
+    })
   }
-
 
   private buildpolicyParams() {
     const policyParms = Object();
@@ -373,7 +384,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   }
 
   toggleSilentNotification(event:any){
-    this.isSilentNotificationEnabled = event.checked;
+    this.warningNotification = event.checked;
   }
   
   onSelectCategory(selectedCategory) {
@@ -421,7 +432,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
   }
 
   getData() {
-    this.getDatasourceDetails();
+    // this.getDatasourceDetails();
+    this.getPolicyDetails(this.policyId);
   }
 
   /*
@@ -445,8 +457,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.isDisabled = false;
           this.readonly = false;
           this.hideContent = true;
-          // this.getpolicyCategoryDetails();
-          this.getPolicyDetails(this.policyId);
+          this.updateComponent();
         }
 
         this.FullQueryParams = currentQueryParams;
@@ -486,6 +497,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, {}, { policyId: policyId }).subscribe(reponse => {
       this.policyDetails = reponse[0];
       this.selectedPolicyId = this.policyDetails.policyId;
+      this.status = this.policyDetails.status=="ENABLED";
       this.selectedSeverity = this.policyDetails.severity;
       this.selectedCategory = this.policyDetails.category;
       this.policyId = this.policyDetails.policyId;
@@ -500,11 +512,17 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       this.resolutionUrl = this.policyDetails.resolutionUrl;
       this.isAutofixAvailable = this.policyDetails.autoFixAvailable == "true";
       this.isAutofixEnabled =this.policyDetails.autoFixEnabled == "true";
-     
 
-      if(!this.isAutofixAvailable)
-           this.removeStepper("Autofix");
-      else{
+      if (this.resolutionUrl == null || this.resolutionUrl == "") {
+        this.resolutionUrl = "https://github.com/PaladinCloud/CE/wiki/Policy";
+      }
+
+      this.assetTypeMapService.getAssetMap().subscribe(data=>{
+        this.assetMap = data;
+        this.selectedAssetType = this.assetMap.get(this.selectedAssetType);
+      });
+
+      if(this.isAutofixAvailable){
           this.getAccounts();
           this.selectedAccounts = this.policyDetails.allowList.split(",").slice();
           this.fixMailSubject = this.policyDetails.fixMailSubject;
@@ -516,42 +534,39 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
           this.warningMailSubject = this.policyDetails.warningMailSubject; 
           this.elapsedTime = this.policyDetails.elapsedTime;
           this.fixType = this.policyDetails.fixType;
-          this.isSilentNotificationEnabled = this.fixType == "silent";
+          this.warningNotification = this.fixType == "silent";
         }
       this.allPolicyParams = JSON.parse(this.policyDetails.policyParams)["params"];
       this.paramsList = [];
-      let hasEditableParameters = false;
+      
       for (let i = this.allPolicyParams.length - 1; i >= 0; i -= 1) {
-        if(this.allPolicyParams[i]["isEdit"]){
-          hasEditableParameters = true;
+        if (this.allPolicyParams[i]["isEdit"]) {
+          this.hasEditableParams++;
         }
-        this.paramsList.push(
-              {
+        if(this.allPolicyParams[i]["key"].toLowerCase() == "policycategory" || this.allPolicyParams[i]["key"].toLowerCase() == "severity")
+        {
+          continue;
+        }
+          this.paramsList.push(
+            {
               "key": this.allPolicyParams[i]["key"],
               "value": this.allPolicyParams[i]["value"],
+              "displayName": this.allPolicyParams[i]["displayName"]?this.allPolicyParams[i]["displayName"]:this.allPolicyParams[i]["key"],
               "isEdit": this.allPolicyParams[i]["isEdit"] ? this.allPolicyParams[i]["isEdit"] : false,
               "isMandatory": this.allPolicyParams[i]["isMandatory"] ? this.allPolicyParams[i]["isMandatory"] : false,
-              "description": this.allPolicyParams[i]["description"],
-              "displayName": this.allPolicyParams[i]["displayName"]
-              }
-            )
-         }
-         
-      if (!hasEditableParameters) {
-        this.removeStepper("Policy Parameters");
-      }
-      this.stepperData.forEach((data,index)=>{
-            data.id = index;        
-      })
-      if(this.showAutofix){
-          const currentStepperIndex = this.stepperData.findIndex(data=> data.name == "Autofix");
-          this.selectedStepperIndex(currentStepperIndex);
-       }else{
-          this.currentStepperIndex = 0;
-          this.selectedStepperIndex(0);
-       }
-      this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
+              "description": this.allPolicyParams[i]["description"] 
+            }
+          )
+        }
+      // this.getTargetTypeNamesByDatasourceName(this.selectedAssetGroup);
       this.hideContent = false;
+
+      this.paramsList.forEach(param=>{
+        this.formData[param.key]=param.value;
+      })
+      this.formData["maxEmailNotification"]=this.maxEmailNotification;
+      this.formData["waitingTime"] = this.waitingTime;
+
     },
       error => {
         this.logger.log("Error",error);
@@ -595,8 +610,8 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     }
   }
 
-  onAccountsChange(updatedAccounts:any){
-    this.updatedAccounts = updatedAccounts;
+  onAccountsChange(selectedAccounts:any){
+    this.selectedAccounts = selectedAccounts;
   }
 
   removeStepper(stepperName: string){
@@ -615,7 +630,7 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result == "yes") {
-        this.updatePolicy(PolicyModel);
+        this.createOrUpdatepolicy(PolicyModel);
       }
     });
   }
@@ -645,6 +660,38 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
     }
   }
 
+  toggleStatus(event:any){
+      this.status = event.checked;
+  }
+
+  toggleWarningNotification(event:any){
+      this.warningNotification = event.checked;
+  }
+
+  enableDisableRuleOrJob(action:string) {
+    return new Promise((resolve,reject)=>{
+    try {      
+        const url = environment.enableDisableRuleOrJob.url;
+        const method = environment.enableDisableRuleOrJob.method;
+        const params = {};
+        params['policyId'] = this.policyId;
+        
+        params['action'] = action;
+  
+        this.adminService.executeHttpAction(url, method, {}, params).subscribe(response => {
+            resolve("sucess");
+      }, 
+          error => {
+            reject("error");
+          });
+      } catch (error) {
+        this.logger.log("error", error);
+        reject("error");
+      }
+    })
+
+  }
+
   ngOnDestroy() {
     try {
       if (this.routeSubscription) {
@@ -652,6 +699,9 @@ export class CreateEditPolicyComponent implements OnInit, OnDestroy {
       }
       if (this.previousUrlSubscription) {
         this.previousUrlSubscription.unsubscribe();
+      }
+      if(this.assetTypeSubscription){
+        this.assetTypeSubscription.unsubscribe();
       }
     } catch (error) {
       this.logger.log('error', '--- Error while unsubscribing ---');

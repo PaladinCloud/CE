@@ -29,6 +29,7 @@ import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { MatDialog } from "@angular/material/dialog";
 import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
 import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
+import { AssetTypeMapService } from "src/app/core/services/asset-type-map.service";
 
 @Component({
   selector: "app-admin-policies",
@@ -144,6 +145,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   private previousUrlSubscription: Subscription;
   selectedRowTitle: any;
   action: any;
+  assetTypeMap: any;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -158,16 +160,22 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     private tableStateService: TableStateService,
     private notificationObservableService: NotificationObservableService,
     public dialog: MatDialog,
+    private assetTypeMapService: AssetTypeMapService
   ) { }
 
   ngOnInit() {
     this.notificationObservableService.getMessage();
     this.urlToRedirect = this.router.routerState.snapshot.url;
+    const stateUpdated =  history.state.dataUpdated;
     this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
       this.pageLevel
     );
-    const state = this.tableStateService.getState("adminPolicies") || {};
-    if(state){
+    let state = this.tableStateService.getState("adminPolicies") || {};
+    if(stateUpdated){
+      this.clearState();
+      state = {};
+    }
+    if(state){      
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
       this.bucketNumber = state.bucketNumber || 0;
@@ -184,7 +192,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       if(this.filters){
         this.getFiltersData(this.tableData);
       }
-
+   
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
@@ -405,6 +413,10 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       var getData = data;
       const keynames = Object.keys(getData[0]);
 
+      this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+        this.assetTypeMap = assetTypeMap;
+      });
+
       let cellData;
       for (var row = 0; row < getData.length; row++) {
         const autoFixAvailable = getData[row].autoFixAvailable;
@@ -433,10 +445,18 @@ export class PoliciesComponent implements OnInit, OnDestroy {
               isLink: true
             };
           }
+          else if(col.toLowerCase()=="asset type"){
+            const currentAssetType = this.assetTypeMap.get(cellData);
+              cellObj = {
+              ...cellObj,
+              text: currentAssetType?currentAssetType:cellData,
+              titleText:  currentAssetType?currentAssetType:cellData, // text to show on hover
+              valueText:  currentAssetType?currentAssetType:cellData
+            };
+          }
           else if (col.toLowerCase() == "actions") {
-            let dropDownItems: Array<String> = ["Edit Policy"];
-          if (autoFixAvailable === "true"){
-             dropDownItems.push("Edit Autofix");
+            let dropDownItems: Array<String> = ["Edit"];
+          if (autoFixAvailable === "true"){ 
              if(autoFixEnabled == "true") {
               dropDownItems.push("Disable Autofix");
              } else {
@@ -554,7 +574,12 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }
   }
 
-  goToDetails(event) {
+
+  handleRowClick(event){
+    this.goToDetails(event,true);
+  }
+
+  goToDetails(event,isRowclicked=false) {
     const action = event?.action?.toLowerCase();
     if(action == "enable policy"
     || action == "disable policy"
@@ -586,18 +611,26 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
       );
-    if (action && (action === "edit policy" || action === "edit autofix")) {
+      if(isRowclicked){
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
           queryParams: {
             policyId: policyId,
-            showAutofix: action == "edit autofix"
           },
         });
-    } else if (action && (action === "Run Policy")){
+      }
+    if (action && action === "edit") {
+        this.router.navigate(["create-edit-policy"], {
+          relativeTo: this.activatedRoute,
+          queryParamsHandling: "merge",
+          queryParams: {
+            policyId: policyId
+          },
+        });
+    } else if (action && (action === "run policy")){
          this.invokePolicy(policyId);
-    }
+     }
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);
@@ -615,7 +648,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.adminService.executeHttpAction(url,method,{},queryParams).subscribe(response=>{
         if(response && response[0].message=="success"){
           const snackbarText = 'Autofix for policy "' +  policyId + '" ' + autoFix + 'd successfully';
-          this.openSnackBar(snackbarText,"green-info-circle");
+          this.openSnackBar(snackbarText,"check-circle");
           this.getPolicyDetails();
         }
       })
@@ -630,7 +663,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     this.adminService.executeHttpAction(url, method, [{}], {policyId:policyId}).subscribe(response => {
      const invocationId = response[0].data;
       if(invocationId)
-      this.openSnackBar("Invocation Id " + invocationId + " invoked successfully!!","green-info-circle");
+      this.openSnackBar("Invocation Id " + invocationId + " invoked successfully!!","check-circle");
     },
     error => {
       this.errorHandling.handleJavascriptError(error);

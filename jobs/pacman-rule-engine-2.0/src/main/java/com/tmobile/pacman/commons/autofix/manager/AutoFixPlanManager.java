@@ -24,7 +24,6 @@ package com.tmobile.pacman.commons.autofix.manager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -153,14 +152,13 @@ public class AutoFixPlanManager{
      
      
      /**
-      * 
       * @param resourceId
       * @return
-     * @throws Exception 
-     * @throws IOException 
+      * @throws Exception
+      * @throws IOException
       */
-     public AutoFixPlan getAutoFixPalnForResource(String resourceId,Map<String, String> ruleParam) throws IOException, Exception{
-         AutoFixPlan plan =  getAutoFixPlan(resourceId,ElasticSearchDataPublisher.getIndexName(ruleParam));
+     public AutoFixPlan getAutoFixPlanForResource(String resourceId, Map<String, String> ruleParam) throws IOException, Exception {
+         AutoFixPlan plan = getAutoFixPlan(resourceId, ElasticSearchDataPublisher.getIndexName(ruleParam));
          return plan;
      }
      

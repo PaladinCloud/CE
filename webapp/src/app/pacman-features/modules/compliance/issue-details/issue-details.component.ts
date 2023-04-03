@@ -32,6 +32,7 @@ import {
 } from '../../../secondary-components/policy-violation-desc/policy-violation-desc.component';
 import {CONFIGURATIONS} from '../../../../../config/configurations';
 import {PermissionGuardService} from '../../../../core/services/permission-guard.service';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 
 const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
@@ -201,6 +202,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
     private getRevokeSubscription: Subscription;
     private findJiraSubscription: Subscription;
     private subscriptionDomain: Subscription;
+    assetTypeMap: any;
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -215,7 +217,8 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         private workflowService: WorkflowService,
         private utilityService: UtilsService,
         private domainObservableService: DomainTypeObservableService,
-        private permissions: PermissionGuardService
+        private permissions: PermissionGuardService,
+        private assetTypeMapService:AssetTypeMapService
     ) {
         try {
             this.elementRef = this.myElement;
@@ -420,19 +423,23 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                                         this.issueTopblocks.push(obj);
                                     }
 
+                                    this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
+                                        this.assetTypeMap = assetTypeMap;
+                                      })
+
                                     if (this.issueBlocks.resourceType !== undefined) {
                                         let obj;
                                         const iconKeys = Object.keys(ICONS.awsResources);
                                         if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
                                             obj = {
                                                 header: 'Asset Type',
-                                                footer: this.issueBlocks.resourceType,
+                                                footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
                                                 img: ICONS.awsResources[this.issueBlocks.resourceType]
                                             };
                                         } else {
                                             obj = {
                                                 header: 'Asset Type',
-                                                footer: this.issueBlocks.resourceType,
+                                                footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
                                                 img: ICONS.awsResources[`unknown`]
                                             };
                                         }
@@ -1070,13 +1077,13 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
                     obj = {
                         header: 'Asset Type',
-                        footer: this.issueBlocks.resourceType,
+                        footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
                         img: ICONS.awsResources[this.issueBlocks.resourceType]
                     };
                 } else {
                     obj = {
                         header: 'Asset Type',
-                        footer: this.issueBlocks.resourceType,
+                        footer: this.assetTypeMap.get(this.issueBlocks.resourceType),
                         img: ICONS.awsResources[`unknown`]
                     };
                 }

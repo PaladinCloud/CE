@@ -1,80 +1,40 @@
-.custom-selection-content-wrapper{
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  align-items: center;
+.date-selection-card {
+    padding: 8px 0 10px;
+    max-width: 450px;
+    width: 300px;
 }
 
-.custom-selection-content-wrapper ::ng-deep .mat-form-field-infix{
-  width: 100px !important;
+.date-selection-actions {
+    border-top: 2px solid var(--border-100);
+    display: flex;
+    margin: 0;
+    height: 42px;
+    align-items: center;
+    background: var(--background-white);
+    padding: 0 24px;
 }
 
-.custom-selection-content-wrapper ::ng-deep .mat-card{
-  border: 1px solid var(--border-200);
+.date-selection-content {
+    padding: 0 16px;
+    margin: 0;
+    background: var(--background-white);
 }
 
-mat-card-actions button {
-  border: none;
-  background: var(--background-white);
-  cursor: pointer;
-  height: 17px;
-  font-family: var(--text-medium-font-family);
-  font-style: var(--text-font-style);
-  font-weight: var(--text-font-weight);
-  font-size: var(--text-body-2-font-size);
-  display: flex;
-  letter-spacing: -0.005em;
-  color: var(--primary-500);
+.apply-btn {
+    margin-left: auto;
+    color: var(--primary-400);
+    border: none;
+    background: var(--background-white);
+    cursor: pointer;
+    height: 17px;
+    font-family: var(--text-medium-font-family);
+    font-style: var(--text-font-style);
+    font-weight: var(--text-font-weight);
+    font-size: var(--text-body-2-font-size);
+    letter-spacing: -0.005em;
 }
 
-mat-card-header {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 16px 24px;
-  width: 100%;
-  height: 58px;
-  margin: 0;
-  background: var(--background-white);
-  border-bottom: 2px solid var(--border-100);
-  border-radius: 16px 16px 0px 0px;
-  font: var(--text-body-2);
-  color: var(--text-high-emphasis);
-}
-
-mat-card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px 24px 0px 24px;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background: var(--background-white);
-}
-
-mat-card-actions {
-  margin-bottom: 0 !important;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 16px 24px !important;
-  width: 100%;
-  height: 52px;
-  margin: 0;
-  background: var(--background-white);
-  border-top: 2px solid var(--border-100);
-  border-radius: 0px 0px 16px 16px;
-}
-
-.btn-disabled{
-  color: var(--primary-200) !important;
-  cursor: unset !important;
-}
-
-.apply-btn{
-  margin-left: auto; 
-  color: var(--primary-400);
+.apply-btn:disabled {
+    color: var(--primary-200);
+    cursor: unset;
 }

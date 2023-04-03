@@ -1,20 +1,19 @@
-<mat-card style="padding: 0; height: 100%; max-width: 450px;" (click)="$event.stopPropagation()">
-    <mat-card-header style="padding: 16px 24px; height:auto">Custom Selection</mat-card-header>
-    <mat-card-content style="padding: 20px 24px;">
-    <div class="custom-selection-content-wrapper">
-        <span style="white-space: nowrap;">From :</span>
-        <app-dropdown [items]="years" (selected)="onSelectYear(fromDate, $event)" placeholder="Year"></app-dropdown>
-        <app-dropdown [items]="allMonths" (selected)="onSelectMonth(fromDate, $event, 'from')" placeholder="Month"></app-dropdown>
-        <app-dropdown [items]="fromDays" (selected)="onSelectDay(fromDate, $event)" placeholder="Date"></app-dropdown>
-        <span style="white-space: nowrap;">To :</span>
-        <app-dropdown [items]="years" (selected)="onSelectYear(toDate, $event)" placeholder="Year"></app-dropdown>
-        <app-dropdown [items]="allMonths" (selected)="onSelectMonth(toDate, $event, 'to')" placeholder="Month"></app-dropdown>
-        <app-dropdown [items]="toDays" (selected)="onSelectDay(toDate, $event)" placeholder="Date"></app-dropdown>
-    </div>
+<mat-card class="date-selection-card" (click)="$event.stopPropagation()">
+    <mat-card-content class="date-selection-content">
+        <mat-calendar
+            [maxDate]="today"
+            [selected]="selectedRange"
+            (selectedChange)="selectedDateChange($event)"
+        ></mat-calendar>
     </mat-card-content>
-    <mat-card-actions>
-    <button class="apply-btn" [class.btn-disabled]="toDate<=fromDate || toDate>today" (click)="customDateSelected(fromDate, toDate)">
-        Apply
-    </button>
+    <mat-card-actions class="date-selection-actions">
+        <button
+            class="apply-btn"
+            type="button"
+            [disabled]="selectedRange?.end <= selectedRange?.start"
+            (click)="customDateSelected()"
+        >
+            Apply
+        </button>
     </mat-card-actions>
 </mat-card>

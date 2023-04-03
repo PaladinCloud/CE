@@ -2,23 +2,31 @@
     <mat-card-header>
         {{ card.header }}
         <div *ngIf="showDateDropdown" class="date-dropdown-container">
-            <app-dropdown (closeEventEmitter)="onDropdownClose()" (click)="onCustomSelection()"
+            <div
+                class="date-selection-trigger"
+                #menuTrigger="matMenuTrigger"
+                [matMenuTriggerFor]="menu"
+            ></div>
+            <app-dropdown
+                (closeEventEmitter)="onDropdownClose()"
+                (click)="onCustomSelection()"
                 [items]="['1 week', '1 month', '6 months', '12 months', 'All time', 'Custom']"
-                [selectedItem]="selectedItem" (selected)="handleGraphIntervalSelection($event)">
+                [selectedItem]="selectedItem"
+                (selected)="handleGraphIntervalSelection($event)"
+            >
             </app-dropdown>
-            <div mat-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"></div>
-            <mat-menu #menu="matMenu">
+            <mat-menu #menu="matMenu" xPosition="before">
                 <div class="date-selection-modal">
                     <app-date-selection
-                        (datesSelected)="dateIntervalSelected($event.from, $event.to)"></app-date-selection>
+                        (datesSelected)="dateIntervalSelected($event.from, $event.to)"
+                    ></app-date-selection>
                 </div>
             </mat-menu>
         </div>
     </mat-card-header>
     <mat-card-content>
-        <div class="chart" style="overflow-y: scroll;">
-            <div class="chart-wrapper" id="trendGraph"
-                style="height: 100%; width: 100%; background-color: white;">
+        <div class="chart">
+            <div class="chart-wrapper" id="trendGraph">
                 <ng-content></ng-content>
             </div>
         </div>

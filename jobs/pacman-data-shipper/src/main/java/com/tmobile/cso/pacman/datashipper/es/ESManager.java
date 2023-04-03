@@ -531,8 +531,23 @@ public class ESManager implements Constants {
         Map<String, Map<String, Map<String, Object>>> asgInfoList = new HashMap<>();
         try {
             ObjectMapper objMapper = new ObjectMapper();
-            String payLoad = "{\"query\": { \"match\": { \"date\": \"" + date + "\"} }}";
-            Response response = invokeAPI("GET", "assetgroup_stats/count_type/_search?size=10000", payLoad);
+//            String payLoad = "{\"query\": { \"match\": { \"date\": \"" + date + "\"} }}";
+            String payLoad = "{" +
+                    "  \"query\": {" +
+                    "    \"bool\": {" +
+                    "      \"must\": [" +
+                    "        {" +
+                    "          \"match\": {" +
+                    "            \"docType\": \"count_type\"" +
+                    "          }" +
+                    "        }," +
+                    "        {" +
+                    "          \"match\": { \"date\": \"" + date + "\"}" +
+                    "      ]" +
+                    "    }" +
+                    "  }" +
+                    "}";
+            Response response = invokeAPI("POST", "assetgroup_stats/_search?size=10000", payLoad);
             String responseJson = EntityUtils.toString(response.getEntity());
 
             Map<String, Object> docMap = objMapper.readValue(responseJson, new TypeReference<Map<String, Object>>() {

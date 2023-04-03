@@ -98,13 +98,13 @@ export class ComplianceDashboardComponent implements OnInit {
     link: boolean;
     styling: { cursor: string };
   };
-  policyDataError: string = '';
+  policyDataError = '';
   pacmanIssues: any;
   pacmanCategories: any[];
   showdata: boolean;
   error: boolean;
   loaded: boolean;
-  fetchedViolations: boolean = false;
+  fetchedViolations = false;
   widgetWidth2: number;
   breakpoint1: number;
   breakpoint2: number;
@@ -122,11 +122,20 @@ export class ComplianceDashboardComponent implements OnInit {
   breadcrumbArray = [];
   breadcrumbLinks = [];
   breadcrumbPresent = "Dashboard";
-  columnNamesMap = {name: "Policy", failed: "Violations", provider: "Cloud Type", severity:"Severity",policyCategory: "Category"}
-  columnWidths = {"Policy": 3, "Violations": 1, "Cloud Type": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  columnNamesMap = {name: "Policy", failed: "Violations", provider: "Source", severity:"Severity",policyCategory: "Category"}
+  columnWidths = {"Policy": 3, "Violations": 1, "Source": 1, "Severity": 1, "Category": 1, "Compliance":1};
+  centeredColumns = {
+      Policy: false,
+      Violations: true,
+      Source: true,
+      Severity: true,
+      Category: true,
+      Compliance: true,
+  };
+
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+      const severeness = { low: 4, medium: 3, high: 2, critical: 1, default: 5 * (isAsc ? 1 : -1) };
 
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
@@ -155,8 +164,8 @@ export class ComplianceDashboardComponent implements OnInit {
       a = a.substring(0, a.length-1);
       b = b.substring(0, b.length-1);
 
-      let aNum = parseFloat(a);
-      let bNum = parseFloat(b);
+      const aNum = parseFloat(a);
+      const bNum = parseFloat(b);
 
       return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
     },
@@ -214,7 +223,7 @@ export class ComplianceDashboardComponent implements OnInit {
   graphToDate: Date = new Date();
 
   massageAssetTrendGraphData(graphData){
-    let data = [];
+    const data = [];
     data.push({"key":"Total Assets", "values":[], "info":{}})
 
     for(let i=0; i<data.length; i++){
@@ -228,7 +237,7 @@ export class ComplianceDashboardComponent implements OnInit {
       data[i].values.sort(function(a,b){
         return new Date(a.date).valueOf() - new Date(b.date).valueOf();
       });
-      }
+    }
 
 
     data[0].info = {
@@ -399,8 +408,8 @@ export class ComplianceDashboardComponent implements OnInit {
                 };
                 this.pacmanCategories.push(obj);
               }
-              let dataValue = [],
-                totalCount = 0;
+              const dataValue = [];
+              let totalCount = 0;
               for (let i = 0; i < this.pacmanIssues.severity.length; i++) {
                 const count = this.pacmanIssues.severity[i][
                   Object.keys(this.pacmanIssues.severity[i])[0]
@@ -603,11 +612,11 @@ export class ComplianceDashboardComponent implements OnInit {
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
 
-        let keyValue = _.find(this.filterTypeOptions, {
+        const keyValue = _.find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
         this.changeFilterType(keyValue).then(() => {
-            let filterValue = _.find(this.filterTagOptions[keyValue], {
+            const filterValue = _.find(this.filterTagOptions[keyValue], {
               id: this.filterText[filterObjKeys[i]],
             })["name"];
           const eachObj = {
@@ -689,7 +698,7 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   changeFilterTags(event) {
-    let value = event.filterValue;
+    const value = event.filterValue;
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
       });
@@ -791,7 +800,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
   getFormattedDate(date: Date){
     const offset = date.getTimezoneOffset()
-    let formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+    const formattedDate = new Date(date.getTime() - (offset*60*1000)).toISOString().split('T')[0];
     return formattedDate;
   }
 
@@ -837,17 +846,18 @@ export class ComplianceDashboardComponent implements OnInit {
 
   processData(data) {
     try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
+      let innerArr = {};
+      const totalVariablesObj = {};
+      let cellObj = {};
       let processedData = [];
-      var getData = data;
+      const getData = data;
       const keynames = Object.keys(getData[0]);
 
       let cellData;
-      for (var row = 0; row < getData.length; row++) {
+      for (let row = 0; row < getData.length; row++) {
         innerArr = {};
         keynames.forEach(col => {
+          const isPolicyCol = col.toLowerCase() === "policy";
           cellData = getData[row][col];
           cellObj = {
             text: this.tableImageDataMap[typeof cellData == "string"?cellData.toLowerCase(): cellData]?.imageOnly?"":cellData, // text to be shown in table cell
@@ -859,13 +869,7 @@ export class ComplianceDashboardComponent implements OnInit {
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            isLink: false
-          }
-          if(col.toLowerCase()=="policy"){
-            cellObj = {
-              ...cellObj,
-              isLink: true
-            };
+            isLink: isPolicyCol
           }
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";
@@ -873,7 +877,7 @@ export class ComplianceDashboardComponent implements OnInit {
         processedData.push(innerArr);
       }
       if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
+        const halfLength = processedData.length / 2;
         processedData = processedData.splice(halfLength);
       }
       return processedData;
@@ -913,7 +917,7 @@ export class ComplianceDashboardComponent implements OnInit {
             { class: "", title: "Tagging", val: "NR" },
           ];
           response[0].data.forEach((element) => {
-            let category = element[1]["title"].toLowerCase();
+            const category = element[1]["title"].toLowerCase();
             let index;
             switch(category){
               case "security":
@@ -988,8 +992,8 @@ export class ComplianceDashboardComponent implements OnInit {
         a = a.substring(0, a.length-1);
         b = b.substring(0, b.length-1);
 
-        let aNum = parseFloat(a);
-        let bNum = parseFloat(b);
+        const aNum = parseFloat(a);
+        const bNum = parseFloat(b);
 
         return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
       });
@@ -1114,7 +1118,7 @@ export class ComplianceDashboardComponent implements OnInit {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent,
       );
-      let updatedQueryParams = { ...this.activatedRoute.snapshot.queryParams };
+      const updatedQueryParams = { ...this.activatedRoute.snapshot.queryParams };
       updatedQueryParams["searchValue"] = undefined;
       this.router.navigate(["../policy-details", selectedRow["Policy ID"].valueText], {
         relativeTo: this.activatedRoute,
@@ -1162,12 +1166,10 @@ export class ComplianceDashboardComponent implements OnInit {
     const fileType = "csv";
 
     try {
-      let queryParams;
-
-      queryParams = {
-        fileFormat: "csv",
+      const queryParams = {
+        fileFormat: fileType,
         serviceId: 2,
-        fileType: fileType,
+        fileType,
       };
 
       const downloadRequest = {

@@ -101,7 +101,7 @@ import { TableComponent } from "./table/table.component";
 import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MultilineZoomGraphComponent } from "./multiline-zoom-graph/multiline-zoom-graph.component";
-import { DateSelection } from "./date-selection/date-selection.component";
+import { DateSelectionComponent } from "./date-selection/date-selection.component";
 import { MatCardModule } from "@angular/material/card";
 import { DialogBoxComponent } from './components/molecules/dialog-box/dialog-box.component';
 import { SnackbarComponent } from './components/molecules/snackbar/snackbar.component';
@@ -124,6 +124,7 @@ import { InputFieldComponent } from './input-field/input-field.component';
   imports: [
     MatButtonModule,
     MatStepperModule,
+    MatTooltipModule,
     MatDialogModule,
     MatChipsModule,
     MatSnackBarModule,
@@ -148,7 +149,7 @@ import { InputFieldComponent } from './input-field/input-field.component';
   declarations: [
     MultilineZoomGraphComponent,
     TableComponent,
-    DateSelection,
+    DateSelectionComponent,
     DropdownComponent,
     FilterDropdownComponent,
     CanvasSidePanelComponent,
@@ -227,7 +228,7 @@ import { InputFieldComponent } from './input-field/input-field.component';
     SnackbarComponent,
     MultilineZoomGraphComponent,
     TableComponent,
-    DateSelection,
+    DateSelectionComponent,
     DropdownComponent,
     DoughnutChartComponent,
     CommonModule,

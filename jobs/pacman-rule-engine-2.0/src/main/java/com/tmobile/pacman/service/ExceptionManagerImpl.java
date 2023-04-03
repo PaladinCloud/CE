@@ -37,22 +37,34 @@ import com.tmobile.pacman.util.ESUtils;
  */
 public class ExceptionManagerImpl implements ExceptionManager {
 
-    /** The index for exceptions. */
-    private static String INDEX_FOR_EXCEPTIONS = "exceptions";
+    /**
+     * The index for exceptions.
+     */
+    private static final String INDEX_FOR_EXCEPTIONS = "exceptions";
 
-    /** The type for sticky exceptions. */
-    private static String TYPE_FOR_STICKY_EXCEPTIONS = "sticky_exceptions";
+    /**
+     * The type for sticky exceptions.
+     */
+    private static final String TYPE_FOR_STICKY_EXCEPTIONS = "sticky_exceptions";
 
-    /** The rule id attribute name. */
-    private static String POLICY_ID_ATTRIBUTE_NAME = "targetTypes.policies.policyId.keyword";
+    /**
+     * The rule id attribute name.
+     */
+    private static final String POLICY_ID_ATTRIBUTE_NAME = "targetTypes.policies.policyId.keyword";
 
-    /** The resource type attribute name. */
-    private static String RESOURCE_TYPE_ATTRIBUTE_NAME = "targetTypes.name.keyword";
+    /**
+     * The resource type attribute name.
+     */
+    private static final String RESOURCE_TYPE_ATTRIBUTE_NAME = "targetTypes.name.keyword";
 
-    /** The resource id. */
-    private static String RESOURCE_ID = "_resourceid";
+    /**
+     * The resource id.
+     */
+    private static final String RESOURCE_ID = "_resourceid";
 
-    /** The Constant logger. */
+    /**
+     * The Constant logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(ExceptionManagerImpl.class);
 
     /**

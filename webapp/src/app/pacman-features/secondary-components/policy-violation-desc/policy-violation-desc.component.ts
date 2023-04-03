@@ -42,6 +42,7 @@ export class PolicyViolationDescComponent implements OnInit {
   showAccordion = true;
   testData;
   public agAndDomain = {};
+  
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,

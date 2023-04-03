@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,7 +58,7 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({URLDecoder.class, PacmanUtils.class,IAMUtils.class})
+@PrepareForTest({URLDecoder.class, PacmanUtils.class,IAMUtils.class, Annotation.class})
 public class IAMAccessGrantForNonAdminAccountRuleTest {
 
     @InjectMocks
@@ -149,6 +151,8 @@ public class IAMAccessGrantForNonAdminAccountRuleTest {
         when(identityManagementClient.getPolicy(anyObject())).thenReturn(policyResult);
         when(identityManagementClient.listAttachedRolePolicies(anyObject())).thenReturn(result);
         when(identityManagementClient.getPolicyVersion(anyObject())).thenReturn(versionResult1);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));
         
         when(identityManagementClient.getPolicy(anyObject())).thenReturn(policyResult);
@@ -178,7 +182,15 @@ public class IAMAccessGrantForNonAdminAccountRuleTest {
         assertThatThrownBy(
                 () -> iamAccessGrantForNonAdminAccountRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
-  
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     
     @Test
     public void getHelpTextTest(){

@@ -1,39 +1,92 @@
 <div class="container-wrapper">
     <div class="container-1">
-        <mat-grid-list [cols]="breakpoint1" rowHeight="186px" gutterSize="20px" (window:resize)="onresize($event)">
+        <mat-grid-list
+            [cols]="breakpoint1"
+            rowHeight="186px"
+            gutterSize="20px"
+            (window:resize)="onresize($event)"
+        >
             <mat-grid-tile class="violation-tile" *ngFor="let card of violationCards">
-                <app-violations-card [breadcrumbPresent]="breadcrumbPresent" [card]="card"></app-violations-card>
+                <app-violations-card
+                    [breadcrumbPresent]="breadcrumbPresent"
+                    [card]="card"
+                ></app-violations-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
     <div class="container-2">
-        <mat-grid-list [cols]="breakpoint2" rowHeight="396px" gutterSize="20px" (window:resize)="onresize($event)">
+        <mat-grid-list
+            [cols]="breakpoint2"
+            rowHeight="396px"
+            gutterSize="20px"
+            (window:resize)="onresize($event)"
+        >
             <mat-grid-tile>
-                <app-card [card]="cards[0]" [data]="complianceData" [dataError]="complianceDataError"></app-card>
+                <app-card
+                    [card]="cards[0]"
+                    [data]="complianceData"
+                    [dataError]="complianceDataError"
+                ></app-card>
             </mat-grid-tile>
             <mat-grid-tile>
-                <app-card [card]="cards[1]" [dataError]="policyDataError" [data]="policyData"></app-card>
+                <app-card
+                    [card]="cards[1]"
+                    [dataError]="policyDataError"
+                    [data]="policyData"
+                ></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
     <div class="container-3">
-        <mat-grid-list [cols]="breakpoint3" rowHeight="530px" gutterSize="20px" (window:resize)="onresize($event)">
+        <mat-grid-list
+            [cols]="breakpoint3"
+            rowHeight="530px"
+            gutterSize="20px"
+            (window:resize)="onresize($event)"
+        >
             <mat-grid-tile>
-                <app-card [card]="cards[2]" [dataError]="totalAssetsCountDataError" [data]="totalAssetsCountData" (graphIntervalSelected)="getAssetsCountData($event)"></app-card>
+                <app-card
+                    [card]="cards[2]"
+                    [dataError]="totalAssetsCountDataError"
+                    [data]="totalAssetsCountData"
+                    (graphIntervalSelected)="getAssetsCountData($event)"
+                ></app-card>
             </mat-grid-tile>
         </mat-grid-list>
     </div>
     <div class="container-4" (window:resize)="onresize($event)">
         <mat-grid-list [cols]="breakpoint4" rowHeight="504px">
-            <mat-grid-tile style="background-color: var(--background-white);">
-                <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
-                    [data]="complianceTableData" [columnWidths]="columnWidths" [tableErrorMessage]='tableErrorMessage' [tableDataLoaded]='tableDataLoaded'
-                    [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                    [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns" [tableTitle]="tableTitle"
-                    [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
-                    [searchQuery]="searchTxt" (downloadClicked)="handlePopClick($event)" [tableScrollTop]="tableScrollTop" [totalRows]="totalRows" [showDownloadBtn]="showDownloadBtn"
-                    [showFilterBtn]="true" [doLocalFilter]="true" [doLocalSearch]="true"
-                    [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters">
+            <mat-grid-tile style="background-color: var(--background-white)">
+                <app-table
+                    style="height: 100%; width: 100%"
+                    (rowSelectEventEmitter)="goToDetails($event)"
+                    [data]="complianceTableData"
+                    [columnWidths]="columnWidths"
+                    [centeredColumns]="centeredColumns"
+                    [tableErrorMessage]="tableErrorMessage"
+                    [tableDataLoaded]="tableDataLoaded"
+                    [columnsSortFunctionMap]="columnsSortFunctionMap"
+                    (headerColNameSelected)="handleHeaderColNameSelection($event)"
+                    [headerColName]="headerColName"
+                    [direction]="direction"
+                    [whiteListColumns]="whiteListColumns"
+                    [tableTitle]="tableTitle"
+                    [showAddRemoveCol]="true"
+                    [showSearchBar]="true"
+                    (searchCalledEventEmitter)="callNewSearch($event)"
+                    [searchQuery]="searchTxt"
+                    (downloadClicked)="handlePopClick($event)"
+                    [tableScrollTop]="tableScrollTop"
+                    [totalRows]="totalRows"
+                    [showDownloadBtn]="showDownloadBtn"
+                    [showFilterBtn]="true"
+                    [doLocalFilter]="true"
+                    [doLocalSearch]="true"
+                    [filterTypeLabels]="filterTypeLabels"
+                    [filterTagLabels]="filterTagLabels"
+                    [filteredArray]="filters"
+                    [rowSize]="'SM'"
+                >
                 </app-table>
             </mat-grid-tile>
         </mat-grid-list>

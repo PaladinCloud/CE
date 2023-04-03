@@ -80,8 +80,7 @@ public class ESEncryptionAtRestRule extends BasePolicy {
 		}
 		if (resourceAttributes != null) {
 			String esEncryEnable = StringUtils.trim(resourceAttributes.get(ES_PROP_ENCRYPTION_ENABLED));
-
-				if (Double.parseDouble(resourceAttributes.get(ES_PROP_VERSION)) >= 5.1 &&
+				if (checkIfVersionIsCorrect(resourceAttributes.get(ES_PROP_VERSION)) &&
 						(esEncryEnable == null || "".equals(esEncryEnable) 
 						|| !PacmanRuleConstants.TRUE_VAL.equalsIgnoreCase(esEncryEnable) )) {
 					List<LinkedHashMap<String, Object>> issueList = new ArrayList<>();
@@ -104,6 +103,14 @@ public class ESEncryptionAtRestRule extends BasePolicy {
 		logger.debug("========ESEncryptionAtRestRule ended=========");
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS, PacmanRuleConstants.SUCCESS_MESSAGE);
 
+	}
+
+	private boolean checkIfVersionIsCorrect(String version) {
+		if(version.startsWith("OpenSearch"))
+			return true;
+		if(Double.parseDouble(version) >= 5.1)
+			return true;
+		return false;
 	}
 
 	@Override

@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -14,7 +14,7 @@
 
 .issue-trend-wrapper-3 {
   min-height: 435px;
-  background-color: white;
+  background-color: var(--background-white);
   width: 72vw;
   height: 58vh;
   position: fixed;
@@ -36,7 +36,6 @@
 
 .delete-title {
   cursor: pointer;
-  margin-left: auto;
 }
 
 .multiline-brush-zoom-container {
@@ -62,13 +61,11 @@
   height: 24px;
   color: var(--text-black-emphasis);
   font: var(--text-body-2);
-  padding: 5px 0px;
+  padding: 5px 0;
 }
 
-.multiline-brush-zoom-container {
-  position: relative;
-  min-height: 25.83em;
-  font-size: 1em;
+.sub-header-wrapper > * {
+    margin-left: auto;
 }
 
 .sub-footer {

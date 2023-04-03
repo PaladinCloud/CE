@@ -23,7 +23,7 @@
 }
 
 .table-header {
-  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 .table-count-info{
@@ -31,7 +31,6 @@
 }
 
 .table-header .table-column-modifier{
-    /* background-color: var(--background-white); */
     border: 1px solid var(--border-100);
     height: 64px;
     padding: 12px 19px 12px 24px;
@@ -58,7 +57,6 @@
   border: 1px solid var(--border-100);
   height: 56px;
   padding: 16px 24px;
-  display: inherit;
   align-items: center;
   font: var(--text-body-2);
   color: var(--text-high-emphasis);
@@ -75,15 +73,12 @@
 .table-header .header-right{
     flex: 5;
     padding: 5px;
-    /* margin-left: auto; */
 }
 
 .add-remove-columns-wrapper{
   display: flex;
   align-items: center;
   justify-content: center;
-    /* margin-left: auto; */
-    /* height: 25px; */
     border: 1px solid var(--border-200);
     padding: 0px 16px;
     font: var(--text-caption);
@@ -95,7 +90,6 @@
   border: 1px solid var(--border-200);
   padding: 4px 12px;
   cursor: pointer;
-  /* margin-left: 12px; */
   gap: 8px;
   align-items: center;
   font: var(--text-caption);
@@ -110,10 +104,6 @@
 }
 
 .filter-modal-container{
-  /* z-index: 101;
-  position: absolute;
-  right: 20px;
-  top: 120px; */
   min-height: 100px;
   min-width: 480px;
   max-height: 250px;
@@ -138,7 +128,7 @@
 
 .isDisabled{
   pointer-events: none;
-  opacity: 50%;
+  opacity: 0.5;
 }
 
 .filter-modal-container .filters-wrapper .filter{
@@ -153,6 +143,10 @@
 .filter-modal-container .header .title{
   font: var(--text-body-2);
   color: var(--text-medium-emphasis);
+}
+
+.filter-modal-container .clear-all-btn{
+  margin-left: auto;
 }
 
 .filter-modal-container .header .clear-all-btn{
@@ -173,15 +167,11 @@
   padding: 4px;
 }
 
-.filter-modal-container .clear-all-btn{
-  margin-left: auto;
-}
-
 .filters-container{
   overflow-y: scroll;
   min-height: 50px;
   max-height: 121px;
-  padding: 12px 0px;
+  padding: 12px 0;
 }
 
 .filters-container ::ng-deep .mat-form-field-infix{
@@ -201,8 +191,7 @@
 }
 
 .table-header ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
-    /* height: 0px; */
-    padding: .6em .75em 0 .75em;
+    padding: .6em .75em 0;
 }
 
 .table-header ::ng-deep .mat-form-field-underline {
@@ -221,7 +210,6 @@
 .search-in-columns ::ng-deep .mat-select-arrow-wrapper {
     width: 20px;
     height: 20px;
-    /* background: #eee; */
     border: 1px solid var(--border-100);
 }
 
@@ -235,7 +223,7 @@
 }
 
 .search-in-columns ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-infix {
-  padding: 10px 10px !important;
+  padding: 10px !important;
 }
 
 .search-in-columns ::ng-deep .mat-select-trigger{
@@ -267,8 +255,6 @@
     display: none;
 }
 
-
-
 table {
   width: 100%;
   table-layout: fixed;
@@ -282,39 +268,61 @@ th.mat-sort-header-sorted {
   color: var(--primary-400);
 }
 
-
 .row-hover:hover{
   background-color: var(--background-grey);
   cursor: pointer;
 }
 
 tr.mat-row, tr.mat-footer-row {
-  height: 62px;
-  padding: 12px 0px;
   align-items: center;
   font: var(--text-body-2);
   color: var(--text-high-emphasis);
 }
 
+tr.mat-footer-row {
+    height: 62px;
+}
+
+tr.mat-row.lg {
+    height: 62px;
+}
+
+tr.mat-row.md {
+    height: 48px;
+}
+
+tr.mat-row.sm {
+    height: 36px;
+}
+
+tr.mat-row.md > td {
+    font-size: 93%;
+}
+
+tr.mat-row.sm > td {
+    font-size: 86%;
+}
+
 th.mat-header-cell, td.mat-cell, td.mat-footer-cell{
-  border:none;
-}
-
-tr.mat-header-row{
-  height: 52px;
-  padding: 16px 0px;
-  font: var(--text-body-2);
-  color: var(--text-low-emphasis);
-  border: 1px solid var(--border-100);
-  background-color: #f8f8f8;
-}
-
-th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
-  padding: 0px 24px;
+  padding: 0 24px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 100px;
+  border:none;
+}
+
+::ng-deep th.mat-header-cell.centered > .mat-sort-header-container {
+    justify-content: center;
+}
+
+tr.mat-header-row{
+  height: 52px;
+  padding: 16px 0;
+  font: var(--text-body-2);
+  color: var(--text-low-emphasis);
+  border: 1px solid var(--border-100);
+  background-color: #f8f8f8;
 }
 
 .download-btn{
@@ -338,7 +346,7 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
 .chip{
   max-width: 100px;
   background: var(--background-grey);
-  padding: 0px 4px 0px 12px;
+  padding: 0 4px 0 12px;
   border-radius: 4px;
   font: var(--text-body-2);
 }
