@@ -133,8 +133,7 @@ public class KeyVaultsRule extends BasePolicy {
 
     @Override
     public String getHelpText() {
-
-        return null;
+        return "This rule checks if azure keyvault rule alert";
     }
 
 }
