@@ -100,7 +100,7 @@ public class SetLatestTlsVersionRule extends BasePolicy {
                         .get(PacmanRuleConstants.SOURCE);
                 logger.debug("Validating the data item: {}", jsonDataItem.toString());
 
-                String minTLSVersion=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.MIN_TLS_VERSION).toString();
+                String minTLSVersion=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.MIN_TLS_VERSION).getAsString();
                 logger.info("minTLSVersion",minTLSVersion);
 
                 if(minTLSVersion.equalsIgnoreCase(tlsVersion)){

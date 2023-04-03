@@ -1,6 +1,7 @@
 package com.tmobile.cloud.azurerules.VirtualMachine;
 
 import com.amazonaws.util.StringUtils;
+import com.google.gson.JsonElement;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
@@ -114,12 +115,15 @@ public class BYOKDiskVolumeRule extends BasePolicy {
                         boolean encryption = diskDataItem.getAsJsonObject().get(isEncryptionEnabled).getAsBoolean();
                         if (encryption) {
                             logger.info("The attached disk volumes are  encrypted,");
-                            JsonArray encryptionSettings=jsonDataItem.getAsJsonObject().get(encryptionSetting).getAsJsonArray();
-                            if(encryptionSettings.size()>0){
-                                JsonObject keyEncryptionKey=encryptionSettings.getAsJsonArray().get(Integer.parseInt(keyEncryption)).getAsJsonObject();
-                                String keyUrl=keyEncryptionKey.getAsJsonObject().get(keyurl).getAsString();
-                                if(keyUrl!=null){
-                                    validationResult=true;}
+                            JsonElement encryptionSettingElement = diskDataItem.getAsJsonObject().get(encryptionSetting);
+                            if (encryptionSettingElement != null && encryptionSettingElement.isJsonArray()) {
+                                JsonArray encryptionSettings = encryptionSettingElement.getAsJsonArray();
+                                if(encryptionSettings.size()>0){
+                                    JsonObject keyEncryptionKey=encryptionSettings.get(0).getAsJsonObject().get(keyEncryption).getAsJsonObject();
+                                    String keyUrl=keyEncryptionKey.getAsJsonObject().get(keyurl).getAsString();
+                                    if(keyUrl!=null){
+                                        validationResult=true;}
+                                }
                             }
                         }
                     }

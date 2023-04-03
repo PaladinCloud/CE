@@ -8,6 +8,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.cloud.azurerules.StorageAccount.SetLatestTlsVersionRule;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import org.junit.Test;
@@ -30,7 +31,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class, Annotation.class })
 public class SetLatestTlsVersionRuleTest {
 
     @InjectMocks
@@ -138,8 +139,20 @@ public class SetLatestTlsVersionRuleTest {
                 anyObject(),
                 anyObject(), anyObject(), anyInt(), anyObject(), anyObject(), anyObject()))
                 .thenReturn(getFailureJsonArrayForMinTlsVersion());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(setLatestTlsVersionRule.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 
     @Test
