@@ -552,7 +552,7 @@ public class PacmanRuleConstants {
     public  static  final  String HTTPS_ONLY="httpsOnly";
     public  static  final String FTP_STATE="ftpsState";
     public static  final String DBFLAGNAME="dbFlagName";
-    public  static  final String TLS_VERSION="supportedTlsVersions";
+    public  static  final String TLS_VERSION="tlsVersion";
     public static final String ClientCertEnabled="clientCertEnabled";
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";

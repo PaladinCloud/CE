@@ -86,7 +86,7 @@ public class MinTLSVersionRule extends BasePolicy {
 
     private boolean validateTLSVersion(String esUrl, Map<String, Object> mustFilter, String expectedTlsVersion) throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = true;
+        boolean validationResult = false;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
@@ -104,18 +104,15 @@ public class MinTLSVersionRule extends BasePolicy {
                 logger.debug("Validating the data item: {}", jsonDataItem);
                 String tlsVersion = jsonDataItem.getAsJsonObject()
                         .get(PacmanRuleConstants.AZURE_TLSVersion_MySQLFlex).getAsString();
-                if (tlsVersion.equals(expectedTlsVersion)) {
+                if (tlsVersion.equalsIgnoreCase(expectedTlsVersion)) {
                     validationResult=true;
                 } else {
                     logger.info("TLS version is NOT 1.2");
-                    validationResult = false;
                 }
-
             } else {
                 logger.info(RESOURCE_NOT_FOUND);
             }
         }
-
         return validationResult;
 
     }

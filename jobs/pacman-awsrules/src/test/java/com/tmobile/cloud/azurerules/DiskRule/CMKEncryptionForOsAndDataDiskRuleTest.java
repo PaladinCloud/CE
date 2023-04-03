@@ -8,6 +8,7 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import org.junit.Test;
@@ -27,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class,Annotation.class})
 public class CMKEncryptionForOsAndDataDiskRuleTest {
 
     @InjectMocks
@@ -38,31 +39,33 @@ public class CMKEncryptionForOsAndDataDiskRuleTest {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson(
                 "{\n" +
-                        "    \"hits\": [{n\" +\n" +
-                        "    \"_index\": \"azure_storageaccount\",n\" +\n" +
-                        "    \"_type\": \"storageaccount\",n\" +\n" +
-                        "    \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",n\" +\n" +
-                        "     \"_score\": 1,n\" +\n" +
-                        "      \"_source\": {n\" +\n" +
-                        "       \"discoverydate\": \"2022-09-06 13:00:00+0530\",n\" +\n" +
-                        "     \"_cloudType\": \"Azure\",n\" +\n" +
-                        "        \"subscription\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",n\" +\n" +
-                        "       \"region\": null,n\" +\n" +
-                        "       \"subscriptionName\": \"dev-paladincloud\",n\" +\n" +
-                        "        \"resourceGroupName\": \"dev-rg-1\",n\" +\n" +
-                        "         \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",n\" +\n" +
-                        "        \"canAccessFromAzureServices\": true,n\" +\n" +
-                        "       \"name\": \"sqlvaisndaov4vhjgg\",n\" +\n" +
-                        "        \"regionName\": \"eastus\",n\" +\n" +
-                        "         \"diskInner\": {n\" +\n" +
-                        "         \"properties.encryption\": {n\" +\n" +
-                        "          \"diskEncryptionSetId\": null,n\" +\n" +
-                        "          \"type\": \"EncryptionAtRestWithPlatformKey\n\" +\n" +
-                        "         \"}\" +\n" +
-                        "         \"}\" +\n" +
-                        "           \"}\" +\n" +
-                        "           \"}]\" +\n" +
-                        "           \"}",
+                        "    \"hits\": [\n" +
+                        "        {\n" +
+                        "            \"_index\": \"azure_storageaccount\",\n" +
+                        "            \"_type\": \"storageaccount\",\n" +
+                        "            \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n" +
+                        "            \"_score\": 1,\n" +
+                        "            \"_source\": {\n" +
+                        "                \"discoverydate\": \"2022-09-06 13:00:00+0530\",\n" +
+                        "                \"_cloudType\": \"Azure\",\n" +
+                        "                \"subscription\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
+                        "                \"region\": null,\n" +
+                        "                \"subscriptionName\": \"dev-paladincloud\",\n" +
+                        "                \"resourceGroupName\": \"dev-rg-1\",\n" +
+                        "                \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n" +
+                        "                \"canAccessFromAzureServices\": true,\n" +
+                        "                \"name\": \"sqlvaisndaov4vhjgg\",\n" +
+                        "                \"regionName\": \"eastus\",\n" +
+                        "                \"diskInner\": {\n" +
+                        "                    \"properties.encryption\": {\n" +
+                        "                            \"diskEncryptionSetId\": null,\n" +
+                        "                            \"type\": \"EncryptionAtRestWithPlatformKey\"\n" +
+                        "                    }\n" +
+                        "                }\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    ]\n" +
+                        "}\n",
                 JsonElement.class));
         return jsonObject;
     }
@@ -72,31 +75,33 @@ public class CMKEncryptionForOsAndDataDiskRuleTest {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("hits", gson.fromJson(
                 "{\n" +
-                        "\"hits\": [{\n" +
-                        "\"_index\": \"azure_storageaccount\",\n" +
-                        "\"_type\": \"storageaccount\",\n" +
-                        "\"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n" +
-                        "\"_score\": 1,\n" +
-                        "\"_source\": {\n" +
-                        "\"discoverydate\": \"2022-09-06 13:00:00+0530\",\n" +
-                        "\"_cloudType\": \"Azure\",\n" +
-                        "\"subscription\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
-                        "\"region\": null,\n" +
-                        "\"subscriptionName\": \"dev-paladincloud\",\n" +
-                        "\"resourceGroupName\": \"dev-rg-1\",\n" +
-                        "\"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n" +
-                        "\"canAccessFromAzureServices\": true,\n" +
-                        "\"name\": \"sqlvaisndaov4vhjgg\",\n" +
-                        "\"regionName\": \"eastus\",\n" +
-                        "\"diskInner\": {\n" +
-                        "\"properties.encryption\": {\n" +
-                        "\"diskEncryptionSetId\": null,\n" +
-                        "\"type\": \"EncryptionAtRestWithCustomerKey\"\n" +
-                        "\"}\n" +
-                        "\"}\n" +
-                        "\"}\n" +
-                        "\"}]\n" +
-                        "}",
+                        "    \"hits\": [\n" +
+                        "        {\n" +
+                        "            \"_index\": \"azure_storageaccount\",\n" +
+                        "            \"_type\": \"storageaccount\",\n" +
+                        "            \"_id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n" +
+                        "            \"_score\": 1,\n" +
+                        "            \"_source\": {\n" +
+                        "                \"discoverydate\": \"2022-09-06 13:00:00+0530\",\n" +
+                        "                \"_cloudType\": \"Azure\",\n" +
+                        "                \"subscription\": \"f4d319d8-7eac-4e15-a561-400f7744aa81\",\n" +
+                        "                \"region\": null,\n" +
+                        "                \"subscriptionName\": \"dev-paladincloud\",\n" +
+                        "                \"resourceGroupName\": \"dev-rg-1\",\n" +
+                        "                \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/resourceGroups/dev-rg-1/providers/Microsoft.Storage/storageAccounts/sqlvaisndaov4vhjgg\",\n" +
+                        "                \"canAccessFromAzureServices\": true,\n" +
+                        "                \"name\": \"sqlvaisndaov4vhjgg\",\n" +
+                        "                \"regionName\": \"eastus\",\n" +
+                        "                \"diskInner\": {\n" +
+                        "                    \"properties.encryption\": {\n" +
+                        "                            \"diskEncryptionSetId\": null,\n" +
+                        "                            \"type\": \"EncryptionAtRestWithCustomerKey\"\n" +
+                        "                    }\n" +
+                        "                }\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    ]\n" +
+                        "}\n",
                 JsonElement.class));
         return jsonObject;
     }
@@ -127,8 +132,19 @@ public class CMKEncryptionForOsAndDataDiskRuleTest {
                 anyObject(),
                 anyObject(), anyObject(), anyInt(), anyObject(), anyObject(), anyObject()))
                 .thenReturn(getFailureForCMKEncryption());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(cmkEncryptionForOsAndDataDiskRule.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
+    }
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 
     @Test
