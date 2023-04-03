@@ -102,24 +102,33 @@ public class AdministrativeLevelPermisionsRule extends BasePolicy {
                         .get(PacmanRuleConstants.SOURCE);
 
                 JsonArray permissionForKeys = jsonDataItem.get("permissionForKeys").getAsJsonArray();
+                logger.info("permissionForKeys : {}",permissionForKeys);
                 JsonArray permissionForSecrets = jsonDataItem.get("permissionForSecrets").getAsJsonArray();
+                logger.info("permissionForSecrets : {}",permissionForSecrets);
                 JsonArray permissionForCertificates = jsonDataItem.get("permissionForCertificates").getAsJsonArray();
+                logger.info("permissionForCertificates : {}",permissionForCertificates);
 
                 for (JsonElement permissionForKey:permissionForKeys)
                 {
-                if (!ArrayUtils.contains(adminForKeys, permissionForKey)) {
+                    String keyString=permissionForKey.getAsString();
+                if (!ArrayUtils.contains(adminForKeys, keyString)) {
+                    logger.info("adminForKeys : {}",adminForKeys);
+                    logger.info("permissionForKey : {}",keyString);
+                    logger.info("validationResult :{}",validationResult);
                     return validationResult = false;
                 }
                 }
                 for (JsonElement permissionForSecret:permissionForSecrets)
                 {
-                    if (!ArrayUtils.contains(adminForSecrets, permissionForSecret)) {
+                    String secretString=permissionForSecret.getAsString();
+                    if (!ArrayUtils.contains(adminForSecrets, secretString)) {
                         return validationResult = false;
                     }
                 }
                 for (JsonElement permissionForCertificate:permissionForCertificates)
                 {
-                    if (!ArrayUtils.contains(adminForCertificates, permissionForCertificate)) {
+                    String certificateString=permissionForCertificate.getAsString();
+                    if (!ArrayUtils.contains(adminForCertificates, certificateString)) {
                         return validationResult = false;
                     }
                 }
