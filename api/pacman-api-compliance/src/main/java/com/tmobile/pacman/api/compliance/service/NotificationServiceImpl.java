@@ -81,9 +81,9 @@ public class NotificationServiceImpl implements NotificationService{
         if(issueDetail.get(POLICYID)!=null && policyIdPolicyNameMap.get(issueDetail.get(POLICYID))!=null) {
             NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
             notificationBaseRequest.setEventCategory(NotificationTypes.EXEMPTIONS);
-            notificationBaseRequest.setEventCategoryName(EXEMPTION_CATEGORY_NAME);
-            notificationBaseRequest.setEventName(String.format(eventName, issueDetail.get(ES_DOC_ID_KEY)));
-            notificationBaseRequest.setEventDescription(String.format(eventName, issueDetail.get(ES_DOC_ID_KEY)));
+            notificationBaseRequest.setEventCategoryName(NotificationTypes.EXEMPTIONS.getValue());
+            notificationBaseRequest.setEventName(String.format(eventName, issueDetail.get(RESOURCEID)));
+            notificationBaseRequest.setEventDescription(String.format(eventName, issueDetail.get(RESOURCEID)));
 
             notificationBaseRequest.setSubject(subject);
             if(isCreate){
@@ -163,7 +163,7 @@ public class NotificationServiceImpl implements NotificationService{
                                 .create(credentials.getAWSAccessKeyId(), credentials.getAWSSecretKey(), credentials.getSessionToken()))).build();
 
         Map<String, Object> userInfo = getUserInfo(identityProviderClient, userPoolId, userId);
-        return (String)userInfo.get(email);
+        return (String)userInfo.get(EMAIL);
     }
 
 
@@ -181,8 +181,8 @@ public class NotificationServiceImpl implements NotificationService{
                 userInfo.put("firstName", attribute.value());
             } else if(attribute.name().equalsIgnoreCase("family_name")){
                 userInfo.put("lastName", attribute.value());
-            } else if(attribute.name().equalsIgnoreCase(email)){
-                userInfo.put(email, attribute.value());
+            } else if(attribute.name().equalsIgnoreCase(EMAIL)){
+                userInfo.put(EMAIL, attribute.value());
             }else {
                 userInfo.put(attribute.name(), attribute.value());
             }

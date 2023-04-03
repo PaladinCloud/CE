@@ -1,4 +1,4 @@
-package com.tmobile.pacman.commons.dto;
+package com.tmobile.pacman.dto;
 
 import com.tmobile.pacman.commons.utils.Constants;
 
