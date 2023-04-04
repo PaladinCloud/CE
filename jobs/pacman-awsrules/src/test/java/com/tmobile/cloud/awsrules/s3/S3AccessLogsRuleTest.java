@@ -24,6 +24,8 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +38,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class})
+@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class, Annotation.class})
 public class S3AccessLogsRuleTest {
 
     @InjectMocks
@@ -51,6 +53,8 @@ public class S3AccessLogsRuleTest {
         
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(PacmanUtils.getValueFromElasticSearchAsSet(anyString(),anyObject(),anyObject(),anyObject(),anyString(),anyObject())).thenReturn(CommonTestUtils.getEmptySetString());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(s3AccessLogsRule.execute(CommonTestUtils.getMapStringNLB("r_123 "),CommonTestUtils.getMapStringNLB("r_123 ")), is(notNullValue()));
         
         when(PacmanUtils.getValueFromElasticSearchAsSet(anyString(),anyObject(),anyObject(),anyObject(),anyString(),anyObject())).thenReturn(CommonTestUtils.getSetString("123"));
@@ -61,7 +65,15 @@ public class S3AccessLogsRuleTest {
         assertThatThrownBy(
                 () -> s3AccessLogsRule.execute(CommonTestUtils.getMapStringNLB("r_123 "),CommonTestUtils.getMapStringNLB("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
-    
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     @Test
     public void getHelpTextTest(){
         assertThat(s3AccessLogsRule.getHelpText(), is(notNullValue()));
