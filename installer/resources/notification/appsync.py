@@ -29,6 +29,5 @@ class AppSyncNotification(AppSync):
 	            'subscription': 'Subscription'
             }'''
 
-
 class ApiSyncIdKey(ApiSyncId):
     api_id = AppSyncNotification.get_output_attr('id')
