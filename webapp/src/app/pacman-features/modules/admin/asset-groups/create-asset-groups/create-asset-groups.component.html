@@ -55,12 +55,14 @@
             <span class="attribute-header">Value</span>
         </div>
         <div class="attributes-wrapper">
-            <div class="flex flex-col gap-8" *ngFor="let criteria of criterias;let criteriaIdx=index">
+            <div class="flex flex-col" *ngFor="let criteria of criterias;let criteriaIdx=index">
                 <div class="attribute-wrapper flex gap-8" *ngFor="let condition of criteria; let conditionIdx=index">
+                 <div class="flex dropdown-wrapper">
                     <app-dropdown [items]="condition.keyList" placeholder="Key" [selectedItem]="condition.selectedKey"
                     (selected)="onKeySelect(condition,$event)"></app-dropdown>
                     <app-dropdown [items]="condition.valueList" placeholder="Value" [selectedItem]="condition.selectedValue"
                     (selected)="onValueSelect(condition,$event)"></app-dropdown>
+                 </div>
                     <ng-container *ngIf="conditionIdx<criteria.length-1; else addIcon">
                     <app-chip [backgroundColor]="'#EBF2FF'" [color]="'#515459'" [chipsList]="['AND']">
                     </app-chip>

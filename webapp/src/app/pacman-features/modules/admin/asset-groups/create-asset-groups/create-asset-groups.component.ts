@@ -288,13 +288,12 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.createdBy = stateUpdated["Created By"]?stateUpdated["Created By"]:"";
     const criteriaDetails = stateUpdated["criteriaDetails"];
     const criteriaMap = criteriaDetails.reduce((acc, criteria) => {
-      if (!acc[criteria.groupId]) {
-        acc[criteria.groupId] = [];
+      if (!acc[criteria.criteriaName]) {
+        acc[criteria.criteriaName] = [];
       }
-      acc[criteria.groupId].push(criteria);
+      acc[criteria.criteriaName].push(criteria);
       return acc;
     }, {});
-
     this.createCriteriaList(criteriaMap);
   }
 
