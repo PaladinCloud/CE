@@ -2,6 +2,9 @@ package com.tmobile.pacman.dto;
 
 import com.tmobile.pacman.common.AutoFixAction;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AutofixNotificationRequest {
     private String policyName;
     private String discoveredOn;
@@ -11,10 +14,18 @@ public class AutofixNotificationRequest {
     private String severity;
     private AutoFixAction action;
     private String issueId;
-
     private String policyNameLink;
     private String issueIdLink;
     private String resourceIdLink;
+    private Map<String,Object> additionalInfo=new HashMap<>();
+
+    public Map<String, Object> getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(Map<String, Object> additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
 
     public String getPolicyNameLink() {
         return policyNameLink;

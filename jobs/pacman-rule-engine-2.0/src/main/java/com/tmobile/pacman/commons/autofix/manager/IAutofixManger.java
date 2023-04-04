@@ -96,6 +96,8 @@ public interface IAutofixManger {
         Map<String, Object> autoFixStats = new HashMap<>();
         List<AutoFixTransaction> autoFixTrans = new ArrayList<>();
         List<AutoFixTransaction> silentautoFixTrans = new ArrayList<>();
+        List<Map<String,String>> silentFixAnnotations = new ArrayList<>();
+
         Map<String, Object> clientMap = null;
 
         Integer resourcesTaggedCounter = 0;
@@ -412,12 +414,9 @@ public interface IAutofixManger {
 
                             }
                             if (nextStepManager.isSilentFixEnabledForRule(policyId) && null != addDetailsToTransactionLogMethod) {
-                                AutoFixTransaction autofixTxn = (AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation);
-                                autofixTxn.setIssueId(annotation.get("_id"));
-                                autofixTxn.setAdditionalInfo(annotation.get("createdDate"));
-                                silentautoFixTrans.add(autofixTxn);
+                                silentautoFixTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
+                                silentFixAnnotations.add(annotation);
                             }
-
                             autoFixCounter++;
                         } catch (Exception e) {
                             logger.error(String.format("unable to execute auto fix for %s  will not fix at this time", resourceId),
@@ -440,7 +439,7 @@ public interface IAutofixManger {
         autoFixPlanManager.releaseResourfes();
         //Silent fix send Digest email
         if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyId)) {
-                NotificationUtils.triggerSilentAutofixNotification(silentautoFixTrans,policyParam);
+                NotificationUtils.triggerSilentAutofixNotification(silentFixAnnotations,policyParam);
          //   MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
         }
         // publish the transactions here

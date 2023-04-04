@@ -740,7 +740,7 @@ public class ComplianceController implements Constants {
                 return ResponseUtils.buildFailureResponse(new Exception("At least one issue id is required"));
             }
 
-            return ResponseUtils.buildSucessResponse(complianceService.revokeMultipleIssueException(assetGroup, revokeIssuesException.getIssueIds()));
+            return ResponseUtils.buildSucessResponse(complianceService.revokeMultipleIssueException(assetGroup, revokeIssuesException.getIssueIds(), revokeIssuesException.getRevokedBy()));
         } catch (ServiceException exception) {
             return ResponseUtils.buildFailureResponse(exception);
         }

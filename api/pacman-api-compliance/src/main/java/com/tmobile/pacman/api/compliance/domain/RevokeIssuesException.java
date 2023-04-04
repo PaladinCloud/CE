@@ -21,6 +21,15 @@ public class RevokeIssuesException {
 
     /** The issue ids. */
     private List<String> issueIds;
+    private String revokedBy;
+
+    public String getRevokedBy() {
+        return revokedBy;
+    }
+
+    public void setRevokedBy(String revokedBy) {
+        this.revokedBy = revokedBy;
+    }
 
     public List<String> getIssueIds() {
         return issueIds;
