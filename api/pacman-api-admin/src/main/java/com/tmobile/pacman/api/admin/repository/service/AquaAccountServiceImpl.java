@@ -88,11 +88,11 @@ public class AquaAccountServiceImpl extends AbstractAccountServiceImpl implement
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Failed to validate the aqua account ",e);
             validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Aqua validation successful");
+            validateResponse.setMessage("Aqua validation failed");
         } catch (IOException e) {
             LOGGER.error("Failed to validate the aqua account "+e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
-            validateResponse.setMessage("Aqua validation successful: "+e.getMessage());
+            validateResponse.setMessage("Aqua validation failed: "+e.getMessage());
 
         }
     }
