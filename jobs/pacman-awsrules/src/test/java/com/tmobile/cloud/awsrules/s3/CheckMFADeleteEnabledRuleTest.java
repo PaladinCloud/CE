@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +36,7 @@ import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class, Annotation.class})
 public class CheckMFADeleteEnabledRuleTest {
 
     @InjectMocks
@@ -64,7 +66,8 @@ public class CheckMFADeleteEnabledRuleTest {
         CheckMFADeleteEnabledRule spy = Mockito.spy(new CheckMFADeleteEnabledRule());
         
         Mockito.doReturn(map).when((BasePolicy)spy).getClientFor(anyObject(), anyString(), anyObject());
-        
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(awsS3Client.getBucketVersioningConfiguration(anyString())).thenReturn(configuration);
         spy.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "));
         
@@ -83,8 +86,16 @@ public class CheckMFADeleteEnabledRuleTest {
         assertThatThrownBy(
                 () -> checkMFADeleteEnabledRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
-  
-    
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
     @Test
     public void getHelpTextTest(){
         assertThat(checkMFADeleteEnabledRule.getHelpText(), is(notNullValue()));
