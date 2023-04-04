@@ -2841,17 +2841,17 @@ INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aq
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_password','aqua password');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('default_page_size','Base64 encoded user:password of qualys');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_image_vul_query_params','Base64 encoded user:password of qualys');
-INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.lambda.function.url','lambda_notification')
-INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.topic.arn','lambda_notification')
-INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.email.topic.arn','lambda_notification')
-INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.to.emailid','lambda_notification')
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.lambda.function.url','lambda_notification');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.topic.arn','lambda_notification');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.email.topic.arn','lambda_notification');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.to.emailid','lambda_notification');
 
 -- delete configs containing http url
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('aqua_client_domain_url', 'aqua_api_url','aqua_username','aqua_password','default_page_size','aqua_image_vul_query_params');
-DELETE IGNORE FROM pac_config_properties where cfkey in ('notification.lambda.function.url','notification.topic.arn','notification.email.topic.arn','notification.to.emailid')
+DELETE IGNORE FROM pac_config_properties where cfkey in ('notification.lambda.function.url','notification.topic.arn','notification.email.topic.arn','notification.to.emailid');
 
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.lambda.function.url','concat(@NOTIFICATION_FUNCTION_URL,'')','application','prd','latest',NULL,NULL,NULL,NULL);
