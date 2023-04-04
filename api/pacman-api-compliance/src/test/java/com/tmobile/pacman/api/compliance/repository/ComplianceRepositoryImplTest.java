@@ -61,7 +61,6 @@ import com.tmobile.pacman.api.compliance.domain.IssuesException;
 import com.tmobile.pacman.api.compliance.domain.KernelVersion;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
 import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
-import com.tmobile.pacman.api.compliance.util.CommonTestUtil;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ PacHttpUtils.class, EntityUtils.class, Response.class, RestClient.class })
@@ -309,7 +308,7 @@ public class ComplianceRepositoryImplTest implements Constants {
 
         List<String> issueIds = new ArrayList<>();
         issueIds.add("1234");
-        assertTrue(complianceRepositoryImpl.revokeAndUpdateMultipleIssueDetails("aws",issueIds).getStatus().equals("Success"));
+        assertTrue(complianceRepositoryImpl.revokeAndUpdateMultipleIssueDetails("aws",issueIds, anyString()).getStatus().equals("Success"));
     }
 
    /* @Test

@@ -7,5 +7,5 @@ import java.util.Map;
 
 public interface NotificationService {
     void triggerCreateExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds, IssuesException issuesException);
-    public void triggerRevokeExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds, String subject);
+    public void triggerRevokeExemptionNotification(List<Map<String, Object>> issueDetails, List<String> failedIssueIds, String subject, String revokedBy);
 }
