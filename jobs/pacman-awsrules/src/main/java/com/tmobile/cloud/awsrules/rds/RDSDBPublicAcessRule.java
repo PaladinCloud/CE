@@ -37,7 +37,6 @@ import org.slf4j.MDC;
 
 import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.util.StringUtils;
-import com.tmobile.cloud.awsrules.redshift.RedShiftPublicAccessRule;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
@@ -51,7 +50,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 @PacmanPolicy(key = "check-for-rds-db-public-access", desc = "This rule checks for RDS DB is publicaly accessble, if yes then it creates an issue", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 public class RDSDBPublicAcessRule extends BasePolicy {
 
-	private static final Logger logger = LoggerFactory.getLogger(RedShiftPublicAccessRule.class);
+	private static final Logger logger = LoggerFactory.getLogger(RDSDBPublicAcessRule.class);
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
 	 * 
@@ -194,7 +193,6 @@ public class RDSDBPublicAcessRule extends BasePolicy {
 				}
 			}
 		} catch (Exception exception) {
-			logger.error("error: ", exception);
 			throw new RuleExecutionFailedExeption(exception.getMessage());
 		}
 		logger.debug("========RDSDBPublicAcessRule ended=========");
