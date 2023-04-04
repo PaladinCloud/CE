@@ -4,6 +4,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.S3PacbotUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.junit.Before;
@@ -22,15 +23,14 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.anyObject;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, Annotation.class})
 public class S3ObjectLevelLoggingRuleTest {
 
     private static final String CLOUD_TRAIL_URL = "/aws/cloudtrail/_search";
@@ -118,6 +118,8 @@ public class S3ObjectLevelLoggingRuleTest {
         String expected = "CloudTrail log with matching conditions does not exists,accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 
         PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
@@ -145,6 +147,8 @@ public class S3ObjectLevelLoggingRuleTest {
                 "readwritetype: " + readTypeFromSearch + ",accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID)
                 + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 
         PolicyResult ruleResult = s3ObjectLevelWriteLoggingRule.execute(ruleParam, resourceAttribute);
         assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
@@ -168,6 +172,8 @@ public class S3ObjectLevelLoggingRuleTest {
                 any(), any(), any(), any())).thenReturn(null);
         String expected = "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true,accountId: "
                 + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID) + " for s3 bucket: " + resourceAttribute.get(PacmanRuleConstants.NAME);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL),
                 any(), any(), any(), eq(PacmanRuleConstants.DATA_RESOURCE_VALUE), any()))
                 .thenReturn(new HashSet<>(Collections.singletonList("arn:aws:s3")));
@@ -182,6 +188,8 @@ public class S3ObjectLevelLoggingRuleTest {
     @Test
     public void executeThrowsTest() throws Exception {
         ruleParam.put(PacmanRuleConstants.RESOURCE_ID, "test1");
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 
         when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
         when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_EVENT_SELECTOR_URL), any(), any(),
@@ -227,5 +235,15 @@ public class S3ObjectLevelLoggingRuleTest {
         resObj.put(PacmanRuleConstants.ACCOUNTID, "123456789");
         resObj.put(PacmanRuleConstants.NAME, "test");
         return resObj;
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }
