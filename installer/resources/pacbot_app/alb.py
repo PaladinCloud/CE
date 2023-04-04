@@ -20,13 +20,18 @@ class ApplicationLoadBalancer(LoadBalancerResource):
         # using domain url if exists.
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
-        return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
+        return "%s://%s" % (Settings.get('ALB_PROTOCOLS', "HTTP").lower(), pacbot_domain)
 
     @classmethod
     def get_pacbot_domain_url(cls):
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
+        return "%s://%s" % (Settings.get('ALB_PROTOCOLS', "HTTP").lower(), pacbot_domain)
 
+    @classmethod
+    def get_pacbot_domain_url_cognito(cls):
+        pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
+        pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
         return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
 
     @classmethod
@@ -37,7 +42,7 @@ class ApplicationLoadBalancer(LoadBalancerResource):
         # using domain url if exists
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
-        return "%s://%s/api" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
+        return "%s://%s/api" % (Settings.get('ALB_PROTOCOLS', "HTTP").lower(), pacbot_domain)
 
     @classmethod
     def get_api_version_url(cls, service):
@@ -61,7 +66,7 @@ class ApplicationLoadBalancer(LoadBalancerResource):
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else dns_name
 
-        return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
+        return "%s://%s" % (Settings.get('ALB_PROTOCOLS', "HTTP").lower(), pacbot_domain)
 
     def render_output(self, outputs):
         if self.resource_in_tf_output(outputs):

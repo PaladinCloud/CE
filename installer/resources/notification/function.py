@@ -1,11 +1,10 @@
-from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource, LambdaPermission
-from resources.datastore.es import ESDomain
+from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource
 from resources.iam.lambda_role import LambdaRole
 from core.config import Settings
 from resources.s3.bucket import BucketStorage
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.notification.appsync import AppSyncNotification, ApiSyncIdKey
-from resources.notification.s3_upload import FetchNotificationFunctionJarFile, FetchNotificationFunctionJarFile, SendNotificationFunctionJarFile, InvokeNotificationFunctionJarFile, SEND_NOTIFICATION, TEMPLATE_NOTIFICATION, INAPP_NOTIFICATION_FILE_NAME, INVOKE_NOTIFICATION, NOTIFICATION_LOG_TO_ES, GET_STAKEHOLDER_RESOURCES
+from resources.notification.s3_upload import FetchNotificationFunctionJarFile, FetchNotificationFunctionJarFile, SendNotificationFunctionJarFile, InvokeNotificationFunctionJarFile, FETCH_NOTIFICATION, SEND_NOTIFICATION, INAPP_NOTIFICATION_FILE_NAME, INVOKE_NOTIFICATION
 from core.terraform.resources.aws.sns import SNSResoures, SNSSubscription
 
 class NotificationSNS(SNSResoures):
@@ -22,7 +21,7 @@ class SendNotificationFunction(LambdaFunctionResource):
     handler =  "com.paladincloud.FetchNotificationSettings::handleRequest"
     runtime = "java11"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX + "/v1/" + SEND_NOTIFICATION + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX + "/v1/" + FETCH_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'SNS_TOPIC_ARN': NotificationSNS.get_output_attr('arn')

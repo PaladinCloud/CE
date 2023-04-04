@@ -10,7 +10,6 @@ TEMPLATE_NOTIFICATION= "template-formatter-notification-service"
 INVOKE_NOTIFICATION = "invoke-notification-service"
 INAPP_NOTIFICATION_FILE_NAME =  "inapp-notification-service"
 NOTIFICATION_LOG_TO_ES = "es-logging-notification-service"
-GET_STAKEHOLDER_RESOURCES = "stakeholder-notification-service"
  
 class FetchNotificationFunctionJarFile(S3BucketObject):
     bucket = BucketStorage.get_output_attr('bucket')
