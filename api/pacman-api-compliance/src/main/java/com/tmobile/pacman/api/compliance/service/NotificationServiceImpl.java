@@ -38,6 +38,9 @@ public class NotificationServiceImpl implements NotificationService{
     @Value("${notification.lambda.function.url}")
     private String notificationUrl;
 
+    @Value("${stakeholder.tag}")
+    private String stakeholderTagsStr;
+
     /** The ui host. */
     @Value("${pacman.host}")
     private String hostName;
@@ -85,6 +88,7 @@ public class NotificationServiceImpl implements NotificationService{
             notificationBaseRequest.setEventName(String.format(eventName, issueDetail.get(RESOURCEID)));
             notificationBaseRequest.setEventDescription(String.format(eventName, issueDetail.get(RESOURCEID)));
 
+
             notificationBaseRequest.setSubject(subject);
             if(isCreate){
                 IndividualExNotificationRequest createRequest = new IndividualExNotificationRequest();
@@ -100,6 +104,14 @@ public class NotificationServiceImpl implements NotificationService{
                 createRequest.setPolicyNameLink(hostName + POLICY_DETAILS_UI_PATH + issueDetail.get(POLICYID) + "/true?ag=" + issueDetail.get(DATA_SOURCE_KEY));
                 createRequest.setType("individual");
                 createRequest.setAction(Actions.CREATE);
+                if(stakeholderTagsStr!=null){
+                    String[] stakeholderTags = stakeholderTagsStr.split(",");
+                    Map<String,String> stakeholderKeyAndValueMap = new HashMap<>();
+                    Arrays.stream(stakeholderTags).forEach(stakeholderTag -> stakeholderKeyAndValueMap.put(stakeholderTag,(String)issueDetail.get("tags."+stakeholderTag)));
+                    createRequest.getAdditionalInfo().put("stakeholderTagDetails",stakeholderKeyAndValueMap);
+                }
+                createRequest.getAdditionalInfo().put("cloudType",issueDetail.get(DATA_SOURCE_KEY));
+                createRequest.getAdditionalInfo().put("targetType",issueDetail.get(TARGET_TYPE));
                 notificationBaseRequest.setPayload(createRequest);
                 return notificationBaseRequest;
             }
@@ -113,6 +125,14 @@ public class NotificationServiceImpl implements NotificationService{
                 revokeRequest.setPolicyNameLink(hostName + POLICY_DETAILS_UI_PATH + issueDetail.get(POLICYID) + "/true?ag=" + issueDetail.get(DATA_SOURCE_KEY));
                 revokeRequest.setType("individual");
                 revokeRequest.setAction(Actions.REVOKE);
+                if(stakeholderTagsStr!=null){
+                    String[] stakeholderTags = stakeholderTagsStr.split(",");
+                    Map<String,String> stakeholderKeyAndValueMap = new HashMap<>();
+                    Arrays.stream(stakeholderTags).forEach(stakeholderTag -> stakeholderKeyAndValueMap.put(stakeholderTag,(String)issueDetail.get("tags."+stakeholderTag)));
+                    revokeRequest.getAdditionalInfo().put("stakeholderTagDetails",stakeholderKeyAndValueMap);
+                }
+                revokeRequest.getAdditionalInfo().put("cloudType",issueDetail.get(DATA_SOURCE_KEY));
+                revokeRequest.getAdditionalInfo().put(TARGET_TYPE,issueDetail.get(TARGET_TYPE));
                 notificationBaseRequest.setPayload(revokeRequest);
                 return notificationBaseRequest;
             }

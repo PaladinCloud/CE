@@ -2,6 +2,9 @@ package com.tmobile.pacman.api.admin.dto;
 
 import com.tmobile.pacman.api.commons.dto.ExemptionCommonDetails;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StickyExNotificationRequest extends ExemptionCommonDetails {
 
     private String assetGroup;
@@ -9,7 +12,6 @@ public class StickyExNotificationRequest extends ExemptionCommonDetails {
     private String exceptionReason;
     private String expiringOn;
     private String policyNames;
-
     private String userId;
 
     public String getAssetGroup() {

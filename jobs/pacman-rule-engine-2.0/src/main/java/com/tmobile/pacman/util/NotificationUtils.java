@@ -1,5 +1,6 @@
 package com.tmobile.pacman.util;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tmobile.pacman.common.AutoFixAction;
 import com.tmobile.pacman.common.PacmanSdkConstants;
@@ -15,9 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.*;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.POLICY_ID;
@@ -32,6 +31,11 @@ public class NotificationUtils {
         try {
             Gson gson = new Gson();
             String hostName = CommonUtils.getPropValue(HOSTNAME);
+            String stakeholderTagsStr = CommonUtils.getPropValue(STAKEHOLDER_TAGS);
+            String[] stakeholderTags={};
+            if(!Strings.isNullOrEmpty(stakeholderTagsStr)){
+                stakeholderTags= stakeholderTagsStr.split(",");
+            }
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
 
             for (Annotation annotation : annotations) {
@@ -39,11 +43,11 @@ public class NotificationUtils {
                 annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
                 if (isOpen && null == issueAttributes && PacmanSdkConstants.STATUS_OPEN.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
-                    notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME));
+                    notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME,stakeholderTags));
                 } else if (!isOpen) {
                     if (!(!existingIssuesMap.containsKey(annotationId)
                             || PacmanSdkConstants.STATUS_CLOSE.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY)))) {
-                        notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, false, CLOSE_VIOLATION_EVENT_NAME));
+                        notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, false, CLOSE_VIOLATION_EVENT_NAME, stakeholderTags));
                     }
                 }
             }
@@ -61,7 +65,7 @@ public class NotificationUtils {
         }
     }
 
-    private static NotificationBaseRequest getNotificationBaseRequest(Annotation annotation, String hostName, boolean isOpen, String violationEventName) {
+    private static NotificationBaseRequest getNotificationBaseRequest(Annotation annotation, String hostName, boolean isOpen, String violationEventName, String[] stakeholderTags) {
         NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
         notificationBaseRequest.setEventCategory(Constants.NotificationTypes.VIOLATIONS);
         notificationBaseRequest.setSubject(isOpen?OPEN_VIOLATIONS_SUBJECT:CLOSE_VIOLATIONS_SUBJECT);
@@ -80,6 +84,13 @@ public class NotificationUtils {
         request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
                 PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+        if(stakeholderTags.length>0){
+            Map<String,String> stakeholderKeyAndValueMap = new HashMap<>();
+            Arrays.stream(stakeholderTags).forEach(stakeholderTag -> stakeholderKeyAndValueMap.put(stakeholderTag,annotation.get("tags."+stakeholderTag)));
+            request.getAdditionalInfo().put("stakeholderTagDetails",stakeholderKeyAndValueMap);
+        }
+        request.getAdditionalInfo().put("cloudType",annotation.get(DATA_SOURCE_KEY));
+        request.getAdditionalInfo().put(TARGET_TYPE,annotation.get(TARGET_TYPE));
         notificationBaseRequest.setPayload(request);
         return notificationBaseRequest;
     }
@@ -89,6 +100,8 @@ public class NotificationUtils {
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
             Gson gson = new Gson();
             String hostName = CommonUtils.getPropValue(HOSTNAME);
+            String stakeholderTagsStr = CommonUtils.getPropValue(STAKEHOLDER_TAGS);
+
             NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
             notificationBaseRequest.setEventCategory(Constants.NotificationTypes.AUTOFIX);
             notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.AUTOFIX.getValue());
@@ -101,6 +114,14 @@ public class NotificationUtils {
             autofixNotificationRequest.setSeverity(policyParam.get("severity").toUpperCase());
             autofixNotificationRequest.setWaitingTime(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
             autofixNotificationRequest.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
+            if(!Strings.isNullOrEmpty(stakeholderTagsStr)){
+                String[] stakeholderTags = stakeholderTagsStr.split(",");
+                Map<String,String> stakeholderKeyAndValueMap = new HashMap<>();
+                Arrays.stream(stakeholderTags).forEach(stakeholderTag -> stakeholderKeyAndValueMap.put(stakeholderTag,annotation.get("tags."+stakeholderTag)));
+                autofixNotificationRequest.getAdditionalInfo().put("stakeholderTagDetails",stakeholderKeyAndValueMap);
+            }
+            autofixNotificationRequest.getAdditionalInfo().put("cloudType",annotation.get(DATA_SOURCE_KEY));
+            autofixNotificationRequest.getAdditionalInfo().put("targetType",annotation.get("targetType"));
 
             String accountName = annotation.get("accountname");
             if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_EMAIL && "Sandbox".equalsIgnoreCase(accountName)) {
@@ -172,6 +193,7 @@ public class NotificationUtils {
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
             Gson gson = new Gson();
             String hostName = CommonUtils.getPropValue(HOSTNAME);
+            String stakeholderTagsStr = CommonUtils.getPropValue(STAKEHOLDER_TAGS);
 
             for(AutoFixTransaction autoFixTransaction: silentautoFixTrans){
                 NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
@@ -195,6 +217,14 @@ public class NotificationUtils {
                 String discoveredOn = autoFixTransaction.getAdditionalInfo();
                 autofixNotificationRequest.setDiscoveredOn(getDateTimeInUserFormat(discoveredOn));
                 autofixNotificationRequest.setAutofixedOn(dtf.format(presentTime));
+//                if(!Strings.isNullOrEmpty(stakeholderTagsStr)){
+//                    String[] stakeholderTags = stakeholderTagsStr.split(",");
+//                    Map<String,String> stakeholderKeyAndValueMap = new HashMap<>();
+//                    Arrays.stream(stakeholderTags).forEach(stakeholderTag -> stakeholderKeyAndValueMap.put(stakeholderTag,annotation.get("tags."+stakeholderTag)));
+//                    autofixNotificationRequest.getAdditionalInfo().put("stakeholderTagDetails",stakeholderKeyAndValueMap);
+//                }
+//                autofixNotificationRequest.getAdditionalInfo().put("cloudType",autoFixTransaction.get(DATA_SOURCE_KEY));
+                autofixNotificationRequest.getAdditionalInfo().put("targetType",autoFixTransaction.getTargetType());
                 notificationBaseRequestList.add(notificationBaseRequest);
             }
             if (!notificationBaseRequestList.isEmpty()) {
