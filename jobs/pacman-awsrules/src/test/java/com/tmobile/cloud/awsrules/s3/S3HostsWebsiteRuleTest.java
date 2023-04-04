@@ -16,15 +16,24 @@
 package com.tmobile.cloud.awsrules.s3;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyObject;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.cloud.awsrules.utils.PacmanEc2Utils;
+import com.tmobile.cloud.awsrules.utils.PacmanUtils;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.PolicyResult;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Purpose: This test checks for s3 bucket containing web-site configuration.
@@ -36,6 +45,8 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
  * Modified Date: April 11th, 2019
  * 
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Annotation.class})
 public class S3HostsWebsiteRuleTest {
 
 	@Test
@@ -47,11 +58,21 @@ public class S3HostsWebsiteRuleTest {
 		resourceAttributes.put(PacmanRuleConstants.WEB_SITE_CONFIGURATION, "true");
 		ruleParam.put("executionId", "test");
 		ruleParam.put(PacmanSdkConstants.POLICY_ID, "rule-id");
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
 		PolicyResult ruleResult = s3HostsWebsiteRule.execute(ruleParam, resourceAttributes);
 		assertTrue(ruleResult.getStatus().equals(PacmanSdkConstants.STATUS_FAILURE));
 
 	}
-	
+	private Annotation getMockAnnotation() {
+		Annotation annotation=new Annotation();
+		annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+		annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+		annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+		annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+		annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+		return annotation;
+	}
 	@Test
 	public void testExecuteNoWebsiteConfiguration() {
 		Map<String, String> ruleParam = new HashMap<>();
