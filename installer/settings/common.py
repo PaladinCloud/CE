@@ -70,6 +70,9 @@ PROCESS_RESOURCES = {
     'cognito.function' : {'tags' : ["cognito"]},
     'cognito.s3_upload' : {'tags' : ["cognito"]},
     'cognito.userpool' : {'tags' : ["cognito"]},
+    'notification.s3_upload' : {'tags' : ["notification"]},
+    'notification.function' : {'tags' : ["notification"]},
+    'notification.appsync' : {'tags' : ["notification"]}
 }
 
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')
