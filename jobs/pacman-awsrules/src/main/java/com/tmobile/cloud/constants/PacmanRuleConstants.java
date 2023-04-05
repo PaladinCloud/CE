@@ -318,6 +318,7 @@ public class PacmanRuleConstants {
     public static final String QUERY = "query";
     public static final String RANGE = "range";
     public static final String ERROR_MESSAGE = "error retrieving inventory from ES";
+    public static final String GET_NO_OF_ACCOUNT_ERROR_MESSAGE = "Exception in getting total number of accounts - ";
     public static final String TERMS = "terms";
     public static final String HAS_CHILD = "has_child";
     public static final String HAS_PARENT = "has_parent";
