@@ -967,7 +967,7 @@ UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wi
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/GCP-Policy#check-for-publicly-accessible-cloud-kms-keys' WHERE policyId = 'GCP_kms_public_access_rule';
 UPDATE cf_PolicyTable SET resolutionUrl = 'https://github.com/PaladinCloud/CE/wiki/GCP-Policy#remove-user-options-database-flag-for-cloud-sql-server-instance' WHERE policyId = 'Remove_user_options_for_SQLServer';
 
-DELETE FROM cf_PolicyTable WHERE policyId IN('UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume','ec2deperecatedinstancetype_version-1_ec2deprecatedinstancetype_ec2','rdsdb_version-1_RdsDbPublicAccess_rdsdb','Azure_policies-JIT_Network_Access_version-1_JIT_virtualmachine','Enable_soft_delete_for_Blob_storage','Deny_allowlist_all_public_ip_for_sql','Configure_custom_ssl_for_https','GCP_Cloud_Function_configured_with_overly_permissive_Ingress_setting');
+DELETE FROM cf_PolicyTable WHERE policyId IN('UntaggedOrUnusedEbsRule_version-1_version-1_UntaggedOrUnusedEbsRule_volume','ec2deperecatedinstancetype_version-1_ec2deprecatedinstancetype_ec2','rdsdb_version-1_RdsDbPublicAccess_rdsdb','Azure_policies-JIT_Network_Access_version-1_JIT_virtualmachine','Deny_allowlist_all_public_ip_for_sql','Configure_custom_ssl_for_https','GCP_Cloud_Function_configured_with_overly_permissive_Ingress_setting');
 
 
 delete from cf_PolicyCategoryWeightage where policyCategory in ('costOptimization', 'governance');
