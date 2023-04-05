@@ -24,6 +24,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,7 +36,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class CheckNonRoleTasksMemberRuleTest {
 
     @InjectMocks
@@ -44,6 +45,9 @@ public class CheckNonRoleTasksMemberRuleTest {
     @Test
     public void executeTest() throws Exception {
         mockStatic(PacmanUtils.class);
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
+
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(),anyString())).thenReturn(
                 true);
         when(PacmanUtils.getNestedRoles(anyString(), anyString(),anyString())).thenReturn(

@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +53,7 @@ import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class, Annotation.class})
 public class CheckForApiGatewayProtectedTest {
 
     @InjectMocks
@@ -64,7 +65,9 @@ public class CheckForApiGatewayProtectedTest {
 
     @Before
     public void setUp() throws Exception{
-        apiGatewayClient = PowerMockito.mock(AmazonApiGatewayClient.class); 
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
+        apiGatewayClient = PowerMockito.mock(AmazonApiGatewayClient.class);
     }
     @Test
     public void test()throws Exception{

@@ -13,6 +13,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,7 +30,7 @@ import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @PowerMockIgnore("jdk.internal.reflect.*")
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class EbsShouldBeEncryptedWithKMSKeysTest {
 
     @InjectMocks
@@ -36,6 +38,8 @@ public class EbsShouldBeEncryptedWithKMSKeysTest {
  
     @Test
 	public void executeTest() throws Exception {
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
 		mockStatic(PacmanUtils.class);
 		Map<String, String> ruleParam = new HashMap<>();
 		ruleParam.put(PacmanSdkConstants.EXECUTION_ID, "exectionid");

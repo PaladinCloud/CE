@@ -37,6 +37,8 @@ import com.tmobile.pacman.commons.policy.BasePolicy;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 
+import static com.tmobile.cloud.awsrules.utils.PacmanUtils.AWS_SEARCH_INDEX;
+
 @PacmanPolicy(key = "check-for-external-vpc-peering-connections", desc = "checks for external VPC peering connections", severity = PacmanSdkConstants.SEV_HIGH, category = PacmanSdkConstants.SECURITY)
 public class ExternalVpcPeeringConnections extends BasePolicy {
     private static final Logger logger = LoggerFactory.getLogger(ExternalVpcPeeringConnections.class);
@@ -85,8 +87,7 @@ public class ExternalVpcPeeringConnections extends BasePolicy {
 		logger.debug("========pacmanHost {}  =========", pacmanHost);
 
 		if (!StringUtils.isNullOrEmpty(pacmanHost)) {
-			accountEsURL = ruleParam.get(PacmanRuleConstants.ES_ACCOUNT_URL);
-			accountEsURL = pacmanHost + accountEsURL;
+			accountEsURL = pacmanHost + AWS_SEARCH_INDEX;
 		}
 		logger.debug("========ec2SgEsURL URL after concatination param {}  =========", accountEsURL);
 
