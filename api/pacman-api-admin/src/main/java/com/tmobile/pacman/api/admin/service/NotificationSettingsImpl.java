@@ -5,6 +5,7 @@ import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,6 +15,13 @@ public class NotificationSettingsImpl implements NotificationSettings{
 
     @Autowired
     PacmanRdsRepository pacmanRdsRepository;
+
+    @Value("${notification.email.topic.arn:}")
+    String emailTopic;
+
+    @Value("${notification.to.emailid:}")
+    String toEmailId;
+
     private static final Logger log = LoggerFactory.getLogger(NotificationSettingsImpl.class);
     @Override
     public Map<String,Object> getNotificationSettings() {
@@ -90,4 +98,31 @@ public class NotificationSettingsImpl implements NotificationSettings{
             pacmanRdsRepository.update(deleteNotifMappingsQuery.toString());
         }
     }
+
+
+    @Override
+    public Map<String,Object> getNotificationSettingsAndConfigs() {
+        Map<String,Object> notfSettingsAndConfigMap =new HashMap<>();
+        Map<String,Object> destinationMap =new HashMap<>();
+        Map<String,Object> notificationTypesMap = getNotificationSettings();
+        for(String notificationType : notificationTypesMap.keySet()){
+            Map<String,Object> channelsMap = (Map<String,Object>) notificationTypesMap.get(notificationType);
+            for(String channel : channelsMap.keySet()){
+                Map<String,Object> channelConfigMap = new HashMap<>();
+                channelConfigMap.put("isOn",Integer.parseInt(channelsMap.get(channel).toString()));
+                if("email".equalsIgnoreCase(channel)){
+                    channelConfigMap.put("toAddress",Arrays.asList(toEmailId));
+                }
+                else{
+                    channelConfigMap.put("toAddress",Collections.emptyList());
+                }
+                channelsMap.put(channel,channelConfigMap);
+            }
+        }
+        notfSettingsAndConfigMap.put("settings",notificationTypesMap);
+        destinationMap.put("email",emailTopic);
+        notfSettingsAndConfigMap.put("destinations",destinationMap);
+        return notfSettingsAndConfigMap;
+    }
+
 }

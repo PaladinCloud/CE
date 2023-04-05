@@ -224,7 +224,7 @@ public class NotificationUtils {
 //                    autofixNotificationRequest.getAdditionalInfo().put("stakeholderTagDetails",stakeholderKeyAndValueMap);
 //                }
 //                autofixNotificationRequest.getAdditionalInfo().put("cloudType",autoFixTransaction.get(DATA_SOURCE_KEY));
-                autofixNotificationRequest.getAdditionalInfo().put("targetType",autoFixTransaction.getTargetType());
+                autofixNotificationRequest.getAdditionalInfo().put(TARGET_TYPE,autoFixTransaction.getTargetType());
                 notificationBaseRequestList.add(notificationBaseRequest);
             }
             if (!notificationBaseRequestList.isEmpty()) {
