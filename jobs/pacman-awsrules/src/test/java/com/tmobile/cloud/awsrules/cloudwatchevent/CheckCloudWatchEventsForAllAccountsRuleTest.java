@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +51,7 @@ import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,BasePolicy.class})
+@PrepareForTest({ PacmanUtils.class,BasePolicy.class, Annotation.class})
 public class CheckCloudWatchEventsForAllAccountsRuleTest {
 
     @InjectMocks
@@ -62,6 +63,8 @@ public class CheckCloudWatchEventsForAllAccountsRuleTest {
 
     @Before
     public void setUp() throws Exception{
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         cloudWatchEventsClient = PowerMockito.mock(AmazonCloudWatchEventsClient.class); 
     }
     @Test

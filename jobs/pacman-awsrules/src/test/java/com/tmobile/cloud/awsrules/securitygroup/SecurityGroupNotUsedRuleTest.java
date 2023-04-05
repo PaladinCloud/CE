@@ -24,6 +24,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,7 +36,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class SecurityGroupNotUsedRuleTest {
 
     @InjectMocks
@@ -43,9 +44,12 @@ public class SecurityGroupNotUsedRuleTest {
  
     @Test
     public void executeTest() throws Exception {
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(
                 true);
+        when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(true);
         when(PacmanUtils.splitStringToAList(anyString(),anyString())).thenReturn(CommonTestUtils.getListString());
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(PacmanUtils.getQueryFromElasticSearch(anyString(),anyObject(),anyString(),anyObject())).thenReturn("");
@@ -54,8 +58,7 @@ public class SecurityGroupNotUsedRuleTest {
         
         assertThat(securityGroupNotUsedRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
         
-        when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(
-                false);
+        when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString())).thenReturn(false);
         assertThatThrownBy(
                 () -> securityGroupNotUsedRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
