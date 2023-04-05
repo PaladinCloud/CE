@@ -16,14 +16,22 @@
 package com.tmobile.cloud.awsrules.cloudfront;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyObject;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.PolicyResult;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Purpose: This test checks for cloudfront cdn exposing content without
@@ -36,10 +44,14 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
  * Modified Date: April 11th, 2019
  * 
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Annotation.class})
 public class CloudfrontAuthorizedContentDistributionRuleTest {
 
 	@Test
 	public void testExecute() {
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
 		CloudfrontAuthorizedContentDistributionRule cloudfrontAuthorizedContentDistributionRule = new CloudfrontAuthorizedContentDistributionRule();
 
 		Map<String, String> ruleParam = new HashMap<>();

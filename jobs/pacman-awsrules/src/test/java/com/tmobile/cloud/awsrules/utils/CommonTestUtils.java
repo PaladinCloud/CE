@@ -1204,4 +1204,14 @@ public class CommonTestUtils {
 
         return commonMap;
     }
+
+    public static Annotation getMockAnnotation() {
+        Annotation annotation = new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
 }
