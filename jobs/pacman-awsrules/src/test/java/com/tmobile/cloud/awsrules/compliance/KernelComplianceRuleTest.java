@@ -25,6 +25,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 @PowerMockIgnore({"javax.net.ssl.*","javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanTableAPI.class,SpacewalkAndSatelliteManager.class,SSHManager.class,PacmanUtils.class, LDAPManager.class,PacmanUtils.class,DefaultTargetCriteriaDataProvider.class})
+@PrepareForTest({PacmanTableAPI.class,SpacewalkAndSatelliteManager.class,SSHManager.class,PacmanUtils.class, LDAPManager.class, Annotation.class,DefaultTargetCriteriaDataProvider.class})
 public class KernelComplianceRuleTest {
 
     @InjectMocks
@@ -49,6 +50,8 @@ public class KernelComplianceRuleTest {
     DefaultTargetCriteriaDataProvider defaultTargetCriteriaDataProvider; 
     @Before
     public void setUp() throws Exception{
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         mockStatic(DefaultTargetCriteriaDataProvider.class);
         defaultTargetCriteriaDataProvider = PowerMockito.mock(DefaultTargetCriteriaDataProvider.class);
         mockStatic(PacmanUtils.class);

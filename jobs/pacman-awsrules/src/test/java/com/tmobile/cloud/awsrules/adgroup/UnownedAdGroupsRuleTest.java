@@ -24,8 +24,10 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Annotatable;
 import org.mockito.InjectMocks;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -36,7 +38,7 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class UnownedAdGroupsRuleTest {
 
     @InjectMocks
@@ -44,6 +46,8 @@ public class UnownedAdGroupsRuleTest {
  
     @Test
     public void executeTest() throws Exception {
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(),anyString())).thenReturn(
                 true);

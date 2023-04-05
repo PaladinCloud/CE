@@ -18,11 +18,16 @@ package com.tmobile.cloud.awsrules.cloudfront;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -51,13 +56,15 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
  */
 // @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, HttpClientBuilder.class })
+@PrepareForTest({ PacmanUtils.class, HttpClientBuilder.class, Annotation.class })
 public class CloudfrontAuthorizedHTMLContentDistributionRuleTest {
 	CloudfrontAuthorizedHTMLContentDistributionRule cloudfrontAuthorizedHTMLContentDistributionRule = null;
 	CloudfrontAuthorizedHTMLContentDistributionRule spy = null;
 
 	@Before
 	public void setup() throws Exception {
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
 		HttpClientBuilder httpClientBuilder = PowerMockito.mock(HttpClientBuilder.class);
 		PowerMockito.mockStatic(HttpClientBuilder.class);
 

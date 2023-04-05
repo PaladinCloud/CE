@@ -24,6 +24,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +37,7 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class CheckNestedRolesRuleTest {
 
     @InjectMocks
@@ -45,11 +46,13 @@ public class CheckNestedRolesRuleTest {
     @Test
     public void executeTest() throws Exception {
         mockStatic(PacmanUtils.class);
+        mockStatic(Annotation.class);
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(),anyString())).thenReturn(
                 true);
         when(PacmanUtils.getNestedRoles(anyString(), anyString(),anyString())).thenReturn(
                 true);
         when(PacmanUtils.formatUrl(anyObject(),anyString())).thenReturn("host");
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         assertThat(checkNestedRolesRule.execute(CommonTestUtils.getMapString("r_123"),CommonTestUtils.getMapString("r_123")), is(notNullValue()));
         
         when(PacmanUtils.getNestedRoles(anyString(), anyString(),anyString())).thenReturn(
