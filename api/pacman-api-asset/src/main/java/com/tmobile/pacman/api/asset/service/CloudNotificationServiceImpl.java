@@ -19,8 +19,8 @@ public class CloudNotificationServiceImpl implements CloudNotificationService {
 
 	@Override
 	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter,
-			boolean globalNotifier, int size, int from) {
-		return repository.getNotifications(assetGroup, filter, globalNotifier, size, from);
+			 int size, int from) {
+		return repository.getNotifications(assetGroup, filter, size, from);
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class CloudNotificationServiceImpl implements CloudNotificationService {
 	}
 
 	@Override
-	public List<Map<String, Object>> getCloudNotificationDetail(String eventArn, boolean globalNotifier, String assetGroup) {
-		return repository.getCloudNotificationDetail(eventArn, globalNotifier, assetGroup);
+	public Map<String, Object> getCloudNotificationDetail(String eventArn, String assetGroup) {
+		return repository.getCloudNotificationDetail(eventArn, assetGroup);
 	}
 
 	@Override

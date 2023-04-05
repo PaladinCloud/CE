@@ -56,7 +56,7 @@ public class CloudNotificationsController {
 
 		@ApiOperation(httpMethod = "POST", value = "Get the list of  Cloud Notifications by a asset Group. Mandatory Filter -'Global Notifications'")
 		@PostMapping(value = "/v1/cloud/notifications")
-		public ResponseEntity<Object> getlistOfCloudNotifications(@RequestBody(required = true) Request request, @RequestParam(name = "global", required = true) boolean globalNotifier ) {
+		public ResponseEntity<Object> getlistOfCloudNotifications(@RequestBody(required = true) Request request ) {
 
 			String assetGroup = request.getAg();
 			if (Strings.isNullOrEmpty(assetGroup)) {
@@ -74,7 +74,7 @@ public class CloudNotificationsController {
 			List<Map<String, Object>> masterList;
 			
 			try {
-				masterList = cloudService.getNotifications(assetGroup, filter, globalNotifier, size, from);
+				masterList = cloudService.getNotifications(assetGroup, filter, size, from);
 			} catch (Exception e) {
 				LOGGER.error("Error in getlistOfCloudNotifications ", e);
 				return ResponseUtils.buildFailureResponse(e);
@@ -141,11 +141,10 @@ public class CloudNotificationsController {
 	    }
 	    
 	    @GetMapping(value = "/v1/cloud/notifications/detail")
-	    public ResponseEntity<Object> getCloudNotificationDetail(@RequestParam(name = "eventArn", required = true) String eventArn, 
-	    		@RequestParam(name = "global", required = true) boolean globalNotifier,
+	    public ResponseEntity<Object> getCloudNotificationDetail(@RequestParam(name = "eventId", required = true) String eventArn, 
 	    		@RequestParam(name = "ag", required = true) String assetGroup) {
 			try {
-				return ResponseUtils.buildSucessResponse(cloudService.getCloudNotificationDetail(eventArn,globalNotifier, assetGroup));
+				return ResponseUtils.buildSucessResponse(cloudService.getCloudNotificationDetail(eventArn, assetGroup));
 			} catch (Exception e) {
 				LOGGER.error("Error in getCloudNotificationDetail "+ e);
 				return ResponseUtils.buildFailureResponse(e);

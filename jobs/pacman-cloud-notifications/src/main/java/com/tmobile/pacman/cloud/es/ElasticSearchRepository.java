@@ -31,6 +31,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.tmobile.pacman.cloud.dto.NotificationBaseRequest;
 import com.tmobile.pacman.cloud.exception.DataException;
 import com.tmobile.pacman.cloud.util.Constants;
 import com.tmobile.pacman.cloud.util.HttpUtil;
@@ -428,7 +429,7 @@ public class ElasticSearchRepository {
 	 * @param idKey   the id key
 	 * @param refresh the refresh
 	 */
-	public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey,
+	public static void uploadData(String index, String type, List<NotificationBaseRequest> docs, 
 			boolean refresh) {
 		try {
 			String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
@@ -441,9 +442,9 @@ public class ElasticSearchRepository {
 			if (null != docs && !docs.isEmpty()) {
 				StringBuilder bulkRequest = new StringBuilder();
 				int i = 0;
-				for (Map<String, Object> doc : docs) {
+				for (NotificationBaseRequest doc : docs) {
 					
-					String id = doc.get(idKey).toString();
+					String id = doc.getEventId();
 					StringBuilder _doc = new StringBuilder(createESDoc(doc));
 					_doc.deleteCharAt(_doc.length() - 1); 
 					 _doc.append(",\"latest\":true,\"_loaddate\":\"" + loaddate + "\" }");
@@ -474,7 +475,7 @@ public class ElasticSearchRepository {
 
 	}
 
-	public static String createESDoc(Map<String, ?> doc) {
+	public static String createESDoc(NotificationBaseRequest doc) {
 		ObjectMapper objMapper = new ObjectMapper();
 		String docJson = "{}";
 		try {
