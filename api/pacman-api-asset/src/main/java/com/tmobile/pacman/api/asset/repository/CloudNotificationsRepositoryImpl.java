@@ -59,6 +59,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	private String INDEX = "notification";
 	private String AUTOFIXTYPE = "autofixplan";
 	final static String protocol = "http";
+	final static String START_TIME = "startTime";
 	private String esUrl;
 	private static final String _SOURCE = "_source";
 	private static final String _COUNT = "_count";
@@ -85,8 +86,8 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			LOGGER.error("Error in getNotifications", e);
 		}
 		Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate
-				.parse(m2.get("startTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE).compareTo(
-						LocalDate.parse(m1.get("startTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
+				.parse(m2.get(START_TIME).toString().substring(0, 10), DateTimeFormatter.ISO_DATE).compareTo(
+						LocalDate.parse(m1.get(START_TIME).toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
 		Collections.sort(notifications, comp);
 
 		LOGGER.info("Exiting getNotifications");
@@ -154,7 +155,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		List<Map<String, Object>> cloudDetails = null;
 		List<String> fieldNames = new ArrayList<>();
 		List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID,
-				AssetConstants.UNDERSCORE_ENTITY, Constants._ID, AssetConstants.UNDERSCORE_LOADDATE,
+				AssetConstants.UNDERSCORE_ENTITY, Constants._ID,AssetConstants.UNDERSCORE_LOADDATE, 
 				Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
 				AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
 				AssetConstants.CREATION_DATE);
@@ -202,7 +203,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			return asset;
 		} else {
 			Map<String, Object> asset = new LinkedHashMap<>();
-			// asset.put(Constants.RESOURCEID, assetDetail.get(Constants.RESOURCEID));
+			asset.put(START_TIME, assetDetail.get(AssetConstants.UNDERSCORE_LOADDATE));
 			assetDetail.forEach((key, value) -> {
 				if (!fieldsToBeSkipped.contains(key)) {
 					asset.put(key, value);
