@@ -10,6 +10,8 @@ import com.tmobile.cso.pacman.aqua.jobs.AquaImageVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.jobs.AquaVMVulnerabilityDataImporter;
 import com.tmobile.cso.pacman.aqua.util.ErrorManageUtil;
 import com.tmobile.pacman.commons.jobs.PacmanJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -17,6 +19,10 @@ import com.tmobile.pacman.commons.jobs.PacmanJob;
  */
 @PacmanJob(methodToexecute = "execute", jobName = "Aqua Data importer", desc = "Job to enrich Aqua data in ES", priority = 5)
 public class Main {
+
+    private static Logger log = LoggerFactory.getLogger(Main.class);
+
+
 
     /**
      * The main method.
@@ -66,6 +72,8 @@ public class Main {
         case "aqua_functions_vulnerability":
             errorInfo = new AquaFunctionVulnerabilityDataImporter().execute();
                 break;
+        default:
+            log.info("Job hint is not supplied!!!!!!!!!!!!!");
         }
         return  errorInfo;
     }

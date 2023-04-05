@@ -26,6 +26,8 @@
  **/
 package com.tmobile.pacman.api.commons;
 
+import com.google.gson.annotations.SerializedName;
+
 public interface Constants {
     Integer ES_PAGE_SIZE = 10000;
     String ES_PAGE_SCROLL_TTL = "2m";
@@ -350,4 +352,53 @@ public interface Constants {
     String AUTOFIX_AVAILABLE = "autoFixAvailable";
     String AUTOFIX = "autofix";
     String AQUA = "aqua";
+    String ISSUE_ID_UI_PATH  = "#pl#compliance#issue-listing#issue-details#".replace("#","/");
+
+    String POLICY_DETAILS_UI_PATH  = "#pl#compliance#policy-knowledgebase-details#".replace("#","/");
+
+    String ASSET_DETAILS_UI_PATH  =  "#pl#assets#asset-list#".replace("#","/");
+
+    String DATA_SOURCE_KEY = "pac_ds";
+
+    enum NotificationTypes {
+        @SerializedName("exemptions")
+        EXEMPTIONS("Exemptions"),
+        @SerializedName("violations")
+        VIOLATIONS("Violations"),
+        @SerializedName("autofix")
+        AUTOFIX("Autofix");
+
+        String value;
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        NotificationTypes(String value){
+            this.value=value;
+        }
+
+    }
+
+    enum Actions {
+        @SerializedName("create")
+        CREATE,
+        @SerializedName("revoke")
+        REVOKE,
+        @SerializedName("delete")
+        DELETE,
+        @SerializedName("update")
+        UPDATE;
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    }
+    String EVENT_SOURCE = "paladinCloud";
+    String EVENT_SOURCE_NAME = "PaladinCloud";
 }

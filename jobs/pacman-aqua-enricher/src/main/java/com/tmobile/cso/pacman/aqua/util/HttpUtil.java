@@ -75,16 +75,12 @@ public class HttpUtil {
         CloseableHttpClient httpClient = getHttpClient();
         if(httpClient!=null){
             HttpResponse httpResponse;
-            try {
-               
                 httpResponse = httpClient.execute(httpGet);
                 if( httpResponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
                     throw new UnAuthorisedException();
                 }
-                return EntityUtils.toString(httpResponse.getEntity());
-            } catch (Exception e) {
-                LOGGER.error("Error getting the data " , e);
-            }
+                if(null!= httpResponse && null!= httpResponse.getEntity())
+                    return EntityUtils.toString(httpResponse.getEntity());
         }
         return "{}";
     }
@@ -100,7 +96,7 @@ public class HttpUtil {
      * @throws Exception             the exception
      */
     public static String post(String url, String requestBody,String token,String tokeType) throws Exception {
-        try {
+
             CloseableHttpClient httpClient = getHttpClient();
             if(httpClient!=null){
                 HttpPost httppost = new HttpPost(url);
@@ -113,11 +109,9 @@ public class HttpUtil {
                 if( httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_UNAUTHORIZED){
                     throw new UnAuthorisedException();
                 }
-                return EntityUtils.toString(httpresponse.getEntity());
+                if(null!= httpresponse && null!=httpresponse.getEntity())
+                    return EntityUtils.toString(httpresponse.getEntity());
             }
-        } catch (Exception e) {
-            LOGGER.error("Error getting the data " , e);
-        }
         return null;
 
     }

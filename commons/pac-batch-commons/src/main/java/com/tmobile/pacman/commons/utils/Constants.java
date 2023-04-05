@@ -1,5 +1,7 @@
 package com.tmobile.pacman.commons.utils;
 
+import com.google.gson.annotations.SerializedName;
+
 public interface Constants {
 
     String RDS_DB_URL = "spring.datasource.url";
@@ -50,5 +52,48 @@ public interface Constants {
 
     String NAME = "name";
 
+    enum NotificationTypes {
+        @SerializedName("exemptions")
+        EXEMPTIONS("Exemptions"),
+        @SerializedName("violations")
+        VIOLATIONS("Violations"),
+        @SerializedName("autofix")
+        AUTOFIX("Autofix");
+
+        String value;
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        NotificationTypes(String value){
+            this.value=value;
+        }
+
+    }
+
+    enum Actions {
+        @SerializedName("create")
+        CREATE,
+        @SerializedName("revoke")
+        REVOKE,
+        @SerializedName("delete")
+        DELETE,
+        @SerializedName("update")
+        UPDATE,
+        @SerializedName("close")
+        CLOSE;
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    }
+    String EVENT_SOURCE = "paladinCloud";
+    String EVENT_SOURCE_NAME = "PaladinCloud";
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ErrorManageUtil implements Constants {
+public class ErrorManageUtil{
     
     private ErrorManageUtil() {
         
@@ -26,17 +26,17 @@ public class ErrorManageUtil implements Constants {
         if(!errorList.isEmpty()) {
             for(Map<String, String> errorDetail :errorList) {
                 Map<String,Object> error = new HashMap<>();
-                error.put(ERROR, errorDetail.get(ERROR));
+                error.put(Constants.ERROR, errorDetail.get(Constants.ERROR));
                 
                 List<Map<String,String>> details = new ArrayList<>();
                 Map<String,String> detail = new HashMap<>();
-                detail.put(EXCEPTION,errorDetail.get(EXCEPTION));
+                detail.put(Constants.EXCEPTION,errorDetail.get(Constants.EXCEPTION));
                 details.add(detail);
                 error.put("details",details);
                 errors.add(error);
                 
-                if(!FAILED.equalsIgnoreCase(status)) {
-                    status = (FATAL.equalsIgnoreCase(errorDetail.get(ERROR_TYPE))) ? FAILED:"Partial Success";
+                if(!Constants.FAILED.equalsIgnoreCase(status)) {
+                    status = (Constants.FATAL.equalsIgnoreCase(errorDetail.get(Constants.ERROR_TYPE))) ? Constants.FAILED:"Partial Success";
                 }
             }
         }

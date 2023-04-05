@@ -16,7 +16,7 @@
  export const COGNITO = 'cognito';
  const DB = 'db';
  const LDAP = 'ldap';
- 
+
  export const CONFIGURATIONS = {
    required: {
      APP_NAME: 'Paladin Cloud',
@@ -44,15 +44,15 @@
        cognitoConfig: {
          sso_api_username: '',
          sso_api_pwd: '',
- 
+
          loginURL: '',
- 
+
          redirectURL: '',
- 
+
          cognitoTokenURL: '',
- 
+
          logout: '',
-         
+
          CloudformationTemplateUrl: ''
        }
      },
@@ -78,7 +78,12 @@
        qualysEnabled: false,
        OSS: true,
        gaKey: '',
+       notifications: {
+         url: '',
+         region: '',
+         apiKey: '',
+       }
      }
    }
  };
- 
+

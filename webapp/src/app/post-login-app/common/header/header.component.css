@@ -168,3 +168,31 @@
 .user-info-wrapper .user-email {
   color: var(--text-medium-emphasis);
 }
+
+.header-company-logo {
+    height: 28px;
+}
+
+.header-user-notification {
+    margin: 4px 16px 0 0;
+    width: 25px;
+    height: 25px;
+    position: relative;
+    color: var(--icons-300);
+}
+
+.header-user-notification:hover {
+    cursor: pointer;
+}
+
+.header-user-notification.active::after {
+    width: 7px;
+    height: 7px;
+    position: absolute;
+    content: ' ';
+    border-radius: 50%;
+    top: 0;
+    right: 0;
+    background: var(--vizualization-significant-color);
+}
+

@@ -1,38 +1,37 @@
 <div class="header-wrapper">
-  <img src="/assets/images/Paladin_Logo.svg" style="height: 28px;"/>
-  <div class="header-search-wrapper" (click)="handleSearch()">
-    <div class="header-search-content-container flex flex-row">
-      <!-- <mat-icon
-        class="mat-icon"
-        matPrefix
-        svgIcon="customSearchIcon"
-      ></mat-icon> -->
+    <img class="header-company-logo" src="/assets/images/Paladin_Logo.svg" />
 
-      <img src="/assets/icons/header-search.svg" alt="" />
-      <form class="header-search-form">
-        <mat-form-field class="header-search-full-width" appearance="fill">
-          <input type="search" matInput placeholder="Search" />
-        </mat-form-field>
-      </form>
+    <div class="header-search-wrapper" (click)="handleSearch()">
+        <div class="header-search-content-container flex flex-row">
+            <img src="/assets/icons/header-search.svg" alt="Search icon" />
+            <form class="header-search-form">
+                <mat-form-field class="header-search-full-width" appearance="fill">
+                    <input type="search" matInput placeholder="Search" />
+                </mat-form-field>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <div class="header-user-wrapper">
-    <div class="header-user-content-wrapper">
-      <div class="user-image-wrapper">
-        <h3>{{userName[0]}}</h3>
-      </div>
-      <div class="user-info-wrapper">
-        <div class="user-name">{{userName}}</div>
-        <div class="user-email">{{userEmail}}</div>
-      </div>
-      <div title="Logout" class="user-logout-modal-btn" >
-        <img
-          src="/assets/icons/logout-icon.svg"
-          alt=""
-          (click)="logout()"
-        />
-      </div>
+    <div class="header-user-wrapper flex">
+        <mat-icon
+            class="header-user-notification material-icons-outlined"
+            title="Notifications"
+            [ngClass]="{ active: haveNewNotification }"
+            (click)="openNotification()"
+        >
+            notifications
+        </mat-icon>
+        <div class="header-user-content-wrapper">
+            <div class="user-image-wrapper">
+                <h3>{{ userName[0] }}</h3>
+            </div>
+            <div class="user-info-wrapper">
+                <div class="user-name">{{ userName }}</div>
+                <div class="user-email" [title]="userEmail">{{ userEmail }}</div>
+            </div>
+            <div title="Logout" class="user-logout-modal-btn" (click)="logout()">
+                <img src="/assets/icons/logout-icon.svg" alt="Logout" />
+            </div>
+        </div>
     </div>
-  </div>
 </div>

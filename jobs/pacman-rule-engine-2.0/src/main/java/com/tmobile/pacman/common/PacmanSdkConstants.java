@@ -19,6 +19,7 @@ package com.tmobile.pacman.common;
 
 
 // TODO: Auto-generated Javadoc
+
 /**
  * The Interface PacmanSdkConstants.
  */
@@ -599,7 +600,6 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String BOOLEAN_TRUE = "true";
     String SUBSCRIPTION = "subscription";
     String PROJECT_NAME = "projectName";
-    
     /** Compliance API to get Policy Details using UUID */
     String POLICY_DETAILS_URL = "POLICY_DETAILS_URL";
 
@@ -617,4 +617,34 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String AUTOFIX_POLICY_VIOLATION_MESSAGE = "violationMessage";
     String POLICY_STATUS_ENABLED = "ENABLED";
     String AUTOFIX_POLICY_ELAPSED_TIME = "elapsedTime";
+
+    String NOTIFICATION_URL  = "notification.lambda.function.url";
+    String  HOSTNAME = "pacman.host";
+
+    String ISSUE_ID_UI_PATH  = "#pl#compliance#issue-listing#issue-details#".replace("#","/");
+
+    String POLICY_DETAILS_UI_PATH  = "#pl#compliance#policy-knowledgebase-details#".replace("#","/");
+
+    String ASSET_DETAILS_UI_PATH  =  "#pl#assets#asset-list#".replace("#","/");
+
+    String OPEN_VIOLATIONS_SUBJECT = "Policy Violation Created";
+    String CLOSE_VIOLATIONS_SUBJECT = "Policy Violation Closed";
+    String CREATE_VIOLATION_EVENT_NAME  = "Violation for policy - %s";
+
+    String CLOSE_VIOLATION_EVENT_NAME   = "Violation closed for policy - %s";
+
+    String AUTOFIX_WARNING_SUBJECT = "Autofix Scheduled For A Violation";
+    String AUTOFIX_APPLIED = "Autofix Applied For A Violation";
+
+    String AUTOFIX_EXEMPTION_SUBJECT = "Autofix Not Applied For An Exempted Violation";
+
+    String SILENT_AUTOFIX_SUBJECT = "Autofix Applied For Violations Without Warning Notifications";
+    String SILENT_AUTOFIX_EVENT_NAME = "Autofix Without Warning for resource %s";
+    String AUTOFIX_EXEMPTION_EVENT_NAME = "Autofix is not applied for exempted violation of policy %s .";
+
+    String AUTOFIX_WARNING_EVENT_NAME = "Autofix scheduled for resource %s";
+    String AUTOFIX_APPLIED_EVENT_NAME = "Autofix applied for resource %s";
+
+    String POLICY_DISPLAY_NAME = "policyDisplayName";
+    String NOTIFICATION_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
 }
