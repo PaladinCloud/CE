@@ -1,8 +1,8 @@
 <div class="input-wrapper">
     <mat-form-field appearance="outline">
         <mat-label>{{placeholder}}</mat-label>
-        <input *ngIf="type=='input'" autocomplete="off" matInput [(ngModel)]="value" (ngModelChange)="onInputChange()" [style.height]="height">
-        <textarea *ngIf="type=='textarea'" autocomplete="off" matInput [(ngModel)]="value" (ngModelChange)="onInputChange()" [style.height]="height"></textarea>
+        <input [disabled]="isDisabled" *ngIf="type=='input'" autocomplete="off" matInput [(ngModel)]="value" (ngModelChange)="onInputChange()" [style.height]="height">
+        <textarea [disabled]="isDisabled" *ngIf="type=='textarea'" autocomplete="off" matInput [(ngModel)]="value" (ngModelChange)="onInputChange()" [style.height]="height"></textarea>
     </mat-form-field>
     <div class="info-img" *ngIf="description.length>0">
         <img src="../../../assets/icons/info-circle.svg" [matTooltip]="description" matTooltipPosition="right">

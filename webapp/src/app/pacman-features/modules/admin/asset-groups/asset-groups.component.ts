@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, TemplateRef } from "@angular/core";
 import { environment } from "./../../../../../environments/environment";
 import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
 import { Subject, Subscription } from "rxjs";
@@ -26,6 +26,8 @@ import { RouterUtilityService } from "../../../../shared/services/router-utility
 import { AdminService } from "../../../services/all-admin.service";
 import { DATA_MAPPING } from "src/app/shared/constants/data-mapping";
 import { NotificationObservableService } from "src/app/shared/services/notification-observable.service";
+import { DialogBoxComponent } from "src/app/shared/components/molecules/dialog-box/dialog-box.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: "app-asset-groups",
@@ -108,7 +110,8 @@ export class AssetGroupsComponent implements OnInit {
       id: 3,
       header: "Total Compliance Trend",
     }
-  
+
+  selectedAssetGroup = "";
   isStatePreserved: boolean;
   selectedDomain: any;
   paginatorSize: number = 25;
@@ -144,6 +147,9 @@ export class AssetGroupsComponent implements OnInit {
   private previousUrlSubscription: Subscription;
   private downloadSubscription: Subscription;
   assetGroupList: any[];
+  @ViewChild("actionRef") actionRef: TemplateRef<any>;
+  errorMessage: string;
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -156,7 +162,8 @@ export class AssetGroupsComponent implements OnInit {
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
-    private notificationObservableService: NotificationObservableService
+    private notificationObservableService: NotificationObservableService,
+    public dialog: MatDialog
   ) {
     this.getFilters();
   }
@@ -191,6 +198,32 @@ export class AssetGroupsComponent implements OnInit {
       this.filterTagLabels[column] = filterTags;
     });
   }
+
+  confirmAction(action:string,selectedRow:any){
+    const groupId = selectedRow["Group Id"].valueText;
+    this.selectedAssetGroup = selectedRow["Name"].valueText;
+    const dialogRef = this.dialog.open(DialogBoxComponent,
+    {
+      width: '600px',
+      data: {
+        title: null,
+        yesButtonLabel: action,
+        noButtonLabel: "Cancel",
+        template: this.actionRef
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      try {
+        if (result == "yes") {
+              this.deleteAssetGroup(groupId);
+        }
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log('error', error);
+      }
+    });
+  }
+
 
   getAssetGroupsDetails(isNextPageCalled?) {
     var url = environment.assetGroups.url;
@@ -425,11 +458,11 @@ export class AssetGroupsComponent implements OnInit {
   }
 
   onSelectAction(event) {
-    const action = event.action.toLowerCase();
+    const action = event.action;
     const rowSelected = event.rowSelected;
-    if (action === "delete") {
-       this.deleteAssetGroup(rowSelected["Group Id"].valueText);
-    } else if (action === "edit") {
+    if (action === "Delete") {
+       this.confirmAction(action,rowSelected);
+    } else if (action === "Edit") {
       try {
         this.workflowService.addRouterSnapshotToLevel(
           this.router.routerState.snapshot.root, 0, this.pageTitle

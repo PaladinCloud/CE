@@ -6,3 +6,19 @@
     max-height: 75vh;
     height: 100%;
 }
+
+.dialog-body-header{
+    font: var(--text-headline-6);
+    color: var(--text-high-emphasis);
+}
+
+.dialog-body-content{
+   font: var(--text-body-2);
+   color: var(--text-medium-emphasis);
+}
+
+.dialog-body{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}

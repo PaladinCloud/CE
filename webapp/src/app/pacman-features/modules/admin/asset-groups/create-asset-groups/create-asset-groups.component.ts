@@ -29,6 +29,7 @@ import { RouterUtilityService } from '../../../../../shared/services/router-util
 import { AdminService } from '../../../../services/all-admin.service';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { NotificationObservableService } from 'src/app/shared/services/notification-observable.service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 interface ICondition{
     keyList: string[];
@@ -102,7 +103,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   attributeValue = '';
   targetTypeSelectedValue = '';
   selectedAttributes = [];
-
+  AttributeKeyViewMap = {"CloudType":"Cloud Type", "TargetType" : "Target Type" ,"tags.Application": "Application", "tags.Environment": "Environment","Region":"Region", "Id": "Account Id", "region":"Region","accountid":"Account Id"};
+  AttributeKeyMap = {"Cloud Type":"CloudType", "Target Type" : "TargetType" ,"Application": "tags.Application", "Environment": "tags.Environment","Region":"region", "Account Id": "accountid"};
   allOptionalRuleParams = [];
   isAssetGroupFailed = false;
   isAssetGroupSuccess = false;
@@ -237,11 +239,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   ]
 
   public labels;
-  private previousUrl = '';
   private routeSubscription: Subscription;
-  private getKeywords: Subscription;
   private previousUrlSubscription: Subscription;
-  private downloadSubscription: Subscription;
   selectedCriteriaValues = [];
   selectedValue = "";
   selectedKey = "";
@@ -255,7 +254,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private adminService: AdminService,
     private notificationObservableService: NotificationObservableService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private dataCacheService: DataCacheService
   ) {
     this.routerParam();
     this.updateComponent();
@@ -276,11 +276,14 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     if(stateUpdated){
     this.getAttributesData(stateUpdated);
     this.submitBtn = "Confirm and Update";
+    this.pageTitle = "Edit Asset Group";
+    this.breadcrumbPresent = 'Edit Asset Group';
     }
-    else
+    else{
       this.getAttributesData();
+      this.createdBy = this.dataCacheService.getUserDetailsValue().getEmail();
+    }
   }
-
 
   getDetails(stateUpdated){
     this.assetGroupName = stateUpdated["Name"]?stateUpdated["Name"]:"";
@@ -301,20 +304,10 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     let conditionList = [];
     let k = 0;
     for(const criteria in criteriaMap){
-      this.criterias.push([
-        {
-          valueList: [],
-          keyList: this.criteriaKeys,
-          isDisabled: false,
-          selectedValue: "",
-          selectedKey: "",
-        }
-        ]);
       conditionList = criteriaMap[criteria];
       for(let j=0;j<conditionList.length;j++){
-          this.addEmptyCondition(k,conditionList[j]["attributeName"],conditionList[j]["attributeValue"]);
+          this.addEmptyCondition(k,this.AttributeKeyViewMap[conditionList[j]["attributeName"]],conditionList[j]["attributeValue"]);
       }
-      this.deleteCondition(k,0);
       k++;
     }
   }
@@ -324,8 +317,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     const method = environment.getCloudTypeObject.method;
 
     this.adminService.executeHttpAction(url,method,{},{}).subscribe(response=>{
-      this.cloudsData = response[0];
-      this.criteriaKeys = Object.keys(response[0][0]); 
+      const cloudsData = response[0];
+      this.processData(cloudsData);
       if(stateUpdated){
         this.getDetails(stateUpdated);
       }
@@ -343,11 +336,27 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     })
   }
 
+  processData(cloudsData:any){
+      for(let i=0;i<cloudsData.length;i++){
+          cloudsData[i] = Object.entries(cloudsData[i]).reduce((acc, [oldKey, value]) => {
+            const newKey = this.AttributeKeyViewMap[oldKey];
+            acc[newKey] = value;
+            return acc;
+          }, {});
+      }
+      this.cloudsData = cloudsData;
+      this.criteriaKeys = Object.keys(this.cloudsData[0]); 
+  }
+
   addEmptyCondition(criteriaIdx,selectedKey="",selectedValue=""){
     let selectedKeyList = [];
-    this.criterias[criteriaIdx].forEach(condition=>{
-       selectedKeyList.push(condition.selectedKey);
-    })
+ 
+    if(this.criterias.length>criteriaIdx){
+      this.criterias[criteriaIdx].forEach(condition=>{
+        selectedKeyList.push(condition.selectedKey);
+     })
+    }
+
 
     this.selectedCriteriaKeyList[criteriaIdx] = selectedKeyList;
     const newKeyList = this.criteriaKeys.filter(key=>{
@@ -362,7 +371,12 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
       selectedKey: selectedKey
     }
 
-    this.criterias[criteriaIdx].push(condition)
+    if(this.criterias.length<criteriaIdx+1){
+      this.criterias.push([condition]);
+    }
+    else{
+    this.criterias[criteriaIdx].push(condition);
+     }
   }
 
   onKeySelect(condition:ICondition,selectedKey:string){
@@ -381,6 +395,9 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
 
   deleteCondition(criteriaIdx,conditionIdx){
     this.criterias[criteriaIdx].splice(conditionIdx,1);
+    if(this.criterias[criteriaIdx].length==0){
+      this.deleteCriteria(criteriaIdx);
+    }
   }
 
   deleteCriteria(criteriaIdx){
@@ -752,11 +769,11 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
     this.criterias.forEach(criteria=>{
       let obj = {};
       criteria.forEach(condition=>{
-        if(condition.selectedKey == "CloudType" || condition.selectedKey == "TargetType"){
-          obj[condition.selectedKey] = [condition.selectedValue];
+        if(condition.selectedKey == "Cloud Type" || condition.selectedKey == "Target Type"){
+          obj[this.AttributeKeyMap[condition.selectedKey]] = [condition.selectedValue];
         }
         else
-         obj[condition.selectedKey] = condition.selectedValue;
+         obj[this.AttributeKeyMap[condition.selectedKey]] = condition.selectedValue;
       })
       criteriaList.push(obj);
     })

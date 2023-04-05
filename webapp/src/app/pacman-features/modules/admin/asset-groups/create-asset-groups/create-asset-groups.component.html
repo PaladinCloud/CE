@@ -39,12 +39,9 @@
 <ng-template #assetGroupRef>
     <div class="step-content">
         <app-input-field [(value)]="assetGroupName" placeholder="Name"></app-input-field>
-        <app-input-field [height]="'112px'" [type]="'textarea'" [(value)]="assetGroupDesc" placeholder="Description"></app-input-field>
-        <app-input-field [(value)]="createdBy" placeholder="Created by"></app-input-field>
-        <app-dropdown [items]="typeList" [selectedItem]="selectedAccountType"
-        placeholder="Type" name="accountType"
-        (selected)="onSelectType($event)" [requiredInfo]="true"
-        ></app-dropdown>
+        <app-input-field [height]="'54px'" [type]="'textarea'" [(value)]="assetGroupDesc" placeholder="Description"></app-input-field>
+        <app-input-field [isDisabled]="true" [(value)]="createdBy" placeholder="Created By"></app-input-field>
+        <app-input-field [(value)]="selectedAccountType" placeholder="Type"></app-input-field>
     </div>
 </ng-template>
 
@@ -70,7 +67,7 @@
                     <ng-template #addIcon>
                         <img [class.disableIcon]="!condition.selectedValue" class="pointer add-icon" (click)="addEmptyCondition(criteriaIdx)" src="/assets/icons/plus.svg" alt="">
                     </ng-template>
-                    <img *ngIf="conditionIdx<criteria.length-1" class="x-icon pointer" src="/assets/icons/x-icon.svg" alt="" (click)="deleteCondition(criteriaIdx,conditionIdx)">
+                    <img *ngIf="!(criteriaIdx == 0 && conditionIdx == 0)" class="x-icon pointer" src="/assets/icons/x-icon.svg" alt="" (click)="deleteCondition(criteriaIdx,conditionIdx)">
                 </div>
                 <div class="chip-wrapper" *ngIf="criteriaIdx<criterias.length-1">
                     <app-chip [backgroundColor]="'#D8FFFD'" [color]="'#515459'" [chipsList]="['OR']">

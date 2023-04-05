@@ -16,6 +16,8 @@
   flex-direction: column;
   gap: 20px;
   height: calc(100% - 120px);
+  overflow: auto;
+  padding-top: 8px;
 }
 
 .configuration-body ::ng-deep .mat-form-field-wrapper{

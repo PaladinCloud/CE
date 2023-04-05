@@ -2076,6 +2076,7 @@ g.arc .bubble-text {
   order: 1;
   flex-grow: 0;
   border: none;
+  cursor: pointer;
 }
 
 .stepper{

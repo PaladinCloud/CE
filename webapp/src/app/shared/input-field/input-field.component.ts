@@ -12,6 +12,7 @@ export class InputFieldComponent implements OnInit {
   @Input() placeholder: string = '';
   @Input() description: string = '';
   @Input() value: string = '';
+  @Input() isDisabled: boolean = false;
   @Output() valueChange = new EventEmitter<string>();
 
   onInputChange(){
