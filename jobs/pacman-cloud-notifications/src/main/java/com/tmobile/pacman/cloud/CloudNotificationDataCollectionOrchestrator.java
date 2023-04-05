@@ -2,20 +2,17 @@ package com.tmobile.pacman.cloud;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.tmobile.pacman.cloud.config.ConfigManager;
 import com.tmobile.pacman.cloud.dao.RDSDBManager;
+import com.tmobile.pacman.cloud.dto.NotificationBaseRequest;
 import com.tmobile.pacman.cloud.es.ElasticSearchRepository;
 import com.tmobile.pacman.cloud.exception.DataException;
 import com.tmobile.pacman.cloud.util.Constants;
@@ -30,14 +27,22 @@ public class CloudNotificationDataCollectionOrchestrator {
 	/** Clound Notification Query */
 	private String cloudTargetQuery = "select * FROM CloudNotification_mapping"; // { "EC2" }; , "DIRECTCONNECT", "RDS",
 																					// "LAMBDA", "IAM", "VPN",
-																					// "CLOUDFRONT", "S3", "REDSHIFT", "SQS",
-																					// "DYNAMODB", "ELASTICCACHE", "APIGATEWAY", 
-																					//"VPC", "KMS", "MQ", "CONFIG", "CLOUDTRAIL" };
+																					// "CLOUDFRONT", "S3", "REDSHIFT",
+																					// "SQS",
+																					// "DYNAMODB", "ELASTICCACHE",
+																					// "APIGATEWAY",
+																					// "VPC", "KMS", "MQ", "CONFIG",
+																					// "CLOUDTRAIL" };
 
 	private static final String CURR_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new java.util.Date());
 
 	/** The es type. */
-	private static String ESTYPE = "cloud_notification";
+	private static String ES_NOTIFICATION = "notification";
+
+	private static String EVENT_SOURCE_AWS = "aws";
+	private static String EVENT_SOURCE_DISPLAY_AWS = "AWS";
+	private static String EVENT_CATEGORY = "eventtypecategory";
+	private static String EVENT_NAME = "eventtypecode";
 
 	/**
 	 * Orchestrate.
@@ -67,10 +72,9 @@ public class CloudNotificationDataCollectionOrchestrator {
 	public void dataCollection() {
 
 		try {
-			List<Map<String, Object>> outputList = new ArrayList<Map<String, Object>>();
 			List<Map<String, Object>> countList = new ArrayList<Map<String, Object>>();
 			List<Map<String, String>> cloudMappings = RDSDBManager.executeQuery(cloudTargetQuery);
-			List<Map<String, Object>> cloudNotificationObjs = new ArrayList<>();
+			List<NotificationBaseRequest> cloudNotificationObjs = new ArrayList<>();
 
 			cloudMappings.parallelStream().forEach(cloudMapping -> {
 
@@ -89,6 +93,20 @@ public class CloudNotificationDataCollectionOrchestrator {
 									.getPhdEnityByArn(event.get(Constants.EVENTARN).toString());
 							// System.out.println("**Entty**"+phdEntity);
 							// Get the resources from pacbot
+							NotificationBaseRequest notificationReq = new NotificationBaseRequest();
+							String eventName = (String) event.getOrDefault(EVENT_NAME, "");
+							notificationReq.setEventName(eventName.replaceAll("_", " "));
+							notificationReq.setEventSource(EVENT_SOURCE_AWS);
+							notificationReq.setEventSourceName(EVENT_SOURCE_DISPLAY_AWS);
+							String category = (String) event.get(EVENT_CATEGORY);
+							notificationReq.setEventCategory(category);
+							try {
+								notificationReq.setEventCategoryName(
+										Constants.NotificationTypes.valueOf(category.toUpperCase()));
+							} catch (Exception e) {
+								LOGGER.error("invalid category type found " + category + " excpetion " + e);
+							}
+
 							if (phdEntity != null && !"UNKNOWN".equals(phdEntity) && !"AWS_ACCOUNT".equals(phdEntity)) {
 
 								List<Map<String, Object>> resorceDet = ElasticSearchRepository.getPacResourceDet(
@@ -102,51 +120,56 @@ public class CloudNotificationDataCollectionOrchestrator {
 														+ "**DOCID***" + details.get(Constants._DOCID));
 										countList.add(details);
 
-										Map<String, Object> notificationObj = new HashMap<>();
-										notificationObj.putAll(event);
-										notificationObj.put("_docid", details.get("_docid"));
-										notificationObj.put("_resourceid",
+										event.put(Constants._DOCID, details.get(Constants._DOCID));
+										event.put(Constants._RESOURCEID,
 												details.get(cloudMapping.get(Constants.RESOURCEIDVAL)));
-										notificationObj.put("latest", true);
-										notificationObj.put("notificationId",
+										// event.put(Constants.LATEST, true);
+										event.put(Constants.EVENT_ID,
 												details.get(cloudMapping.get(Constants.RESOURCEIDVAL)));
-										notificationObj.put("type",
+										event.put(Constants.TYPE,
 												cloudMapping.get(Constants.ESINDEX).toLowerCase().toString());
-										cloudNotificationObjs.add(notificationObj);
+										notificationReq.setEventId(
+												details.get(cloudMapping.get(Constants.RESOURCEIDVAL)).toString());
+										notificationReq.setAssetType(
+												cloudMapping.get(Constants.ESINDEX).toLowerCase().toString());
+										notificationReq.setAssetTypeName(
+												cloudMapping.get(Constants.ESINDEX).toLowerCase().toString());
 									});
 								} else {
-									Map<String, Object> sourceMap = event;
-									sourceMap.put("@id", event.get(Constants.ACCOUNTID).toString() + ":"
+
+									event.put(Constants._ID, event.get(Constants.ACCOUNTID).toString() + ":"
 											+ event.get(Constants.EVENTARN).toString());
-									outputList.add(sourceMap);
+									notificationReq.setEventId(event.get(Constants.ACCOUNTID).toString() + ":"
+											+ event.get(Constants.EVENTARN).toString());
+
 								}
 
 							} else {
-								Map<String, Object> sourceMap = event;
-								sourceMap.put("@id", event.get(Constants.ACCOUNTID).toString() + ":"
+
+								event.put(Constants._ID, event.get(Constants.ACCOUNTID).toString() + ":"
 										+ event.get(Constants.EVENTARN).toString());
-								outputList.add(sourceMap);
+								notificationReq.setEventId(event.get(Constants.ACCOUNTID).toString() + ":"
+										+ event.get(Constants.EVENTARN).toString());
+
 							}
+							notificationReq.setPayload(event);
+							cloudNotificationObjs.add(notificationReq);
 						} catch (DataException e) {
 							LOGGER.error("Error in the cloudNotification" + e.getMessage());
 						}
 					}
 				});
 			});
+
 			if (!cloudNotificationObjs.isEmpty()) {
-				//cloudNotificationObjs.forEach(System.err::println);
-				ElasticSearchRepository.uploadDataWithParent(cloudNotificationObjs);
-			}
-			// Storing the data
-			if (!outputList.isEmpty()) {
-				//outputList.forEach(System.err::println);
+				// outputList.forEach(System.err::println);
 				LOGGER.info("UPLOADING SECURITYHUB DATA TO ES");
 
-				ElasticSearchRepository.uploadData("cloud_notifications", ESTYPE, outputList, "@id", false);
+				Util.pushNotificaiton(System.getProperty(Constants.NOTIFICATION_URL), cloudNotificationObjs);
 			}
-			LOGGER.info("**size**" + countList.size());
+			LOGGER.info("**PHD with resourceID size**" + countList.size());
 		} catch (Exception e) {
-			LOGGER.error(" FAILED IN SECURITYHUB DATACOLLECTION JOB", Util.getStackTrace(e));
+			LOGGER.error(" FAILED IN SECURITYHUB DATACOLLECTION JOB {}", Util.getStackTrace(e));
 		}
 	}
 }
