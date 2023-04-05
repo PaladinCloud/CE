@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -26,6 +27,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +39,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class})
+@PrepareForTest({ PacmanUtils.class, Annotation.class})
 public class ComprehendEncryptionRuleTest {
 
     @InjectMocks
@@ -44,6 +47,8 @@ public class ComprehendEncryptionRuleTest {
  
     @Test
     public void executeTest() throws Exception {
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString())).thenReturn(true);
         

@@ -24,6 +24,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -37,7 +38,7 @@ import com.tmobile.pacman.commons.exception.InvalidInputException;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class})
+@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class, Annotation.class})
 public class RedShiftPublicAccessRuleTest {
 
     @InjectMocks
@@ -45,6 +46,9 @@ public class RedShiftPublicAccessRuleTest {
  
     @Test
     public void executeTest() throws Exception {
+        mockStatic(Annotation.class);
+        Annotation annotation = CommonTestUtils.getMockAnnotation();
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(annotation);
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(
                 true);
@@ -55,7 +59,9 @@ public class RedShiftPublicAccessRuleTest {
         when(PacmanUtils.isIgwFound(anyString(),anyString(),anyString(),anyObject(),anyObject(),anyString(),anyString(),anyString())).thenReturn(true);
         when(PacmanUtils.getSecurityGroupsByResourceId(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getListSecurityGroupId());
         when(PacmanUtils.checkAccessibleToAll(anyObject(),anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getMapBoolean("123"));
-        when(PacmanUtils.setAnnotation(anyObject(),anyObject(),anyString(),anyString(),anyObject())).thenReturn(CommonTestUtils.getAnnotation("123"));
+        annotation.put("description", "description");
+        annotation.put("passwordlastused", "passwordlastused");
+        when(PacmanUtils.setAnnotation(anyObject(),anyObject(),anyString(),anyString(),anyObject())).thenReturn(annotation);
         assertThat(redShiftPublicAccessRule.execute(CommonTestUtils.getMapString("r_123 "),CommonTestUtils.getMapString("r_123 ")), is(notNullValue()));
         
         when(PacmanUtils.getRouteTableId(anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtils.getEmptySetString());
