@@ -100,11 +100,21 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.Annotation;
 
+import static com.tmobile.cloud.constants.PacmanRuleConstants.GET_NO_OF_ACCOUNT_ERROR_MESSAGE;
+
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
     public static final String NIST_VULN_DETAILS_URL = "https://nvd.nist.gov/vuln/detail/";
     AwsSecretManagerUtil awsSecretManagerUtil=new AwsSecretManagerUtil();
     CredentialProvider credentialProvider=new CredentialProvider();
+
+    private static final String ES_GET_ACCOUNTS = "{\"query\":{\"bool\":{\"should\":[{\"bool\":{\"must\":[" +
+            "{\"term\":{\"accountid.keyword\":\"%s\"}},{\"term\":{\"docType\":\"account\"}}," +
+            "{\"term\":{\"latest\":true}}]}},{\"bool\":{\"must\":[" +
+            "{\"term\":{\"accountid.keyword\":\"%s\"}},{\"term\":{\"docType\":\"account\"}}," +
+            "{\"term\":{\"latest\":true}}]}}]}}}";
+
+    public static final String AWS_SEARCH_INDEX = "/aws/_search";
 
     private PacmanUtils() {
 
@@ -2030,17 +2040,29 @@ public class PacmanUtils {
         return list;
     }
 
-    public static int getCountOfAccountIds(String esUrl, String requesterOwnerId, String accepterOwnerId) throws Exception {
-        String requestBody = "{\"query\":{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"accountid.keyword\":\"" + requesterOwnerId +
-                "\"}},{\"term\":{\"latest\":true}}]}},{\"bool\":{\"must\":[{\"term\":{\"accountid.keyword\":\"" + accepterOwnerId +
-                "\"}},{\"term\":{\"latest\":true}}]}}]}}}";
-        String totalStr = "0";
+    public static int getCountOfAccountIds(String esUrl, String requesterOwnerId, String acceptorOwnerId) throws Exception {
+        String requestBody = String.format(ES_GET_ACCOUNTS, requesterOwnerId, acceptorOwnerId);
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getResponse(esUrl, requestBody);
-        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
-            JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
-            totalStr = hitsJson.has(PacmanRuleConstants.TOTAL) ? hitsJson.get(PacmanRuleConstants.TOTAL).toString() : "0";
+        if (resultJson == null || !resultJson.has(PacmanRuleConstants.HITS)
+                || !resultJson.getAsJsonObject(PacmanRuleConstants.HITS).has(PacmanRuleConstants.TOTAL)) {
+            return 0;
         }
-        return Integer.parseInt(totalStr);
+        try {
+            if (resultJson.getAsJsonObject(PacmanRuleConstants.HITS).get(PacmanRuleConstants.TOTAL).isJsonPrimitive()) {
+                return Integer.parseInt(resultJson.getAsJsonObject(PacmanRuleConstants.HITS)
+                        .get(PacmanRuleConstants.TOTAL).toString());
+            }
+            resultJson = resultJson.getAsJsonObject(PacmanRuleConstants.HITS)
+                    .getAsJsonObject(PacmanRuleConstants.TOTAL);
+            if (resultJson.has(PacmanRuleConstants.VALUE)
+                    && resultJson.get(PacmanRuleConstants.VALUE).isJsonPrimitive()) {
+                return Integer.parseInt(resultJson.get(PacmanRuleConstants.VALUE).toString());
+            }
+        } catch (Exception e) {
+            logger.error(GET_NO_OF_ACCOUNT_ERROR_MESSAGE, e);
+            return 0;
+        }
+        return 0;
     }
 
     public static Set<String> getRouteTableId(String subnetId, String vpcId, String routetableEsURL, String type)
