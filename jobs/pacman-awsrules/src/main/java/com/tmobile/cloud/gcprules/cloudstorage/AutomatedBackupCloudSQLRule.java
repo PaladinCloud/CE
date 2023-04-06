@@ -93,7 +93,7 @@ public class AutomatedBackupCloudSQLRule extends BasePolicy {
 
             logger.debug("Validating the data item: {}", backupObject);
 
-            Boolean isBackupEnabled=backupObject.getAsJsonObject().get(PacmanRuleConstants.BACKUP_ENABLED).getAsBoolean();
+            boolean isBackupEnabled=backupObject.getAsJsonObject().get(PacmanRuleConstants.BACKUP_ENABLED).getAsBoolean();
 
             if (isBackupEnabled) {
                 validationResult = true;
