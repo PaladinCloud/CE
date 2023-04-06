@@ -352,7 +352,7 @@ public class TestUtils {
                 "              \"allAuthenticatedUsers\",\n" +
                 "              \"allUsers\" \n" +
                 "          ],\n" +
-                "          \"defaultKmsKeyName\": null,\n" +
+                "          \"defaultKmsKeyName\":null,\n" +
                 "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
                 "          \"_resourceid\": \"8993151141438601059\",\n" +
                 "          \"_docid\": \"8993151141438601059\",\n" +
@@ -372,110 +372,77 @@ public class TestUtils {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", gson.fromJson("{\n" +
-                "          \"_cloudType\": \"gcp\",\n" +
-                "          \"region\": \"us-central1\",\n" +
-                "          \"id\": \"cool-bay-349411:us-central1:gcp-mysql-sever1\",\n" +
-                "          \"projectName\": \"cool-bay-349411\",\n" +
-                "          \"name\": \"gcp-mysql-sever1\",\n" +
-                "          \"kind\": \"sql#instance\",\n" +
-                "          \"createdTime\": \"2022-08-11T08:17:19.922Z\",\n" +
-                "          \"masterInstanceName\": null,\n" +
-                "          \"backendType\": \"SECOND_GEN\",\n" +
-                "          \"state\": \"RUNNABLE\",\n" +
-                "          \"databaseVersion\": \"SQLSERVER_2019_STANDARD\",\n" +
-                "          \"databaseInstalledVersion\": \"SQLSERVER_2019_STANDARD_CU16\",\n" +
-                "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
-                "          \"eTag\": \"7d608164c64713163c83a83f5170b9af2e642287919b366faf54d605337abc6c\",\n" +
-                "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/cool-bay-349411/instances/gcp-mysql-sever1\",\n" +
-                "          \"serviceAccountEmail\": \"p47822473470-cpwrh9@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
-                "          \"kmsKeyVersion\": null,\n" +
-                "          \"kmsKeyName\": null,\n" +
-                "          \"maxDiskSize\": null,\n" +
-                "          \"currentDiskSize\": null,\n" +
-                "          \"ipAddress\": [\n" +
-                "            {\n" +
-                "              \"ip\": \"34.171.119.180\",\n" +
-                "              \"type\": \"PRIMARY\"\n" +
-                "            }\n" +
-                "          ],\n" +
-                "          \"serverCaCert\": {\n" +
-                "            \"certSerialNumber\": \"0\",\n" +
-                "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=2149545f-4fd6-4ce3-9ab8-0ec282e3cd71\",\n" +
-                "            \"createTime\": \"2022-08-11T08:18:03.671Z\",\n" +
-                "            \"expirationTime\": \"2032-08-08T08:19:03.671Z\",\n" +
-                "            \"instance\": \"gcp-mysql-sever1\",\n" +
-                "            \"kind\": \"sql#sslCert\"\n" +
-                "          },\n" +
-                "          \"settings\": {\n" +
-                "            \"activationPolicy\": \"ALWAYS\",\n" +
-                "            \"activeDirectoryConfig\": {\n" +
-                "              \"kind\": \"sql#activeDirectoryConfig\"\n" +
-                "            },\n" +
-                "            \"authorizedGaeApplications\": [],\n" +
-                "            \"availabilityType\": \"REGIONAL\",\n" +
-                "            \"backupConfiguration\": {\n" +
-                "              \"backupRetentionSettings\": {\n" +
-                "                \"retainedBackups\": 7,\n" +
-                "                \"retentionUnit\": \"COUNT\"\n" +
-                "              },\n" +
-                "              \"enabled\": true,\n" +
-                "              \"kind\": \"sql#backupConfiguration\",\n" +
-                "              \"location\": \"us\",\n" +
-                "              \"startTime\": \"10:00\",\n" +
-                "              \"transactionLogRetentionDays\": 7\n" +
-                "            },\n" +
-                "            \"collation\": \"SQL_Latin1_General_CP1_CI_AS\",\n" +
-                "            \"dataDiskSizeGb\": 100,\n" +
-                "            \"dataDiskType\": \"PD_SSD\",\n" +
-                "            \"databaseFlags\": [\n" +
-                "              {\n" +
-                "                \"name\": \"cross db ownership chaining\",\n" +
-                "                \"value\": \"off\"\n" +
-                "              }\n" +
-                "            ],\n" +
-                "            \"ipConfiguration\": {\n" +
-                "              \"authorizedNetworks\": [\\n\" +\n" +
-                "                \"            {\\n\" +\n" +
-                "                \"              \\\"ip\\\": \\\"34.171.119.180\\\",\\n\" +\n" +
-                "                \"              \\\"type\\\": \\\"PRIMARY\\\"\\n\" +\n" +
-                "                \"            }\\n\" +],\n" +
-                "              \"ipv4Enabled\": true\n" +
-                "            },\n" +
-                "            \"kind\": \"sql#settings\",\n" +
-                "            \"locationPreference\": {\n" +
-                "              \"kind\": \"sql#locationPreference\",\n" +
-                "              \"zone\": \"us-central1-b\"\n" +
-                "            },\n" +
-                "            \"maintenanceWindow\": {\n" +
-                "              \"day\": 0,\n" +
-                "              \"hour\": 0,\n" +
-                "              \"kind\": \"sql#maintenanceWindow\",\n" +
-                "              \"updateTrack\": \"stable\"\n" +
-                "            },\n" +
-                "            \"pricingPlan\": \"PER_USE\",\n" +
-                "            \"replicationType\": \"SYNCHRONOUS\",\n" +
-                "            \"settingsVersion\": 1,\n" +
-                "            \"sqlServerAuditConfig\": {\n" +
-                "              \"kind\": \"sql#sqlServerAuditConfig\",\n" +
-                "              \"retentionInterval\": \"0s\",\n" +
-                "              \"uploadInterval\": \"0s\"\n" +
-                "            },\n" +
-                "            \"storageAutoResize\": true,\n" +
-                "            \"storageAutoResizeLimit\": 0,\n" +
-                "            \"tier\": \"db-custom-2-8192\",\n" +
-                "            \"deletionProtectionEnabled\": true\n" +
-                "          },\n" +
-                "          \"dataBaseFlags\": null,\n" +
-                "          \"discoverydate\": \"2022-08-12 00:00:00+0000\",\n" +
-                "          \"_resourceid\": \"cool-bay-349411:us-central1:gcp-mysql-sever1\",\n" +
-                "          \"_docid\": \"cool-bay-349411:us-central1:gcp-mysql-sever1\",\n" +
-                "          \"_entity\": \"true\",\n" +
-                "          \"_entitytype\": \"cloudsql\",\n" +
-                "          \"firstdiscoveredon\": \"2022-08-11 08:00:00+0000\",\n" +
-                "          \"latest\": true,\n" +
-                "          \"_loaddate\": \"2022-08-12 06:23:00+0000\"\n" +
-                "        }", JsonElement.class));
-
+                "\"_cloudType\": \"gcp\",\n" +
+                "\"region\": \"us-central1\",\n" +
+                "\"id\": \"cool-bay-349411:us-central1:gcp-mysql-sever1\",\n" +
+                "\"projectName\": \"cool-bay-349411\",\n" +
+                "\"name\": \"gcp-mysql-sever1\",\n" +
+                "\"kind\": \"sql#instance\",\n" +
+                "\"createdTime\": \"2022-08-11T08:17:19.922Z\",\n" +
+                "\"masterInstanceName\": null,\n" +
+                "\"backendType\": \"SECOND_GEN\",\n" +
+                "\"state\": \"RUNNABLE\",\n" +
+                "\"databaseVersion\": \"SQLSERVER_2019_STANDARD\",\n" +
+                "\"databaseInstalledVersion\": \"SQLSERVER_2019_STANDARD_CU16\",\n" +
+                "\"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                "\"eTag\": \"7d608164c64713163c83a83f5170b9af2e642287919b366faf54d605337abc6c\",\n" +
+                "\"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/cool-bay-349411/instances/gcp-mysql-sever1\",\n" +
+                "\"serviceAccountEmail\": \"p47822473470-cpwrh9@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                "\"kmsKeyVersion\": null,\n" +
+                "\"kmsKeyName\": null,\n" +
+                "\"maxDiskSize\": null,\n" +
+                "\"currentDiskSize\": null,\n" +
+                "\"ipAddress\": [{\n" +
+                "\"ip\": \"34.171.119.180\",\n" +
+                "\"type\": \"PRIMARY\"\n" +
+                "}],\n" +
+                "\"serverCaCert\": {\n" +
+                "\"certSerialNumber\": \"0\",\n" +
+                "\"commonName\": \"C=US,O=Google, Inc,CN=Google Cloud SQL Server CA,dnQualifier=2149545f-4fd6-4ce3-9ab8-0ec282e3cd71\",\n" +
+                "\"createTime\": \"2022-08-11T08:18:03.671Z\",\n" +
+                "\"expirationTime\": \"2032-08-08T08:19:03.671Z\",\n" +
+                "\"instance\": \"gcp-mysql-sever1\",\n" +
+                "\"kind\": \"sql#sslCert\"\n" +
+                "},\n" +
+                "\"settings\": {\n" +
+                "\"activationPolicy\": \"ALWAYS\",\n" +
+                "\"activeDirectoryConfig\": {\n" +
+                "\"kind\": \"sql#activeDirectoryConfig\"\n" +
+                "},\n" +
+                "\"authorizedGaeApplications\": [],\n" +
+                "\"availabilityType\": \"REGIONAL\",\n" +
+                "\"backupConfiguration\": {\n" +
+                "\"backupRetentionSettings\": {\n" +
+                "\"retainedBackups\": 7,\n" +
+                "\"retentionUnit\": \"COUNT\"\n" +
+                "},\n" +
+                "\"enabled\": true,\n" +
+                "\"kind\": \"sql#backupConfiguration\",\n" +
+                "\"location\": \"us\",\n" +
+                "\"startTime\": \"10:00\",\n" +
+                "\"transactionLogRetentionDays\": 7\n" +
+                "},\n" +
+                "\"collation\": \"SQL_Latin1_General_CP1_CI_AS\",\n" +
+                "\"dataDiskSizeGb\": 100,\n" +
+                "\"dataDiskType\": \"PD_SSD\",\n" +
+                "\"databaseFlags\": [{\n" +
+                "\"name\": \"cross db ownership chaining\",\n" +
+                "\"value\": \"off\"\n" +
+                "}],\n" +
+                "\"ipConfiguration\": {\n" +
+                "\"authorizedNetworks\": [{\n" +
+                "\"ip\": \"34.171.119.180\",\n" +
+                "\"type\": \"PRIMARY\"\n" +
+                "}],\n" +
+                "\"ipv4Enabled\": true\n" +
+                "},\n" +
+                "\"kind\": \"sql#settings\",\n" +
+                "\"locationPreference\": {\n" +
+                "\"kind\": \"sql#locationPreference\",\n" +
+                "\"zone\": \"us-central1-b\"\n" +
+                "}\n" +
+                "}\n" +
+                "}", JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);
         return array;
@@ -896,7 +863,7 @@ public class TestUtils {
                 "              \"project-viewers-47822473470\" \n" +
                 "          ],\n" +
                 "          \"defaultKmsKeyName\": \"projects/cool-bay-349411/locations/us/keyRings/cool-bay-349411-key-ring/cryptoKeys/cool-bay-bigquery-cmk\",\n"+
-                "          \"backupConfiguration\":\"true\",\n"
+                "          \"backupEnabled\":\"true\",\n"
                 +
                 "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
                 "          \"_resourceid\": \"8993151141438601059\",\n" +
@@ -927,7 +894,7 @@ public class TestUtils {
                 "              \"allUsers\" \n" +
                 "          ],\n" +
                 "          \"defaultKmsKeyName\": null,\n" +
-                "          \"backupConfiguration\":\"true\",\n" +
+                "          \"backupEnabled\":\"false\",\n" +
                 "          \"discoverydate\": \"2022-06-16 06:00:00+0000\",\n" +
                 "          \"_resourceid\": \"8993151141438601059\",\n" +
                 "          \"_docid\": \"8993151141438601059\",\n" +
@@ -1036,100 +1003,77 @@ public class TestUtils {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", gson.fromJson("{\n" +
-                "          \"_cloudType\": \"gcp\",\n" +
-                "          \"region\": \"us-central1\",\n" +
-                "          \"id\": \"cool-bay-349411:us-central1:gcp-mysql-instance1\",\n" +
-                "          \"projectName\": \"cool-bay-349411\",\n" +
-                "          \"name\": \"gcp-mysql-instance1\",\n" +
-                "          \"kind\": \"sql#instance\",\n" +
-                "          \"createdTime\": \"2022-06-28T03:07:43.761Z\",\n" +
-                "          \"masterInstanceName\": null,\n" +
-                "          \"backendType\": \"SECOND_GEN\",\n" +
-                "          \"state\": \"SUSPENDED\",\n" +
-                "          \"databaseVersion\": \"MYSQL_8_0\",\n" +
-                "          \"databaseInstalledVersion\": \"MYSQL_8_0_26\",\n" +
-                "          \"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
-                "          \"eTag\": \"44c8f7e7d3b041fb1e4f8089c1558b6dcdf4de2e127d574a98b86452990c08c6\",\n" +
-                "          \"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/cool-bay-349411/instances/gcp-mysql-instance1\",\n" +
-                "          \"serviceAccountEmail\": \"p47822473470-0s7wz4@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
-                "          \"kmsKeyVersion\": null,\n" +
-                "          \"kmsKeyName\": null,\n" +
-                "          \"maxDiskSize\": null,\n" +
-                "          \"currentDiskSize\": null,\n" +
-                "          \"ipAddress\": [\n" +
-                "            {\n" +
-                "              \"ip\": \"34.68.114.195\",\n" +
-                "              \"type\": \"SEC\"\n" +
-                "            }\n" +
-                "          ],\n" +
-                "          \"serverCaCert\": {\n" +
-                "            \"certSerialNumber\": \"0\",\n" +
-                "            \"commonName\": \"C=US,O=Google\\\\, Inc,CN=Google Cloud SQL Server CA,dnQualifier=39b1af3a-6bd5-4bcf-bd3c-b76ea723538b\",\n" +
-                "            \"createTime\": \"2022-06-28T03:09:24.129Z\",\n" +
-                "            \"expirationTime\": \"2032-06-25T03:10:24.129Z\",\n" +
-                "            \"instance\": \"gcp-mysql-instance1\",\n" +
-                "            \"kind\": \"sql#sslCert\"\n" +
-                "          },\n" +
-                "          \"settings\": {\n" +
-                "            \"activationPolicy\": \"ALWAYS\",\n" +
-                "            \"authorizedGaeApplications\": [],\n" +
-                "            \"availabilityType\": \"ZONAL\",\n" +
-                "            \"backupConfiguration\": {\n" +
-                "              \"backupRetentionSettings\": {\n" +
-                "                \"retainedBackups\": 7,\n" +
-                "                \"retentionUnit\": \"COUNT\"\n" +
-                "              },\n" +
-                "              \"binaryLogEnabled\": true,\n" +
-                "              \"enabled\": true,\n" +
-                "              \"kind\": \"sql#backupConfiguration\",\n" +
-                "              \"location\": \"us\",\n" +
-                "              \"startTime\": \"03:00\",\n" +
-                "              \"transactionLogRetentionDays\": 7\n" +
-                "            },\n" +
-                "            \"dataDiskSizeGb\": 100,\n" +
-                "            \"dataDiskType\": \"PD_SSD\",\n" +
-                "            \"ipConfiguration\": {\n" +
-                "              \"authorizedNetworks\": [+\n" +
-                "               {\n" +
-                "                \"value\": \"10.50.51.5/32\",\n"  +
-                "                \"kind\": \"sql#aclEntry\"\n" +
-                "                 \"name\": \"private-ip\"\n"   +
-                "                }\n" +
-                "                                      ],\n" +
-                "              \"ipv4Enabled\": true\n" +
-                "            },\n" +
-                "            \"kind\": \"sql#settings\",\n" +
-                "            \"locationPreference\": {\n" +
-                "              \"kind\": \"sql#locationPreference\",\n" +
-                "              \"zone\": \"us-central1-b\"\n" +
-                "            },\n" +
-                "            \"maintenanceWindow\": {\n" +
-                "              \"day\": 0,\n" +
-                "              \"hour\": 0,\n" +
-                "              \"kind\": \"sql#maintenanceWindow\",\n" +
-                "              \"updateTrack\": \"stable\"\n" +
-                "            },\n" +
-                "            \"pricingPlan\": \"PER_USE\",\n" +
-                "            \"replicationType\": \"SYNCHRONOUS\",\n" +
-                "            \"settingsVersion\": 17,\n" +
-                "            \"storageAutoResize\": true,\n" +
-                "            \"storageAutoResizeLimit\": 0,\n" +
-                "            \"tier\": \"db-custom-2-8192\",\n" +
-                "            \"userLabels\": {\n" +
-                "              \"environment\": \"demo\",\n" +
-                "              \"application\": \"paladincloud\",\n" +
-                "              \"created_by\": \"paladin\"\n" +
-                "            }\n" +
-                "          },\n" +
-                "          \"discoverydate\": \"2022-08-16 11:00:00+0000\",\n" +
-                "          \"_resourceid\": \"cool-bay-349411:us-central1:gcp-mysql-instance1\",\n" +
-                "          \"_docid\": \"cool-bay-349411:us-central1:gcp-mysql-instance1\",\n" +
-                "          \"_entity\": \"true\",\n" +
-                "          \"_entitytype\": \"cloudsql\",\n" +
-                "          \"firstdiscoveredon\": \"2022-07-20 15:00:00+0000\",\n" +
-                "          \"latest\": true,\n" +
-                "          \"_loaddate\": \"2022-08-16 12:22:00+0000\"\n" +
-                "        }\n" , JsonElement.class));
+                "\"_cloudType\": \"gcp\",\n" +
+                "\"region\": \"us-central1\",\n" +
+                "\"id\": \"cool-bay-349411:us-central1:gcp-mysql-instance1\",\n" +
+                "\"projectName\": \"cool-bay-349411\",\n" +
+                "\"name\": \"gcp-mysql-instance1\",\n" +
+                "\"kind\": \"sql#instance\",\n" +
+                "\"createdTime\": \"2022-06-28T03:07:43.761Z\",\n" +
+                "\"masterInstanceName\": null,\n" +
+                "\"backendType\": \"SECOND_GEN\",\n" +
+                "\"state\": \"SUSPENDED\",\n" +
+                "\"databaseVersion\": \"MYSQL_8_0\",\n" +
+                "\"databaseInstalledVersion\": \"MYSQL_8_0_26\",\n" +
+                "\"instanceType\": \"CLOUD_SQL_INSTANCE\",\n" +
+                "\"eTag\": \"44c8f7e7d3b041fb1e4f8089c1558b6dcdf4de2e127d574a98b86452990c08c6\",\n" +
+                "\"selfLink\": \"https://sqladmin.googleapis.com/v1/projects/cool-bay-349411/instances/gcp-mysql-instance1\",\n" +
+                "\"serviceAccountEmail\": \"p47822473470-0s7wz4@gcp-sa-cloud-sql.iam.gserviceaccount.com\",\n" +
+                "\"kmsKeyVersion\": null,\n" +
+                "\"kmsKeyName\": null,\n" +
+                "\"maxDiskSize\": null,\n" +
+                "\"currentDiskSize\": null,\n" +
+                "\"ipAddress\": [{\n" +
+                "\"ip\": \"34.68.114.195\",\n" +
+                "\"type\": \"SEC\"\n" +
+                "}],\n" +
+                "\"serverCaCert\": {\n" +
+                "\"certSerialNumber\": \"0\",\n" +
+                "\"commonName\": \"C=US,O=Google, Inc,CN=Google Cloud SQL Server CA,dnQualifier=39b1af3a-6bd5-4bcf-bd3c-b76ea723538b\",\n" +
+                "\"createTime\": \"2022-06-28T03:09:24.129Z\",\n" +
+                "\"expirationTime\": \"2032-06-25T03:10:24.129Z\",\n" +
+                "\"instance\": \"gcp-mysql-instance1\",\n" +
+                "\"kind\": \"sql#sslCert\"\n" +
+                "},\n" +
+                "\"settings\": {\n" +
+                "\"activationPolicy\": \"ALWAYS\",\n" +
+                "\"authorizedGaeApplications\": [],\n" +
+                "\"availabilityType\": \"ZONAL\",\n" +
+                "\"backupConfiguration\": {\n" +
+                "\"backupRetentionSettings\": {\n" +
+                "\"retainedBackups\": 7,\n" +
+                "\"retentionUnit\": \"COUNT\"\n" +
+                "},\n" +
+                "\"binaryLogEnabled\": true,\n" +
+                "\"enabled\": true,\n" +
+                "\"kind\": \"sql#backupConfiguration\",\n" +
+                "\"location\": \"us\",\n" +
+                "\"startTime\": \"03:00\",\n" +
+                "\"transactionLogRetentionDays\": 7\n" +
+                "},\n" +
+                "\"dataDiskSizeGb\": 100,\n" +
+                "\"dataDiskType\": \"PD_SSD\",\n" +
+                "\"ipConfiguration\": {\n" +
+                "\"authorizedNetworks\": [{\n" +
+                "\"value\": \"10.50.51.5/32\",\n" +
+                "\"kind\": \"sql#aclEntry\",\n" +
+                "\"name\": \"private-ip\"\n" +
+                "}]\n" +
+                "},\n" +
+                "\"ipv4Enabled\": true,\n" +
+                "\"kind\": \"sql#settings\",\n" +
+                "\"locationPreference\": {\n" +
+                "\"kind\": \"sql#locationPreference\",\n" +
+                "\"zone\": \"us-central1-b\"\n" +
+                "},\n" +
+                "\"maintenanceWindow\": {\n" +
+                "\"day\": 0,\n" +
+                "\"hour\": 0,\n" +
+                "\"kind\": \"sql#maintenanceWindow\",\n" +
+                "\"updateTrack\": \"stable\"\n" +
+                "}\n" +
+                "}\n" +
+                "}", JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);
         return array;}
@@ -1314,10 +1258,10 @@ public class TestUtils {
                 "            \"dataDiskSizeGb\": 100,\n" +
                 "            \"dataDiskType\": \"PD_SSD\",\n" +
                 "            \"ipConfiguration\": {\n" +
-                "              \"authorizedNetworks\": [+\n" +
+                "              \"authorizedNetworks\": [" +
                 "               {\n" +
                 "                \"value\": \"0.0.0.0/0\",\n"  +
-                "                \"kind\": \"sql#aclEntry\"\n" +
+                "                \"kind\": \"sql#aclEntry\",\n" +
                 "                 \"name\": \"public-ip\"\n"   +
                 "                }\n" +
                 "                                      ],\n" +
@@ -3202,7 +3146,7 @@ public class TestUtils {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", gson.fromJson(
-                "{\"discoveryDate\":\"2022-12-0813:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"projectName\":null,\"projectId\":null,\"name\":\"projects/344106022091/locations/global/keys/5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"displayName\":\"APIkey3\",\"createdDate\":\"Thu Dec 01 12:45:46 IST 2022\",\"restrictions\":{\"androidKeyRestrictions\":{},\"serverKeyRestrictions\":{},\"iosKeyRestrictions\":{},\"browserKeyRestrictions\":{\"allowed_referrers\":[\"http.example.com\"]}},\"discoverydate\":\"2022-12-0813:00:00+0530\",\"_resourceid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_docid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_entity\":\"true\",\"_entitytype\":\"apikeys\",\"firstdiscoveredon\":\"2022-12-0712:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-12-0808:00:00+0000\"}"                    ,
+                "{\"discoveryDate\":\"2022-12-0813:00:00+0530\",\"_cloudType\":\"GCP\",\"region\":null,\"id\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"projectName\":null,\"projectId\":null,\"name\":\"projects/344106022091/locations/global/keys/5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"displayName\":\"APIkey3\",\"createdDate\":\"Wed March 01 12:45:46 IST 2023\",\"restrictions\":{\"androidKeyRestrictions\":{},\"serverKeyRestrictions\":{},\"iosKeyRestrictions\":{},\"browserKeyRestrictions\":{\"allowed_referrers\":[\"http.example.com\"]}},\"discoverydate\":\"2022-12-0813:00:00+0530\",\"_resourceid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_docid\":\"5a2a6ab0-a1ae-4856-be41-d61d0f646633\",\"_entity\":\"true\",\"_entitytype\":\"apikeys\",\"firstdiscoveredon\":\"2022-12-0712:00:00+0530\",\"latest\":true,\"_loaddate\":\"2022-12-0808:00:00+0000\"}"                    ,
                 JsonElement.class));
 
                 JsonArray array = new JsonArray();
