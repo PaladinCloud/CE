@@ -17,6 +17,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { TreeComponent, TreeNode } from '@circlon/angular-tree-component';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
+import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { ThemeObservableService } from 'src/app/core/services/theme-observable.service';
@@ -53,16 +54,18 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
     private downloadSubscription: Subscription;
 
     constructor(
-        private workflowService: WorkflowService,
-        private themeObservableService: ThemeObservableService,
         private assetGroupObservableService: AssetGroupObservableService,
-        private domainObservableService: DomainTypeObservableService,
-        private logger: LoggerService,
-        private downloadService: DownloadService,
-        private dataCacheService: DataCacheService,
-        private router: Router,
+        private assetTypeMapService: AssetTypeMapService,
         private commonResponseService: CommonResponseService,
+        private dataCacheService: DataCacheService,
+        private domainObservableService: DomainTypeObservableService,
+        private downloadService: DownloadService,
+        private logger: LoggerService,
+        private router: Router,
+        private themeObservableService: ThemeObservableService,
+        private workflowService: WorkflowService,
     ) {
+        this.assetTypeMapService.fetchAssetTypes();
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
                 const currentRoute = this.router.url

@@ -78,7 +78,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
-      
+
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
@@ -148,7 +148,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     private routerUtilityService: RouterUtilityService,
     private tableStateService: TableStateService,
     private assetTypeMapService:AssetTypeMapService
-  ) { 
+  ) {
     this.assetGroupSubscription = this.assetGroupObservableService
     .getAssetGroup()
     .subscribe((assetGroupName) => {
@@ -160,7 +160,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       // this.updateComponent();
       this.getFilters();
     });
-    
+
     this.subscriptionDomain = this.domainObservableService
     .getDomainType()
     .subscribe((domain) => {
@@ -168,22 +168,22 @@ export class AssetListComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() { 
-    
+  ngOnInit() {
+
     const state = this.tableStateService.getState("assetList") || {};
-    if(state){      
+    if(state){
       this.headerColName = state.headerColName || '';
       this.direction = state.direction || '';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
-      
+
       this.tableData = state?.data || [];
       this.tableDataLoaded = true;
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
       this.tableScrollTop = state?.tableScrollTop;
-      
+
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
       }else{
@@ -192,8 +192,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
 
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -213,7 +213,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   storeState(state){
-    this.tableStateService.setState("assetList", state);    
+    this.tableStateService.setState("assetList", state);
   }
 
   clearState(){
@@ -272,7 +272,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     } catch (error) { }
     /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
   }
-  
+
   /*
    * this function passes query params to filter component to show filter
    */
@@ -290,7 +290,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       }
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
-        
+
         let keyValue = _.find(this.filterTypeOptions, {
           optionValue: formattedFilters[i].name,
         })["optionName"];
@@ -322,7 +322,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
-    if(this.isStatePreserved){  
+    if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
     }else{
@@ -482,7 +482,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       var totalVariablesObj = {};
       var cellObj = {};
       let processedData = [];
-      var getData = data;      
+      var getData = data;
       const keynames = Object.keys(getData[0]);
 
       let cellData;
@@ -561,7 +561,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             if (data.response.length > 0) {
               this.assetListData = data.response;
               this.totalRows = data.total;
-             
+
               const updatedResponse = this.massageData(this.assetListData);
               const processedData = this.processData(updatedResponse);
               if(isNextPageCalled){
@@ -587,7 +587,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     const columnNamesMap = this.columnNamesMap;
     const newData = [];
     data.map(function (row) {
-      const KeysTobeChanged = Object.keys(row);      
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
@@ -611,7 +611,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    
+
     const row = event.rowSelected;
     const data = event.data;
     const state = {
@@ -729,11 +729,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }
   }
 
-  callNewSearch(searchVal){    
+  callNewSearch(searchVal){
     this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
     this.isStatePreserved = false;
-    this.updateComponent();  
+    this.updateComponent();
     // this.getUpdatedUrl();
   }
 
@@ -854,7 +854,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   getUpdatedUrl() {
-    let updatedQueryParams = {};    
+    let updatedQueryParams = {};
       this.filterText = this.utils.arrayToObject(
       this.filters,
       "filterkey",
@@ -877,7 +877,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
      * api is again called with the updated filter
      */
     this.filterText = this.utils.processFilterObj(this.filterText);
-    
+
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: updatedQueryParams,
