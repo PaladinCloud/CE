@@ -23,7 +23,7 @@
                     </ng-template>
                 </div>
             </mat-select-trigger>
-            <mat-option [class.optionImage]="optionImage" *ngFor="let item of optionList" [value]="item.text">
+            <mat-option [class.optionImage]="optionImage" *ngFor="let item of optionList" [value]="item.text" [disabled]="disableOption(item.text)">
                 <div [class.optionImage]="optionImage">
                     <img *ngIf="optionImage" src="{{item.img}}">
                     <span *ngIf="isFirstCharNumber(item.text); else isNotNumber;">{{item.text}}</span>

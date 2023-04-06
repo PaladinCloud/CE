@@ -42,6 +42,10 @@ width: 14px !important;
   display: none !important;
 }
 
+::ng-deep .mat-option.mat-option-disabled{
+  opacity: 40%;
+}
+
 .dropdown-wrapper ::ng-deep .mat-select{
   color: var(--text-high-emphasis);
   font: var(--text-body-2);

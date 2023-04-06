@@ -379,12 +379,19 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
      }
   }
 
-  onKeySelect(condition:ICondition,selectedKey:string){
+  onKeySelect(criteriaIdx,conditionIdx,selectedKey:string){
     this.selectedCriteriaValues = [];
     let selectedValues = [];
     selectedValues = [].concat(...this.cloudsData.map(cloud => cloud[selectedKey]));
-    condition.selectedKey = selectedKey;
-    condition.valueList = selectedValues;
+    if(this.selectedCriteriaKeyList[criteriaIdx])
+    {
+      this.selectedCriteriaKeyList[criteriaIdx].splice(conditionIdx,1);
+      this.selectedCriteriaKeyList[criteriaIdx].push(selectedKey);
+    }else{
+      this.selectedCriteriaKeyList.push([selectedKey]);
+    }
+    this.criterias[criteriaIdx][conditionIdx].selectedKey = selectedKey;
+    this.criterias[criteriaIdx][conditionIdx].valueList = selectedValues;
     this.criterias = [...this.criterias];
   }
 
@@ -394,6 +401,8 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
   }
 
   deleteCondition(criteriaIdx,conditionIdx){
+    if(this.selectedCriteriaKeyList[criteriaIdx])
+      this.selectedCriteriaKeyList[criteriaIdx].splice(conditionIdx,1);
     this.criterias[criteriaIdx].splice(conditionIdx,1);
     if(this.criterias[criteriaIdx].length==0){
       this.deleteCriteria(criteriaIdx);
@@ -1286,7 +1295,7 @@ export class CreateAssetGroupsComponent implements OnInit, OnDestroy {
         deleteIndexes.push(index);
       } else{
         const size = criteria.length-1;
-        if(!criteria[size].selectedKey){
+        if(!criteria[size].selectedKey || !criteria[size].selectedValue){
           this.deleteCondition(index,size);
         }
       }

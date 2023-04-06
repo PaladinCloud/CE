@@ -55,8 +55,8 @@
             <div class="flex flex-col" *ngFor="let criteria of criterias;let criteriaIdx=index">
                 <div class="attribute-wrapper flex gap-8" *ngFor="let condition of criteria; let conditionIdx=index">
                  <div class="flex dropdown-wrapper">
-                    <app-dropdown [items]="condition.keyList" placeholder="Key" [selectedItem]="condition.selectedKey"
-                    (selected)="onKeySelect(condition,$event)"></app-dropdown>
+                    <app-dropdown [items]="criteriaKeys" placeholder="Key" [selectedItem]="condition.selectedKey" [selectedList]="selectedCriteriaKeyList[criteriaIdx]"
+                    (selected)="onKeySelect(criteriaIdx,conditionIdx,$event)"></app-dropdown>
                     <app-dropdown [items]="condition.valueList" placeholder="Value" [selectedItem]="condition.selectedValue"
                     (selected)="onValueSelect(condition,$event)"></app-dropdown>
                  </div>
@@ -67,7 +67,7 @@
                     <ng-template #addIcon>
                         <img [class.disableIcon]="!condition.selectedValue" class="pointer add-icon" (click)="addEmptyCondition(criteriaIdx)" src="/assets/icons/plus.svg" alt="">
                     </ng-template>
-                    <img *ngIf="!(criteriaIdx == 0 && conditionIdx == 0)" class="x-icon pointer" src="/assets/icons/x-icon.svg" alt="" (click)="deleteCondition(criteriaIdx,conditionIdx)">
+                    <img *ngIf="!(criteriaIdx == 0 && conditionIdx == 0 && criteria.length == 1)" class="x-icon pointer" src="/assets/icons/x-icon.svg" alt="" (click)="deleteCondition(criteriaIdx,conditionIdx)">
                 </div>
                 <div class="chip-wrapper" *ngIf="criteriaIdx<criterias.length-1">
                     <app-chip [backgroundColor]="'#D8FFFD'" [color]="'#515459'" [chipsList]="['OR']">
@@ -108,7 +108,7 @@
             <div class="configure-access-wrapper" *ngIf="criterias.length>0">
                 <span class="configure-header">Configure Access</span>
                 <div class="configure-content" *ngFor="let criteria of criterias;let criteriaIdx=index">
-                    <div *ngIf="criteria[0].selectedKey">
+                    <div *ngIf="criteria[0].selectedKey" class="flex flex-col gap-8">
                         <span class="body-2 medium-emphasis">Criteria {{criteriaIdx+1}}</span>
                         <div class="criteria-wrapper" *ngFor="let condition of criteria;let conditionIdx=index">
                             <div class="flex flex-row gap-12">

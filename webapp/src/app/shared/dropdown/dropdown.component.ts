@@ -78,7 +78,7 @@ export class DropdownComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(this.selectedList){
+    if(this.selectedList?.length>0 && this.isChipListEnabled){
       this.listControl.setValue(this.selectedList);
     }
     this.massageData(this.items, this.selectedItem);
@@ -110,5 +110,16 @@ export class DropdownComponent implements OnChanges {
     }
     return option;
   }
+
+  disableOption(option:string){
+    if(!this.selectedList) return false;
+    for(let selectedOption of this.selectedList){
+      if(selectedOption == option && this.selectedOption != option){
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
 
