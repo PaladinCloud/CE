@@ -10,6 +10,7 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
 public class HttpTriggersTest {
 
@@ -50,24 +51,12 @@ public class HttpTriggersTest {
     public void executeSuccessTest() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
-        when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForEnableHttpsRule());
         Map<String, String> map = getMapString("r_123 ");
-        assertThat(httpTriggerRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
+        assertThat(httpTriggerRule.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
-
     }
 
-    private JsonObject getHitsJsonObjectForIngressSettingRule() {
-        JsonArray hitsJsonArray = getHitsJsonArrayForEnableHttpsRule();
-        JsonObject sourceData= null;
-        if (hitsJsonArray != null && hitsJsonArray.size() > 0){
-            sourceData = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
-                    .get(PacmanRuleConstants.SOURCE);
-        }
-        return sourceData;
-    }
     private JsonArray getHitsJsonArrayForEnableHttpsRule(){
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
@@ -138,13 +127,11 @@ public class HttpTriggersTest {
 
     @Test
     public void executeFailureTestWithInvalidInputException() throws Exception {
-
-        when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureHitsJsonArrayForEnableHttpsRule());
-
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureHitsJsonArrayForEnableHttpsRule());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         Map<String, String> map = getMapString("r_123 ");
         assertThatThrownBy(() -> httpTriggerRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }
@@ -155,14 +142,24 @@ public class HttpTriggersTest {
         commonMap.put("executionId", "1234");
         commonMap.put("_resourceid", passRuleResourceId);
         commonMap.put("severity", "medium");
-        commonMap.put("ruleCategory", "security");
+        commonMap.put("policyCategory", "security");
         commonMap.put("accountid", "12345");
+        commonMap.put("ruleId", "GCP_Cloud_Function_not_enabled_with_VPC_connector");
         commonMap.put("policyId", "GCP_Cloud_Function_not_enabled_with_VPC_connector");
         commonMap.put("policyVersion", "version-1");
-
-
         return commonMap;
     }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
+
 
     @Test
     public void getHelpTextTest() {

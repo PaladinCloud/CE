@@ -35,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
 public class IngressSettingRuleTest {
 
@@ -54,8 +54,6 @@ public class IngressSettingRuleTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
         when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getHitsJsonObjectForIngressSettingRule());
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
         Map<String, String> map = getMapString("r_123 ");
         assertThat(ingressSettingRule.execute(map, map).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
@@ -142,9 +140,10 @@ public class IngressSettingRuleTest {
     public void executeFailureTestWithInvalidInputException() throws Exception {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureHitsJsonArrayForIngressSettingRule());
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(false);
         Map<String, String> map = getMapString("r_123 ");
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThatThrownBy(() -> ingressSettingRule.execute(map, map)).isInstanceOf(InvalidInputException.class);
     }
 
@@ -158,9 +157,17 @@ public class IngressSettingRuleTest {
         commonMap.put("accountid", "12345");
         commonMap.put("policyId", "GCP_Cloud_Function_not_enabled_with_VPC_connector");
         commonMap.put("policyVersion", "version-1");
-
-
         return commonMap;
+    }
+
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 
     @Test
