@@ -6,6 +6,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 public class AutomatedBackupCloudSQLRuleTest {
 
     @InjectMocks
@@ -41,14 +42,9 @@ public class AutomatedBackupCloudSQLRuleTest {
 
     @Test
     public void executeSuccessTest() throws Exception {
-
-
-        when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForAutomatedBackupSuccess());
-
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForAutomatedBackupSuccess());
         assertThat(automatedBackupCloudSQLRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_SUCCESS));
 
     }
@@ -56,25 +52,21 @@ public class AutomatedBackupCloudSQLRuleTest {
     @Test
     public void executeFailureTest() throws Exception {
 
-
-        when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForAutomatedBackupFailure());
-
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForAutomatedBackupFailure());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(automatedBackupCloudSQLRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
     @Test
     public void executeFailureTestWithInvalidInputException() throws Exception {
-
-        when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
-        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForCloudStoragePublicAccessFailure());
-
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
+        when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForCloudStoragePublicAccessFailure());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThatThrownBy(() -> automatedBackupCloudSQLRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);
     }
 
@@ -89,6 +81,15 @@ public class AutomatedBackupCloudSQLRuleTest {
         commonMap.put("policyId","Enable_Automated_backups_for_sql_database");
         commonMap.put("policyVersion", "version-1");
         return commonMap;
+    }
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 
     @Test
