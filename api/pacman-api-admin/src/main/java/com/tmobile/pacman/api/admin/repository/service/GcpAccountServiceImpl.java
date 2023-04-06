@@ -7,7 +7,10 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.compute.v1.*;
+import com.google.common.collect.Lists;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -19,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.Map;
@@ -66,52 +66,50 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
 
         String credJson=generateCredentialJson(accountData);
-        String fileName= GCP_CREDENTIAL +accountData.getProjectId()+ JSON;
-        new File(credentialFilePath).mkdirs();
-        String credFilePath = credentialFilePath + File.separator + fileName;
-        //create credential json file
-        File credFile=new File(credFilePath);
-        if(!credFile.exists()){
-            try {
-                writeToFilePath(credFilePath,credJson,false);
-            } catch (IOException e) {
-                LOGGER.error("Error in generating credential file:{} ",e.getMessage());
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
-                return validateResponse;
-            }
-        }else{
-            LOGGER.info("File already exists");
-        }
-        //set env variable
-        setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", credFilePath);
-
-        //connect
         GoogleCredentials credentials = null;
         try {
-            credentials = GoogleCredentials.getApplicationDefault();
+            credentials=GoogleCredentials.fromStream(new ByteArrayInputStream(credJson.getBytes()))
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+
             LOGGER.info("Credentials created: {}",credentials);
-            validateResponse.setMessage("Connection to project established successfully");
-            validateResponse.setValidationStatus(SUCCESS);
+            InstancesSettings instancesSettings = InstancesSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
+                    .build();
+            try( InstancesClient instancesClient =InstancesClient.create(instancesSettings)){
+                LOGGER.debug("Client created successfully, trying to fetch data.");
+
+                AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
+                        .newBuilder()
+                        .setProject(accountData.getProjectId())
+                        .build();
+                InstancesClient.AggregatedListPagedResponse response = instancesClient
+                        .aggregatedList(aggregatedListInstancesRequest);
+                LOGGER.info("AggregatedListPagedResponse fetched: {}",response);
+                for (Map.Entry<String, InstancesScopedList> zoneInstances : response.iterateAll()) {
+                    // Instances scoped by each zone
+                    String zone = zoneInstances.getKey();
+                    if (!zoneInstances.getValue().getInstancesList().isEmpty()) {
+                        String zoneName = zone.substring(zone.lastIndexOf("/") + 1);
+                        LOGGER.debug("Instances at %s: {} ", zoneName);
+                        for (Instance instance : zoneInstances.getValue().getInstancesList()) {
+                            LOGGER.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+                        }
+                    }
+                }
+                validateResponse.setMessage("Connection to project established successfully");
+                validateResponse.setValidationStatus(SUCCESS);
+            }
+
         } catch (IOException e) {
             LOGGER.error("Error in connecting to project :{} ",e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setErrorDetails(e.getMessage());
             validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
-            return validateResponse;
-        }finally {
-            //reset environment variable
-            setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", "");
-            File file=new File(credFilePath);
-            try {
-                Files.deleteIfExists(file.toPath());
-            }catch (IOException e) {
-                LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage("Account validation failed");
-            }
+        }catch (Exception e) {
+            LOGGER.error("Error in connecting to project :{} ",e.getMessage());
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setErrorDetails(e.getMessage());
+            validateResponse.setMessage("Error in validating account");
         }
         return validateResponse;
     }
@@ -144,14 +142,15 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             LOGGER.info("File already exists");
         }
         uploadFileToS3(s3Bucket,s3CredData,s3Region,credFilePath);
-        createAccountInDb(accountData.getProjectId(),accountData.getProjectName(), Constants.GCP);
+
         //update gcp enable flag for scheduler job
         String key="gcp.enabled";
         String value = "true";
         String application = "job-scheduler";
         updateConfigProperty(key, value, application);
-        validateResponse.setValidationStatus(SUCCESS);
-        validateResponse.setMessage("Account added successfully");
+        validateResponse = createAccountInDb(accountData.getProjectId(), accountData.getProjectName(), Constants.GCP);
+        validateResponse.setProjectId(accountData.getProjectId());
+        validateResponse.setAccountName(accountData.getProjectName());
         return validateResponse;
     }
 
@@ -216,7 +215,8 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
 
 
             //delete entry from db
-            deleteAccountFromDB(projectId);
+            response=deleteAccountFromDB(projectId);
+            response.setType(Constants.GCP);
 
         } catch (IOException e) {
             LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());

@@ -36,7 +36,9 @@ import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -90,6 +93,7 @@ public class GCPCredentialsProvider {
     private ZonesClient zonesClient;
     private Dns dns;
     private NetworksClient networksClient;
+
     private CloudResourceManager cloudResourceManager;
     private Iam iamService;
     private UrlMapsClient urlMap;
@@ -104,6 +108,8 @@ public class GCPCredentialsProvider {
 
     private ApiKeysClient apiKeysClient;
 
+    private Map<String, GoogleCredentials> credentialCache = new HashMap<>();
+
     // If you don't specify credentials when constructing the client, the client
     // library will
     // look for credentials via the environment variable
@@ -112,6 +118,10 @@ public class GCPCredentialsProvider {
     private GoogleCredentials getCredentials(String projectId) throws IOException {
         // Specify a credential file by providing a path to GoogleCredentials.Otherwise, credentials are read from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
         logger.info("Inside getCredential method");
+        if(credentialCache.containsKey(projectId)){
+            //credential cache to avoid s3 read each time collector needs credential
+            return credentialCache.get(projectId);
+        }
         BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
         String fileName = "gcp-credential-" + projectId + ".json";
@@ -119,33 +129,24 @@ public class GCPCredentialsProvider {
 
         File credFile = new File(fileName);
         try{
-        s3client.getObject(request, credFile);
+            s3client.getObject(request, credFile);
+
+            if(credFile.exists()){
+                logger.info("File is created!!");
+                String fileContent = Files.asCharSource(credFile, Charsets.UTF_8).read();
+                GoogleCredentials gcpCredentials=GoogleCredentials.fromStream(new ByteArrayInputStream(fileContent.getBytes()))
+                        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+                logger.info("Credentials created: {}",credentials);
+                credentialCache.put(projectId,gcpCredentials);
+                return  gcpCredentials;
+            }else {
+                logger.error("Error:: Credential file not found!! ");
+            }
         }catch (Exception exc){
             logger.error("Error:: {}", exc.getMessage());
         }
+        return null;
 
-        if(credFile.exists()){
-            logger.info("File is created!!");
-        }
-
-
-        logger.info("Setting env variable for GOOGLE_APPLICATION_CREDENTIALS. File path:{}",credFile.getPath());
-        setEnv("GOOGLE_APPLICATION_CREDENTIALS", credFile.getPath());
-        GoogleCredentials gcpcredentials = GoogleCredentials.getApplicationDefault();
-        logger.info("Credentials created: {}",credentials);
-        return  gcpcredentials;
-    }
-    public void setEnv(String key, String value) {
-        try {
-            Map<String, String> env = System.getenv();
-            Class<?> cl = env.getClass();
-            Field field = cl.getDeclaredField("m");
-            field.setAccessible(true);
-            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
-            writableEnv.put(key, value);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to set environment variable", e);
-        }
     }
     public String getAccessToken() throws IOException {
         String cred = System.getProperty("gcp.credentials");
