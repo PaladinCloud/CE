@@ -1,27 +1,57 @@
- <div class="floating-widgets-section flex flex-col issue-listing-wrapper" [class.filter-absent]='filters.length == 0'>
+<div
+    class="floating-widgets-section flex flex-col issue-listing-wrapper"
+    [class.filter-absent]="!filters.length"
+>
     <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
-     </div>
+        <app-breadcrumb
+            *ngIf="breadcrumbLinks.length > 0"
+            [breadcrumbLinks]="breadcrumbLinks"
+            [breadcrumbArray]="breadcrumbArray"
+            [breadcrumbPresent]="breadcrumbPresent"
+        ></app-breadcrumb>
+    </div>
     <div class="flex">
-        <!-- <img class="arrow-img" *ngIf="backButtonRequired" (click)="navigateBack()" style="height: 1.4em;" src="../assets/icons/left-arrow.svg"> -->
-        <h6 class="title-text">{{pageTitle}}</h6>
+        <h6 class="title-text">{{ pageTitle }}</h6>
     </div>
     <div class="data-table-container">
         <section>
             <ul>
                 <li class="widget-wrapper relative">
                     <div class="relative">
-                        <app-table style="height: 100%; width: 100%;" (rowSelectEventEmitter)="goToDetails($event)"
-                        [data]="tableData" [columnWidths]="columnWidths"
-                        [columnsSortFunctionMap]="columnsSortFunctionMap" (headerColNameSelected)="handleHeaderColNameSelection($event)" 
-                        [headerColName]="headerColName" [direction]="direction" [whiteListColumns]="whiteListColumns"
-                        [showAddRemoveCol]="true" [showSearchBar]="true" (searchCalledEventEmitter)="callNewSearch($event)"
-                        [searchQuery]="searchTxt" (nextPageCalled)="nextPg($event)" (downloadClicked)="handlePopClick($event)" (selectedFilterType)='changeFilterType($event)'
-                        (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels"
-                        (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions" [tableErrorMessage]='tableErrorMessage'
-                        [showDownloadBtn]="showDownloadBtn" [showFilterBtn]="showFilterBtn" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows" (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
-                        [tableScrollTop]="tableScrollTop" [tableDataLoaded]='tableDataLoaded'></app-table>
-                        <div class="data-table-desc">{{dataTableDesc}}</div>
+                        <app-table
+                            style="height: 100%; width: 100%"
+                            [columnsSortFunctionMap]="columnsSortFunctionMap"
+                            [columnWidths]="columnWidths"
+                            [data]="tableData"
+                            [direction]="direction"
+                            [filteredArray]="filters"
+                            [filterTagLabels]="filterTagLabels"
+                            [filterTypeLabels]="filterTypeLabels"
+                            [filterTypeOptions]="filterTypeOptions"
+                            [headerColName]="headerColName"
+                            [onScrollDataLoader]="onScrollDataLoader"
+                            [rowSize]="'SM'"
+                            [searchQuery]="searchTxt"
+                            [showAddRemoveCol]="true"
+                            [showDownloadBtn]="showDownloadBtn"
+                            [showFilterBtn]="showFilterBtn"
+                            [showSearchBar]="true"
+                            [tableDataLoaded]="tableDataLoaded"
+                            [tableErrorMessage]="tableErrorMessage"
+                            [tableScrollTop]="tableScrollTop"
+                            [totalRows]="totalRows"
+                            [whiteListColumns]="whiteListColumns"
+                            (deleteFilters)="deleteFilters($event)"
+                            (downloadClicked)="handlePopClick($event)"
+                            (headerColNameSelected)="handleHeaderColNameSelection($event)"
+                            (nextPageCalled)="nextPg($event)"
+                            (rowSelectEventEmitter)="goToDetails($event)"
+                            (searchCalledEventEmitter)="callNewSearch($event)"
+                            (selectedFilter)="changeFilterTags($event)"
+                            (selectedFilterType)="changeFilterType($event)"
+                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                        ></app-table>
+                        <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>
                 </li>
             </ul>

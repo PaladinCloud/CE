@@ -9,4 +9,6 @@ import java.util.Map;
 public interface NotificationSettings {
     Map<String,Object> getNotificationSettings();
     void updateNotificationSettings(List<NotificationPrefsRequest> notificationPreferencesList) throws Exception;
+
+    Map<String,Object> getNotificationSettingsAndConfigs();
 }
