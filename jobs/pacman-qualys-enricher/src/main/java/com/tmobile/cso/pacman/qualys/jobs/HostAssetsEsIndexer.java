@@ -153,9 +153,6 @@ public class HostAssetsEsIndexer implements Constants {
         List<Map<String, Object>> vulnInfoList = new ArrayList<>();
         Map<String, Integer> vulnerablityCount=new HashMap<>();
         try {
-            /*JAXBContext jaxbContext = JAXBContext.newInstance(KNOWLEDGEBASEVULNLISTOUTPUT.class);
-            LOGGER.debug("JAXBContext created: {}",jaxbContext);
-            LOGGER.debug("JAXBContext class Name:{}",jaxbContext.getClass().getPackage().getName()+jaxbContext.getClass().getName());*/
             Map<String, Map<String, Object>> vulnMap = (Map<String, Map<String, Object>>) asset.get("vuln");
             if (vulnMap != null) {
                 LOGGER.debug("fetching vulnInfo, vuln Map:{}", vulnMap);

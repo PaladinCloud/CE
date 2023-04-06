@@ -96,9 +96,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     private String lastVulnDate = LocalDate.now().minusDays(scanThreshold).toString();
     
     private static List<Map<String,String>> errorList = new ArrayList<>();
-//    String limit=System.getenv("Limit");
-
-
+   
     /**
      * Execute.
      * @return 
@@ -208,7 +206,6 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
                 "classification","cvelist");
         vulnInfoMap = ElasticSearchManager.getExistingInfo("qualys-kb", "kb", filters, true);
         LOGGER.debug("VulnInfoMap: {}",vulnInfoMap.size());
-        LOGGER.debug("VulnInfoMap data: {}",vulnInfoMap);
     }
 
     /**
