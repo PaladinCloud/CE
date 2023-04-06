@@ -2,13 +2,14 @@ from core.terraform.resources.aws import iam
 from resources.iam.base_role import BaseRole
 from resources.iam.ecs_role import ECSRole
 from resources.iam.batch_role import BatchRole
+from core.config import Settings
 
 
 class BaseRolePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [
         {
             'actions': ["sts:AssumeRole"],
-            'resources': [BaseRole.get_output_attr('arn')]
+            'resources': "arn:aws:iam::" + Settings.ACCOUNT_ID + ":role/" + Settings.RESOURCE_NAME_PREFIX
         }
     ]
 
