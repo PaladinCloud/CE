@@ -125,7 +125,7 @@ public class GCPCredentialsProvider {
         BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
         String fileName = "gcp-credential-" + projectId + ".json";
-        GetObjectRequest request=new GetObjectRequest(s3, s3CredData + File.pathSeparator + fileName);
+        GetObjectRequest request=new GetObjectRequest(s3, s3CredData + "/" + fileName);
 
         File credFile = new File(fileName);
         try{
