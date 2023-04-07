@@ -72,9 +72,9 @@ export const MENU_NODES: MenuItem[] = [
         children: [
             {
                 id: 'Health Notifications',
-                name: 'Health Notifications',
+                name: 'Notifications',
                 parent: 'Fix Central',
-                route: '/pl/compliance/health-notifications',
+                route: '/pl/notifications/notifications-list',
                 notDisplayIfAzure: true,
             },
             {

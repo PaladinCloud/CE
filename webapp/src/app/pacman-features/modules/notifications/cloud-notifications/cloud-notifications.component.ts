@@ -88,7 +88,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
   tableScrollTop: any;
   isTableStatePreserved = false;
   columnNamesMap = {"eventName":"Event", "eventCategoryName": "Type", "eventSourceName": "Source","startTime": "Created"};
-  columnWidths = {'Event': 1, "Type": 1, "Source" :1,"Created": 1};
+  columnWidths = {'Event': 2, "Type": 1, "Source" :1,"Created": 1};
 
   FullQueryParams: any;
   queryParamsWithoutFilter: any;
