@@ -1322,6 +1322,18 @@ body {
   padding: 16px;
 }
 
+.padding-20{
+  padding: 20px;
+}
+
+.padding-24{
+  padding: 24px;
+}
+
+.padding-28{
+  padding: 28px;
+}
+
 ::-webkit-scrollbar {
   max-width: 7px;
   background-color: transparent;

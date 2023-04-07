@@ -1,0 +1,24 @@
+<div class="notification-details component-wrapper flex flex-col gap-20 padding-28">
+    <div class="header flex flex-col gap-24">
+        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px;"> 
+            <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        </div>
+    </div>
+    <div class="content-wrapper padding-24 flex flex-col gap-24">
+        <div class="header flex flex-col gap-8">
+            <app-text text="Summary" classNames="body-2 low-emphasis"></app-text>
+            <div class="flex">
+                <app-text [text]="summaryTitle" classNames="body-1 high-emphasis"></app-text>
+            </div>
+        </div>
+        <div class="details-list grid-table">
+            <div class="row" *ngFor="let detail of eventDetails">
+                <div class="row-wrapper border-bottom" *ngIf="detail.name && detail.value">
+                    <app-text class="cell" [text]="detail.name" classNames="body-1 low-emphasis"></app-text>
+                    <app-text-with-icon *ngIf="detail.preImgSrc" class="cell" [text]="detail.value" [preImagePath]="detail.preImgSrc" [textVariant]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"></app-text-with-icon>
+                    <app-text [class.pointer]="detail.link" (click)="navigateTo(detail.link)" *ngIf="!detail.preImgSrc" class="cell" [text]="detail.value" [classNames]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"></app-text>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
