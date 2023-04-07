@@ -384,7 +384,7 @@ public class ElasticSearchManager {
         else
             payLoad.append("]}");
 
-        String endPoint = indexName + "/" + type + "/_search?scroll=1m" + filter_path + "&size=" + _count;
+        String endPoint = indexName + "/" + type + "/_search?scroll=5m" + filter_path + "&size=" + _count;
 
         LOGGER.info("getExistingInfo endpoint: {}",endPoint);
         Map<String, Map<String, Object>> _data = new HashMap<>();
@@ -393,8 +393,12 @@ public class ElasticSearchManager {
         if (scroll) {
             count -= SCROLL_SIZE;
             do {
-                endPoint = "/_search/scroll?scroll=1m&scroll_id=" + scrollId + filter_path;
-                scrollId = fetchDataAndScrollId(endPoint, _data, keyField, null);
+                endPoint = "/_search/scroll";
+                String payload="{\n" +
+                        "\"scroll\" : \"5m\", \n" +
+                        "\"scroll_id\" : \""+scrollId+"\" \n" +
+                        "}";
+                scrollId = fetchScrollPost(endPoint, _data, keyField, payload);
                 count -= SCROLL_SIZE;
                 if (count < 0)
                     scroll = false;
@@ -438,7 +442,39 @@ public class ElasticSearchManager {
         return "";
 
     }
-    
+
+    private static String fetchScrollPost(String endPoint, Map<String, Map<String, Object>> _data, String keyField,
+                                               String payLoad) {
+        LOGGER.debug("fetchScrollPost >> endpoint :{}, payload: {} ", endPoint,payLoad);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Response apiResponse = invokeAPI("POST", endPoint, payLoad);
+            String responseJson = EntityUtils.toString(apiResponse.getEntity());
+            JsonNode _info = mapper.readTree(responseJson).at("/hits/hits");
+            String scrollId = mapper.readTree(responseJson).at("/_scroll_id").textValue();
+            Iterator<JsonNode> iterator = _info.elements();
+            while (iterator.hasNext()) {
+                Iterator<Map.Entry<String, JsonNode>> fields = iterator.next().fields();
+                String doc="";
+                while(fields.hasNext()){
+                    Map.Entry<String, JsonNode> field = fields.next();
+                    if(field.getKey().equalsIgnoreCase("_source")){
+                        doc=field.getValue().toString();
+                    }
+                }
+                Map<String, Object> documentMap = new ObjectMapper().readValue(doc,
+                        new TypeReference<Map<String, Object>>() {
+                        });
+                _data.put(documentMap.get(keyField).toString(), documentMap);
+                documentMap.remove(keyField);
+            }
+            return scrollId;
+        } catch (ParseException | IOException e) {
+            LOGGER.error("Error fetchDataAndScrollId ", e);
+        }
+        return "";
+
+    }
     /**
      * Update latest status.
      *
