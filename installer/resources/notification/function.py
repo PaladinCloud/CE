@@ -28,7 +28,7 @@ class SendNotificationFunction(LambdaFunctionResource):
             'SNS_TOPIC_ARN': NotificationSNS.get_output_attr('arn')
         }
     }
-    DEPENDS_ON = [NotificationSNS,FetchNotificationFunctionJarFile,FetchNotificationFunctionJarFile,SendNotificationFunctionJarFile,InvokeNotificationFunctionJarFile]
+    DEPENDS_ON = [NotificationSNS,FetchNotificationFunctionJarFile,SendNotificationFunctionJarFile,InvokeNotificationFunctionJarFile]
 
 class TemplateFormatterFunction(LambdaFunctionResource):
     function_name = INVOKE_NOTIFICATION
