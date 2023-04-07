@@ -1,10 +1,11 @@
-from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource
+from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource, LambdaPermission
+from resources.datastore.es import ESDomain
 from resources.iam.lambda_role import LambdaRole
 from core.config import Settings
 from resources.s3.bucket import BucketStorage
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.notification.appsync import AppSyncNotification, ApiSyncIdKey
-from resources.notification.s3_upload import FetchNotificationFunctionJarFile, FetchNotificationFunctionJarFile, SendNotificationFunctionJarFile, InvokeNotificationFunctionJarFile, SEND_NOTIFICATION, TEMPLATE_NOTIFICATION, INAPP_NOTIFICATION_FILE_NAME, INVOKE_NOTIFICATION
+from resources.notification.s3_upload import FetchNotificationFunctionJarFile, FetchNotificationFunctionJarFile, SendNotificationFunctionJarFile, InvokeNotificationFunctionJarFile, SEND_NOTIFICATION, TEMPLATE_NOTIFICATION, INAPP_NOTIFICATION_FILE_NAME, INVOKE_NOTIFICATION, NOTIFICATION_LOG_TO_ES, GET_STAKEHOLDER_RESOURCES
 from core.terraform.resources.aws.sns import SNSResoures, SNSSubscription
 
 class NotificationSNS(SNSResoures):
