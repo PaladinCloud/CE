@@ -9,7 +9,9 @@ SEND_NOTIFICATION = "send-email-notification-service"
 TEMPLATE_NOTIFICATION= "template-formatter-notification-service"
 INVOKE_NOTIFICATION = "invoke-notification-service"
 INAPP_NOTIFICATION_FILE_NAME =  "inapp-notification-service"
-
+NOTIFICATION_LOG_TO_ES = "es-logging-notification-service"
+GET_STAKEHOLDER_RESOURCES = "stakeholder-notification-service"
+ 
 class FetchNotificationFunctionJarFile(S3BucketObject):
     bucket = BucketStorage.get_output_attr('bucket')
     key = Settings.RESOURCE_NAME_PREFIX + "/v1/" + SEND_NOTIFICATION + ".jar"
@@ -37,4 +39,11 @@ class InAppNotificationFunctionZipFile(S3BucketObject):
     source = source = os.path.join(
         get_terraform_scripts_and_files_dir(),
         INAPP_NOTIFICATION_FILE_NAME + ".zip")
+
+class EsLoggingFunctionJarFile(S3BucketObject):
+    bucket = BucketStorage.get_output_attr('bucket')
+    key = Settings.RESOURCE_NAME_PREFIX + "/v1/" + NOTIFICATION_LOG_TO_ES + ".jar"
+    source = os.path.join(
+        get_terraform_scripts_and_files_dir(),
+        NOTIFICATION_LOG_TO_ES + ".jar")
 
