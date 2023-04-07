@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.compute.v1.*;
+import com.google.common.collect.Lists;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -21,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.Map;
@@ -68,58 +66,40 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
 
         String credJson=generateCredentialJson(accountData);
-        String fileName= GCP_CREDENTIAL +accountData.getProjectId()+ JSON;
-        new File(credentialFilePath).mkdirs();
-        String credFilePath = credentialFilePath + File.separator + fileName;
-        //create credential json file
-        File credFile=new File(credFilePath);
-        if(!credFile.exists()){
-            try {
-                writeToFilePath(credFilePath,credJson,false);
-            } catch (IOException e) {
-                LOGGER.error("Error in generating credential file:{} ",e.getMessage());
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
-                return validateResponse;
-            }
-        }else{
-            LOGGER.info("File already exists");
-        }
-        //set env variable
-        setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", credFilePath);
-
-        //connect
         GoogleCredentials credentials = null;
-        InstancesClient instancesClient =null;
         try {
-            credentials = GoogleCredentials.getApplicationDefault();
+            credentials=GoogleCredentials.fromStream(new ByteArrayInputStream(credJson.getBytes()))
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+
             LOGGER.info("Credentials created: {}",credentials);
             InstancesSettings instancesSettings = InstancesSettings.newBuilder()
                     .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
                     .build();
-            instancesClient = InstancesClient.create(instancesSettings);
-            AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
-                    .newBuilder()
-                    .setProject(accountData.getProjectId())
-                    .build();
-            LOGGER.debug("Client created successfully, trying to fetch data.");
-            InstancesClient.AggregatedListPagedResponse response = instancesClient
-                    .aggregatedList(aggregatedListInstancesRequest);
+            try( InstancesClient instancesClient =InstancesClient.create(instancesSettings)){
+                LOGGER.debug("Client created successfully, trying to fetch data.");
 
-            for (Map.Entry<String, InstancesScopedList> zoneInstances : response.iterateAll()) {
-                // Instances scoped by each zone
-                String zone = zoneInstances.getKey();
-                if (!zoneInstances.getValue().getInstancesList().isEmpty()) {
-                    String zoneName = zone.substring(zone.lastIndexOf("/") + 1);
-                    LOGGER.debug("Instances at %s: {} ", zoneName);
-                    for (Instance instance : zoneInstances.getValue().getInstancesList()) {
-                        LOGGER.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+                AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
+                        .newBuilder()
+                        .setProject(accountData.getProjectId())
+                        .build();
+                InstancesClient.AggregatedListPagedResponse response = instancesClient
+                        .aggregatedList(aggregatedListInstancesRequest);
+                LOGGER.info("AggregatedListPagedResponse fetched: {}",response);
+                for (Map.Entry<String, InstancesScopedList> zoneInstances : response.iterateAll()) {
+                    // Instances scoped by each zone
+                    String zone = zoneInstances.getKey();
+                    if (!zoneInstances.getValue().getInstancesList().isEmpty()) {
+                        String zoneName = zone.substring(zone.lastIndexOf("/") + 1);
+                        LOGGER.debug("Instances at %s: {} ", zoneName);
+                        for (Instance instance : zoneInstances.getValue().getInstancesList()) {
+                            LOGGER.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+                        }
                     }
                 }
+                validateResponse.setMessage("Connection to project established successfully");
+                validateResponse.setValidationStatus(SUCCESS);
             }
-            validateResponse.setMessage("Connection to project established successfully");
-            validateResponse.setValidationStatus(SUCCESS);
+
         } catch (IOException e) {
             LOGGER.error("Error in connecting to project :{} ",e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
@@ -130,21 +110,6 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setErrorDetails(e.getMessage());
             validateResponse.setMessage("Error in validating account");
-        }finally {
-            //reset environment variable
-            setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", "");
-            File file=new File(credFilePath);
-            try {
-                Files.deleteIfExists(file.toPath());
-                if(instancesClient!=null){
-                    instancesClient.shutdownNow();
-                }
-            }catch (IOException e) {
-                LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage("Account validation failed");
-            }
         }
         return validateResponse;
     }
