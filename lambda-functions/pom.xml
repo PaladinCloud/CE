@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.paladincloud</groupId>
+	<artifactId>lambda-functions</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>PaladinCloud lambda functions</name>
+	<description>Build for paladincloud Jobs Projects</description>
+	<url>https://github.com/paladincloud/CE/jobs</url>
+
+	<licenses>
+		<license>
+			<name>Apache</name>
+			<url>https://github.com/paladincloud/CE/blob/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>PaladinCloud Team</id>
+			<name>PaladinCloud Team</name>
+			<email>CommunitySupport@PaladinCloud.io</email>
+		</developer>
+	</developers>
+
+	<organization>
+		<name>PaladinCloud</name>
+		<url>https://www.paladincloud.io</url>
+	</organization>
+
+   <scm>
+        <connection>scm:git:git://github.com/PaladinCloud/CE.git</connection>
+        <developerConnection>scm:git:ssh://github.com/PaladinCloud/CE.git</developerConnection>
+        <url>https://github.com/PaladinCloud/CE/tree/master</url>
+    </scm>
+
+	<modules>
+		<module>notify-event</module>
+    </modules>
+
+</project>
+
+
