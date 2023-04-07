@@ -1,7 +1,7 @@
 from core.terraform.resources.aws import iam
 from resources.iam.ecs_role import ECSRole
 from core.config import Settings
-
+from resources.iam.base_role_policy import BaseRolePolicy
 
 class PolicyDocumentForBaseRole(iam.IAMPolicyDocumentData):
     statement = [
@@ -79,6 +79,10 @@ class BaseECSTaskExecPolicyAttach(iam.IAMRolePolicyAttachmentResource):
 class BaseSecurityAudit(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
+
+class BaseBasepolicy(iam.IAMRolePolicyAttachmentResource):
+    role = BaseRole.get_output_attr('name')
+    policy_arn = BaseRolePolicy.get_output_attr('arn')
 
 
 class PaladinCognitoUserPoolFullAccessDocument(iam.IAMPolicyDocumentData):

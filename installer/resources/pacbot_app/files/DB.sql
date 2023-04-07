@@ -111,6 +111,11 @@ SET @AQUA_USERNAME='$AQUA_USERNAME';
 SET @AQUA_PASSWORD='$AQUA_PASSWORD';
 SET @AQUA_API_DEFAULT_PAGE_SIZE='$AQUA_API_DEFAULT_PAGE_SIZE';
 SET @AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS='$AQUA_IMAGE_VULNERABILITY_QUERY_PARAMS';
+SET @NOTIFICATION_FUNCTION_URL='$ENV_NOTIFICATION_FUNCTION_URL';
+SET @TOPIC_ARN='$ENV_TOPIC_ARN';
+SET @EMAIL_TOPIC_ARN='$ENV_EMAIL_TOPIC_ARN';
+SET @NOTIFICATION_EMAIL_ID='$ENV_NOTIFICATION_EMAIL_ID';
+
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -2836,12 +2841,23 @@ INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aq
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_password','aqua password');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('default_page_size','Base64 encoded user:password of qualys');
 INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('aqua_image_vul_query_params','Base64 encoded user:password of qualys');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.lambda.function.url','lambda_notification');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.topic.arn','lambda_notification');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.email.topic.arn','lambda_notification');
+INSERT IGNORE INTO `pac_config_key_metadata` (`cfkey`, `description`) values('notification.to.emailid','lambda_notification');
 
 -- delete configs containing http url
 DELETE IGNORE FROM pac_config_properties where value like 'http://%elb.amazonaws.com%';
 DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('aqua_client_domain_url', 'aqua_api_url','aqua_username','aqua_password','default_page_size','aqua_image_vul_query_params');
+DELETE IGNORE FROM pac_config_properties where cfkey in ('notification.lambda.function.url','notification.topic.arn','notification.email.topic.arn','notification.to.emailid');
+
+
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.lambda.function.url','concat(@NOTIFICATION_FUNCTION_URL,'')','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.topic.arn','concat(@TOPIC_ARN,'')','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.email.topic.arn','concat(@EMAIL_TOPIC_ARN,'')','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.to.emailid','concat(@NOTIFICATION_EMAIL_ID,'')','application','prd','latest',NULL,NULL,NULL,NULL);
 
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',REPLACE(TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'\n',''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);

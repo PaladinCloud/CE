@@ -27,3 +27,7 @@ class BatchBaseRolePolicyAttach(iam.IAMRolePolicyAttachmentResource):
 class EcsBaseRolePolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = ECSRole.get_output_attr('name')
     policy_arn = BaseRolePolicy.get_output_attr('arn')
+
+class BaseRoleBasePolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = BaseRole.get_output_attr('name')
+    policy_arn = BaseRolePolicy.get_output_attr('arn')
