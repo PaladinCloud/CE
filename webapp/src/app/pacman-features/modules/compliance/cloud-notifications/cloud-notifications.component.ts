@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { environment } from './../../../../../environments/environment';
 import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { UtilsService } from '../../../../shared/services/utils.service';
 import { LoggerService } from '../../../../shared/services/logger.service';
 import { CommonResponseService } from './../../../../shared/services/common-response.service';
@@ -24,6 +24,7 @@ import { DownloadService } from '../../../../shared/services/download.service';
 import { WorkflowService } from '../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
 import { FilterManagementService } from '../../../../shared/services/filter-management.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
 
 @Component({
   selector: 'app-cloud-notifications',
@@ -39,6 +40,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
     private router: Router,
+    private errorHandler: ErrorHandlingService,
     private utils: UtilsService,
     private logger: LoggerService,
     private workflowService: WorkflowService,
@@ -54,6 +56,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     );
   }
 
+  pageTitle = "Notifications";
   popRows = ['Download Data'];
   tabSelected = 'asset';
   backButtonRequired;
@@ -95,8 +98,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
   ];
   paginatorSize = 25;
-  totalRows = 0;
-  bucketNumber = 0;
   currentBucket: any = [];
   firstPaginator = 1;
   lastPaginator: number;
@@ -107,13 +108,28 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
   errorValue = 0;
   summaryValue = 0;
   errorMsg = 'apiResponseError';
-  searchTxt = '';
   filter = {
     'eventtypecategory': ''
   };
   filterArray = [];
 
+  searchTxt = '';
+  tableErrorMessage = '';
+  onScrollDataLoader: Subject<any> = new Subject<any>();
+  headerColName: string;
+  direction: string;
+  bucketNumber: number = 0;
+  totalRows: number = 0;
+  tableDataLoaded: boolean = false;
+  tableData: any = [];
+  displayedColumns: string[] = [];
+  whiteListColumns: any = [];
+  tableScrollTop: any;
+  columnNamesMap = {"event":"Event", "eventCategory": "Type", "startTime": "Created"};
+  columnWidths = {'Event': 1, "Type": 1, "Created": 1};
+
   ngOnInit() {
+    this.whiteListColumns = Object.keys(this.columnWidths);
     this.activatedRoute.queryParams.subscribe(params => {
       this.routerParam();
     });
@@ -281,11 +297,14 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     });
   }
 
-  getData() {
+  getData(isNextPageCalled?) {
     if (this.dataSubscription) {
       this.dataSubscription.unsubscribe();
     }
-    this.errorValue = 0;
+    this.tableDataLoaded = false;
+    this.tableData = [];
+    this.tableErrorMessage = "";
+
     const payload = {
       'ag': this.selectedAssetGroup,
       'filter': this.filter,
@@ -300,11 +319,12 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     };
     this.dataSubscription = this.commonResponseService.getData( TableUrl, TableMethod, payload, queryParam).subscribe(
       response => {
+        console.log("rsepose;", response);
+        this.tableDataLoaded = true;
         try {
-          this.errorValue = 1;
           if (response.data.response.length === 0) {
-            this.errorValue = -1;
-            this.errorMsg = 'noDataAvailable';
+            this.totalRows = 0;
+            this.tableErrorMessage = 'noDataAvailable';
           }
           this.totalRows = response.data.total;
           if (response.data.response.length > 0) {
@@ -314,85 +334,101 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             if (this.lastPaginator > this.totalRows) {
               this.lastPaginator = this.totalRows;
             }
-            const updatedResponse = this.utils.massageTableData(response.data.response);
-            this.currentBucket[this.bucketNumber] = updatedResponse;
-            this.processData(updatedResponse);
+            let updatedResponse = this.utils.massageTableData(response.data.response, this.columnNamesMap);
+            const processData = this.processData(updatedResponse);
+            if(isNextPageCalled){
+              this.onScrollDataLoader.next(processData)
+            }else{
+              this.tableData = processData;
+            }
+            // this.getFiltersData(this.tableData);
           }
         } catch (e) {
             this.errorValue = -1;
             this.logger.log('error', e);
-            this.errorMsg = 'jsError';
+            this.tableErrorMessage = 'jsError';
         }
     },
     error => {
       this.errorValue = -1;
       this.logger.log('error', error);
-      this.errorMsg = 'apiResponseError';
+      this.tableErrorMessage = 'apiResponseError';
     });
   }
 
-  processData(data) {
-    let innerArr = {};
-    const totalVariablesObj = {};
-    let cellObj = {};
-    this.outerArr = [];
-    const datainString = JSON.stringify(data);
-    const getData = JSON.parse(datainString);
-    const getCols = Object.keys(getData[0]);
+  // getFiltersData(data){
+  //   this.filterTypeLabels = [];
+  //   this.filterTagLabels = {};
+  //   this.whiteListColumns.forEach(column => {
+  //     if(column.toLowerCase()=='number of assets' || column.toLowerCase()=='actions'){
+  //       return;
+  //     }
+  //     let filterTags = [];
+  //     this.filterTypeLabels.push(column);
+  //     const set = new Set();
+  //     data.forEach(row => {
+  //       set.add(row[column].valueText.toLowerCase());
+  //     });
+  //     filterTags = Array.from(set);
+  //     filterTags.sort();
+      
+  //     this.filterTagLabels[column] = filterTags;
+  //   });
+  // }
 
-    for (let row = 0 ; row < getData.length ; row++) {
-      innerArr = {};
-      for (let col = 0; col < getCols.length; col++) {
-        if (getCols[col].toLowerCase() === 'affected resources' || getCols[col].toLowerCase() === 'event') {
+  processData(data) {
+    try {
+      var innerArr = {};
+      var totalVariablesObj = {};
+      var cellObj = {};
+      let processedData = [];
+      var getData = data;      
+      const keynames = Object.keys(getData[0]);
+
+      let cellData;
+      for (var row = 0; row < getData.length; row++) {
+        innerArr = {};
+        keynames.forEach(col => {
+          cellData = getData[row][col];
           cellObj = {
-            'link': 'Event Details',
-            'properties':
-              {
-                  'color': ''
-              },
-            'colName': getCols[col],
-            'hasPreImg': false,
-            'imgLink': '',
-            'text': getData[row][getCols[col]],
-            'valText': getData[row][getCols[col]]
-          };
-        } else if (getCols[col].toLowerCase() === 'start time' || getCols[col].toLowerCase() === 'end time') {
-          cellObj = {
-            'link': '',
-            'properties':
-              {
-                  'color': ''
-              },
-            'colName': getCols[col],
-            'hasPreImg': false,
-            'imgLink': '',
-            'text': getData[row][getCols[col]] ? this.utils.calculateDateAndTime(getData[row][getCols[col]],true) : '',
-            'valText': getData[row][getCols[col]] ? this.utils.calculateDateAndTime(getData[row][getCols[col]],true) : ''
-          };
-        } else {
-          cellObj = {
-            'link': '',
-            'properties':
-              {
-                  'color': ''
-              },
-            'colName': getCols[col],
-            'hasPreImg': false,
-            'imgLink': '',
-            'text': getData[row][getCols[col]],
-            'valText': getData[row][getCols[col]]
-          };
-        }
-        innerArr[getCols[col]] = cellObj;
-        totalVariablesObj[getCols[col]] = '';
+            text: cellData, // text to be shown in table cell
+            titleText: cellData, // text to show on hover
+            valueText: cellData,
+            hasPostImage: false,
+            imgSrc: "",  // if imageSrc is not empty and text is also not empty then this image comes before text otherwise if imageSrc is not empty and text is empty then only this image is rendered,
+            postImgSrc: "",
+            isChip: "",
+            isMenuBtn: false,
+            properties: "",
+            isLink: false
+          }
+          if(col.toLowerCase()=="name"){
+            cellObj = {
+              ...cellObj,
+              isLink: true
+            };
+          } else if (col.toLowerCase() == "actions") {
+            let dropDownItems: Array<String> = ["Edit", "Delete"];
+            cellObj = {
+              ...cellObj,
+              isMenuBtn: true,
+              menuItems: dropDownItems,
+            };
+          }
+          innerArr[col] = cellObj;
+          totalVariablesObj[col] = "";
+        });
+        processedData.push(innerArr);
       }
-      this.outerArr.push(innerArr);
+      if (processedData.length > getData.length) {
+        var halfLength = processedData.length / 2;
+        processedData = processedData.splice(halfLength);
+      }
+      return processedData;
+    } catch (error) {
+      this.tableErrorMessage = this.errorHandler.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
-    if (this.outerArr.length > getData.length) {
-      const halfLength = this.outerArr.length / 2;
-      this.outerArr = this.outerArr.splice(halfLength);
-    }
-    this.allColumns = Object.keys(totalVariablesObj);
   }
 
   goToDetails(row) {
@@ -423,25 +459,15 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     );
   }
 
-  prevPg() {
-    this.currentPointer--;
-    this.processData(this.currentBucket[this.currentPointer]);
-    this.firstPaginator = (this.currentPointer * this.paginatorSize) + 1;
-    this.lastPaginator = (this.currentPointer * this.paginatorSize) + this.paginatorSize;
-  }
-
-  nextPg() {
-    if (this.currentPointer < this.bucketNumber) {
-        this.currentPointer++;
-        this.processData(this.currentBucket[this.currentPointer]);
-        this.firstPaginator = (this.currentPointer * this.paginatorSize) + 1;
-        this.lastPaginator = (this.currentPointer * this.paginatorSize) + this.paginatorSize;
-        if (this.lastPaginator > this.totalRows) {
-          this.lastPaginator = this.totalRows;
-        }
-    } else {
-      this.bucketNumber++;
-      this.getData();
+  nextPg(e) {
+    try {
+      this.tableScrollTop = e;
+        this.bucketNumber++;
+        this.bucketNumber++;
+        this.getData(true);
+    } catch (error) {
+      // this.errorMessage = this.errorHandling.handleJavascriptError(error);
+      this.logger.log("error", error);
     }
   }
 
@@ -480,7 +506,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     this.searchTxt = search;
   }
 
-  callNewSearch() {
+  callNewSearch(search) {
+    this.searchTxt = search;
     this.bucketNumber = 0;
     this.currentBucket = [];
     this.getData();
