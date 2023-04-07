@@ -1,12 +1,14 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.compute.v1.*;
@@ -23,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -141,14 +142,18 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }else{
             LOGGER.info("File already exists");
         }
-        uploadFileToS3(s3Bucket,s3CredData,s3Region,credFilePath);
+        validateResponse = createAccountInDb(accountData.getProjectId(), accountData.getProjectName(), Constants.GCP);
+        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+            LOGGER.error("Account already exists");
+            return validateResponse;
+        }
+        uploadFileToS3(s3Bucket,s3CredData,s3Region,credentialFilePath,fileName);
 
         //update gcp enable flag for scheduler job
         String key="gcp.enabled";
         String value = "true";
         String application = "job-scheduler";
         updateConfigProperty(key, value, application);
-        validateResponse = createAccountInDb(accountData.getProjectId(), accountData.getProjectName(), Constants.GCP);
         validateResponse.setProjectId(accountData.getProjectId());
         validateResponse.setAccountName(accountData.getProjectName());
         return validateResponse;
@@ -212,13 +217,13 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         File file=new File(credFilePath);
         try {
             Files.deleteIfExists(file.toPath());
-
+            deleteS3File(s3Bucket,s3Region,s3CredData,fileName);
 
             //delete entry from db
             response=deleteAccountFromDB(projectId);
             response.setType(Constants.GCP);
 
-        } catch (IOException e) {
+        } catch (IOException | SdkClientException e) {
             LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
             response.setValidationStatus(FAILURE);
             response.setErrorDetails(e.getMessage());
@@ -258,32 +263,23 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             bw.flush();
         }
     }
-    public void setEnvironment(String key, String value) {
-        try {
-            Map<String, String> env = System.getenv();
-            Class<?> cl = env.getClass();
-            Field field = cl.getDeclaredField("m");
-            field.setAccessible(true);
-            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
-            writableEnv.put(key, value);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to set environment variable", e);
-        }
-    }
-    public void uploadFileToS3(String s3Bucket,String dataFolder, String s3Region,String filePath){
+    public void uploadFileToS3(String s3Bucket,String dataFolder, String s3Region,String credPath,String filePath){
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-        uploadAllFiles(s3client,s3Bucket,dataFolder,filePath);
+        uploadAllFiles(s3client,s3Bucket,dataFolder,credPath,filePath);
 
     }
-
-    private void uploadAllFiles(AmazonS3 s3client,String s3Bucket,String dataFolderS3, String filePath){
+    public void deleteS3File(String s3Bucket, String s3Region, String s3Key, String credFile) throws SdkClientException {
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        DeleteObjectRequest deleteRequest=new DeleteObjectRequest(s3Bucket,s3Key+"/"+credFile);
+        s3client.deleteObject(deleteRequest);
+    }
+    private void uploadAllFiles(AmazonS3 s3client,String s3Bucket,String dataFolderS3, String credPath, String filePath){
         LOGGER.info("Uploading files to bucket: {} folder: {}",s3Bucket,dataFolderS3);
         TransferManager xferMgr = TransferManagerBuilder.standard().withS3Client(s3client).build();
         try {
-            MultipleFileUpload xfer = xferMgr.uploadDirectory(s3Bucket,
-                    dataFolderS3, new File(filePath), false);
-
+            Upload xfer = xferMgr.upload(s3Bucket, dataFolderS3+"/"+filePath, new File(credPath+File.separator+filePath));
             while(!xfer.isDone()){
                 delayForCompletion();
                 LOGGER.debug("Transfer % Completed :{}" ,xfer.getProgress().getPercentTransferred());
