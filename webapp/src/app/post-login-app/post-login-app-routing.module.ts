@@ -69,6 +69,12 @@ const routes: Routes = [
           () => import('./../pacman-features/modules/omnisearch/omnisearch.module').then(m => m.OmnisearchModule),
       },
       {
+        path: "notifications",
+        data: { sequence: 6 },
+        loadChildren:
+          () => import('../pacman-features/modules/notifications/notifications.module').then(m => m.NotificationsModule),
+      },
+      {
         path: "admin",
         data: { sequence: 5 },
         loadChildren:

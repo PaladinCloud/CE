@@ -60,6 +60,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { FetchResourcesService } from "../pacman-features/services/fetch-resources.service";
 import { TokenResolverService } from "../resolver/token-resolver.service";
+import { NotificationsModule } from "../pacman-features/modules/notifications/notifications.module";
 @NgModule({
   imports: [
     MatIconModule,
@@ -70,6 +71,7 @@ import { TokenResolverService } from "../resolver/token-resolver.service";
     PostLoginAppRoutingModule,
     SharedModule,
     ComplianceModule,
+    NotificationsModule,
     AssetsModule,
     ToolsModule,
     OmnisearchModule,

@@ -1302,6 +1302,10 @@ body {
   gap: 16px;
 }
 
+.gap-24{
+  gap: 24px;
+}
+
 .padding-2{
   padding: 2px;
 }
