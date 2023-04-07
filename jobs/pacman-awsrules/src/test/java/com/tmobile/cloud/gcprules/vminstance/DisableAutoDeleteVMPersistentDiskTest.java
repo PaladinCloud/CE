@@ -10,6 +10,7 @@ import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PolicyResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
 public class DisableAutoDeleteVMPersistentDiskTest {
     @InjectMocks
@@ -42,6 +43,7 @@ public class DisableAutoDeleteVMPersistentDiskTest {
     public void setUp() {
         mockStatic(PacmanUtils.class);
         mockStatic(GCPUtils.class);
+        mockStatic(Annotation.class);
     }
 
     @Test
@@ -49,8 +51,7 @@ public class DisableAutoDeleteVMPersistentDiskTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.validateRuleParam(anyObject())).thenReturn(true);
         when(GCPUtils.getJsonObjFromSourceData(anyObject(), anyObject())).thenReturn(getHitsJsonObjectRule());
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         Map<String, String> map = getMapString("r_123 ");
         assertThat(disableAutoDeleteVMPersistentDisk.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
                 is(PacmanSdkConstants.STATUS_SUCCESS));
@@ -73,7 +74,7 @@ public class DisableAutoDeleteVMPersistentDiskTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureJsonArrayRule());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
         Map<String, String> map = getMapString("r_123 ");
