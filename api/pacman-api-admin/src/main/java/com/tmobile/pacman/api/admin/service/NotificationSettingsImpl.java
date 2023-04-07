@@ -1,5 +1,6 @@
 package com.tmobile.pacman.api.admin.service;
 
+import com.google.common.base.Strings;
 import com.tmobile.pacman.api.admin.domain.NotificationPrefsRequest;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import org.slf4j.Logger;
@@ -95,8 +96,6 @@ public class NotificationSettingsImpl implements NotificationSettings{
             pacmanRdsRepository.update(deleteNotifMappingsQuery.toString());
         }
     }
-
-
     @Override
     public Map<String,Object> getNotificationSettingsAndConfigs() {
         Map<String,Object> notfSettingsAndConfigMap =new HashMap<>();
@@ -107,7 +106,13 @@ public class NotificationSettingsImpl implements NotificationSettings{
                 Map<String,Object> channelConfigMap = new HashMap<>();
                 channelConfigMap.put("isOn",Integer.parseInt(channelsMap.get(channel).toString()));
                 if("email".equalsIgnoreCase(channel)){
-                    channelConfigMap.put("toAddress",Arrays.asList(toEmailId));
+                    if(!Strings.isNullOrEmpty(toEmailId)){
+                        String[] emailIdArray = toEmailId.split(",");
+                        channelConfigMap.put("toAddress",Arrays.asList(emailIdArray));
+                    }
+                    else{
+                        channelConfigMap.put("toAddress",Collections.emptyList());
+                    }
                 }
                 else{
                     channelConfigMap.put("toAddress",Collections.emptyList());
