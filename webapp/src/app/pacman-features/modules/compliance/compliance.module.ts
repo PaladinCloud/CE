@@ -42,7 +42,6 @@ import { AllVulnerabilityTableComponent } from "./../../secondary-components/all
 import { VulnerabilityTrendComponent } from "./../../secondary-components/vulnerability-trend/vulnerability-trend.component";
 import { PatchingComplianceComponent } from "./patching-compliance/patching-compliance.component";
 import { TaggingComplianceComponent } from "./tagging-compliance/tagging-compliance.component";
-import { CloudNotificationsComponent } from "./cloud-notifications/cloud-notifications.component";
 import { EventDetailsComponent } from "./event-details/event-details.component";
 import { CertificateComplianceComponent } from "./certificate-compliance/certificate-compliance.component";
 import { WindowRefService } from "./../../services/window.service";
@@ -167,7 +166,6 @@ import { MatMenuModule } from "@angular/material/menu";
     VulnerabilityTrendComponent,
     PatchingComplianceComponent,
     TaggingComplianceComponent,
-    CloudNotificationsComponent,
     CertificateComplianceComponent,
     EventDetailsComponent,
     AllPatchingTableComponent,

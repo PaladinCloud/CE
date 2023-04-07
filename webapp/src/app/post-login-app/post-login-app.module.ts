@@ -60,7 +60,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import { FetchResourcesService } from "../pacman-features/services/fetch-resources.service";
 import { TokenResolverService } from "../resolver/token-resolver.service";
-
 @NgModule({
   imports: [
     MatIconModule,

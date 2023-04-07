@@ -1,0 +1,28 @@
+ <div class="notifications-wrapper flex flex-col padding-28 gap-24">
+    <div class="flex flex-between flex-align-center">
+        <div>
+            <app-text classNames="headline-6 medium-emphasis" [text]="pageTitle"></app-text>
+        </div>
+    </div>
+    <div class="flex flex-col full-height">
+        <div class="flex flex-col full-height cloud-notifications-wrap">
+            <div class="flex flex-col full-height data-table-container">
+                <div class="relative table-wrapper">
+                    <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
+                        [headerColName]="headerColName" [direction]="direction"
+                        [doLocalSearch]="false" [doLocalFilter]="false"
+                        [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
+                        [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
+                        [showDownloadBtn]="true" (downloadClicked)="handlePopClick($event)"  [showFilterBtn]="true" (nextPageCalled)="nextPg($event)"
+                        [totalRows]="totalRows" [tableDataLoaded]="tableDataLoaded"
+                        [rowClickable]="true" (rowSelectEventEmitter)="goToDetails($event)" [showAddRemoveCol]="true" [tableErrorMessage]="tableErrorMessage"
+                        [onScrollDataLoader]="onScrollDataLoader"
+                        (selectedFilterType)='changeFilterType($event)' [tableScrollTop]="tableScrollTop"
+                        (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
+                        [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions">
+                    </app-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

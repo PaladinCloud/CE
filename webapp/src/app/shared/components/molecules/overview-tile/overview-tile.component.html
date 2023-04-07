@@ -4,7 +4,7 @@
             <div class="tile-content flex flex-col gap-8">
                 <div class="tile-title capitalize">{{tile.mainContent.title}}</div>
                 <div class="tile-count" (click)="redirectTo(tile.mainContent.title)">
-                    <app-text-with-icon [text]="tile.mainContent.count" textVariant="headline-3 primary-400" iconUrl="/assets/icons/Path.svg"></app-text-with-icon>
+                    <app-text-with-icon [text]="tile.mainContent.count" textVariant="headline-3 primary-400" postImagePath="/assets/icons/Path.svg" gap=12.5></app-text-with-icon>
                 </div>
             </div>
             <div class="tile-img" *ngIf="showIcon">
