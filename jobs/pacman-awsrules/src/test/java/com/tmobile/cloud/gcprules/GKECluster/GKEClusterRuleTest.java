@@ -10,6 +10,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import com.tmobile.cloud.gcprules.GKEClusterRule.GKEClusterRule;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 public class GKEClusterRuleTest {
 
     @InjectMocks
@@ -39,6 +40,7 @@ public class GKEClusterRuleTest {
     public void setUp() {
         mockStatic(PacmanUtils.class);
         mockStatic(GCPUtils.class);
+        mockStatic(Annotation.class);
     }
 
     @Test
@@ -47,8 +49,7 @@ public class GKEClusterRuleTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonForGKEClusterSuccess());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(gkeCluster.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
@@ -63,8 +64,7 @@ public class GKEClusterRuleTest {
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
                 .thenReturn(getHitsJsonForGKEClusterFailure());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(gkeCluster.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),

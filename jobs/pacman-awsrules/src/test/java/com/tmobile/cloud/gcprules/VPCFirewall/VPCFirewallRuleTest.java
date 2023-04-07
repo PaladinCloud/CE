@@ -9,6 +9,7 @@ import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, GCPUtils.class })
+@PrepareForTest({ PacmanUtils.class, GCPUtils.class, Annotation.class })
 public class VPCFirewallRuleTest {
 
     @InjectMocks
@@ -38,6 +39,7 @@ public class VPCFirewallRuleTest {
     public void setUp() {
         mockStatic(PacmanUtils.class);
         mockStatic(GCPUtils.class);
+        mockStatic(Annotation.class);
     }
 
     @Test
@@ -46,8 +48,7 @@ public class VPCFirewallRuleTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForVPCFIreWall());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(vpcNetworkRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
@@ -62,8 +63,7 @@ public class VPCFirewallRuleTest {
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
                 .thenReturn(getHitsJsonArrayForVPCFIreWall());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(vpcNetworkRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
@@ -77,8 +77,7 @@ public class VPCFirewallRuleTest {
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
                 .thenReturn(getHitsJsonArrayForVPCFIreWallFailure());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
         assertThatThrownBy(() -> vpcNetworkRule.execute(getMapString("r_123 "), getMapString("r_123 ")))
