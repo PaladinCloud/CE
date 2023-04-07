@@ -175,6 +175,26 @@
                     "key": "latestdescription"
                 }
             ]
+        },
+        "issue": {
+            "common": [
+                {
+                    "keyDisplayName": "Account",
+                    "key": "accountname"
+                },
+                {
+                    "keyDisplayName": "Cloud",
+                    "key": "_cloudType"
+                },
+                {
+                    "keyDisplayName": "Discovered on",
+                    "key": "firstdiscoveredon"
+                },
+                {
+                    "keyDisplayName": "Description",
+                    "key": "latestdescription"
+                }
+            ]
         }
     },
     "azure": {}

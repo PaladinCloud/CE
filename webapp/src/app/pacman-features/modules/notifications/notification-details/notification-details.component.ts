@@ -136,7 +136,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
               })
 
               this.eventDetails = details;
-              if (response == 0) {
+              if (this.eventDetails.length == 0) {
                 this.errorMessage = 'noDataAvailable';
               }else{
                 this.errorMessage = '';

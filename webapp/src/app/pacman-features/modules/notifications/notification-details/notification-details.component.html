@@ -11,6 +11,7 @@
                 <app-text [text]="summaryTitle" classNames="body-1 high-emphasis"></app-text>
             </div>
         </div>
+        <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
         <div class="details-list grid-table">
             <div class="row" *ngFor="let detail of eventDetails">
                 <div class="row-wrapper border-bottom" *ngIf="detail.name && detail.value">
