@@ -37,7 +37,6 @@ import {TableStateService} from 'src/app/core/services/table-state.service';
 })
 
 export class CloudNotificationsComponent implements OnInit, OnDestroy {
-
     assetGroupSubscription: Subscription;
     dataSubscription: Subscription;
     summarySubscription: Subscription;
@@ -86,18 +85,21 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     whiteListColumns: any = [];
     tableScrollTop: any;
     isTableStatePreserved = false;
+
     columnNamesMap = {
         eventName: 'Event',
         eventCategoryName: 'Type',
         eventSourceName: 'Source',
         startTime: 'Created'
     };
+
     columnWidths = {
         'Event': 2,
         'Type': 1,
         'Source': 1,
         'Created': 1
     };
+
     centeredColumns = {
         Event: false,
         Type: true,
@@ -125,7 +127,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(
             this.pageLevel
         );
-
     }
 
     ngOnInit() {
@@ -183,7 +184,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
-
     getUpdatedUrl() {
         let updatedQueryParams = {};
         this.filterText = this.utils.arrayToObject(
@@ -197,11 +197,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
          * To change the url
          * with the deleted filter value along with the other existing paramter(ex-->tv:true)
          */
-
         updatedQueryParams = {
             filter: this.filterText.filter,
         }
-
 
         /**
          * Finally after changing URL Link
@@ -235,11 +233,10 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     /*
-     * this functin passes query params to filter component to show filter
+     * this function passes query params to filter component to show filter
      */
     getFilterArray() {
         try {
-            // let labelsKey = Object.keys(this.labels);
             const filterObjKeys = Object.keys(this.filterText);
             const dataArray = [];
             for (let i = 0; i < filterObjKeys.length; i++) {
@@ -249,9 +246,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 };
                 dataArray.push(obj);
             }
+
             const formattedFilters = dataArray;
             for (let i = 0; i < formattedFilters.length; i++) {
-
                 let keyValue = _.find(this.filterTypeOptions, {
                     optionValue: formattedFilters[i].name,
                 })["optionName"];
@@ -282,7 +279,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
      * This function get calls the keyword service before initializing
      * the filter array ,so that filter keynames are changed
      */
-
     getFilters() {
         try {
             this.filterTypeLabels.push("Type");
@@ -293,9 +289,10 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
             // this.filterTypeLabels.push("Source");
             // this.filterTypeOptions.push({
-            //   optionName: 'eventSource',
-            //   optionValue: 'Source'
+            //   optionName: 'Source',
+            //   optionValue: 'eventSource'
             // })
+
             this.routerParam();
             this.getFilterArray();
             this.updateComponent();
@@ -311,6 +308,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 this.currentFilterType = _.find(this.filterTypeOptions, {
                     optionName: value,
                 });
+
                 if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
                     if (value.toLowerCase() == "type") {
                         this.filterTagLabels[value] = ["Violation", "Autofix", "Exemption", "Sticky Exemption"];
@@ -333,6 +331,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                             }
                         ]
                         resolve(this.filterTagLabels[value]);
+
                         return;
                     }
                 }
@@ -417,16 +416,19 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             'searchtext': this.searchTxt,
             'size': this.paginatorSize
         };
-        const TableUrl = environment.cloudNotifications.url;
-        const TableMethod = environment.cloudNotifications.method;
+
         const queryParam = {
             global: this.tabSelected === 'general'
         };
+
+        const TableUrl = environment.cloudNotifications.url;
+        const TableMethod = environment.cloudNotifications.method;
         this.dataSubscription = this.commonResponseService.getData(TableUrl, TableMethod, payload, queryParam).subscribe(
             response => {
                 if (!isNextPageCalled) {
                     this.tableData = [];
                 }
+
                 this.tableDataLoaded = true;
                 try {
                     if (response.data.response.length === 0) {
@@ -435,6 +437,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     } else {
                         this.tableErrorMessage = '';
                     }
+
                     this.totalRows = response.data.total;
                     if (response.data.response.length > 0) {
 
@@ -461,15 +464,15 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     processData(data) {
         try {
-            var innerArr = {};
-            var totalVariablesObj = {};
-            var cellObj = {};
+            let innerArr = {};
+            let totalVariablesObj = {};
+            let cellObj = {};
             let processedData = [];
-            var getData = data;
+            let getData = data;
             const keynames = Object.keys(getData[0]);
 
             let cellData;
-            for (var row = 0; row < getData.length; row++) {
+            for (let row = 0; row < getData.length; row++) {
                 innerArr = {};
                 keynames.forEach(col => {
                     cellData = getData[row][col];
@@ -485,21 +488,25 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                         properties: "",
                         isLink: false
                     }
+
                     if (col.toLowerCase() == "event") {
                         cellObj = {
                             ...cellObj,
                             isLink: true
                         };
                     }
+
                     innerArr[col] = cellObj;
                     totalVariablesObj[col] = "";
                 });
+
                 processedData.push(innerArr);
             }
             if (processedData.length > getData.length) {
-                var halfLength = processedData.length / 2;
+                const halfLength = processedData.length / 2;
                 processedData = processedData.splice(halfLength);
             }
+
             return processedData;
         } catch (error) {
             this.tableErrorMessage = this.errorHandler.handleJavascriptError(error);
@@ -520,6 +527,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             searchTxt: this.searchTxt,
             tableScrollTop: event.tableScrollTop
         }
+
         this.storeState(state);
         try {
             const eventId = encodeURIComponent(rowSelected['eventId'].valueText);
@@ -529,24 +537,12 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 {queryParams: {'eventId': eventId}, queryParamsHandling: 'merge'}
             ).then(response => {
                 this.logger.log('info', 'Successfully navigated to details page: ' + response);
-            })
-                .catch(error => {
-                    this.logger.log('error', 'Error in navigation - ' + error);
-                });
-            // if (rowSelected['eventId'].valueText.toLowerCase() === 'affected resources' || rowSelected['eventId'].valueText.toLowerCase() === 'event') {
-
-            // }
+            }).catch(error => {
+                this.logger.log('error', 'Error in navigation - ' + error);
+            });
         } catch (error) {
             this.logger.log('error', error);
         }
-    }
-
-    callHelp() {
-        const newParams = {widgetId: 'w8'};
-        this.router.navigate(
-            ['/pl', {outlets: {helpTextModal: ['help-text']}}],
-            {queryParams: newParams, queryParamsHandling: 'merge'}
-        );
     }
 
     nextPg(e) {
@@ -555,7 +551,6 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.bucketNumber++;
             this.getData(true);
         } catch (error) {
-            // this.errorMessage = this.errorHandler.handleJavascriptError(error);
             this.logger.log("error", error);
         }
     }
@@ -569,6 +564,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 'serviceId': this.tabSelected === 'general' ? 18 : 17,
                 'fileType': fileType
             };
+
             const downloadRequest = {
                 'ag': this.selectedAssetGroup,
                 'filter': this.filter,
@@ -576,9 +572,11 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 'searchtext': this.searchTxt,
                 'size': this.totalRows
             };
+
             const downloadUrl = environment.download.url;
             const downloadMethod = environment.download.method;
             const downloadName = 'Event Logs';
+
             this.downloadService.requestForDownload(
                 queryParams,
                 downloadUrl,
