@@ -30,7 +30,7 @@ import { PolicyViolationsListComponent } from './policy-violations-list.componen
 
 describe('PolicyViolationsListComponent', () => {
   let component: PolicyViolationsListComponent;
-  let fixture: ComponentFixture<PolicyViolationsListComponent>;
+  let fixture: ComponentFixture<PolicyViolationsListComponenat>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
