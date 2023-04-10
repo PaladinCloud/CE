@@ -101,7 +101,14 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.Annotation;
 
+import static com.tmobile.cloud.constants.PacmanRuleConstants.BOOL;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.DOC_TYPE;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.FORWARD_SLASH;
 import static com.tmobile.cloud.constants.PacmanRuleConstants.GET_NO_OF_ACCOUNT_ERROR_MESSAGE;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.MATCH;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.MUST;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.TERM;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.TERMS;
 
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
@@ -441,6 +448,28 @@ public class PacmanUtils {
         return false;
     }
 
+    private static JsonObject getQueryForMustByMap(HashMap<String, String> mustMap) {
+
+        JsonObject mustObj = new JsonObject();
+        JsonArray mustArray = new JsonArray();
+        JsonObject bool = new JsonObject();
+        JsonObject query = new JsonObject();
+        mustMap.forEach((key, value) -> {
+            JsonObject innerJson = new JsonObject();
+            JsonObject matchPhrase = new JsonObject();
+            innerJson.addProperty(key, value);
+            if(key.equalsIgnoreCase(DOC_TYPE)) {
+                matchPhrase.add(TERM, innerJson);
+            } else {
+                matchPhrase.add(MATCH, innerJson);
+            }
+            mustArray.add(matchPhrase);
+        });
+        mustObj.add(MUST, mustArray);
+        bool.add(BOOL, mustObj);
+        query.add(PacmanRuleConstants.QUERY, bool);
+        return query;
+    }
     public static Map<String, String> getSeviceLimit(String id, String accountId, String esUrl) {
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = new JsonArray();
@@ -449,29 +478,17 @@ public class PacmanUtils {
             HttpClient client = HttpClientBuilder.create().build();
 
             URL url = new URL(esUrl);
-            URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
+            String[] urlPaths = url.getPath().split(FORWARD_SLASH);
+            URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), AWS_SEARCH_INDEX,
                     url.getQuery(), url.getRef());
 
             // prepare Json pay load for GET query.
-            JsonObject innerJson = new JsonObject();
-            JsonObject innerJson1 = new JsonObject();
-            JsonObject matchPhrase = new JsonObject();
-            JsonObject matchPhrase1 = new JsonObject();
-            JsonObject mustObj = new JsonObject();
-            JsonArray mustArray = new JsonArray();
-            JsonObject bool = new JsonObject();
-            JsonObject query = new JsonObject();
+            HashMap<String, String> mustMap = new HashMap<>();
+            mustMap.put(PacmanRuleConstants.CHECK_ID_KEYWORD, id);
+            mustMap.put(PacmanRuleConstants.ACCOUNTID, accountId);
+            mustMap.put(DOC_TYPE, urlPaths[2]);
 
-            innerJson.addProperty(PacmanRuleConstants.CHECK_ID_KEYWORD, id);
-            innerJson1.addProperty(PacmanRuleConstants.ACCOUNTID, accountId);
-            matchPhrase.add("match", innerJson);
-            matchPhrase1.add("match", innerJson1);
-            mustArray.add(matchPhrase);
-            mustArray.add(matchPhrase1);
-            mustObj.add("must", mustArray);
-            bool.add("bool", mustObj);
-            query.add(PacmanRuleConstants.QUERY, bool);
-            StringEntity strjson = new StringEntity(query.toString());
+            StringEntity strjson = new StringEntity(getQueryForMustByMap(mustMap).toString());
 
             // Qurying the ES
             HttpPost httpPost = new HttpPost();

@@ -150,6 +150,8 @@ public class PolicyExecutor {
 
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
+            policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
+                    CommonUtils.getPropValue(PacmanSdkConstants.APPLICATION_PREFIX) + PacmanSdkConstants.ROLE_SUFFIX);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
                 logger.error(
                         "data source is missing, will not be able to figure out the target index to post the policy evaluvation, please check rule configuration");
