@@ -85,7 +85,7 @@ public class AssetGroupController {
 	@RequestMapping(path = "/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> updateAssetGroupDetails(@AuthenticationPrincipal Principal user,
 			@RequestBody CreateAssetGroup assetGroupDetails) {
-		log.info("Inside controller AssetGroupController.updateAssetGroupDetails with request ::", assetGroupDetails);
+		log.info("Inside controller AssetGroupController.updateAssetGroupDetails with request %s", assetGroupDetails);
 		try {
 			return ResponseUtils
 					.buildSucessResponse(assetGroupService.updateAssetGroupDetails(assetGroupDetails, user.getName()));
@@ -120,7 +120,7 @@ public class AssetGroupController {
 	@PostMapping (path = "/createAssetGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createAssetGroup(@AuthenticationPrincipal Principal user,
 														  @RequestBody CreateAssetGroup assetGroupDetails) {
-		log.info("Inside controller AssetGroupController.createAssetGroup with request ::", assetGroupDetails);
+		log.info("Inside controller AssetGroupController.createAssetGroup with request %s", assetGroupDetails);
 		try {
 			return ResponseUtils
 					.buildSucessResponse(assetGroupService.createAssetGroupDetails(assetGroupDetails, user.getName()));
@@ -140,7 +140,7 @@ public class AssetGroupController {
      * @return All asset group details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupDetails(
 			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
@@ -154,7 +154,7 @@ public class AssetGroupController {
 	}
 
 	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(
 			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
@@ -177,7 +177,7 @@ public class AssetGroupController {
      * @return All asset group details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all asset group details by id and datasource", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list-by-id-and-datasource", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list-by-id-and-datasource", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAssetGroupDetailsByNameAndDataSource(
 			@ApiParam(value = "provide valid id", required = true) @RequestParam(defaultValue = "", name = "assetGroupId", required = true) String assetGroupId,
 			@ApiParam(value = "provide valid datasource", required = true) @RequestParam(defaultValue = "", name = "dataSource", required = true) String dataSource) {
@@ -198,7 +198,7 @@ public class AssetGroupController {
      * @return Asset group details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get asset group details by name", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list-by-name", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list-by-name", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> findByGroupName(
 			@ApiParam(value = "provide valid name", required = true) @RequestParam(defaultValue = "", name = "assetGroupName", required = true) String assetGroupName) {
 		try {
