@@ -31,7 +31,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
     eventDetails = [];
     summaryTitle = "";
     notificationDetails = {};
-    hasDetails = this.eventDetails.length > 0;
+    hasDetails;
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -140,6 +140,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
                             })
 
                             this.eventDetails = details;
+                            this.hasDetails = this.eventDetails.length > 0;
                             if (this.eventDetails.length == 0) {
                                 this.errorMessage = 'noDataAvailable';
                             } else {
