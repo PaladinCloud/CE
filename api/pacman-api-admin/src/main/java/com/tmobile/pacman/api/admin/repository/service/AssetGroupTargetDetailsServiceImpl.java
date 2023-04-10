@@ -15,12 +15,20 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.repository.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -32,6 +40,8 @@ import com.tmobile.pacman.api.admin.repository.AssetGroupTargetDetailsRepository
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
 import com.tmobile.pacman.api.commons.Constants;
+
+import javax.annotation.PostConstruct;
 
 /**
  * AssetGroup Target Details Service Implementations
@@ -47,6 +57,27 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 
 	@Autowired
 	private PolicyService policyService;
+
+	private String esUrl;
+
+	private static final String PROTOCOL = "http";
+
+	@Value("${elastic-search.host}")
+	private String esHost;
+	@Value("${elastic-search.port}")
+	private int esPort;
+
+	private static final String FORWARD_SLASH = "/";
+
+	@PostConstruct
+	void init()
+	{
+		esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
+	}
+
+	@Autowired
+	PacmanRdsRepository rdsRepository;
+
 
 	@Override
 	public List<TargetTypePolicyDetails> getTargetTypesByAssetGroupName(String assetGroupName) {
@@ -90,4 +121,36 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		targetTypeRuleDetails.setPolicies(Lists.newArrayList());
 		return targetTypeRuleDetails;
 	};
+
+	public List<Map<String, Object>> getTargetTypesByAssetGroupNameFromES(String assetGroupName) {
+		String query1 = "{\"size\":\"0\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"_type\",\"size\":1000}}}}";
+
+		String urlToQuery = buildAggsURL(esUrl, assetGroupName, null);
+		List<String> targetTypes = new ArrayList<String>();
+		String responseDetails = null;
+		try {
+			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, query1);
+			JSONObject json = new JSONObject(responseDetails);
+			JSONArray jsonArray =new JSONObject(responseDetails).getJSONObject("aggregations").getJSONObject("name").getJSONArray("buckets");
+			for (int i=0; i < jsonArray.length(); i++) {
+				targetTypes.add(jsonArray.getJSONObject(i).get("key").toString());
+			}
+		} catch (Exception e) {
+
+		}
+		String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
+		String query = "select distinct targetName as type, displayName as displayName ,category as category,domain as domain from cf_Target "
+				+ " where  (status = 'active' or status = 'enabled') and targetName in ("+result+") ";
+		return rdsRepository.getDataFromPacman(query);
+	}
+
+	private String buildAggsURL(String url, String index, String type) {
+
+		StringBuilder urlToQuery = new StringBuilder(url).append(FORWARD_SLASH).append(index);
+		if (!Strings.isNullOrEmpty(type)) {
+			urlToQuery.append(FORWARD_SLASH).append(type);
+		}
+		urlToQuery.append(FORWARD_SLASH).append("_search/?size=0");
+		return urlToQuery.toString();
+	}
 }

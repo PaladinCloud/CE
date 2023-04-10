@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.admin.repository;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -37,4 +38,7 @@ public interface DatasourceRepository extends JpaRepository<Datasource, String> 
      */
 	@Query(value = "SELECT source.dataSourceName AS dataSourceName, source.dataSourceDesc AS dataSourceDesc, source.config AS config, COUNT(target.dataSourceName) AS targetCounts FROM cf_Datasource source LEFT JOIN cf_Target target ON source.dataSourceName = target.dataSourceName GROUP BY source.dataSourceName ORDER BY targetCounts DESC", nativeQuery=true)
 	public Collection<Object[]> getAllDatasourceDetails();
+
+	@Query(value = "select distinct dataSourceName from cf_Datasource", nativeQuery=true)
+	public List<String> getAllDataSourceList();
 }

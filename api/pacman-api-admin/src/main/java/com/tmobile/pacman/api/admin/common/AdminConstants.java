@@ -22,8 +22,9 @@ public final class AdminConstants {
 	
 	private AdminConstants() {
 	}
-	
 	public static final String SERVERLESS_RULE_TYPE					= 	"Serverless";
+
+	public static final String ASSET_GROUP_ALREADY_EXISTS		=	"Asset Group already exits with the provided asset group name";
 	public static final String MANAGED_POLICY_TYPE					= 	"ManagePolicy";
 	public static final String JAR_EXTENSION						= 	".jar";
 	public static final String JAR_FILE_MISSING						=	"Jar file is missing";
@@ -46,6 +47,8 @@ public final class AdminConstants {
 	public static final String JOB_UPDATION_SUCCESS					=	"Job has been successfully updated";
 	public static final String JOB_ID_ALREADY_EXITS					=	"Job %s already exists!!";
 	public static final String JOB_ID_NOT_EXITS						=	"Job %s does not exists!!";
+
+	public static final String INVALID_REQUEST = "Invalid request - ";
 	public static final String INVALID_JOB_FREQUENCY				=	"Invalid Job Frequency or Cron Expression!";
 	public static final String UNEXPECTED_ERROR_OCCURRED 			= 	"Unexpected error occurred!!";
 	public static final String LAMBDA_LINKING_EXCEPTION             =   "Failed in linking the lambda function to the rule";
