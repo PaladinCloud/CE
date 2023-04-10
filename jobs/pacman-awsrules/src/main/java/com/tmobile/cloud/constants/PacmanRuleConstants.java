@@ -163,6 +163,8 @@ public class PacmanRuleConstants {
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
     public static final String ACCOUNTID = "accountid";
+    public static final String DOC_TYPE = "docType";
+    public static final String FORWARD_SLASH = "/";
     public static final String PUBLIC_IP_ADDR = "publicipaddress";
     public static final String VPC_ID = "vpcid";
     public static final String SUBNETID = "subnetid";
@@ -315,11 +317,15 @@ public class PacmanRuleConstants {
     public static final String CREATED_EVENT_TYPE = "created";
     public static final String SERVICE_LIMIT_STATUS_RED = "status_RED";
     public static final String MATCH_ALL = "match_all";
+    public static final String MATCH = "match";
     public static final String QUERY = "query";
+    public static final String MUST = "must";
+    public static final String BOOL = "bool";
     public static final String RANGE = "range";
     public static final String ERROR_MESSAGE = "error retrieving inventory from ES";
     public static final String GET_NO_OF_ACCOUNT_ERROR_MESSAGE = "Exception in getting total number of accounts - ";
     public static final String TERMS = "terms";
+    public static final String TERM = "term";
     public static final String HAS_CHILD = "has_child";
     public static final String HAS_PARENT = "has_parent";
     public static final String RESOURCE_ID = "_resourceid";
