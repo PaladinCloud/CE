@@ -2,6 +2,9 @@ package com.tmobile.pacman.dto;
 
 import com.tmobile.pacman.commons.utils.Constants;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PolicyViolationNotificationRequest {
     private String resourceId;
     private String resourceIdLink;
@@ -12,7 +15,15 @@ public class PolicyViolationNotificationRequest {
     private String description;
     private String scanTime;
     private Constants.Actions action;
+    private Map<String,Object> additionalInfo=new HashMap<>();
 
+    public Map<String, Object> getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(Map<String, Object> additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
     public String getScanTime() {
         return scanTime;
     }

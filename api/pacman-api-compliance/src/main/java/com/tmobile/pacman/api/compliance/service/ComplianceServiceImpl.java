@@ -1290,9 +1290,9 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
     }
 
     @Override
-    public IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds) throws ServiceException {
+    public IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds, String revokedBy) throws ServiceException {
         try {
-            return repository.revokeAndUpdateMultipleIssueDetails(assetGroup, issueIds);
+            return repository.revokeAndUpdateMultipleIssueDetails(assetGroup, issueIds, revokedBy);
         } catch (DataException e) {
             throw new ServiceException(e);
         }

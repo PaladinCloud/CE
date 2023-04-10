@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.tmobile.pacman.common.AutoFixAction;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.dto.NotificationBaseRequest;
-import com.tmobile.pacman.dto.AutoFixTransaction;
 import com.tmobile.pacman.dto.PolicyViolationNotificationRequest;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.utils.Constants;
@@ -15,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.tmobile.pacman.common.PacmanSdkConstants.*;
 import static com.tmobile.pacman.commons.PacmanSdkConstants.POLICY_ID;
@@ -38,6 +35,7 @@ public class NotificationUtils {
                 String annotationId = CommonUtils.getUniqueAnnotationId(annotation);
                 annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
+
                 if (isOpen && null == issueAttributes && PacmanSdkConstants.STATUS_OPEN.equals(annotation.get(PacmanSdkConstants.ISSUE_STATUS_KEY))) {
                     notificationDetailsList.add(getNotificationBaseRequest(annotation, hostName, true, CREATE_VIOLATION_EVENT_NAME));
                 } else if (!isOpen) {
@@ -80,6 +78,14 @@ public class NotificationUtils {
         request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
                 PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+
+        //populate tags information into additionalInfo field.
+        Map<String,String> tagsKeyAndValueMap = new HashMap<>();
+        annotation.entrySet().stream().filter(obj -> obj.getKey().startsWith("tags.")).forEach(obj -> tagsKeyAndValueMap.put(obj.getKey().substring(5), obj.getValue()));
+        request.getAdditionalInfo().put(TAG_DETAILS,tagsKeyAndValueMap);
+        request.getAdditionalInfo().put(CLOUD_TYPE,annotation.get(DATA_SOURCE_KEY));
+        request.getAdditionalInfo().put(TARGET_TYPE,annotation.get(TARGET_TYPE));
+
         notificationBaseRequest.setPayload(request);
         return notificationBaseRequest;
     }
@@ -89,6 +95,7 @@ public class NotificationUtils {
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
             Gson gson = new Gson();
             String hostName = CommonUtils.getPropValue(HOSTNAME);
+
             NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
             notificationBaseRequest.setEventCategory(Constants.NotificationTypes.AUTOFIX);
             notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.AUTOFIX.getValue());
@@ -101,6 +108,13 @@ public class NotificationUtils {
             autofixNotificationRequest.setSeverity(policyParam.get("severity").toUpperCase());
             autofixNotificationRequest.setWaitingTime(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
             autofixNotificationRequest.setIssueId(annotation.get(PacmanSdkConstants.ANNOTATION_PK));
+
+            //populate tags information into additionalInfo field.
+            Map<String,String> tagsKeyAndValueMap = new HashMap<>();
+            annotation.entrySet().stream().filter(obj -> obj.getKey().startsWith("tags.")).forEach(obj -> tagsKeyAndValueMap.put(obj.getKey().substring(5), obj.getValue()));
+            autofixNotificationRequest.getAdditionalInfo().put(TAG_DETAILS,tagsKeyAndValueMap);
+            autofixNotificationRequest.getAdditionalInfo().put(CLOUD_TYPE,annotation.get(DATA_SOURCE_KEY));
+            autofixNotificationRequest.getAdditionalInfo().put(TARGET_TYPE,annotation.get(TARGET_TYPE));
 
             String accountName = annotation.get("accountname");
             if (autofixActionEmail == AutoFixAction.AUTOFIX_ACTION_EMAIL && "Sandbox".equalsIgnoreCase(accountName)) {
@@ -166,35 +180,40 @@ public class NotificationUtils {
 
     }
 
-    public static void triggerSilentAutofixNotification(List<AutoFixTransaction> silentautoFixTrans, Map<String, String> policyParam) {
+    public static void triggerSilentAutofixNotification(List<Map<String,String>> silentAutofixAnnotations, Map<String, String> policyParam) {
 
         try{
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
             Gson gson = new Gson();
             String hostName = CommonUtils.getPropValue(HOSTNAME);
 
-            for(AutoFixTransaction autoFixTransaction: silentautoFixTrans){
+            for(Map<String,String> autofixAnnotation: silentAutofixAnnotations){
                 NotificationBaseRequest notificationBaseRequest = new NotificationBaseRequest();
                 notificationBaseRequest.setEventCategory(Constants.NotificationTypes.AUTOFIX);
                 notificationBaseRequest.setEventCategoryName(Constants.NotificationTypes.AUTOFIX.getValue());
                 notificationBaseRequest.setSubject(SILENT_AUTOFIX_SUBJECT);
-                notificationBaseRequest.setEventName(String.format(SILENT_AUTOFIX_EVENT_NAME,autoFixTransaction.getResourceId()));
-                notificationBaseRequest.setEventDescription(String.format(SILENT_AUTOFIX_EVENT_NAME,autoFixTransaction.getResourceId()));
+                notificationBaseRequest.setEventName(String.format(SILENT_AUTOFIX_EVENT_NAME,autofixAnnotation.get(RESOURCE_ID)));
+                notificationBaseRequest.setEventDescription(String.format(SILENT_AUTOFIX_EVENT_NAME,autofixAnnotation.get(RESOURCE_ID)));
                 AutofixNotificationRequest autofixNotificationRequest = new AutofixNotificationRequest();
                 notificationBaseRequest.setPayload(autofixNotificationRequest);
                 autofixNotificationRequest.setPolicyName(policyParam.get(POLICY_DISPLAY_NAME));
                 autofixNotificationRequest.setPolicyNameLink(hostName + POLICY_DETAILS_UI_PATH + policyParam.get(POLICY_ID) + "/true?ag=" + policyParam.get("assetGroup"));
-                autofixNotificationRequest.setResourceId(autoFixTransaction.getResourceId());
-                autofixNotificationRequest.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + policyParam.get(TARGET_TYPE) + "/" + autoFixTransaction.getResourceId() + "?ag=" + policyParam.get("assetGroup"));
+                autofixNotificationRequest.setResourceId(autofixAnnotation.get(RESOURCE_ID));
+                autofixNotificationRequest.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + policyParam.get(TARGET_TYPE) + "/" + autofixAnnotation.get(RESOURCE_ID) + "?ag=" + policyParam.get("assetGroup"));
                 autofixNotificationRequest.setSeverity(policyParam.get("severity").toUpperCase());
                 autofixNotificationRequest.setWaitingTime(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_WAITING_TIME));
-                autofixNotificationRequest.setIssueId(autoFixTransaction.getIssueId());
+                autofixNotificationRequest.setIssueId(autofixAnnotation.get(ANNOTATION_PK));
                 autofixNotificationRequest.setAction(AutoFixAction.AUTOFIX_ACTION_FIX);
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern(NOTIFICATION_TIME_FORMAT);
                 LocalDateTime presentTime = LocalDateTime.now(Clock.systemUTC());
-                String discoveredOn = autoFixTransaction.getAdditionalInfo();
+                String discoveredOn = autofixAnnotation.get(CREATED_DATE);
                 autofixNotificationRequest.setDiscoveredOn(getDateTimeInUserFormat(discoveredOn));
                 autofixNotificationRequest.setAutofixedOn(dtf.format(presentTime));
+                Map<String,String> tagsKeyAndValueMap = new HashMap<>();
+                autofixAnnotation.entrySet().stream().filter(obj -> obj.getKey().startsWith("tags.")).forEach(obj -> tagsKeyAndValueMap.put(obj.getKey().substring(5),obj.getValue()));
+                autofixNotificationRequest.getAdditionalInfo().put(TAG_DETAILS,tagsKeyAndValueMap);
+                autofixNotificationRequest.getAdditionalInfo().put(CLOUD_TYPE,autofixAnnotation.get(DATA_SOURCE_KEY));
+                autofixNotificationRequest.getAdditionalInfo().put(TARGET_TYPE,autofixAnnotation.get(TARGET_TYPE));
                 notificationBaseRequestList.add(notificationBaseRequest);
             }
             if (!notificationBaseRequestList.isEmpty()) {
@@ -202,7 +221,7 @@ public class NotificationUtils {
                 String notifyUrl = CommonUtils.getPropValue(PacmanSdkConstants.NOTIFICATION_URL);
                 com.tmobile.pacman.commons.utils.CommonUtils.doHttpPost(notifyUrl, notificationDetailsStr);
                 if(LOGGER.isInfoEnabled()){
-                    LOGGER.info("{} Silent Autofix Notification sent for violations of policy \"{}\"",silentautoFixTrans.size(),policyParam.get(POLICY_DISPLAY_NAME));
+                    LOGGER.info("{} Silent Autofix Notification sent for violations of policy \"{}\"",silentAutofixAnnotations.size(),policyParam.get(POLICY_DISPLAY_NAME));
                 }
             }
         }

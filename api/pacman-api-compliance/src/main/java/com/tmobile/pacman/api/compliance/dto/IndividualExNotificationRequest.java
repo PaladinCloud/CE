@@ -2,6 +2,9 @@ package com.tmobile.pacman.api.compliance.dto;
 
 import com.tmobile.pacman.api.commons.dto.ExemptionCommonDetails;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class IndividualExNotificationRequest extends ExemptionCommonDetails {
     private String resourceId;
     private String resourceIdLink;
@@ -13,6 +16,16 @@ public class IndividualExNotificationRequest extends ExemptionCommonDetails {
     private String exemptionExpiringOn;
     private String createdBy;
     private String policyNameLink;
+
+    private Map<String,Object> additionalInfo=new HashMap<>();
+
+    public Map<String, Object> getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(Map<String, Object> additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
 
     public String getPolicyNameLink() {
         return policyNameLink;
