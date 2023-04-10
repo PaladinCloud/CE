@@ -122,7 +122,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         if (this.haveNewNotification) {
             this.haveNewNotification = false;
         }
-        this.router.navigate(['pl/compliance/health-notifications'], {
+        this.router.navigate(['pl/notifications/notifications-list'], {
             queryParams: this.route.snapshot.queryParams,
         });
     }

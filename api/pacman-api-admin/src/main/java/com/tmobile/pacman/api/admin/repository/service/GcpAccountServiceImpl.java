@@ -1,13 +1,18 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.transfer.MultipleFileUpload;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
+import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.compute.v1.*;
+import com.google.common.collect.Lists;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -19,11 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Field;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.Map;
 
@@ -66,52 +67,50 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
 
         String credJson=generateCredentialJson(accountData);
-        String fileName= GCP_CREDENTIAL +accountData.getProjectId()+ JSON;
-        new File(credentialFilePath).mkdirs();
-        String credFilePath = credentialFilePath + File.separator + fileName;
-        //create credential json file
-        File credFile=new File(credFilePath);
-        if(!credFile.exists()){
-            try {
-                writeToFilePath(credFilePath,credJson,false);
-            } catch (IOException e) {
-                LOGGER.error("Error in generating credential file:{} ",e.getMessage());
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
-                return validateResponse;
-            }
-        }else{
-            LOGGER.info("File already exists");
-        }
-        //set env variable
-        setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", credFilePath);
-
-        //connect
         GoogleCredentials credentials = null;
         try {
-            credentials = GoogleCredentials.getApplicationDefault();
+            credentials=GoogleCredentials.fromStream(new ByteArrayInputStream(credJson.getBytes()))
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+
             LOGGER.info("Credentials created: {}",credentials);
-            validateResponse.setMessage("Connection to project established successfully");
-            validateResponse.setValidationStatus(SUCCESS);
+            InstancesSettings instancesSettings = InstancesSettings.newBuilder()
+                    .setCredentialsProvider(FixedCredentialsProvider.create(credentials))
+                    .build();
+            try( InstancesClient instancesClient =InstancesClient.create(instancesSettings)){
+                LOGGER.debug("Client created successfully, trying to fetch data.");
+
+                AggregatedListInstancesRequest aggregatedListInstancesRequest = AggregatedListInstancesRequest
+                        .newBuilder()
+                        .setProject(accountData.getProjectId())
+                        .build();
+                InstancesClient.AggregatedListPagedResponse response = instancesClient
+                        .aggregatedList(aggregatedListInstancesRequest);
+                LOGGER.info("AggregatedListPagedResponse fetched: {}",response);
+                for (Map.Entry<String, InstancesScopedList> zoneInstances : response.iterateAll()) {
+                    // Instances scoped by each zone
+                    String zone = zoneInstances.getKey();
+                    if (!zoneInstances.getValue().getInstancesList().isEmpty()) {
+                        String zoneName = zone.substring(zone.lastIndexOf("/") + 1);
+                        LOGGER.debug("Instances at %s: {} ", zoneName);
+                        for (Instance instance : zoneInstances.getValue().getInstancesList()) {
+                            LOGGER.debug((instance.getName() + " " + instance.getCreationTimestamp()));
+                        }
+                    }
+                }
+                validateResponse.setMessage("Connection to project established successfully");
+                validateResponse.setValidationStatus(SUCCESS);
+            }
+
         } catch (IOException e) {
             LOGGER.error("Error in connecting to project :{} ",e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setErrorDetails(e.getMessage());
             validateResponse.setMessage(ERROR_WHILE_CREATING_CREDENTIAL_FILE);
-            return validateResponse;
-        }finally {
-            //reset environment variable
-            setEnvironment("GOOGLE_APPLICATION_CREDENTIALS", "");
-            File file=new File(credFilePath);
-            try {
-                Files.deleteIfExists(file.toPath());
-            }catch (IOException e) {
-                LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
-                validateResponse.setValidationStatus(FAILURE);
-                validateResponse.setErrorDetails(e.getMessage());
-                validateResponse.setMessage("Account validation failed");
-            }
+        }catch (Exception e) {
+            LOGGER.error("Error in connecting to project :{} ",e.getMessage());
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setErrorDetails(e.getMessage());
+            validateResponse.setMessage("Error in validating account");
         }
         return validateResponse;
     }
@@ -143,15 +142,20 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }else{
             LOGGER.info("File already exists");
         }
-        uploadFileToS3(s3Bucket,s3CredData,s3Region,credFilePath);
-        createAccountInDb(accountData.getProjectId(),accountData.getProjectName(), Constants.GCP);
+        validateResponse = createAccountInDb(accountData.getProjectId(), accountData.getProjectName(), Constants.GCP);
+        if (validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+            LOGGER.error("Account already exists");
+            return validateResponse;
+        }
+        uploadFileToS3(s3Bucket,s3CredData,s3Region,credentialFilePath,fileName);
+
         //update gcp enable flag for scheduler job
         String key="gcp.enabled";
         String value = "true";
         String application = "job-scheduler";
         updateConfigProperty(key, value, application);
-        validateResponse.setValidationStatus(SUCCESS);
-        validateResponse.setMessage("Account added successfully");
+        validateResponse.setProjectId(accountData.getProjectId());
+        validateResponse.setAccountName(accountData.getProjectName());
         return validateResponse;
     }
 
@@ -213,12 +217,13 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         File file=new File(credFilePath);
         try {
             Files.deleteIfExists(file.toPath());
-
+            deleteS3File(s3Bucket,s3Region,s3CredData,fileName);
 
             //delete entry from db
-            deleteAccountFromDB(projectId);
+            response=deleteAccountFromDB(projectId);
+            response.setType(Constants.GCP);
 
-        } catch (IOException e) {
+        } catch (IOException | SdkClientException e) {
             LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
             response.setValidationStatus(FAILURE);
             response.setErrorDetails(e.getMessage());
@@ -258,32 +263,23 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             bw.flush();
         }
     }
-    public void setEnvironment(String key, String value) {
-        try {
-            Map<String, String> env = System.getenv();
-            Class<?> cl = env.getClass();
-            Field field = cl.getDeclaredField("m");
-            field.setAccessible(true);
-            Map<String, String> writableEnv = (Map<String, String>) field.get(env);
-            writableEnv.put(key, value);
-        } catch (Exception e) {
-            throw new IllegalStateException("Failed to set environment variable", e);
-        }
-    }
-    public void uploadFileToS3(String s3Bucket,String dataFolder, String s3Region,String filePath){
+    public void uploadFileToS3(String s3Bucket,String dataFolder, String s3Region,String credPath,String filePath){
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-        uploadAllFiles(s3client,s3Bucket,dataFolder,filePath);
+        uploadAllFiles(s3client,s3Bucket,dataFolder,credPath,filePath);
 
     }
-
-    private void uploadAllFiles(AmazonS3 s3client,String s3Bucket,String dataFolderS3, String filePath){
+    public void deleteS3File(String s3Bucket, String s3Region, String s3Key, String credFile) throws SdkClientException {
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+        DeleteObjectRequest deleteRequest=new DeleteObjectRequest(s3Bucket,s3Key+"/"+credFile);
+        s3client.deleteObject(deleteRequest);
+    }
+    private void uploadAllFiles(AmazonS3 s3client,String s3Bucket,String dataFolderS3, String credPath, String filePath){
         LOGGER.info("Uploading files to bucket: {} folder: {}",s3Bucket,dataFolderS3);
         TransferManager xferMgr = TransferManagerBuilder.standard().withS3Client(s3client).build();
         try {
-            MultipleFileUpload xfer = xferMgr.uploadDirectory(s3Bucket,
-                    dataFolderS3, new File(filePath), false);
-
+            Upload xfer = xferMgr.upload(s3Bucket, dataFolderS3+"/"+filePath, new File(credPath+File.separator+filePath));
             while(!xfer.isDone()){
                 delayForCompletion();
                 LOGGER.debug("Transfer % Completed :{}" ,xfer.getProgress().getPercentTransferred());

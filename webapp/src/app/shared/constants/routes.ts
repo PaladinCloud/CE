@@ -18,7 +18,7 @@ import { IssueDetailsComponent } from "../../pacman-features/modules/compliance/
 import { VulnerabilitiesComplianceComponent } from "../../pacman-features/modules/compliance/vulnerabilities-compliance/vulnerabilities-compliance.component";
 import { PatchingComplianceComponent } from "../../pacman-features/modules/compliance/patching-compliance/patching-compliance.component";
 import { TaggingComplianceComponent } from "../../pacman-features/modules/compliance/tagging-compliance/tagging-compliance.component";
-import { CloudNotificationsComponent } from "../../pacman-features/modules/compliance/cloud-notifications/cloud-notifications.component";
+import { CloudNotificationsComponent } from "../../pacman-features/modules/notifications/cloud-notifications/cloud-notifications.component";
 import { EventDetailsComponent } from "../../pacman-features/modules/compliance/event-details/event-details.component";
 import { CertificateComplianceComponent } from "../../pacman-features/modules/compliance/certificate-compliance/certificate-compliance.component";
 import { PolicyDetailsComponent } from "../../pacman-features/modules/compliance/policy-details/policy-details.component";
@@ -72,6 +72,7 @@ import { RecommendationsDetailsComponent } from "../../pacman-features/modules/c
 import { AssetDistributionComponent } from "src/app/pacman-features/modules/assets/asset-distribution/asset-distribution.component";
 import { UserManagementComponent } from "src/app/pacman-features/modules/admin/user-management/user-management.component";
 import { AddAccountComponent } from "src/app/pacman-features/modules/admin/account-management/add-account/add-account.component";
+import { NotificationDetailsComponent } from "src/app/pacman-features/modules/notifications/notification-details/notification-details.component";
 
 export const COMPLIANCE_ROUTES = [
   {
@@ -160,22 +161,6 @@ export const COMPLIANCE_ROUTES = [
     canActivate: [AuthGuardService],
   },
   {
-    path: "health-notifications",
-    component: CloudNotificationsComponent,
-    data: {
-      title: "Health Notifications",
-    },
-    canActivate: [AuthGuardService],
-  },
-  {
-    path: "health-notifications/event-details/:arn",
-    component: EventDetailsComponent,
-    data: {
-      title: "Event Details",
-    },
-    canActivate: [AuthGuardService],
-  },
-  {
     path: "certificates",
     component: CertificatesComponent,
     data: {
@@ -238,6 +223,25 @@ export const COMPLIANCE_ROUTES = [
     component: RecommendationsDetailsComponent,
     data: {
       title: "Recommendations Detail",
+    },
+    canActivate: [AuthGuardService],
+  },
+];
+
+export const NOTIFICATIONS_ROUTES = [
+  {
+    path: "notification-details",
+    component: NotificationDetailsComponent,
+    data: {
+      title: "Notifications Details",
+    },
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: "notifications-list",
+    component: CloudNotificationsComponent,
+    data: {
+      title: "Notifications",
     },
     canActivate: [AuthGuardService],
   },

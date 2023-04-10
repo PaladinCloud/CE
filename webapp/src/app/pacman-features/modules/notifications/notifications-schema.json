@@ -1,0 +1,201 @@
+
+{
+    "paladincloud": {
+        "violations": {
+            "common": [
+                {
+                    "keyDisplayName": "Policy",
+                    "key": "policyName",
+                    "link": "policyNameLink"
+                },
+                {
+                    "keyDisplayName": "Violation",
+                    "key": "issueId",
+                    "link": "issueIdLink"
+                },
+                {
+                    "keyDisplayName": "Severity",
+                    "key": "severity"
+                },
+                {
+                    "keyDisplayName": "Autofix",
+                    "key": "autofixAvailable"
+                },
+                {
+                    "keyDisplayName": "Discovered on",
+                    "key": "scanTime"
+                }
+            ],
+            "open": [],
+            "closed": [
+                {
+                    "keyDisplayName": "Fixed on",
+                    "key": "policyName"
+                }
+            ]
+        },
+        "autofix": {
+            "common": [
+                {
+                    "keyDisplayName": "Policy",
+                    "key": "policyName",
+                    "link": "policyNameLink"
+                },
+                {
+                    "keyDisplayName": "Violation",
+                    "key": "issueId",
+                    "link": "issueIdLink"
+                },
+                {
+                    "keyDisplayName": "Severity",
+                    "key": "severity"
+                },
+                {
+                    "keyDisplayName": "Discovered on",
+                    "key": "scanTime"
+                }
+            ],
+            "violated": [
+                {
+                    "keyDisplayName": "Wait time",
+                    "key": "waitingTime"
+                },
+                {
+                    "keyDisplayName": "Scheduled on",
+                    "key": "scanTime"
+                }
+            ],
+            "resolved": [
+                {
+                    "keyDisplayName": "Autofixed on",
+                    "key": "scanTime"
+                }
+            ]
+        },
+        "exemptions": {
+            "common": [
+                {
+                    "keyDisplayName": "Policy",
+                    "key": "policyName",
+                    "link": "policyNameLink"
+                },
+                {
+                    "keyDisplayName": "Reason",
+                    "key": "reason"
+                },
+                {
+                    "keyDisplayName": "Resource",
+                    "key": "resourceId",
+                    "link": "resourceIdLink"
+                }
+            ],
+            "request": [
+                {
+                    "keyDisplayName": "Requested by",
+                    "key": "requestedBy"
+                },
+                {
+                    "keyDisplayName": "Requested on",
+                    "key": "requestedOn"
+                },
+                {
+                    "keyDisplayName": "Expires on",
+                    "key": "expiresOn"
+                }
+            ],
+            "granted": [
+                {
+                    "keyDisplayName": "Requested by",
+                    "key": "requestedBy"
+                },
+                {
+                    "keyDisplayName": "Requested on",
+                    "key": "requestedOn"
+                },
+                {
+                    "keyDisplayName": "Granted by",
+                    "key": "grantedBy"
+                },
+                {
+                    "keyDisplayName": "Granted on",
+                    "key": "grantedOn"
+                },
+                {
+                    "keyDisplayName": "Expires on",
+                    "key": "expiresOn"
+                }
+            ],
+            "revoked": [
+                {
+                    "keyDisplayName": "Revoked by",
+                    "key": "revokedBy"
+                },
+                {
+                    "keyDisplayName": "Revoked on",
+                    "key": "revokedOn"
+                },
+                {
+                    "keyDisplayName": "Expires on",
+                    "key": "expiresOn"
+                }
+            ],
+            "expired": [
+                {
+                    "keyDisplayName": "Created by",
+                    "key": "createdBy"
+                },
+                {
+                    "keyDisplayName": "Created on",
+                    "key": "createdOn"
+                },
+                {
+                    "keyDisplayName": "Expired on",
+                    "key": "expiredOn"
+                }
+            ]
+        }
+    },
+    "aws": {
+        "accountnotification": {
+            "common": [
+                {
+                    "keyDisplayName": "Account",
+                    "key": "accountname"
+                },
+                {
+                    "keyDisplayName": "Cloud",
+                    "key": "_cloudType"
+                },
+                {
+                    "keyDisplayName": "Discovered on",
+                    "key": "firstdiscoveredon"
+                },
+                {
+                    "keyDisplayName": "Description",
+                    "key": "latestdescription"
+                }
+            ]
+        },
+        "issue": {
+            "common": [
+                {
+                    "keyDisplayName": "Account",
+                    "key": "accountname"
+                },
+                {
+                    "keyDisplayName": "Cloud",
+                    "key": "_cloudType"
+                },
+                {
+                    "keyDisplayName": "Discovered on",
+                    "key": "firstdiscoveredon"
+                },
+                {
+                    "keyDisplayName": "Description",
+                    "key": "latestdescription"
+                }
+            ]
+        }
+    },
+    "azure": {}
+}

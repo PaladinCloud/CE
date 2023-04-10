@@ -201,8 +201,7 @@ class Buildpacbot(object):
                 if "cognitoTokenURL: '" in line:
                     lines[idx] = "cognitoTokenURL: '" + self.domain_cognito_url + "/oauth2/token" + "',\n"
                 if "logout: '" in line:
-                    lines[
-                        idx] = "logout: '" + self.domain_cognito_url + "/logout?" + "client_id=" + self.client_cognito_id + "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url + "',\n"
+                    lines[idx] = "logout: '" + self.domain_cognito_url + "/logout?" + "client_id=" + self.client_cognito_id + "&response_type=code&scope=openid+profile&" + "redirect_uri=" + self.cognito_callback_url + "',\n"
                 if "CloudformationTemplateUrl: '" in line:
                     lines[idx] = "CloudformationTemplateUrl:'" + self.cloudformation_template_url + "'\n"
 

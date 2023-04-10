@@ -61,31 +61,17 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
 
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
-        boolean isCreated=createAccountInDb(accountData.getAccountId(),accountData.getAccountName(),accountData.getPlatform());
-        AccountValidationResponse accountDetails=new AccountValidationResponse();
-        accountDetails.setAccountId(accountData.getAccountId());
-        accountDetails.setAccountName(accountData.getAccountName());
-        accountDetails.setType(accountData.getPlatform());
-        if(isCreated){
-            accountDetails.setMessage("configured");
-        }else{
-            accountDetails.setMessage("failed");
-        }
-        return accountDetails;
+        AccountValidationResponse response = createAccountInDb(accountData.getAccountId(), accountData.getAccountName(), accountData.getPlatform());
+        response.setAccountName(accountData.getAccountName());
+        response.setAccountId(accountData.getAccountId());
+        return response;
     }
 
     @Override
     public AccountValidationResponse deleteAccount(String accountId) {
-        boolean isDeleted = deleteAccountFromDB(accountId);
-        AccountValidationResponse accountDetails=new AccountValidationResponse();
-        accountDetails.setAccountId(accountId);
-        accountDetails.setType(Constants.AWS);
-        if(isDeleted){
-            accountDetails.setMessage("Account deleted successfully");
-        }else{
-            accountDetails.setMessage("Account deletion failed");
-        }
-        return accountDetails;
+        AccountValidationResponse response = deleteAccountFromDB(accountId);
+        response.setType(Constants.AWS);
+        return response;
     }
 
 

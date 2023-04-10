@@ -88,6 +88,7 @@ public class AccountsController {
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }
+
     @ApiOperation(httpMethod = "GET", value = "API to fetch base account details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(path = "/baseAccount",produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getBaseAccount(){

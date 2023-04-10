@@ -8,8 +8,10 @@ import { Component, Input, OnInit } from '@angular/core';
 export class TextWithIconComponent implements OnInit {
 
   @Input() text;
-  @Input() iconUrl;
+  @Input() preImagePath;
+  @Input() postImagePath;
   @Input() textVariant;
+  @Input() gap = 8;
 
   constructor() { }
 
