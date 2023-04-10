@@ -74,7 +74,12 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.router.navigateByUrl(link).then(response => {
+        this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
+        this.router.navigate(
+            [link], 
+            {
+                "queryParamsHandling": "merge"
+            }).then(response => {
             this.logger.log('info', 'Successfully navigated to details page: ' + response);
         })
             .catch(error => {
@@ -134,7 +139,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
                                 details.push({
                                     name: obj.keyDisplayName,
                                     value: value,
-                                    link: obj.link ? response.payload[obj.link] : '',
+                                    link: obj.link ? response.payload[obj.link].replace(window.location.origin, "") : '',
                                     preImgSrc: preImgSrc
                                 })
                             })
