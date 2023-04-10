@@ -2414,6 +2414,7 @@ INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (6,'certificat
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (7,'patching');
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (8,'AssetListing');
 INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (9,'digitaldev');
+INSERT IGNORE INTO pac_v2_ui_filters (filterId,filterName) VALUES (10,'notification');
 
 /* UI Filter Options */
 
@@ -2433,6 +2434,8 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (17,1,'Severity','severity.keyword','/compliance/v1/filters/severities?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (18,1,'Category','category.keyword','/compliance/v1/filters/categories?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (19,1,'Status','issueStatus.keyword','/compliance/v1/filters/issuestatus?ag=aws');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (20,10,'Type','eventCategoryName.keyword','/compliance/v1/filters/eventtype');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (21,10,'Source','eventSourceName.keyword','/compliance/v1/filters/eventsource');
 
 
 /* UI Widgets */
