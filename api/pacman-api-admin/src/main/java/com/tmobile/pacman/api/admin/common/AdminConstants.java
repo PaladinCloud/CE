@@ -98,6 +98,8 @@ public final class AdminConstants {
 	public static final String ACCOUNT_DELETION_SUCCESS             =   "Account has been successfully deleted";
 	public static final String ACCOUNT_DELETE_FAILED                =   "Failed in deleting the Account";
 	public static final Integer TEMPORARY_CREDS_VALID_SECONDS 		=   3600;
+
+	public static final String COUNT = "count";
 	public static final String DEFAULT_SESSION_NAME 				=   "PAC_GET_ADMIN_DATA_SESSION";
 	
 	public static final String JOBID_OR_POLICYID_NOT_EMPTY            =   "Both Job Id or Policy Id cannot be blank";
@@ -105,6 +107,9 @@ public final class AdminConstants {
     
 	public static final String ES_EXCEPTION_INDEX					= 	"/exceptions";
 	public static final String INIT_ES_CREATE_INDEX					= 	"INIT_ES_CREATE_INDEX";
+
+	public static final String INDEX					= 	"index";
+	public static final String ACTIONS = "actions";
 	
 	public static final String ERROR_CONFIG_MANDATORY				=	"Config key, Config value and application are mandatory";
     public static final String LATEST								=	"latest";

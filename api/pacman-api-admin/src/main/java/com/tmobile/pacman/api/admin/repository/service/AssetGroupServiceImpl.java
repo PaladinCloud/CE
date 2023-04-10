@@ -69,23 +69,20 @@ import org.springframework.util.CollectionUtils;
 public class AssetGroupServiceImpl implements AssetGroupService {
 
 	private static final Logger log = LoggerFactory.getLogger(AssetGroupServiceImpl.class);
-	
+
 	private static final String ALIASES = "/_aliases";
-		
+
 	@Autowired
 	private AssetGroupRepository assetGroupRepository;
-	
+
 	@Autowired
 	private TargetTypesRepository targetTypesRepository;
-	
+
 	@Autowired
 	private CommonService commonService;
-	
+
 	@Autowired
 	private ObjectMapper mapper;
-	
-	@Autowired
-	private AssetGroupTargetDetailsRepository assetGroupTargetDetailsRepository;
 
 	@Autowired
 	private AssetGroupTargetDetailsService assetGroupTargetDetailsService;
@@ -98,6 +95,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 
 	@Autowired
 	private CreateAssetGroupService createAssetGroupService;
+
 	@Override
 	public Collection<String> getAllAssetGroupNames() {
 		return assetGroupRepository.getAllAssetGroupNames();
@@ -117,7 +115,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			if(!StringUtils.isEmpty(assetGroup.getGroupType()) && !assetGroup.getGroupType().equalsIgnoreCase("stakeholder")){
 				AssetGroupView assetGroupView = new AssetGroupView();
 				List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
-				Long sum = countMap==null ? 0L : countMap.stream().map(x -> x.get("count")).collect(Collectors.toList())
+				Long sum = countMap==null ? 0L : countMap.stream().map(x -> x.get(AdminConstants.COUNT)).collect(Collectors.toList())
 						.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
 				assetGroupView.setAssetCount(sum);
 				assetGroupView.setGroupId(assetGroup.getGroupId());
@@ -129,45 +127,45 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				allAssetGroupList.add(assetGroupView);
 			}
 		});
-		return new PageImpl<AssetGroupView>(allAssetGroupList, PageRequest.of(allAssetGroups.getNumber(), allAssetGroups.getSize()),allAssetGroups.getTotalElements());
+		return new PageImpl<>(allAssetGroupList, PageRequest.of(allAssetGroups.getNumber(), allAssetGroups.getSize()),allAssetGroups.getTotalElements());
 	}
 
 	private Page<AssetGroupView> buildAssetGroupView(final Page<AssetGroupDetails> allAssetGroups, Map<String, String> filterMap) {
 		List<AssetGroupView> allAssetGroupListTemp = Lists.newArrayList();
-		allAssetGroups.getContent().forEach(assetGroup -> {
-			if(!StringUtils.isEmpty(assetGroup.getGroupType()) && !assetGroup.getGroupType().equalsIgnoreCase("stakeholder")){
-				AssetGroupView assetGroupView = new AssetGroupView();
-				List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
-				Long sum = countMap==null ? 0L : countMap.stream().map(x -> x.get("count")).collect(Collectors.toList())
-						.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
-				assetGroupView.setAssetCount(sum);
-				assetGroupView.setGroupId(assetGroup.getGroupId());
-				assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
-				assetGroupView.setType(assetGroup.getGroupType());
-				assetGroupView.setGroupName(assetGroup.getGroupName());
-				assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
-				assetGroupView.setType(assetGroup.getGroupType());
-				allAssetGroupListTemp.add(assetGroupView);
-			}
+		List<AssetGroupDetails> assetGrpsList = allAssetGroups.getContent().stream().filter(assetGroup -> (!StringUtils.isEmpty(assetGroup.getGroupType()) &&
+				!assetGroup.getGroupType().equalsIgnoreCase("stakeholder"))).collect(Collectors.toList());
+		assetGrpsList.forEach(assetGroup -> {
+			AssetGroupView assetGroupView = new AssetGroupView();
+			List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
+			Long sum = countMap.stream().map(x -> x.get(AdminConstants.COUNT)).collect(Collectors.toList())
+					.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
+			assetGroupView.setAssetCount(sum);
+			assetGroupView.setGroupId(assetGroup.getGroupId());
+			assetGroupView.setCriteriaDetails(assetGroup.getCriteriaDetails());
+			assetGroupView.setType(assetGroup.getGroupType());
+			assetGroupView.setGroupName(assetGroup.getGroupName());
+			assetGroupView.setCreatedBy(assetGroup.getCreatedBy());
+			assetGroupView.setType(assetGroup.getGroupType());
+			allAssetGroupListTemp.add(assetGroupView);
 		});
 
 		List<AssetGroupView> allAssetGroupList = allAssetGroupListTemp;
 
 		if(filterMap != null){
 			if(filterMap.containsKey(Constants.GROUP_NAME) && filterMap.get(Constants.GROUP_NAME) != null){
-				allAssetGroupList =  allAssetGroupList.stream().filter(x -> x.getGroupName().toLowerCase().equals(filterMap.get(Constants.GROUP_NAME).toLowerCase())).collect(Collectors.toList());
+				allAssetGroupList =  allAssetGroupList.stream().filter(x -> x.getGroupName().equalsIgnoreCase(filterMap.get(Constants.GROUP_NAME))).collect(Collectors.toList());
 			}
 			if(filterMap.containsKey(Constants.TYPE) && filterMap.get(Constants.TYPE) != null){
-				allAssetGroupList =  allAssetGroupList.stream().filter(x -> StringUtils.isNotEmpty(x.getType())).filter(x -> x.getType().toLowerCase().equals(filterMap.get(Constants.TYPE).toLowerCase())).collect(Collectors.toList());
+				allAssetGroupList =  allAssetGroupList.stream().filter(x -> StringUtils.isNotEmpty(x.getType())).filter(x -> x.getType().equalsIgnoreCase(filterMap.get(Constants.TYPE))).collect(Collectors.toList());
 			}
 			if(filterMap.containsKey(Constants.CREATED_BY) && filterMap.get(Constants.CREATED_BY) != null){
-				allAssetGroupList =  allAssetGroupList.stream().filter(x -> StringUtils.isNotEmpty(x.getCreatedBy())).filter(x -> x.getCreatedBy().toLowerCase().equals(filterMap.get(Constants.CREATED_BY).toLowerCase())).collect(Collectors.toList());
+				allAssetGroupList =  allAssetGroupList.stream().filter(x -> StringUtils.isNotEmpty(x.getCreatedBy())).filter(x -> x.getCreatedBy().equalsIgnoreCase(filterMap.get(Constants.CREATED_BY))).collect(Collectors.toList());
 			}
 			if(filterMap.containsKey(Constants.ASSET_COUNT) && filterMap.get(Constants.ASSET_COUNT) != null){
 				allAssetGroupList =  allAssetGroupList.stream().filter(x -> Long.compare(x.getAssetCount(), Long.valueOf(filterMap.get(Constants.ASSET_COUNT))) == 0).collect(Collectors.toList());
 			}
 		}
-		return new PageImpl<AssetGroupView>(allAssetGroupList, PageRequest.of(allAssetGroups.getNumber(), allAssetGroups.getSize()),allAssetGroups.getTotalElements());
+		return new PageImpl<>(allAssetGroupList, PageRequest.of(allAssetGroups.getNumber(), allAssetGroups.getSize()),allAssetGroups.getTotalElements());
 	}
 
 
@@ -177,10 +175,9 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		log.debug("Fetch counts from elastic search");
 
 		// ES query may possibly return other types as well.
-		AssetGroupServiceImpl repository;
 		Map<String, Long> countMap = esRepository.getAssetCountByAssetGroup(assetGroup, type, application);
 		List<String> validTypes = Lists.newArrayList();
-		if ("all".equals(type.toLowerCase())) {
+		if ("all".equalsIgnoreCase(type)) {
 			log.debug("Remove the entries which are not valid types");
 			List<Map<String, Object>> targetTypes = assetGroupTargetDetailsService.getTargetTypesByAssetGroupNameFromES(assetGroup);
 			validTypes = targetTypes.stream().map(obj -> obj.get(Constants.TYPE).toString())
@@ -218,7 +215,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	public AssetGroupDetails findByGroupName(String groupName) {
 		return assetGroupRepository.findByGroupName(groupName);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public String updateAssetGroupDetails(final CreateAssetGroup updateAssetGroupDetails, final String userId) throws PacManException {
@@ -235,7 +232,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 						throw new PacManException(UNEXPECTED_ERROR_OCCURRED);
 					}
 				} catch (Exception exception) {
-					log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 					throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 				}
 			} else {
@@ -243,30 +239,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			}
 		} else {
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
-		}			
-	}
-
-	public String getTargetTypesByAssetGroup(String aseetGroupName, String domain, String provider){
-		try {
-			Gson gson = new Gson();
-			String query = "{\"size\":\"0\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"_type\",\"size\":1000}}}}";
-			Map<Object,Object> attributes = gson.fromJson(gson.toJson(query),Map.class);
-			String endpoint = aseetGroupName+"/_search";
-			Response response = commonService.invokeAPI("GET", endpoint, mapper.writeValueAsString(attributes));
-			if(response != null) {
-				if (response.getStatusLine().getStatusCode() == 200) {
-					response.getEntity();
-				} else {
-					log.error("");
-				}
-			} else {
-				throw new PacManException(UNEXPECTED_ERROR_OCCURRED);
-			}
-		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
-			return null;
 		}
-		return null;
 	}
 
 	@Override
@@ -275,18 +248,18 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			if(createAssetGroupDetails == null || org.apache.commons.lang.StringUtils.isEmpty(createAssetGroupDetails.getGroupName()) || org.apache.commons.lang.StringUtils.isEmpty(createAssetGroupDetails.getType())){
 				throw new PacManException(AdminConstants.INVALID_REQUEST);
 			}
-			String aliasName = createAssetGroupDetails.getGroupName().toLowerCase().trim().replaceAll(" ","-");
-			log.info("Alias name to be created ::", aliasName);
+			String aliasName = createAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
+			log.info("Alias name to be created {}", aliasName);
 			AssetGroupDetails isAlreadyExisting = assetGroupRepository.findByGroupName(aliasName);
 			if(isAlreadyExisting != null){
-				log.info("Alias name to be created already exists in database with group id::", isAlreadyExisting.getGroupId());
+				log.info("Alias name to be created already exists in database with group id ");
 				throw new PacManException(AdminConstants.ASSET_GROUP_ALREADY_EXISTS);
 			}
 			CreateAssetGroup createAssetGroup = createAssetGroupService.createAliasForAssetGroup(createAssetGroupDetails);
 			Response response = commonService.invokeAPI("POST", ALIASES, mapper.writeValueAsString(createAssetGroup.getAlias()));
 			if(response != null) {
 				if (response.getStatusLine().getStatusCode() == 200) {
-					log.info("ES Service to create alias is successful::", response.getStatusLine().getStatusCode());
+					log.info("ES Service to create alias is successful {}", response.getStatusLine().getStatusCode());
 					return processCreateAssetGroupDetails(createAssetGroup, userId);
 				} else {
 					throw new PacManException(UNEXPECTED_ERROR_OCCURRED);
@@ -297,7 +270,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			}
 		} catch (Exception exception) {
 			log.error("Exception in creating asset group ");
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 		}
 	}
@@ -317,7 +289,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				throw new PacManException(UNEXPECTED_ERROR_OCCURRED);
 			}
 		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 		}
 	}
@@ -325,7 +296,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	@Override
 	public UpdateAssetGroupDetails getAssetGroupDetailsByIdAndDataSource(final String assetGroupId, final String dataSource) throws PacManException {
 		if(assetGroupRepository.existsById(assetGroupId)) {
-			AssetGroupDetails existingAssetGroupDetails = assetGroupRepository.findById(assetGroupId).get();	
+			AssetGroupDetails existingAssetGroupDetails = assetGroupRepository.findById(assetGroupId).get();
 			return buildAssetGroupDetails(existingAssetGroupDetails);
 		} else {
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
@@ -358,7 +329,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			assetGroupRepository.saveAndFlush(existingAssetGroupDetails);
 			return ASSET_GROUP_UPDATION_SUCCESS;
 		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 		}
 	}
@@ -377,11 +347,11 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private String processCreateAssetGroupDetails(final CreateAssetGroup createAssetGroupDetails, final String userId) throws PacManException {
 		AssetGroupDetails assetGroupDetails = new AssetGroupDetails();
 		try {
-			log.info("Persisting asset group in database::", createAssetGroupDetails);
+			log.info("Persisting asset group in database");
 			String dataSource = createAssetGroupDetails.getDatasource();
 			String assetGroupId = UUID.randomUUID().toString();
 			assetGroupDetails.setGroupId(assetGroupId);
-			assetGroupDetails.setGroupName(createAssetGroupDetails.getGroupName().toLowerCase().trim().replaceAll(" ", "-"));
+			assetGroupDetails.setGroupName(createAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ", "-"));
 			assetGroupDetails.setDisplayName(createAssetGroupDetails.getGroupName());
 			assetGroupDetails.setGroupType(createAssetGroupDetails.getType());
 			assetGroupDetails.setCreatedBy(createAssetGroupDetails.getCreatedBy());
@@ -394,10 +364,9 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			Set<AssetGroupCriteriaDetails> criteriaDetails = buildAssetGroupCriteria(createAssetGroupDetails.getConfiguration(), assetGroupId);
 			assetGroupDetails.setCriteriaDetails(criteriaDetails);
 			assetGroupRepository.save(assetGroupDetails);
-			log.info("Asset group saved successfully in  database::", assetGroupDetails);
+			log.info("Asset group saved successfully in  database");
 			return ASSET_GROUP_CREATION_SUCCESS;
 		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			deleteAssetGroupAlias(assetGroupDetails);
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 		}
@@ -409,7 +378,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			String dataSource = createAssetGroupDetails.getDataSourceName();
 			String assetGroupId = UUID.randomUUID().toString();
 			assetGroupDetails.setGroupId(assetGroupId);
-			assetGroupDetails.setGroupName(createAssetGroupDetails.getGroupName().toLowerCase().trim().replaceAll(" ", "-"));
+			assetGroupDetails.setGroupName(createAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ", "-"));
 			assetGroupDetails.setDisplayName(createAssetGroupDetails.getDisplayName());
 			assetGroupDetails.setGroupType(createAssetGroupDetails.getType());
 			assetGroupDetails.setCreatedBy(createAssetGroupDetails.getCreatedBy());
@@ -425,7 +394,6 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			assetGroupRepository.save(assetGroupDetails);
 			return ASSET_GROUP_CREATION_SUCCESS;
 		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			deleteAssetGroupAlias(assetGroupDetails);
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 		}
@@ -482,7 +450,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private UpdateAssetGroupDetails buildAssetGroupDetails(final AssetGroupDetails assetGroup) {
 		UpdateAssetGroupDetails assetGroupView = new UpdateAssetGroupDetails();
 		List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
-		Long sum = countMap==null ? 0L : countMap.stream().map(x -> x.get("count")).collect(Collectors.toList())
+		Long sum = countMap==null ? 0L : countMap.stream().map(x -> x.get(AdminConstants.COUNT)).collect(Collectors.toList())
 				.stream().map(x -> Long.valueOf(x.toString())).collect(Collectors.summingLong(Long::longValue));
 		assetGroupView.setAssetCount(sum);
 		assetGroupView.setGroupId(assetGroup.getGroupId());
@@ -502,100 +470,28 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		try {
 			Map<String, Object> alias = Maps.newHashMap();
 			List<Object> action = Lists.newArrayList();
-			final String aliasName = assetGroupDetails.getGroupName().toLowerCase().trim().replaceAll(" ", "-");
-			JSONArray jsonArray = new JSONObject(assetGroupDetails.getAliasQuery()).getJSONArray("actions");
+			final String aliasName = assetGroupDetails.getGroupName().toLowerCase().trim().replace(" ", "-");
+			JSONArray jsonArray = new JSONObject(assetGroupDetails.getAliasQuery()).getJSONArray(AdminConstants.ACTIONS);
 			for (int i=0; i < jsonArray.length(); i++) {
-				String index = jsonArray.getJSONObject(i).getJSONObject("add").getString("index");
+				String index = jsonArray.getJSONObject(i).getJSONObject("add").getString(AdminConstants.INDEX);
 				Map<String, Object> addObj = Maps.newHashMap();
-				addObj.put("index", index);
+				addObj.put(AdminConstants.INDEX, index);
 				addObj.put("alias", aliasName);
 				Map<String, Object> add = Maps.newHashMap();
 				add.put("remove", addObj);
 				action.add(add);
 			}
-			alias.put("actions", action);
+			alias.put(AdminConstants.ACTIONS, action);
+			boolean res = false;
 			Response response = commonService.invokeAPI("POST", ALIASES, mapper.writeValueAsString(alias));
 			if(response != null && response.getStatusLine().getStatusCode() == 200) {
-				return true;
-			} else {
-				return false;
+				res = true;
 			}
+			return res;
 
 		} catch (Exception exception) {
-			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 		}
-	}
-
-
-	private List<Object> createFilterForDataSource(List<String> datasource, String aliasName, List<AttributeDetails> attributes, List<String> targetTypes) throws Exception{
-		List<Object> action = Lists.newArrayList();
-		Map<String, Object> filterDetails = null;
-		List<Object> mustArray = buildMustArray(attributes);
-		if(!mustArray.isEmpty()){
-			Map<String, Object> mustObj = Maps.newHashMap();
-			Map<String, Object> boolObj = Maps.newHashMap();
-			mustObj.put("must", mustArray);
-			Map<String, Object> boolMust = Maps.newHashMap();
-			boolMust.put("bool", mustObj);
-			List<Object> shouldArray = Lists.newArrayList();
-			shouldArray.add(boolMust);
-			filterDetails = Maps.newHashMap();
-			boolObj.put("should", shouldArray);
-			filterDetails.put("bool", boolObj);
-		}
-		log.info("Filter details for alias query ::", filterDetails);
-		if(!CollectionUtils.isEmpty(datasource)){
-			for(String ds : datasource){
-				if(ifIndexValid(ds)){
-					Map<String, Object> addObj = Maps.newHashMap();
-					Map<String, Object> add = Maps.newHashMap();
-					if(filterDetails != null){
-						addObj.put("filter", filterDetails);
-					}
-					addObj.put("index",ds+"_*");
-					addObj.put("alias",aliasName);
-					add.put("add", addObj);
-					action.add(add);
-				}
-			}
-		}
-		log.info("Datasource details for alias query ::", action);
-		if(!CollectionUtils.isEmpty(targetTypes)){
-			for(String target : targetTypes){
-				Map<String, Object> addObj = Maps.newHashMap();
-				Map<String, Object> add = Maps.newHashMap();
-				String targetType = target.toLowerCase().trim().replaceAll(" ", "-");
-				String index = targetTypesRepository.findDataSourceByTargetType(targetType).toLowerCase().trim().replaceAll(" ", "-") + "_" + targetType;
-				if(ifIndexValid(index)){
-					if(filterDetails != null){
-						addObj.put("filter", filterDetails);
-					}
-					addObj.put("index", targetTypesRepository.findDataSourceByTargetType(targetType).toLowerCase().trim().replaceAll(" ", "-") + "_" + targetType);
-					addObj.put("alias", aliasName);
-					add.put("add", addObj);
-					action.add(add);
-				}
-			}
-		}
-		log.info("Action details for alias query ::", action);
-		return action;
-	}
-
-	private boolean ifIndexValid(String index){
-		log.info("Checking if the provided index exits or not ::", index);
-		try{
-			Response res = commonService.invokeAPI("GET", index, null);
-			if(res != null){
-				log.info("Provided index exits ::", index);
-				return true;
-			}
-		}catch(Exception e){
-			log.error("Provided index does not exits ::", index);
-			return false;
-		}
-		log.info("Provided index does not exits ",index);
-		return false;
 	}
 
 	private Map<String, Object> createAliasForAssetGroup(final CreateUpdateAssetGroupDetails assetGroupDetailsJson) {
@@ -603,11 +499,11 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			Map<String, Object> alias = Maps.newHashMap();
 			List<Object> action = Lists.newArrayList();
 			List<TargetTypesDetails> targetTypes = assetGroupDetailsJson.getTargetTypes();
-			final String aliasName = assetGroupDetailsJson.getGroupName().toLowerCase().trim().replaceAll(" ", "-");
+			final String aliasName = assetGroupDetailsJson.getGroupName().toLowerCase().trim().replace(" ", "-");
 			for (int targetIndex = 0; targetIndex < targetTypes.size(); targetIndex++) {
 				Map<String, Object> addObj = Maps.newHashMap();
-				String targetType = targetTypes.get(targetIndex).getTargetName().toLowerCase().trim().replaceAll(" ", "-");
-				addObj.put("index", targetTypesRepository.findDataSourceByTargetType(targetType).toLowerCase().trim().replaceAll(" ", "-") + "_" + targetType);
+				String targetType = targetTypes.get(targetIndex).getTargetName().toLowerCase().trim().replace(" ", "-");
+				addObj.put(AdminConstants.INDEX, targetTypesRepository.findDataSourceByTargetType(targetType).toLowerCase().trim().replace(" ", "-") + "_" + targetType);
 				addObj.put("alias", aliasName);
 				List<AttributeDetails> attributes = Lists.newArrayList();
 				if (!targetTypes.get(targetIndex).isIncludeAll()) {
@@ -621,7 +517,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				typeValueDetails.put("value", targetTypes.get(targetIndex).getTargetName());
 				typeDetails.put("_type", typeValueDetails);
 				parentObj.put("term", typeDetails);
-				
+
 				List<Object> mustArray = buildMustArray(attributes);
 				String tempMustArray = mapper.writeValueAsString(mustArray);
 				List<Object> shouldArray = Lists.newArrayList();
@@ -660,7 +556,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				add.put("add", addObj);
 				action.add(add);
 			}
-			alias.put("actions", action);
+			alias.put(AdminConstants.ACTIONS, action);
 			return alias;
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
@@ -716,19 +612,18 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	}
 
 	private String deleteAssetGroupDetails(final DeleteAssetGroupRequest deleteAssetGroupRequest) throws PacManException {
-		log.info("To delete the provided asset group ", deleteAssetGroupRequest.getGroupId());
+		log.info("To delete the provided asset group");
 		if(assetGroupRepository.existsById(deleteAssetGroupRequest.getGroupId())) {
 			AssetGroupDetails assetGroupDetails = assetGroupRepository.findById(deleteAssetGroupRequest.getGroupId()).get();
-			log.info("Provided asset group exits in database ", assetGroupDetails.getGroupName());
+			log.info("Provided asset group exits in database ");
 			boolean isDeleted = deleteAssetGroupAlias(assetGroupDetails);
-			log.info("Provided asset group deleted from es ", assetGroupDetails.getGroupName());
+			log.info("Provided asset group deleted from es");
 			if(isDeleted) {
 				try {
 					assetGroupRepository.delete(assetGroupDetails);
-					log.info("Provided asset group deleted from es and db ", assetGroupDetails.getGroupName());
+					log.info("Provided asset group deleted from es and db");
 					return ASSET_GROUP_DELETE_SUCCESS;
 				} catch(Exception exception) {
-					log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 					commonService.invokeAPI("POST", ALIASES, assetGroupDetails.getAliasQuery());
 					throw new PacManException(UNEXPECTED_ERROR_OCCURRED.concat(": ").concat(exception.getMessage()));
 				}
@@ -736,19 +631,19 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				return ASSET_GROUP_DELETE_FAILED;
 			}
 		} else {
-			log.info("Provided asset group does not exits in database ", deleteAssetGroupRequest.getGroupId());
+			log.info("Provided asset group does not exits in database");
 			throw new PacManException(ASSET_GROUP_NOT_EXITS);
 		}
 	}
 	public List<String> getFilterKeyValues(String key) throws  PacManException{
-		log.info("Inside method to fetch filterkeyvalues for input ", key);
+		log.info("Inside method to fetch filterkeyvalues for input");
 		if(StringUtils.isEmpty(key))
-			return new ArrayList<String>();
+			return new ArrayList<>();
 		if(key.toLowerCase().equalsIgnoreCase("type"))
 			return assetGroupRepository.getDistinctType();
 		else if(key.toLowerCase().equalsIgnoreCase("createdBy"))
 			return assetGroupRepository.getDistinctCreatedBy();
 		else
-			return new ArrayList<String>();
+			return new ArrayList<>();
 	}
 }
