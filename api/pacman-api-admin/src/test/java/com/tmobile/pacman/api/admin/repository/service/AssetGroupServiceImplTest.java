@@ -19,15 +19,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
+import com.tmobile.pacman.api.admin.domain.*;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -52,10 +51,6 @@ import org.springframework.data.domain.PageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
-import com.tmobile.pacman.api.admin.domain.AssetGroupView;
-import com.tmobile.pacman.api.admin.domain.AttributeDetails;
-import com.tmobile.pacman.api.admin.domain.CreateUpdateAssetGroupDetails;
-import com.tmobile.pacman.api.admin.domain.TargetTypesDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.AssetGroupRepository;
 import com.tmobile.pacman.api.admin.repository.AssetGroupTargetDetailsRepository;
@@ -77,6 +72,9 @@ public class AssetGroupServiceImplTest {
 	private AssetGroupTargetDetailsRepository assetGroupTargetDetailsRepository;
 
 	@Mock
+	private AssetGroupTargetDetailsService assetGroupTargetDetailsService;
+
+	@Mock
 	private RestClient restClient;
 	
 	@Mock
@@ -90,6 +88,12 @@ public class AssetGroupServiceImplTest {
 	 
 	@Mock
 	private PacmanConfiguration config;
+
+	@Mock
+	private ElasticSearchRepository esRepository;
+
+	@Mock
+	private CreateAssetGroupService createAssetGroupService;
 	
 	@Mock
 	private ObjectMapper mapper;
@@ -114,7 +118,9 @@ public class AssetGroupServiceImplTest {
 		assetGroupDetail.add(getAssetGroupDetails());
 		Page<AssetGroupDetails> allAssetGroupDetails = new PageImpl<AssetGroupDetails>(assetGroupDetail,new PageRequest(0, 1), assetGroupDetail.size());
 		when(assetGroupRepository.findAll(anyString(), any(PageRequest.class))).thenReturn(allAssetGroupDetails);
-		assertThat(assetGroupService.getAllAssetGroupDetails(StringUtils.EMPTY, 0, 1), is(notNullValue()));
+		when(esRepository.getAssetCountByAssetGroup(anyString(), anyString(), anyString())).thenReturn(new HashMap<String, Long>());
+		when(assetGroupTargetDetailsService.getTargetTypesByAssetGroupNameFromES(anyString())).thenReturn(new ArrayList<Map<String, Object>>());
+		assertThat(assetGroupService.getAllAssetGroupDetails(null, StringUtils.EMPTY, 0, 1), is(notNullValue()));
 	}
 	
 	@Test
@@ -124,33 +130,21 @@ public class AssetGroupServiceImplTest {
 	}
 
 	@Test
-	public void createAssetGroupDetailsIncludeTest() throws PacManException, IOException {
-		CreateUpdateAssetGroupDetails createUpdateAssetGroupDetails = getCreateUpdateAssetGroupDetailsRequest(true, 1);
+	public void createAssetGroupDetailsTest() throws PacManException, IOException {
+		CreateAssetGroup createUpdateAssetGroupDetails = getCreateUpdateAssetGroupDetailsRequest(true, 1);
 		HttpEntity jsonEntity = new StringEntity("{}", ContentType.APPLICATION_JSON);
         when(response.getEntity()).thenReturn(jsonEntity);
-        when(commonService.invokeAPI(anyString(), anyString(), anyString())).thenReturn(response);
-        when(sl.getStatusCode()).thenReturn(200);
- 	    when(response.getStatusLine()).thenReturn(sl);
-		assertThat(assetGroupService.createAssetGroupDetails(createUpdateAssetGroupDetails, StringUtils.EMPTY), is(notNullValue()));
-	} 
-
-	@Test
-	public void createAssetGroupDetailsNotIncludeTest() throws PacManException, IOException {
-		CreateUpdateAssetGroupDetails createUpdateAssetGroupDetails = getCreateUpdateAssetGroupDetailsRequest(false, 2);
-		HttpEntity jsonEntity = new StringEntity("{}", ContentType.APPLICATION_JSON);
-		when(response.getEntity()).thenReturn(jsonEntity);
+		when(createAssetGroupService.createAliasForAssetGroup(anyObject())).thenReturn(createUpdateAssetGroupDetails);
         when(commonService.invokeAPI(anyString(), anyString(), anyString())).thenReturn(response);
         when(sl.getStatusCode()).thenReturn(200);
  	    when(response.getStatusLine()).thenReturn(sl);
 		assertThat(assetGroupService.createAssetGroupDetails(createUpdateAssetGroupDetails, StringUtils.EMPTY), is(notNullValue()));
 	}
 	
-	private CreateUpdateAssetGroupDetails getCreateUpdateAssetGroupDetailsRequest(boolean include, int attributeSize) { 
-		CreateUpdateAssetGroupDetails createUpdateAssetGroupDetails = new CreateUpdateAssetGroupDetails();
+	private CreateAssetGroup getCreateUpdateAssetGroupDetailsRequest(boolean include, int attributeSize) {
+		CreateAssetGroup createUpdateAssetGroupDetails = new CreateAssetGroup();
 		createUpdateAssetGroupDetails.setCreatedBy("createdBy");
-		createUpdateAssetGroupDetails.setDataSourceName("dataSourceName");
 		createUpdateAssetGroupDetails.setDescription("description");
-		createUpdateAssetGroupDetails.setDisplayName("displayName");
 		createUpdateAssetGroupDetails.setGroupName("groupName");
 		List<String> allAttributesName = Lists.newArrayList();
 		allAttributesName.add("ABC");
@@ -179,6 +173,7 @@ public class AssetGroupServiceImplTest {
 		createUpdateAssetGroupDetails.setType("type");
 		createUpdateAssetGroupDetails.setVisible(false);
 		createUpdateAssetGroupDetails.setTargetTypes(allTargetTypesDetails);
+		createUpdateAssetGroupDetails.setConfiguration(new ArrayList<HashMap<String, Object>>());
 		return createUpdateAssetGroupDetails;
 	}
 
