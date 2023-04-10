@@ -297,4 +297,9 @@ public interface PacmanSdkConstants {
 	String CLOUD_INSIGHT_PASSWORD = "CLOUD_INSIGHT_PASSWORD";
     String OPERATIONS ="operations" ;
 	String PROJECT_ID = "projectId" ;
+
+	/** application prefix name*. */
+	String APPLICATION_PREFIX = "application.prefix";
+	String ROLE_PREFIX = "role/";
+	String ROLE_SUFFIX = "_ro";
 }
