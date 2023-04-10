@@ -16,13 +16,12 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
+import com.tmobile.pacman.api.admin.domain.*;
 import org.springframework.data.domain.Page;
 
-import com.tmobile.pacman.api.admin.domain.AssetGroupView;
-import com.tmobile.pacman.api.admin.domain.CreateUpdateAssetGroupDetails;
-import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupRequest;
-import com.tmobile.pacman.api.admin.domain.UpdateAssetGroupDetails;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
 
@@ -48,7 +47,7 @@ public interface AssetGroupService {
      * @param size - the size of the page to be returned.
      * @return All asset group details
      */
-	public Page<AssetGroupView> getAllAssetGroupDetails(final String searchTerm, final int page, final int size);
+	public Page<AssetGroupView> getAllAssetGroupDetails(Map<String, String> filterMap, final String searchTerm, final int page, final int size);
 
 	/**
      * Service to get asset group details by name
@@ -68,7 +67,12 @@ public interface AssetGroupService {
      * @return Success or failure message
      * @throws PacManException
      */
-	public String createAssetGroupDetails(final CreateUpdateAssetGroupDetails createAssetGroupDetails, final String userId) throws PacManException;
+	public String createAssetGroupDetail(final CreateUpdateAssetGroupDetails createAssetGroupDetails, final String userId) throws PacManException;
+
+	public List<Map<String, Object>> getAssetCountByAssetGroup(String assetGroup, String type, String domain,
+															   String application, String provider);
+
+	public String createAssetGroupDetails(final CreateAssetGroup createAssetGroupDetails, final String userId) throws PacManException;
 
 	/**
      * Service to update existing asset group
@@ -79,7 +83,7 @@ public interface AssetGroupService {
      * @return Success or failure message
      * @throws PacManException
      */
-	public String updateAssetGroupDetails(final CreateUpdateAssetGroupDetails updateAssetGroupDetails, final String userId) throws PacManException;
+	public String updateAssetGroupDetails(final CreateAssetGroup updateAssetGroupDetails, final String userId) throws PacManException;
 
 	/**
      * Service to get all asset group details by id and dataSource
@@ -102,5 +106,7 @@ public interface AssetGroupService {
      * @throws PacManException
      */
 	public String deleteAssetGroup(final DeleteAssetGroupRequest assetGroupDetails, final String userId) throws PacManException;
+
+	public List<String> getFilterKeyValues(String key) throws  PacManException;
 
 }

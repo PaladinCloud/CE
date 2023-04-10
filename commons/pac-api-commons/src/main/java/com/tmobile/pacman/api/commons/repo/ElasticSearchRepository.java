@@ -108,6 +108,12 @@ public class ElasticSearchRepository implements Constants {
 	 *
 	 */
 	private static final String _ALL = "_all";
+
+	public static final String UNDERSCORE_ENTITY = "_entity";
+
+	public static final String ALL = "all";
+
+	public static final String UNDERSCORE_TYPE = "_type";
 	/**
 	 *
 	 */
@@ -234,6 +240,36 @@ public class ElasticSearchRepository implements Constants {
 		String request = serializer.toJson(requestBody);
 
 		return prepareResultsUsingScroll(0, totalDocs, urlToQuery, request);
+	}
+
+	public Map<String, Long> getAssetCountByAssetGroup(String aseetGroupName, String type, String application) {
+
+		Map<String, Object> filter = new HashMap<>();
+		filter.put(Constants.LATEST, Constants.TRUE);
+		filter.put(UNDERSCORE_ENTITY, Constants.TRUE);
+		if (application != null) {
+			filter.put(Constants.TAGS_APPS, application);
+		}
+
+		Map<String, Long> countMap = new HashMap<>();
+		try {
+			if (ALL.equals(type)) {
+				try {
+					countMap = getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
+							null, UNDERSCORE_TYPE, Constants.THOUSAND, null);
+				} catch (Exception e) {
+					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+				}
+			} else {
+				long count = getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null,
+						null, null, null);
+				countMap.put(type, count);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
+		}
+
+		return countMap;
 	}
 
 	/**

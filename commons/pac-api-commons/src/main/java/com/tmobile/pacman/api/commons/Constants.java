@@ -29,6 +29,8 @@ package com.tmobile.pacman.api.commons;
 import com.google.gson.annotations.SerializedName;
 
 public interface Constants {
+
+    String CREATED_BY = "createdBy";
     Integer ES_PAGE_SIZE = 10000;
     String ES_PAGE_SCROLL_TTL = "2m";
     String ES_DOC_ID_KEY = "_id";
@@ -52,7 +54,11 @@ public interface Constants {
     String INCLUDE_EXEMPT = "include_exempt";
     String SEVERITY = "severity";
     String NAME = "name";
-    String COMPLIANCEPERCENT = "compliance-percent";
+    String DOMAINS = "domains";
+
+    String GROUP_NAME = "groupName";
+    String COMPLIANCEPERCENT="compliance-percent";
+    String COMPLIANT="compliant";
     String POLICYID = "policyId";
     String OPEN_ISSUES = "openIssues";
     String EC2_MANDATORY_TAG_RULE = "ec2mandatorytags_version-1_ec2mandatorytags_ec2";
