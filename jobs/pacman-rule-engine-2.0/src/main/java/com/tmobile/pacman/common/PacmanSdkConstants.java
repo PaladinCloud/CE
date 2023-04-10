@@ -647,4 +647,6 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
 
     String POLICY_DISPLAY_NAME = "policyDisplayName";
     String NOTIFICATION_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    String CLOUD_TYPE = "cloudType";
+    String TAG_DETAILS = "tagDetails";
 }

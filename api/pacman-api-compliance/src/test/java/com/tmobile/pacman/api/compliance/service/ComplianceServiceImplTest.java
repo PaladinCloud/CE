@@ -607,17 +607,17 @@ public class ComplianceServiceImplTest {
 
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         issueExceptionResponse.setStatus("Success");
-        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject()))
+        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject(), anyString()))
                 .thenReturn(issueExceptionResponse);
         
-        assertThat(complianceService.revokeMultipleIssueException("aws",new ArrayList<>()).getStatus().equals("Success"),
+        assertThat(complianceService.revokeMultipleIssueException("aws",new ArrayList<>(), "admin").getStatus().equals("Success"),
                 is(true));
 
-        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject()))
+        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject(), anyString()))
                 .thenThrow(new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.revokeMultipleIssueException("aws",new ArrayList<>()))
+                () -> complianceService.revokeMultipleIssueException("aws",new ArrayList<>(), "admin"))
                 .isInstanceOf(ServiceException.class);
     }
     

@@ -305,8 +305,9 @@ public interface ComplianceService {
      *
      * @param assetGroup the asset group
      * @param issueIds   the issue ids
+     * @param revokedBy
      * @return the issue exception response
      * @throws ServiceException the service exception
      */
-    IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds) throws ServiceException;
+    IssueExceptionResponse revokeMultipleIssueException(String assetGroup, List<String> issueIds, String revokedBy) throws ServiceException;
 }
