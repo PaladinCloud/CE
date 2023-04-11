@@ -249,10 +249,10 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 				throw new PacManException(AdminConstants.INVALID_REQUEST);
 			}
 			String aliasName = createAssetGroupDetails.getGroupName().toLowerCase().trim().replace(" ","-");
-			log.info("Alias name to be created {}", aliasName);
+			log.info("Alias name to be created");
 			AssetGroupDetails isAlreadyExisting = assetGroupRepository.findByGroupName(aliasName);
 			if(isAlreadyExisting != null){
-				log.info("Alias name to be created already exists in database with group id ");
+				log.info("Alias name to be created already exists in database");
 				throw new PacManException(AdminConstants.ASSET_GROUP_ALREADY_EXISTS);
 			}
 			CreateAssetGroup createAssetGroup = createAssetGroupService.createAliasForAssetGroup(createAssetGroupDetails);

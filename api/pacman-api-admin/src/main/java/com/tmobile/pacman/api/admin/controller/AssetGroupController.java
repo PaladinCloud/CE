@@ -85,7 +85,7 @@ public class AssetGroupController {
 	@RequestMapping(path = "/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> updateAssetGroupDetails(@AuthenticationPrincipal Principal user,
 			@RequestBody CreateAssetGroup assetGroupDetails) {
-		log.info("Inside controller AssetGroupController.updateAssetGroupDetails with request %s", assetGroupDetails);
+		log.info("Inside controller AssetGroupController.updateAssetGroupDetails with request");
 		try {
 			return ResponseUtils
 					.buildSucessResponse(assetGroupService.updateAssetGroupDetails(assetGroupDetails, user.getName()));
@@ -120,7 +120,7 @@ public class AssetGroupController {
 	@PostMapping (path = "/createAssetGroup", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createAssetGroup(@AuthenticationPrincipal Principal user,
 														  @RequestBody CreateAssetGroup assetGroupDetails) {
-		log.info("Inside controller AssetGroupController.createAssetGroup with request %s", assetGroupDetails);
+		log.info("Inside controller AssetGroupController.createAssetGroup with request");
 		try {
 			return ResponseUtils
 					.buildSucessResponse(assetGroupService.createAssetGroupDetails(assetGroupDetails, user.getName()));
