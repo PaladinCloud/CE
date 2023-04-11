@@ -1,9 +1,13 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.auth.WebIdentityTokenCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.transfer.MultipleFileUpload;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -64,7 +69,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             validateResponse.setValidationStatus(FAILURE);
             return validateResponse;
         }
-
+        verifySDKConfiguration();
         String credJson=generateCredentialJson(accountData);
         GoogleCredentials credentials = null;
         try {
@@ -114,6 +119,37 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         return validateResponse;
     }
 
+    public void verifySDKConfiguration(){
+        try {
+            LOGGER.info("Verifying SDK configuration");
+            String credentialsEndpoint = "http://169.254.170.2" + System.getenv("AWS_CONTAINER_CREDENTIALS_RELATIVE_URI");
+            LOGGER.info("Credentials endpoint: {}", credentialsEndpoint);
+
+            AWSCredentialsProvider credentialsProvider = WebIdentityTokenCredentialsProvider.builder()
+                    .roleArn("arn:aws:iam::500559730414:role/betaaccount_ecs_role")
+                    .roleSessionName("session-1")
+                    .webIdentityTokenFile("/var/run/secrets/eks.amazonaws.com/serviceaccount/token")
+                    //.withIdentityProviderUri("http://169.254.169.254/latest/api/token")
+                    .build();
+            LOGGER.info("Credential provider created:{}", credentialsProvider);
+
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                    .withCredentials(credentialsProvider)
+                    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://s3.us-west-1.amazonaws.com", "us-west-1"))
+                    .build();
+            LOGGER.info("s3Client created:{}", s3Client);
+
+            List<Bucket> buckets = s3Client.listBuckets();
+            for (Bucket bucket : buckets) {
+                LOGGER.info("Bucket : {}",bucket.getName());
+                System.out.println(bucket.getName());
+            }
+            LOGGER.info("Verifying SDK configuration completed");
+        }catch (Exception e){
+            LOGGER.error("Error in verifying sdk configuration:{}", e);
+        }
+    }
+
     @Override
     public AccountValidationResponse addAccount(CreateAccountRequest accountData) {
         LOGGER.info("Inside addAccount method of GcpAccountServiceImpl");
@@ -143,6 +179,7 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
         uploadFileToS3(s3Bucket,s3CredData,s3Region,credFilePath);
 
+        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         //update gcp enable flag for scheduler job
         String key="gcp.enabled";
         String value = "true";
