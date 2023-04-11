@@ -36,6 +36,7 @@
     </div>
     <div class="policy-knowledgebase-content-wrapper">
         <div class="policy-knowledgebase-content">
+<<<<<<< HEAD
             <app-table
                 [centeredColumns]="centeredColumns"
                 [columnsSortFunctionMap]="columnsSortFunctionMap"
@@ -64,6 +65,16 @@
                 (searchCalledEventEmitter)="callNewSearch($event)"
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)"
             >
+=======
+            <app-table (rowSelectEventEmitter)="goToDetails($event)" 
+                [data]="tableData" [columnWidths]="columnWidths"
+                [columnsSortFunctionMap]="columnsSortFunctionMap"
+                [headerColName]="headerColName" [direction]="direction" (searchCalledEventEmitter)="callNewSearch($event)" [searchQuery]="searchTxt"
+                [showSearchBar]="showSearchBar" [showAddRemoveCol]="showAddRemoveCol"
+                (searchInColumnsChanged)="handleSearchInColumnsChange($event)" [whiteListColumns]="whiteListColumns" (downloadClicked)="handlePopClick($event)" [doLocalSearch]="doLocalSearch"
+                [tableErrorMessage]="errorMessage" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [totalRows]="totalRows" [showFilterBtn]="true" [doLocalFilter]="true"
+                [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters" [showDownloadBtn]="true">
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             </app-table>
         </div>
     </div>

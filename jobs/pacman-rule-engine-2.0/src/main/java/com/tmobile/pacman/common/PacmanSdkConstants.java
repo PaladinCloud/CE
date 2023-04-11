@@ -479,6 +479,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** application tag name*. */
     String APPLICATION_TAG_NAME = "Application";
 
+    /** application prefix name*. */
+    String APPLICATION_PREFIX = "application.prefix"   ;
 
     /** The target type alias. */
     String TARGET_TYPE_ALIAS = "pacman.target.type.alias";
@@ -600,6 +602,10 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String BOOLEAN_TRUE = "true";
     String SUBSCRIPTION = "subscription";
     String PROJECT_NAME = "projectName";
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     /** Compliance API to get Policy Details using UUID */
     String POLICY_DETAILS_URL = "POLICY_DETAILS_URL";
 

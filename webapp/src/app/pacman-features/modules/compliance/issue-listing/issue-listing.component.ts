@@ -206,8 +206,13 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     if (sortColName === "severity") {
       this.fieldName = "severity.keyword";
       this.fieldType = "number";
+<<<<<<< HEAD
       this.sortOrder = ["low", "medium", "high", "critical"]
     } else if (sortColName === "violation id") {
+=======
+      this.sortOrder = ["critical", "high", "medium", "low"]
+    } else if (sortColName === "issue id") {
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       this.fieldName = "_uid";
       this.fieldType = "string";
     } else if (sortColName === "resource id") {
@@ -217,7 +222,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldName = "policyCategory.keyword";
       this.fieldType = "number";
       this.sortOrder = ["tagging", "costOptimization", "governance", "security"]
+<<<<<<< HEAD
     } else if (sortColName === "policy") {
+=======
+    } else if (sortColName === "title") {
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
     }
@@ -405,7 +414,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
             ag: this.selectedAssetGroup,
             domain: this.selectedDomain,
           }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(

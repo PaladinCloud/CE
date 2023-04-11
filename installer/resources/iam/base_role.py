@@ -41,6 +41,14 @@ class BaseCloudWatchEventFullAcessPolicyAttach(iam.IAMRolePolicyAttachmentResour
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchEventsFullAccess"
 
+<<<<<<< HEAD
+=======
+class BaseSecurityAudit(iam.IAMRolePolicyAttachmentResource):
+    role = BaseRole.get_output_attr('name')
+    policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
+
+
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 class ECSTaskExecutionRolePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [
         {
@@ -72,9 +80,13 @@ class BaseECSTaskExecPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = ECSTaskExecutionRolePolicy.get_output_attr('arn')
 
+<<<<<<< HEAD
 class BaseSecurityAudit(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
+=======
+
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 class PaladinCognitoUserPoolFullAccessDocument(iam.IAMPolicyDocumentData):
 	statement = [	 

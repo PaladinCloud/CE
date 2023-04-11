@@ -561,7 +561,11 @@ public class CommonUtils {
         return Long.toString(h);
     }
 
+<<<<<<< HEAD
     
+=======
+  
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     public static String buildPolicyUUIDFromJson(String json) {
  		JsonElement jsonelement = new JsonParser().parse(json);
  		JsonObject jobject = jsonelement.getAsJsonObject();
@@ -571,7 +575,11 @@ public class CommonUtils {
  		return null;
      }
      
+<<<<<<< HEAD
  
+=======
+   
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     /**
      * Creates the param map.
      *
@@ -684,7 +692,11 @@ public class CommonUtils {
 
 	}
  
+<<<<<<< HEAD
   
+=======
+    
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     /**
      * Decrypt.
      *

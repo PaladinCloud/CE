@@ -62,6 +62,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
+<<<<<<< HEAD
   centeredColumns = {
     Policy: false,
     Source: true,
@@ -75,13 +76,26 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     Severity: (a, b, isAsc) => {
       const severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
 
+=======
+  columnWidths = {'Title': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
+  columnNamesMap = {name: "Title"};
+  columnsSortFunctionMap = {
+    Severity: (a, b, isAsc) => {
+      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Category: (a, b, isAsc) => {
+<<<<<<< HEAD
       const priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
 
+=======
+      let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
       return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
@@ -435,7 +449,11 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         filterTags = Array.from(set);
         filterTags.sort();
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       this.filterTagLabels[column] = filterTags;
     });
   }

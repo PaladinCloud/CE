@@ -215,11 +215,19 @@ public class ComplianceControllerTest {
     
     @Test
     public void getNonCompliancePolicyByPolicyTest() throws Exception {
+<<<<<<< HEAD
         when(complianceService.getPolicyCompliance(anyObject())).thenReturn(CommonTestUtil.getResponseWithOrder());
         assertThat(complianceController.getNonCompliancePolicyByPolicy(CommonTestUtil.getRequest()), is(notNullValue()));
         assertThat(complianceController.getNonCompliancePolicyByPolicy(CommonTestUtil.getRequestEmpty()), is(notNullValue()));
         
         when(complianceService.getPolicyCompliance(anyObject())).thenThrow(new ServiceException());
+=======
+        when(complianceService.getPolicycompliance(anyObject())).thenReturn(CommonTestUtil.getResponseWithOrder());
+        assertThat(complianceController.getNonCompliancePolicyByPolicy(CommonTestUtil.getRequest()), is(notNullValue()));
+        assertThat(complianceController.getNonCompliancePolicyByPolicy(CommonTestUtil.getRequestEmpty()), is(notNullValue()));
+        
+        when(complianceService.getPolicycompliance(anyObject())).thenThrow(new ServiceException());
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.getNonCompliancePolicyByPolicy(CommonTestUtil.getRequest());
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
@@ -227,11 +235,19 @@ public class ComplianceControllerTest {
     
     @Test
     public void getPolicydetailsbyApplicationTest() throws Exception {
+<<<<<<< HEAD
         when(complianceService.getPolicyDetailsByApplication(anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
         assertThat(complianceController.getPolicydetailsbyApplication("ag","policyId","searchText"), is(notNullValue()));
         assertThat(complianceController.getPolicydetailsbyApplication("","",""), is(notNullValue()));
         
         when(complianceService.getPolicyDetailsByApplication(anyString(),anyString(),anyString())).thenThrow(new ServiceException());
+=======
+        when(complianceService.getPolicyDetailsbyApplication(anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
+        assertThat(complianceController.getPolicydetailsbyApplication("ag","policyId","searchText"), is(notNullValue()));
+        assertThat(complianceController.getPolicydetailsbyApplication("","",""), is(notNullValue()));
+        
+        when(complianceService.getPolicyDetailsbyApplication(anyString(),anyString(),anyString())).thenThrow(new ServiceException());
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.getPolicydetailsbyApplication("ag","policyId","searchText");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
@@ -239,11 +255,19 @@ public class ComplianceControllerTest {
     
     @Test
     public void getpolicydetailsbyEnvironmentTest() throws Exception {
+<<<<<<< HEAD
         when(complianceService.getPolicyDetailsByEnvironment(anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
         assertThat(complianceController.getpolicydetailsbyEnvironment("ag","policyId","application","searchText"), is(notNullValue()));
         assertThat(complianceController.getpolicydetailsbyEnvironment("","","",""), is(notNullValue()));
         
         when(complianceService.getPolicyDetailsByEnvironment(anyString(),anyString(),anyString(),anyString())).thenThrow(new ServiceException());
+=======
+        when(complianceService.getPolicyDetailsbyEnvironment(anyString(),anyString(),anyString(),anyString())).thenReturn(CommonTestUtil.getListMapObject());
+        assertThat(complianceController.getpolicydetailsbyEnvironment("ag","policyId","application","searchText"), is(notNullValue()));
+        assertThat(complianceController.getpolicydetailsbyEnvironment("","","",""), is(notNullValue()));
+        
+        when(complianceService.getPolicyDetailsbyEnvironment(anyString(),anyString(),anyString(),anyString())).thenThrow(new ServiceException());
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.getpolicydetailsbyEnvironment("ag","policyId","application","searchText");
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);

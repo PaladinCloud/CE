@@ -42,6 +42,7 @@ public interface ComplianceService {
      * Gets Issue count based on name of the asset group/policyId/domain passed.
      *
      * @param assetGroup the asset group
+<<<<<<< HEAD
      * @param policyId   the policy id
      * @param domain     the domain
      * @param accountId  the account id
@@ -49,6 +50,14 @@ public interface ComplianceService {
      * @throws ServiceException the service exception
      */
     long getIssuesCount(String assetGroup, String policyId, String domain, String accountId) throws ServiceException;
+=======
+     * @param policyId the policy id
+     * @param domain the domain
+     * @return long
+     * @throws ServiceException the service exception
+     */
+    public long getIssuesCount(String assetGroup, String policyId, String domain) throws ServiceException;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     /**
      * Gets Compliance distribution by policy category and severity.
@@ -144,14 +153,23 @@ public interface ComplianceService {
     List<Map<String, Object>> getResourceDetails(String assetGroup, String resourceId) throws ServiceException;
 
     /**
+<<<<<<< HEAD
      * Returns true if its successfully closes all the issues in ES
      * for that policyId else false.
+=======
+     *  Returns true if its successfully closes all the issues in ES
+     *         for that policyId else false.
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      *
      * @param policyDetails the policy details
      * @return Map<String, Object>
      */
 
+<<<<<<< HEAD
     Map<String, Object> closeIssuesByPolicy(PolicyDetails policyDetails);
+=======
+    public Map<String, Object> closeIssuesByPolicy(PolicyDetails policyDetails);
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     /**
      * Gets the list of all the policies compliance mapped to that domain.
@@ -160,6 +178,7 @@ public interface ComplianceService {
      * @return ResponseWithOrder
      * @throws ServiceException the service exception
      */
+<<<<<<< HEAD
     ResponseWithOrder getPolicyCompliance(Request request) throws ServiceException;
 
     /**
@@ -168,26 +187,52 @@ public interface ComplianceService {
      *
      * @param assetGroup the asset group
      * @param policyId   the policy id
+=======
+    public ResponseWithOrder getPolicycompliance(Request request) throws ServiceException;
+
+    /**
+     * Gets the policy details by application.SearchText is used to match any text
+     *         you are looking for.
+     *
+     * @param assetGroup the asset group
+     * @param policyId the policy id
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      * @param searchText the search text
      * @return List<Map < String, Object>>
      * @throws ServiceException the service exception
      */
+<<<<<<< HEAD
     List<Map<String, Object>> getPolicyDetailsByApplication(String assetGroup, String policyId, String searchText)
+=======
+    public List<Map<String, Object>> getPolicyDetailsbyApplication(String assetGroup, String policyId, String searchText)
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             throws ServiceException;
 
     /**
      * Gets the policy details by environment.SearchText is used to match any
+<<<<<<< HEAD
      * text you are looking for.
      *
      * @param assetGroup  the asset group
      * @param policyId    the policy id
+=======
+     *         text you are looking for.
+     *
+     * @param assetGroup the asset group
+     * @param policyId the policy id
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      * @param application the application
      * @param searchText  the search text
      * @return List<Map < String, Object>>
      * @throws ServiceException the service exception
      */
+<<<<<<< HEAD
     List<Map<String, Object>> getPolicyDetailsByEnvironment(String assetGroup, String policyId, String application,
                                                                    String searchText) throws ServiceException;
+=======
+    public List<Map<String, Object>> getPolicyDetailsbyEnvironment(String assetGroup, String policyId, String application,
+            String searchText) throws ServiceException;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     /**
      * Gets the policy description and other details.
@@ -196,7 +241,11 @@ public interface ComplianceService {
      * @return Map<String, Object>
      * @throws ServiceException the service exception
      */
+<<<<<<< HEAD
     Map<String, Object> getPolicyDescription(String policyId) throws ServiceException;
+=======
+    public Map<String, Object> getPolicyDescription(String policyId) throws ServiceException;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     /**
      * Gets the kernel version of an instance id from DB where the kernel version updated by web service.
@@ -241,10 +290,17 @@ public interface ComplianceService {
      * Gets the policy severity and category details.
      *
      * @param policyDetails the policy details
+<<<<<<< HEAD
      * @return List<Map < String, Object>>
      * @throws ServiceException the service exception
      */
     List<Map<String, Object>> getPoliciesCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
+=======
+     * @return List<Map<String, Object>>
+     * @throws ServiceException the service exception
+     */
+    public List<Map<String, Object>> getPoliciesevCatDetails(List<Map<String, Object>> policyDetails) throws ServiceException;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     /**
      * Gets the policy violation details by issue id.

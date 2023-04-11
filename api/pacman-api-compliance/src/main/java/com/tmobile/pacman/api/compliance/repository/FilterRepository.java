@@ -146,6 +146,7 @@ public interface FilterRepository {
             throws DataException;
 
     public AssetCountDTO[] getValueListforTag(String assetGroup, String tag, String type) throws DataException;
+<<<<<<< HEAD
     
     /**
      * Gets the list of Notification types.
@@ -163,4 +164,6 @@ public interface FilterRepository {
      */
     public Map<String, Long> getNotificationSourceFromES() throws DataException;
 
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }

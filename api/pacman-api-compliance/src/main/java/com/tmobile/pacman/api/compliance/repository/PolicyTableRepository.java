@@ -35,7 +35,10 @@ public interface PolicyTableRepository extends
      */
     public PolicyTable findPoicyTableByPolicyId(final String policyId);
     
+<<<<<<< HEAD
     
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     /**
      * Find PolicyTable by policy UUID.
      *

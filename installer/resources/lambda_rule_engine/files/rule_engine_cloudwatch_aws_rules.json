@@ -188,9 +188,13 @@
 	"aws_elasticip_should_not_be_unused",
 	"aws_account_should_have_vpclogs_enabled",
 	"aws_cloudfront_shouldnothave_unauthorized_html_content",
+<<<<<<< HEAD
 	"aws_iamuser_shouldnothave_corenetwork_privileges",
 	"aws_image_aqua_scanned_rule",
 	"aws_image_critical_vulnerabilities_aqua_scanned_rule",
 	"aws_image_high_vulnerabilities_aqua_scanned_rule",
 	"aws_image_medium_vulnerabilities_aqua_scanned_rule"
+=======
+	"aws_iamuser_shouldnothave_corenetwork_privileges"
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 ]

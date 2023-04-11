@@ -489,6 +489,10 @@ public class PolicyServiceImpl implements PolicyService {
 
 	private boolean invokePolicy(AWSLambda awsLambdaClient, Policy policyDetails, String invocationId,
 			List<Map<String, Object>> additionalRuleParams) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 		JsonObject inputConstant = new JsonObject();
 		inputConstant.addProperty(AdminConstants.POLICY_UUID, policyDetails.getPolicyUUID());		
 		if (invocationId != null) {

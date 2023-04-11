@@ -70,14 +70,22 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Category: (a, b, isAsc) => {
       let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
       return (priority[ACategory] < priority[BCategory] ? -1 : 1) * (isAsc ? 1 : -1);
@@ -270,7 +278,11 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         filterTags = Array.from(set);
         filterTags.sort();
       }
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       this.filterTagLabels[column] = filterTags;
     });
   }
@@ -611,6 +623,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
       );
+<<<<<<< HEAD
       if(isRowclicked){
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
@@ -621,6 +634,9 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         });
       }
     if (action && action === "edit") {
+=======
+    // if (action && action === "edit") {
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         this.router.navigate(["create-edit-policy"], {
           relativeTo: this.activatedRoute,
           queryParamsHandling: "merge",
@@ -628,9 +644,20 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             policyId: policyId
           },
         });
+<<<<<<< HEAD
     } else if (action && (action === "run policy")){
          this.invokePolicy(policyId);
      }
+=======
+    // }else{
+    //   const policyParams = event?.rowSelected["policyParams"];
+    //   const autoFixEnabled = JSON.parse(policyParams.text)["autofix"]??false;
+    //   this.router.navigate(["/pl/compliance/policy-knowledgebase-details", event?.rowSelected["Policy ID"]?.text, autoFixEnabled], {
+    //     relativeTo: this.activatedRoute,
+    //     queryParamsHandling: "merge",
+    //   });
+    // }
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     } catch (error) {
         this.errorMessage = this.errorHandling.handleJavascriptError(error);
         this.logger.log("error", error);

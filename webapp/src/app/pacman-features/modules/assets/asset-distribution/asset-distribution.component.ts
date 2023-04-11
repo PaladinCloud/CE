@@ -268,10 +268,21 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
       },
       dataLabels: {
         enabled: true,
+<<<<<<< HEAD
         offsetY: -6,
         style:{
             fontSize:'13%',
         }
+=======
+        offsetY: -3,
+        formatter: function (val:string, opts) {
+          let label = val;
+          if (label.length > 12) {
+              label = label.substring(0, 12) + '...';
+          }
+          return label;
+      }
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       },
       plotOptions: {
         treemap: {

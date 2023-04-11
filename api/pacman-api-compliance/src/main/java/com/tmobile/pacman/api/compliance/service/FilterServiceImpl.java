@@ -421,6 +421,7 @@ public class FilterServiceImpl implements FilterService, Constants {
 
         return getAssetCountByAppOrEnv(assetCountByApps);
     }
+<<<<<<< HEAD
     
 	/*
 	 * (non-Javadoc)
@@ -479,5 +480,7 @@ public class FilterServiceImpl implements FilterService, Constants {
 		return map;
 	}   
     
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 }

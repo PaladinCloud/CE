@@ -37,5 +37,8 @@ public interface PolicyTableService {
      * @return the policy instance by policy UUID
      */
     public PolicyTable getPolicyTableByPolicyUUID(String policyUUID);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }

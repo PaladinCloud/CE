@@ -25,8 +25,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     haveNewNotification = false;
 
+<<<<<<< HEAD
     private readonly NOTIFICATIONS_CHANNEL = 'InAppNotification';
     private destroy$ = new Subject<void>();
+=======
+  ngOnInit() {
+    try {
+      this.haveAdminPageAccess = this.permissions.checkAdminPermission();
+      this.userType = this.haveAdminPageAccess ? "Admin" : "";
+      this.userName = "Guest";
+      this.userEmail = "Guest"
+      const detailsData = this.dataCacheService.getUserDetailsValue();
+      const userNameData = detailsData.getFirstName();
+      const emailData = detailsData.getEmail();
+      if (userNameData) {
+        this.userName = userNameData;
+      }
+      if(emailData){
+        this.userEmail = emailData;
+        this.userName = this.userEmail.split("@")[0].split(".")[0];
+      }
+      // console.log("");
+      
+      this.route.queryParams.subscribe((params) => {
+        this.queryParams = params;
+      });
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     constructor(
         private apollo: Apollo,

@@ -24,8 +24,13 @@ def get_rule_engine_cloudwatch_rules_aws_var():
         #     continue
         # elif variable_dict_input[index]['assetGroup'] == "gcp" and not need_to_enable_gcp():
         #     continue
+<<<<<<< HEAD
         # if variable_dict_input[index] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
         #     continue
+=======
+        if variable_dict_input[index] == "aws_ec2_qualys_scanned_rule" and not need_to_deploy_vulnerability_service():
+            continue
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         batch = int(index % Settings.JOB_SCHEDULER_NUMBER_OF_BATCHES)
         item = {
             'policyId': variable_dict_input[index],

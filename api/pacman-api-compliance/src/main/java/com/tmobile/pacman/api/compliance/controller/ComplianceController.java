@@ -106,21 +106,34 @@ public class ComplianceController implements Constants {
      * policy associated to that domain.
      *
      * @param assetGroup name of the asset group
+<<<<<<< HEAD
      * @param domain     the domain
      * @param policyId   the policy id
+=======
+     * @param domain the domain
+     * @param policyId the policy id
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      * @return the issues count
      */
     @RequestMapping(path = "/v1/issues/count", method = RequestMethod.GET)
     public ResponseEntity<Object> getIssuesCount(@RequestParam("ag") String assetGroup,
+<<<<<<< HEAD
                                                  @RequestParam("domain") String domain,
                                                  @RequestParam(name = "policyId", required = false) String policyId) {
+=======
+            @RequestParam("domain") String domain, @RequestParam(name = "policyId", required = false) String policyId) {
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(domain)) {
             return ResponseUtils.buildFailureResponse(new Exception(ASSET_GROUP_DOMAIN));
         }
 
         Map<String, Long> response = new HashMap<>();
         try {
+<<<<<<< HEAD
             response.put(TOTAL_ISSUES, complianceService.getIssuesCount(assetGroup, policyId, domain, null));
+=======
+            response.put("total_issues", complianceService.getIssuesCount(assetGroup, policyId, domain));
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         } catch (ServiceException e) {
             return ResponseUtils.buildFailureResponse(e);
         }
@@ -362,7 +375,11 @@ public class ComplianceController implements Constants {
     public ResponseEntity<Object> closeIssues(
             @ApiParam(value = "Provide valid Policy Details ", required = true) @RequestBody(required = true) PolicyDetails policyDetails) {
         Map<String, Object> response = complianceService.closeIssuesByPolicy(policyDetails);
+<<<<<<< HEAD
         if (Integer.parseInt(response.get(STATUS).toString()) == TWO_HUNDRED) {
+=======
+        if (Integer.parseInt(response.get("status").toString()) == TWO_HUNDRED) {
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
@@ -428,7 +445,11 @@ public class ComplianceController implements Constants {
     }
 
     /**
+<<<<<<< HEAD
      * Gets the non-compliance policy by policy.request expects asset group and
+=======
+     * Gets the non compliance policy by policy.request expects asset group and
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      * domain as mandatory.Api returns list of all the policies associated to that
      * domain with compliance percentage/severity/policyCategory etc fields.
      *
@@ -439,6 +460,10 @@ public class ComplianceController implements Constants {
     // TODO: performance after refactoring
     // @Cacheable(cacheNames="compliance",unless="#result.status==200")
     // @Cacheable(cacheNames="compliance",key="#request.key")
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     public ResponseEntity<Object> getNonCompliancePolicyByPolicy(@RequestBody(required = false) Request request) {
         String assetGroup = request.getAg();
         Map<String, String> filters = request.getFilter();
@@ -449,7 +474,11 @@ public class ComplianceController implements Constants {
 
         ResponseWithOrder response = null;
         try {
+<<<<<<< HEAD
             response = (complianceService.getPolicyCompliance(request));
+=======
+            response = (complianceService.getPolicycompliance(request));
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -464,15 +493,24 @@ public class ComplianceController implements Constants {
      * are looking for
      *
      * @param assetGroup name of the asset group
+<<<<<<< HEAD
      * @param policyId   the policy id
+=======
+     * @param policyId the policy id
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      * @param searchText the search text
      * @return ResponseEntity
      */
     @RequestMapping(path = "/v1/policydetailsbyapplication", method = RequestMethod.GET)
     // @Cacheable(cacheNames="compliance",unless="#result.status==200")
     public ResponseEntity<Object> getPolicydetailsbyApplication(@RequestParam("ag") String assetGroup,
+<<<<<<< HEAD
                                                                 @RequestParam("policyId") String policyId,
                                                                 @RequestParam(name = "searchText", required = false) String searchText) {
+=======
+            @RequestParam("policyId") String policyId,
+            @RequestParam(name = "searchText", required = false) String searchText) {
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(policyId)) {
             return ResponseUtils.buildFailureResponse(new Exception("Assetgroup/policyId is mandatory"));
         }
@@ -480,7 +518,11 @@ public class ComplianceController implements Constants {
         ResponseData response = null;
         try {
 
+<<<<<<< HEAD
             response = new ResponseData(complianceService.getPolicyDetailsByApplication(assetGroup, policyId, searchText));
+=======
+            response = new ResponseData(complianceService.getPolicyDetailsbyApplication(assetGroup, policyId, searchText));
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         } catch (ServiceException e) {
             return complianceService.formatException(e);
         }
@@ -497,11 +539,17 @@ public class ComplianceController implements Constants {
      *
      * @param assetGroup  name of the asset group
      * @param application name of the application
+<<<<<<< HEAD
      * @param policyId    the policy id
      * @param searchText  the search text
+=======
+     * @param policyId the policy id
+     * @param searchText the search text
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
      * @return ResponseEntity
      */
     @RequestMapping(path = "/v1/policydetailsbyenvironment", method = RequestMethod.GET)
+<<<<<<< HEAD
 
     public ResponseEntity<Object> getpolicydetailsbyEnvironment(@RequestParam("ag") String assetGroup,
                                                                 @RequestParam("application") String application, @RequestParam("policyId") String policyId,
@@ -509,11 +557,24 @@ public class ComplianceController implements Constants {
 
         if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(application) || Strings.isNullOrEmpty(policyId)) {
             return ResponseUtils.buildFailureResponse(new Exception("assetGroup/application/policyId is mandatory"));
+=======
+    
+    public ResponseEntity<Object> getpolicydetailsbyEnvironment(@RequestParam("ag") String assetGroup,
+            @RequestParam("application") String application, @RequestParam("policyId") String policyId,
+            @RequestParam(name = "searchText", required = false) String searchText) {
+
+        if (Strings.isNullOrEmpty(assetGroup) || Strings.isNullOrEmpty(application) || Strings.isNullOrEmpty(policyId)) {
+            return ResponseUtils.buildFailureResponse(new Exception("assetgroup/application/policyId is mandatory"));
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         }
 
         ResponseData response = null;
         try {
+<<<<<<< HEAD
             response = new ResponseData(complianceService.getPolicyDetailsByEnvironment(assetGroup, policyId, application,
+=======
+            response = new ResponseData(complianceService.getPolicyDetailsbyEnvironment(assetGroup, policyId, application,
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                     searchText));
 
         } catch (ServiceException e) {
@@ -530,7 +591,13 @@ public class ComplianceController implements Constants {
      * @return ResponseEntity<Object>
      */
     @RequestMapping(path = "/v1/policydescription", method = RequestMethod.GET)
+<<<<<<< HEAD
     public ResponseEntity<Object> getPolicyDescription(@RequestParam("policyId") String policyId) {
+=======
+    
+    public ResponseEntity<Object> getPolicyDescription(@RequestParam("policyId") String policyId) {
+
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         if (Strings.isNullOrEmpty(policyId)) {
             return ResponseUtils.buildFailureResponse(new Exception("policyId Mandatory"));
         }
@@ -753,6 +820,7 @@ public class ComplianceController implements Constants {
      * @return Policies details
      * @author
      */
+<<<<<<< HEAD
     @ApiOperation(httpMethod = "GET", value = "API to get policy by id", produces = MediaType.APPLICATION_JSON_VALUE)
     @RequestMapping(path = "/v1/policy-details-by-id", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getPoliciesById(
@@ -783,4 +851,36 @@ public class ComplianceController implements Constants {
             return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
         }
     }
+=======
+	@ApiOperation(httpMethod = "GET", value = "API to get policy by id",  produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/v1/policy-details-by-id", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getPoliciesById(
+			@ApiParam(value = "provide valid policy id", required = true) @RequestParam(defaultValue = "", name = "policyId", required = true) String policyId) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyId(policyId));
+		} catch (Exception exception) {
+			log.error("Unexpected error occurred!!", exception);
+			return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+		}
+	} 
+	
+	 /**
+     * API to get policy by UUID
+     *
+     * @author 
+     * @param policyUUID - valid policy UUID
+     * @return Policies details
+     */
+	@ApiOperation(httpMethod = "GET", value = "API to get policy by UUID",  produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/v1/policy-details-by-uuid", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getPoliciesByUUID(
+			@ApiParam(value = "provide valid policy UUID", required = true) @RequestParam(defaultValue = "", name = "policyUUID", required = true) String policyUUID) {
+		try {
+			return ResponseUtils.buildSucessResponse(policyTableService.getPolicyTableByPolicyUUID(policyUUID));
+		} catch (Exception exception) {
+			log.error("Unexpected error occurred!!", exception);
+			return ResponseUtils.buildFailureResponse(new Exception("Unexpected error occurred!!"), exception.getMessage());
+		}
+	} 
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }

@@ -178,10 +178,19 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
         // Make map of rule severity,category
         Set<String> ruleCat = new HashSet<>();
         List<Map<String, Object>> ruleSevCatDetails;
+<<<<<<< HEAD
 
         ruleSevCatDetails = complianceService
                 .getPoliciesCatDetails(ruleDetails);
 
+=======
+    
+            ruleSevCatDetails = complianceService
+                    .getPoliciesevCatDetails(ruleDetails);
+       
+        
+        
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         Map<String, Object> ruleCatDetails = ruleSevCatDetails.parallelStream()
                 .collect(
                         Collectors.toMap(c -> c.get(POLICYID).toString(),
@@ -195,9 +204,25 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
             inputList = repository
                     .getComplianceTrendProgress(assetGroup, fromDate, domain,
                             ruleCat);
+<<<<<<< HEAD
         } catch (DataException e) {
             throw new ServiceException(e);
         }
+=======
+         } catch (DataException e) {
+             throw new ServiceException(e);
+           }
+
+        try{
+            Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
+            if (!inputList.isEmpty()) {
+            // Sort the list by the date in ascending order
+            Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate.parse(
+                    m1.get("date").toString(), DateTimeFormatter.ISO_DATE)
+                    .compareTo(
+                            LocalDate.parse(m2.get("date").toString(),
+                                    DateTimeFormatter.ISO_DATE));
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
         try {
             Map<String, Object> policyCatWeightageUnsortedMap = complianceRepository.getPolicyCategoryWeightagefromDB(domain);
@@ -231,10 +256,27 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                     }
                     complianceInfoList.add(outputMap);
                 });
+<<<<<<< HEAD
                 Collections.sort(complianceInfoList, comp);
 
             }
         } catch (DataException e) {
+            throw new ServiceException(e);
+=======
+                if(!outputMap.containsKey("overall")){
+                    Double weightedAvgSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->(Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString()) * Double.parseDouble(outputMap.get(catStr).toString()))).reduce(0d,(a,b)->a+b);
+                    Double weightedSum = outputMap.keySet().stream().filter(str -> policyCatWeightageUnsortedMap.keySet().contains(str)).map(catStr->Double.parseDouble(policyCatWeightageUnsortedMap.get(catStr).toString())).reduce(0d,(a,b)->a+b);
+                    if(weightedSum.doubleValue()!=0){
+                        outputMap.put("overall",weightedAvgSum/weightedSum);
+                    }
+                }
+                complianceInfoList.add(outputMap);
+            });
+            Collections.sort(complianceInfoList, comp);
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
+        }
+        }
+        catch (DataException e) {
             throw new ServiceException(e);
         }
         parentMap.put("compliance_info", complianceInfoList);
@@ -328,6 +370,7 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                             .get("certificates_expiring");
                     compliantQuantity = total - noncompliantQuantity;
 
+<<<<<<< HEAD
                     latestDaysTrendData.put(COMPLAINT, compliantQuantity);
                     latestDaysTrendData.put(NON_COMPLIANT, noncompliantQuantity);
                     latestDaysTrendData.put(TOTAL, total);
@@ -336,6 +379,60 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
                                 .floor(compliantQuantity * HUNDRED / total);
                     } else {
                         compliance = INT_HUNDRED;
+=======
+                latestDaysTrendData.put(COMPLAINT, compliantQuantity);
+                latestDaysTrendData.put(NON_COMPLIANT, noncompliantQuantity);
+                latestDaysTrendData.put(TOTAL, total);
+                if (total > 0) {
+                    compliance = Math
+                            .floor(compliantQuantity * HUNDRED / total);
+                } else {
+                    compliance = INT_HUNDRED;
+                }
+                latestDaysTrendData.put(COMPLIANCE_PERCENT, compliance);
+                break;
+
+            case "issuecompliance":
+                Request request = new Request();
+                request.setAg(ag);
+                Map<String, String> filters = new HashMap<>();
+                filters.put("policyId.keyword", ruleId);
+                filters.put("domain", domain);
+                request.setFilter(filters);
+                ResponseWithOrder responseWithOrder = complianceService
+                        .getPolicycompliance(request);
+                latestDaysTrendData.put(COMPLAINT, responseWithOrder
+                        .getResponse().get(0).get("passed"));
+                latestDaysTrendData.put(NON_COMPLIANT, responseWithOrder
+                        .getResponse().get(0).get("failed"));
+                latestDaysTrendData.put(TOTAL, responseWithOrder.getResponse()
+                        .get(0).get("assetsScanned"));
+                latestDaysTrendData.put(COMPLIANCE_PERCENT, responseWithOrder
+                        .getResponse().get(0).get(COMPLIANCE_PERCENT));
+
+                break;
+
+            case "patching":
+                baseApiReturnMap = complianceService.getPatching(ag, null,null);
+                compliantQuantity = baseApiReturnMap.get("patched_instances");
+                noncompliantQuantity = baseApiReturnMap
+                        .get("unpatched_instances");
+                total = baseApiReturnMap.get("total_instances");
+                compliance = baseApiReturnMap.get("patching_percentage");
+                latestDaysTrendData.put("patched_instances", compliantQuantity);
+                latestDaysTrendData.put("unpatched_instances",
+                        noncompliantQuantity);
+                latestDaysTrendData.put("total_instances", total);
+                latestDaysTrendData.put("patching_percentage", compliance);
+                break;
+
+            case COMPLIANCE_PERCENTAGE:
+                overallCompliance  = complianceService
+                        .getOverallComplianceByDomain(ag, domain);
+                if(!overallCompliance.isEmpty()){
+                    for (Map.Entry<String,Object> entry : overallCompliance.entrySet()) {
+                        latestDaysTrendData.put(entry.getKey(),entry.getValue());
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                     }
                     latestDaysTrendData.put(COMPLIANCE_PERCENT, compliance);
                     break;
@@ -779,9 +876,15 @@ public class IssueTrendServiceImpl implements IssueTrendService, Constants {
 
         Set<String> ruleSev = new HashSet<>();
         List<Map<String, Object>> ruleSevCatDetails;
+<<<<<<< HEAD
         ruleSevCatDetails = complianceService
                 .getPoliciesCatDetails(ruleDetails);
 
+=======
+            ruleSevCatDetails = complianceService
+                    .getPoliciesevCatDetails(ruleDetails);
+        
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         Map<String, Object> ruleSevDetails = ruleSevCatDetails.parallelStream()
                 .collect(
                         Collectors.toMap(r -> r.get(POLICYID).toString(),

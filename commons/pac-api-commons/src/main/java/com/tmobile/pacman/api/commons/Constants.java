@@ -355,6 +355,7 @@ public interface Constants {
     String UNABLE_TO_DETERMINE = "unable to determine";
     String STATUS_REASON = "status-reason";
     String AUTOFIX_ENABLED = "autoFixEnabled";
+<<<<<<< HEAD
     String AUTOFIX_AVAILABLE = "autoFixAvailable";
     String AUTOFIX = "autofix";
     String AQUA = "aqua";
@@ -413,4 +414,7 @@ public interface Constants {
     String NOTIFICATION_INDEX_TYPE = "notification";
     String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
     String NOTIFICATION_SOURCE_NAME = "eventSourceName";
+=======
+    String AUTOFIX = "autofix";
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }

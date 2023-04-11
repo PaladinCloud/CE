@@ -119,6 +119,7 @@ public final class AdminConstants {
     public static final String CONFIG_ROLLBACK_MSG					=	"Rollback to an older timestamp through API invocation";
     public static final String POLICY_UUID							= 	"policyUUID";
     public static final String INVOCATION_ID						= 	"invocationId";
+<<<<<<< HEAD
 	public static final String AUTOFIX_ENABLE_SUCCESS				=	"AutoFix has been successfully Enabled !!";
 	public static final String AUTOFIX_DISABLE_SUCCESS				=	"AutoFix has been successfully Disabled !!";
     public static final String AUTO_FIX_KEY							=   "fixKey";
@@ -134,5 +135,7 @@ public final class AdminConstants {
 	public static final String UPDATE_STICKY_EXCEPTION_SUBJECT  		= "Sticky Exception Updated";
 
 
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 

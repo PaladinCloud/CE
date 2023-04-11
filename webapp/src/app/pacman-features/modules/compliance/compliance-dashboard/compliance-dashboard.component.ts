@@ -135,8 +135,13 @@ export class ComplianceDashboardComponent implements OnInit {
 
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
+<<<<<<< HEAD
       const severeness = { low: 4, medium: 3, high: 2, critical: 1, default: 5 * (isAsc ? 1 : -1) };
 
+=======
+      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       if(severeness[ASeverity] == severeness[BSeverity]){
@@ -146,7 +151,11 @@ export class ComplianceDashboardComponent implements OnInit {
     },
     Category: (a, b, isAsc) => {
       let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
       if(priority[ACategory] == priority[BCategory]){
@@ -172,7 +181,11 @@ export class ComplianceDashboardComponent implements OnInit {
     Violations: (a: string, b: string, isAsc) => {
       a = a["Violations"].valueText;
       b = b["Violations"].valueText;
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
       return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
     }
   };
@@ -460,8 +473,13 @@ export class ComplianceDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+<<<<<<< HEAD
     const state = this.tableStateService.getState("dashboard") || {};
 
+=======
+    const state = this.tableStateService.getState("dashboard") || {};    
+      
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     this.headerColName = state.headerColName || 'Severity';
     this.direction = state.direction || 'asc';
     // this.bucketNumber = state.bucketNumber || 0;
@@ -474,6 +492,13 @@ export class ComplianceDashboardComponent implements OnInit {
     this.tableScrollTop = state?.tableScrollTop;
     this.totalRows = state.totalRows || 0;
     this.filters = state?.filters || [];
+<<<<<<< HEAD
+=======
+
+    if(this.filters){
+      this.getFiltersData(this.complianceTableData);
+    }
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     if(this.filters){
       this.getFiltersData(this.complianceTableData);
@@ -951,6 +976,57 @@ export class ComplianceDashboardComponent implements OnInit {
           this.logger.log("error", error);
         }
       });
+  }
+  
+  getFiltersData(data){
+    this.filterTypeLabels = [];
+    this.filterTagLabels = {};
+    this.whiteListColumns.forEach(column => {
+      if(column=='Violations'){
+        return;
+      }
+      let filterTags = [];
+      this.filterTypeLabels.push(column);
+      if(column=='Severity'){
+        filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Category'){
+        filterTags = ["security", "cost", "operations", "tagging"];
+      }
+      else if(column=='Compliance'){
+        filterTags = ["0%-25%","26%-50%","51%-75%","76%-100%"];
+      }
+      else{
+        const set = new Set();
+        data.forEach(row => {
+          set.add(row[column].valueText);
+        });
+        filterTags = Array.from(set);
+        this.sortFilters(filterTags, column);
+      }
+      this.filterTagLabels[column] = filterTags;
+    });
+  }
+
+  sortFilters(array, column){
+    if(column=='Compliance'){
+      array.sort((a, b) => {
+        const isAsc = true;
+        if(a=="NR") isAsc?a="101%":a = "-1%";
+        if(b=="NR") isAsc?b="101%":b = "-1%";
+
+        a = a.substring(0, a.length-1);
+        b = b.substring(0, b.length-1);
+
+        let aNum = parseFloat(a);
+        let bNum = parseFloat(b);
+        
+        return (aNum < bNum ? -1 : 1) * (isAsc ? 1 : -1);
+      });
+    }else if(column=='Violations'){
+      array.sort((a, b) => a-b);
+    }else{
+      array.sort()
+    }
   }
 
   getFiltersData(data){

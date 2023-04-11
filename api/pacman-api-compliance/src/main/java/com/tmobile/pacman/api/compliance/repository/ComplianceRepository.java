@@ -56,7 +56,11 @@ public interface ComplianceRepository {
      * @throws DataException
      *             the data exception
      */
+<<<<<<< HEAD
     public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId)
+=======
+    public long getIssuesCount(String assetGroup, String policyId, String domain)
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             throws DataException;
 
 
