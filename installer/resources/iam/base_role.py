@@ -1,7 +1,6 @@
 from core.terraform.resources.aws import iam
 from resources.iam.ecs_role import ECSRole
 from core.config import Settings
-from resources.iam.base_role_policy import BaseRolePolicy
 
 class PolicyDocumentForBaseRole(iam.IAMPolicyDocumentData):
     statement = [
@@ -34,7 +33,6 @@ class BaseGuardDutyPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/AmazonGuardDutyReadOnlyAccess"
 
-
 class BaseAWSSupportPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/AWSSupportAccess"
@@ -42,7 +40,6 @@ class BaseAWSSupportPolicyAttach(iam.IAMRolePolicyAttachmentResource):
 class BaseCloudWatchEventFullAcessPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchEventsFullAccess"
-
 
 class ECSTaskExecutionRolePolicyDocument(iam.IAMPolicyDocumentData):
     statement = [
@@ -71,7 +68,6 @@ class ECSTaskExecutionRolePolicy(iam.IAMRolePolicyResource):
     path = '/'
     policy = ECSTaskExecutionRolePolicyDocument.get_output_attr('json')
 
-
 class BaseECSTaskExecPolicyAttach(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = ECSTaskExecutionRolePolicy.get_output_attr('arn')
@@ -79,11 +75,6 @@ class BaseECSTaskExecPolicyAttach(iam.IAMRolePolicyAttachmentResource):
 class BaseSecurityAudit(iam.IAMRolePolicyAttachmentResource):
     role = BaseRole.get_output_attr('name')
     policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
-
-class BaseBasepolicy(iam.IAMRolePolicyAttachmentResource):
-    role = BaseRole.get_output_attr('name')
-    policy_arn = BaseRolePolicy.get_output_attr('arn')
-
 
 class PaladinCognitoUserPoolFullAccessDocument(iam.IAMPolicyDocumentData):
 	statement = [	 
