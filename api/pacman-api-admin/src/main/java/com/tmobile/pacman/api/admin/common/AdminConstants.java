@@ -109,7 +109,10 @@ public final class AdminConstants {
 	public static final String INIT_ES_CREATE_INDEX					= 	"INIT_ES_CREATE_INDEX";
 
 	public static final String INDEX					= 	"index";
+
+	public static final String CLOUD_TYPE = "CloudType";
 	public static final String ACTIONS = "actions";
+	public static final String TARGET_TYPE = "TargetType";
 	
 	public static final String ERROR_CONFIG_MANDATORY				=	"Config key, Config value and application are mandatory";
     public static final String LATEST								=	"latest";
