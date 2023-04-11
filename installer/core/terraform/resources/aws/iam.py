@@ -62,7 +62,8 @@ class IAMRolePolicyResource(TerraformResource):
         'path': {'required': False},
         'arn': {'required': False},
         'description': {'required': False},
-        'tags': {'required': False} 
+        'tags': {'required': False},
+        'lifecycle' : {'required': False}
     }
 
     description = Settings.RESOURCE_DESCRIPTION
@@ -99,6 +100,7 @@ class IAMRolePolicyAttachmentResource(TerraformResource):
     available_args = {
         'role': {'required': True},
         'policy_arn': {'required': True},
+        'lifecycle' : {'required': False}
     }
 
 
@@ -147,6 +149,7 @@ class IAMPolicyDocumentData(TerraformData):
     resource_instance_name = "aws_iam_policy_document"
     available_args = {
         'statement': {'required': True},
+        'lifecycle' : {'required': False}
     }
 
 
