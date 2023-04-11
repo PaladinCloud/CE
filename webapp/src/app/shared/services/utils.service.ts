@@ -134,13 +134,15 @@ export class UtilsService {
   getParamsFromUrlSnippet(urlSnippet) {
     const split = urlSnippet.split('?');
     const url = split[0];
-    const inputParams = split[1].split('&');
     const params = {};
-    _.each(inputParams, arg => {
-      const key = arg.substring(0, arg.indexOf('='));
-      const value = arg.substring(arg.indexOf('=') + 1, arg.length);
-      params[key] = value;
-    });
+    if(split.length>1){
+      const inputParams = split[1].split('&');
+      _.each(inputParams, arg => {
+        const key = arg.substring(0, arg.indexOf('='));
+        const value = arg.substring(arg.indexOf('=') + 1, arg.length);
+        params[key] = value;
+      });
+    }
 
     return {
       url: url,

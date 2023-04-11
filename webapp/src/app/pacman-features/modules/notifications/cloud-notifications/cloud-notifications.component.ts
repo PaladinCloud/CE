@@ -26,6 +26,8 @@ import {RouterUtilityService} from '../../../../shared/services/router-utility.s
 import {ErrorHandlingService} from 'src/app/shared/services/error-handling.service';
 import * as _ from 'lodash';
 import {TableStateService} from 'src/app/core/services/table-state.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 
 @Component({
     selector: 'app-cloud-notifications',
@@ -33,6 +35,7 @@ import {TableStateService} from 'src/app/core/services/table-state.service';
     styleUrls: ['./cloud-notifications.component.css'],
     providers: [
         LoggerService,
+        IssueFilterService
     ]
 })
 
@@ -40,6 +43,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     assetGroupSubscription: Subscription;
     dataSubscription: Subscription;
     summarySubscription: Subscription;
+    filterSubscription: Subscription;
+    domainSubscription: Subscription;
 
     pageTitle = "Notifications";
     popRows = ['Download Data'];
@@ -47,6 +52,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     backButtonRequired;
     pageLevel = 0;
     selectedAssetGroup;
+    selectedDomain;
     currentPageLevel = 0;
 
     paginatorSize = 100;
@@ -112,6 +118,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
     constructor(
         private assetGroupObservableService: AssetGroupObservableService,
+        private domainObservableService: DomainTypeObservableService,
+        private filterService: IssueFilterService,
         private router: Router,
         private errorHandler: ErrorHandlingService,
         private utils: UtilsService,
@@ -155,6 +163,12 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 .getAssetGroup()
                 .subscribe(assetGroupName => {
                     this.selectedAssetGroup = assetGroupName;
+                });
+
+            this.domainSubscription = this.domainObservableService
+                .getDomainType()
+                .subscribe((domain) => {
+                    this.selectedDomain = domain;
                 });
             this.getFilters();
         }
@@ -281,21 +295,21 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
      */
     getFilters() {
         try {
-            this.filterTypeLabels.push("Type");
-            this.filterTypeOptions.push({
-                optionName: 'Type',
-                optionValue: 'eventCategory'
-            })
-
-            // this.filterTypeLabels.push("Source");
-            // this.filterTypeOptions.push({
-            //   optionName: 'Source',
-            //   optionValue: 'eventSource'
-            // })
-
-            this.routerParam();
-            this.getFilterArray();
-            this.updateComponent();
+            this.filterSubscription = this.filterService
+        .getFilters(
+          { filterId: 10, domain: this. selectedDomain},
+          environment.issueFilter.url,
+          environment.issueFilter.method
+        )
+        .subscribe((response) => {
+          this.filterTypeLabels = _.map(response[0].response, "optionName");
+          this.filterTypeOptions = response[0].response;          
+          
+          this.routerParam();
+          // this.deleteFilters();
+          this.getFilterArray();
+          this.updateComponent();
+        });
         } catch (error) {
             this.errorMessage = this.errorHandler.handleJavascriptError(error);
             this.logger.log("error", error);
@@ -308,32 +322,28 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 this.currentFilterType = _.find(this.filterTypeOptions, {
                     optionName: value,
                 });
-
-                if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
-                    if (value.toLowerCase() == "type") {
-                        this.filterTagLabels[value] = ["Violation", "Autofix", "Exemption", "Sticky Exemption"];
-                        this.filterTagOptions[value] = [
-                            {
-                                id: "issue",
-                                name: "Violation"
-                            },
-                            {
-                                id: "autofix",
-                                name: "Autofix"
-                            },
-                            {
-                                id: "exemption",
-                                name: "Exemption"
-                            },
-                            {
-                                id: "sticky-exemption",
-                                name: "Sticky Exemption"
-                            }
-                        ]
-                        resolve(this.filterTagLabels[value]);
-
-                        return;
+                const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
+                const queryParams = {
+                        ...urlObj.params,
+                        ag: this.selectedAssetGroup,
+                        domain: this.selectedDomain,
                     }
+
+                if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
+                    this.filterSubscription = this.filterService
+                    .getFilters(
+                    queryParams,
+                    environment.base +
+                    urlObj.url,
+                    "GET"
+                    )
+                    .subscribe((response) => {
+                    this.filterTagOptions[value] = response[0].response;
+                    this.filterTagLabels[value] = _.map(response[0].response, "name");
+                    this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
+
+                    resolve(this.filterTagOptions[value]);
+                    });
                 }
             } catch (error) {
                 this.errorMessage = this.errorHandler.handleJavascriptError(error);
@@ -604,6 +614,14 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
         if (this.summarySubscription) {
             this.summarySubscription.unsubscribe();
+        }
+
+        if (this.filterSubscription) {
+            this.filterSubscription.unsubscribe();
+        }
+
+        if (this.domainSubscription) {
+            this.domainSubscription.unsubscribe();
         }
     }
 }
