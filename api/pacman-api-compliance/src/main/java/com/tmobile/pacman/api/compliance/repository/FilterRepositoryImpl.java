@@ -253,5 +253,45 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             return data.getAssets();
 
     }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getRegionsFromES(java.lang.String)
+     */
+    public Map<String, Long> getNotificationTypesFromES()
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_CATEGEORY_NAME);
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+            		NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.tmobile.pacman.api.compliance.repository.FilterRepository#
+     * getRegionsFromES(java.lang.String)
+     */
+    public Map<String, Long> getNotificationSourceFromES()
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_SOURCE_NAME);
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+            		NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
 
 }

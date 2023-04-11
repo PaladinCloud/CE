@@ -426,10 +426,10 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 					+ "]}},{\"term\":{\"latest\":\"true\"}}";
 
 			if (!Strings.isNullOrEmpty(eventSource)) {
-				body = body + ",{\"terms\":{\"eventSource.keyword\":" + eventSource + "}}";
+				body = body + ",{\"terms\":{\"eventSourceName.keyword\":" + eventSource + "}}";
 			}
 			if (!Strings.isNullOrEmpty(eventCategory)) {
-				body = body + ",{\"terms\":{\"eventCategory.keyword\":" + eventCategory + "}}";
+				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventCategory + "}}";
 			}
 			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
 			String urlToQuery = esRepository.buildESURL(esUrl, index, type, size, from);

@@ -146,4 +146,21 @@ public interface FilterRepository {
             throws DataException;
 
     public AssetCountDTO[] getValueListforTag(String assetGroup, String tag, String type) throws DataException;
+    
+    /**
+     * Gets the list of Notification types.
+     *
+     * @return Map<String, Long>
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getNotificationTypesFromES() throws DataException;
+    
+    /**
+     * Gets the list of Notification source.
+     *
+     * @return Map<String, Long>
+     * @throws DataException the data exception
+     */
+    public Map<String, Long> getNotificationSourceFromES() throws DataException;
+
 }
