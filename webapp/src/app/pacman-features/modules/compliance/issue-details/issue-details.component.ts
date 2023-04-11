@@ -1319,6 +1319,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
+<<<<<<< HEAD
     nextPg() {
         try {
             if (this.currentPointer < this.bucketNumber) {
@@ -1330,6 +1331,591 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
                 if (this.lastPaginator > this.totalRows) {
                     this.lastPaginator = this.totalRows;
                 }
+=======
+  calculateDateEmail(_JSDate) {
+    try {
+      const date = new Date(_JSDate);
+      const year = date.getFullYear().toString();
+      const month = date.getMonth() + 1;
+      let monthString;
+      if (month < 10) {
+        monthString = '0' + month.toString();
+      } else {
+        monthString = month.toString();
+      }
+      const day = date.getDate();
+      let dayString;
+      if (day < 10) {
+        dayString = '0' + day.toString();
+      } else {
+        dayString = day.toString();
+      }
+      return year + '-' + monthString + '-' + dayString;
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  // below fns are related to RHS of page // not to be removed
+
+  removeData(index): any {
+    try {
+      this.emailArray.splice(index, 1);
+      if (this.emailArray.length < 1) {
+        this.emailObj.to.required = false;
+      } else {
+        this.emailObj.to.required = true;
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  showOtherDivJira() {
+    try {
+      this.showJira = !this.showJira;
+      this.showOppositeJira = !this.showOppositeJira;
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  revokeException() {
+    try {
+      const Url = environment.revokeIssueException.url;
+      const Method = environment.revokeIssueException.method;
+      const payload = {
+        issueIds: [this.policyViolationId]
+      };
+      const queryParams = {
+        ag: this.selectedAssetGroup
+      }
+      this.getRevokeSubscription = this.commonResponseService
+        .getData(Url, Method, payload, queryParams)
+        .subscribe(
+          response => {
+            this.upateStatusOnAddOrRevokeException('Open');
+            setTimeout(() => {
+              this.exceptionAdded = !this.exceptionAdded;
+              this.checkRevoke = false;
+              this.showLoadcompleteRevoke = true;
+              this.getIssueAudit();
+            }, 100);
+          },
+          error => {
+            setTimeout(() => {
+              this.checkRevoke = true;
+              this.showLoadcompleteRevoke = true;
+            }, 100);
+          }
+        );
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  createJira() {
+    try {
+      let Data = this.dataStore.getUserDetailsValue();
+      Data = Data.getEmail();
+      const Url = environment.createJira.url;
+      const Method = environment.createJira.method;
+      const payload = {
+        email: Data,
+        title: 'JIRA ticket created with issueId ' + this.issueIdValue,
+        description: [
+          {
+            heading: 'Issue Details',
+            details: {},
+            highlight: 'true'
+          },
+          {
+            heading: 'Entity Details',
+            details: {}
+          },
+          {
+            heading: 'Rule Parameters',
+            details: {}
+          }
+        ],
+        issue_id: this.issueIdValue
+      };
+
+      this.keysValue = Object.keys(this.issueBlocks);
+      let count = 0;
+      for (let i = 0; i < this.keysValue.length; i++) {
+        if (i >= 0 && i < 6) {
+          count = 0;
+        } else if (i >= 6 && i < 12) {
+          count = 1;
+        } else {
+          count = 2;
+        }
+        if (this.keysValue[i] !== 'nonDisplayableAttributes') {
+          if (this.keysValue[i] === 'description') {
+            payload.description[0].details[
+              this.keysValue[i]
+            ] = this.issueBlocks[this.keysValue[i]];
+          } else if (this.keysValue[i] === 'RuleCategory') {
+            payload.description[2].details[
+              this.keysValue[i]
+            ] = this.issueBlocks[this.keysValue[i]];
+          } else {
+            payload.description[count].details[
+              this.keysValue[i]
+            ] = this.issueBlocks[this.keysValue[i]];
+          }
+        }
+      }
+
+      this.getJiraSubscription = this.commonResponseService
+        .getData(Url, Method, payload, {})
+        .subscribe(
+          response => {
+            this.issueKey = response.data.issueKey;
+            if (response.data.exists === true) {
+              this.viewJira = true;
+            }
+            setTimeout(() => {
+              return this.hideJira();
+            }, 4500);
+          },
+          error => {
+            this.viewJira = false;
+            const self = this;
+            setTimeout(() => {
+              self.checkJira = true;
+              self.showLoadcompleteJira = true;
+            }, 4500);
+          }
+        );
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  onSubmit({ value, valid }: { value; valid: boolean }) {
+    try {
+      const date = new Date();
+      const endDateValue = this.utilityService.getUTCDate(this.endDate);
+      const grantedDateValue = this.utilityService.getUTCDate(date);
+      const payload = {
+        createdBy: this.dataStore.getUserDetailsValue().getUserId(),
+        exceptionEndDate: endDateValue,
+        exceptionGrantedDate: grantedDateValue,
+        exceptionReason: value.name,
+        issueIds: [this.policyViolationId],
+      };
+      const queryParams = {
+        ag: this.selectedAssetGroup
+      }
+      const exceptionUrl = environment.addIssueException.url;
+      const exceptionMethod = environment.addIssueException.method;
+      this.getExceptionSubscription = this.commonResponseService
+        .getData(exceptionUrl, exceptionMethod, payload, queryParams)
+        .subscribe(
+          response => {
+            this.check = true;
+            this.showLoadcomplete = true;
+            this.showTopSection = false;
+            this.exceptionAdded = !this.exceptionAdded;
+            this.getIssueAudit();
+            this.upateStatusOnAddOrRevokeException('Exempt');
+          },
+          error => {
+            this.logger.log("error test", error);            
+            this.addRevokeExemptionErrorMessage = error.error.message;
+            this.check = false;
+            this.showLoadcomplete = true;
+          }
+        );
+
+      this.user.reset();
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  keyDown(event: KeyboardEvent) {
+    try {
+      switch (event.keyCode) {
+        case 38: // this is the ascii of arrow up
+          this.arrowkeyLocation--;
+          break;
+        case 40: // this is the ascii of arrow down
+          this.arrowkeyLocation++;
+          break;
+        case 13: // this is the ascii of enter
+          if (this.filteredList.length > 0) {
+            this.queryValue = this.filteredList[this.arrowkeyLocation];
+            this.filteredList = [];
+            this.queryValue = this.retrieveEmailFromSelectedItem(this.queryValue);
+            this.emailArray.push(this.queryValue);
+          } else if (this.queryValue.length > 0) {
+              if (this.validateEmailInput(this.queryValue)) {
+                this.emailArray.push(this.queryValue);
+              }
+          }
+          this.queryValue = '';
+          if (this.emailArray.length < 1) {
+            this.emailObj.to.required = false;
+          } else {
+            this.emailObj.to.required = true;
+          }
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  keyEvent(event: KeyboardEvent, item) {
+    try {
+      switch (event.keyCode) {
+        case 13: // this is the ascii of enter
+          this.queryValue = item;
+          this.filteredList = [];
+          item = this.retrieveEmailFromSelectedItem(item);
+          this.emailArray.push(item);
+          this.queryValue = '';
+          if (this.emailArray.length < 1) {
+            this.emailObj.to.required = false;
+          } else {
+            this.emailObj.to.required = true;
+          }
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  upateStatusOnAddOrRevokeException(status) {
+    try {
+
+      let statusIcon;
+
+      if (status && status.toLowerCase() === 'exempt') {
+        statusIcon = '../assets/icons/Lock-Closed.svg';
+      } else if (status && status.toLowerCase() === 'open') {
+        statusIcon = '../assets/icons/Lock-Open.svg';
+      }
+
+      let obj;
+      this.issueTopblocks = [];
+      obj = {
+        header: 'Status',
+        footer: status, // 'Exempted' | 'Open'
+        img: statusIcon
+      };
+      this.issueTopblocks.push(obj);
+
+      if (this.issueBlocks.severity !== undefined) {
+        obj = {
+          header: 'Severity',
+          footer: this.issueBlocks.severity,
+          img: '../assets/icons/Flag-Critical.svg'
+        };
+        this.issueTopblocks.push(obj);
+      }
+
+      if (this.issueBlocks.resourceType !== undefined) {
+        const iconKeys = Object.keys(ICONS.awsResources);
+        if (iconKeys.indexOf(this.issueBlocks.resourceType) > -1) {
+          obj = {
+            header: 'Target Type',
+            footer: this.issueBlocks.resourceType,
+            img: ICONS.awsResources[this.issueBlocks.resourceType]
+          };
+        } else {
+          obj = {
+            header: 'Target Type',
+            footer: this.issueBlocks.resourceType,
+            img: ICONS.awsResources[`unknown`]
+          };
+        }
+        this.issueTopblocks.push(obj);
+      }
+
+      if (this.issueBlocks.policyCategory !== undefined) {
+        if (
+          this.issueBlocks.policyCategory === 'governance' ||
+          this.issueBlocks.policyCategory === 'Governance'
+        ) {
+          obj = {
+            header: 'Rule Category',
+            footer: this.issueBlocks.policyCategory,
+            img: '../assets/icons/Governance.svg'
+          };
+        } else {
+          obj = {
+            header: 'Rule Category',
+            footer: this.issueBlocks.policyCategory,
+            img: '../assets/icons/Security.svg'
+          };
+        }
+        this.issueTopblocks.push(obj);
+      }
+      if (this.issueTopblocks.length) {
+        this.showTopSection = true;
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  onSubmitemail() {
+    try {
+      // reset values
+      this.emailObj = {
+        'to': {
+          'required': true,
+          'validFormat': true
+        },
+        'from': {
+          'required': true,
+          'validFormat': true
+        }
+      };
+      // to address validation
+      if (this.emailArray.length < 1 && this.queryValue.length <= 0) {
+        this.emailObj.to.required = false;
+        return;
+      } else {
+        this.emailObj.to.required = true;
+        if (this.emailArray.length < 1 && this.queryValue.length > 0) {
+          if (this.validateEmailInput(this.queryValue)) {
+            this.emailArray.push(this.queryValue);
+          } else {
+            this.emailObj.to.validFormat = false;
+            return;
+          }
+        }
+      }
+      // from address validation
+      if (this.fromEmailID.length > 0) {
+        if (!this.validateEmailInput(this.fromEmailID)) {
+          this.emailObj.from.validFormat = false;
+          return;
+        }
+      } else {
+        this.emailObj.from.required = false;
+        return;
+      }
+
+      this.showTransactionEmail = true;
+
+      this.postEmail(this.emailArray);
+
+      this.emailArray = [];
+      this.userEmail.reset();
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  postEmail(emailArrayList): any {
+    try {
+      const locationValue =
+        window.location.href + '?ag=' + this.selectedAssetGroup;
+
+      const emailUrl = environment.email.url;
+      const emailMethod = environment.email.method;
+      const resourceId = encodeURIComponent(encodeURIComponent(this.issueBlocks.resouceViolatedPolicy));
+      const resourceType = encodeURIComponent(encodeURIComponent(this.issueBlocks.resourceType));
+      const assetGroup = encodeURIComponent(encodeURIComponent(this.selectedAssetGroup));
+      const domainName = encodeURIComponent(encodeURIComponent(this.selectedDomain));
+      const ruleID = encodeURIComponent(encodeURIComponent(this.issueBlocks.policyId));
+      const payload = {
+        attachmentUrl: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL + '/html.handlebars',
+        from: this.fromEmailID,
+        mailTemplateUrl: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL + '/html.handlebars',
+        placeholderValues: {
+          link: locationValue,
+          name: name,
+          statusName: 'Status',
+          statusFooter: this.issueBlocks.status,
+          severityName: 'Severity',
+          severityFooter: this.issueBlocks.severity,
+          targetTypeName: 'Target Type',
+          targetTypeFooter: this.issueBlocks.resourceType,
+          policyCategoryName: 'Rule Category',
+          policyCategoryFooter: this.issueBlocks.policyCategory,
+          policyViolated: this.issueBlocks.policyViolated,
+          policyDescription: this.issueBlocks.policyDescription,
+          violationReason: this.issueBlocks.violationReason,
+          resourceId: this.issueBlocks.resouceViolatedPolicy,
+          resourceUrl: window.location.origin+'/pl/assets/asset-list/'+resourceType+'/'+resourceId+'?ag='+assetGroup+'&domain='+domainName,
+          policyUrl: window.location.origin+'/pl/compliance/policy-knowledgebase-details/'+ruleID+'/false?ag='+assetGroup+'&domain='+domainName,
+          createdOn: this.issueBlocks.violationModifiedDate,
+          lastModifiedDate: this.issueBlocks.violationModifiedDate,
+          templatePath: this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_MAIL_TEMPLATE_URL
+        },
+        subject: 'Issue Details',
+        to: emailArrayList
+      };
+      this.getEmailSubscription = this.commonResponseService
+        .getData(emailUrl, emailMethod, payload, {}, {
+          responseType: 'text'
+        })
+        .subscribe(
+          response => {
+            this.showLoadcompleteEmail = true;
+            this.checkEmail = true;
+          },
+          error => {
+            this.showLoadcompleteEmail = true;
+            this.checkEmail = false;
+          }
+        );
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  clearContents(element): any {
+      this.showTransaction = true;
+  }
+
+  showOtherDivRecommend(): any {
+    try {
+      this.showRecommend = !this.showRecommend;
+      this.showOppositeRecommend = !this.showOppositeRecommend;
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  searchCalled(search) {
+    try {
+      this.searchTxt = search;
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  getDateData(date: any): any {
+    try {
+      const todaysDate = new Date();
+      this.endDate = date;
+      this.endDate.setHours(todaysDate.getHours());
+      this.endDate.setMinutes(todaysDate.getMinutes());
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  showOtherDiv(): any {
+    try {
+      this.showOpposite = !this.showOpposite;
+      this.showNone = !this.showNone;
+      if (this.showOpposite === false) {
+        this.showTransaction = false;
+        this.showLoadcomplete = false;
+      }
+      this.user.reset();
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  showOtherDivRevoke(): any {
+    try {
+      this.showRevoke = !this.showRevoke;
+      this.showOppositeRevoke = !this.showOppositeRevoke;
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  showOtherDivEmail(): any {
+    try {
+      this.showOppositeEmail = !this.showOppositeEmail;
+      this.showNone = !this.showNone;
+      if (this.showOppositeEmail === false) {
+        this.showTransactionEmail = false;
+        this.showLoadcompleteEmail = false;
+        this.queryValue = '';
+        this.filteredList = [];
+        this.fromEmailID = this.GLOBAL_CONFIG && this.GLOBAL_CONFIG.optional && this.GLOBAL_CONFIG.optional.pacmanIssue && this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue && this.GLOBAL_CONFIG.optional.pacmanIssue.emailPacManIssue.ISSUE_EMAIL_FROM_ID;
+        this.emailObj = {
+          'to': {
+            'required': true,
+            'validFormat': true
+          },
+          'from': {
+            'required': true,
+            'validFormat': true
+          }
+        };
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  prevPg() {
+    try {
+      this.currentPointer--;
+      this.processData(this.currentBucket[this.currentPointer]);
+      this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
+      this.lastPaginator =
+        this.currentPointer * this.paginatorSize + this.paginatorSize;
+    } catch (error) {
+      this.logger.log('error', error);
+    }
+  }
+
+  nextPg() {
+    try {
+      if (this.currentPointer < this.bucketNumber) {
+        this.currentPointer++;
+        this.processData(this.currentBucket[this.currentPointer]);
+        this.firstPaginator = this.currentPointer * this.paginatorSize + 1;
+        this.lastPaginator =
+          this.currentPointer * this.paginatorSize + this.paginatorSize;
+        if (this.lastPaginator > this.totalRows) {
+          this.lastPaginator = this.totalRows;
+        }
+      } else {
+        this.bucketNumber++;
+        this.getData();
+      }
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  showJiraTicket(): any {
+    try {
+      this.viewJira = true;
+      setTimeout(() => {
+        return this.hideJira();
+      }, 10);
+    } catch (e) {
+      this.logger.log('error', e);
+    }
+  }
+
+  findJiraExist(): any {
+    try {
+      const url = environment.findJira.url;
+      const method = environment.findJira.method;
+      let issueValue;
+      this.routeSubscription = this.activatedRoute.params.subscribe(params => {
+        issueValue = params['issueId'];
+      });
+
+      const payload = {
+        issue_id: issueValue
+      };
+
+      this.findJiraSubscription = this.commonResponseService
+        .getData(url, method, payload, {})
+        .subscribe(
+          response => {
+            this.showJiraButton = true;
+            if (response.data.exists === false) {
+              this.showJiraData = true;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             } else {
                 this.bucketNumber++;
                 this.getData();

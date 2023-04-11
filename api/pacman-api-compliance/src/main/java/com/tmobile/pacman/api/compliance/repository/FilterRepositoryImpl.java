@@ -253,6 +253,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             return data.getAssets();
 
     }
+<<<<<<< HEAD
     
     /*
      * (non-Javadoc)
@@ -293,5 +294,7 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
             throw new DataException(e);
         }
     }
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 }

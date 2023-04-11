@@ -27,8 +27,13 @@ class RuleEngineLambdaFunction(LambdaFunctionResource):
             'JOB_QUEUE': RuleEngineJobQueue.get_input_attr('name'),
             'JOB_DEFINITION': SubmitAndRuleEngineJobDefinition.get_output_attr('arn'),
             'CONFIG_CREDENTIALS': "dXNlcjpwYWNtYW4=",
+<<<<<<< HEAD
             'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule,batch/prd/latest",
             'CONFIG_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule,aqua-enricher/prd/latest",
+=======
+            'CONFIG_SERVICE_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
+            'CONFIG_URL': ApplicationLoadBalancer.get_http_url() + "/api/config/rule/prd/latest",
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             'POLICY_DETAILS_URL' : ApplicationLoadBalancer.get_http_url() + "/api/compliance/v1/policy-details-by-uuid?policyUUID="
         }
     }

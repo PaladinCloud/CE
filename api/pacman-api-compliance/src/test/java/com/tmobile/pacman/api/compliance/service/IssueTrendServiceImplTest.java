@@ -96,7 +96,11 @@ public class IssueTrendServiceImplTest {
         when(complianceService.getCertificates(anyString()))
         .thenReturn(taggingInfoMap);
         
+<<<<<<< HEAD
         when(complianceService.getPolicyCompliance(anyObject()))
+=======
+        when(complianceService.getPolicycompliance(anyObject()))
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         .thenReturn(CommonTestUtil.getResponseWithOrder());
         
         when(complianceService.getPatching(anyString(),anyString(),anyString()))
@@ -139,7 +143,11 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
+<<<<<<< HEAD
         when(complianceService.getPoliciesCatDetails(anyObject()))
+=======
+        when(complianceService.getPoliciesevCatDetails(anyObject()))
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(repository.getTrendIssues(anyString(),anyObject(),anyObject(),anyObject(),anyObject()))
@@ -162,7 +170,11 @@ public class IssueTrendServiceImplTest {
         when(complainceRepository.getPolicyIdWithDisplayNameQuery(anyString()))
         .thenReturn(CommonTestUtil.getListMapObject());
         
+<<<<<<< HEAD
         when(complianceService.getPoliciesCatDetails(anyObject()))
+=======
+        when(complianceService.getPoliciesevCatDetails(anyObject()))
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
         .thenReturn(CommonTestUtil.getListMapObject());
         
         when(repository.getComplianceTrendProgress(anyString(),anyObject(),anyString(),anyObject()))

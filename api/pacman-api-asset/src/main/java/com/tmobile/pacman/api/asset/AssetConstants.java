@@ -108,8 +108,11 @@ public final class AssetConstants {
 
     public static final String ASSET = "asset";
     public static final String TYPE_KEYWORD = "type.keyword";
+<<<<<<< HEAD
     public static final String EVENTCATEGORY = "eventCategoryName";
     public static final String EVENTSOURCE = "eventSourceName";
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     
 }
 

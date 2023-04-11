@@ -24,10 +24,23 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_UPD
 import static com.tmobile.pacman.api.admin.common.AdminConstants.DATE_FORMAT;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
+<<<<<<< HEAD
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
+=======
+import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.UUID;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 import com.google.gson.Gson;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
@@ -60,7 +73,11 @@ import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
 import com.tmobile.pacman.api.admin.service.CommonService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
+<<<<<<< HEAD
 import org.springframework.util.CollectionUtils;
+=======
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 /**
  * AssetGroup Service Implementations
@@ -78,6 +95,12 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	@Autowired
 	private TargetTypesRepository targetTypesRepository;
 
+<<<<<<< HEAD
+=======
+	@Autowired
+	private PacmanRdsRepository rdsRepository;
+	
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 	@Autowired
 	private CommonService commonService;
 
@@ -447,6 +470,7 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		return allTargetTypesDetails;
 	}
 
+<<<<<<< HEAD
 	private UpdateAssetGroupDetails buildAssetGroupDetails(final AssetGroupDetails assetGroup) {
 		UpdateAssetGroupDetails assetGroupView = new UpdateAssetGroupDetails();
 		List<Map<String, Object>> countMap = getAssetCountByAssetGroup(assetGroup.getGroupName(), "all", null, null, null);
@@ -464,6 +488,95 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 		assetGroupView.setGroupName(assetGroup.getGroupName());
 		assetGroupView.setGroupType(assetGroup.getGroupType());
 		return assetGroupView;
+=======
+	private UpdateAssetGroupDetails buildAssetGroupDetails(final AssetGroupDetails existingAssetGroupDetails) {
+		List<TargetTypesDetails> assetGroupTargetTypes = Lists.newArrayList();
+		UpdateAssetGroupDetails assetGroupDetails = new UpdateAssetGroupDetails();
+		assetGroupDetails.setGroupId(existingAssetGroupDetails.getGroupId());
+		assetGroupDetails.setCreatedBy(existingAssetGroupDetails.getCreatedBy());
+		assetGroupDetails.setDataSourceName(existingAssetGroupDetails.getDataSource());
+		assetGroupDetails.setDescription(existingAssetGroupDetails.getDescription());
+		assetGroupDetails.setDisplayName(existingAssetGroupDetails.getDisplayName());
+		assetGroupDetails.setGroupName(existingAssetGroupDetails.getGroupName());
+		assetGroupDetails.setType(existingAssetGroupDetails.getGroupType());
+		assetGroupDetails.setVisible(existingAssetGroupDetails.getIsVisible());
+		
+		Set<AssetGroupTargetDetails> allTargetTypeDetails = existingAssetGroupDetails.getTargetTypes();
+		Map<String, Integer> targetTypesIndex = Maps.newHashMap();
+		Set<String> selectedTargetTypes = Sets.newHashSet();
+		
+		String targetTypeNames = allTargetTypeDetails.stream()
+		.map(targetType->targetType.getTargetType())
+		.collect(Collectors.joining("','"));
+
+		targetTypeNames = "'"+targetTypeNames+"'";
+		String query = "SELECT targetName, dataSourceName FROM pacmandata.cf_Target where targetName in ("+targetTypeNames+")";
+		List<Map<String,Object>> targetNameList = rdsRepository.getDataFromPacman(query);
+		Map<String,String> targetNameMap = new HashMap<>();
+		targetNameList.stream().forEach(targetList->{
+			String targetName=(String) targetList.get("targetName");
+			String dataSourceName=(String) targetList.get("dataSourceName");
+			targetNameMap.put(targetName, dataSourceName);
+		});
+		
+		final int[] idx = { -1 };
+		allTargetTypeDetails.forEach(targetTypeDetails -> {
+			TargetTypesDetails targetTypes = new TargetTypesDetails();
+			selectedTargetTypes.add(targetTypeDetails.getTargetType());
+			if(targetTypesIndex.get(targetTypeDetails.getTargetType()) != null) {
+				int index = targetTypesIndex.get(targetTypeDetails.getTargetType());
+				targetTypes = assetGroupTargetTypes.get(index);
+				List<AttributeDetails> attributes = targetTypes.getAttributes();
+				AttributeDetails attributeDetails = new AttributeDetails();
+				attributeDetails.setName(targetTypeDetails.getAttributeName());
+				attributeDetails.setValue(targetTypeDetails.getAttributeValue());
+				attributes.add(attributeDetails);
+				targetTypes.setAttributes(attributes);
+			} else {
+				idx[0]++;
+				targetTypes.setDataSourceName(targetNameMap.get(targetTypeDetails.getTargetType()));
+				targetTypesIndex.put(targetTypeDetails.getTargetType(), idx[0]);
+				targetTypes.setAdded(true);
+				targetTypes.setTargetName(targetTypeDetails.getTargetType());
+				targetTypes.setAllAttributesName(commonService.getFieldNames(targetTypesRepository.findDataSourceByTargetType(targetTypeDetails.getTargetType()) + "_" + targetTypeDetails.getTargetType(), targetTypeDetails.getTargetType()));
+				if(targetTypeDetails.getAttributeName().equalsIgnoreCase("all") && targetTypeDetails.getAttributeValue().equalsIgnoreCase("all")) {
+					targetTypes.setIncludeAll(true);
+					targetTypes.setAttributes(Lists.newArrayList());
+				} else {
+					targetTypes.setIncludeAll(false);
+					AttributeDetails attributeDetails = new AttributeDetails();
+					attributeDetails.setName(targetTypeDetails.getAttributeName());
+					attributeDetails.setValue(targetTypeDetails.getAttributeValue());
+					List<AttributeDetails> attributes = Lists.newArrayList();
+					attributes.add(attributeDetails);
+					targetTypes.setAttributes(attributes);
+				}
+				assetGroupTargetTypes.add(targetTypes);
+			}
+		});
+		List<TargetTypesDetails> attributes = Lists.newArrayList(); 
+		List<TargetTypesProjection> remainingTargetTypes = Lists.newArrayList(); 
+		assetGroupDetails.setTargetTypes(assetGroupTargetTypes);
+		if(!selectedTargetTypes.isEmpty()) {
+			remainingTargetTypes = targetTypesRepository.findByTargetTypeNotIn(Lists.newArrayList(selectedTargetTypes));
+		} else {
+			remainingTargetTypes = targetTypesRepository.getAllTargetTypes();
+		}
+		
+		
+		for(TargetTypesProjection remainingTargetType : remainingTargetTypes) {
+			String targetName = remainingTargetType.getText().trim();
+			TargetTypesDetails targetTypeAttribute = new TargetTypesDetails();
+			targetTypeAttribute.setAttributes(Lists.newArrayList());
+			targetTypeAttribute.setTargetName(targetName.trim());
+			targetTypeAttribute.setAllAttributesName(commonService.getFieldNames(targetTypesRepository.findDataSourceByTargetType(targetName) + "_" + targetName, targetName));
+			targetTypeAttribute.setIncludeAll(false);
+			attributes.add(targetTypeAttribute);
+		}
+		assetGroupDetails.setRemainingTargetTypes(remainingTargetTypes);
+		assetGroupDetails.setRemainingTargetTypesFullDetails(attributes);
+		return assetGroupDetails;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 	}
 
 	private boolean deleteAssetGroupAlias(final AssetGroupDetails assetGroupDetails) throws PacManException {

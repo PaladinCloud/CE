@@ -323,13 +323,21 @@ public class ComplianceServiceImplTest {
                         anyInt(), anyString())).thenReturn(
                 CommonTestUtil.getMapLong());
 
+<<<<<<< HEAD
         assertThat(complianceService.getPolicyCompliance(CommonTestUtil
+=======
+        assertThat(complianceService.getPolicycompliance(CommonTestUtil
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                 .getRequest()), is(notNullValue()));
     }
 
     @Test
     public void getPolicycomplianceWithoutPolicyIdTest() throws Exception {
+<<<<<<< HEAD
         assertThat(complianceService.getPolicyCompliance(CommonTestUtil
+=======
+        assertThat(complianceService.getPolicycompliance(CommonTestUtil
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                 .getRequest()), is(nullValue()));
     }
 
@@ -383,23 +391,39 @@ public class ComplianceServiceImplTest {
                 CommonTestUtil.getMapLong());
 
         assertThat(
+<<<<<<< HEAD
                 complianceService.getPolicyDetailsByApplication(
+=======
+                complianceService.getPolicyDetailsbyApplication(
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                         "dummyString",
                         "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Policy_ec2",
                         "dummyString"), is(notNullValue()));
 
         assertThat(
+<<<<<<< HEAD
                 complianceService.getPolicyDetailsByApplication(
+=======
+                complianceService.getPolicyDetailsbyApplication(
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                         "dummyString",
                         "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
                         "dummyString"), is(notNullValue()));
 
         assertThat(
+<<<<<<< HEAD
                 complianceService.getPolicyDetailsByApplication(
                         "dummyString",
                         "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
                         "dummyString"), is(notNullValue()));
         assertThat(complianceService.getPolicyDetailsByApplication("dummyString",
+=======
+                complianceService.getPolicyDetailsbyApplication(
+                        "dummyString",
+                        "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
+                        "dummyString"), is(notNullValue()));
+        assertThat(complianceService.getPolicyDetailsbyApplication("dummyString",
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                 "", "dummyString"), is(notNullValue()));
 
     }
@@ -425,12 +449,17 @@ public class ComplianceServiceImplTest {
                         anyString(), anyString(),anyString(), anyString(),anyString())).thenReturn(5000l);
 
         assertThat(
+<<<<<<< HEAD
                 complianceService.getPolicyDetailsByEnvironment(
+=======
+                complianceService.getPolicyDetailsbyEnvironment(
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                         "dummyString",
                         "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Policy_ec2",
                         "", "dummyString"), is(notNullValue()));
 
         assertThat(
+<<<<<<< HEAD
                 complianceService.getPolicyDetailsByEnvironment(
                         "dummyString",
                         "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
@@ -444,6 +473,21 @@ public class ComplianceServiceImplTest {
                         "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
                         "dummyString",""), is(notNullValue()));
         assertThat(complianceService.getPolicyDetailsByEnvironment("dummyString",
+=======
+                complianceService.getPolicyDetailsbyEnvironment(
+                        "dummyString",
+                        "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
+                        "", "dummyString"), is(notNullValue()));
+        assertThat(complianceService.getPolicyDetailsbyEnvironment("dummyString",
+                "", "", "dummyString"), is(notNullValue()));
+
+        assertThat(
+                complianceService.getPolicyDetailsbyEnvironment(
+                        "dummyString",
+                        "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
+                        "dummyString",""), is(notNullValue()));
+        assertThat(complianceService.getPolicyDetailsbyEnvironment("dummyString",
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                 "", "","dummyString"), is(notNullValue()));
     }
 

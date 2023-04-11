@@ -38,7 +38,10 @@ public class HostAssetsEsIndexer implements Constants {
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(HostAssetsEsIndexer.class);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     private static final String BASE_API_URL = System.getProperty("qualys_api_url");
     private static final String kbGetUri = BASE_API_URL+"/api/2.0/fo/knowledge_base/vuln/?action=list&ids=%s";
 

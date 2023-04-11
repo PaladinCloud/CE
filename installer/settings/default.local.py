@@ -65,6 +65,7 @@ ENABLE_VULNERABILITY_FEATURE = False
 QUALYS_API_URL = ""  # Qualys API Url without trailing slash
 QUALYS_INFO = ""  # Base64 encoded user:password of qualys
 
+<<<<<<< HEAD
 # These settings are for the enabling and using Aqua Vulnerability feature and service
 ENABLE_AQUA_VULNERABILITY_FEATURE = False
 AQUA_API_URL="" # Aqua API Url without trailing slash
@@ -76,7 +77,12 @@ AQUA_PASSWORD = "" # Aqua Client password
 #Cognito Configuration
 COGNITO_ADMIN_EMAIL_ID = "" #email_id of admin user 
 COGNITO_DOMAIN = ""       #example xyzpaladincloud
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
+#Cognito Configuration
+COGNITO_ADMIN_EMAIL_ID = "" #email_id of admin user 
+COGNITO_DOMAIN = ""       #example xyzpaladincloud
 
 #job/rules intervals
 JOB_SCHEDULE_INITIALDELAY = 5 #scheduling jobs initial delay in minute
@@ -144,7 +150,11 @@ BATCH_INSTANCE_TYPE = "m5.xlarge"     #m4.xlarge,m5.xlarge & c5.xlarge (follow b
 #AZURE_AD_CONFIGURATION
 #optianal configuration if you would like to setup AzureAD AUTHENTICATION  
 ENABLE_AZURE_AD = False  
+<<<<<<< HEAD
 METADATA_XML_FILE = "" 
 
 #AutoFix Configuration
 DEFAULT_RESOURCE_OWNER = ""   #Enter Email ID, All AutoFix notification send to this mail ID.
+=======
+METADATA_XML_FILE = "" 
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955

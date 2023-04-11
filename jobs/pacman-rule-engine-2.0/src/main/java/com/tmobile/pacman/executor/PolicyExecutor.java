@@ -106,7 +106,11 @@ public class PolicyExecutor {
                 try {   logger.info("input source detected as policy, will process policy now.");
                         new PolicyExecutor().run(args, executionId);
                 } catch (Exception e) {
+<<<<<<< HEAD
                     logger.error("error while in policy method for executionId ->" + executionId, e);
+=======
+                    logger.error("error while in poilcy method for executionId ->" + executionId, e);
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                 }
         }
     }
@@ -132,22 +136,37 @@ public class PolicyExecutor {
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         final String mandatoryTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
+<<<<<<< HEAD
         System.setProperty(Constants.RDS_DB_URL,CommonUtils.getPropValue(Constants.RDS_DB_URL));
         System.setProperty(Constants.RDS_USER,CommonUtils.getPropValue(Constants.RDS_USER));
         System.setProperty(Constants.RDS_PWD,CommonUtils.getPropValue(Constants.RDS_PWD));
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
             String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
+=======
+        if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
+       	 String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
             policyDetailsUrl += policyUUID;
             String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
             if(Strings.isNullOrEmpty(policyDetails )) {
+<<<<<<< HEAD
                 logger.error(
+=======
+            	logger.error(
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
                         "Policy details for the policyID {} not found ",policyUUID);
                 logger.error("exiting now..");
                 ProgramExitUtils.exitWithError();
             }
+<<<<<<< HEAD
             policyParam = CommonUtils.createPolicyParamMap(policyDetails);
 
+=======
+           policyParam = CommonUtils.createPolicyParamMap(policyDetails);
+            policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, "role/" +
+                    CommonUtils.getPropValue(PacmanSdkConstants.APPLICATION_PREFIX) + "_ro");
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {

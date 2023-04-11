@@ -743,16 +743,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.currentFilterType = _.find(this.filterTypeOptions, {
         optionName: value,
       });
+      const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
+      const queryParams = {
+            ...urlObj.params,
+            ag: this.selectedAssetGroup,
+            domain: this.selectedDomain,
+          }
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          {
-            ag: this.selectedAssetGroup,
-            domain: this.selectedDomain,
-          },
-          environment.base +
-            this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL)
-              .url,
+          queryParams,
+          environment.base + urlObj.url,
           "GET"
         )
         .subscribe((response) => {

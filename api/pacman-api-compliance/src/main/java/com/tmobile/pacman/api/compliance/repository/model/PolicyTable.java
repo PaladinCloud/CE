@@ -40,6 +40,7 @@ public class PolicyTable {
 	private String severity;
 	private String category;
 	private String autoFixEnabled;
+<<<<<<< HEAD
 	private String autoFixAvailable;
 	private String allowList;
 	private Integer waitingTime;
@@ -53,6 +54,8 @@ public class PolicyTable {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 	
 	public String getPolicyId() {
 		return policyId;
@@ -192,6 +195,7 @@ public class PolicyTable {
 	public void setAutoFixEnabled(String autoFixEnabled) {
 		this.autoFixEnabled = autoFixEnabled;
 	}
+<<<<<<< HEAD
 	public String getAutoFixAvailable() {
 		return autoFixAvailable;
 	}
@@ -272,5 +276,8 @@ public class PolicyTable {
 	}
 	
 
+=======
+	
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 	
 }

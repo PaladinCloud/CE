@@ -116,9 +116,13 @@ import { StepperComponent } from "./stepper/stepper.component";
 import { CustomCardComponent } from './components/molecules/custom-card/custom-card.component';
 import { OverviewTileComponent } from './components/molecules/overview-tile/overview-tile.component';
 import { TextWithIconComponent } from "./components/molecules/text-with-icon/text-with-icon.component";
+<<<<<<< HEAD
 import { MatChipsModule } from "@angular/material/chips";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { InputFieldComponent } from './input-field/input-field.component';
+=======
+import { MatTooltipModule } from "@angular/material/tooltip";
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 @NgModule({
   imports: [

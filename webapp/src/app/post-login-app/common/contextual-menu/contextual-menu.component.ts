@@ -33,10 +33,108 @@ import { MENU_NODES } from './contextual-menu-nodes';
     templateUrl: './contextual-menu.component.html',
     styleUrls: ['./contextual-menu.component.css'],
 })
+<<<<<<< HEAD
 export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() haveAdminPageAccess: boolean;
     @Input() expanded: boolean;
     @ViewChild('treeMenu') tree: TreeComponent;
+=======
+export class ContextualMenuComponent implements OnInit, OnDestroy {
+  currentParentId: number = 1;
+  currentNodeId: number = 1;
+  current_version: string = "";
+  @Input() haveAdminPageAccess;
+  @Input() expanded;
+  nodes = [
+    {
+      id: 1,
+      name: "Dashboard",
+      image: "dashboard-icon",
+      route: "/pl/compliance/compliance-dashboard",
+    },
+    {
+      id: 2,
+      name: "Violations",
+      image: "violations-icon",
+      route: "/pl/compliance/issue-listing"
+    },
+    {
+      id: 3,
+      name: "Assets",
+      image: "assets-icon",
+      children: [
+        {
+          id: 4,
+          name: "Summary",
+          parent: "Assets",
+          route: "/pl/assets/asset-dashboard",
+        },
+        {
+          "id": 25,
+          "name": "Distribution",
+          "parent": "Assets",
+          "route": "/pl/assets/asset-distribution"
+        },
+        {
+          id: 5,
+          name: "List",
+          parent: "Assets",
+          route: "/pl/assets/asset-list",
+        }
+      ],
+    },
+    {
+      id: 6,
+      name: "Policy",
+      image: "policy-icon",
+      route: "/pl/compliance/policy-knowledgebase",
+    },
+    {
+      id: 7,
+      name: "Tagging",
+      image: "tagging-icon",
+      route: "/pl/compliance/tagging-compliance",
+    },
+    {
+      id: 8,
+      name: "Fix Central",
+      image: "fix-central-icon",
+      children: [
+        {
+          id: 9,
+          name: "Health Notifications",
+          parent: "Fix Central",
+          route: "/pl/compliance/health-notifications",
+          notDisplayIfAzure: true,
+        },
+        {
+          id: 10,
+          name: "Recommendations",
+          parent: "Fix Central",
+          route: "/pl/compliance/recommendations",
+        },
+        // { id: 11, name: "Fixes", parent: "Fix Central" },
+      ],
+    },
+    {
+      id: 13,
+      name: "Statistics",
+      image: "statistics-icon",
+      route: "stats-overlay",
+      overlay: true,
+    },
+    {
+      id: 14,
+      name: "Admin",
+      image: "admin-icon",
+      children: [
+        {
+          id: 15,
+          name: "Policy",
+          parent: "Admin",
+          route: "/pl/admin/policies",
+          permissions: ["policy-management"]
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
     currentParentId = '';
     currentNodeId = '';

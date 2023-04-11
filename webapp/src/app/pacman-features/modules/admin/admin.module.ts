@@ -48,12 +48,16 @@ import { ConfigManagementComponent } from "./config-management/config-management
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from "@angular/material/input";
+<<<<<<< HEAD
 import { UserManagementComponent } from './user-management/user-management.component';
 import { AdminService } from "../../services/all-admin.service";
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { AddAccountComponent } from './account-management/add-account/add-account.component';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 
+=======
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 
 @NgModule({
   imports: [
@@ -64,7 +68,10 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
+<<<<<<< HEAD
     ClipboardModule,
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
     MatSlideToggleModule
   ],
   declarations: [

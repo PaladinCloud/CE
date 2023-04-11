@@ -16,11 +16,25 @@
   padding: 28px;
   height: 100%;
 } 
+<<<<<<< HEAD
 
 .right-wrapper{
   display: flex;
   width: 100%;
   height: calc(100% - 90px);
+=======
+
+.form-wrapper{
+   overflow: auto;
+   padding: 0 24px 24px 0;
+   display: flex;
+   flex-direction: column;
+   gap: 40px;
+}
+
+.right-wrapper{
+width: 100%;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 
 .type-wrapper{
@@ -155,6 +169,7 @@ gap: 16px;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
+<<<<<<< HEAD
   gap: 20px;
 }
 
@@ -162,6 +177,10 @@ gap: 16px;
   display: flex;
   flex-direction: column;
   width: 100%;
+=======
+  padding-top: 24px;
+  border-top: 1px solid var(--border-200);
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
   gap: 20px;
 }
 
@@ -265,6 +284,10 @@ input{
   width: 100% !important;
 }
 
+.parameter-wrapper ::ng-deep .mat-form-field{
+  width: 100% !important;
+}
+
 .hide{
   display: none;
 }
@@ -317,10 +340,13 @@ input{
   color:#515459;
 }
 
+<<<<<<< HEAD
 h6{
  color: #515459;
 }
 
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 .header-wrapper{
   border-bottom: 1px solid var(--border-200);
 }
@@ -337,12 +363,21 @@ h6{
 
 
 ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb-container{
+<<<<<<< HEAD
   transform: translate3d(18px, 0, 0) !important; 
 }
 
 ::ng-deep .mat-slide-toggle-thumb-container{
   top: 3px !important;
   left: 5px !important;
+=======
+  transform: translate3d(20px, 0, 0) !important; 
+}
+
+::ng-deep .mat-slide-toggle-thumb-container{
+  top: 2px !important;
+  left: 3px !important;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 
 ::ng-deep .mat-slide-toggle-thumb{
@@ -360,7 +395,11 @@ h6{
 }
 
 ::ng-deep .mat-slide-toggle.mat-checked .mat-slide-toggle-bar{
+<<<<<<< HEAD
   background-color: var(--secondary-600) !important;
+=======
+  background-color: var(--primary-400) !important;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 
 ::ng-deep .mat-ripple{
@@ -381,7 +420,10 @@ h6{
 
 .subtitle-2{
   font: var(--text-subtitle-2);
+<<<<<<< HEAD
   color: var(--text-high-emphasis);
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 
 .header{
@@ -389,6 +431,10 @@ h6{
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
+=======
+  padding-bottom: 24px;
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 
 .header-text{
@@ -501,12 +547,18 @@ img{
 .details-content-wrapper{
 padding: 24px;
 display: flex;
+<<<<<<< HEAD
 height: calc(100% - 120px);
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 flex-direction: column;
 border-bottom: 2px solid var(--border-100);
 border-top: 2px solid var(--border-100);
 gap: 32px;
+<<<<<<< HEAD
 overflow: auto;
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
 
 .tile-content-wrapper{
@@ -576,6 +628,7 @@ gap: 20px;
 
 .header-subtext{
   color: var(--text-low-emphasis)
+<<<<<<< HEAD
 }
 
 ::ng-deep .mat-slide-toggle-bar{
@@ -630,4 +683,6 @@ display: block !important;
   display: flex;
   flex-direction: column;
   gap: 24px;
+=======
+>>>>>>> 55b501d9d49feb8369404878431f66be1e658955
 }
