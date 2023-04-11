@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import com.google.common.base.Strings;
 import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
 import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -48,6 +50,8 @@ import javax.annotation.PostConstruct;
  */
 @Service
 public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetailsService, Constants {
+
+	private static final Logger log = LoggerFactory.getLogger(AssetGroupTargetDetailsService.class);
 
 	@Autowired
 	private AssetGroupTargetDetailsRepository assetGroupTargetDetailsRepository;
@@ -126,17 +130,16 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		String query1 = "{\"size\":\"0\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"_type\",\"size\":1000}}}}";
 
 		String urlToQuery = buildAggsURL(esUrl, assetGroupName, null);
-		List<String> targetTypes = new ArrayList<String>();
+		List<String> targetTypes = new ArrayList<>();
 		String responseDetails = null;
 		try {
 			responseDetails = PacHttpUtils.doHttpPost(urlToQuery, query1);
-			JSONObject json = new JSONObject(responseDetails);
 			JSONArray jsonArray =new JSONObject(responseDetails).getJSONObject("aggregations").getJSONObject("name").getJSONArray("buckets");
 			for (int i=0; i < jsonArray.length(); i++) {
 				targetTypes.add(jsonArray.getJSONObject(i).get("key").toString());
 			}
 		} catch (Exception e) {
-
+			log.error("Cannot fetch target types from ES");
 		}
 		String result = targetTypes.stream().collect(Collectors.joining("','", "'", "'"));
 		String query = "select distinct targetName as type, displayName as displayName ,category as category,domain as domain from cf_Target "

@@ -254,12 +254,8 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Long> countMap = new HashMap<>();
 		try {
 			if (ALL.equals(type)) {
-				try {
-					countMap = getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
-							null, UNDERSCORE_TYPE, Constants.THOUSAND, null);
-				} catch (Exception e) {
-					LOGGER.error("Exception in getAssetCountByAssetGroup :", e);
-				}
+				countMap = getTotalDistributionForIndexAndType(aseetGroupName, null, filter, null,
+						null, UNDERSCORE_TYPE, Constants.THOUSAND, null);
 			} else {
 				long count = getTotalDocumentCountForIndexAndType(aseetGroupName, type, filter, null,
 						null, null, null);
