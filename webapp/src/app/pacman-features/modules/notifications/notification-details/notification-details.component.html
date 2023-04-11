@@ -1,7 +1,9 @@
 <div class="notification-details component-wrapper flex flex-col gap-20 padding-28">
     <div class="header flex flex-col gap-24">
-        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px;"> 
-            <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px;">
+            <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbArray]="breadcrumbArray"
+                            [breadcrumbLinks]="breadcrumbLinks"
+                            [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
         </div>
     </div>
     <div class="content-wrapper padding-24 flex flex-col gap-24">
@@ -11,15 +13,30 @@
                 <app-text [text]="summaryTitle" classNames="body-1 high-emphasis"></app-text>
             </div>
         </div>
-        <app-error-message *ngIf="errorMessage" [selectedValue]="errorMessage"></app-error-message>
-        <div class="details-list grid-table">
+        <div *ngIf="hasDetails" class="details-list grid-table">
             <div class="row" *ngFor="let detail of eventDetails">
                 <div class="row-wrapper border-bottom" *ngIf="detail.name && detail.value">
                     <app-text class="cell" [text]="detail.name" classNames="body-1 low-emphasis"></app-text>
-                    <app-text-with-icon *ngIf="detail.preImgSrc" class="cell" [text]="detail.value" [preImagePath]="detail.preImgSrc" [textVariant]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"></app-text-with-icon>
-                    <app-text [class.pointer]="detail.link" (click)="navigateTo(detail.link)" *ngIf="!detail.preImgSrc" class="cell" [text]="detail.value" [classNames]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"></app-text>
+                    <div class="cell">
+                        <div class="description" *ngIf="detail.name=='Description'; else nonHTMLValue">
+                            <div [innerHTML]="detail.value"></div>
+                        </div>
+                        <ng-template #nonHTMLValue>
+                            <app-text-with-icon *ngIf="detail.preImgSrc" [preImagePath]="detail.preImgSrc"
+                                        [textVariant]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"
+                                        [text]="detail.value"
+                                        ></app-text-with-icon>
+                            <app-text (click)="navigateTo(detail.link)" *ngIf="!detail.preImgSrc" [class.pointer]="detail.link"
+                                        [classNames]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"
+                                        [text]="detail.value"
+                                        ></app-text>
+                        </ng-template>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div *ngIf="!hasDetails" class="details-list grid-table">
+            <ngx-json-viewer [json]="notificationDetails"></ngx-json-viewer>
         </div>
     </div>
 </div>

@@ -19,9 +19,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERRO
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -108,7 +106,7 @@ public class AssetGroupControllerTest {
 		List<AssetGroupView> assetGroupDetail = new ArrayList<AssetGroupView>();
 		assetGroupDetail.add(getAssetGroupViewDetails());
 		Page<AssetGroupView> allAssetGroupDetails = new PageImpl<AssetGroupView>(assetGroupDetail,new PageRequest(0, 1), assetGroupDetail.size());
-		when(assetGroupService.getAllAssetGroupDetails(anyString(), anyInt(), anyInt())).thenReturn(allAssetGroupDetails);
+		when(assetGroupService.getAllAssetGroupDetails(anyMap(), anyString(), anyInt(), anyInt())).thenReturn(allAssetGroupDetails);
 		mockMvc.perform(get("/asset-group/list")
 				.param("searchTerm", StringUtils.EMPTY)
 				.param("page", "0")
@@ -122,7 +120,7 @@ public class AssetGroupControllerTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void getAllAssetGroupDetailsExceptionTest() throws Exception {
-		when(assetGroupService.getAllAssetGroupDetails(anyString(), anyInt(), anyInt())).thenThrow(Exception.class);
+		when(assetGroupService.getAllAssetGroupDetails(anyMap(), anyString(), anyInt(), anyInt())).thenThrow(Exception.class);
 		mockMvc.perform(get("/asset-group/list")
 				.param("searchTerm", StringUtils.EMPTY)
 				.param("page", "0")
@@ -160,7 +158,7 @@ public class AssetGroupControllerTest {
 	public void createAssetGroupDetailsTest() throws Exception {
 		byte[] assetGroupDetailsContent = toJson(getCreateUpdateAssetGroupDetailsRequest());
 		when(assetGroupService.createAssetGroupDetails(any(), any())).thenReturn(AdminConstants.ASSET_GROUP_CREATION_SUCCESS);
-		mockMvc.perform(post("/asset-group/create").principal(principal)
+		mockMvc.perform(post("/asset-group/createAssetGroup").principal(principal)
 				.content(assetGroupDetailsContent)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -173,7 +171,7 @@ public class AssetGroupControllerTest {
 	public void createAssetGroupDetailsExceptionTest() throws Exception {
 		byte[] assetGroupDetailsContent = toJson(getCreateUpdateAssetGroupDetailsRequest());
 		when(assetGroupService.createAssetGroupDetails(any(), any())).thenThrow(Exception.class);
-		mockMvc.perform(post("/asset-group/create").principal(principal)
+		mockMvc.perform(post("/asset-group/createAssetGroup").principal(principal)
 				.content(assetGroupDetailsContent)
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))

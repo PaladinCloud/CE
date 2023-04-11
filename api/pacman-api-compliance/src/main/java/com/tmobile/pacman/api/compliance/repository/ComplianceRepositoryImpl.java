@@ -2235,7 +2235,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     @Override
-    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup, List<String> issueIds) throws DataException {
+    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup, List<String> issueIds, String revokedBy) throws DataException {
 
         String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
         StringBuilder builderRequestAudit = new StringBuilder();
@@ -2311,7 +2311,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 issueIds.removeAll(failedIssueIds);
             }
             failedIssueIds.addAll(revokeException(assetGroup,issueIds));
-            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT);
+            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT,revokedBy);
         } else {
             failedIssueIds.addAll(issueIds);
         }

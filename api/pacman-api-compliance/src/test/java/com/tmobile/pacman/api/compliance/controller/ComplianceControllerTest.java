@@ -332,10 +332,10 @@ public class ComplianceControllerTest {
         
         RevokeIssuesException revokeIssuesException = new RevokeIssuesException();
         revokeIssuesException.setIssueIds(Arrays.asList("123"));
-        when(complianceService.revokeMultipleIssueException("aws",anyObject())).thenReturn(new IssueExceptionResponse());
+        when(complianceService.revokeMultipleIssueException("aws",anyObject(), revokeIssuesException.getRevokedBy())).thenReturn(new IssueExceptionResponse());
         assertThat(complianceController.revokeIssuesException("aws",revokeIssuesException), is(notNullValue()));
         
-        when(complianceService.revokeMultipleIssueException("aws",anyObject())).thenThrow(new ServiceException());
+        when(complianceService.revokeMultipleIssueException("aws",anyObject(), revokeIssuesException.getRevokedBy())).thenThrow(new ServiceException());
         when(complianceService.formatException(anyObject())).thenReturn(ResponseUtils.buildFailureResponse(new ServiceException()));
         ResponseEntity<Object> responseObj = complianceController.revokeIssuesException("aws",revokeIssuesException);
         assertTrue(responseObj.getStatusCode() == HttpStatus.EXPECTATION_FAILED);

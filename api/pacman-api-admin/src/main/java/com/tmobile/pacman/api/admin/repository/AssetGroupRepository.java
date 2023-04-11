@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.admin.repository;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,4 +63,10 @@ public interface AssetGroupRepository extends JpaRepository<AssetGroupDetails, S
      * @return Asset Group Details
      */
 	public AssetGroupDetails findByGroupName(String groupName);
+
+	@Query("SELECT distinct groupType FROM AssetGroupDetails")
+	public List<String> getDistinctType();
+
+	@Query("SELECT distinct createdBy FROM AssetGroupDetails")
+	public List<String> getDistinctCreatedBy();
 }

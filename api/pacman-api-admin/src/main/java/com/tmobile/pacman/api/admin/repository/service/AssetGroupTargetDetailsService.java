@@ -16,6 +16,7 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.tmobile.pacman.api.admin.domain.TargetTypePolicyDetails;
@@ -35,6 +36,8 @@ public interface AssetGroupTargetDetailsService {
      * @return All TargetType rule details
      */
 	public List<TargetTypePolicyDetails> getTargetTypesByAssetGroupName(String assetGroupName);
+
+	public List<Map<String, Object>> getTargetTypesByAssetGroupNameFromES(String assetGroupName);
 
 	/**
      * Service to get target types by assetGroup Id and target type not in list
