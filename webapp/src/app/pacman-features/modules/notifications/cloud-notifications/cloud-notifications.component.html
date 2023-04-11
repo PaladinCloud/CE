@@ -1,0 +1,49 @@
+<div class="notifications-wrapper flex flex-col padding-28 gap-24">
+    <div class="flex flex-between flex-align-center">
+        <div>
+            <app-text [text]="pageTitle" classNames="headline-6 medium-emphasis"></app-text>
+        </div>
+    </div>
+    <div class="flex flex-col full-height">
+        <div class="flex flex-col full-height cloud-notifications-wrap">
+            <div class="flex flex-col full-height data-table-container">
+                <div class="relative table-wrapper">
+                    <app-table (deleteFilters)="deleteFilters($event)"
+                               (downloadClicked)="handlePopClick($event)"
+                               (nextPageCalled)="nextPg($event)"
+                               (rowSelectEventEmitter)="goToDetails($event)"
+                               (searchCalledEventEmitter)="callNewSearch($event)"
+                               (selectedFilter)="changeFilterTags($event)"
+                               (selectedFilterType)='changeFilterType($event)'
+                               [centeredColumns]="centeredColumns"
+                               [columnWidths]="columnWidths"
+                               [data]="tableData"
+                               [direction]="direction"
+                               [doLocalFilter]="false"
+                               [doLocalSearch]="false"
+                               [filterTagLabels]="filterTagLabels"
+                               [filterTypeLabels]="filterTypeLabels"
+                               [filterTypeOptions]="filterTypeOptions"
+                               [filteredArray]="filters"
+                               [headerColName]="headerColName"
+                               [onScrollDataLoader]="onScrollDataLoader"
+                               [rowClickable]="true"
+                               [rowSize]="'SM'"
+                               [searchQuery]="searchTxt"
+                               [showAddRemoveCol]="true"
+                               [showDownloadBtn]="true"
+                               [showFilterBtn]="true"
+                               [showMoreMenu]="true"
+                               [showSearchBar]="true"
+                               [tableDataLoaded]="tableDataLoaded"
+                               [tableErrorMessage]="tableErrorMessage"
+                               [tableScrollTop]="tableScrollTop"
+                               [totalRows]="totalRows"
+                               [whiteListColumns]="whiteListColumns"
+                               style="height: 100%; width: 100%;">
+                    </app-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

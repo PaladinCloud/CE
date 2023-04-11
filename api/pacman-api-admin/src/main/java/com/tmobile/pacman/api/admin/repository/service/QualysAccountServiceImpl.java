@@ -4,10 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
+import com.amazonaws.services.secretsmanager.model.*;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -35,6 +32,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
+    public static final String QUALYS_CONNECTOR = "Qualys-Connector";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -72,6 +70,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         try {
             HttpResponse httpResponse = httpClient.execute(httpGet);
             if(httpResponse.getStatusLine().getStatusCode()!=200){
+                validateResponse.setValidationStatus(FAILURE);
                 validateResponse.setMessage("Account validation failed");
                 validateResponse.setErrorDetails("API returned status code : "+httpResponse.getStatusLine().getStatusCode());
             }else{
@@ -79,6 +78,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
                 validateResponse.setMessage("Qualys validation successful");
             }
         } catch (IOException e) {
+            validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage("Account validation failed");
             validateResponse.setErrorDetails(e.getMessage());
         }
@@ -93,24 +93,35 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
-        String region = System.getenv("REGION");
-
-        AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(region).build();
-
-        CreateSecretRequest createRequest=new CreateSecretRequest()
-                .withName(secretManagerPrefix+"/qualys").withSecretString(getQualysSecret(accountData));
-
-        CreateSecretResult createResponse = secretClient.createSecret(createRequest);
-        LOGGER.info("Create secret response: {}",createResponse);
         String accountId = UUID.randomUUID().toString();
-        createAccountInDb(accountId,"Qualys-Connector", Constants.QUALYS);
+        validateResponse = createAccountInDb(accountId, QUALYS_CONNECTOR, Constants.QUALYS);
+        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+            LOGGER.info("Account already exists");
+            return validateResponse;
+        }
+        try {
+            BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+            String region = System.getenv("REGION");
 
-        validateResponse.setValidationStatus(SUCCESS);
-        validateResponse.setMessage("Account added successfully. Account id: "+accountId);
+            AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(region).build();
+
+            CreateSecretRequest createRequest = new CreateSecretRequest()
+                    .withName(secretManagerPrefix + "/qualys").withSecretString(getQualysSecret(accountData));
+
+            CreateSecretResult createResponse = secretClient.createSecret(createRequest);
+            LOGGER.info("Create secret response: {}", createResponse);
+            validateResponse.setValidationStatus(SUCCESS);
+        }catch (ResourceExistsException e){
+            LOGGER.error(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            //Delete the entry from DB
+            deleteAccountFromDB(accountId);
+        }
         return validateResponse;
     }
 
@@ -160,18 +171,16 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 
         //delete entry from db
-        deleteAccountFromDB(accountId);
+        response=deleteAccountFromDB(accountId);
 
         response.setType(Constants.QUALYS);
         response.setAccountId(accountId);
-        response.setValidationStatus(SUCCESS);
-        response.setMessage("Account deleted successfully");
 
         return response;
     }
 
     private String getQualysSecret(CreateAccountRequest accountRequest){
-        String template="{\"qualysApiUrl\":\"%s\"\"apiusername\":\"%s\",\"apipassword\":\"%s\"}";
+        String template="{\"qualysApiUrl\":\"%s\",\"apiusername\":\"%s\",\"apipassword\":\"%s\"}";
         return String.format(template,accountRequest.getQualysApiUrl(),accountRequest.getQualysApiUser()
                 ,accountRequest.getQualysApiPassword());
 

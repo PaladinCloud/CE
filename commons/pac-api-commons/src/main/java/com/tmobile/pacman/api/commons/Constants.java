@@ -1,28 +1,36 @@
-/*******************************************************************************
+/**
  * Copyright 2018 T Mobile, Inc. or its affiliates. All Rights Reserved.
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.  You may obtain a copy
  * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
  * License for the specific language governing permissions and limitations under
  * the License.
- ******************************************************************************/
+ * <p>
+ * Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+ * Purpose:
+ * Author :kkumar
+ * Modified Date: Oct 18, 2017
+ **/
 /**
-   Copyright (C) 2017 T Mobile Inc - All Rights Reserve
-   Purpose:
-   Author :kkumar
-   Modified Date: Oct 18, 2017
-**/
+ Copyright (C) 2017 T Mobile Inc - All Rights Reserve
+ Purpose:
+ Author :kkumar
+ Modified Date: Oct 18, 2017
+ **/
 package com.tmobile.pacman.api.commons;
+
+import com.google.gson.annotations.SerializedName;
 
 public interface Constants {
 
+    String CREATED_BY = "createdBy";
     Integer ES_PAGE_SIZE = 10000;
     String ES_PAGE_SCROLL_TTL = "2m";
     String ES_DOC_ID_KEY = "_id";
@@ -46,7 +54,11 @@ public interface Constants {
     String INCLUDE_EXEMPT = "include_exempt";
     String SEVERITY = "severity";
     String NAME = "name";
+    String DOMAINS = "domains";
+
+    String GROUP_NAME = "groupName";
     String COMPLIANCEPERCENT="compliance-percent";
+    String COMPLIANT="compliant";
     String POLICYID = "policyId";
     String OPEN_ISSUES = "openIssues";
     String EC2_MANDATORY_TAG_RULE = "ec2mandatorytags_version-1_ec2mandatorytags_ec2";
@@ -59,6 +71,7 @@ public interface Constants {
     String POLICY_NAME = "policyName";
     String DISPLAY_NAME = "policyDisplayName";
     String ASSETS_SCANNED = "assetsScanned";
+    String ASSETS = "assets";
     String PASSED = "passed";
     String FAILED = "failed";
     String POLICY_DISPAY_NAME = "policyDisplayName";
@@ -87,14 +100,22 @@ public interface Constants {
     String _ID = "_id";
     String ID = "id";
     String EXEMPTED = "exempted";
+    String IS_ASSETS_EXEMPTED = "isAssetsExempted";
     String MODIFIED_DATE = "modifiedDate";
     String PAC_DS = "pac_ds";
     String POLICY_VIOLATION = "#violation";
     String CONTRIBUTION = "contribution";
+    String CONTRIBUTION_PERCENT = "contribution_percent";
     String COMPLIANCE_PERCENTAGE = "compliance";
     String COMPLIANCE_PERCENT = "compliance_percent";
     String LAST_SCAN = "lastScan";
     String CATEGORY_TAGGING = "tagging";
+    String TAGGED = "tagged";
+    String POLICY_DETAILS_BY_ENVIRONMENT = "policydetailsbyenvironment";
+    String POLICY_DETAILS_BY_APPLICATION = "policydetailsbyapplication";
+    String NON_COMPLIANCE_POLICY = "noncompliancepolicy";
+    String OVERALL = "overall";
+    String TOTAL_ISSUES = "total_issues";
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";
     String ACCOUNT_ID = "accountid";
@@ -159,7 +180,9 @@ public interface Constants {
     String VALID_TO = "validto";
     String UNDERSCORE_COUNT = "_count";
     String ISSUE_DETAILS = "issueDetails";
-    String QUALYS_DETAILS = "qualysIssueDetails";
+    String QUALYS_ISSUE_DETAILS = "qualysIssueDetails";
+    String QUALYS_VIOLATION_DETAILS = "qualysViolationDetails";
+    String VIOLATION_REASON = "violationReason";
     String SEARCH = "_search";
     String INFRA_AND_PLATFORMS = "Infra & Platforms";
     String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -177,9 +200,8 @@ public interface Constants {
     String MUST = "must";
     String DIRECTOR = "director";
     String EXCUTIVE_SPONSOR = "executiveSponsor";
-    String UNPATCHED_INSTANCE = "unpatched_instances";
-    String NO_DATA_FOUND = "No Data Found";
     String UNPATCHED_INSTANCES = "unpatched_instances";
+    String NO_DATA_FOUND = "No Data Found";
     String TOTAL_INSTANCES = "total_instances";
     String PATCHING_PERCENTAGE = "patching_percentage";
     String EC2 = "ec2";
@@ -194,7 +216,7 @@ public interface Constants {
     String RANGE = "range";
     String AG_STATS = "assetgroup_stats";
     String VULN_INFO = "vulninfo";
-    String APPS = "application";;
+    String APPS = "application";
     String SCROLL = "?scroll=";
     String SLASH_SCROLL = "/scroll";
     String TAGS_APPS = "tags.Application.keyword";
@@ -213,11 +235,12 @@ public interface Constants {
     int ELEVEN = 11;
     String COMPLAINT = "compliant";
     String NON_COMPLIANT = "noncompliant";
+    String NON_COMPLIANT_KEY = "non-compliant";
     int NINE_THOUSAND_THREE_HUNDRED = 9300;
     String NON_COMPLIANT_NUMBER = "nonCompliantNumber";
     String APP_TAG = "appTag";
     String KERNEL_RELEASE = "kernel_release";
-    String PATCHED_INSTANCE = "patched_instances";
+    String PATCHED_INSTANCES = "patched_instances";
     String START_DATE = "start_date";
     String END_DATE = "end_date";
     String INSTANCE_ID = "instanceid";
@@ -332,6 +355,62 @@ public interface Constants {
     String UNABLE_TO_DETERMINE = "unable to determine";
     String STATUS_REASON = "status-reason";
     String AUTOFIX_ENABLED = "autoFixEnabled";
+    String AUTOFIX_AVAILABLE = "autoFixAvailable";
     String AUTOFIX = "autofix";
     String AQUA = "aqua";
+    String ISSUE_ID_UI_PATH  = "#pl#compliance#issue-listing#issue-details#".replace("#","/");
+
+    String POLICY_DETAILS_UI_PATH  = "#pl#compliance#policy-knowledgebase-details#".replace("#","/");
+
+    String ASSET_DETAILS_UI_PATH  =  "#pl#assets#asset-list#".replace("#","/");
+
+    String DATA_SOURCE_KEY = "pac_ds";
+
+    enum NotificationTypes {
+        @SerializedName("exemptions")
+        EXEMPTIONS("Exemptions"),
+        @SerializedName("violations")
+        VIOLATIONS("Violations"),
+        @SerializedName("autofix")
+        AUTOFIX("Autofix");
+
+        String value;
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+
+        NotificationTypes(String value){
+            this.value=value;
+        }
+
+    }
+
+    enum Actions {
+        @SerializedName("create")
+        CREATE,
+        @SerializedName("revoke")
+        REVOKE,
+        @SerializedName("delete")
+        DELETE,
+        @SerializedName("update")
+        UPDATE;
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    }
+    String EVENT_SOURCE = "paladinCloud";
+    String EVENT_SOURCE_NAME = "PaladinCloud";
+    String CLOUD_TYPE = "cloudType";
+    String TAG_DETAILS = "tagDetails";
+    String NOTIFICATION_INDEX = "notification";
+    String NOTIFICATION_INDEX_TYPE = "notification";
+    String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
+    String NOTIFICATION_SOURCE_NAME = "eventSourceName";
 }

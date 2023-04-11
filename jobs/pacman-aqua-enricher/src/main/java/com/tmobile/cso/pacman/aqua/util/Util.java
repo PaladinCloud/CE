@@ -80,7 +80,7 @@ public class Util {
     }
 
 
-    public static Gson getJsonBuilder() throws ParseException{
+    public static Gson getJsonBuilder(){
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");

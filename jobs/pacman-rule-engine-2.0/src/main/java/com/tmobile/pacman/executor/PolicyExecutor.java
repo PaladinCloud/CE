@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.tmobile.pacman.commons.autofix.AutoFixManagerFactory;
@@ -29,9 +31,7 @@ import com.tmobile.pacman.commons.autofix.manager.IAutofixManger;
 import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.PacmanPolicy;
 import com.tmobile.pacman.commons.policy.PolicyResult;
-
 import com.tmobile.pacman.commons.utils.Constants;
-import org.apache.logging.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -41,7 +41,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.tmobile.pacman.common.PacmanSdkConstants;
-import com.tmobile.pacman.commons.autofix.manager.AutoFixManager;
 import com.tmobile.pacman.dto.IssueException;
 import com.tmobile.pacman.integrations.slack.SlackMessageRelay;
 import com.tmobile.pacman.publisher.impl.AnnotationPublisher;
@@ -54,6 +53,7 @@ import com.tmobile.pacman.util.ESUtils;
 import com.tmobile.pacman.util.ProgramExitUtils;
 import com.tmobile.pacman.util.ReflectionUtils;
 import com.tmobile.pacman.util.PolicyExecutionUtils;
+import com.tmobile.pacman.util.NotificationUtils;
 
 
 // TODO: Auto-generated Javadoc
@@ -128,7 +128,7 @@ public class PolicyExecutor {
 
         Map<String, Object> policyEngineStats = new HashMap<>();
         
-        //this is elastic search type to put rule engine stats in  
+        //this is elastic search type to put rule engine stats in
         final String type = CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY); // "execution-stats";
         final String JOB_ID = CommonUtils.getEnvVariableValue(PacmanSdkConstants.JOB_ID);
         final String mandatoryTags = CommonUtils.getPropValue(PacmanSdkConstants.TAGGING_MANDATORY_TAGS);
@@ -136,18 +136,18 @@ public class PolicyExecutor {
         System.setProperty(Constants.RDS_USER,CommonUtils.getPropValue(Constants.RDS_USER));
         System.setProperty(Constants.RDS_PWD,CommonUtils.getPropValue(Constants.RDS_PWD));
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
-          	 String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
-               String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
-               policyDetailsUrl += policyUUID;
-               String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
-               if(Strings.isNullOrEmpty(policyDetails )) {
-               	logger.error(
-                           "Policy details for the policyID {} not found ",policyUUID);
-                   logger.error("exiting now..");
-                   ProgramExitUtils.exitWithError();
-               }
-              policyParam = CommonUtils.createPolicyParamMap(policyDetails);
-        
+            String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
+            String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
+            policyDetailsUrl += policyUUID;
+            String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
+            if(Strings.isNullOrEmpty(policyDetails )) {
+                logger.error(
+                        "Policy details for the policyID {} not found ",policyUUID);
+                logger.error("exiting now..");
+                ProgramExitUtils.exitWithError();
+            }
+            policyParam = CommonUtils.createPolicyParamMap(policyDetails);
+
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
@@ -525,8 +525,12 @@ public class PolicyExecutor {
                             policyParam.get(PacmanSdkConstants.TARGET_TYPE), null, null));
         }
         annotationPublisher.publish();
-        metrics.put("total-issues-found", issueFoundCounter);
+         metrics.put("total-issues-found", issueFoundCounter);
         List<Annotation> closedIssues = annotationPublisher.processClosureEx();
+        ExecutorService threadpool = Executors.newCachedThreadPool();
+        threadpool.submit(() -> NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true));
+        threadpool.submit(() -> NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false));
+        threadpool.shutdown();
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);

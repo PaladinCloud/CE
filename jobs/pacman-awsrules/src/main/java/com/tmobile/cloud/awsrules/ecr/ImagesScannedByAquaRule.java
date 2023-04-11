@@ -51,10 +51,10 @@ public class ImagesScannedByAquaRule extends BasePolicy {
     String imageId = null;
     String category = ruleParam.get(PacmanRuleConstants.CATEGORY);
     String target = ruleParam.get(PacmanRuleConstants.TARGET);
-    String firstDiscoveredOn = resourceAttributes.get(PacmanRuleConstants.FIRST_DISCOVERED_ON);
+    String discoveryDate = resourceAttributes.get(PacmanRuleConstants.DISCOVEREY_DATE);
     String discoveredDaysRange = ruleParam.get(PacmanRuleConstants.DISCOVERED_DAYS_RANGE);
-    if (!StringUtils.isNullOrEmpty(firstDiscoveredOn)) {
-      firstDiscoveredOn = firstDiscoveredOn.substring(0, PacmanRuleConstants.FIRST_DISCOVERED_DATE_FORMAT_LENGTH);
+    if (!StringUtils.isNullOrEmpty(discoveryDate)) {
+      discoveryDate = discoveryDate.substring(0, PacmanRuleConstants.FIRST_DISCOVERED_DATE_FORMAT_LENGTH);
     }
     String aquaEsAPI = null;
     String formattedUrl = PacmanUtils.formatUrl(ruleParam, PacmanRuleConstants.ES_AQUA_IMAGE_URL);
@@ -74,7 +74,7 @@ public class ImagesScannedByAquaRule extends BasePolicy {
       String imageName = buildImageNameFromResourceId(imageId);
       String entityType = resourceAttributes.get(PacmanRuleConstants.AQUA_ENTITY_TYPE);
       List<JsonObject> vulnerabilityInfoList = new ArrayList<>();
-      if (PacmanUtils.calculateLaunchedDuration(firstDiscoveredOn) > Long.parseLong(discoveredDaysRange)) {
+      if (PacmanUtils.calculateLaunchedDuration(discoveryDate) > Long.parseLong(discoveredDaysRange)) {
         try {
           vulnerabilityInfoList = PacmanUtils.checkImageIdFromElasticSearchForAqua(imageName, aquaEsAPI, "image_name", null);
           if (CollectionUtils.isNullOrEmpty(vulnerabilityInfoList)) {
@@ -107,7 +107,6 @@ public class ImagesScannedByAquaRule extends BasePolicy {
               annotation.put(PacmanRuleConstants.CATEGORY, category);
               LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
               issue.put(PacmanRuleConstants.VIOLATION_REASON, "" + entityType + " image not scanned by aqua found");
-              issue.put(PacmanRuleConstants.SOURCE_VERIFIED, "_resourceid," + PacmanRuleConstants.AQUA_LAST_VULN_SCAN);
               issueList.add(issue);
               annotation.put("issueDetails", issueList.toString());
               logger.debug("========ResourceScannedByAquaRule ended with annotation {} : =========", annotation);

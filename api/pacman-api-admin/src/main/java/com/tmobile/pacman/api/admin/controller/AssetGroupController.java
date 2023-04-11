@@ -18,7 +18,9 @@ package com.tmobile.pacman.api.admin.controller;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.security.Principal;
+import java.util.Map;
 
+import com.tmobile.pacman.api.admin.domain.CreateAssetGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tmobile.pacman.api.admin.domain.CreateUpdateAssetGroupDetails;
 import com.tmobile.pacman.api.admin.domain.DeleteAssetGroupRequest;
@@ -86,7 +84,8 @@ public class AssetGroupController {
 	@ApiOperation(httpMethod = "POST", value = "API to update new asset group", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
 	@RequestMapping(path = "/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> updateAssetGroupDetails(@AuthenticationPrincipal Principal user,
-			@RequestBody CreateUpdateAssetGroupDetails assetGroupDetails) {
+			@RequestBody CreateAssetGroup assetGroupDetails) {
+		log.info("Inside controller AssetGroupController.updateAssetGroupDetails with request");
 		try {
 			return ResponseUtils
 					.buildSucessResponse(assetGroupService.updateAssetGroupDetails(assetGroupDetails, user.getName()));
@@ -110,6 +109,20 @@ public class AssetGroupController {
 			@RequestBody CreateUpdateAssetGroupDetails assetGroupDetails) {
 		try {
 			return ResponseUtils
+					.buildSucessResponse(assetGroupService.createAssetGroupDetail(assetGroupDetails, user.getName()));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+
+	@ApiOperation(httpMethod = "POST", value = "API to create asset group", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping (path = "/createAssetGroup", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> createAssetGroup(@AuthenticationPrincipal Principal user,
+														  @RequestBody CreateAssetGroup assetGroupDetails) {
+		log.info("Inside controller AssetGroupController.createAssetGroup with request");
+		try {
+			return ResponseUtils
 					.buildSucessResponse(assetGroupService.createAssetGroupDetails(assetGroupDetails, user.getName()));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
@@ -127,13 +140,28 @@ public class AssetGroupController {
      * @return All asset group details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAllAssetGroupDetails(
 			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
 			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
 			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue = "", name = "searchTerm", required = false) String searchTerm) {
 		try {
-			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupDetails(searchTerm.trim(), page, size));
+			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupDetails(null, searchTerm.trim(), page, size));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+
+	@ApiOperation(httpMethod = "POST", value = "API to filte asset group details", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getAllAssetGroupDetailsFilter(
+			@ApiParam(value = "provide valid page number", required = true) @RequestParam("page") Integer page,
+			@ApiParam(value = "provide valid page size", required = true) @RequestParam("size") Integer size,
+			@ApiParam(value = "provide valid search term", required = false) @RequestParam(defaultValue = "", name = "searchTerm", required = false) String searchTerm,
+			@RequestBody Map<String, String> filterMap) {
+		try {
+			return ResponseUtils.buildSucessResponse(assetGroupService.getAllAssetGroupDetails(filterMap, searchTerm.trim(), page, size));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
@@ -149,7 +177,7 @@ public class AssetGroupController {
      * @return All asset group details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get all asset group details by id and datasource", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list-by-id-and-datasource", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list-by-id-and-datasource", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> getAssetGroupDetailsByNameAndDataSource(
 			@ApiParam(value = "provide valid id", required = true) @RequestParam(defaultValue = "", name = "assetGroupId", required = true) String assetGroupId,
 			@ApiParam(value = "provide valid datasource", required = true) @RequestParam(defaultValue = "", name = "dataSource", required = true) String dataSource) {
@@ -170,7 +198,7 @@ public class AssetGroupController {
      * @return Asset group details
      */
 	@ApiOperation(httpMethod = "GET", value = "API to get asset group details by name", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
-	@RequestMapping(path = "/list-by-name", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/list-by-name", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> findByGroupName(
 			@ApiParam(value = "provide valid name", required = true) @RequestParam(defaultValue = "", name = "assetGroupName", required = true) String assetGroupName) {
 		try {
@@ -195,6 +223,18 @@ public class AssetGroupController {
 			@RequestBody DeleteAssetGroupRequest assetGroupDetails) {
 		try {
 			return ResponseUtils.buildSucessResponse(assetGroupService.deleteAssetGroup(assetGroupDetails, user.getName()));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+
+
+	@GetMapping(value = "/getFilterKeyValues", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> getFilterKeyValues(@AuthenticationPrincipal Principal user,
+													 @RequestParam(defaultValue = "", name = "key", required = true) String key) {
+		try {
+			return ResponseUtils.buildSucessResponse(assetGroupService.getFilterKeyValues(key));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

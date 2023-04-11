@@ -1,4 +1,5 @@
-<div class="text-with-icon flex flex-row">
+<div class="text-with-icon flex flex-row" [ngStyle]="{gap: gap + 'px'}">
+    <img *ngIf="preImagePath" [src]="preImagePath">
     <app-text [text]="text" [classNames]="textVariant"></app-text>
-    <img [src]="iconUrl">
+    <img *ngIf="postImagePath" [src]="postImagePath">
 </div>

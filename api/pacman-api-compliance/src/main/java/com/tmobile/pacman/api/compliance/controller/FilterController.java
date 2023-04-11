@@ -301,5 +301,38 @@ public class FilterController implements Constants {
     }
 
 
+    /**
+     * Gets the list of notification types.
+     *
+     * @return ResponseEntity<Object>
+     */
+    
+    @RequestMapping(path = "/v1/filters/eventtype", method = RequestMethod.GET)
+    public ResponseEntity<Object> getEventType() {
+        ResponseData response = null;
+        try {
+            response = new ResponseData(filterService.getNotificationTypes());
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+    
+    /**
+     * Gets the list of notification types.
+     *
+     * @return ResponseEntity<Object>
+     */
+    
+    @RequestMapping(path = "/v1/filters/eventsource", method = RequestMethod.GET)
+    public ResponseEntity<Object> getEventSource() {
+        ResponseData response = null;
+        try {
+            response = new ResponseData(filterService.getNotificationSource());
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
 
 }

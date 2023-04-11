@@ -22,8 +22,9 @@ public final class AdminConstants {
 	
 	private AdminConstants() {
 	}
-	
 	public static final String SERVERLESS_RULE_TYPE					= 	"Serverless";
+
+	public static final String ASSET_GROUP_ALREADY_EXISTS		=	"Asset Group already exits with the provided asset group name";
 	public static final String MANAGED_POLICY_TYPE					= 	"ManagePolicy";
 	public static final String JAR_EXTENSION						= 	".jar";
 	public static final String JAR_FILE_MISSING						=	"Jar file is missing";
@@ -46,6 +47,8 @@ public final class AdminConstants {
 	public static final String JOB_UPDATION_SUCCESS					=	"Job has been successfully updated";
 	public static final String JOB_ID_ALREADY_EXITS					=	"Job %s already exists!!";
 	public static final String JOB_ID_NOT_EXITS						=	"Job %s does not exists!!";
+
+	public static final String INVALID_REQUEST = "Invalid request - ";
 	public static final String INVALID_JOB_FREQUENCY				=	"Invalid Job Frequency or Cron Expression!";
 	public static final String UNEXPECTED_ERROR_OCCURRED 			= 	"Unexpected error occurred!!";
 	public static final String LAMBDA_LINKING_EXCEPTION             =   "Failed in linking the lambda function to the rule";
@@ -95,6 +98,8 @@ public final class AdminConstants {
 	public static final String ACCOUNT_DELETION_SUCCESS             =   "Account has been successfully deleted";
 	public static final String ACCOUNT_DELETE_FAILED                =   "Failed in deleting the Account";
 	public static final Integer TEMPORARY_CREDS_VALID_SECONDS 		=   3600;
+
+	public static final String COUNT = "count";
 	public static final String DEFAULT_SESSION_NAME 				=   "PAC_GET_ADMIN_DATA_SESSION";
 	
 	public static final String JOBID_OR_POLICYID_NOT_EMPTY            =   "Both Job Id or Policy Id cannot be blank";
@@ -102,6 +107,12 @@ public final class AdminConstants {
     
 	public static final String ES_EXCEPTION_INDEX					= 	"/exceptions";
 	public static final String INIT_ES_CREATE_INDEX					= 	"INIT_ES_CREATE_INDEX";
+
+	public static final String INDEX					= 	"index";
+
+	public static final String CLOUD_TYPE = "CloudType";
+	public static final String ACTIONS = "actions";
+	public static final String TARGET_TYPE = "TargetType";
 	
 	public static final String ERROR_CONFIG_MANDATORY				=	"Config key, Config value and application are mandatory";
     public static final String LATEST								=	"latest";
@@ -112,7 +123,16 @@ public final class AdminConstants {
 	public static final String AUTOFIX_DISABLE_SUCCESS				=	"AutoFix has been successfully Disabled !!";
     public static final String AUTO_FIX_KEY							=   "fixKey";
     public static final String AUTO_FIX_KEYWORD						= 	"autofix";
- 
+	public static final String CREATE_EXCEPTION_EVENT_NAME 			=	"Sticky exception %s is created";
+	public static final String UPDATE_EXCEPTION_EVENT_NAME 			=	"Sticky exception %s is updated";
+
+	public static final String DELETE_EXCEPTION_EVENT_NAME  			=	"Sticky exception %s is deleted";
+
+	public static final String CREATE_STICKY_EXCEPTION_SUBJECT  		= "Sticky Exception Created";
+	public static final String DELETE_STICKY_EXCEPTION_SUBJECT  		= "Sticky Exception Deleted";
+
+	public static final String UPDATE_STICKY_EXCEPTION_SUBJECT  		= "Sticky Exception Updated";
+
 
 }
 

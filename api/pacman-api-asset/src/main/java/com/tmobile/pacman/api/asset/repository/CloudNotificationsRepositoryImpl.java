@@ -55,10 +55,11 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	private String esHost;
 	@Value("${elastic-search.port}")
 	private int esPort;
-	private String TYPE = "cloud_notification";
-	private String INDEX = "cloud_notifications";
+	private String TYPE = "notification";
+	private String INDEX = "notification";
 	private String AUTOFIXTYPE = "autofixplan";
 	final static String protocol = "http";
+	final static String START_TIME = "startTime";
 	private String esUrl;
 	private static final String _SOURCE = "_source";
 	private static final String _COUNT = "_count";
@@ -71,54 +72,35 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 	}
 
 	@Override
-	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter,
-			boolean globalNotifier, int size, int from) {
+	public List<Map<String, Object>> getNotifications(String assetGroup, Map<String, String> filter, int size,
+			int from) {
 		LOGGER.info("Inside getNotifications");
 		notifications = new ArrayList<>();
 		try {
-			
-			if (globalNotifier) {
-				getCloudNotifications(INDEX, TYPE, filter, size, from).forEach(notification -> {
-					notifications.add(notification);
-				});
-			} else {
-				
-				String eventCat = filter.get(Constants.EVENTCATEGORY);
-				String resourceId = filter.get(Constants.RESOURCEID);
-				if ((filter.isEmpty() || filter.containsValue("Autofix") || Strings.isNullOrEmpty(eventCat)) && (Strings.isNullOrEmpty(resourceId)) ) {
-					getAutofixProjections(assetGroup, AUTOFIXTYPE, filter).forEach(autofix -> {
-						notifications.add(autofix);
-					});
-				}
-				
-				getCloudNotifications(assetGroup, TYPE, filter, size, from).forEach(notification -> {
-					notifications.add(notification);
-				});
-			}
+
+			getCloudNotifications(INDEX, TYPE, filter, size, from).forEach(notification -> {
+				notifications.add(notification);
+			});
+
 		} catch (Exception e) {
 			LOGGER.error("Error in getNotifications", e);
 		}
 		Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate
-                .parse(m2.get("startTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE)
-                .compareTo(LocalDate.parse(m1.get("startTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
-        Collections.sort(notifications, comp);
+				.parse(m2.get(START_TIME).toString().substring(0, 10), DateTimeFormatter.ISO_DATE).compareTo(
+						LocalDate.parse(m1.get(START_TIME).toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
+		Collections.sort(notifications, comp);
 
 		LOGGER.info("Exiting getNotifications");
 		return notifications.stream().distinct().collect(Collectors.toList());
 	}
 
-	
 	@Override
-	public List<Map<String, Object>> getCloudNotificationDetail(String eventArn, boolean globalNotifier,
-			String assetGroup) {
+	public Map<String, Object> getCloudNotificationDetail(String eventId, String assetGroup) {
 		LOGGER.info("Inside getCloudNotificationDetail");
-		List<Map<String, Object>> detail = new ArrayList<>();
+		Map<String, Object> detail = new HashMap<>();
 		try {
-			if (globalNotifier) {
-				detail = getCloudNotificationDetail(INDEX, TYPE, eventArn);
-			} else {
-				detail = getCloudNotificationDetail(assetGroup, TYPE, eventArn);
-			}
+
+			detail = getCloudNotificationDetail(INDEX, TYPE, eventId);
 
 		} catch (Exception e) {
 			LOGGER.error("Error in getCloudNotificationDetail", e);
@@ -126,7 +108,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		LOGGER.info("Exiting getCloudNotificationDetail");
 		return detail;
 	}
-	
+
 	@SuppressWarnings({ "deprecation" })
 	private List<Map<String, Object>> getAssetsByResourceId(String assetGroupName, String type, String resourceId) {
 
@@ -163,20 +145,24 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		}
 		return assets;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> getCloudNotificationDetail(String index, String type, String eventArn)
+	public Map<String, Object> getCloudNotificationDetail(String index, String type, String eventId)
 			throws DataException {
 		Gson gson = new GsonBuilder().create();
 		String responseDetails = null;
 		StringBuilder requestBody = null;
 		List<Map<String, Object>> cloudDetails = null;
 		List<String> fieldNames = new ArrayList<>();
-		List<Map<String, Object>> detail = new ArrayList<Map<String, Object>>();
+		List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID,
+				AssetConstants.UNDERSCORE_ENTITY, Constants._ID,AssetConstants.UNDERSCORE_LOADDATE, 
+				Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
+				AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
+				AssetConstants.CREATION_DATE);
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
 				.append("/").append(_SEARCH);
-		String body = "{\"_source\": [\"eventarn\",\"notificationId\",\"latestdescription\", \"type\"], \"query\":{\"bool\":{\"must\":[{\"term\":{\"eventarn.keyword\":\""
-				+ eventArn + "\"}},{\"term\":{\"latest\":\"true\"}}]}}}";
+		String body = "{\"_source\": [\"eventID\",\"eventName\",\"eventCategory\", \"eventCategoryName\", \"eventSource\",\"eventSourceName\",\"eventDescription\",\"_loaddate\",\"payload\"], \"query\":{\"bool\":{\"must\":[{\"term\":{\"eventId.keyword\":\""
+				+ eventId + "\"}},{\"term\":{\"latest\":\"true\"}}]}}}";
 		requestBody = new StringBuilder(body);
 		try {
 			responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
@@ -189,60 +175,42 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			Map<String, Object> hits = (Map<String, Object>) responseMap.get(HITS);
 			if (hits.containsKey(HITS)) {
 				cloudDetails = (List<Map<String, Object>>) hits.get(HITS);
-				List<String> resources = new ArrayList<String>();
-				String resourceType = "";
-				for (Map<String, Object> cloudDetail : cloudDetails) {
+				if (cloudDetails.size() > 0) {
+					Map<String, Object> cloudDetail = cloudDetails.get(0);
 					Map<String, Object> sourceMap = (Map<String, Object>) cloudDetail.get("_source");
-					if (sourceMap.containsKey("notificationId")) {
-						resources.add(sourceMap.get("notificationId").toString());
-						resourceType = sourceMap.get("type").toString();
-						detail.add(getAssetsByResourceId(index, resourceType, resources.get(0).toString()).get(0));
-					}
+					return formGetListResponse(fieldNames, sourceMap, fieldsToBeSkipped);
 				}
 			}
 		}
-		List<String> fieldsToBeSkipped = Arrays.asList(Constants.RESOURCEID, Constants.DOCID,
-				AssetConstants.UNDERSCORE_ENTITY, Constants._ID, AssetConstants.UNDERSCORE_LOADDATE,
-				Constants.ES_DOC_PARENT_KEY, Constants.ES_DOC_ROUTING_KEY, AssetConstants.CREATE_TIME,
-				AssetConstants.FIRST_DISCOVEREDON, AssetConstants.DISCOVERY_DATE, Constants.LATEST,
-				AssetConstants.CREATION_DATE);
-		return formGetListResponse(fieldNames, detail, fieldsToBeSkipped);
+		return new HashMap<>();
+
 	}
 
-	private List<Map<String, Object>> formGetListResponse(List<String> fieldNames,
-			List<Map<String, Object>> assetDetails, List<String> fieldsToBeSkipped) {
-
-		List<Map<String, Object>> assetList = new ArrayList<>();
+	private Map<String, Object> formGetListResponse(List<String> fieldNames, Map<String, Object> assetDetail,
+			List<String> fieldsToBeSkipped) {
 		if (!CollectionUtils.isEmpty(fieldNames)) {
 			final List<String> fieldNamesCopy = fieldNames;
-			assetDetails.parallelStream().forEach(assetDetail -> {
-				Map<String, Object> asset = new LinkedHashMap<>();
-				for (String fieldName : fieldNamesCopy) {
-					if (!assetDetail.containsKey(fieldName)) {
-						asset.put(fieldName, "");
-					} else {
-						asset.put(fieldName, assetDetail.get(fieldName));
-					}
+
+			Map<String, Object> asset = new LinkedHashMap<>();
+			for (String fieldName : fieldNamesCopy) {
+				if (!assetDetail.containsKey(fieldName)) {
+					asset.put(fieldName, "");
+				} else {
+					asset.put(fieldName, assetDetail.get(fieldName));
 				}
-				synchronized (assetList) {
-					assetList.add(asset);
-				}
-			});
-			return assetList;
+			}
+
+			return asset;
 		} else {
-			assetDetails.parallelStream().forEach(assetDetail -> {
-				Map<String, Object> asset = new LinkedHashMap<>();
-				asset.put(Constants.RESOURCEID, assetDetail.get(Constants.RESOURCEID));
-				assetDetail.forEach((key, value) -> {
-					if (!fieldsToBeSkipped.contains(key)) {
-						asset.put(key, value);
-					}
-				});
-				synchronized (assetList) {
-					assetList.add(asset);
+			Map<String, Object> asset = new LinkedHashMap<>();
+			asset.put(START_TIME, assetDetail.get(AssetConstants.UNDERSCORE_LOADDATE));
+			assetDetail.forEach((key, value) -> {
+				if (!fieldsToBeSkipped.contains(key)) {
+					asset.put(key, value);
 				}
 			});
-			return assetList;
+
+			return asset;
 		}
 	}
 
@@ -270,7 +238,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
 				.append("/").append(_SEARCH);
 
-		String body = "{\"_source\": [\"eventarn\",\"endtime\",\"eventtypecategory\",\"starttime\",\"statuscode\",\"eventtypecode\",\"eventregion\",\"latestdescription\", \"type\"], \"query\":{\"bool\":{\"must\":[{\"term\":{\"eventarn.keyword\":\""
+		String body = "{\"_source\": [\"eventarn\",\"endtime\",\"eventtypecategory\",\"_loaddate\",\"statuscode\",\"eventtypecode\",\"eventregion\",\"latestdescription\", \"type\"], \"query\":{\"bool\":{\"must\":[{\"term\":{\"eventarn.keyword\":\""
 				+ eventArn + "\"}},{\"term\":{\"latest\":\"true\"}}]}}}";
 		requestBody = new StringBuilder(body);
 		try {
@@ -294,7 +262,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 					infoMap.put("event", CommonUtils.capitailizeWord(sourceMap.get("eventtypecode").toString()));
 					infoMap.put("status", sourceMap.get("statuscode"));
 					infoMap.put("region", sourceMap.get("eventregion"));
-					infoMap.put("startTime", sourceMap.get("starttime"));
+					infoMap.put("startTime", sourceMap.get("_loaddate"));
 					infoMap.put("endTime", sourceMap.get("endtime"));
 					infoMap.put("eventCategory", eventMap.get(sourceMap.get("eventtypecategory")));
 					infoMap.put("eventarn", sourceMap.get("eventarn"));
@@ -449,28 +417,21 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 					.collect(Collectors.joining("\",\"", "\"", "\""));
 
 			String body = "";
-			String evenCategory = filterkey(filter, Constants.EVENTCATEGORY);
-			String resourceId = filterkey(filter, Constants.RESOURCEID);
+			String eventCategory = filterkey(filter, AssetConstants.EVENTCATEGORY);
 
-			String eventStatus = filterkey(filter, Constants.EVENTSTATUS);
-			if(evenCategory.contains("Autofix") && (Strings.isNullOrEmpty(resourceId))) {
-				getAutofixProjections(index, AUTOFIXTYPE, filter).forEach(autofix -> {
-					notificationsList.add(autofix);
-				});
+			String eventSource = filterkey(filter, AssetConstants.EVENTSOURCE);
+
+			body = "{\"size\":10000,\"_source\":[\"eventId\",\"eventName\",\"eventCategory\",\"eventCategoryName\",\"eventSource\",\"eventSourceName\",\"_loaddate\"],"
+					+ "\"query\":{\"bool\":{\"must\":[{\"terms\":{\"eventId.keyword\":[" + eventArn
+					+ "]}},{\"term\":{\"latest\":\"true\"}}";
+
+			if (!Strings.isNullOrEmpty(eventSource)) {
+				body = body + ",{\"terms\":{\"eventSourceName.keyword\":" + eventSource + "}}";
 			}
-			
-			body = "{\"size\":10000,\"_source\":[\"eventarn\",\"eventtypecode\",\"statuscode\",\"eventregion\",\"starttime\",\"endtime\",\"eventtypecategory\"],\"query\":{\"bool\":{\"must\":[{\"terms\":{\"eventarn.keyword\":["
-					+ eventArn + "]}},{\"term\":{\"latest\":\"true\"}}";
-			if (!Strings.isNullOrEmpty(evenCategory)) {
-				body = body + ",{\"terms\":{\"eventtypecategory.keyword\":" + evenCategory + "}}";
+			if (!Strings.isNullOrEmpty(eventCategory)) {
+				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventCategory + "}}";
 			}
-			if (!Strings.isNullOrEmpty(resourceId)) {
-				body = body + ",{\"terms\":{\"_resourceid.keyword\":" + resourceId + "}}";
-			}
-			if (!Strings.isNullOrEmpty(eventStatus)) {
-				body = body + ",{\"terms\":{\"statuscode.keyword\":" + eventStatus + "}}";
-			}
-			body = body + "]}},\"sort\":[{\"starttime.keyword\":{\"order\":\"desc\"}}]}}";
+			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
 			String urlToQuery = esRepository.buildESURL(esUrl, index, type, size, from);
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
@@ -488,17 +449,14 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 						for (Map<String, Object> hitDetail : hitDetails) {
 							Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
 							Map<String, Object> notifcation = new LinkedHashMap<String, Object>();
-							notifcation.put("event",
-									CommonUtils.capitailizeWord(sources.get("eventtypecode").toString()));
-							notifcation.put("status", sources.get("statuscode"));
-							notifcation.put("region", sources.get("eventregion"));
-							notifcation.put("startTime", sources.get("starttime"));
-							notifcation.put("endTime", sources.get("endtime"));
-							if (!index.equalsIgnoreCase("cloud_notifications")) {
-								notifcation.put("affectedResources", eventArnMap.get(sources.get("eventarn")));
-							}
-							notifcation.put("eventCategory", eventMap.get(sources.get("eventtypecategory")));
-							notifcation.put("eventarn", sources.get("eventarn"));
+							notifcation.put("eventId", sources.get("eventId").toString());
+							notifcation.put("eventName", sources.get("eventName"));
+							notifcation.put("eventCategory", sources.get("eventCategory"));
+							notifcation.put("eventCategoryName", sources.get("eventCategoryName"));
+							notifcation.put("eventSource", sources.get("eventSource"));
+							notifcation.put("eventSourceName", sources.get("eventSourceName"));
+							notifcation.put("payload", sources.get("payload"));
+							notifcation.put("startTime", sources.get("_loaddate"));
 							notificationsList.add(notifcation);
 						}
 					}
@@ -525,8 +483,8 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
 				.append("/").append(_SEARCH);
 
-		String body = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}},"
-				+ "\"sort\":[{\"starttime.keyword\":{\"order\":\"desc\"}}]}";
+		String body = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventId.keyword\",\"size\":1000}}},"
+				+ "\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
 		requestBody = new StringBuilder(body);
 		try {
 			responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
@@ -586,7 +544,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			return 0;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getAutofixProjections(String index, String type, Map<String, String> filter)
 			throws DataException {
@@ -612,27 +570,28 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 						for (Map<String, Object> hitDetail : hitDetails) {
 							Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
 							Map<String, Object> notifcation = new LinkedHashMap<String, Object>();
-							notifcation.put("event", "Aws "+ sources.get("resourceType")+ " Autofix");
+							notifcation.put("event", "Aws " + sources.get("resourceType") + " Autofix");
 							notifcation.put("eventCategory", "Autofix");
 							notifcation.put("eventarn", sources.get("resourceId"));
 							Object planStatus = sources.get("planStatus");
 							List<Map<String, Object>> planitems = (List<Map<String, Object>>) sources.get("planItems");
-							
-							if(planitems!=null && !planitems.isEmpty()) {
-								
+
+							if (planitems != null && !planitems.isEmpty()) {
+
 								notifcation.put("startTime", planitems.get(0).get("plannedActionTime"));
-								notifcation.put("endTime", planitems.get(planitems.size()-1).get("plannedActionTime"));
-								
-								if(planStatus==null) {
-									planStatus =  planitems.get(planitems.size()-1).get("status");
+								notifcation.put("endTime",
+										planitems.get(planitems.size() - 1).get("plannedActionTime"));
+
+								if (planStatus == null) {
+									planStatus = planitems.get(planitems.size() - 1).get("status");
 								}
-								
+
 							}
-							if(planStatus!=null) {
-								notifcation.put("status",planStatus.toString().toLowerCase());
-								
-							}else {
-								notifcation.put("status","unknown");
+							if (planStatus != null) {
+								notifcation.put("status", planStatus.toString().toLowerCase());
+
+							} else {
+								notifcation.put("status", "unknown");
 							}
 							notifcation.put("affectedResources", 1);
 							autofixPlanList.add(notifcation);
@@ -641,15 +600,15 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				}
 			}
 			Comparator<Map<String, Object>> comp = (m1, m2) -> LocalDate
-					.parse(m2.get("endTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE)
-					.compareTo(LocalDate.parse(m1.get("endTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
+					.parse(m2.get("endTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE).compareTo(
+							LocalDate.parse(m1.get("endTime").toString().substring(0, 10), DateTimeFormatter.ISO_DATE));
 			Collections.sort(autofixPlanList, comp);
 		} catch (Exception e) {
 			LOGGER.error("Error in getAutofixProjections", e);
 		}
 		return autofixPlanList;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getAutofixProjectionDetail(String ag, Map<String, String> filter) {
 		Map<String, Object> autofixPlanDet = new LinkedHashMap<String, Object>();
@@ -657,15 +616,15 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		try {
 			StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(ag).append("/").append(AUTOFIXTYPE)
 					.append("/").append(_SEARCH);
-			filter.entrySet().forEach(autofix->{
+			filter.entrySet().forEach(autofix -> {
 				autoFixQuery = "{\"size\":1,\"_source\":[\"docId\",\"planItems\",\"policyId\",\"issueId\",\"resourceId\",\"resourceType\"],\"query\":{\"match\":{\""
-						+autofix.getKey()+".keyword"+"\":\""
-						+autofix.getValue()+"\"}}}";
+						+ autofix.getKey() + ".keyword" + "\":\"" + autofix.getValue() + "\"}}}";
 			});
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
 			try {
-				responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(), new StringBuilder(autoFixQuery).toString());
+				responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(),
+						new StringBuilder(autoFixQuery).toString());
 			} catch (Exception e) {
 				LOGGER.error("Error in getAutofixProjectionDetail", e);
 			}
@@ -677,8 +636,8 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 					if (!hitDetails.isEmpty()) {
 						for (Map<String, Object> hitDetail : hitDetails) {
 							Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
-							autofixPlanDet.put("event", "Aws "+ sources.get("resourceType")+ " Autofix");
-							
+							autofixPlanDet.put("event", "Aws " + sources.get("resourceType") + " Autofix");
+
 							autofixPlanDet.put("eventCategory", "Autofix");
 							autofixPlanDet.put("eventarn", sources.get("resourceId"));
 							autofixPlanDet.put("planItems", sources.get("planItems"));
@@ -703,33 +662,39 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 									autofixPlanDet.put("status", item.getValue().toString().toLowerCase());
 								}
 							});
-							
+
 							List<Map<String, Object>> ruleDetails = new ArrayList<Map<String, Object>>();
-					        try {
-					        	ruleDetails = rdsRepository.getDataFromPacman("SELECT policyDisplayName, policyId FROM cf_PolicyTable WHERE policyId =\""+sources.get("policyId")+"\"");
-					        	autofixPlanDet.put("Name", ruleDetails.get(0).get("policyDisplayName"));
-					        } catch (Exception exception) {
-					            LOGGER.error("Error in getAutofixProjectionDetail for getting rule displayName " , exception);
-					        }
-					        try {
-					        	autofixPlanDet.put("policyDescription", rdsRepository.queryForString("select policyDesc from cf_PolicyTable WHERE policyId =\""+ruleDetails.get(0).get("policyId")+"\""));
-					        } catch (Exception exception) {
-					            LOGGER.error("Error in getAutofixProjectionDetail for getting policy description " , exception);
-					        }
-						}	
+							try {
+								ruleDetails = rdsRepository.getDataFromPacman(
+										"SELECT policyDisplayName, policyId FROM cf_PolicyTable WHERE policyId =\""
+												+ sources.get("policyId") + "\"");
+								autofixPlanDet.put("Name", ruleDetails.get(0).get("policyDisplayName"));
+							} catch (Exception exception) {
+								LOGGER.error("Error in getAutofixProjectionDetail for getting rule displayName ",
+										exception);
+							}
+							try {
+								autofixPlanDet.put("policyDescription",
+										rdsRepository.queryForString(
+												"select policyDesc from cf_PolicyTable WHERE policyId =\""
+														+ ruleDetails.get(0).get("policyId") + "\""));
+							} catch (Exception exception) {
+								LOGGER.error("Error in getAutofixProjectionDetail for getting policy description ",
+										exception);
+							}
 						}
 					}
 				}
+			}
 		} catch (Exception e) {
 			LOGGER.error("Error in getAutofixProjectionDetail", e);
 		}
 		return autofixPlanDet;
 	}
-	
+
 	private String filterkey(Map<String, String> filter, String keyText) {
 		String searchterm = "";
-		if (filter.containsKey(keyText)
-				&& StringUtils.isNotBlank(filter.get(keyText))) {
+		if (filter.containsKey(keyText) && StringUtils.isNotBlank(filter.get(keyText))) {
 			searchterm = "[";
 			String[] splitted = filter.get(keyText).split(",");
 			for (String _categoryList : splitted) {
@@ -761,77 +726,78 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				countMap.put("autofixCount", 0);
 				summaryList.add(countMap);
 			} else {
-			if(!Strings.isNullOrEmpty(resourceId) && !Strings.isNullOrEmpty(resourceId) && !globalNotifier) {
-				String body = "{\"size\": 1,\"_source\":\"eventtypecategory\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"_resourceid.keyword\":\""
-						+ resourceId +"\"}},{\"term\":{\"statuscode.keyword\":\""
-						+ eventStatus +"\"}}]}}}";
-				StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(assetGroup).append("/").append(TYPE)
-						.append("/").append(_SEARCH);
-				Gson gson = new GsonBuilder().create();
-				String responseDetails = null;
-				try {
-					responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(), new StringBuilder(body).toString());
-				} catch (Exception e) {
-					LOGGER.error("Error in getAutofixProjectionDetail", e);
-				}
-				Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Object.class);
-				if (response.containsKey(HITS)) {
-					Map<String, Object> hits = (Map<String, Object>) response.get(HITS);
-					if (hits.containsKey(HITS)) {
-						List<Map<String, Object>> hitDetails = (List<Map<String, Object>>) hits.get(HITS);
-						if (!hitDetails.isEmpty()) {
-							for (Map<String, Object> hitDetail : hitDetails) {
-								Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
-								String eventType = sources.get("eventtypecategory").toString();
-								switch (eventType) {
-								case "scheduledChange":
-									countMap.put("globalNotificationsCount", 0);
-									countMap.put("evnetIssuesCount", 0);
-									countMap.put("eventscheduledCount", sources.size());
-									countMap.put("eventNotificationCount", 0);
-									countMap.put("autofixCount", 0);
-									summaryList.add(countMap);
-									break;
-								case "issue":
-									countMap.put("globalNotificationsCount", 0);
-									countMap.put("evnetIssuesCount", sources.size());
-									countMap.put("eventscheduledCount", 0);
-									countMap.put("eventNotificationCount", 0);
-									countMap.put("autofixCount", 0);
-									summaryList.add(countMap);
-									break;
-								case "accountNotification":
-									countMap.put("globalNotificationsCount", 0);
-									countMap.put("evnetIssuesCount", 0);
-									countMap.put("eventscheduledCount", 0);
-									countMap.put("eventNotificationCount", sources.size());
-									countMap.put("autofixCount", 0);
-									summaryList.add(countMap);
-									break;
-								default:
+				if (!Strings.isNullOrEmpty(resourceId) && !Strings.isNullOrEmpty(resourceId) && !globalNotifier) {
+					String body = "{\"size\": 1,\"_source\":\"eventtypecategory\",\"query\":{\"bool\":{\"must\":[{\"term\":{\"_resourceid.keyword\":\""
+							+ resourceId + "\"}},{\"term\":{\"statuscode.keyword\":\"" + eventStatus + "\"}}]}}}";
+					StringBuilder urlToQuery = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
+							.append(TYPE).append("/").append(_SEARCH);
+					Gson gson = new GsonBuilder().create();
+					String responseDetails = null;
+					try {
+						responseDetails = PacHttpUtils.doHttpPost(urlToQuery.toString(),
+								new StringBuilder(body).toString());
+					} catch (Exception e) {
+						LOGGER.error("Error in getAutofixProjectionDetail", e);
+					}
+					Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Object.class);
+					if (response.containsKey(HITS)) {
+						Map<String, Object> hits = (Map<String, Object>) response.get(HITS);
+						if (hits.containsKey(HITS)) {
+							List<Map<String, Object>> hitDetails = (List<Map<String, Object>>) hits.get(HITS);
+							if (!hitDetails.isEmpty()) {
+								for (Map<String, Object> hitDetail : hitDetails) {
+									Map<String, Object> sources = (Map<String, Object>) hitDetail.get(_SOURCE);
+									String eventType = sources.get("eventtypecategory").toString();
+									switch (eventType) {
+									case "scheduledChange":
+										countMap.put("globalNotificationsCount", 0);
+										countMap.put("evnetIssuesCount", 0);
+										countMap.put("eventscheduledCount", sources.size());
+										countMap.put("eventNotificationCount", 0);
+										countMap.put("autofixCount", 0);
+										summaryList.add(countMap);
+										break;
+									case "issue":
+										countMap.put("globalNotificationsCount", 0);
+										countMap.put("evnetIssuesCount", sources.size());
+										countMap.put("eventscheduledCount", 0);
+										countMap.put("eventNotificationCount", 0);
+										countMap.put("autofixCount", 0);
+										summaryList.add(countMap);
+										break;
+									case "accountNotification":
+										countMap.put("globalNotificationsCount", 0);
+										countMap.put("evnetIssuesCount", 0);
+										countMap.put("eventscheduledCount", 0);
+										countMap.put("eventNotificationCount", sources.size());
+										countMap.put("autofixCount", 0);
+										summaryList.add(countMap);
+										break;
+									default:
+									}
 								}
 							}
 						}
 					}
-				}
-			} else if(!Strings.isNullOrEmpty(resourceId) && !Strings.isNullOrEmpty(resourceId) && globalNotifier) {
-				countMap.put("globalNotificationsCount", 0);
-				countMap.put("evnetIssuesCount", 0);
-				countMap.put("eventscheduledCount", 0);
-				countMap.put("eventNotificationCount", 0);
-				countMap.put("autofixCount", 0);
-				summaryList.add(countMap);
-			} else {
-				countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications", "cloud_notification",
-						"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("evnetIssuesCount", getTotalDocCount(assetGroup, "cloud_notification",
-						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("eventscheduledCount", getTotalDocCount(assetGroup, "cloud_notification",
-						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("eventNotificationCount", getTotalDocCount(assetGroup, "cloud_notification",
-						"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
-				countMap.put("autofixCount", getAutoFixSummary(assetGroup, "autofixplan"));
-				summaryList.add(countMap);
+				} else if (!Strings.isNullOrEmpty(resourceId) && !Strings.isNullOrEmpty(resourceId) && globalNotifier) {
+					countMap.put("globalNotificationsCount", 0);
+					countMap.put("evnetIssuesCount", 0);
+					countMap.put("eventscheduledCount", 0);
+					countMap.put("eventNotificationCount", 0);
+					countMap.put("autofixCount", 0);
+					summaryList.add(countMap);
+				} else {
+					countMap.put("globalNotificationsCount", getTotalDocCount("cloud_notifications",
+							"cloud_notification",
+							"{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("evnetIssuesCount", getTotalDocCount(assetGroup, "cloud_notification",
+							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"issue\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("eventscheduledCount", getTotalDocCount(assetGroup, "cloud_notification",
+							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"scheduledChange\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("eventNotificationCount", getTotalDocCount(assetGroup, "cloud_notification",
+							"{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}},{\"match\": {\"eventtypecategory.keyword\": \"accountNotification\"}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventarn.keyword\",\"size\":1000}}}}"));
+					countMap.put("autofixCount", getAutoFixSummary(assetGroup, "autofixplan"));
+					summaryList.add(countMap);
 				}
 			}
 		} catch (Exception e) {

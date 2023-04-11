@@ -49,7 +49,6 @@ PROCESS_RESOURCES = {
     'datastore.es': {'tags': ["es", "datastore"]},
     'pacbot_app.alb': {'tags': ["infra"]},
     'pacbot_app.alb_target_groups': {'tags': ["infra", "deploy"]},
-    'pacbot_app.create_template': {'tags': ["deploy", "infra"]},
     'pacbot_app.alb_listener_rules': {'tags': ["infra", "deploy"]},
     'pacbot_app.ecr': {'tags': ["infra"]},
     'pacbot_app.cloudwatch_log_groups': {'tags': ["infra"]},
@@ -57,6 +56,7 @@ PROCESS_RESOURCES = {
     'pacbot_app.import_db': {'tags': ["deploy", "app-import-db", "infra"]},
     'pacbot_app.ecs_task_defintions': {'tags': ["deploy", "task-definitions", "infra"]},
     'pacbot_app.ecs_services': {'tags': ["deploy", "ecs-services", "infra"]},
+    'pacbot_app.create_template': {'tags': ["deploy", "infra"]},
     's3.bucket': {'tags': ["s3"]},
     'batch.env': {'tags': ["batch"]},
     'batch.ecr': {'tags': ["batch", "batch-ecr"]},
@@ -70,6 +70,9 @@ PROCESS_RESOURCES = {
     'cognito.function' : {'tags' : ["cognito"]},
     'cognito.s3_upload' : {'tags' : ["cognito"]},
     'cognito.userpool' : {'tags' : ["cognito"]},
+    'notification.s3_upload' : {'tags' : ["notification"]},
+    'notification.function' : {'tags' : ["notification"]},
+    'notification.appsync' : {'tags' : ["notification"]}
 }
 
 DATA_DIR = os.path.join(BASE_APP_DIR, 'data')

@@ -421,5 +421,63 @@ public class FilterServiceImpl implements FilterService, Constants {
 
         return getAssetCountByAppOrEnv(assetCountByApps);
     }
+    
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
+	 * )
+	 */
+	public List<Map<String, Object>> getNotificationTypes() throws ServiceException {
+		Map<String, Long> notificationMap;
+		try {
+			notificationMap = repository.getNotificationTypesFromES();
+		} catch (DataException e) {
+			throw new ServiceException(e);
+		}
+		return convertESResponseToMap(notificationMap);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.tmobile.pacman.api.compliance.service.FilterService#getNotificationTypes(
+	 * )
+	 */
+	public List<Map<String, Object>> getNotificationSource() throws ServiceException {
+		Map<String, Long> sourceMap;
+		try {
+			sourceMap = repository.getNotificationSourceFromES();
+		} catch (DataException e) {
+			throw new ServiceException(e);
+		}
+		return convertESResponseToMap(sourceMap);
+
+	}
+
+	public List<Map<String, Object>> convertESResponseToMap(Map<String, Long> regionsMap) throws ServiceException {
+		List<Map<String, Object>> map = new ArrayList<>();
+		if (regionsMap.isEmpty()) {
+			throw new ServiceException(NO_DATA_FOUND);
+		}
+		regionsMap.entrySet().parallelStream().forEach(region -> {
+			Map<String, Object> regMap = new HashMap<>();
+			if (StringUtils.isNotBlank(region.getKey())) {
+				regMap.put(NAME, region.getKey());
+				regMap.put(ID, region.getKey());
+				synchronized (map) {
+					map.add(regMap);
+				}
+			}
+		});
+		if (map.isEmpty()) {
+			throw new ServiceException(NO_DATA_FOUND);
+		}
+		return map;
+	}   
+    
 
 }

@@ -323,13 +323,13 @@ public class ComplianceServiceImplTest {
                         anyInt(), anyString())).thenReturn(
                 CommonTestUtil.getMapLong());
 
-        assertThat(complianceService.getPolicycompliance(CommonTestUtil
+        assertThat(complianceService.getPolicyCompliance(CommonTestUtil
                 .getRequest()), is(notNullValue()));
     }
 
     @Test
     public void getPolicycomplianceWithoutPolicyIdTest() throws Exception {
-        assertThat(complianceService.getPolicycompliance(CommonTestUtil
+        assertThat(complianceService.getPolicyCompliance(CommonTestUtil
                 .getRequest()), is(nullValue()));
     }
 
@@ -383,23 +383,23 @@ public class ComplianceServiceImplTest {
                 CommonTestUtil.getMapLong());
 
         assertThat(
-                complianceService.getPolicyDetailsbyApplication(
+                complianceService.getPolicyDetailsByApplication(
                         "dummyString",
                         "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Policy_ec2",
                         "dummyString"), is(notNullValue()));
 
         assertThat(
-                complianceService.getPolicyDetailsbyApplication(
+                complianceService.getPolicyDetailsByApplication(
                         "dummyString",
                         "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
                         "dummyString"), is(notNullValue()));
 
         assertThat(
-                complianceService.getPolicyDetailsbyApplication(
+                complianceService.getPolicyDetailsByApplication(
                         "dummyString",
                         "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
                         "dummyString"), is(notNullValue()));
-        assertThat(complianceService.getPolicyDetailsbyApplication("dummyString",
+        assertThat(complianceService.getPolicyDetailsByApplication("dummyString",
                 "", "dummyString"), is(notNullValue()));
 
     }
@@ -425,25 +425,25 @@ public class ComplianceServiceImplTest {
                         anyString(), anyString(),anyString(), anyString(),anyString())).thenReturn(5000l);
 
         assertThat(
-                complianceService.getPolicyDetailsbyEnvironment(
+                complianceService.getPolicyDetailsByEnvironment(
                         "dummyString",
                         "PacMan_cloud-kernel-compliance_version-1_Ec2-Kernel-Compliance-Policy_ec2",
                         "", "dummyString"), is(notNullValue()));
 
         assertThat(
-                complianceService.getPolicyDetailsbyEnvironment(
+                complianceService.getPolicyDetailsByEnvironment(
                         "dummyString",
                         "PacMan_onpremisekernelversion_version-1_onpremKernelVersionPolicy_onpremserver",
                         "", "dummyString"), is(notNullValue()));
-        assertThat(complianceService.getPolicyDetailsbyEnvironment("dummyString",
+        assertThat(complianceService.getPolicyDetailsByEnvironment("dummyString",
                 "", "", "dummyString"), is(notNullValue()));
 
         assertThat(
-                complianceService.getPolicyDetailsbyEnvironment(
+                complianceService.getPolicyDetailsByEnvironment(
                         "dummyString",
                         "PacMan_Ec2InstanceScannedByQualys_version-1_Ec2-instance-scanned-by-qualys-API_ec2",
                         "dummyString",""), is(notNullValue()));
-        assertThat(complianceService.getPolicyDetailsbyEnvironment("dummyString",
+        assertThat(complianceService.getPolicyDetailsByEnvironment("dummyString",
                 "", "","dummyString"), is(notNullValue()));
     }
 
@@ -607,17 +607,17 @@ public class ComplianceServiceImplTest {
 
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         issueExceptionResponse.setStatus("Success");
-        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject()))
+        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject(), anyString()))
                 .thenReturn(issueExceptionResponse);
         
-        assertThat(complianceService.revokeMultipleIssueException("aws",new ArrayList<>()).getStatus().equals("Success"),
+        assertThat(complianceService.revokeMultipleIssueException("aws",new ArrayList<>(), "admin").getStatus().equals("Success"),
                 is(true));
 
-        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject()))
+        when(complianceRepository.revokeAndUpdateMultipleIssueDetails("aws",anyObject(), anyString()))
                 .thenThrow(new DataException());
 
         assertThatThrownBy(
-                () -> complianceService.revokeMultipleIssueException("aws",new ArrayList<>()))
+                () -> complianceService.revokeMultipleIssueException("aws",new ArrayList<>(), "admin"))
                 .isInstanceOf(ServiceException.class);
     }
     

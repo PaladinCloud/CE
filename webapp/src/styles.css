@@ -1302,6 +1302,10 @@ body {
   gap: 16px;
 }
 
+.gap-24{
+  gap: 24px;
+}
+
 .padding-2{
   padding: 2px;
 }
@@ -1320,6 +1324,18 @@ body {
 
 .padding-16{
   padding: 16px;
+}
+
+.padding-20{
+  padding: 20px;
+}
+
+.padding-24{
+  padding: 24px;
+}
+
+.padding-28{
+  padding: 28px;
 }
 
 ::-webkit-scrollbar {

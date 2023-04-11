@@ -21,6 +21,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -34,6 +35,7 @@ import org.springframework.web.util.UrlPathHelper;
 @EnableFeignClients
 @Configuration
 @EnableCaching
+@EnableAsync
 @ComponentScan(basePackages = "com.tmobile.pacman")
 public class ComplianceApplication implements WebMvcConfigurer {  
 

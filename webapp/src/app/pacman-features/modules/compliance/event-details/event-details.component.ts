@@ -44,8 +44,8 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
   getAutofixSubscription: Subscription;
   getDetailsSubscription: Subscription;
   selectedAssetGroup;
-  breadcrumbArray: any = ["Health Notifications"];
-  breadcrumbLinks: any = ["health-notifications"];
+  breadcrumbArray: any = ["Notifications"];
+  breadcrumbLinks: any = ["notifications-list"];
   breadcrumbPresent = "Event Details";
   backButtonRequired;
   responseStatusInfo = {

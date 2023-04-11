@@ -15,7 +15,10 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.domain;
 
+import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * UpdateAssetGroupDetails Domain Class
@@ -25,6 +28,38 @@ public class UpdateAssetGroupDetails extends CreateUpdateAssetGroupDetails {
 	private String groupId;
 	private List<TargetTypesProjection> remainingTargetTypes;
 	private List<TargetTypesDetails> remainingTargetTypesFullDetails;
+
+	private Long assetCount;
+
+	private Set<AssetGroupCriteriaDetails> criteriaDetails;
+
+	private String groupType;
+
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
+	}
+
+	public Set<AssetGroupCriteriaDetails> getCriteriaDetails() {
+		return criteriaDetails;
+	}
+
+	public void setCriteriaDetails(Set<AssetGroupCriteriaDetails> criteriaDetails) {
+		this.criteriaDetails = criteriaDetails;
+	}
+
+
+
+	public void setAssetCount(Long assetCount) {
+		this.assetCount = assetCount;
+	}
+
+	public Long getAssetCount() {
+		return assetCount;
+	}
 
 	public String getGroupId() {
 		return groupId;

@@ -147,7 +147,30 @@ public interface Constants {
 	String ACCOUNTID = "accountid";
 	String TYPE = "type";
 	String INDEX = "index";
+	String LATEST = "latest";
+	String EVENT_ID = "eventId";
+	String _ID = "@id";
+	String NOTIFICATION_URL = "notification.lambda.function.url";
 	
-	
+	enum NotificationTypes {
+        EXEMPTIONS("Exemption"),
+        VIOLATIONS("Violation"),
+        AUTOFIX ("AutoFix"),
+        ISSUE("Issue"),
+        ACCOUNTNOTIFICATION("AccountNotification"),
+    	SCHEDULEDCHANGE("ScheduledChange"),
+    	INVESTIGATION("Investigation");
+    	
+    	private String value;
+    	
+    	NotificationTypes(String value){
+    		this.value = value;
+    	}
+    	public String getValue() {
+    		return value;
+    	}
+    	
+    	
+    }
 	
 }

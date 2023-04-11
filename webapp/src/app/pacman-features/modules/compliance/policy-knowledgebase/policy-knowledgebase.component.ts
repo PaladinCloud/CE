@@ -1,19 +1,27 @@
-import { Component, OnDestroy, ViewChild, ElementRef, AfterViewInit, Renderer2, OnInit } from '@angular/core';
-import { AssetGroupObservableService } from '../../../../core/services/asset-group-observable.service';
-import { Subscription } from 'rxjs';
-import { CommonResponseService } from '../../../../shared/services/common-response.service';
-import { environment } from './../../../../../environments/environment';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LoggerService } from '../../../../shared/services/logger.service';
-import { ErrorHandlingService } from '../../../../shared/services/error-handling.service';
-import { WorkflowService } from '../../../../core/services/workflow.service';
-import { DomainTypeObservableService } from '../../../../core/services/domain-type-observable.service';
-import { RouterUtilityService } from '../../../../shared/services/router-utility.service';
-import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
-import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
-import { DownloadService } from 'src/app/shared/services/download.service';
-import { TableStateService } from 'src/app/core/services/table-state.service';
+import { Subscription } from 'rxjs';
+import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
+import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
+import { TableStateService } from 'src/app/core/services/table-state.service';
+import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
+import { CommonResponseService } from 'src/app/shared/services/common-response.service';
+import { DownloadService } from 'src/app/shared/services/download.service';
+import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
+import { LoggerService } from 'src/app/shared/services/logger.service';
+import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
+import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
+import { environment } from 'src/environments/environment';
+
+enum PolicyCategory {
+    ALL_POLICIES = 'all policies',
+    COST = 'cost',
+    OPERATIONS = 'operations',
+    SECURITY = 'security',
+    TAGGING = 'tagging',
+}
 
 @Component({
   selector: 'app-policy-knowledgebase',
@@ -31,8 +39,20 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   tableDataLoaded = false;
   searchTxt = '';
   breadcrumbPresent;
-  typeObj;
-  tabName: any = [];
+  policyCategoryDic: { [key in PolicyCategory]: number } = {
+    [PolicyCategory.ALL_POLICIES]: 0,
+    [PolicyCategory.SECURITY]: 0,
+    [PolicyCategory.OPERATIONS]: 0,
+    [PolicyCategory.COST]: 0,
+    [PolicyCategory.TAGGING]: 0,
+  };
+  policyCategories = [
+    PolicyCategory.ALL_POLICIES,
+    PolicyCategory.SECURITY,
+    PolicyCategory.OPERATIONS,
+    PolicyCategory.COST,
+    PolicyCategory.TAGGING,
+  ];
   errorMessage: any = '';
   currentPageLevel = 0;
   headerColName;
@@ -42,18 +62,25 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   filters = [];
   filterTypeLabels = [];
   filterTagLabels = {};
-  columnWidths = {'Policy': 3, 'Cloud Type': 1, 'Severity': 1, 'Category': 1, 'Asset Type': 1};
-  columnNamesMap = {name: "Policy"};
+  centeredColumns = {
+    Policy: false,
+    Source: true,
+    Severity: true,
+    Category: true,
+    'Asset Type': false,
+  };
+  columnWidths = { Policy: 3, Source: 1, Severity: 1, Category: 1, 'Asset Type': 1 };
+  columnNamesMap = { name: 'Policy', provider: 'Source' };
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+      const severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
 
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
       return (severeness[ASeverity] < severeness[BSeverity] ? -1 : 1) * (isAsc ? 1 : -1);
     },
     Category: (a, b, isAsc) => {
-      let priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
+      const priority = {"security":4, "operations":3, "cost":2, "tagging":1, "default": 5 * (isAsc ? 1 : -1)}
 
       const ACategory = a["Category"].valueText??"default";
       const BCategory = b["Category"].valueText??"default";
@@ -61,6 +88,10 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     },
   };
   tableImageDataMap = {
+      [PolicyCategory.ALL_POLICIES]: {
+        image: 'policy-icon',
+        imageOnly: true
+      },
       security:{
           image: "category-security",
           imageOnly: true
@@ -266,16 +297,15 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tableDataLoaded = false;
       this.getData();
     }
-    // this.typeObj = undefined;
   }
 
   processData(data) {
     let processedData = [];
       const getData = data;
       try {
-      var innerArr = {};
-      var totalVariablesObj = {};
-      var cellObj = {};
+      let innerArr = {};
+      const totalVariablesObj = {};
+      let cellObj = {};
       const keynames = Object.keys(getData[0]);
 
       this.assetTypeMapService.getAssetMap().subscribe(assetTypeMap=>{
@@ -283,7 +313,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       });
 
       let cellData;
-      for (var row = 0; row < getData.length; row++) {
+      for (let row = 0; row < getData.length; row++) {
         innerArr = {};
         keynames.forEach(col => {
           cellData = getData[row][col];
@@ -301,12 +331,19 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
           }
-          if(col.toLowerCase()=="policy"){
+          if(col.toLowerCase() === 'policy'){
+            const autoFixAvailable = getData[row].autoFixAvailable;
+            const autoFixEnabled = getData[row].autoFixEnabled;
+            let imgSrc = 'noImg';
+            if (autoFixAvailable) {
+                imgSrc = autoFixEnabled ? 'autofix' : 'no-autofix';
+            }
             cellObj = {
-              ...cellObj,
-              isLink: true
+                ...cellObj,
+                isLink: true,
+                imgSrc,
             };
-          } else if(col.toLowerCase()=="asset type"){
+          } else if(col.toLowerCase() === 'asset type'){
               const currentAssetType = this.assetTypeMap.get(cellData);
               cellObj = {
               ...cellObj,
@@ -321,7 +358,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         processedData.push(innerArr);
       }
       if (processedData.length > getData.length) {
-        var halfLength = processedData.length / 2;
+        const halfLength = processedData.length / 2;
         processedData = processedData.splice(halfLength);
       }
     } catch (error) {
@@ -333,37 +370,20 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
   getTilesData(getData){
     try{
-      this.typeObj = {
-          'All Policies': 0
+        const newPolicyDic: {[key in PolicyCategory]: number} = {
+            [PolicyCategory.ALL_POLICIES]: 0,
+            [PolicyCategory.COST]: 0,
+            [PolicyCategory.OPERATIONS]: 0,
+            [PolicyCategory.SECURITY]: 0,
+            [PolicyCategory.TAGGING]: 0,
         };
-        for (let i = 0; i < getData.length; i++) {
-          this.typeObj[getData[i].Category.valueText] = 0;
-        }
-        this.typeObj[`critical`] = 0;
-        this.typeObj[`high`] = 0;
-        this.typeObj[`medium`] = 0;
-        this.typeObj[`low`] = 0;
-        this.typeObj["cost"]=0;
-        this.typeObj["operations"]=0;
-        this.typeObj["security"]=0;
-        this.typeObj["tagging"]=0;
-        for (let i = 0; i < getData.length; i++) {
-          this.typeObj[getData[i].Severity.valueText] = 0;
-        }
-        this.typeObj[`Auto Fix`] = 0;
-        delete this.typeObj[''];
-        for (let i = 0; i < getData.length; i++) {
-          this.typeObj['All Policies']++;
-          this.typeObj[getData[i].Category.valueText.toLowerCase()]++;
-          this.typeObj[getData[i].Severity.valueText.toLowerCase()]++;
-          if (getData[i].autoFixEnabled.valueText === true) {
-            this.typeObj['Auto Fix']++;
-          }
-        }
 
-        let typeArr = [];
-        typeArr = Object.keys(this.typeObj);
-        this.tabName = ["All Policies", "security", "operations", "cost", "tagging"];
+        for (let i = 0; i < getData.length; i++) {
+          newPolicyDic[PolicyCategory.ALL_POLICIES]++;
+          newPolicyDic[getData[i].Category.valueText.toLowerCase()]++
+        }
+        this.policyCategoryDic = newPolicyDic;
+
       } catch (error) {
       this.logger.log('error', error);
     }
@@ -487,7 +507,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     const policyId = tileData["Policy ID"].valueText;
     try {
       this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root, 0, this.breadcrumbPresent);
-      let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
+      const updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       updatedQueryParams["searchValue"] = undefined;
       this.router.navigate(
         ['pl', 'compliance', 'policy-knowledgebase-details', policyId, autofixEnabled],
@@ -498,6 +518,20 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.logger.log('error', error);
     }
   }
+
+    applyFilterByCategory(policyCategory: PolicyCategory) {
+        const key = 'Category';
+        const newFilters = this.filters.filter((f) => f.key !== key);
+        if (policyCategory !== PolicyCategory.ALL_POLICIES) {
+            newFilters.push({
+                key,
+                keyDisplayValue: key,
+                filterValue: policyCategory,
+                value: policyCategory,
+            });
+        }
+        this.filters = newFilters;
+    }
 
   ngOnDestroy() {
     try {

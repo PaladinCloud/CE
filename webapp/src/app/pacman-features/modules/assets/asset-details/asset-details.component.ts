@@ -903,7 +903,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   navigateToAWSNotifications(status) {
     this.workflowService.addRouterSnapshotToLevel(this.router.routerState.snapshot.root);
     const eachParams = { 'eventstatus': status, '_resourceid': this.resourceId };
-    this.router.navigate(['../../../../compliance/health-notifications'],
+    this.router.navigate(['../../../../notifications/notifications-list'],
       { relativeTo: this.activatedRoute, queryParams: this.utilityService.makeFilterObj(eachParams), queryParamsHandling: 'merge' });
   }
 

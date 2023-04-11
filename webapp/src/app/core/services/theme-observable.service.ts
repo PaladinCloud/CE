@@ -17,14 +17,11 @@
  */
 
 import { Injectable } from '@angular/core';
-import { Observable ,  ReplaySubject } from 'rxjs';
-
+import { ReplaySubject } from 'rxjs';
 
 @Injectable()
-
 export class ThemeObservableService {
-
-    private subject = new ReplaySubject<any>(0);
+    private subject = new ReplaySubject<string>(0);
 
     updateTheme(themeName: string) {
         if (themeName) {
@@ -32,8 +29,7 @@ export class ThemeObservableService {
         }
     }
 
-    getTheme(): Observable<any> {
+    getTheme() {
         return this.subject.asObservable();
     }
-
 }

@@ -18,6 +18,7 @@ import * as moment from 'moment';
 import { QUARTER } from './../constants/quarter';
 import { LoggerService } from './logger.service';
 import { RefactorFieldsService } from './refactor-fields.service';
+import { DATA_MAPPING } from '../constants/data-mapping';
 
 @Injectable()
 export class UtilsService {
@@ -89,22 +90,29 @@ export class UtilsService {
     return str;
   }
 
-  massageTableData(data) {
+  massageTableData(data, columnNamesMap?) {
     /*
        * added by Trinanjan 14/02/2017
        * the funciton replaces keys of the table header data to a readable format
      */
     const refactoredService = this.refactorFieldsService;
     const newData = [];
-    data.map(function(responseData) {
-      const KeysTobeChanged = Object.keys(responseData);
+    data.map(function(row) {
+      const KeysTobeChanged = Object.keys(row);
       let newObj = {};
       KeysTobeChanged.forEach(element => {
-        const elementnew =
-          refactoredService.getDisplayNameForAKey(
-            element.toLocaleLowerCase()
-          ) || element;
-        newObj = Object.assign(newObj, { [elementnew]: responseData[element] });
+        let elementnew;
+        if(columnNamesMap[element]) {
+          elementnew = columnNamesMap[element];
+          newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        }else{
+          elementnew =
+            refactoredService.getDisplayNameForAKey(
+              element.toLocaleLowerCase()
+            ) || element;
+        }
+        newObj = Object.assign(newObj, { [elementnew]: row[element] });
+        newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newData.push(newObj);
     });
@@ -126,13 +134,15 @@ export class UtilsService {
   getParamsFromUrlSnippet(urlSnippet) {
     const split = urlSnippet.split('?');
     const url = split[0];
-    const inputParams = split[1].split('&');
     const params = {};
-    _.each(inputParams, arg => {
-      const key = arg.substring(0, arg.indexOf('='));
-      const value = arg.substring(arg.indexOf('=') + 1, arg.length);
-      params[key] = value;
-    });
+    if(split.length>1){
+      const inputParams = split[1].split('&');
+      _.each(inputParams, arg => {
+        const key = arg.substring(0, arg.indexOf('='));
+        const value = arg.substring(arg.indexOf('=') + 1, arg.length);
+        params[key] = value;
+      });
+    }
 
     return {
       url: url,

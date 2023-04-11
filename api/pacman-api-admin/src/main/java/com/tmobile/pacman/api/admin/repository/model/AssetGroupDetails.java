@@ -58,7 +58,20 @@ public class AssetGroupDetails {
 	@JsonManagedReference
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "assetGroup", cascade = CascadeType.ALL)
 	@LazyCollection(LazyCollectionOption.EXTRA)
-	private Set<AssetGroupTargetDetails> targetTypes = new HashSet<AssetGroupTargetDetails>();
+	private Set<AssetGroupCriteriaDetails> criteriaDetails = new HashSet<>();
+
+	@JsonManagedReference
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "assetGroup", cascade = CascadeType.ALL)
+	@LazyCollection(LazyCollectionOption.EXTRA)
+	private Set<AssetGroupTargetDetails> targetTypes = new HashSet<>();
+
+	public Set<AssetGroupCriteriaDetails> getCriteriaDetails() {
+		return criteriaDetails;
+	}
+
+	public void setCriteriaDetails(Set<AssetGroupCriteriaDetails> criteriaDetails) {
+		this.criteriaDetails = criteriaDetails;
+	}
 
 	public String getGroupId() {
 		return groupId;

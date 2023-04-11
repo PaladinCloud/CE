@@ -622,11 +622,12 @@ public interface ComplianceRepository {
     /**
      * Revoke and update multiple issue details.
      *
-     * @param issueIds the issue ids
+     * @param issueIds  the issue ids
+     * @param revokedBy
      * @return the issue exception response
      * @throws DataException the data exception
      */
-    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup,List<String> issueIds) throws DataException;
+    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup, List<String> issueIds, String revokedBy) throws DataException;
     
     /**
  	 * Gets the total asset count by environment.

@@ -15,8 +15,24 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.repository;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import com.tmobile.pacman.api.commons.repo.HeimdallElasticSearchRepository;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.CommonUtils;
+import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
+import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
+
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,28 +73,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.tmobile.pacman.api.commons.Constants;
-import com.tmobile.pacman.api.commons.exception.DataException;
-import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
-import com.tmobile.pacman.api.commons.repo.HeimdallElasticSearchRepository;
-import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
-import com.tmobile.pacman.api.commons.utils.CommonUtils;
-import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
-import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
 import com.tmobile.pacman.api.compliance.domain.AssetApi;
 import com.tmobile.pacman.api.compliance.domain.AssetApiData;
 import com.tmobile.pacman.api.compliance.domain.AssetCount;
@@ -86,7 +86,6 @@ import com.tmobile.pacman.api.compliance.domain.AssetCountByAppEnvDTO;
 import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
 import com.tmobile.pacman.api.compliance.domain.AssetCountData;
 import com.tmobile.pacman.api.compliance.domain.AssetCountEnvCount;
-import com.tmobile.pacman.api.compliance.domain.Compare;
 import com.tmobile.pacman.api.compliance.domain.ExemptedAssetByPolicy;
 import com.tmobile.pacman.api.compliance.domain.ExemptedAssetByPolicyData;
 import com.tmobile.pacman.api.compliance.domain.IssueExceptionResponse;
@@ -96,7 +95,9 @@ import com.tmobile.pacman.api.compliance.domain.KernelVersion;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
-import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
+import com.tmobile.pacman.api.compliance.service.NotificationService;
+
+import static com.tmobile.pacman.api.compliance.util.Constants.*;
 
 /**
  * The Class ComplianceRepositoryImpl.
@@ -104,64 +105,141 @@ import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 @Repository
 public class ComplianceRepositoryImpl implements ComplianceRepository, Constants {
 
-    /** The mandatory tags. */
+    /**
+     * The Constant PROTOCOL.
+     */
+    static final String PROTOCOL = "http";
+    /**
+     * The rest client.
+     */
+    private static RestClient restClient;
+    /**
+     * The logger.
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
+    /**
+     * The mandatory tags.
+     */
     @Value("${tagging.mandatoryTags}")
     private String mandatoryTags;
-
-    /** The es host. */
+    /**
+     * The es host.
+     */
     @Value("${elastic-search.host}")
     private String esHost;
-
-    /** The es port. */
+    /**
+     * The es port.
+     */
     @Value("${elastic-search.port}")
     private int esPort;
-
-    /** The Constant PROTOCOL. */
-    static final String PROTOCOL = "http";
-
-    /** The es url. */
+    /**
+     * The es url.
+     */
     private String esUrl;
-
-    /** The elastic search repository. */
+    /**
+     * The elastic search repository.
+     */
     @Autowired
     private ElasticSearchRepository elasticSearchRepository;
-
-    /** The rdsepository. */
+    /**
+     * The rdsepository.
+     */
     @Autowired
     private PacmanRdsRepository rdsepository;
-
-    /** The asset service client. */
+    /**
+     * The asset service client.
+     */
     @Autowired
     private AssetServiceClient assetServiceClient;
-
-    /** The filter repository. */
+    /**
+     * The filter repository.
+     */
     @Autowired
     private FilterRepository filterRepository;
-
-    /** The rhn system details repository. */
+    /**
+     * The rhn system details repository.
+     */
     @Autowired
     private RhnSystemDetailsRepository rhnSystemDetailsRepository;
-
-    /** The patching repository. */
+    /**
+     * The patching repository.
+     */
     @Autowired
     private PatchingRepository patchingRepository;
-
-    /** The heimdall elastic search repository. */
+    /**
+     * The heimdall elastic search repository.
+     */
     @Autowired
     private HeimdallElasticSearchRepository heimdallElasticSearchRepository;
 
-    /** The rest client. */
-    private static RestClient restClient;
+    /**
+     * Gets the untagged count.
+     *
+     * @param esUrl      the es url
+     * @param assetGroup the asset group
+     * @param policyId   the policy id
+     * @param tagsList   the tags list
+     * @return the untagged count
+     * @throws Exception the exception
+     */
+    private static int getUntaggedCount(String esUrl, String assetGroup, String policyId, List<String> tagsList)
+            throws Exception {
+        int size = 0;
+        Gson serializer = new GsonBuilder().create();
+        String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
+                + CATEGORY_TAGGING + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
+        body = body + ",{\"term\":{\"policyId.keyword\":{\"value\":\"" + policyId + "\"}}}";
 
-    /** The logger. */
-    protected final Log logger = LogFactory.getLog(getClass());
+        body = body + "]";
+        if (!tagsList.isEmpty()) {
+            body = body + ",\"should\":[";
+
+            for (String tag : tagsList) {
+                body = body + "{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},";
+            }
+            body = body.substring(0, body.length() - 1);
+            body = body + "]";
+            body = body + ",\"minimum_should_match\":1";
+        }
+        body = body + "}}}";
+        String urlToQueryCountBuffer = esUrl + "/" + assetGroup + "/" +
+                UNDERSCORE_COUNT;
+        String responseCount = PacHttpUtils.doHttpPost(urlToQueryCountBuffer, body);
+        Map<String, Object> responseCountMap = (Map<String, Object>) serializer.fromJson(responseCount, Object.class);
+        if (responseCountMap.containsKey(COUNT)) {
+            Double sizeD = (Double) responseCountMap.get(COUNT);
+            size = sizeD.intValue();
+        }
+        return size;
+
+    }
+
+    /**
+     * Gets the current quarter criteria key.
+     *
+     * @return the current quarter criteria key
+     */
+    private static String getCurrentQuarterCriteriaKey() {
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int currentQuarter = (month / 3) + 1;
+        return "pacman.kernel.compliance.map".concat(".").concat(String.valueOf(year)).concat(".q")
+                .concat(String.valueOf(currentQuarter));
+    }
+
+
+    @Autowired
+    NotificationService notificationService;
 
     /**
      * Inits the.
      */
     @PostConstruct
     void init() {
-    esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
+        esUrl = PROTOCOL + "://" + esHost + ":" + esPort;
     }
 
     /*
@@ -170,7 +248,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getIssuesCount(java.lang.String, java.lang.String, java.lang.String)
      */
-    public long getIssuesCount(String assetGroup, String policyId, String domain,String accountId) throws DataException {
+    public long getIssuesCount(String assetGroup, String policyId, String domain, String accountId) throws DataException {
         long totalIssueCount;
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
@@ -181,18 +259,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         if (!Strings.isNullOrEmpty(policyId)) {
             mustFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyId);
         }
-        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("aws"))
-        {
-            mustFilter.put("accountid.keyword",accountId);
+        if (!Strings.isNullOrEmpty(accountId) && assetGroup.equals("aws")) {
+            mustFilter.put("accountid.keyword", accountId);
         }
-        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("azure"))
-        {
-            mustFilter.put("subscription.keyword",accountId);
+        if (!Strings.isNullOrEmpty(accountId) && assetGroup.equals("azure")) {
+            mustFilter.put("subscription.keyword", accountId);
         }
 
-        if(!Strings.isNullOrEmpty(accountId) && assetGroup.equals("gcp"))
-        {
-            mustFilter.put("projectId.keyword",accountId);
+        if (!Strings.isNullOrEmpty(accountId) && assetGroup.equals("gcp")) {
+            mustFilter.put("projectId.keyword", accountId);
         }
         mustFilter.put(CommonUtils.convertAttributetoKeyword(TYPE), ISSUE);
         mustFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), OPEN);
@@ -208,12 +283,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     }
 
-
-
-
-
-    private HashMap<String,Object> getDistributionBySeverity(String query, String assetGroup, String keyName) throws DataException{
-        HashMap<String,Object>result=new HashMap<>();
+    private HashMap<String, Object> getDistributionBySeverity(String query, String assetGroup, String keyName) throws DataException {
+        HashMap<String, Object> result = new HashMap<>();
         Gson gson = new GsonBuilder().create();
         String responseDetails = null;
         StringBuilder requestBody = null;
@@ -226,49 +297,46 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         Map<String, Object> response = (Map<String, Object>) gson.fromJson(responseDetails, Map.class);
         Map<String, Object> aggregations = (Map<String, Object>) response.get(AGGREGATIONS);
-        Map<String, Object> severity=(Map<String, Object>) aggregations.get("by_severity");
+        Map<String, Object> severity = (Map<String, Object>) aggregations.get("by_severity");
 
-        JsonObject resultJson =  JsonParser.parseString(responseDetails).getAsJsonObject();
+        JsonObject resultJson = JsonParser.parseString(responseDetails).getAsJsonObject();
         JsonObject aggsJson = (JsonObject) JsonParser.parseString(resultJson.get(AGGREGATIONS).toString());
         JsonArray buckets = aggsJson.getAsJsonObject("by_severity").getAsJsonArray(BUCKETS).getAsJsonArray();
 
-        for (JsonElement bucket:buckets) {
-            HashMap<String,String>policyDetails=new HashMap<>();
-            policyDetails.put(keyName,bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
-            policyDetails.put("totalViolations",bucket.getAsJsonObject().get("doc_count").getAsString());
-            result.put(bucket.getAsJsonObject().get("key").getAsString(),policyDetails);
+        for (JsonElement bucket : buckets) {
+            HashMap<String, String> policyDetails = new HashMap<>();
+            policyDetails.put(keyName, bucket.getAsJsonObject().get(keyName).getAsJsonObject().get("value").getAsString());
+            policyDetails.put("totalViolations", bucket.getAsJsonObject().get("doc_count").getAsString());
+            result.put(bucket.getAsJsonObject().get("key").getAsString(), policyDetails);
         }
         return result;
     }
 
-    private String getOuery(String keyName, List<Object> Policies, String queryAttribute){
+    private String getOuery(String keyName, List<Object> Policies, String queryAttribute) {
         String query;
         String policyIds = Policies.stream().map(policy -> "\"" + policy.toString().trim() + "\"")
                 .collect(Collectors.joining(","));
-        switch (keyName){
-            case "averageAge":
-                query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"terms\":{\"policyId.keyword\":["+policyIds+"]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\""+keyName+"\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
-                break;
-            default:
-                query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":["+policyIds+"]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\""+keyName+"\":{\"cardinality\":{\"field\":\""+queryAttribute+"\"}}}}}}";
-                break;
+        if (keyName.equals("averageAge")) {
+            query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}},{\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\"},\"aggs\":{\"" + keyName + "\":{\"avg\":{\"script\":{\"inline\":\"(new Date().getTime()- ZonedDateTime.parse(params._source.createdDate).toInstant().toEpochMilli())/(24*60*60*1000)\"}}}}}}}";
+        } else {
+            query = "{\"size\":0,\"query\":{\"bool\":{\"must\":[{\"term\":{\"type\":\"issue\"}}, {\"terms\":{\"policyId.keyword\":[" + policyIds + "]}},{\"term\":{\"issueStatus\":\"open\"}}]}},\"aggs\":{\"by_severity\":{\"terms\":{\"field\":\"severity.keyword\",\"size\":10000},\"aggs\":{\"" + keyName + "\":{\"cardinality\":{\"field\":\"" + queryAttribute + "\"}}}}}}";
         }
         return query;
     }
 
-    public HashMap<String,Object> getPolicyCountBySeverity(String assetGroup, List<Object> Policies) throws DataException{
+    public HashMap<String, Object> getPolicyCountBySeverity(String assetGroup, List<Object> Policies) throws DataException {
         String keyName = "policyCount";
         String query = this.getOuery(keyName, Policies, "policyId.keyword");
         return getDistributionBySeverity(query, assetGroup, keyName);
     }
 
-    public HashMap<String,Object> getAssetCountBySeverity(String assetGroup, List<Object> Policies) throws DataException{
+    public HashMap<String, Object> getAssetCountBySeverity(String assetGroup, List<Object> Policies) throws DataException {
         String keyName = "assetCount";
         String query = this.getOuery(keyName, Policies, "_resourceid.keyword");
         return getDistributionBySeverity(query, assetGroup, keyName);
     }
 
-    public HashMap<String,Object> getAverageAge(String assetGroup, List<Object> Policies) throws DataException{
+    public HashMap<String, Object> getAverageAge(String assetGroup, List<Object> Policies) throws DataException {
         String keyName = "averageAge";
         String query = this.getOuery(keyName, Policies, null);
         return getDistributionBySeverity(query, assetGroup, keyName);
@@ -373,7 +441,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         if (null != filters.get("include_exempt") && ("yes".equalsIgnoreCase(filters.get(INCLUDE_EXEMPT)))) {
             issueStatus.add(EXEMPTED);
         }
-        if(issueStatus.size()>0) mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
+        if (issueStatus.size() > 0)
+            mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(ISSUE_STATUS), issueStatus);
         mustTermsFilter.put(CommonUtils.convertAttributetoKeyword(POLICYID), policyIdOrder);
 
         try {
@@ -404,9 +473,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
                 body = body + "}}}";
                 requestBody = new StringBuilder(body);
-                StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
-                        .append(SEARCH).append("?").append("from").append("=").append(from);
-                String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(), requestBody.toString());
+                String urlToQueryBuffer = esUrl + "/" + assetGroup + "/" +
+                        SEARCH + "?" + "from" + "=" + from;
+                String responseDetails = PacHttpUtils.doHttpPost(urlToQueryBuffer, requestBody.toString());
                 Map<String, Object> responseMap = (Map<String, Object>) serializer.fromJson(responseDetails,
                         Object.class);
                 if (responseMap.containsKey(HITS)) {
@@ -425,7 +494,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             } else {
                 if (MapUtils.isNotEmpty(filters) || size > 0 || !Strings.isNullOrEmpty(searchText)) {
 
-                    if (null!=sortFilters && sortFilters.get("fieldName").equals("policyId.keyword")) {
+                    if (null != sortFilters && sortFilters.get("fieldName").equals("policyId.keyword")) {
                         sortFilters.put("sortOrder", policyIdOrder);
                     }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
@@ -475,7 +544,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         Map<String, Long> tagging = new HashMap<>();
         long totaluntagged;
-        long totalAssets = 0l;
+        long totalAssets = 0L;
         long assets;
         long totalTagged;
         double compliance;
@@ -521,7 +590,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         JsonObject aggs = responseJson.get(AGGREGATIONS).getAsJsonObject();
         JsonObject resourceids = aggs.get("distinct_resourceids").getAsJsonObject();
         totaluntagged = resourceids.get("value").getAsLong();
-        policyIdWithTargetTypeQuery = "SELECT  p.targetType FROM cf_PolicyTable p WHERE  p.status = 'ENABLED' AND p.category = '"+Constants.CATEGORY_TAGGING+"'";
+        policyIdWithTargetTypeQuery = "SELECT p.targetType FROM cf_PolicyTable p WHERE p.status = 'ENABLED' AND p.category = '" + Constants.CATEGORY_TAGGING + "'";
         policyIdwithTargetType = rdsepository.getDataFromPacman(policyIdWithTargetTypeQuery);
         if (Strings.isNullOrEmpty(targetType)) {
             assetCount = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null, null, "");
@@ -603,14 +672,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the recommendations.
      *
-     * @author santoshi
-     * @param assetGroup
-     *                   the asset group
-     * @param targetType
-     *                   the target type
+     * @param assetGroup the asset group
+     * @param targetType the target type
      * @return the recommendations
-     * @throws DataException
-     *                       the data exception
+     * @throws DataException the data exception
+     * @author santoshi
      */
     @SuppressWarnings("rawtypes")
     public List<Map<String, Object>> getRecommendations(String assetGroup, String targetType) throws DataException {
@@ -663,19 +729,17 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the total asset count for anytarget type.
      *
-     * @author santoshi
-     * @param assetGroup
-     *                   the asset group
-     * @param targetType
-     *                   the target type
+     * @param assetGroup the asset group
+     * @param targetType the target type
      * @return the total asset count for anytarget type
+     * @author santoshi
      */
     public Long getTotalAssetCountForAnytargetType(String assetGroup, String targetType) {
 
         AssetCount totalAssets = assetServiceClient.getTotalAssetsCount(assetGroup, targetType, null, null, "");
         AssetCountData data = totalAssets.getData();
         AssetCountByAppEnvDTO[] assetcount = data.getAssetcount();
-        Long totalAssetsCount = 0l;
+        Long totalAssetsCount = 0L;
         for (AssetCountByAppEnvDTO assetCount_Count : assetcount) {
             if (assetCount_Count.getType().equalsIgnoreCase(targetType)) {
                 totalAssetsCount = Long.parseLong(assetCount_Count.getCount());
@@ -687,14 +751,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the resource details from ES.
      *
-     * @author u55262
-     * @param assetGroup
-     *                   the asset group
-     * @param resourceId
-     *                   the resource id
+     * @param assetGroup the asset group
+     * @param resourceId the resource id
      * @return the resource details from ES
-     * @throws DataException
-     *                       the data exception
+     * @throws DataException the data exception
+     * @author u55262
      */
     public List<Map<String, Object>> getResourceDetailsFromES(String assetGroup, String resourceId)
             throws DataException {
@@ -717,23 +778,17 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the issue audit log.
      *
-     * @author u55262
-     * @param annotationId
-     *                     the annotation id
-     * @param targetType
-     *                     the target type
-     * @param from
-     *                     the from
-     * @param size
-     *                     the size
-     * @param searchText
-     *                     the search text
+     * @param annotationId the annotation id
+     * @param targetType   the target type
+     * @param from         the from
+     * @param size         the size
+     * @param searchText   the search text
      * @return the issue audit log
-     * @throws DataException
-     *                       the data exception
+     * @throws DataException the data exception
+     * @author u55262
      */
-    public List<LinkedHashMap<String, Object>> getIssueAuditLog(String datasource ,String annotationId, String targetType, int from,
-            int size, String searchText) throws DataException {
+    public List<LinkedHashMap<String, Object>> getIssueAuditLog(String datasource, String annotationId, String targetType, int from,
+                                                                int size, String searchText) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         mustFilter.put(CommonUtils.convertAttributetoKeyword("annotationid"), annotationId);
         String type = ISSUE_UNDERSCORE + targetType + "_audit";
@@ -770,11 +825,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the Policies from ES.
      *
-     * @param assetGroup
-     *                   the asset group
+     * @param assetGroup the asset group
      * @return the Policies from ES
-     * @throws Exception
-     *                   the exception
+     * @throws Exception the exception
      */
     public Map<String, Long> getPoliciesFromES(String assetGroup) throws Exception {
         Map<String, Object> mustFilter = new HashMap<>();
@@ -827,10 +880,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Close issues by policy.
      *
-     * @author NidhishKrishnan (Nidhish)
-     * @param policyDetails
-     *                    the policy details
+     * @param policyDetails the policy details
      * @return Boolean
+     * @author NidhishKrishnan (Nidhish)
      * @requestBody PolicyDetails
      */
     @Override
@@ -841,8 +893,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             Boolean status = true;
             for (Map<String, Object> issueDetail : issueDetails) {
                 if (status) {
-                    String dataSource = String.valueOf(issueDetail.get(PAC_DS)) + "_" + issueDetail.get(TARGET_TYPE);
-                    String targetType = String.valueOf(issueDetail.get(TYPE)) + "_" + issueDetail.get(TARGET_TYPE);
+                    String dataSource = issueDetail.get(PAC_DS) + "_" + issueDetail.get(TARGET_TYPE);
+                    String targetType = issueDetail.get(TYPE) + "_" + issueDetail.get(TARGET_TYPE);
                     String id = String.valueOf(issueDetail.get(ES_DOC_ID_KEY));
                     String routing = String.valueOf(issueDetail.get(ES_DOC_ROUTING_KEY));
                     String parent = String.valueOf(issueDetail.get(ES_DOC_PARENT_KEY));
@@ -866,12 +918,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the open issue details by policy id.
      *
+     * @param policyId the policy id
+     * @return List<Map < String, Object>>
+     * @throws Exception the exception
      * @author Nidhish Krishnan (Nidhish)
-     * @param policyId
-     *               the policy id
-     * @return List<Map<String, Object>>
-     * @throws Exception
-     *                   the exception
      * @requestParam policyId
      */
     private List<Map<String, Object>> getOpenIssueDetailsByPolicyId(final String policyId) throws Exception {
@@ -892,14 +942,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the issue details.
      *
-     * @author NidhishKrishnan (Nidhish)
-     * @param issueId
-     *                the issue id
-     * @param status
-     *                the status
+     * @param issueId the issue id
+     * @param status  the status
      * @return It return list of map details for the given issueId and status
-     * @throws DataException
-     *                       the data exception
+     * @throws DataException the data exception
+     * @author NidhishKrishnan (Nidhish)
      * @requestParam issueId - String
      * @requestParam status - String
      */
@@ -955,11 +1002,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         List<Map<String, Object>> exceptionDetails = getIssueDetails(issueId, null);
                         Map<String, Object> exceptionDetail = exceptionDetails.get(0);
                         String exceptionId = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));
-                        StringBuilder esQueryUrl = new StringBuilder(esUrl);
-                        esQueryUrl.append("/").append(dataSource).append("/" + targetType).append("_exception/")
-                                .append(exceptionId).append("?routing=" + routing);
+                        String esQueryUrl = esUrl + "/" + dataSource + "/" + targetType + "_exception/" +
+                                exceptionId + "?routing=" + routing;
                         HttpClient client = HttpClientBuilder.create().build();
-                        HttpDelete httpdelete = new HttpDelete(esQueryUrl.toString());
+                        HttpDelete httpdelete = new HttpDelete(esQueryUrl);
                         httpdelete.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
                         client.execute(httpdelete);
                     } catch (Exception exception) {
@@ -1003,7 +1049,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyIdWithDisplayNameQuery(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIdWithDisplayNameQuery(String targetType) {
-    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
+        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
                 + targetType + ")  ORDER BY policyDisplayName asc";
         return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
     }
@@ -1015,7 +1061,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyIDsForTargetType(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIDsForTargetType(String targetType) throws DataException {
-    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType ='"
+        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType ='"
                 + targetType + "'";
 
         return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
@@ -1028,8 +1074,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyIdDetails(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIdDetails(String policyId) throws DataException {
-    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED' AND policyId IN ("
-    	        + policyId + ")";
+        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED' AND policyId IN ("
+                + policyId + ")";
         try {
             return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
         } catch (Exception e) {
@@ -1058,26 +1104,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the non compliance policy by es with asset group.
      *
-     * @author santoshi
-     * @param assetGroup
-     *                    the asset group
-     * @param searchText
-     *                    the search text
-     * @param filters
-     *                    the filters
-     * @param from
-     *                    the from
-     * @param size
-     *                    the size
-     * @param targetTypes
-     *                    the target types
+     * @param assetGroup  the asset group
+     * @param searchText  the search text
+     * @param filters     the filters
+     * @param from        the from
+     * @param size        the size
+     * @param targetTypes the target types
      * @return the non compliance policy by es with asset group
-     * @throws DataException
-     *                       the data exception
+     * @throws DataException the data exception
+     * @author santoshi
      */
     @SuppressWarnings("rawtypes")
     public Map<String, Long> getNonCompliancePolicyByEsWithAssetGroup(String assetGroup, String searchText,
-            Map<String, String> filters, int from, int size, String targetTypes) throws DataException {
+                                                                      Map<String, String> filters, int from, int size, String targetTypes) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
@@ -1131,15 +1170,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         AssetCountDTO[] targetTypes = data.getTargettypes();
         for (AssetCountDTO name : targetTypes) {
             if (!Strings.isNullOrEmpty(name.getType())) {
-                ttypesTemp = new StringBuilder().append('\'').append(name.getType()).append('\'').toString();
+                ttypesTemp = '\'' + name.getType() + '\'';
                 if (Strings.isNullOrEmpty(ttypes)) {
                     ttypes = ttypesTemp;
                 } else {
-                    ttypes = new StringBuilder(ttypes).append(",").append(ttypesTemp).toString();
+                    ttypes = ttypes + "," + ttypesTemp;
                 }
             }
         }
-        logger.info("Compliance API >> Fetched target types: " +ttypes);
+        logger.info("Compliance API >> Fetched target types: " + ttypes);
         return ttypes;
     }
 
@@ -1189,7 +1228,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     public String getScanDate(String policyId, Map<String, String> rulidwithScanDate) {
         return rulidwithScanDate.get(policyId);
     }
-
 
     /*
      * (non-Javadoc)
@@ -1283,12 +1321,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * java.lang.String, java.lang.String)
      */
     public Long getTotalAssetCountForEnvironment(String assetGroup, String application, String environment,
-            String targetType) {
+                                                 String targetType) {
         AssetCount totalAssets = assetServiceClient.getTotalAssetsCountByEnvironment(assetGroup, application,
                 targetType);
         AssetCountData data = totalAssets.getData();
         AssetCountByAppEnvDTO[] assetcount = data.getAssetcount();
-        Long totalAssetsCount = 0l;
+        Long totalAssetsCount = 0L;
         for (AssetCountByAppEnvDTO assetCount_Count : assetcount) {
             if (assetCount_Count.getApplication().equals(application)) {
                 for (AssetCountEnvCount envCount_Count : assetCount_Count.getEnvironments()) {
@@ -1309,7 +1347,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * java.lang.String, java.lang.String)
      */
     public JsonArray getPolicyDetailsByEnvironmentFromES(String assetGroup, String policyId, String application,
-            String searchText, String targetType) throws DataException {
+                                                         String searchText, String targetType) throws DataException {
         String responseJson = null;
         JsonParser jsonParser;
         JsonObject resultJson;
@@ -1383,8 +1421,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * Gets the events processed from es.
      *
      * @return the events processed from es
-     * @throws Exception
-     *                   the exception
+     * @throws Exception the exception
      */
     public JsonArray getEventsProcessedFromEs() throws Exception {
         return heimdallElasticSearchRepository.getEventsProcessed();
@@ -1397,8 +1434,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * getPolicyDescriptionFromDb(java.lang.String)
      */
     public List<Map<String, Object>> getPolicyDescriptionFromDb(String policyId) throws DataException {
-    	String policyDescQuery = "SELECT policyDisplayName,resolutionUrl,resolution,policyDesc, targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE status = 'ENABLED' AND policyId ='"
-    	        + policyId + "'";
+        String policyDescQuery = "SELECT policyDisplayName,resolutionUrl,resolution,policyDesc, targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE status = 'ENABLED' AND policyId ='"
+                + policyId + "'";
         return rdsepository.getDataFromPacman(policyDescQuery);
     }
 
@@ -1417,23 +1454,17 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the issue list.
      *
-     * @param issueDetail
-     *                                 the issue detail
-     * @param sourceMap
-     *                                 the source map
-     * @param policyIdwithDisplayNameMap
-     *                                 the policy idwith display name map
-     * @param issueList
-     *                                 the issue list
-     * @param domain
-     *                                 the domain
+     * @param issueDetail                the issue detail
+     * @param sourceMap                  the source map
+     * @param policyIdwithDisplayNameMap the policy idwith display name map
+     * @param issueList                  the issue list
+     * @param domain                     the domain
      * @return the issue list
-     * @throws DataException
-     *                       the data exception
+     * @throws DataException the data exception
      */
     private List<LinkedHashMap<String, Object>> getIssueList(Map<String, Object> issueDetail,
-            Map<String, Object> sourceMap, Map<String, String> policyIdwithDisplayNameMap,
-            List<LinkedHashMap<String, Object>> issueList, String domain) {
+                                                             Map<String, Object> sourceMap, Map<String, String> policyIdwithDisplayNameMap,
+                                                             List<LinkedHashMap<String, Object>> issueList, String domain) {
         Map<String, Object> nonDisplayable = new HashMap<>();
         LinkedHashMap<String, Object> issue = new LinkedHashMap<>();
         if (!Strings.isNullOrEmpty(policyIdwithDisplayNameMap.get(sourceMap.get(POLICYID)))) {
@@ -1468,54 +1499,6 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             issueList.add(issue);
         }
         return issueList;
-    }
-
-    /**
-     * Gets the untagged count.
-     *
-     * @param esUrl
-     *                   the es url
-     * @param assetGroup
-     *                   the asset group
-     * @param policyId
-     *                   the policy id
-     * @param tagsList
-     *                   the tags list
-     * @return the untagged count
-     * @throws Exception
-     *                   the exception
-     */
-    private static int getUntaggedCount(String esUrl, String assetGroup, String policyId, List<String> tagsList)
-            throws Exception {
-        int size = 0;
-        Gson serializer = new GsonBuilder().create();
-        String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"type.keyword\":{\"value\":\"issue\"}}},{\"term\":{\"policyId.keyword\":{\"value\":\""
-                + CATEGORY_TAGGING + "\"}}},{\"term\":{\"issueStatus.keyword\":{\"value\":\"open\"}}}";
-        body = body + ",{\"term\":{\"policyId.keyword\":{\"value\":\"" + policyId + "\"}}}";
-
-        body = body + "]";
-        if (!tagsList.isEmpty()) {
-            body = body + ",\"should\":[";
-
-            for (String tag : tagsList) {
-                body = body + "{\"match_phrase_prefix\":{\"missingTags\":\"" + tag + "\"}},";
-            }
-            body = body.substring(0, body.length() - 1);
-            body = body + "]";
-            body = body + ",\"minimum_should_match\":1";
-        }
-        body = body + "}}}";
-        StringBuilder requestBody = new StringBuilder(body);
-        StringBuilder urlToQueryCountBuffer = new StringBuilder(esUrl).append("/").append(assetGroup).append("/")
-                .append(UNDERSCORE_COUNT);
-        String responseCount = PacHttpUtils.doHttpPost(urlToQueryCountBuffer.toString(), requestBody.toString());
-        Map<String, Object> responseCountMap = (Map<String, Object>) serializer.fromJson(responseCount, Object.class);
-        if (responseCountMap.containsKey(COUNT)) {
-            Double sizeD = (Double) responseCountMap.get(COUNT);
-            size = sizeD.intValue();
-        }
-        return size;
-
     }
 
     /*
@@ -1567,9 +1550,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 } else {
                     String instanceIdSearchQuery = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":{\"value\":\"true\"}}},{\"term\":{\"instanceid.keyword\":{\"value\":\""
                             + kernelVersion.getInstanceId() + "\"}}}]}}}";
-                    StringBuilder urlToQueryinstanceId = new StringBuilder(esUrl).append("/").append("aws_ec2/ec2")
-                            .append("/").append(UNDERSCORE_COUNT);
-                    String instanceDetails = PacHttpUtils.doHttpPost(urlToQueryinstanceId.toString(),
+                    String urlToQueryinstanceId = esUrl + "/" + "aws_ec2/ec2" +
+                            "/" + UNDERSCORE_COUNT;
+                    String instanceDetails = PacHttpUtils.doHttpPost(urlToQueryinstanceId,
                             instanceIdSearchQuery);
                     Gson serializer = new GsonBuilder().create();
                     Map<String, Object> instanceDetailsMap = (Map<String, Object>) serializer.fromJson(instanceDetails,
@@ -1616,8 +1599,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Builds the criteria map.
      *
-     * @param compCriteriaMap
-     *                        the comp criteria map
+     * @param compCriteriaMap the comp criteria map
      * @return the map
      */
     private Map<String, String> buildCriteriaMap(String compCriteriaMap) {
@@ -1642,16 +1624,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Checks if is compliant.
      *
-     * @param version
-     *                                 the version
-     * @param criteriaMapkeys
-     *                                 the criteria mapkeys
-     * @param kernelCriteriaMapDetails
-     *                                 the kernel criteria map details
+     * @param version                  the version
+     * @param criteriaMapkeys          the criteria mapkeys
+     * @param kernelCriteriaMapDetails the kernel criteria map details
      * @return the boolean
      */
     private Boolean isCompliant(String version, Set<String> criteriaMapkeys,
-            Map<String, String> kernelCriteriaMapDetails) {
+                                Map<String, String> kernelCriteriaMapDetails) {
         String criteria = getComplianceCriteriaFor(version, criteriaMapkeys, kernelCriteriaMapDetails);
         if (criteria == null || criteria.equals(StringUtils.EMPTY)) {
             return Boolean.FALSE;
@@ -1663,38 +1642,19 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     /**
      * Gets the compliance criteria for.
      *
-     * @param version
-     *                                 the version
-     * @param criteriaMapkeys
-     *                                 the criteria mapkeys
-     * @param kernelCriteriaMapDetails
-     *                                 the kernel criteria map details
+     * @param version                  the version
+     * @param criteriaMapkeys          the criteria mapkeys
+     * @param kernelCriteriaMapDetails the kernel criteria map details
      * @return the compliance criteria for
      */
     private String getComplianceCriteriaFor(String version, Set<String> criteriaMapkeys,
-            Map<String, String> kernelCriteriaMapDetails) {
+                                            Map<String, String> kernelCriteriaMapDetails) {
         for (String key : criteriaMapkeys) {
             if (version.contains(key)) {
                 return kernelCriteriaMapDetails.get(key);
             }
         }
         return StringUtils.EMPTY;
-    }
-
-    /**
-     * Gets the current quarter criteria key.
-     *
-     * @return the current quarter criteria key
-     */
-    private static String getCurrentQuarterCriteriaKey() {
-        Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int currentQuarter = (month / 3) + 1;
-        return "pacman.kernel.compliance.map".concat(".").concat(String.valueOf(year)).concat(".q")
-                .concat(String.valueOf(currentQuarter));
     }
 
     /*
@@ -1716,7 +1676,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getTaggingByAG(java.lang.String)
      */
@@ -1813,8 +1773,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     issueDetails.put(ISSUE_REASON, source.get("desc").getAsString());
                 } else if (source.has(STATUS_REASON)) {
                     issueDetails.put(ISSUE_REASON, source.get(STATUS_REASON).getAsString());
-                }
-                else {
+                } else {
                     issueDetails.put(ISSUE_REASON, UNABLE_TO_DETERMINE);
                 }
                 if (null != source.get(ISSUE_DETAILS)) {
@@ -1871,13 +1830,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      * java.lang.String)
      */
     public List<Map<String, Object>> getPolicyIdWithDisplayNameWithPolicyCategoryQuery(String targetType,
-            String policyCategory) throws DataException {
-    	String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
+                                                                                       String policyCategory) throws DataException {
+        String policyIdWithDisplayquery = "SELECT policyId, policyDisplayName, targetType, severity, category, autoFixEnabled, autoFixAvailable FROM cf_PolicyTable WHERE STATUS = 'ENABLED' AND targetType IN ("
                 + targetType + ")";
-        if(policyCategory != null && !"".equals(policyCategory)) {
-        	policyIdWithDisplayquery = policyIdWithDisplayquery + " AND `category` = '" + policyCategory + "'";
+        if (policyCategory != null && !"".equals(policyCategory)) {
+            policyIdWithDisplayquery = policyIdWithDisplayquery + " AND `category` = '" + policyCategory + "'";
         }
-        policyIdWithDisplayquery = policyIdWithDisplayquery+" ;";
+        policyIdWithDisplayquery = policyIdWithDisplayquery + " ;";
         try {
             return rdsepository.getDataFromPacman(policyIdWithDisplayquery);
         } catch (Exception e) {
@@ -1910,7 +1869,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getUnpatchedAssetsCount(java.lang.String, java.lang.String)
      */
@@ -1951,7 +1910,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     public Map<String, Long> getPoliciesDistribution(String assetGroup, String domain, List<Object> Policies,
-            String aggsFiltername) throws DataException {
+                                                     String aggsFiltername) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
         Map<String, Object> mustTermsFilter = new HashMap<>();
@@ -2006,7 +1965,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private JsonObject getResopnse(String assetGroup, String apiType, String application, String environment,
-            String resourceType) throws DataException {
+                                   String resourceType) throws DataException {
         StringBuilder urlToQuery = formatURL(assetGroup, resourceType, apiType);
         String responseJson = "";
         try {
@@ -2021,12 +1980,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     public Long getInstanceCountForQualys(String assetGroup, String apiType, String application, String environment,
-            String resourceType) throws DataException {
+                                          String resourceType) throws DataException {
         return getResopnse(assetGroup, apiType, application, environment, resourceType).get(COUNT).getAsLong();
     }
 
     public Map<String, Long> getInstanceCountForQualysByAppsOrEnv(String assetGroup, String apiType, String application,
-            String environment, String resourceType) throws DataException {
+                                                                  String environment, String resourceType) throws DataException {
         Map<String, Long> assetWithTagsMap = new HashMap<>();
         JsonObject resultJson = getResopnse(assetGroup, apiType, application, environment, resourceType);
 
@@ -2043,7 +2002,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private StringBuilder getQueryForQualys(String apiType, String application, String environment,
-            String resourceType) {
+                                            String resourceType) {
         StringBuilder requestBody = new StringBuilder();
 
         if (EC2.equals(resourceType)) {
@@ -2095,8 +2054,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         }
         return urlToQuery;
     }
-    private  String createAuditTrail(String ds, String type, String status, String id) {
-        String date = CommonUtils.getCurrentDateStringWithFormat("UTC","yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+    private String createAuditTrail(String ds, String type, String status, String id) {
+        String date = CommonUtils.getCurrentDateStringWithFormat("UTC", "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Map<String, String> auditTrail = new LinkedHashMap<>();
         auditTrail.put("datasource", ds);
         auditTrail.put("targetType", type);
@@ -2114,10 +2074,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     @Override
-    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup,IssuesException issuesException)
+    public IssueExceptionResponse exemptAndUpdateMultipleIssueDetails(String assetGroup, IssuesException issuesException)
             throws DataException {
         String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
-        StringBuilder builderRequestAudit= new StringBuilder();
+        StringBuilder builderRequestAudit = new StringBuilder();
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
         String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
         String actionTemplateException = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\"} }%n";
@@ -2131,7 +2091,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
-            issueDetails = getMultipleIssueDetails(assetGroup,issueIds, OPEN);
+            issueDetails = getMultipleIssueDetails(assetGroup, issueIds, OPEN);
         } catch (DataException e) {
             logger.error("Error while fetching open issue details ", e);
             issueExceptionResponse.setStatus("Failed");
@@ -2168,10 +2128,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
                     StringBuilder exceptionDoc = new StringBuilder(createESDoc(issueExceptionDetails));
                     if (exceptionDoc != null) {
-                        StringBuilder exceptionTarget = new StringBuilder(String.format(actionTemplateException,
-                                dataSource, "issue_" + issueDetail.get(TARGET_TYPE) + "_exception", routing))
-                                .append(exceptionDoc + "\n");
-                        exceptions.put(id, exceptionTarget.toString());
+                        String exceptionTarget = String.format(actionTemplateException,
+                                dataSource, "issue_" + issueDetail.get(TARGET_TYPE) + "_exception", routing) +
+                                exceptionDoc + "\n";
+                        exceptions.put(id, exceptionTarget);
                     }
 
                     Map<String, Object> issueDocument = Maps.newHashMap();
@@ -2184,7 +2144,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id)+"\n");
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "exempt", id) + "\n");
 
                     }
                     i++;
@@ -2194,7 +2154,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         bulkUpload(auditErrors, builderRequestAudit.toString());
 
                         bulkRequest = new StringBuilder();
-                        builderRequestAudit= new StringBuilder();
+                        builderRequestAudit = new StringBuilder();
                     }
                 } catch (Exception e) {
                     throw new DataException(e);
@@ -2211,10 +2171,11 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
-            failedIssueIds.addAll(revokeException(assetGroup,issueIds));
+            failedIssueIds.addAll(revokeException(assetGroup, issueIds));
+
 
             if (failedIssueIds.isEmpty()) {
-                System.out.println("exception size"+failedIssueIds);
+                System.out.println("exception size" + failedIssueIds);
                 i = 0;
                 for (Map.Entry<String, String> entry : exceptions.entrySet()) {
                     bulkRequest.append(entry.getValue());
@@ -2256,6 +2217,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     }
                 }
             });
+            notificationService.triggerCreateExemptionNotification(issueDetails, failedIssueIds, issuesException);
 
         } else {
             failedIssueIds.addAll(issueIds);
@@ -2273,10 +2235,10 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     @Override
-    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup,List<String> issueIds) throws DataException {
+    public IssueExceptionResponse revokeAndUpdateMultipleIssueDetails(String assetGroup, List<String> issueIds, String revokedBy) throws DataException {
 
         String actionTemplateAudit = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_parent\" : \"%s\" } }%n";
-        StringBuilder builderRequestAudit= new StringBuilder();
+        StringBuilder builderRequestAudit = new StringBuilder();
         String actionTemplateIssue = "{ \"update\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\", \"_parent\" : \"%s\"} }%n";
         IssueExceptionResponse issueExceptionResponse = new IssueExceptionResponse();
 
@@ -2287,7 +2249,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         List<Map<String, Object>> issueDetails = new ArrayList<>();
         try {
-            issueDetails = getMultipleIssueDetails(assetGroup,issueIds, EXEMPTED);
+            issueDetails = getMultipleIssueDetails(assetGroup, issueIds, EXEMPTED);
         } catch (DataException e) {
             logger.error("Error while fetching exempted issue details ", e);
             issueExceptionResponse.setStatus("Failed");
@@ -2322,7 +2284,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                         String _index = dataSource;
                         String _type = targetType + "_audit";
 
-                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id)+"\n");
+                        builderRequestAudit.append(String.format(actionTemplateAudit, _index, _type, id)).append(createAuditTrail(assetGroup, targetType, "revoked", id) + "\n");
 
                     }
                     i++;
@@ -2348,8 +2310,8 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 failedIssueIds.addAll(fetchIdFromErrors(errors));
                 issueIds.removeAll(failedIssueIds);
             }
-
             failedIssueIds.addAll(revokeException(assetGroup,issueIds));
+            notificationService.triggerRevokeExemptionNotification(issueDetails, failedIssueIds, REVOKE_EXEMPTION_SUBJECT,revokedBy);
         } else {
             failedIssueIds.addAll(issueIds);
         }
@@ -2365,7 +2327,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return issueExceptionResponse;
     }
 
-    private List<Map<String, Object>> getMultipleIssueDetails(String assetGroup,final List<String> issueIds, final String status)
+    private List<Map<String, Object>> getMultipleIssueDetails(String assetGroup, final List<String> issueIds, final String status)
             throws DataException {
         Map<String, Object> mustFilter = Maps.newHashMap();
         Map<String, Object> mustFilterTerms = Maps.newHashMap();
@@ -2379,15 +2341,13 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
         try {
             if (mustFilter.isEmpty()) {
-                StringBuilder urlToQuery = new StringBuilder(esUrl).append("/"+assetGroup+"/_search");
+                StringBuilder urlToQuery = new StringBuilder(esUrl).append("/" + assetGroup + "/_search");
                 String responseJson = "";
                 try {
-                    StringBuilder requestBody = new StringBuilder(
-                            "{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"terms\":{\"issueId.keyword\":[");
-                    requestBody.append("\"" + StringUtils.join(issueIds, "\", \"") + "\"");
-                    requestBody.append("]}}]}}}");
+                    String requestBody = "{\"size\":10000,\"query\":{\"bool\":{\"must\":[{\"terms\":{\"issueId.keyword\":[" + "\"" + StringUtils.join(issueIds, "\", \"") + "\"" +
+                            "]}}]}}}";
                     responseJson = PacHttpUtils.doHttpPost(urlToQuery.toString(),
-                            requestBody.toString());
+                            requestBody);
                     elasticSearchRepository.processResponseAndSendTheScrollBack(
                             responseJson, resourceDetList);
                 } catch (Exception e) {
@@ -2403,7 +2363,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         return resourceDetList;
     }
 
-    private List<String> revokeException(String assetGroup,List<String> issueIds) throws DataException {
+    private List<String> revokeException(String assetGroup, List<String> issueIds) throws DataException {
 
         String actionTemplateException = "{ \"index\" : { \"_id\" : \"%s\", \"_index\" : \"%s\", \"_type\" : \"%s\", \"_routing\" : \"%s\"} }%n";
         StringBuilder bulkRequest = new StringBuilder();
@@ -2414,7 +2374,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         List<Map<String, Object>> exceptionDetails = new ArrayList<>();
 
         try {
-            exceptionDetails = getMultipleIssueDetails(assetGroup,issueIds, null);
+            exceptionDetails = getMultipleIssueDetails(assetGroup, issueIds, null);
         } catch (DataException e) {
             logger.error("Error while fetching exemption details ", e);
             failedIssueIds.addAll(issueIds);
@@ -2428,7 +2388,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             int i = 0;
             for (Map<String, Object> exceptionDetail : exceptionDetails) {
                 try {
-                    if (exceptionDetail.get("exceptionEndDate")!=null && sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
+                    if (exceptionDetail.get("exceptionEndDate") != null && sdf.parse(exceptionDetail.get("exceptionEndDate").toString()).after(yesterday())) {
                         String dataSource = "aws_" + exceptionDetail.get(TARGET_TYPE);
                         String targetType = "issue_" + exceptionDetail.get(TARGET_TYPE) + "_exception";
                         String id = String.valueOf(exceptionDetail.get(ES_DOC_ID_KEY));
@@ -2471,17 +2431,17 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
     }
 
     private void bulkUpload(List<String> errors, String bulkRequest) {
-        System.out.println("bulkRequest"+ bulkRequest);
+        System.out.println("bulkRequest" + bulkRequest);
         try {
             Response resp = invokeAPI("POST", "/_bulk?refresh=true", bulkRequest);
             String responseStr = EntityUtils.toString(resp.getEntity());
             if (responseStr.contains("\"errors\":true")) {
                 logger.error(responseStr);
-  errors.add(responseStr);
+                errors.add(responseStr);
             }
         } catch (Exception e) {
             logger.error("Bulk upload failed", e);
-         errors.add(e.getMessage());
+            errors.add(e.getMessage());
         }
     }
 
@@ -2505,7 +2465,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         if (payLoad != null)
             entity = new NStringEntity(payLoad, ContentType.APPLICATION_JSON);
 
-        return getRestClient().performRequest(method, uri, Collections.<String, String>emptyMap(), entity);
+        return getRestClient().performRequest(method, uri, Collections.emptyMap(), entity);
     }
 
     private RestClient getRestClient() {
@@ -2545,7 +2505,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getTotalAssetCountByEnvironment(java.lang.String, java.lang.String,
      * java.lang.String)
@@ -2568,12 +2528,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     /**
      * Function for getting dataSource and target type of an asset group and domain
-     * 
+     *
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
-     *      getDataSourceForTargetTypeForAG(java.lang.String, java.lang.String)
+     * getDataSourceForTargetTypeForAG(java.lang.String, java.lang.String)
      */
     public List<Map<String, String>> getDataSourceForTargetTypeForAG(String assetGroup, String domain,
-            String targetType) {
+                                                                     String targetType) {
 
         List<Map<String, String>> dataSourceForTargetType = new ArrayList<Map<String, String>>();
         AssetApi assetApi = assetServiceClient.getTargetTypeList(assetGroup, domain);
@@ -2598,7 +2558,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getTotalAssetCount(java.lang.String, java.lang.String)
      */
@@ -2630,12 +2590,12 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.tmobile.pacman.api.compliance.repository.ComplianceRepository#
      * getPatchabeAssetsCount(java.lang.String, java.lang.String)
      */
     public Long getPatchabeAssetsCount(String assetGroup, String targetType, String application, String environment,
-            String searchText) throws DataException {
+                                       String searchText) throws DataException {
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = null;
 

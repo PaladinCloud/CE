@@ -9,8 +9,6 @@ import com.tmobile.cso.pacman.aqua.util.Util;
 import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AquaDataImporter {
 
@@ -40,9 +38,6 @@ public abstract class AquaDataImporter {
   /** The api map. */
   Map<String, String> apiMap = null;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AquaDataImporter.class);
-
-
   protected AquaDataImporter() {
     apiMap = new HashMap<String, String>();
     apiMap.put("signIn",
@@ -71,6 +66,7 @@ public abstract class AquaDataImporter {
     JsonObject inputObject = new JsonObject();
     inputObject.addProperty("email", DEFAULT_USER);
     inputObject.addProperty("password", DEFAULT_PASS);
+
     String input = inputObject.toString();
     try {
       String response = HttpUtil.post(tokenUri,input,null , null);

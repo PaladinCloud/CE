@@ -25,21 +25,24 @@
                         </div>
                     </div>
 
+                    <input
+                        type="search"
+                        matInput
+                        [(ngModel)]="searchQuery"
+                        (keyup)="handleSearch($event)"
+                        placeholder="Search"
+                        class="search-bar-cursor"
+                    />
 
-                    <input type="search" matInput [(ngModel)]="searchQuery" (keyup)="handleSearch($event)"
-                        placeholder="Search" class="search-bar-cursor" />
+                    <img
+                        class="padding-12 pointer"
+                        src="/assets/icons/x-circle.svg"
+                        *ngIf="searchQuery || chips?.length"
+                        (click)="clearSearchTextAndFilters()"
+                        matPrefix
+                        alt="Clear search and filters"
+                    />
 
-                    <!-- <div class="search-in-columns" matSuffix>
-                        <mat-form-field>
-                            <mat-select [formControl]="searchInColumns" multiple>
-                                <mat-option class="disabled-option" disabled="true" value="disabled">SEARCH IN</mat-option>
-                                <mat-option (click)="handleSearchInColumnsChange()" *ngFor="let column of whiteListColumns" [value]="column">
-                                {{column}}
-                                </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div> -->
-                    <img class="padding-12 pointer" src="/assets/icons/x-circle.svg" *ngIf="searchQuery.length>0" (click)="clearSearchText()" matPrefix alt="" />
                     <div class="filter-wrapper flex flex-row" [matMenuTriggerFor]="filterModal" (click)="scrollFilterModalToBottom()" [class.isDisabled]="!showFilterBtn">
                         <img style="padding: 0; height: auto;" src="/assets/icons/filters-icon.svg" alt="">
                     </div>
@@ -140,7 +143,7 @@
                             alt=""
                         />
                     </th>
-                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="element[column].isCentered">
+                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="centeredColumns[column]">
                     <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
                         <img class="pointer menu-btn" *ngIf="element[column].menuItems.length>0" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
                         <mat-menu #actionMenu="matMenu">

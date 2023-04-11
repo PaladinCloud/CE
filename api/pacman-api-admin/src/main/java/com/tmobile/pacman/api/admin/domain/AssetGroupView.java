@@ -17,6 +17,7 @@ package com.tmobile.pacman.api.admin.domain;
 
 import java.util.Set;
 
+import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupDetails;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
 
@@ -24,6 +25,65 @@ import com.tmobile.pacman.api.admin.repository.model.AssetGroupTargetDetails;
  * AssetGroupView Domain Class
  */
 public class AssetGroupView {
+
+	private String description;
+	private String type;
+
+	private String createdBy;
+
+	private Long assetCount;
+
+	private String groupType;
+	private Set<AssetGroupCriteriaDetails> criteriaDetails;
+
+	public String getDescription() {
+		return description;
+	}
+
+	public Set<AssetGroupCriteriaDetails> getCriteriaDetails() {
+		return criteriaDetails;
+	}
+
+	public void setCriteriaDetails(Set<AssetGroupCriteriaDetails> criteriaDetails) {
+		this.criteriaDetails = criteriaDetails;
+	}
+
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Long getAssetCount() {
+		return assetCount;
+	}
+
+	public void setAssetCount(Long assetCount) {
+		this.assetCount = assetCount;
+	}
+
+	public String getGroupType() {
+		return groupType;
+	}
+
+	public void setGroupType(String groupType) {
+		this.groupType = groupType;
+	}
 
 	private String groupId;
 	private String groupName;

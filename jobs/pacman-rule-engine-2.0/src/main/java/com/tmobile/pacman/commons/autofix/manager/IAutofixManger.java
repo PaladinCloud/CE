@@ -30,19 +30,13 @@ import com.tmobile.pacman.publisher.impl.ElasticSearchDataPublisher;
 import com.tmobile.pacman.service.ExceptionManager;
 import com.tmobile.pacman.service.ExceptionManagerImpl;
 import com.tmobile.pacman.service.ResourceOwnerService;
-import com.tmobile.pacman.util.CommonUtils;
-import com.tmobile.pacman.util.ESUtils;
-import com.tmobile.pacman.util.MailUtils;
-import com.tmobile.pacman.util.ReflectionUtils;
+import com.tmobile.pacman.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -102,6 +96,8 @@ public interface IAutofixManger {
         Map<String, Object> autoFixStats = new HashMap<>();
         List<AutoFixTransaction> autoFixTrans = new ArrayList<>();
         List<AutoFixTransaction> silentautoFixTrans = new ArrayList<>();
+        List<Map<String,String>> silentFixAnnotations = new ArrayList<>();
+
         Map<String, Object> clientMap = null;
 
         Integer resourcesTaggedCounter = 0;
@@ -251,9 +247,14 @@ public interface IAutofixManger {
                         resourcesTaggedCounter++;
                         // this means this resource was exempted after sending
                         // the violation emails and exempted afterwards
-                        if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE)) 
-                        		&& !MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
-                                exceptionExpiryDate, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, addDetailsToLogTrans, annotation)) {
+//                        if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))
+//                        		&& !MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
+//                                exceptionExpiryDate, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, addDetailsToLogTrans, annotation)) {
+//                            logger.error("unable to send email to {}", resourceOwner);
+//                        }
+
+                        if (!nextStepManager.isSilentFixEnabledForRule(policyParam.get(PacmanSdkConstants.AUTOFIX_POLICY_FIXTYPE))
+                                && !NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EXEMPTED, annotation)) {
                             logger.error("unable to send email to {}", resourceOwner);
                         }
                     }
@@ -297,7 +298,7 @@ public interface IAutofixManger {
                     }
 
                     if (resourceOwner == null || resourceOwner.getEmailId() == null
-                    		||!resourceOwner.getEmailId().contains("@")) { // service
+                            ||!resourceOwner.getEmailId().contains("@")) { // service
                         // account
                         // case, in
                         // this
@@ -326,13 +327,20 @@ public interface IAutofixManger {
 
                 if (AutoFixAction.AUTOFIX_ACTION_EMAIL == autoFixAction
                         && isAccountAllowListedForAutoFix(annotation.get(PacmanSdkConstants.ACCOUNT_ID), policyId, policyParam)) {
-                    long autofixExpiring = nextStepManager.getAutoFixExpirationTimeInHours(policyParam,policyParam.get(PacmanSdkConstants.POLICY_ID), resourceId);
-                	/*ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(Integer.parseInt(CommonUtils.getPropValue(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY
+//                    long autofixExpiring = nextStepManager.getAutoFixExpirationTimeInHours(policyParam,policyParam.get(PacmanSdkConstants.POLICY_ID), resourceId);
+                    /*ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(Integer.parseInt(CommonUtils.getPropValue(PacmanSdkConstants.PAC_AUTO_FIX_DELAY_KEY
                             +"."+ ruleParam.get(PacmanSdkConstants.RULE_ID))));*/
-                    ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(autofixExpiring);
-                    String expiringTime = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    if (!MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
-                            expiringTime, AutoFixAction.AUTOFIX_ACTION_EMAIL, addDetailsToLogTrans, annotation)) {
+//                    ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("America/Los_Angeles")).plusHours(autofixExpiring);
+//                    String expiringTime = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//                    if (!MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId,
+//                            expiringTime, AutoFixAction.AUTOFIX_ACTION_EMAIL, addDetailsToLogTrans, annotation)) {
+//                        String msg = String.format("unable to send email to %s for vulnerable resource %s, hence skipping this pass", resourceOwner.toString(), resourceId);
+//                        logger.error(msg);
+//                        new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.PAC_MONITOR_SLACK_USER), msg);
+//                        continue; // notification was not sent, skip further
+//                        // execution
+//                    }
+                    if (!NotificationUtils.triggerAutoFixNotification(policyParam, AutoFixAction.AUTOFIX_ACTION_EMAIL, annotation)) {
                         String msg = String.format("unable to send email to %s for vulnerable resource %s, hence skipping this pass", resourceOwner.toString(), resourceId);
                         logger.error(msg);
                         new SlackMessageRelay().sendMessage(CommonUtils.getPropValue(PacmanSdkConstants.PAC_MONITOR_SLACK_USER), msg);
@@ -382,8 +390,9 @@ public interface IAutofixManger {
                                 if (null != addDetailsToTransactionLogMethod) {
                                     addDetailsToLogTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
                                 }
-                                MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
-                                        AutoFixAction.AUTOFIX_ACTION_FIX, addDetailsToLogTrans, annotation);
+//                                MailUtils.sendAutoFixNotification(policyParam, resourceOwner, targetType, resourceId, "",
+//                                        AutoFixAction.AUTOFIX_ACTION_FIX, addDetailsToLogTrans, annotation);
+                                NotificationUtils.triggerAutoFixNotification(policyParam,AutoFixAction.AUTOFIX_ACTION_FIX, annotation);
                                 nextStepManager.postFixAction(resourceId, AutoFixAction.AUTOFIX_ACTION_FIX);
                                 try {
                                     if (null == autoFixPlan && !nextStepManager.isSilentFixEnabledForRule(policyId)) {
@@ -406,8 +415,8 @@ public interface IAutofixManger {
                             }
                             if (nextStepManager.isSilentFixEnabledForRule(policyId) && null != addDetailsToTransactionLogMethod) {
                                 silentautoFixTrans.add((AutoFixTransaction) addDetailsToTransactionLogMethod.invoke(fixObject, annotation));
+                                silentFixAnnotations.add(annotation);
                             }
-
                             autoFixCounter++;
                         } catch (Exception e) {
                             logger.error(String.format("unable to execute auto fix for %s  will not fix at this time", resourceId),
@@ -430,8 +439,8 @@ public interface IAutofixManger {
         autoFixPlanManager.releaseResourfes();
         //Silent fix send Digest email
         if (!silentautoFixTrans.isEmpty() && nextStepManager.isSilentFixEnabledForRule(policyId)) {
-
-            MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
+                NotificationUtils.triggerSilentAutofixNotification(silentFixAnnotations,policyParam);
+         //   MailUtils.sendCommonFixNotification(silentautoFixTrans, policyParam, resourceOwner, targetType);
         }
         // publish the transactions here
         // if any transaction exists post it

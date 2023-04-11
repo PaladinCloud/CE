@@ -139,4 +139,21 @@ public interface FilterService {
             String assetGroup, String domain) throws ServiceException;
 
     public List<Map<String, Object>> getFilterForTag(String assetGroup, String tag, String type) throws ServiceException;
+    
+    /**
+     * Gets the Notification Types.
+     *
+     * @return List<Map<String, Object>>
+     * @throws ServiceException the service exception
+     */
+    public List<Map<String, Object>> getNotificationTypes() throws ServiceException;
+    
+    /**
+     * Gets the Notification source.
+     *
+     * @return List<Map<String, Object>>
+     * @throws ServiceException the service exception
+     */
+    public List<Map<String, Object>> getNotificationSource() throws ServiceException;
+
 }

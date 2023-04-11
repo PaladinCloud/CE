@@ -26,13 +26,13 @@ export class CardComponent implements OnInit {
   errorMessage: any;
   widgetWidth2: number;
   @Output() graphIntervalSelected = new EventEmitter<any>();
-  
+
   @ViewChild('menuTrigger') matMenuTrigger: MatMenuTrigger;
   isCustomSelected = false;
   fromDate: Date = new Date(2022, 0, 1);
   toDate: Date = new Date();
   selectedItem = "All time";
-  
+
 
   constructor(
     private errorHandling: ErrorHandlingService,
@@ -44,11 +44,11 @@ export class CardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    
+
   }
 
   ifCustomSelected(){
-    
+
     if(this.selectedItem=="Custom"){
       this.selectedItem = "";
     }
@@ -60,7 +60,7 @@ export class CardComponent implements OnInit {
     }
   }
 
-  
+
 
   handleGraphIntervalSelection = (e) => {
     this.fromDate = new Date(2022, 0, 1);
@@ -93,7 +93,7 @@ export class CardComponent implements OnInit {
         break;
     }
 
-    this.dateIntervalSelected(date, this.toDate); 
+    this.dateIntervalSelected(date, this.toDate);
   }
 
 
@@ -104,8 +104,9 @@ export class CardComponent implements OnInit {
     }
     if(toDate){
       queryParamObj["to"] = toDate;
-    }    
+    }
     this.isCustomSelected = false;
+    this.matMenuTrigger.closeMenu();
     this.graphIntervalSelected.emit(queryParamObj);
   }
 

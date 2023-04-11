@@ -12,7 +12,7 @@ from resources.data.aws_info import AwsAccount, AwsRegion
 from resources.lambda_submit.s3_upload import UploadLambdaSubmitJobZipFile, BATCH_JOB_FILE_NAME
 from resources.pacbot_app.alb import ApplicationLoadBalancer
 from resources.eventbus.custom_event_bus import CloudWatchEventBusaws, CloudWatchEventBusgcp, CloudWatchEventBusazure
-from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details , need_to_deploy_aqua_vulnerability_service
+from resources.pacbot_app.utils import  get_azure_tenants,  get_gcp_project_ids, get_aws_account_details
 import json
 from core.config import Settings
 
@@ -353,7 +353,7 @@ class AquaImageVulnerabilityCollectorEventRule(CloudWatchEventRuleResource):
     name = "aqua-image-vulnerability-collector"
     schedule_expression = "cron(0 0 * * ? *)"
     DEPENDS_ON = [SubmitJobLambdaFunction]
-    PROCESS = need_to_deploy_aqua_vulnerability_service()
+
 
 
 class AquaImageVulnerabilityCollectorLambdaPermission(LambdaPermission):
@@ -362,7 +362,7 @@ class AquaImageVulnerabilityCollectorLambdaPermission(LambdaPermission):
     function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
     principal = "events.amazonaws.com"
     source_arn = AquaImageVulnerabilityCollectorEventRule.get_output_attr('arn')
-    PROCESS = need_to_deploy_aqua_vulnerability_service()
+
 
 
 class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
@@ -376,7 +376,7 @@ class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
         'jobDesc': "Aqua Image Vulnerability Collector",
         'environmentVariables': [
             {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
-            ) + "/config/batch,qualys-enricher/prd/latest"},
+            ) + "/config/batch,aqua-enricher/prd/latest"},
         ],
         'params': [
             {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
@@ -384,7 +384,6 @@ class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
             {'encrypt': False, 'key': "job_hint", 'value': "aqua_image_vulnerability"},
         ]
     })
-    PROCESS = need_to_deploy_aqua_vulnerability_service()
 
 
 

@@ -31,6 +31,22 @@ import { AutorefreshService } from "../../services/autorefresh.service";
 import { DomainTypeObservableService } from "../../../core/services/domain-type-observable.service";
 import { ActivatedRoute, Router } from "@angular/router";
 
+enum ComplianceType {
+    COST = 'cost',
+    OPERATIONS = 'operations',
+    OVERALL = 'overall',
+    SECURITY = 'security',
+    TAGGING = 'tagging',
+}
+
+const complianceTypeOrder = {
+    [ComplianceType.SECURITY]: 1,
+    [ComplianceType.COST]: 2,
+    [ComplianceType.OPERATIONS]: 3,
+    [ComplianceType.TAGGING]: 4,
+    [ComplianceType.OVERALL]: 5,
+};
+
 @Component({
   selector: "app-compliance-overview-trend",
   templateUrl: "./compliance-overview-trend.component.html",
@@ -167,7 +183,7 @@ export class ComplianceOverviewTrendComponent
     } catch (error) {
       this.setError("jsError");
     }
-    
+
     const afterLoad = this;
     if (this.autoRefresh !== undefined) {
       if (this.autoRefresh === true || this.autoRefresh.toString() === "true") {
@@ -206,7 +222,9 @@ export class ComplianceOverviewTrendComponent
           (response) => {
             try {
               this.setDataLoaded();
-              this.graphData = response;
+              this.graphData = response.sort(
+                (a, b) => complianceTypeOrder[a.key] - complianceTypeOrder[b.key],
+              );
               if (
                 this.graphData.constructor.name === "Object" ||
                 this.graphData.length === 0
@@ -260,7 +278,7 @@ export class ComplianceOverviewTrendComponent
   }
 
   ngOnInit() {
-   
+
   }
 
   ngOnDestroy() {

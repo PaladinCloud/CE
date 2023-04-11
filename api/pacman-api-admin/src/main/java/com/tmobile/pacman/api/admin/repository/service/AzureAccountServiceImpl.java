@@ -4,12 +4,13 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretRequest;
-import com.amazonaws.services.secretsmanager.model.DeleteSecretResult;
+import com.amazonaws.services.secretsmanager.model.*;
 import com.microsoft.azure.AzureEnvironment;
+import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
+import com.microsoft.azure.management.Azure;
+import com.microsoft.azure.management.Azure.Authenticated;
+import com.microsoft.azure.management.resources.Subscription;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.commons.Constants;
@@ -33,6 +34,7 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
 
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
+    public static final String SECRET_ALREADY_EXIST_FOR_ACCOUNT = "Secret already exist for account";
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -60,20 +62,33 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             response.setErrorDetails("Missing mandatory parameter- secretData or Tenant Id");
             return response;
         }
+        try {
+            Map<String,Map<String,String>> credsMap = new HashMap<>();
+            Arrays.asList(secretData.split("##")).stream().forEach(cred-> {
+                Map<String,String> credInfoMap = new HashMap<>();
+                Arrays.asList(cred.split(",")).stream().forEach(str-> credInfoMap.put(str.split(":")[0],str.split(":")[1]));
+                credsMap.put(credInfoMap.get("tenant"), credInfoMap);
+            });
 
-        Map<String,Map<String,String>> credsMap = new HashMap<>();
-        Arrays.asList(secretData.split("##")).stream().forEach(cred-> {
-            Map<String,String> credInfoMap = new HashMap<>();
-            Arrays.asList(cred.split(",")).stream().forEach(str-> credInfoMap.put(str.split(":")[0],str.split(":")[1]));
-            credsMap.put(credInfoMap.get("tenant"), credInfoMap);
-        });
+            String clientId = credsMap.get(tenant).get("clientId");
+            String secret = credsMap.get(tenant).get("secretId");
 
-        String clientId = credsMap.get(tenant).get("clientId");
-        String secret = credsMap.get(tenant).get("secretId");
-        ApplicationTokenCredentials applicationCreds = new ApplicationTokenCredentials(clientId, tenant, secret, AzureEnvironment.AZURE);
-        LOGGER.debug("Application creds:{}",applicationCreds);
-        response.setValidationStatus(SUCCESS);
-        response.setMessage("Azure account validation successful");
+            ApplicationTokenCredentials applicationCreds = new ApplicationTokenCredentials(clientId, tenant, secret, AzureEnvironment.AZURE);
+            LOGGER.debug("Application creds:{}", applicationCreds);
+
+            Authenticated azureAuthenticated = Azure.authenticate(applicationCreds);
+
+            LOGGER.debug("Azure authenticated :{}", azureAuthenticated);
+            PagedList<Subscription> subscriptions = azureAuthenticated.subscriptions().list();
+            LOGGER.debug("Subscriptions fetched :{}", subscriptions);
+            response.setValidationStatus(SUCCESS);
+            response.setMessage("Azure account validation successful");
+        }catch (Exception e){
+            LOGGER.error("Tenant Id or secretData missing");
+            response.setValidationStatus(FAILURE);
+            response.setMessage("Account validation failed.");
+            response.setErrorDetails(e.getMessage()!=null?e.getMessage():"Account validation failed.");
+        }
         return response;
     }
 
@@ -85,31 +100,43 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             LOGGER.info("Validation failed due to missing parameters");
             return validateResponse;
         }
-        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
-        String region = System.getenv("REGION");
-
-        AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(region).build();
-
         String tenantId = accountData.getTenantId();
         String tenantName=accountData.getTenantName();
-        CreateSecretRequest createRequest=new CreateSecretRequest()
-                .withName(secretManagerPrefix+"/azure/"+ tenantId).withSecretString(getAzureSecretData(accountData.getTenantSecretData()));
+        validateResponse=createAccountInDb(tenantId,tenantName, Constants.AZURE);
+        if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
+            LOGGER.info("Account already exists");
+            return validateResponse;
+        }
+        try {
+            BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+            String region = System.getenv("REGION");
 
-        CreateSecretResult createResponse = secretClient.createSecret(createRequest);
-        LOGGER.info("Create secret response: {}",createResponse);
-        createAccountInDb(tenantId,tenantName, Constants.AZURE);
+            AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(region).build();
 
-        //update azure enable flag for scheduler job
-        String key="azure.enabled";
-        String value = "true";
-        String application = "job-scheduler";
-        updateConfigProperty(key, value, application);
+            CreateSecretRequest createRequest = new CreateSecretRequest()
+                    .withName(secretManagerPrefix + "/azure/" + tenantId).withSecretString(getAzureSecretData(accountData.getTenantSecretData()));
 
-        validateResponse.setValidationStatus(SUCCESS);
-        validateResponse.setMessage("Account added successfully. Tenant id: "+tenantId);
+            CreateSecretResult createResponse = secretClient.createSecret(createRequest);
+            LOGGER.info("Create secret response: {}", createResponse);
+            //update azure enable flag for scheduler job
+            String key="azure.enabled";
+            String value = "true";
+            String application = "job-scheduler";
+            updateConfigProperty(key, value, application);
+            validateResponse.setValidationStatus(SUCCESS);
+            validateResponse.setMessage("Account added successfully. Tenant id: "+tenantId);
+
+        }catch (ResourceExistsException e){
+            LOGGER.error(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            //Delete the entry from DB
+            deleteAccountFromDB(tenantId);
+        }
         return validateResponse;
     }
 
@@ -161,12 +188,10 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
         LOGGER.info("Delete secret response: {} ",deleteResponse);
 
         //delete entry from db
-        deleteAccountFromDB(tenantId);
+        response=deleteAccountFromDB(tenantId);
 
         response.setAccountId(tenantId);
         response.setType(Constants.AZURE);
-        response.setMessage("Account deleted successfully");
-        response.setValidationStatus(SUCCESS);
         return response;
     }
     private String getAzureSecretData(String secret){

@@ -32,6 +32,10 @@ import org.apache.http.entity.ContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.tmobile.pacman.cloud.dto.NotificationBaseRequest;
+import com.tmobile.pacman.commons.utils.CommonUtils;
+
 
 /**
  * The Class Util.
@@ -179,5 +183,17 @@ public class Util {
             LOGGER.error("Error in getUniqueID",e);
         }
         return "";
+    }
+    
+    public static boolean pushNotificaiton(String url, List<NotificationBaseRequest> notifictionList) {
+    	Gson gson = new Gson();
+    	String json = gson.toJson(notifictionList);
+    	try {
+			CommonUtils.doHttpPost(url, json);
+		} catch (Exception e) {
+			LOGGER.error("Failed in calling notificaiton lambda {}",e);
+			return false;
+		}
+    	return true;
     }
 }
