@@ -502,7 +502,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             properties: "",
             isLink: false
           }
-          if(col.toLowerCase()=="resource id"){
+          if(col.toLowerCase()=="asset id"){
             cellObj = {
               ...cellObj,
               isLink: true
@@ -643,7 +643,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       ) {
         resourceType = this.filterText.resourceType;
       }
-      const resourceID = encodeURIComponent(row["Resource ID"].valueText);
+      const resourceID = encodeURIComponent(row["Asset ID"].valueText);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       // updatedQueryParams["searchValue"] = undefined;
       this.router.navigate([resourceType, resourceID], {
