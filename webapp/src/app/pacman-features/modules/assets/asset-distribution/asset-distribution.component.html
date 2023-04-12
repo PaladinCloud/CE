@@ -11,7 +11,7 @@
         <div class="flex">
             <h2 class="page-header-text">{{ pageTitle }}</h2>
             <h3 class="page-header-subtext">
-                {{ totalAssetTypes }} Asset Types | {{ totalAssetCount }} Assets
+                ({{ totalAssetTypes }} Asset Types | {{ totalAssetCount }} Assets)
             </h3>
         </div>
     </div>
@@ -46,7 +46,7 @@
                             <input
                                 class="search-box"
                                 type="text"
-                                placeholder="Search for keywords"
+                                placeholder="Search Asset Types"
                                 [(ngModel)]="searchText"
                                 [ngModelOptions]="{ standalone: true }"
                             />
@@ -57,7 +57,7 @@
                     <div class="content-header">
                         <div class="column-wrapper-header">
                             <div class="col" (click)="sortAssets('col-1')">
-                                <span class="col-header">Name</span>
+                                <span class="col-header">Asset Type</span>
                                 <img
                                     class="sort-img"
                                     [class.sorted]="isSortedByName"

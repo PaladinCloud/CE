@@ -4,7 +4,7 @@
 }
 
 .chart {
-    padding: 10px 24px;
+    padding: 0 24px;
     width: calc(100% - 76px);
 }
 
@@ -44,7 +44,7 @@
 }
 
 .page-header-subtext {
-    font: var(--text-subtitle-1);
+    font: var(--text-body-1);
     margin-left: 16px;
 }
 
@@ -249,7 +249,7 @@
 }
 
 .slider-content {
-    height: calc(100% - 48px);
+    height: calc(100% - 104px);
 }
 
 ::ng-deep .tooltip-box {

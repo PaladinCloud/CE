@@ -89,22 +89,22 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     colors: ColorOptions[] = [
         {
             from: 0,
-            to: 10,
-            color: '#90CAF9',
-        },
-        {
-            from: 10,
             to: 100,
-            color: '#42A5F5',
+            color: '#90CAF9',
         },
         {
             from: 100,
             to: 1000,
-            color: '#1976D2',
+            color: '#64B5F6',
         },
         {
             from: 1000,
-            to: Number.POSITIVE_INFINITY,
+            to: 10000,
+            color: '#1976D2',
+        },
+        {
+            from: 10000,
+            to: 100000,
             color: '#0D47A1',
         },
     ];
@@ -285,13 +285,12 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                 enabled: true,
                 offsetY: -6,
                 style: {
-                    fontSize: '13%',
+                    fontSize: '10px',
                 },
             },
             plotOptions: {
                 treemap: {
-                    enableShades: true,
-                    shadeIntensity: 0.5,
+                    enableShades: false,
                     distributed: true,
                     colorScale: {
                         ranges: this.colorRanges,
