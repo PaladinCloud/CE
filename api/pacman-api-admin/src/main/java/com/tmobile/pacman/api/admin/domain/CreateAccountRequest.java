@@ -29,5 +29,8 @@ public class CreateAccountRequest {
     private String aquaApiUser;
     private String aquaApiPassword;
 
+    private String tenableAPIUrl;
+    private String tenableAccessKey;
+    private String tenableSecretKey;
 
 }
