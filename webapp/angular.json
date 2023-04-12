@@ -30,12 +30,12 @@
               "src/styles.css",
               "node_modules/offline-js/themes/offline-theme-chrome.css",
               "node_modules/offline-js/themes/offline-language-english.css",
-              "node_modules/ag-grid/dist/styles/ag-grid.css",
-              "node_modules/ag-grid/dist/styles/ag-theme-blue.css"
+              "node_modules/ag-grid-community/styles/ag-grid.min.css",
+              "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css"
             ],
             "scripts": [
               "node_modules/offline-js/offline.js",
-              "node_modules/ag-grid/dist/ag-grid.js"
+              "node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js"
             ]
           },
           "configurations": {
@@ -98,15 +98,15 @@
             "tsConfig": "tsconfig.spec.json",
             "scripts": [
               "node_modules/offline-js/offline.js",
-              "node_modules/ag-grid/dist/ag-grid.js",
+              "node_modules/ag-grid-community/dist/ag-grid-community.min.noStyle.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
             "styles": [
               "src/styles.css",
               "node_modules/offline-js/themes/offline-theme-chrome.css",
               "node_modules/offline-js/themes/offline-language-english.css",
-              "node_modules/ag-grid/dist/styles/ag-grid.css",
-              "node_modules/ag-grid/dist/styles/ag-theme-blue.css"
+              "node_modules/ag-grid-community/styles/ag-grid.min.css",
+              "node_modules/ag-grid-community/styles/ag-theme-material-no-font.min.css"
             ],
             "assets": [
               "src/assets",

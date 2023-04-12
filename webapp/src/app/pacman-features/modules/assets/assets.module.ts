@@ -42,7 +42,7 @@ import { AccessGroupsComponent } from "./../../secondary-components/access-group
 import { HostVulnerabilitiesComponent } from "./../../secondary-components/host-vulnerabilities/host-vulnerabilities.component";
 import { InstalledSoftwaresComponent } from "./../../secondary-components/installed-softwares/installed-softwares.component";
 import { OnpremAssetsComponent } from "./onprem-assets/onprem-assets.component";
-import { AgGridModule } from "ag-grid-angular/main";
+import { AgGridModule } from "ag-grid-angular";
 import { AwsNotificationsComponent } from "./aws-notifications/aws-notifications.component";
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from "@angular/material/card";
@@ -60,7 +60,7 @@ import { MatMenuModule } from "@angular/material/menu";
     AssetsRoutingModule,
     NgApexchartsModule,
     SharedModule,
-    AgGridModule.withComponents([OnpremAssetsComponent]),
+    AgGridModule,
   ],
   declarations: [
     AssetDashboardComponent,

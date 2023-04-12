@@ -21,7 +21,7 @@ describe('AgGridTableComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        AgGridModule.withComponents([AgGridTableComponent]),
+        AgGridModule,
         FormsModule,
       ],
       declarations: [AgGridTableComponent, TitleBurgerHeadComponent],
