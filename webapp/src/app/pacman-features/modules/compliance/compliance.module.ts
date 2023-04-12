@@ -52,7 +52,6 @@ import { StateTableComponent } from "./../../secondary-components/state-table/st
 import { OverallComplianceComponent } from "./../../secondary-components/overall-compliance/overall-compliance.component";
 import { PatchingTrendComponent } from "./../../secondary-components/patching-trend/patching-trend.component";
 import { PatchingGraphComponent } from "./../../secondary-components/patching-graph/patching-graph.component";
-import { HighlightModule } from "ngx-highlight";
 import { CertificateSummaryComponent } from "./../../secondary-components/certificate-summary/certificate-summary.component";
 import { CertificateStageComponent } from "./../../secondary-components/certificate-stage/certificate-stage.component";
 import { ProgressSummaryComponent } from "./../../secondary-components/progress-summary/progress-summary.component";
@@ -129,7 +128,6 @@ import { MatMenuModule } from "@angular/material/menu";
     CommonModule,
     ComplianceRoutingModule,
     SharedModule,
-    HighlightModule,
     AgGridModule,
   ],
   declarations: [

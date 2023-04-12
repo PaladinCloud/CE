@@ -50,7 +50,6 @@
         "moment": "^2.24.0",
         "ng-apexcharts": "^1.7.1",
         "ngx-google-analytics": "^13.0.1",
-        "ngx-highlight": "^0.0.3",
         "ngx-infinite-scroll": "^0.8.3",
         "ngx-json-viewer": "^2.4.0",
         "ngx-select-dropdown": "^2.1.0",
