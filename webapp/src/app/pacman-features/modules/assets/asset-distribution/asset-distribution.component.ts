@@ -95,7 +95,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
         {
             from: 100,
             to: 1000,
-            color: '#64B5F6',
+            color: '#42A5F5',
         },
         {
             from: 1000,
