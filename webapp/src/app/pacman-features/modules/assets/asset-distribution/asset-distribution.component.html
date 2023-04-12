@@ -1,63 +1,101 @@
-<div class="page-header">
-    <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
-        <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbLinks]="breadcrumbLinks" [breadcrumbArray]="breadcrumbArray" [breadcrumbPresent]="pageTitle"></app-breadcrumb>
-    </div>
-    <div class="flex">
-        <!-- <img *ngIf="backButtonRequired" class="arrow-img" (click)="navigateBack()" src="../assets/icons/left-arrow.svg"> -->
-        <h6 class="sub-header-text">{{ pageTitle }}</h6>
-    </div>
-</div>
-<div class="overall-distribution">
-    <div class="distribution-content">
-        <div class="chart" [class.expanded]="!isCollapsed" #widgetContainer>
-            <div>
-                <span> {{totalAssetTypes}} Asset Types | {{totalAssetCount}} Assets</span>
-            </div>
-            <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
-                [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
-                [tooltip]="chartOptions.tooltip">
-            </apx-chart>
+<div class="asset-distribution-container flex flex-start flex-col">
+    <div class="page-header">
+        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+            <app-breadcrumb
+                *ngIf="breadcrumbLinks.length > 0"
+                [breadcrumbLinks]="breadcrumbLinks"
+                [breadcrumbArray]="breadcrumbArray"
+                [breadcrumbPresent]="pageTitle"
+            ></app-breadcrumb>
         </div>
-        <div class="slider" [class.collapsed]="isCollapsed">
-            <div class="slider-header">
-                <span class="asset-header" [class.isCollapsed]="isCollapsed">
-                    Asset Types
-                </span>
-                <img class="slider-img" [class.collapsed]="isCollapsed" src='/assets/icons/slider.svg' (click)="expandAssetTypeList()">
+        <div class="flex">
+            <h2 class="page-header-text">{{ pageTitle }}</h2>
+            <h3 class="page-header-subtext">
+                {{ totalAssetTypes }} Asset Types | {{ totalAssetCount }} Assets
+            </h3>
+        </div>
+    </div>
+    <div class="overall-distribution">
+        <div class="distribution-content">
+            <div class="chart" [class.expanded]="!isCollapsed" #widgetContainer>
+                <apx-chart
+                    [series]="chartOptions.series"
+                    [chart]="chartOptions.chart"
+                    [dataLabels]="chartOptions.dataLabels"
+                    [plotOptions]="chartOptions.plotOptions"
+                    [tooltip]="chartOptions.tooltip"
+                >
+                </apx-chart>
             </div>
-            <div class="search-container" [class.isCollapsed]="isCollapsed">
-                <div class="search-bar">
-                    <div class="header-search-content-container">
-                        <img _ngcontent-c3="" class="search-icon" alt="" src="/assets/icons/header-search.svg">
-                        <input class="search-box" type="text" placeholder="Search for keywords" [(ngModel)]="searchText"
-                            [ngModelOptions]="{standalone: true}">
+            <div class="slider" [class.collapsed]="isCollapsed">
+                <div class="slider-header">
+                    <span class="asset-header" [class.isCollapsed]="isCollapsed">
+                        Asset Types
+                    </span>
+                    <img
+                        class="slider-img"
+                        [class.collapsed]="isCollapsed"
+                        src="/assets/icons/slider.svg"
+                        (click)="expandAssetTypeList()"
+                    />
+                </div>
+                <div class="search-container" [class.isCollapsed]="isCollapsed">
+                    <div class="search-bar">
+                        <div class="header-search-content-container">
+                            <img class="search-icon" alt="" src="/assets/icons/header-search.svg" />
+                            <input
+                                class="search-box"
+                                type="text"
+                                placeholder="Search for keywords"
+                                [(ngModel)]="searchText"
+                                [ngModelOptions]="{ standalone: true }"
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="slider-content" [class.isCollapsed]="isCollapsed">
-                <div class="content-header">
-                    <div class="column-wrapper-header">
-                        <div class="col" (click)="sortAssets('col-1')">
-                            <span class="col-header">Name</span>
-                            <img class="sort-img" [class.sorted] = "isSortedByName" src='/assets/icons/arrow-down-2.svg'>
-                        </div>
-                        <div class="col" (click)="sortAssets('col-2')"  >
-                            <span class="col-header">Count</span>
-                            <img class="sort-img" [class.sorted] = "isSortedByAssetNo" src='/assets/icons/arrow-down-2.svg'>
+                <div class="slider-content" [class.isCollapsed]="isCollapsed">
+                    <div class="content-header">
+                        <div class="column-wrapper-header">
+                            <div class="col" (click)="sortAssets('col-1')">
+                                <span class="col-header">Name</span>
+                                <img
+                                    class="sort-img"
+                                    [class.sorted]="isSortedByName"
+                                    src="/assets/icons/arrow-down-2.svg"
+                                />
+                            </div>
+                            <div class="col" (click)="sortAssets('col-2')">
+                                <span class="col-header">Count</span>
+                                <img
+                                    class="sort-img"
+                                    [class.sorted]="isSortedByAssetNo"
+                                    src="/assets/icons/arrow-down-2.svg"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="asset-list">
-                    <div class="column-wrapper"
-                        *ngFor="let asset of filteredResources | searchFilter: searchText:'displayName'"
-                        (click)="redirect(asset)">
-                        <div class="col">
-                            <img class="asset-img" src='/assets/icons/{{asset.provider}}-color.svg'
-                                (click)="expandAsset()">
-                            <span class="asset-name" title="{{asset.displayName}}">{{asset.displayName}}</span>
-                        </div>
-                        <div class="col">
-                            <span class="asset-count">{{asset.count}}</span>
+                    <div class="asset-list">
+                        <div
+                            class="column-wrapper"
+                            *ngFor="
+                                let asset of filteredResources
+                                    | searchFilter : searchText : 'displayName'
+                            "
+                            (click)="redirect(asset)"
+                        >
+                            <div class="col">
+                                <img
+                                    class="asset-img"
+                                    src="/assets/icons/{{ asset.provider }}-color.svg"
+                                    (click)="expandAsset()"
+                                />
+                                <span class="asset-name" [title]="asset.displayName">
+                                    {{ asset.displayName }}
+                                </span>
+                            </div>
+                            <div class="col">
+                                <span class="asset-count">{{ asset.count }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
