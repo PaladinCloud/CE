@@ -61,6 +61,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import { FetchResourcesService } from "../pacman-features/services/fetch-resources.service";
 import { TokenResolverService } from "../resolver/token-resolver.service";
 import { NotificationsModule } from "../pacman-features/modules/notifications/notifications.module";
+import { CdkTreeModule } from '@angular/cdk/tree';
+
 @NgModule({
   imports: [
     MatIconModule,
@@ -77,6 +79,7 @@ import { NotificationsModule } from "../pacman-features/modules/notifications/no
     OmnisearchModule,
     AdminModule,
     TreeModule,
+    CdkTreeModule
   ],
   declarations: [
     ContextualMenuComponent,

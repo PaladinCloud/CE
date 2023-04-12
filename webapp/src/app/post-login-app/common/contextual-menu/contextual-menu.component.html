@@ -17,7 +17,7 @@
     <div class="asset-switcher-container">
         <app-asset-switcher [isExpanded]="expanded"></app-asset-switcher>
     </div>
-    <div class="tree-component">
+    <!-- <div class="tree-component">
         <tree-root [nodes]="nodes" class="tree" #treeMenu>
             <ng-template #treeNodeWrapperTemplate let-node let-index="index">
                 <div *ngIf="hasRequiredPermission(node)">
@@ -73,7 +73,57 @@
                 </div>
             </ng-template>
         </tree-root>
-    </div>
+    </div> -->
+    <nav>
+        <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+            <!-- PARENT NODE -->
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node">
+                <div class="tree-item flex flex-align-center">
+                    <img
+                        *ngIf="node.image"
+                        class="node-img"
+                        src="/assets/icons/{{ node.image }}.svg"
+                        alt=""
+                    />
+                    <span>
+                        {{ node.name }}
+                    </span>
+                </div>
+            </cdk-nested-tree-node>
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: isChild">
+                <div class="tree-child-item">
+                    <span>
+                        {{ node.name }}
+                    </span>
+                </div>
+            </cdk-nested-tree-node>
+            <!--./PARENT NODE -->
+
+            <!-- PARENT NODE WITH CHILDREN -->
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild">
+                <div class="tree-item flex flex flex-align-center" cdkTreeNodeToggle>
+                    <img
+                        *ngIf="node.image"
+                        class="node-img"
+                        src="/assets/icons/{{ node.image }}.svg"
+                        alt=""
+                    />
+                    <span>
+                        {{ node.name }}
+                    </span>
+                    <mat-icon class="tree-expand-icon">
+                        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                    </mat-icon>
+                </div>
+                <!-- CHILD NODES -->
+                <div [hidden]="!treeControl.isExpanded(node)">
+                    <ng-container *cdkTreeNodeOutlet></ng-container>
+                </div>
+                <!--./CHILD NODES -->
+            </cdk-nested-tree-node>
+            <!--./PARENT NODE WITH CHILDREN -->
+        </cdk-tree>
+    </nav>
     <div
         class="know-your-app-wrapper"
         [queryParams]="agAndDomain"
