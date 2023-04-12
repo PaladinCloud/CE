@@ -12,6 +12,8 @@
  * limitations under the License.
  */
 
+import { ArrayDataSource } from '@angular/cdk/collections';
+import { NestedTreeControl } from '@angular/cdk/tree';
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TreeComponent, TreeNode } from '@circlon/angular-tree-component';
@@ -26,7 +28,7 @@ import { CommonResponseService } from 'src/app/shared/services/common-response.s
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { environment } from 'src/environments/environment';
-import { MENU_NODES } from './contextual-menu-nodes';
+import { MenuItem, MenuItemChild, MENU_NODES } from './contextual-menu-nodes';
 
 @Component({
     selector: 'app-contextual-menu',
@@ -37,6 +39,8 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
     @Input() haveAdminPageAccess: boolean;
     @Input() expanded: boolean;
     @ViewChild('treeMenu') tree: TreeComponent;
+    treeControl = new NestedTreeControl<MenuItem>((node) => node.children);
+    dataSource = new ArrayDataSource(MENU_NODES);
 
     currentParentId = '';
     currentNodeId = '';
@@ -108,6 +112,7 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
 
     ngAfterViewInit() {
         this.selectCurrentNode();
+        console.log(this.treeControl.dataNodes, this.treeControl.getDescendants(this.nodes[2]));
     }
 
     private selectCurrentNode() {
@@ -196,6 +201,14 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
             });
         }
         return provider;
+    }
+
+    hasChild(_: number, node: MenuItem) {
+        return node.children?.length > 0;
+    }
+
+    isChild(_: number, node: MenuItemChild) {
+        return !!node.parent;
     }
 
     subscribeForThemeChange() {
