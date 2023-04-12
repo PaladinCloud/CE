@@ -36,7 +36,7 @@ describe('PolicyViolationsListComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientTestingModule,
-        AgGridModule.withComponents([PolicyViolationsListComponent]),
+        AgGridModule,
         FormsModule,
         RouterTestingModule,
       ],

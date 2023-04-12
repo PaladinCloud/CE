@@ -88,7 +88,7 @@ import { PatchingSponsorComponent } from "./../../secondary-components/patching-
 import { PatchingSnapshotComponent } from "./../../secondary-components/patching-snapshot/patching-snapshot.component";
 import { PatchingProjectionsComponent } from "./patching-projections/patching-projections.component";
 import { VulnerabilitySummaryTableComponent } from "./../../secondary-components/vulnerability-summary-table/vulnerability-summary-table.component";
-import { AgGridModule } from "ag-grid-angular/main";
+import { AgGridModule } from "ag-grid-angular";
 import { DigitalDevDashboardComponent } from "./digital-dev-dashboard/digital-dev-dashboard.component";
 import { PullRequestLineMetricsComponent } from "./../../secondary-components/pull-request-line-metrics/pull-request-line-metrics.component";
 import { DigitalApplicationDistributionComponent } from "./../../secondary-components/digital-application-distribution/digital-application-distribution.component";
@@ -130,13 +130,7 @@ import { MatMenuModule } from "@angular/material/menu";
     ComplianceRoutingModule,
     SharedModule,
     HighlightModule,
-    AgGridModule.withComponents([
-      PatchingSnapshotComponent,
-      PatchingSponsorComponent,
-      VulnerabilitySummaryTableComponent,
-      DevPullRequestApplicationsComponent,
-      DevStaleBranchApplicationsComponent,
-    ]),
+    AgGridModule,
   ],
   declarations: [
     ProgressBarChartComponent,

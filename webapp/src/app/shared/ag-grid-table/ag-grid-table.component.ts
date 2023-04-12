@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, OnChanges, EventEmitter, SimpleChanges } from '@angular/core';
-import { GridOptions } from 'ag-grid';
+import { GridOptions } from 'ag-grid-community';
 import { RefactorFieldsService } from '../services/refactor-fields.service';
 import { LoggerService } from '../services/logger.service';
 
