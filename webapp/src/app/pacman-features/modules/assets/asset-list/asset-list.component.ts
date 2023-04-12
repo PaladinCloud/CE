@@ -73,7 +73,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Resource ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
+  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
   columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
