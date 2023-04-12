@@ -2,22 +2,27 @@
     <div class="tile-wrapper flex flex-col gap-16">
         <div class="tile-upper-container flex flex-row gap-16">
             <div class="tile-content flex flex-col gap-8">
-                <div class="tile-title capitalize">{{tile.mainContent.title}}</div>
+                <div class="tile-title capitalize">{{ tile.mainContent.title }}</div>
                 <div class="tile-count" (click)="redirectTo(tile.mainContent.title)">
-                    <app-text-with-icon [text]="tile.mainContent.count" textVariant="headline-3 primary-400" postImagePath="/assets/icons/Path.svg" gap=12.5></app-text-with-icon>
+                    <app-text-with-icon
+                        [text]="tile.mainContent.count"
+                        textVariant="headline-3 primary-400"
+                        postImagePath="/assets/icons/Path.svg"
+                        gap="12.5"
+                    ></app-text-with-icon>
                 </div>
             </div>
             <div class="tile-img" *ngIf="showIcon">
                 <div class="tile-img-wrapper">
-                    <img src="/assets/icons/{{tile.mainContent.image}}.svg" alt="" >
+                    <img src="/assets/icons/{{ tile.mainContent.image }}.svg" alt="" />
                 </div>
             </div>
         </div>
         <div class="tile-lower-container">
             <div class="tile-details-wrapper flex flex-row">
-                <div class="flex flex-col tile-details gap-8" *ngFor="let data of tile.subContent">
-                    <div class="name">{{ data.title }}</div>
-                    <div class="count">{{data.count}}</div>
+                <div class="flex flex-col tile-details gap-8">
+                    <div class="name">{{ tile.subContent.title }}</div>
+                    <div class="count">{{ tile.subContent.count }}</div>
                 </div>
             </div>
         </div>

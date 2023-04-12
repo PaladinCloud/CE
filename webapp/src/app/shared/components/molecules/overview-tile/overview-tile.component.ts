@@ -1,25 +1,33 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
+export interface OverviewTile {
+    mainContent: {
+        count: number;
+        image: string;
+        title: string;
+    };
+    subContent: {
+        count: number;
+        title: string;
+    };
+}
+
 @Component({
-  selector: 'app-overview-tile',
-  templateUrl: './overview-tile.component.html',
-  styleUrls: ['./overview-tile.component.css']
+    selector: 'app-overview-tile',
+    templateUrl: './overview-tile.component.html',
+    styleUrls: ['./overview-tile.component.css'],
 })
 export class OverviewTileComponent implements OnInit {
+    @Input() tile: OverviewTile;
+    @Input() showIcon = true;
 
-  @Input() tile;
-  @Input() showIcon = true;
+    @Output() navigateTo = new EventEmitter<string>();
 
-  @Output() navigateTo = new EventEmitter<any>();
+    constructor() {}
 
-  constructor() { }
+    ngOnInit(): void {}
 
-  ngOnInit(): void {
-    
-  }
-
-  redirectTo(tile){
-    this.navigateTo.emit(tile);
-  }
-
+    redirectTo(title: string) {
+        this.navigateTo.emit(title);
+    }
 }
