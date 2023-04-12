@@ -79,7 +79,7 @@ public class AccountsController {
     }
     @ApiOperation(httpMethod = "POST", value = "API to validate account configuration", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/validate", produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> vcalidateAccount(@RequestBody final CreateAccountRequest accountDetails){
+    public ResponseEntity<Object> validateAccount(@RequestBody final CreateAccountRequest accountDetails){
         try{
             AccountsService accountsService= AccountFactory.getService(accountDetails.getPlatform());
             return ResponseUtils.buildSucessResponse(accountsService.validate(accountDetails));

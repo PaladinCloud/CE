@@ -365,8 +365,9 @@ public interface Constants {
     String ASSET_DETAILS_UI_PATH  =  "#pl#assets#asset-list#".replace("#","/");
 
     String DATA_SOURCE_KEY = "pac_ds";
+    String TENABLE = "tenable";
 
-    enum NotificationTypes {
+  enum NotificationTypes {
         @SerializedName("exemptions")
         EXEMPTIONS("Exemptions"),
         @SerializedName("violations")
