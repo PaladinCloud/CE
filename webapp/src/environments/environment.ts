@@ -13,7 +13,7 @@
  */
 
 export const environment = {
-    production: true,
+    production: false,
     base: '{{baseUrl}}',
     envName: 'dev',
     version: '2.2.0',
