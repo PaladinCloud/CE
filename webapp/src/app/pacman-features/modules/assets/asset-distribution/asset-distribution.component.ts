@@ -279,6 +279,9 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                         const selectedTargetType = this.awsResources[this.dataPointIndex];
                         this.redirect(selectedTargetType);
                     },
+                    dataPointMouseEnter: (event) => {
+                        event.target.style.cursor = 'pointer';
+                    },
                 },
             },
             dataLabels: {
