@@ -79,7 +79,7 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage("Tenable validation Failed");
         } catch (IOException e) {
-            LOGGER.error("Failed to validate the tenable account "+e.getMessage());
+            LOGGER.error("Failed to validate the tenable account ",e.getMessage());
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage("Tenable validation Failed: "+e.getMessage());
         }
