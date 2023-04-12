@@ -26,9 +26,14 @@ class ApplicationLoadBalancer(LoadBalancerResource):
     def get_pacbot_domain_url(cls):
         pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
         pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
-
         return "%s://%s" % (Settings.get('ALB_PROTOCOL', "HTTP").lower(), pacbot_domain)
-
+    
+    @classmethod
+    def get_pacbot_domain_url_cognito(cls):
+        pacbot_domain = Settings.get('PALADINCLOUD_DOMAIN', None)
+        pacbot_domain = pacbot_domain if pacbot_domain else cls.get_output_attr('dns_name')
+        return "%s://%s" % ('https', pacbot_domain)
+    
     @classmethod
     def get_api_base_url(cls):
         # pacbot_domain = cls.get_output_attr('dns_name')

@@ -103,8 +103,8 @@ class AppCLient(UserPoolClientResources):
     allowed_oauth_flows_user_pool_client = True
     supported_identity_providers = [provider]
     allowed_oauth_scopes = ["email", "openid","profile"]
-    callback_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/callback"]
-    logout_urls = [ApplicationLoadBalancer.get_pacbot_domain_url() + "/home"]
+    callback_urls = [ApplicationLoadBalancer.get_pacbot_domain_url_cognito() + "/callback"]
+    logout_urls = [ApplicationLoadBalancer.get_pacbot_domain_url_cognito() + "/home"]
     write_attributes = ['email', 'family_name', 'gender', 'given_name', 'name','custom:defaultAssetGroup', 'custom:userRole']
     read_attributes = ['address', 'birthdate','custom:defaultAssetGroup', 'custom:userRole', 'email', 'email_verified', 'family_name', 'gender', 'given_name', 'locale', 'middle_name', 'name', 'nickname', 'phone_number' ,'phone_number_verified', 'picture' ,'preferred_username', 'profile' ,'updated_at' ,'website' ,'zoneinfo']
     allowed_oauth_flows = ["code", "implicit"]
