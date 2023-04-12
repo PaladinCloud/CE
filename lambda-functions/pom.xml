@@ -42,6 +42,9 @@
 
 	<modules>
 		<module>notify-event</module>
+		<module>invokeNotificationsApi</module>
+		<module>templateFormatterService</module>
+		<module>receiveNotificationRequest</module>
     </modules>
 
 </project>

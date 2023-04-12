@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+.a {
+  font-family: Courier, Arial;
+}
+
+.leftWidth {
+	width: 150px;
+}
+
+.b {
+  font-family: Calibri, Verdana;
+  font-size: 15px;
+}
+
+td {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  padding-top :10px;
+  padding-bottom : 10px;
+  padding-left : 10px;
+}
+
+table {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 500px;
+}
+
+a {
+text-decoration : none;
+}
+</style>
+</head>
+<body>
+
+<br>
+
+<div class="b">Exemption is revoked for violation with id <a href="${issueIdLink}">"${issueId}"</a>.</div>
+
+<br><br>
+
+<table style="width:500px">
+    <tr>
+        <td class="a leftWidth">Resource ID</td>
+        <td><a href="${resourceIdLink}">${resourceId}</a></td>
+    </tr>
+    <tr>
+        <td class="a">Policy Name</td>
+        <td><a href="${policyNameLink}">${policyName}</a></td>
+    </tr>
+    <tr>
+        <td class="a">Revoked By</td>
+        <td>${createdBy}</td>
+    </tr>
+</table>
+
+</body>
+</html>
