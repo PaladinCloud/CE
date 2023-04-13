@@ -453,7 +453,7 @@ CREATE TABLE IF NOT EXISTS  cf_Accounts(
 );
 /* Insert one account */
 
-insert ignore into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''));
+insert ignore into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),'system','dateTime');
 /* Add columns createdby and createdTime */
 ALTER TABLE cf_Accounts
 ADD column  createdBy varchar(255) NULL DEFAULT 'userName' after platform,
