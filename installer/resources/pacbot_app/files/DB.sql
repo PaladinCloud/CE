@@ -452,9 +452,40 @@ CREATE TABLE IF NOT EXISTS  cf_Accounts(
     PRIMARY KEY(accountId)
 );
 /* Add columns createdby and createdTime */
-ALTER TABLE cf_Accounts
-ADD column  createdBy varchar(255) NULL DEFAULT 'userName' after platform,
-ADD column createdTime varchar(500) NULL DEFAULT 'dateTime' after createdBy;
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists $$
+CREATE PROCEDURE alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists()
+BEGIN
+IF NOT EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_Accounts'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'createdBy')  THEN
+
+
+
+ ALTER TABLE `cf_Accounts` ADD `createdBy` varchar(150) COLLATE utf8_bin DEFAULT 'userName';
+
+
+
+END IF;
+IF NOT EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_Accounts'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'createdTime')  THEN
+
+
+
+ ALTER TABLE `cf_Accounts` ADD `createdTime` varchar(255) COLLATE utf8_bin DEFAULT 'dateTime';
+
+
+
+END IF;
+END $$
+DELIMITER ;
+CALL alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists();
+
 
 /* Insert one account */
 
