@@ -45,7 +45,7 @@ export class AssetDashboardComponent implements OnInit, OnDestroy {
 
     card = {
         id: 3,
-        header: 'Asset Graph',
+        header: 'Asset Trend',
     };
 
     tiles: OverviewTile[] = [
