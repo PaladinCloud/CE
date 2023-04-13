@@ -19,7 +19,6 @@ export interface OverviewTile {
 })
 export class OverviewTileComponent implements OnInit {
     @Input() tile: OverviewTile;
-    @Input() showIcon = true;
 
     @Output() navigateTo = new EventEmitter<string>();
 
