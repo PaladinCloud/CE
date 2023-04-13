@@ -6,16 +6,16 @@
 }
 
 .asset-dashboard-wrapper {
-  border-radius: var(--border-radius);
-  width: 100%;
-  height: 100%;
-  gap: 20px;
+    border-radius: var(--border-radius);
+    width: 100%;
+    height: 100%;
+    gap: 20px;
 }
 
-.type-count-container{
-    gap: 18px;
+.type-count-container {
+    gap: 20px;
 }
 
 .asset-summary-card {
-  flex: 1;
+    flex: 1;
 }
