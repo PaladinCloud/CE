@@ -2856,10 +2856,10 @@ DELETE IGNORE FROM pac_config_properties where cfkey in ('aqua_client_domain_url
 DELETE IGNORE FROM pac_config_properties where cfkey in ('notification.lambda.function.url','notification.topic.arn','notification.email.topic.arn','notification.to.emailid');
 
 
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.lambda.function.url','concat(@NOTIFICATION_FUNCTION_URL,'')','application','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.topic.arn','concat(@TOPIC_ARN,'')','application','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.email.topic.arn','concat(@EMAIL_TOPIC_ARN,'')','application','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.to.emailid','concat(@NOTIFICATION_EMAIL_ID,'')','application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.lambda.function.url',concat(@NOTIFICATION_FUNCTION_URL,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.topic.arn',concat(@TOPIC_ARN,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.email.topic.arn',concat(@EMAIL_TOPIC_ARN,''),'application','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.to.emailid',concat(@NOTIFICATION_EMAIL_ID,''),'application','prd','latest',NULL,NULL,NULL,NULL);
 
 INSERT IGNORE INTO pac_config_properties(`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('apiauthinfo',REPLACE(TO_BASE64(concat(@API_CLIENT_ID,':',@API_SCERET_ID)),'\n',''),'application','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('logging.config','classpath:spring-logback.xml','application','prd','latest',NULL,NULL,NULL,NULL);
