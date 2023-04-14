@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+.a {
+  font-family: Courier, Arial;
+  font-weight: bold;
+}
+
+.leftWidth {
+	width: 150px;
+}
+
+.b {
+  font-family: Calibri, Verdana;
+  font-size: 15px;
+}
+
+td {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  padding-top :10px;
+  padding-bottom : 10px;
+  padding-left : 10px;
+}
+
+table {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 500px;
+}
+
+a {
+text-decoration : none;
+}
+</style>
+</head>
+<body>
+
+<br>
+
+<div class="b">Sticky Exception is created with name "${exceptionName}" for the below asset group and policies.</div>
+
+<br><br>
+
+<table style="width:500px">
+    <tr>
+        <td class="a">Asset Group</td>
+        <td>${assetGroup}</td>
+    </tr>
+    <tr>
+        <td class="a">Exception Reason</td>
+        <td>${exceptionReason}</td>
+    </tr>
+    <tr>
+        <td class="a">Exception Expiration Date</td>
+        <td>${expiringOn}</td>
+    </tr>
+    <tr>
+        <td class="a">Policy Names</td>
+        <td>${policyNames}</td>
+    </tr>
+</table>
+
+</body>
+</html>

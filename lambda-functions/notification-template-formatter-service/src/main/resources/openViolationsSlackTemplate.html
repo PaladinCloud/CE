@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+table , tr {
+  border: none;
+  border-collapse: collapse;
+  width: 500px;
+}
+
+tr {
+height : 100px;
+}
+
+a {
+text-decoration : none;
+}
+
+.leftWidth {
+	width: 500px;
+}
+
+.heading {
+  font-family: Courier, Arial;
+}
+
+.content {
+  font-family: Calibri, Verdana;
+  font-size: 15px;
+}
+
+</style>
+</head>
+<body>
+
+
+<div class="content">Policy ID <a href="${policyNameLink}">${policyName}</a> got violated.</div>
+
+<br><br>
+
+<table style="width:800px">
+    <tr>
+        <td class="a leftWidth"><div class="heading">Summary</div>
+            <div class="content">Policy ID <a href="${policyNameLink}">${policyName}</a> got violated.</div></td>
+        <td><div class="heading">Resource ID</div>
+            <div class="content"><a href="${resourceIdLink}">${resourceId}</a></div></td>
+    </tr>
+
+    <tr>
+        <td class="a"><div class="heading">Description</div>
+            <div class="content">${description}</div></td>
+        <td><div class="heading">Scan Time</div>
+            <div class="content">${scanTime}</div></td>
+    </tr>
+
+</table>
+
+
+<br>
+</body>
+</html>
+
