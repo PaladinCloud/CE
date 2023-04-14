@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ComponentScan({"com.tmobile.pacbot.gcp.inventory","com.tmobile.pacman.commons.database"})
+@ComponentScan({"com.tmobile.pacbot.gcp.inventory","com.tmobile.pacman.commons.database","com.tmobile.pacman.commons.secrets"})
 public class GCPDiscoveryApplication {
 
 	public static Map<String, Object> collect(String[] args) {

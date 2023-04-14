@@ -10,11 +10,7 @@ public class CreateAccountRequest {
     private String roleName;
     private String projectId;
     private String projectName;
-    private Long projectNumber;
-    private String location;
-    private String workloadIdentityProviderId;
-    private String getWorkloadIdentityPoolId;
-    private String serviceAccountEmail;
+    private String secretData;
 
     private String tenantId;
     private String tenantName;

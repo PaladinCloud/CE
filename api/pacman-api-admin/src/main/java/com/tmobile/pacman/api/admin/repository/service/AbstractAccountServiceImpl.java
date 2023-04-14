@@ -29,6 +29,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     public static final String FAILURE = "Failure";
     public static final String SUCCESS = "Success";
     public static final String SECRET_ALREADY_EXIST_FOR_ACCOUNT = "Secret already exist for account";
+    public static final String PALADINCLOUD_RO = "PALADINCLOUD_RO";
 
     private static final Logger logger=LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
     @Override
@@ -40,6 +41,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             return convertToMap(accountsRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, columnName)), searchTerm.toLowerCase()));
         }
     }
+
     private AccountList convertToMap(Page<AccountDetails> entities) {
         AccountList accountList=new AccountList();
         List accountDetailsList= entities.getContent();
@@ -82,7 +84,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
             response.setMessage("Account deleted successfully");
             response.setValidationStatus(SUCCESS);
         }catch (EmptyResultDataAccessException exception){
-            logger.error("Error in deleting account:{}",exception);
+            logger.error("Error in deleting account: {}",exception);
             response.setValidationStatus(FAILURE);
             response.setErrorDetails("Account doesn't exists");
             response.setMessage("Account deletion failed");
@@ -127,7 +129,10 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
         configPropertyService.addUpdateProperties(configPropertyRequest, "", "",
                 AdminUtils.getFormatedStringDate(DATE_FORMAT, new Date()), false);
     }
-
+    public String getSecretData(String secret){
+        String jsonTemplate="{\"secretdata\": \"%s\"}";
+        return String.format(jsonTemplate,secret);
+    }
 
 
 

@@ -38,7 +38,7 @@ public class AzureCredentialProvider {
 	String baseAccount=System.getProperty("base.account");
 	String region=System.getProperty("base.region");
 	String roleName=System.getProperty("s3.role");
-	String credentialPrefix=System.getProperty("credential.file.path");
+	String credentialPrefix=System.getProperty("secret.manager.path");
 
 	
 	public AzureCredentialProvider() {
@@ -109,7 +109,10 @@ public class AzureCredentialProvider {
 	
 	private Map<String,Map<String,String>> decodeCredetials(String tenant, BasicSessionCredentials credentials, String region) {
 		Map<String,Map<String,String>> credsMap = new HashMap<>();
-		String secretId=credentialPrefix+"/azure/"+tenant;
+		logger.info("Inside decodeCredetials");
+		logger.info("Credential prefix:{}",credentialPrefix);
+		logger.info("roleName:{}",roleName);
+		String secretId=credentialPrefix+"/"+roleName+"/azure/"+tenant;
 		String secretData=awsSecretManagerUtil.fetchSecret(secretId,credentials,region);
 		String azureCreds = Util.getJson(secretData).get("secretdata");
 		Arrays.asList(azureCreds.split("##")).stream().forEach(cred-> {
