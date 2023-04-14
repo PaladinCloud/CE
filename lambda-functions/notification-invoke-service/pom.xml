@@ -7,7 +7,10 @@
     <artifactId>notification-invoke-service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>Notification Invoke Service</name>
-
+    <properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -38,11 +41,6 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 
     <build>
