@@ -38,6 +38,9 @@ import com.google.gson.JsonParser;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 
+import static com.tmobile.cloud.constants.PacmanRuleConstants.AWS_STRING;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.DOC_TYPE;
+
 public class RulesElasticSearchRepositoryUtil {
     private static final Logger logger = LoggerFactory
             .getLogger(RulesElasticSearchRepositoryUtil.class);
@@ -393,11 +396,11 @@ public class RulesElasticSearchRepositoryUtil {
             matchFilters.put(PacmanRuleConstants.MATCH_ALL, new HashMap<String, String>());
         } else {
             String extractIndex=urlToQuery.substring(urlToQuery.indexOf(".com")+5,urlToQuery.indexOf("/_search"));
-            String cloudType=extractIndex.substring(0,extractIndex.indexOf("_"));
             String extractType=extractIndex.substring(extractIndex.indexOf("/")+1);
             urlToQuery=urlToQuery.replace("/"+extractType,"");
-            if(cloudType.equalsIgnoreCase("aws")){
-            mustFilter.put("docType",extractType);}
+            if (extractIndex.contains(AWS_STRING)) {
+                mustFilter.put(DOC_TYPE, extractType);
+            }
             matchFilters.putAll(mustFilter);
         }
         if (null != mustFilter) {
