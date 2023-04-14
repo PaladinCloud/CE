@@ -73,3 +73,7 @@ commons/pac-batch-commons/publish.propertie
 webapp/package.jsons
 /.idea/
 /jobs/job-scheduler/target/*
+lambda-functions/notification-template-formatter-service/target/*
+lambda-functions/notification-send-email-service/target/*
+lambda-functions/notification-invoke-service/target/*
+lambda-functions/notification-es-logging-service/target/*

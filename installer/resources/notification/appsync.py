@@ -4,7 +4,7 @@ import json
 
 class AppSyncNotification(AppSync):
     authentication_type = "API_KEY"
-    name = "paladincloud"
+    name = "notification-appsync-service"
     schema = ''''type Channel' {
 	            'data': 'AWSJSON!'
 	            'name': 'String!'
