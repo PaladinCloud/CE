@@ -1,4 +1,4 @@
-from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource, LambdaPermission
+from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource, LambdaPermission, LambdaFunctionUrl
 from resources.datastore.es import ESDomain
 from resources.iam.lambda_role import LambdaRole
 from core.config import Settings
@@ -19,7 +19,7 @@ class EmailSNS(SNSResoures):
 class SendNotificationFunction(LambdaFunctionResource):
     function_name = SEND_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
-    handler =  "com.paladincloud.FetchNotificationSettings::handleRequest"
+    handler =  "com.paladincloud.SendNotification::handleRequest"
     runtime = "java11"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = Settings.RESOURCE_NAME_PREFIX + "/v1/" + SEND_NOTIFICATION + ".jar"
@@ -30,10 +30,14 @@ class SendNotificationFunction(LambdaFunctionResource):
     }
     DEPENDS_ON = [NotificationSNS,FetchNotificationFunctionJarFile,SendNotificationFunctionJarFile,InvokeNotificationFunctionJarFile]
 
-class TemplateFormatterFunction(LambdaFunctionResource):
+class SendNotificationFunctionUrl(LambdaFunctionUrl):
+    function_name = SendNotificationFunction.get_output_attr('function_name')
+    authorization_type = "NONE"
+
+class InvokeNotificationFunction(LambdaFunctionResource):
     function_name = INVOKE_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
-    handler =  "com.paladincloud.InvokeNotificationsApi::handleRequest"
+    handler =  "com.paladincloud.FetchNotificationSettings::handleRequest"
     runtime = "java11"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key =  Settings.RESOURCE_NAME_PREFIX + "/v1/" + INVOKE_NOTIFICATION + ".jar"
@@ -46,7 +50,7 @@ class TemplateFormatterFunction(LambdaFunctionResource):
         }
     }
 
-class InvokeNotificationFunction(LambdaFunctionResource):
+class TemplateFormatterFunction(LambdaFunctionResource):
     function_name = TEMPLATE_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.InvokeNotificationsApi::handleRequest"
