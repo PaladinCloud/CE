@@ -27,9 +27,12 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERRO
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import com.google.gson.*;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.exception.ServiceException;
 import org.apache.commons.lang.StringUtils;
 
-import com.google.gson.Gson;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.*;
 import com.tmobile.pacman.api.admin.repository.model.AssetGroupCriteriaDetails;
@@ -39,6 +42,7 @@ import org.elasticsearch.client.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -71,6 +75,8 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 	private static final Logger log = LoggerFactory.getLogger(AssetGroupServiceImpl.class);
 
 	private static final String ALIASES = "/_aliases";
+	private static  final  String BUCKETS="buckets";
+	private  static  final  String KEY="key";
 
 	@Autowired
 	private AssetGroupRepository assetGroupRepository;
@@ -95,6 +101,12 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 
 	@Autowired
 	private CreateAssetGroupService createAssetGroupService;
+
+	@Value("${tagging.mandatoryTags}")
+	private String mandatoryTags;
+
+	@Value("${cloud-provider}")
+	private String cloudProvider;
 
 	@Override
 	public Collection<String> getAllAssetGroupNames() {
@@ -645,5 +657,94 @@ public class AssetGroupServiceImpl implements AssetGroupService {
 			return assetGroupRepository.getDistinctCreatedBy();
 		else
 			return new ArrayList<>();
+	}
+
+	@Override
+	public List<Map<String, Object>> getCloudTypeObject() throws Exception {
+
+		String isGcpEnabled=assetGroupTargetDetailsService.getGcpFlagValueFromDB();
+		String isAzureEnabled=assetGroupTargetDetailsService.getAzureFlagValueFromDB();
+		List<String>cloudTypes=new ArrayList<>(Arrays.asList(cloudProvider.split(",")));
+
+		if(isGcpEnabled.equalsIgnoreCase("true")){
+			cloudTypes.add("gcp");
+		}
+
+		if(isAzureEnabled.equalsIgnoreCase("true")){
+			cloudTypes.add("azure");
+		}
+
+		List<Map<String ,Object>> cloudProviderObjList=new ArrayList<>();
+
+		String aggsStrByTag = "\"%s\":{\"terms\":{\"field\":\"%s\",\"size\":10000}}";
+		Set<String> tagsSet = new HashSet<>(Arrays.asList(mandatoryTags.split(",")));
+		List<String> aggsForTagsList = new ArrayList<>();
+		tagsSet.forEach(str -> aggsForTagsList.add(String.format(aggsStrByTag, "tags."+str, "tags." + str + ".keyword")));
+
+		log.info("aggsForTagsList {}",aggsForTagsList);
+
+		String responseDetails;
+		for (String cloudType : cloudTypes) {
+			Map<String, Object> cloudTypeObject = new HashMap<>();
+			cloudTypeObject.put("CloudType",cloudType);
+			log.info(cloudType);
+			try {
+				responseDetails=esRepository.getRequiredObject(cloudType,aggsForTagsList);
+			} catch (DataException e) {
+				throw new ServiceException(e);
+			}
+			JsonParser parser = new JsonParser();
+			JsonObject responseJson = parser.parse(responseDetails).getAsJsonObject();
+			JsonObject aggs = (JsonObject) responseJson.get("aggregations");
+
+			List<String>targetTypes=new ArrayList<>();
+			JsonObject targetTypeObj = (JsonObject) aggs.get("TargetType");
+			JsonArray targetTypeBuckets = targetTypeObj.get(BUCKETS).getAsJsonArray();
+			for (JsonElement bucket : targetTypeBuckets) {
+				targetTypes.add(bucket.getAsJsonObject().get(KEY).getAsString());
+			}
+			cloudTypeObject.put("TargetType",targetTypes);
+
+
+			List<String>regions=new ArrayList<>();
+			JsonObject regionObj = (JsonObject) aggs.get("Region");
+			JsonArray regionBuckets = regionObj.get(BUCKETS).getAsJsonArray();
+			for (JsonElement bucket : regionBuckets) {
+				regions.add(bucket.getAsJsonObject().get(KEY).getAsString());
+			}
+			cloudTypeObject.put("Region",regions);
+
+			List<String>ids=new ArrayList<>();
+			JsonObject idObj = (JsonObject) aggs.get("Id");
+			JsonArray idBuckets = idObj.get(BUCKETS).getAsJsonArray();
+			for (JsonElement bucket : idBuckets ) {
+				ids.add(bucket.getAsJsonObject().get(KEY).getAsString());
+			}
+
+			cloudTypeObject.put("Id",ids);
+
+			List<String>tagsPool=new ArrayList<>();
+
+			for(String agg : aggsForTagsList) {
+				String[] parts = agg.split(":");
+				String valueBeforeColon = parts[0];
+				tagsPool.add(valueBeforeColon);
+			}
+
+			for(String tag:tagsPool){
+				log.info(tag);
+				tag=tag.substring(1,tag.length()-1);
+				List<String>tagList=new ArrayList<>();
+				JsonObject tagObj = (JsonObject) aggs.get(tag);
+
+				JsonArray tagBuckets = tagObj.get(BUCKETS).getAsJsonArray();
+				for (JsonElement bucket : tagBuckets ) {
+					tagList.add(bucket.getAsJsonObject().get(KEY).getAsString());
+				}
+				cloudTypeObject.put(tag,tagList);
+			}
+			cloudProviderObjList.add(cloudTypeObject);
+		}
+		return cloudProviderObjList ;
 	}
 }

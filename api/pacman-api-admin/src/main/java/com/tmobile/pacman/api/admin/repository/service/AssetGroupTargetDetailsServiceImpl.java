@@ -156,4 +156,34 @@ public class AssetGroupTargetDetailsServiceImpl implements AssetGroupTargetDetai
 		urlToQuery.append(FORWARD_SLASH).append("_search/?size=0");
 		return urlToQuery.toString();
 	}
+
+	@Override
+	public  String getGcpFlagValueFromDB(){
+
+		String query = "select value from pac_config_properties "
+				+ " where  cfkey = 'gcp.enabled' ";
+
+		List<Map<String, Object>> gcpValue =rdsRepository.getDataFromPacman(query);
+		String valueString="";
+		for(Map<String,Object>value:gcpValue) {
+			valueString= (String) value.get("value");
+		}
+		log.info("gcp {} ",rdsRepository.getDataFromPacman(query));
+		return  valueString;
+	}
+
+	@Override
+	public  String getAzureFlagValueFromDB(){
+
+		String query = "select value from pac_config_properties "
+				+ " where  cfkey = 'azure.enabled' ";
+
+		List<Map<String, Object>> azureValue=rdsRepository.getDataFromPacman(query);
+		String valueString="";
+		for(Map<String,Object>value:azureValue) {
+			valueString= (String) value.get("value");
+		}
+		log.info("azure {} ",rdsRepository.getDataFromPacman(query));
+		return  valueString;
+	}
 }
