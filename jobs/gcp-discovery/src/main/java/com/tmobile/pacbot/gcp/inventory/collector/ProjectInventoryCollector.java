@@ -46,7 +46,7 @@ public class ProjectInventoryCollector {
 
         String url = String.format(apiUrlTemplate,
             URLEncoder.encode(projectId,java.nio.charset.StandardCharsets.UTF_8.toString()));
-            String accessToken = gcpCredentialsProvider.getAccessToken();
+            String accessToken = gcpCredentialsProvider.getAccessToken(projectId);
             String response = CommonUtils.doHttpGet(url, "Bearer",accessToken);
             JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
         if(responseObj!=null) {

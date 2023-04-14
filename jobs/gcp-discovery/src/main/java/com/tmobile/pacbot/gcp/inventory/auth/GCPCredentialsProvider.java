@@ -38,7 +38,7 @@ import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
+import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +72,9 @@ public class GCPCredentialsProvider {
     @Value("${s3.cred.data}")
     private String s3CredData;
 
+    @Value("${secret.manager.path}")
+    private String credentialPrefix;
+
     private static final Logger logger = LoggerFactory.getLogger(GCPCredentialsProvider.class);
 
     @Autowired
@@ -98,7 +101,8 @@ public class GCPCredentialsProvider {
     private Iam iamService;
     private UrlMapsClient urlMap;
     private TargetHttpProxiesClient targetHttpProxiesClient;
-
+    @Autowired
+    AwsSecretManagerUtil awsSecretManagerUtil;
     private BackendServicesClient backendService;
     private TargetSslProxiesClient targetSslProxiesClient;
 
@@ -119,37 +123,31 @@ public class GCPCredentialsProvider {
         // Specify a credential file by providing a path to GoogleCredentials.Otherwise, credentials are read from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
         logger.info("Inside getCredential method");
         if(credentialCache.containsKey(projectId)){
-            //credential cache to avoid s3 read each time collector needs credential
+            //credential cache to avoid secret manager read each time collector needs credential
             return credentialCache.get(projectId);
         }
-        BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
-        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(s3Region).withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
-        String fileName = "gcp-credential-" + projectId + ".json";
-        GetObjectRequest request=new GetObjectRequest(s3, s3CredData + "/" + fileName);
 
-        File credFile = new File(fileName);
+        String secretData=getSecretData(projectId);
         try{
-            s3client.getObject(request, credFile);
+            GoogleCredentials gcpCredentials=GoogleCredentials.fromStream(new ByteArrayInputStream(secretData.getBytes()))
+                    .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+            logger.info("Credentials created: {}",gcpCredentials);
+            credentialCache.put(projectId,gcpCredentials);
+            return  gcpCredentials;
 
-            if(credFile.exists()){
-                logger.info("File is created!!");
-                String fileContent = Files.asCharSource(credFile, Charsets.UTF_8).read();
-                GoogleCredentials gcpCredentials=GoogleCredentials.fromStream(new ByteArrayInputStream(fileContent.getBytes()))
-                        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
-                logger.info("Credentials created: {}",credentials);
-                credentialCache.put(projectId,gcpCredentials);
-                return  gcpCredentials;
-            }else {
-                logger.error("Error:: Credential file not found!! ");
-            }
         }catch (Exception exc){
-            logger.error("Error:: {}", exc.getMessage());
+            logger.error("Error:: {}", exc);
         }
         return null;
 
     }
-    public String getAccessToken() throws IOException {
-        String cred = System.getProperty("gcp.credentials");
+    private String getSecretData(String projectId){
+        BasicSessionCredentials credentials = credProvider.getCredentials(account,region,s3Role);
+        String secretId=credentialPrefix+"/"+s3Role+"/gcp/"+projectId;
+         return awsSecretManagerUtil.fetchSecret(secretId,credentials,region);
+    }
+    public String getAccessToken(String projectId) throws IOException {
+        String cred = getSecretData(projectId);
         String token=GoogleCredentials.fromStream(new ByteArrayInputStream(cred.getBytes()))
                 .createScoped("https://www.googleapis.com/auth/cloud-platform")
                 .refreshAccessToken().getTokenValue();
@@ -160,9 +158,7 @@ public class GCPCredentialsProvider {
         if(networksClient==null){
             NetworksSettings networksSettings=NetworksSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             networksClient=NetworksClient.create(networksSettings);
-
         }
-
 
         return networksClient;
 
@@ -232,7 +228,6 @@ public class GCPCredentialsProvider {
                     .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
             topicAdminClient = TopicAdminClient.create(topicAdminSettings);
         }
-
         return topicAdminClient;
     }
 

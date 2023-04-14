@@ -1,5 +1,6 @@
 package com.tmobile.pacman.api.admin.repository.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
@@ -35,6 +36,7 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
     public static final String FAILURE = "FAILURE";
     public static final String SUCCESS = "SUCCESS";
     public static final String SECRET_ALREADY_EXIST_FOR_ACCOUNT = "Secret already exist for account";
+
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
@@ -110,14 +112,14 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
         try {
             BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
             String region = System.getenv("REGION");
-
+            String roleName= System.getenv(PALADINCLOUD_RO);
             AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                     .standard()
                     .withCredentials(new AWSStaticCredentialsProvider(credentials))
                     .withRegion(region).build();
 
             CreateSecretRequest createRequest = new CreateSecretRequest()
-                    .withName(secretManagerPrefix + "/azure/" + tenantId).withSecretString(getAzureSecretData(accountData.getTenantSecretData()));
+                    .withName(secretManagerPrefix+"/"+roleName+ "/azure/" + tenantId).withSecretString(getSecretData(accountData.getTenantSecretData()));
 
             CreateSecretResult createResponse = secretClient.createSecret(createRequest);
             LOGGER.info("Create secret response: {}", createResponse);
@@ -172,30 +174,35 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
     public AccountValidationResponse deleteAccount(String tenantId) {
         LOGGER.info("Inside deleteAccount method of AzureAccountServiceImpl. Tenant id: {}",tenantId);
         AccountValidationResponse response=new AccountValidationResponse();
+        try{
+            //find and delete cred file for account
+            response.setType(Constants.AZURE);
+            response.setTenantId(tenantId);
+            response.setValidationStatus(SUCCESS);
+            response.setMessage("Account deleted successfully");
+            BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
+            String region = System.getenv("REGION");
+            String roleName= System.getenv(PALADINCLOUD_RO);
+            AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
+                    .standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                    .withRegion(region).build();
+            String secretId=secretManagerPrefix+"/"+roleName+"/azure/"+tenantId;
 
-        //find and delete cred file for account
-        BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
-        String region = System.getenv("REGION");
+            DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
+            DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
+            LOGGER.info("Delete secret response: {} ",deleteResponse);
 
-        AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(region).build();
-        String secretId=secretManagerPrefix+"/azure/"+tenantId;
-
-        DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
-        DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
-        LOGGER.info("Delete secret response: {} ",deleteResponse);
-
-        //delete entry from db
-        response=deleteAccountFromDB(tenantId);
-
-        response.setAccountId(tenantId);
-        response.setType(Constants.AZURE);
+            //delete entry from db
+            response=deleteAccountFromDB(tenantId);
+            response.setType(Constants.AZURE);
+        } catch (SdkClientException e) {
+            LOGGER.error("Error in deleting the creds file json: {}", e.getMessage());
+            response.setValidationStatus(FAILURE);
+            response.setErrorDetails(e.getMessage());
+            response.setMessage("Account deletion failed");
+        }
         return response;
     }
-    private String getAzureSecretData(String secret){
-        String jsonTemplate="{\"secretdata\": \"%s\"}";
-        return String.format(jsonTemplate,secret);
-    }
+
 }
