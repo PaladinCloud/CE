@@ -21,10 +21,6 @@ import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.google.cloud.dataproc.v1.ClusterControllerSettings;
 import com.google.cloud.dns.Dns;
 import com.google.cloud.dns.DnsOptions;
-import com.google.cloud.functions.v1.CloudFunctionsServiceClient;
-import com.google.cloud.functions.v1.CloudFunctionsServiceSettings;
-import com.google.cloud.functions.v2.FunctionServiceClient;
-import com.google.cloud.functions.v2.FunctionServiceSettings;
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
 import com.google.cloud.kms.v1.KeyManagementServiceSettings;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
@@ -184,11 +180,11 @@ public class GCPCredentialsProvider {
         return topicAdminClient;
     }
 
-    public FunctionServiceClient getFunctionClient() throws IOException {
+    /*public FunctionServiceClient getFunctionClient() throws IOException {
         FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
         return FunctionServiceClient.create(functionServiceSettings);
-    }
+    }*/
 
     public ClusterControllerClient getDataProcClient(String region) throws IOException {
         String url = region + "-dataproc.googleapis.com:443";
@@ -313,11 +309,11 @@ public class GCPCredentialsProvider {
 
 
 
-    public CloudFunctionsServiceClient getFunctionClientGen1() throws IOException {
-        CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
-                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
-        return CloudFunctionsServiceClient.create(functionsServiceSettings);
-    }
+//    public CloudFunctionsServiceClient getFunctionClientGen1() throws IOException {
+//        CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
+//                .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials())).build();
+//        return CloudFunctionsServiceClient.create(functionsServiceSettings);
+//    }
 
     // close the client in destroy method
     @PreDestroy

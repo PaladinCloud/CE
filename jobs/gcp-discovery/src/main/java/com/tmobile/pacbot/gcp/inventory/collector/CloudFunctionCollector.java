@@ -1,3 +1,4 @@
+/*
 package com.tmobile.pacbot.gcp.inventory.collector;
 
 import com.google.cloud.functions.v2.Function;
@@ -66,3 +67,4 @@ public class CloudFunctionCollector {
         return cloudFunctionVHList;
     }
 }
+*/
