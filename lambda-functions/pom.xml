@@ -41,10 +41,10 @@
     </scm>
 
 	<modules>
-		<module>notify-event</module>
-		<module>invokeNotificationsApi</module>
-		<module>templateFormatterService</module>
-		<module>receiveNotificationRequest</module>
+		<module>notification-es-logging-service</module>
+		<module>notification-send-email-service</module>
+		<module>notification-template-formatter-service</module>
+		<module>notification-invoke-service</module>
     </modules>
 
 </project>
