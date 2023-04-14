@@ -65,3 +65,17 @@ class LambdaPermission(TerraformResource):
         'source_arn': {'required': False},
         'statement_id': {'required': False}
     }
+
+class LambdaFunctionUrl(TerraformResource):
+    """
+    Base resource class for Terraform AWS Lambda function url resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_lambda_function_url"
+    available_args = {
+        'function_name': {'required': True},
+        'authorization_type': {'required': True}
+    }
