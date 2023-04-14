@@ -49,4 +49,9 @@ public interface AssetGroupTargetDetailsService {
      * @throws PacManException
      */
 	public List<TargetTypePolicyViewDetails> getTargetTypesByAssetGroupIdAndTargetTypeNotIn(String assetGroupName, Set<String> targetTypeNames) throws PacManException;
+
+	public  String getGcpFlagValueFromDB();
+
+	public  String getAzureFlagValueFromDB();
 }
+

@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.tmobile.pacman.api.commons.exception.DataException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -1794,6 +1795,47 @@ public class ElasticSearchRepository implements Constants {
 			throw e;
 		}
 		return distribution;
+	}
+
+	public  String getRequiredObject(String cloudType,List<String> aggsForTagsList) throws Exception {
+		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/")
+				.append(cloudType).append("/").append(SEARCH);
+		StringBuilder requestBody = null;
+		String accountId;
+		if(cloudType.equalsIgnoreCase("aws")){
+			accountId="accountid";
+		}
+		else if(cloudType.equalsIgnoreCase("azure")){
+			accountId="subscriptionId";
+		}
+		else{
+			accountId="projectId";
+		}
+		String body = "{"
+				+ "\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":\"true\"}},{\"term\":{\"_entity\":\"true\"}}]}}"
+				+ ",\"aggs\": {"
+				+ "\"TargetType\": {\"terms\": {\"field\": \"_type\",\"size\": 10000}},"
+				+ "\"Id\": {\"terms\": {\"field\": \"" + accountId +".keyword\",\"size\": 10000}},"
+				+ "\"Region\": {\"terms\": {\"field\": \"region.keyword\",\"size\": 10000}},";
+
+		for(String agg : aggsForTagsList) {
+			body += agg + ",";
+		}
+
+		// remove trailing comma
+		body = body.substring(0, body.length() - 1);
+		body += "}}";
+
+		requestBody = new StringBuilder(body);
+		try {
+			String response = PacHttpUtils.doHttpPost(urlToQueryBuffer.toString(),
+					requestBody.toString());
+			LOGGER.info("response {} " + response);
+			return response;
+		}catch (Exception e){
+			LOGGER.error(e.getMessage());
+			throw new DataException(e);
+		}
 	}
 
 }

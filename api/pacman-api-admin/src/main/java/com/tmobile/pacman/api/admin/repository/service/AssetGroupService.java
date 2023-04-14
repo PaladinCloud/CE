@@ -109,4 +109,6 @@ public interface AssetGroupService {
 
 	public List<String> getFilterKeyValues(String key) throws  PacManException;
 
+	public List<Map<String,Object>> getCloudTypeObject() throws Exception;
+
 }
