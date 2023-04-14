@@ -76,7 +76,7 @@ class InAppNotificationFunction(LambdaFunctionResource):
     handler =  INAPP_NOTIFICATION_FILE_NAME + ".lambda_handler"
     runtime = "python3.8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = UploadLambdaInappFile.get_out_attr('id')
+    s3_key = UploadLambdaInappFile.get_output_attr('id')
     environment = {
         'variables': {
             'API_KEY':	ApiSyncIdKey.get_output_attr('key'),
@@ -128,23 +128,23 @@ class TemplateLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
     function_name = TemplateFormatterFunction.get_output_attr('function_name')
-    principal = "cognito-idp.amazonaws.com"
+    principal = "sns.amazonaws.com"
     source_arn = NotificationSNS.get_output_attr('arn')
 class InAppLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
     function_name = InAppNotificationFunction.get_output_attr('function_name')
-    principal = "cognito-idp.amazonaws.com"
+    principal = "sns.amazonaws.com"
     source_arn = NotificationSNS.get_output_attr('arn')
 class SendLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
     function_name = SendNotificationFunction.get_output_attr('function_name')
-    principal = "cognito-idp.amazonaws.com"
-    source_arn = EmailSNS.get_output_attr('arn')('arn')
+    principal = "sns.amazonaws.com"
+    source_arn = EmailSNS.get_output_attr('arn')
 class LogEsLambdaPermission(LambdaPermission):
     statement_id = "Event"
     action = "lambda:InvokeFunction"
     function_name = LogEsNotificationFunction.get_output_attr('function_name')
-    principal = "cognito-idp.amazonaws.com"
+    principal = "sns.amazonaws.com"
     source_arn = NotificationSNS.get_output_attr('arn')
