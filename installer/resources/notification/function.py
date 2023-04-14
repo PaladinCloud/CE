@@ -17,17 +17,17 @@ SEND_NOTIFICATION = "notification-send-email-service"
 
 
 class NotificationSNS(SNSResources):
-    name = "notification-topic"
+    name = "notification-event"
 
 class EmailSNS(SNSResources):
-    name = "email-topic" 
+    name = "notification-email-event" 
 class InvokeNotificationFunction(LambdaFunctionResource):
     function_name = INVOKE_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.SendNotification::handleRequest"
     runtime = "java11"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX +  INVOKE_NOTIFICATION + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX + "/" +  INVOKE_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'SNS_TOPIC_ARN': NotificationSNS.get_output_attr('arn')
@@ -73,7 +73,7 @@ class TemplateFormatterFunction(LambdaFunctionResource):
 class InAppNotificationFunction(LambdaFunctionResource):
     function_name = INAPP_NOTIFICATION_FILE_NAME
     role = LambdaRole.get_output_attr('arn')
-    handler =  INAPP_NOTIFICATION_FILE_NAME + "/" +  ".lambda_handler"
+    handler =  INAPP_NOTIFICATION_FILE_NAME  + ".lambda_handler"
     runtime = "python3.8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaInappFile.get_output_attr('id')
