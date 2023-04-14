@@ -318,6 +318,7 @@ public class PacmanRuleConstants {
     public static final String CREATED_EVENT_TYPE = "created";
     public static final String SERVICE_LIMIT_STATUS_RED = "status_RED";
     public static final String MATCH_ALL = "match_all";
+    public static final String AWS_STRING = "aws";
     public static final String MATCH = "match";
     public static final String QUERY = "query";
     public static final String MUST = "must";
