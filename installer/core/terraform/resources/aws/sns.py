@@ -2,7 +2,7 @@ from core.terraform.resources import TerraformResource
 from core.config import Settings
 # from core.providers.aws.boto3 import cognito
 
-class SNSResoures(TerraformResource):
+class SNSResources(TerraformResource):
     """
     Base resource class for Terraform AWS SNS resource
 
