@@ -113,3 +113,24 @@ class PaladinSecretManagerFullAccessPolicy(iam.IAMRolePolicyResource):
 class PaladinSecretManagerFullAccessAttach(iam.IAMRolePolicyAttachmentResource):
 	role = BaseRole.get_output_attr('name')
 	policy_arn = PaladinSecretManagerFullAccessPolicy.get_output_attr('arn')
+
+class PaladinCloudIamPermissionDocument(iam.IAMPolicyDocumentData):
+    statement = [
+        {
+            "effect": "Allow",
+            "actions": ["iam:CreatePolicy",
+                "iam:CreatePolicyVersion",
+                "iam:DeletePolicyVersion",
+                "iam:SetDefaultPolicyVersion"],
+            "resources": ["*"]
+        }
+    ]
+    
+class PaladinCloudIamPermissionPolicy(iam.IAMRolePolicyResource):
+    name = "PaladinCloudIamPermissionPolicy"
+    path = '/'
+    policy = PaladinCloudIamPermissionDocument.get_output_attr('json')
+
+class PaladinCloudIamPermissionPolicyAttach(iam.IAMRolePolicyAttachmentResource):
+    role = BaseRole.get_output_attr('name')
+    policy_arn = PaladinCloudIamPermissionPolicy.get_output_attr('arn')

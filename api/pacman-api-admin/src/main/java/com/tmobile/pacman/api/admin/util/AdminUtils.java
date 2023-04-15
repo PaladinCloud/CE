@@ -38,6 +38,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -56,6 +60,10 @@ import org.springframework.web.multipart.MultipartFile;
  * Admin Utility Class
  */
 public class AdminUtils {
+
+	public static final String STATEMENT = "Statement";
+	public static final String RESOURCE = "Resource";
+	public static final String MULTIPLE_RESOURCES_FOUND = "Multiple resources found";
 
 	private AdminUtils() {
 	}
@@ -191,4 +199,85 @@ public class AdminUtils {
 	private static IvParameterSpec getIvParameterSpec() throws UnsupportedEncodingException {
 		return new IvParameterSpec("RandomInitVector".getBytes("UTF-8"));
 	}
+
+	public static String addResourceInPolicy(String document, String resource){
+		log.info("Adding resource:{} to policy:{}", resource,document);
+		String result=document;
+		JsonObject policyJson =  JsonParser.parseString(document).getAsJsonObject();
+		JsonObject statement = policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().get(0).getAsJsonObject();
+		policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().remove(0);
+		if(statement.getAsJsonObject().get(RESOURCE).isJsonArray()){
+			log.info(MULTIPLE_RESOURCES_FOUND);
+			JsonArray resourceArray = statement.getAsJsonObject().get(RESOURCE).getAsJsonArray();
+			if(containsResource(resourceArray,resource)){
+				log.info("Resource already added in policy");
+			}else{
+				resourceArray.add(resource);
+				statement.add(RESOURCE,resourceArray);
+				policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().add(statement);
+				result=policyJson.toString();
+			}
+		}else{
+			log.info("Single resource found");
+			String resourceArn = statement.getAsJsonObject().get(RESOURCE).getAsString();
+			if(resourceArn.equalsIgnoreCase(resource)){
+				log.info("Resource already added in policy");
+			}else {
+				JsonArray jsonArray = new JsonArray();
+				jsonArray.add(resourceArn);
+				jsonArray.add(resource);
+				statement.add(RESOURCE, jsonArray);
+				policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().add(statement);
+				result=policyJson.toString();
+			}
+
+		}
+		log.info("Modified policy document: {}",result);
+		return result;
+
+	}
+
+	private static boolean containsResource(JsonArray resourceArray, String resourceArn){
+		for(JsonElement resource:resourceArray){
+			if(resource.getAsString().equalsIgnoreCase(resourceArn)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean removeResource(JsonArray resourceArray, String resourceArn){
+		for(JsonElement resource:resourceArray){
+			if(resource.getAsString().equalsIgnoreCase(resourceArn)){
+				resourceArray.remove(resource);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static String deleteResourceFromPolicy(String policyDocument, String resourceArn){
+		log.info("Deleting resource:{} from policy:{}", resourceArn,policyDocument);
+		String result=policyDocument;
+		JsonObject policyJson =  JsonParser.parseString(policyDocument).getAsJsonObject();
+		JsonObject statement = policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().get(0).getAsJsonObject();
+		policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().remove(0);
+
+		if(statement.getAsJsonObject().get(RESOURCE).isJsonArray()){
+			log.info(MULTIPLE_RESOURCES_FOUND);
+			JsonArray resourceArray = statement.getAsJsonObject().get(RESOURCE).getAsJsonArray();
+			if(removeResource(resourceArray,resourceArn)){
+				log.info("Resource removed");
+				statement.add(RESOURCE,resourceArray);
+				policyJson.getAsJsonArray(STATEMENT).getAsJsonArray().add(statement);
+				result=policyJson.toString();
+			}else{
+				log.info("resource not found in policy");
+			}
+		}else{
+			log.info("only single resource found. not deleting anything");
+		}
+		return result;
+	}
+
 }
