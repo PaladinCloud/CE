@@ -1,10 +1,6 @@
 package com.tmobile.pacbot.gcp.inventory.auth;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.google.api.apikeys.v2.ApiKeysClient;
 import com.google.api.apikeys.v2.ApiKeysSettings;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -26,17 +22,16 @@ import com.google.cloud.dataproc.v1.ClusterControllerClient;
 import com.google.cloud.dataproc.v1.ClusterControllerSettings;
 import com.google.cloud.dns.Dns;
 import com.google.cloud.dns.DnsOptions;
-import com.google.cloud.functions.v1.CloudFunctionsServiceClient;
+/*import com.google.cloud.functions.v1.CloudFunctionsServiceClient;
 import com.google.cloud.functions.v1.CloudFunctionsServiceSettings;
 import com.google.cloud.functions.v2.FunctionServiceClient;
-import com.google.cloud.functions.v2.FunctionServiceSettings;
+import com.google.cloud.functions.v2.FunctionServiceSettings;*/
 import com.google.cloud.kms.v1.KeyManagementServiceClient;
 import com.google.cloud.kms.v1.KeyManagementServiceSettings;
 import com.google.cloud.pubsub.v1.TopicAdminClient;
 import com.google.cloud.pubsub.v1.TopicAdminSettings;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
 import org.slf4j.Logger;
@@ -47,9 +42,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
@@ -231,11 +224,11 @@ public class GCPCredentialsProvider {
         return topicAdminClient;
     }
 
-    public FunctionServiceClient getFunctionClient(String projectId) throws IOException {
+    /*public FunctionServiceClient getFunctionClient(String projectId) throws IOException {
         FunctionServiceSettings functionServiceSettings=FunctionServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
         return FunctionServiceClient.create(functionServiceSettings);
-    }
+    }*/
 
     public ClusterControllerClient getDataProcClient(String region, String projectId) throws IOException {
         String url = region + "-dataproc.googleapis.com:443";
@@ -360,11 +353,11 @@ public class GCPCredentialsProvider {
 
 
 
-    public CloudFunctionsServiceClient getFunctionClientGen1(String projectId) throws IOException {
+    /*public CloudFunctionsServiceClient getFunctionClientGen1(String projectId) throws IOException {
         CloudFunctionsServiceSettings functionsServiceSettings = CloudFunctionsServiceSettings.newBuilder()
                 .setCredentialsProvider(FixedCredentialsProvider.create(this.getCredentials(projectId))).build();
         return CloudFunctionsServiceClient.create(functionsServiceSettings);
-    }
+    }*/
 
     // close the client in destroy method
     @PreDestroy
