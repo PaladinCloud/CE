@@ -52,7 +52,8 @@
 		<module>azure-discovery</module>
         <module>gcp-discovery</module>
         <module>job-scheduler</module>
-    </modules>
+		<module>pacman-tenable-enricher</module>
+	</modules>
 
 </project>
 
