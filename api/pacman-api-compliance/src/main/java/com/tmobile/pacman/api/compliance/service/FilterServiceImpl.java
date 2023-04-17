@@ -458,7 +458,22 @@ public class FilterServiceImpl implements FilterService, Constants {
 
 	}
 
-	public List<Map<String, Object>> convertESResponseToMap(Map<String, Long> regionsMap) throws ServiceException {
+    @Override
+    public List<Map<String, Object>> getTaggedStatusForAssetGroup(String assetGroup, String domain) {
+        List<Map<String, Object>> listOfTaggedStatus = new ArrayList<>();
+        listOfTaggedStatus.add(new HashMap<String, Object>(){{
+            put("name", "true");
+            put("id", "true");
+        }});
+        listOfTaggedStatus.add(new HashMap<String, Object>(){{
+            put("name", "false");
+            put("id", "false");
+        }});
+        return listOfTaggedStatus;
+    }
+
+
+    public List<Map<String, Object>> convertESResponseToMap(Map<String, Long> regionsMap) throws ServiceException {
 		List<Map<String, Object>> map = new ArrayList<>();
 		if (regionsMap.isEmpty()) {
 			throw new ServiceException(NO_DATA_FOUND);

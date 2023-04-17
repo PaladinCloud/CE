@@ -191,7 +191,7 @@ IF NOT EXISTS( SELECT NULL
            WHERE table_name = 'cf_AssetGroupException'
              AND table_schema = 'pacmandata'
              AND column_name = 'createdBy')  THEN
-ALTER TABLE `cf_AssetGroupException`  
+ALTER TABLE `cf_AssetGroupException`
 ADD COLUMN `createdBy` VARCHAR(100) NULL,
 ADD COLUMN `createdOn` DATE NULL,
 ADD COLUMN `modifiedBy` VARCHAR(100) NULL,

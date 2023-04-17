@@ -282,7 +282,16 @@ public class FilterController implements Constants {
         }
         return ResponseUtils.buildSucessResponse(response);
     }
-
+    @GetMapping(value = "/v1/filters/taggedStatus")
+    public ResponseEntity<Object> getListOfTaggedStatus(@RequestParam(name = "ag", required = false) String assetGroup,
+                                                        @RequestParam(name = "domain", required = false) String domain) {
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
+        }
+        ResponseData response = null;
+        response = new ResponseData(filterService.getTaggedStatusForAssetGroup(assetGroup, domain));
+        return ResponseUtils.buildSucessResponse(response);
+    }
     @GetMapping(path = "/v1/filters/tag")
     public ResponseEntity<Object> getListOfEntities(@RequestParam(name = "ag", required = true) String assetGroup,
                                                         @RequestParam(name = "tag", required = true) String tag,
