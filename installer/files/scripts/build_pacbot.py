@@ -40,6 +40,9 @@ class Buildpacbot(object):
         self.cognito_callback_url = cognito_callback_url
         self.cognito_logout_url = cognito_logout_url
         self.cloudformation_template_url = cloudformation_template_url
+        self.appsyncapikey = appsyncapikey
+        self.region = region
+        self.appsync_url = appsync_url
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -139,6 +142,7 @@ class Buildpacbot(object):
         folders = [
             os.path.join(working_dir, "dist", "api"),
             os.path.join(working_dir, "dist", "jobs"),
+            os.path.join(working_dir, "dist", "lambda")
         ]
 
         for folder in folders:
@@ -174,6 +178,17 @@ class Buildpacbot(object):
                 lines[idx] = lines[idx].replace("ISSUE_MAIL_TEMPLATE_URL: ''",
                                                 "ISSUE_MAIL_TEMPLATE_URL: '" + self.issue_email_template + "'")
 
+            if "url: ''" in line:
+                lines[idx] = lines[idx].replace("url: ''",
+                                                "url: '" + self.appsync_url + "'")
+                
+            if "region: ''" in line:
+                lines[idx] = lines[idx].replace("region: ''",
+                                                "region: '" + self.region + "'")
+            if "apiKey: ''" in line:
+                lines[idx] = lines[idx].replace("apiKey: ''",
+                                                "apiKey: '" + self.appsyncapikey + "'")
+            
             if self.auth_type == "AZURE_AD":
                 if "AUTH_TYPE: DB" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: AZURE_SSO")
@@ -262,6 +277,9 @@ if __name__ == "__main__":
     cognito_logout_url = "https://" + os.getenv('APPLICATION_DOMAIN') + "/home"
     cloudformation_template_url = "https://" + os.getenv('S3_BUCKET') + ".s3." + os.getenv(
         'AWS_REGION') + ".amazonaws.com/deployment.yaml"
+    appsync_url =  os.getenv('APPSYNC_URL')
+    region =  os.getenv('AWS_REGION')
+    appsyncapikey =  os.getenv('APPSYNC_API_KEY')
     Buildpacbot(
         aws_details,
         api_domain_url,

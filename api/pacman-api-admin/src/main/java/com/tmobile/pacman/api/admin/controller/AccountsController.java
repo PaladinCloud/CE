@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +28,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERRO
 @RequestMapping("/accounts")
 public class AccountsController {
     private static final Logger log = LoggerFactory.getLogger(AccountsController.class);
+
 
     @ApiOperation(httpMethod = "GET", value = "API to fetch list of accounts", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping(produces =  MediaType.APPLICATION_JSON_VALUE)
@@ -69,11 +71,15 @@ public class AccountsController {
     @ApiOperation(httpMethod = "POST", value = "API to create account", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createAccount(@RequestBody final CreateAccountRequest accountDetails){
+        AccountsService accountsService=null;
         try{
-            AccountsService accountsService= AccountFactory.getService(accountDetails.getPlatform());
+            accountsService= AccountFactory.getService(accountDetails.getPlatform());
             return ResponseUtils.buildSucessResponse(accountsService.addAccount(accountDetails));
         }catch (Exception exception){
             log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+            if(accountsService!=null) {
+                accountsService.deleteAccount(accountDetails.getAccountId());
+            }
             return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
         }
     }

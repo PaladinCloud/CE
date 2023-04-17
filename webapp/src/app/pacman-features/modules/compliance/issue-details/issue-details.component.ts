@@ -842,8 +842,10 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             const payload = {
                 issueIds: [this.policyViolationId]
             };
+            const email = this.dataStore.getUserDetailsValue().getEmail();
             const queryParams = {
-                ag: this.selectedAssetGroup
+              ag: this.selectedAssetGroup,
+              revokedBy: email
             }
             this.getRevokeSubscription = this.commonResponseService
                 .getData(Url, Method, payload, queryParams)

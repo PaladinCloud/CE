@@ -141,11 +141,11 @@
 
 
         <!-- https://mvnrepository.com/artifact/com.google.cloud/google-cloud-functions -->
-        <dependency>
+        <!--<dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-functions</artifactId>
             <version>2.9.0</version>
-        </dependency>
+        </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
         <dependency>
@@ -191,14 +191,38 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
                 <executions>
                     <execution>
                         <id>build-a</id>
                         <configuration>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                </manifest>
+                            </archive>
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>src/resources/META-INF/services</directory>
+                                    <outputDirectory>META-INF/services</outputDirectory>
+                                    <includes>
+                                        <include>*</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </fileSet>
+                            </fileSets>
+                            <!--<dependencySets>
+                                <dependencySet>
+                                    <outputDirectory>com/google/cloud/functions/v2/</outputDirectory>
+                                    <includes>
+                                        <include>com.google.cloud.functions.v2:*</include>
+                                    </includes>
+                                </dependencySet>
+                            </dependencySets>-->
                             <finalName>pacbot-gcp-discovery</finalName>
                         </configuration>
                         <phase>package</phase>

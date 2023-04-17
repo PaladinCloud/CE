@@ -32,7 +32,7 @@ public class CloudAssetInventoryCollector {
         String apiUrlTemplate = "https://serviceusage.googleapis.com/v1/projects/%s/services/cloudasset.googleapis.com";
         String url = String.format(apiUrlTemplate,
                 URLEncoder.encode(projectVH.getProjectNumber().toString(),java.nio.charset.StandardCharsets.UTF_8.toString()));
-        String accessToken = gcpCredentialsProvider.getAccessToken();
+        String accessToken = gcpCredentialsProvider.getAccessToken(projectVH.getProjectId());
         String response = CommonUtils.doHttpGet(url, "Bearer",accessToken);
         JsonObject responseObj = JsonParser.parseString(response).getAsJsonObject();
         logger.info("cloud Asset response {}",responseObj);

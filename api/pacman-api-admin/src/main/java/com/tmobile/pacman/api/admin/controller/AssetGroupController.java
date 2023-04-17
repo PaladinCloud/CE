@@ -240,4 +240,15 @@ public class AssetGroupController {
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
 		}
 	}
+
+	@ApiOperation(httpMethod = "GET", value = "API to get Drop Down Key-Value pair from all CloudProviders", response = Response.class, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/cloud-type-object", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> createObjectForCloudType() {
+		try {
+			return ResponseUtils.buildSucessResponse(assetGroupService.getCloudTypeObject());
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
 }
