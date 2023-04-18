@@ -7,8 +7,10 @@ import { AcsNotificationComponent } from './notification-details/acs-notificatio
 import { IssueNotificationComponent } from './notification-details/issue-notification/issue-notification.component';
 import { KeyvalueNotificationComponent } from './notification-details/keyvalue-notification/keyvalue-notification.component';
 import { NotificationDetailsComponent } from './notification-details/notification-details.component';
-import { NotificationsRoutingModule } from './notifications-routing.module';
 import { ViolationNotificationComponent } from './notification-details/violation-notification/violation-notification.component';
+import { NotificationsRoutingModule } from './notifications-routing.module';
+import { PropTitleCasePipe } from './prop-title-case.pipe';
+import { PropValueLinkDirective } from './prop-value-link.directive';
 
 @NgModule({
     declarations: [
@@ -18,6 +20,8 @@ import { ViolationNotificationComponent } from './notification-details/violation
         AcsNotificationComponent,
         IssueNotificationComponent,
         ViolationNotificationComponent,
+        PropTitleCasePipe,
+        PropValueLinkDirective,
     ],
     imports: [CommonModule, SharedModule, NotificationsRoutingModule, NgxJsonViewerModule],
 })

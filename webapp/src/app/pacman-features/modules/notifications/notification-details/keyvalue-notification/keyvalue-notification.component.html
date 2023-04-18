@@ -1,1 +1,16 @@
-<div *ngFor="let item of details | keyvalue">{{ item.key }} {{ item.value }}</div>
+<table class="keyvalue-table body-1 high-emphasis">
+    <tbody>
+        <tr class="keyvalue-parameter" *ngFor="let item of details | keyvalue">
+            <td class="keyvalue-name">
+                {{ item.key | proptitlecase }}
+            </td>
+            <td
+                class="keyvalue-value"
+                [appPropValueLink]="item.value"
+                (innerNavigate)="navigateTo($event)"
+            >
+                {{ item.value }}
+            </td>
+        </tr>
+    </tbody>
+</table>
