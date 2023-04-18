@@ -1,0 +1,11 @@
+.violation-table {
+    width: 100%;
+}
+
+.violation-table td {
+    padding: 8px 8px 8px 0;
+}
+
+.violation-name {
+    width: 20%;
+}

@@ -1,25 +1,34 @@
-<div class="violation-container flex flex-col gap-24 body-1 high-emphasis">
-    <div class="flex">
-        <app-text text="Policy"></app-text>
-        <app-text
-            classNames="pointer primary-400"
-            [text]="details.policyName"
-            (click)="navigateTo.emit(details.policyNameLink)"
-        >
-        </app-text>
-    </div>
+<table class="violation-table body-1 high-emphasis">
+    <tbody>
+        <tr class="violation-parameter">
+            <td class="violation-name">Policy</td>
+            <td class="violation-value">
+                <app-text
+                    classNames="pointer primary-400"
+                    [text]="details.policyName"
+                    (click)="navigateTo.emit(details.policyNameLink)"
+                >
+                </app-text>
+            </td>
+        </tr>
 
-    <div class="flex">
-        <app-text text="Violation"></app-text>
-        <app-text
-            classNames="pointer primary-400"
-            [text]="details.issueId"
-            (click)="navigateTo.emit(details.issueIdLink)"
-        ></app-text>
-    </div>
+        <tr class="violation-parameter">
+            <td class="violation-name">Violation</td>
+            <td class="violation-value">
+                <app-text
+                    classNames="pointer primary-400"
+                    [text]="details.issueId"
+                    (click)="navigateTo.emit(details.issueIdLink)"
+                ></app-text>
+            </td>
+        </tr>
 
-    <div class="flex">
-        <app-text text="Discovered on"></app-text>
-        <app-text [text]="details.scanTime | date : 'medium'"></app-text>
-    </div>
-</div>
+        <tr class="violation-parameter">
+            <td class="violation-name">Discovered on</td>
+
+            <td class="violation-value">
+                <app-text [text]="details.scanTime | date : 'medium'"></app-text>
+            </td>
+        </tr>
+    </tbody>
+</table>
