@@ -1,1 +1,25 @@
-<p>violation-notification works!</p>
+<div class="violation-container flex flex-col gap-24 body-1 high-emphasis">
+    <div class="flex">
+        <app-text text="Policy"></app-text>
+        <app-text
+            classNames="pointer primary-400"
+            [text]="details.policyName"
+            (click)="navigateTo.emit(details.policyNameLink)"
+        >
+        </app-text>
+    </div>
+
+    <div class="flex">
+        <app-text text="Violation"></app-text>
+        <app-text
+            classNames="pointer primary-400"
+            [text]="details.issueId"
+            (click)="navigateTo.emit(details.issueIdLink)"
+        ></app-text>
+    </div>
+
+    <div class="flex">
+        <app-text text="Discovered on"></app-text>
+        <app-text [text]="details.scanTime | date : 'medium'"></app-text>
+    </div>
+</div>
