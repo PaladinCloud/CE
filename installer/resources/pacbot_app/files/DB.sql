@@ -3842,3 +3842,5 @@ CALL update_filter_for_tag(@MANDATORY_TAGS);
 update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionName='Category';
 
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
+
+update pac_v2_ui_options set optionName='Asset Type' where optionName='Resource Type';

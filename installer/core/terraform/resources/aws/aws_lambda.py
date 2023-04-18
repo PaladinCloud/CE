@@ -22,7 +22,14 @@ class LambdaFunctionResource(TerraformResource):
         's3_key': {'required': True, },
         'environment': {'required': False},
         'description': {'required': False},
-        'tags': {'required': False}
+        'vpc_config': {
+            'required': False,
+            'inline_args': {
+                'security_group_ids': {'required': False},
+                'subnet_ids': {'required': False}
+            }
+        },
+        'tags': {'required': False},
     }
     description = Settings.RESOURCE_DESCRIPTION
 

@@ -1,4 +1,5 @@
 from core.terraform.resources.aws.aws_lambda import LambdaFunctionResource, LambdaPermission, LambdaFunctionUrl
+from resources.vpc.security_group import InfraSecurityGroupResource
 from resources.pacbot_app.build_ui_and_api import BuildUiAndApis
 from resources.datastore.es import ESDomain
 from resources.iam.lambda_role import LambdaRole
@@ -13,8 +14,6 @@ INVOKE_NOTIFICATION = "notification-invoke-service"
 TEMPLATE_NOTIFICATION= "notification-template-formatter-service"
 NOTIFICATION_LOG_TO_ES = "notification-es-logging-service"
 SEND_NOTIFICATION = "notification-send-email-service"
-
-
 
 class NotificationSNS(SNSResources):
     name = "notification-event"
@@ -91,7 +90,9 @@ class LogEsNotificationFunction(LambdaFunctionResource):
     handler =  "com.paladincloud.notification_log.LogNotificationToOpenSearch::handleRequest"
     runtime = "java8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX + NOTIFICATION_LOG_TO_ES + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX + "/"+ NOTIFICATION_LOG_TO_ES + ".jar"
+    subnet_ids = Settings.get('VPC')['SUBNETS']
+    security_group_ids = [InfraSecurityGroupResource.get_output_attr('id')]
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
