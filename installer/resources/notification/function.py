@@ -90,9 +90,9 @@ class LogEsNotificationFunction(LambdaFunctionResource):
     handler =  "com.paladincloud.notification_log.LogNotificationToOpenSearch::handleRequest"
     runtime = "java8"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX + NOTIFICATION_LOG_TO_ES + ".jar"
-    security_group_ids = Settings.get('VPC')['SUBNETS']
-    subnet_ids = [InfraSecurityGroupResource.get_output_attr('id')]
+    s3_key = Settings.RESOURCE_NAME_PREFIX + "/"+ NOTIFICATION_LOG_TO_ES + ".jar"
+    subnet_ids = Settings.get('VPC')['SUBNETS']
+    security_group_ids = [InfraSecurityGroupResource.get_output_attr('id')]
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
