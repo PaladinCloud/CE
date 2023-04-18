@@ -30,6 +30,8 @@
             <!-- VIOLATION -->
             <app-violation-notification
                 *ngSwitchCase="LAYOUTTYPE.VIOLATIONS"
+                [details]="notificationDetails"
+                (navigateTo)="navigateTo($event)"
             ></app-violation-notification>
             <!--./VIOLATION -->
 
