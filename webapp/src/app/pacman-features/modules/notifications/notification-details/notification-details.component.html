@@ -1,8 +1,8 @@
 <div class="notification-details component-wrapper flex flex-col gap-20 padding-28">
     <div class="header flex flex-col gap-24">
-        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px">
+        <div *ngIf="backButtonRequired" class="breadcrumb-container">
             <app-breadcrumb
-                *ngIf="breadcrumbLinks.length > 0"
+                *ngIf="breadcrumbLinks.length"
                 [breadcrumbArray]="breadcrumbArray"
                 [breadcrumbLinks]="breadcrumbLinks"
                 [breadcrumbPresent]="breadcrumbPresent"
