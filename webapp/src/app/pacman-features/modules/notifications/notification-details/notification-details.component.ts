@@ -1,22 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
 import { environment } from 'src/environments/environment';
-import * as notificationSchema from '../notifications-schema.json';
+import { CloudNotification, LayoutService, LayoutType } from '../layout.service';
 
 @Component({
     selector: 'app-notification-details',
     templateUrl: './notification-details.component.html',
     styleUrls: ['./notification-details.component.css'],
+    providers: [LayoutService],
 })
 export class NotificationDetailsComponent implements OnInit, OnDestroy {
-    routeSubscription: Subscription;
-    getDetailsSubscription: Subscription;
-    assetGroupSubscription: Subscription;
+    private destroy$ = new Subject<void>();
 
     backButtonRequired: boolean;
     pageLevel = 0;
@@ -27,10 +27,14 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
     eventId: string;
     errorMessage = '';
 
-    eventDetails = [];
-    summaryTitle = '';
-    notificationDetails = {};
     hasDetails: boolean;
+
+    readonly LAYOUTTYPE = LayoutType;
+    notificationlayoutType: LayoutType;
+
+    eventName: string;
+
+    notificationDetails: { [key: string]: unknown } = {};
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -39,16 +43,18 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         private router: Router,
         private commonResponseService: CommonResponseService,
         private assetGroupObservableService: AssetGroupObservableService,
+        private layoutService: LayoutService,
     ) {
         this.backButtonRequired = this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
 
-        this.assetGroupSubscription = this.assetGroupObservableService
+        this.assetGroupObservableService
             .getAssetGroup()
+            .pipe(takeUntil(this.destroy$))
             .subscribe((assetGroupName) => {
                 this.selectedAssetGroup = assetGroupName;
             });
 
-        this.activatedRoute.queryParams.subscribe((params) => {
+        this.activatedRoute.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
             const urlParams = params;
             this.eventId = decodeURIComponent(urlParams.eventId);
         });
@@ -90,86 +96,90 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
     }
 
     getDetails() {
-        if (this.getDetailsSubscription) {
-            this.getDetailsSubscription.unsubscribe();
-        }
-
-        const Url = environment.getEventDetails.url;
-        const Method = environment.getEventDetails.method;
+        const url = environment.getEventDetails.url;
+        const method = environment.getEventDetails.method;
         const queryParams = {
             ag: this.selectedAssetGroup,
             eventId: this.eventId + '',
-            // global: this.global,
         };
 
-        try {
-            this.getDetailsSubscription = this.commonResponseService
-                .getData(Url, Method, {}, queryParams)
-                .subscribe(
-                    (response) => {
-                        try {
-                            this.notificationDetails = response;
-                            const details = [];
-                            this.summaryTitle = response.eventName;
-                            const source = response.eventSource?.toLowerCase();
-                            const category = response.eventCategory?.toLowerCase(); // "violations" | "autofix" | "exemptions" | "sticky exemptions"
-                            const action = response.payload.action?.toLowerCase();
+        this.commonResponseService
+            .getData(url, method, {}, queryParams)
+            .subscribe((response: CloudNotification) => {
+                this.notificationlayoutType = this.layoutService.getLayoutType(response);
+                this.eventName = response.eventName;
+                this.notificationDetails = response.payload;
+            });
 
-                            const schema = JSON.parse(JSON.stringify(notificationSchema));
+        // try {
+        //     this.getDetailsSubscription = this.commonResponseService
+        //         .getData(Url, Method, {}, queryParams)
+        //         .subscribe(
+        //             (response) => {
+        //                 try {
+        //                     this.notificationDetails = response;
+        //                     const notificationType = this.layoutService.deserialize(response);
+        //                     const details = [];
+        //                     this.summaryTitle = response.eventName;
+        //                     const source = response.eventSource?.toLowerCase();
+        //                     const category = response.eventCategory?.toLowerCase(); // "violations" | "autofix" | "exemptions" | "sticky exemptions"
+        //                     const action = response.payload.action?.toLowerCase();
 
-                            let detailsSchema = [];
-                            if (schema[source] && schema[source][category]) {
-                                detailsSchema = [...schema[source][category]['common']];
+        //                     const schema = JSON.parse(JSON.stringify(notificationSchema));
 
-                                if (schema[source][category][action]) {
-                                    detailsSchema = [
-                                        ...detailsSchema,
-                                        ...schema[source][category][action],
-                                    ];
-                                }
-                            }
+        //                     let detailsSchema = [];
+        //                     if (schema[source] && schema[source][category]) {
+        //                         detailsSchema = [...schema[source][category]['common']];
 
-                            detailsSchema.forEach((obj) => {
-                                let preImgSrc;
-                                let value = response.payload[obj.key];
-                                if (obj.keyDisplayName == 'Description') {
-                                    value = this.formatDescription(value);
-                                }
-                                if (obj.key == 'severity') {
-                                    preImgSrc = `/assets/icons/violations-${value?.toLowerCase()}-icon.svg`;
-                                }
-                                details.push({
-                                    name: obj.keyDisplayName,
-                                    value: value,
-                                    link: obj.link
-                                        ? response.payload[obj.link].replace(
-                                              window.location.origin,
-                                              '',
-                                          )
-                                        : '',
-                                    preImgSrc: preImgSrc,
-                                });
-                            });
+        //                         if (schema[source][category][action]) {
+        //                             detailsSchema = [
+        //                                 ...detailsSchema,
+        //                                 ...schema[source][category][action],
+        //                             ];
+        //                         }
+        //                     }
 
-                            this.eventDetails = details;
-                            this.hasDetails = this.eventDetails.length > 0;
-                            if (this.eventDetails.length == 0) {
-                                this.errorMessage = 'noDataAvailable';
-                            } else {
-                                this.errorMessage = '';
-                            }
-                        } catch (e) {
-                            this.logger.log('javascript error: ', e);
-                            this.errorMessage = 'jsError';
-                        }
-                    },
-                    (error) => {
-                        this.errorMessage = 'apiResponseError';
-                    },
-                );
-        } catch (error) {
-            this.errorMessage = 'jsError';
-        }
+        //                     detailsSchema.forEach((obj) => {
+        //                         let preImgSrc;
+        //                         let value = response.payload[obj.key];
+        //                         if (obj.keyDisplayName == 'Description') {
+        //                             value = this.formatDescription(value);
+        //                         }
+        //                         if (obj.key == 'severity') {
+        //                             preImgSrc = `/assets/icons/violations-${value?.toLowerCase()}-icon.svg`;
+        //                         }
+        //                         details.push({
+        //                             name: obj.keyDisplayName,
+        //                             value: value,
+        //                             link: obj.link
+        //                                 ? response.payload[obj.link].replace(
+        //                                       window.location.origin,
+        //                                       '',
+        //                                   )
+        //                                 : '',
+        //                             preImgSrc: preImgSrc,
+        //                         });
+        //                     });
+
+        //                     this.eventDetails = details;
+        //                     this.hasDetails = this.eventDetails.length > 0;
+        //                     if (this.eventDetails.length == 0) {
+        //                         this.errorMessage = 'noDataAvailable';
+        //                     } else {
+        //                         this.errorMessage = '';
+        //                     }
+        //                 } catch (e) {
+        //                     this.logger.log('javascript error: ', e);
+        //                     this.errorMessage = 'jsError';
+        //                 }
+        //             },
+        //             (error) => {
+        //                 this.errorMessage = 'apiResponseError';
+        //             },
+        //         );
+        // } catch (error) {
+        //     this.errorMessage = 'jsError';
+        // }
     }
 
     formatDescription(description) {
@@ -390,8 +400,7 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        if (this.getDetailsSubscription) this.getDetailsSubscription.unsubscribe();
-        if (this.routeSubscription) this.routeSubscription.unsubscribe();
-        if (this.assetGroupSubscription) this.assetGroupSubscription.unsubscribe();
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 }
