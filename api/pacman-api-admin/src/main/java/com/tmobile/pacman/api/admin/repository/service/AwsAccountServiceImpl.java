@@ -58,6 +58,7 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
         boolean isPolicyUpdated=false;
         try {
             isPolicyUpdated=updatePolicy(accountId, baseAccount, paladinRole,"add");
+            delayForCompletion();
             baseSessioncreds = credentialProvider.getCredentials(accountId, roleName);
 
         } catch (Exception e) {
@@ -208,5 +209,13 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
         return response;
 
+    }
+    private static void delayForCompletion() {
+        try{
+            Thread.sleep(8000);
+        }catch(InterruptedException e){
+            LOGGER.error("Error in uploadAllFiles",e);
+            Thread.currentThread().interrupt();
+        }
     }
 }
