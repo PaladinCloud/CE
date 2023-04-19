@@ -14,6 +14,8 @@ export class PaladinCloudViolationNotificationComponent implements OnInit {
         scanTime: Date;
     };
 
+    @Input() title = '';
+
     @Output() navigateTo = new EventEmitter<string>();
 
     constructor() {}
