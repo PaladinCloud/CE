@@ -46,7 +46,12 @@
             ></app-keyvalue-notification>
 
             <!-- JSON -->
-            <ngx-json-viewer *ngSwitchDefault [json]="notificationDetails"> </ngx-json-viewer>
+            <app-json-notification
+                *ngSwitchDefault
+                [details]="notificationDetails"
+                [title]="eventName"
+            >
+            </app-json-notification>
             <!-- JSON -->
         </div>
         <!--./NOTIFICATION SWITCH -->

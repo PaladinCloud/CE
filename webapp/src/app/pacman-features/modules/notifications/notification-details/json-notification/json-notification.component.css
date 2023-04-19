@@ -3,15 +3,3 @@
     height: var(--text-headline-5-font-size);
     width: var(--text-headline-5-font-size);
 }
-
-.keyvalue-table {
-    width: 100%;
-}
-
-.keyvalue-table td {
-    padding: 8px 8px 8px 0;
-}
-
-.keyvalue-name {
-    width: 20%;
-}
