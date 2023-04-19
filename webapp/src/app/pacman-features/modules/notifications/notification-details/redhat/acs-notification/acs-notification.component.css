@@ -1,0 +1,18 @@
+.acs-table {
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border-200);
+    width: 800px;
+}
+
+.acs-table tr {
+    border-bottom: 1px solid var(--border-100);
+}
+
+.acs-table td {
+    padding: 20px;
+}
+
+.acs-name {
+    width: 20%;
+    color: var(--text-low-emphasis);
+}
