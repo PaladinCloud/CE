@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'app-aws-issue-notification',
@@ -6,6 +6,13 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./issue-notification.component.css'],
 })
 export class AwsIssueNotificationComponent implements OnInit {
+    @Input() details: {
+        accountname: string;
+        _cloudType: string;
+        discoverydate: string;
+        latestdescription: string;
+    };
+
     constructor() {}
 
     ngOnInit(): void {}

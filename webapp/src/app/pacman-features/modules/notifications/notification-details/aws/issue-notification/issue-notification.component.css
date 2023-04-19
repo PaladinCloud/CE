@@ -1,0 +1,19 @@
+.issue-table {
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border-200);
+    width: 800px;
+}
+
+.issue-table tr {
+    border-bottom: 1px solid var(--border-100);
+}
+
+.issue-table td {
+    padding: 20px;
+}
+
+.issue-name {
+    vertical-align: top;
+    width: 20%;
+    color: var(--text-low-emphasis);
+}

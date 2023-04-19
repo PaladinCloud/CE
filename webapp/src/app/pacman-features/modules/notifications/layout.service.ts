@@ -44,6 +44,6 @@ export class LayoutService {
     }
 
     private getEventType(notification: CloudNotification) {
-        return `${notification.eventSource}_${notification.eventCategory}`;
+        return `${notification.eventSource}_${notification.eventCategory}`.toLowerCase();
     }
 }
