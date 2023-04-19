@@ -27,6 +27,8 @@ export class LayoutService {
         const eventType = this.getEventType(notification);
         switch (eventType) {
             case 'aws_issue':
+            case 'aws_account':
+            case 'aws_scheduled':
                 return LayoutType.AWS_ISSUE;
             case 'redhat_acs':
                 return LayoutType.REDHAT_ACS;

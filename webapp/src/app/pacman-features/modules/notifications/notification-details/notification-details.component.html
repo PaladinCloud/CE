@@ -24,6 +24,7 @@
             <app-aws-issue-notification
                 *ngSwitchCase="LAYOUTTYPE.AWS_ISSUE"
                 [details]="notificationDetails"
+                [title]="eventName"
             ></app-aws-issue-notification>
             <!--./AWS ISSUE -->
 
