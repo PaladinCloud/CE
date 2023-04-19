@@ -180,6 +180,8 @@ public interface Constants {
     String VALID_TO = "validto";
     String UNDERSCORE_COUNT = "_count";
     String ISSUE_DETAILS = "issueDetails";
+    String VULNERABILITY_DETAILS = "vulnerabilityDetails";
+    String ERROR_READING_VULNERABILITY = "Error in parsing vulnerability details";
     String QUALYS_ISSUE_DETAILS = "qualysIssueDetails";
     String QUALYS_VIOLATION_DETAILS = "qualysViolationDetails";
     String VIOLATION_REASON = "violationReason";

@@ -17,10 +17,7 @@ package com.tmobile.pacman.api.compliance.service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.tmobile.pacman.api.commons.Constants;
 import com.tmobile.pacman.api.commons.exception.DataException;
 import com.tmobile.pacman.api.commons.exception.ServiceException;
@@ -963,9 +960,10 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
         String resourceId = null;
         String policyId = null;
         String issueDetails = null;
+        String vulnerabilityDetails=null;
         String pac_ds = "";
-
         List<Map<String, Object>> violationList = new ArrayList<>();
+        List<Map<String, Object>> vulnerabilityList = new ArrayList<>();
         Map<String, Object> violation = null;
         Map<String, Object> policyViolationByIssueId;
         try {
@@ -983,9 +981,23 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
             policyDescription = (null != getPolicyDescription(policyId).get(RULE_DESC)) ? getPolicyDescription(policyId).get(RULE_DESC).toString() : "";
             // get policy title from DB
             policyViolated = (null != getPolicyDescription(policyId).get(DISPLAY_NAME)) ? getPolicyDescription(policyId).get(DISPLAY_NAME).toString() : "";
+            vulnerabilityDetails = (null != policyViolationByIssueId.get(VULNERABILITY_DETAILS)) ? policyViolationByIssueId.get(
+                    VULNERABILITY_DETAILS).toString() : null;
             // get issues details from DB
             issueDetails = (null != policyViolationByIssueId.get(ISSUE_DETAILS)) ? policyViolationByIssueId.get(ISSUE_DETAILS).toString() : null;
+            if(vulnerabilityDetails!=null){
+                JsonParser jsonParser = new JsonParser();
+                try {
+                    JsonPrimitive resultJson = (JsonPrimitive) jsonParser.parse(vulnerabilityDetails);
+                    Map<String, Object> vulnerabitity=new HashMap<>();
+                    vulnerabitity.put("vulnerabitityDetails", resultJson.toString());
+                    vulnerabilityList.add(vulnerabitity);
 
+                } catch (Exception e) {
+                    logger.error("Error in reading qualys details", e);
+                    throw new ServiceException(ERROR_READING_VULNERABILITY);
+                }
+            }
             if (null != policyViolationByIssueId.get(QUALYS_ISSUE_DETAILS)) {
                 String violationTitle = policyViolationByIssueId.get(QUALYS_ISSUE_DETAILS).toString();
                 violation = new HashMap<>();
@@ -1016,7 +1028,8 @@ public class ComplianceServiceImpl implements ComplianceService, Constants {
                     policyDescription,
                     policyId,
                     pac_ds,
-                    violationList
+                    violationList,
+                    vulnerabilityList
             );
         } else {
             throw new ServiceException(NO_DATA_FOUND);
