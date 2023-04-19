@@ -22,7 +22,9 @@
                 <td class="acs-name">Id</td>
 
                 <td class="acs-value">
-                    {{ details.id }}
+                    <a class="primary-400" [href]="details.goToViolation" target="_blank">
+                        {{ details.id }}
+                    </a>
                 </td>
             </tr>
 
