@@ -1776,6 +1776,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 } else {
                     issueDetails.put(ISSUE_REASON, UNABLE_TO_DETERMINE);
                 }
+                if (null != source.get(VULNERABILITY_DETAILS)) {
+                    issueDetails.put(VULNERABILITY_DETAILS, source.get(VULNERABILITY_DETAILS));
+                }
                 if (null != source.get(ISSUE_DETAILS)) {
                     issueDetails.put(ISSUE_DETAILS, source.get(ISSUE_DETAILS).getAsString());
                 }

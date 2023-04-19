@@ -69,6 +69,8 @@ public class PolicyViolationDetails {
     /** The violation details. */
     List<Map<String, Object>> violationDetails;
 
+    List<Map<String,Object>> vulnerabilityDetails;
+
     /**
      * Instantiates a new policy violation details.
      *
@@ -93,7 +95,7 @@ public class PolicyViolationDetails {
             String violationReason, String violationCreatedDate,
             String violationModifiedDate, String ruleId,
             String assetGroup,
-            List<Map<String, Object>> violationDetails) {
+            List<Map<String, Object>> violationDetails, List<Map<String, Object>> vulnerabilityDetails) {
         super();
         this.resourceType = resourceType;
         this.status = status;
@@ -107,6 +109,7 @@ public class PolicyViolationDetails {
         this.violationModifiedDate = violationModifiedDate;
         this.policyId = ruleId;
         this.violationDetails = violationDetails;
+        this.vulnerabilityDetails = vulnerabilityDetails;
         this.assetGroup = assetGroup;
     }
 
@@ -333,7 +336,7 @@ public class PolicyViolationDetails {
         this.violationModifiedDate = violationModifiedDate;
     }
 
- 
+
     /**
      * Gets the violation details.
      *
@@ -350,5 +353,13 @@ public class PolicyViolationDetails {
      */
     public void setViolationDetails(List<Map<String, Object>> violationDetails) {
         this.violationDetails = violationDetails;
+    }
+
+    public List<Map<String, Object>> getVulnerabilityDetails() {
+        return vulnerabilityDetails;
+    }
+
+    public void setVulnerabilityDetails(List<Map<String, Object>> vulnerabilityDetails) {
+        this.vulnerabilityDetails = vulnerabilityDetails;
     }
 }
