@@ -1,1 +1,33 @@
-<p>issue-notification works!</p>
+<table class="issue-table body-1 high-emphasis">
+    <tbody>
+        <tr class="issue-parameter">
+            <td class="issue-name">Account</td>
+            <td class="issue-value">
+                {{ details?.accountname }}
+            </td>
+        </tr>
+
+        <tr class="issue-parameter">
+            <td class="issue-name">Cloud</td>
+            <td class="issue-value">
+                {{ details?._cloudType }}
+            </td>
+        </tr>
+
+        <tr class="issue-parameter">
+            <td class="issue-name">Discovered on</td>
+
+            <td class="issue-value">
+                {{ details?.discoverydate | date : 'medium' }}
+            </td>
+        </tr>
+
+        <tr class="issue-parameter">
+            <td class="issue-name">Description</td>
+
+            <td class="issue-value">
+                {{ details?.latestdescription }}
+            </td>
+        </tr>
+    </tbody>
+</table>
