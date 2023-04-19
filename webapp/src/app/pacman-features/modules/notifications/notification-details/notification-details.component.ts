@@ -78,13 +78,16 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const url = new URL(link);
+        const route = url.pathname + url.search;
+
         this.workflowService.addRouterSnapshotToLevel(
             this.router.routerState.snapshot.root,
             0,
             this.breadcrumbPresent,
         );
         this.router
-            .navigate([link], {
+            .navigate([route], {
                 queryParamsHandling: 'merge',
             })
             .then((response) => {
