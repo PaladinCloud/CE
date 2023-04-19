@@ -10,18 +10,12 @@
         </div>
     </div>
     <div class="content-wrapper padding-24 flex flex-col gap-24">
-        <div class="header flex flex-col gap-8">
-            <app-text text="Summary" classNames="body-2 low-emphasis"></app-text>
-            <div class="flex">
-                <app-text [text]="eventName" classNames="body-1 high-emphasis"></app-text>
-            </div>
-        </div>
-
         <!-- NOTIFICATION SWITCH -->
         <div [ngSwitch]="notificationlayoutType">
             <!-- REDHAT ACS -->
             <app-redhat-acs-notification
                 *ngSwitchCase="LAYOUTTYPE.REDHAT_ACS"
+                [title]="eventName"
                 [details]="notificationDetails"
             ></app-redhat-acs-notification>
             <!--./REDHAT ACS -->

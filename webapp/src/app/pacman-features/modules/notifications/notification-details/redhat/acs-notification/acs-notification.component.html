@@ -1,57 +1,53 @@
-<table class="acs-table body-1 high-emphasis">
-    <tbody>
-        <tr class="acs-parameter">
-            <td class="acs-name">Severity</td>
-            <td class="acs-value">{{ details.severity }}</td>
-        </tr>
+<div class="acs-notification-container body-1 high-emphasis">
+    <div class="header flex">
+        <img class="header-icon" src="/assets/icons/redhat-color.svg" />
+        <div class="header-text">
+            {{ title }}
+        </div>
+        <a class="acs-console-link" target="_blank" [href]="details.goToViolation">
+            <mat-icon>open_in_new</mat-icon>
+        </a>
+        <div class="header-severity">
+            <app-acs-severity [severity]="details.severity"></app-acs-severity>
+        </div>
+    </div>
 
-        <tr class="acs-parameter">
-            <td class="acs-name">Last Updated</td>
-            <td class="acs-value">
-                {{ details.lastUpdated | date : 'medium' }}
-            </td>
-        </tr>
+    <div class="acs-description">
+        {{ details.description }}
+    </div>
 
-        <tr class="acs-parameter">
-            <td class="acs-name">Go To Violation</td>
+    <table class="acs-table">
+        <tbody>
+            <tr class="acs-parameter">
+                <td class="acs-name">Id</td>
 
-            <td class="acs-value">
-                <a class="primary-400" target="_blank" [href]="details.goToViolation">
-                    {{ details.goToViolation }}
-                </a>
-            </td>
-        </tr>
+                <td class="acs-value">
+                    {{ details.id }}
+                </td>
+            </tr>
 
-        <tr class="acs-parameter">
-            <td class="acs-name">Cluster Name</td>
+            <tr class="acs-parameter">
+                <td class="acs-name">Cluster Name</td>
 
-            <td class="acs-value">
-                {{ details.clusterName }}
-            </td>
-        </tr>
+                <td class="acs-value">
+                    {{ details.clusterName }}
+                </td>
+            </tr>
 
-        <tr class="acs-parameter">
-            <td class="acs-name">Namespace</td>
+            <tr class="acs-parameter">
+                <td class="acs-name">Namespace</td>
 
-            <td class="acs-value">
-                {{ details.namespace }}
-            </td>
-        </tr>
+                <td class="acs-value">
+                    {{ details.namespace }}
+                </td>
+            </tr>
 
-        <tr class="acs-parameter">
-            <td class="acs-name">Description</td>
-
-            <td class="acs-value">
-                {{ details.description }}
-            </td>
-        </tr>
-
-        <tr class="acs-parameter">
-            <td class="acs-name">Id</td>
-
-            <td class="acs-value">
-                {{ details.id }}
-            </td>
-        </tr>
-    </tbody>
-</table>
+            <tr class="acs-parameter">
+                <td class="acs-name">Last Updated</td>
+                <td class="acs-value">
+                    {{ details.lastUpdated | date : 'medium' }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
