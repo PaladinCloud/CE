@@ -1,3 +1,9 @@
+.header-icon {
+    font-size: var(--text-body-1-font-size);
+    height: var(--text-body-1-font-size);
+    width: var(--text-body-1-font-size);
+}
+
 .keyvalue-table {
     width: 100%;
 }
@@ -9,4 +15,3 @@
 .keyvalue-name {
     width: 20%;
 }
-
