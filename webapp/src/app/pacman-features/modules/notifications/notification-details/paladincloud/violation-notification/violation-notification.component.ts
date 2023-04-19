@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-    selector: 'app-violation-notification',
+    selector: 'app-paladincloud-violation-notification',
     templateUrl: './violation-notification.component.html',
     styleUrls: ['./violation-notification.component.css'],
 })
-export class ViolationNotificationComponent implements OnInit {
+export class PaladinCloudViolationNotificationComponent implements OnInit {
     @Input() details: {
         policyName: string;
         policyNameLink: string;
