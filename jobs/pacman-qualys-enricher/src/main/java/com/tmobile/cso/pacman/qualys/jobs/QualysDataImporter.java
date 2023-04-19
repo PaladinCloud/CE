@@ -44,6 +44,7 @@ public abstract class QualysDataImporter {
     CredentialProvider credentialProvider=new CredentialProvider();
 
     protected String secretManagerPrefix=System.getProperty("secret.manager.path");
+    protected String baseRole=System.getProperty("s3.role");
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(QualysDataImporter.class);
@@ -103,8 +104,7 @@ public abstract class QualysDataImporter {
 
     private void getQualysInfo() {
         BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount, baseRegion, roleName);
-        secretManagerPrefix="paladincloud/secret";
-        String secretData=secretManagerUtil.fetchSecret(secretManagerPrefix+"/qualys",credential,baseRegion);
+        String secretData=secretManagerUtil.fetchSecret(secretManagerPrefix+"/"+baseRole+"/qualys",credential,baseRegion);
         Map<String, String> dataMap = Util.getJsonData(secretData);
         DEFAULT_USER=dataMap.get("apiusername");
         DEFAULT_PASS=dataMap.get("apipassword");
