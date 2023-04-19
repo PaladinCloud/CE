@@ -25,9 +25,10 @@
         <tr class="issue-parameter">
             <td class="issue-name">Description</td>
 
-            <td class="issue-value">
-                {{ details?.latestdescription }}
-            </td>
+            <td
+                class="issue-value"
+                [innerHTML]="details?.latestdescription | notificationDetails"
+            ></td>
         </tr>
     </tbody>
 </table>

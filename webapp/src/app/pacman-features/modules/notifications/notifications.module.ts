@@ -9,7 +9,8 @@ import { NotificationDetailsComponent } from './notification-details/notificatio
 import { PaladinCloudViolationNotificationComponent } from './notification-details/paladincloud/violation-notification/violation-notification.component';
 import { RedhatAcsNotificationComponent } from './notification-details/redhat/acs-notification/acs-notification.component';
 import { NotificationsRoutingModule } from './notifications-routing.module';
-import { PropTitleCasePipe } from './prop-title-case.pipe';
+import { NotificationDetailsPipe } from './pipes/notification-details.pipe';
+import { PropTitleCasePipe } from './pipes/prop-title-case.pipe';
 import { PropValueLinkDirective } from './prop-value-link.directive';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { PropValueLinkDirective } from './prop-value-link.directive';
         PropTitleCasePipe,
         PropValueLinkDirective,
         RedhatAcsNotificationComponent,
+        NotificationDetailsPipe,
     ],
     imports: [CommonModule, SharedModule, NotificationsRoutingModule, NgxJsonViewerModule],
 })
