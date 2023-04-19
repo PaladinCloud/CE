@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { IssueNotificationComponent } from './issue-notification.component';
+import { AwsIssueNotificationComponent } from './issue-notification.component';
 
 describe('IssueNotificationComponent', () => {
-  let component: IssueNotificationComponent;
-  let fixture: ComponentFixture<IssueNotificationComponent>;
+  let component: AwsIssueNotificationComponent;
+  let fixture: ComponentFixture<AwsIssueNotificationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IssueNotificationComponent ]
+      declarations: [ AwsIssueNotificationComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IssueNotificationComponent);
+    fixture = TestBed.createComponent(AwsIssueNotificationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

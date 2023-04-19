@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
 export enum LayoutType {
+    AWS_ISSUE = 'AWS_ISSUE',
+    REDHAT_ACS = 'REDHAT_ACS',
+    PALADINCLOUD_VIOLATION = 'PALADINCLOUD_VIOLATION',
     JSON = 'JSON',
     KEYVALUE = 'KEYVALUE',
-    ISSUE = 'ISSUE',
-    ACS = 'ACS',
-    VIOLATIONS = 'VIOLATIONS',
 }
 
 export interface CloudNotification {
@@ -24,13 +24,14 @@ export class LayoutService {
 
     getLayoutType(notification: CloudNotification): LayoutType {
         const payload = notification.payload;
-        switch (notification.eventCategory) {
-            case 'issue':
-                return LayoutType.ISSUE;
-            case 'acs':
-                return LayoutType.ACS;
-            case 'violations':
-                return LayoutType.VIOLATIONS;
+        const eventType = this.getEventType(notification);
+        switch (eventType) {
+            case 'aws_issue':
+                return LayoutType.AWS_ISSUE;
+            case 'redhat_acs':
+                return LayoutType.REDHAT_ACS;
+            case 'paladincloud_violations':
+                return LayoutType.PALADINCLOUD_VIOLATION;
             default:
                 for (const prop in payload) {
                     if (typeof payload[prop] === 'object' || Array.isArray(payload[prop])) {
@@ -40,5 +41,9 @@ export class LayoutService {
                 break;
         }
         return LayoutType.KEYVALUE;
+    }
+
+    private getEventType(notification: CloudNotification) {
+        return `${notification.eventSource}_${notification.eventCategory}`;
     }
 }

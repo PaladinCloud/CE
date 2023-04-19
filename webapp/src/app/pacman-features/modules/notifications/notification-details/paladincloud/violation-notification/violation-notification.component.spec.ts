@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViolationNotificationComponent } from './violation-notification.component';
+import { PaladinCloudViolationNotificationComponent } from './violation-notification.component';
 
 describe('ViolationNotificationComponent', () => {
-  let component: ViolationNotificationComponent;
-  let fixture: ComponentFixture<ViolationNotificationComponent>;
+  let component: PaladinCloudViolationNotificationComponent;
+  let fixture: ComponentFixture<PaladinCloudViolationNotificationComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ViolationNotificationComponent ]
+      declarations: [ PaladinCloudViolationNotificationComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViolationNotificationComponent);
+    fixture = TestBed.createComponent(PaladinCloudViolationNotificationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

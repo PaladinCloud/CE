@@ -19,20 +19,25 @@
 
         <!-- NOTIFICATION SWITCH -->
         <div [ngSwitch]="notificationlayoutType">
-            <!-- ACES -->
-            <app-acs-notification *ngSwitchCase="LAYOUTTYPE.ACS"></app-acs-notification>
-            <!--./ACS -->
+            <!-- REDHAT ACS -->
+            <app-redhat-acs-notification
+                *ngSwitchCase="LAYOUTTYPE.REDHAT_ACS"
+            ></app-redhat-acs-notification>
+            <!--./REDHAT ACS -->
 
-            <!-- ISSUE -->
-            <app-issue-notification *ngSwitchCase="LAYOUTTYPE.ISSUE"></app-issue-notification>
-            <!--./ISSUE -->
+            <!-- AWS ISSUE -->
+            <app-aws-issue-notification
+                *ngSwitchCase="LAYOUTTYPE.AWS_ISSUE"
+            ></app-aws-issue-notification>
+            <!--./AWS ISSUE -->
 
             <!-- VIOLATION -->
-            <app-violation-notification
-                *ngSwitchCase="LAYOUTTYPE.VIOLATIONS"
+            <app-paladincloud-violation-notification
+                *ngSwitchCase="LAYOUTTYPE.PALADINCLOUD_VIOLATION"
                 [details]="notificationDetails"
                 (navigateTo)="navigateTo($event)"
-            ></app-violation-notification>
+            >
+            </app-paladincloud-violation-notification>
             <!--./VIOLATION -->
 
             <!-- KEY VALUE -->
