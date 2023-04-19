@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { WorkflowService } from 'src/app/core/services/workflow.service';
 
 @Component({
     selector: 'app-keyvalue-notification',
@@ -9,7 +8,9 @@ import { WorkflowService } from 'src/app/core/services/workflow.service';
 })
 export class KeyvalueNotificationComponent implements OnInit {
     @Input() details: { [key: string]: unknown };
-    constructor(private router: Router, private workflowService: WorkflowService) {}
+    @Input() title = '';
+
+    constructor(private router: Router) {}
 
     ngOnInit(): void {}
 
