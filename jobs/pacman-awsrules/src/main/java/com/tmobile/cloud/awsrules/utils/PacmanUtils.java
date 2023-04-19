@@ -4005,7 +4005,7 @@ public class PacmanUtils {
         Map<String, Object> mustTermsFilter = new HashMap<>();
         mustFilter.put(convertAttributetoKeyword(attributeName), imageId);
         if(null!=severityVulnValue)
-            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.AQUA_SEVERITY_KEY), severityVulnValue);
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.SEVERITY), severityVulnValue);
 
         try {
 
@@ -4033,4 +4033,45 @@ public class PacmanUtils {
         }
         return resourceVerified;
     }
+
+    public static List<JsonObject> checkInstanceIdFromElasticSearchForTenable(String instanceId,
+                                                                           String tenableEsAPI,
+                                                                           String attributeName,
+                                                                           String severityVulnValue) {
+        JsonParser jsonParser = new JsonParser();
+        List<JsonObject> resourceVerified = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(attributeName), instanceId);
+        if(null!=severityVulnValue)
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TENABLE_SEVERITY_KEY), severityVulnValue);
+
+        try {
+
+            JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(tenableEsAPI+"?size=10000", mustFilter,
+                    mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+            if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+                {
+                    String hitsJsonString = resultJson.get(PacmanRuleConstants.HITS).toString();
+                    JsonObject hitsJson = (JsonObject) jsonParser.parse(hitsJsonString);
+                    JsonArray jsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+                    if (jsonArray.size() > 0) {
+                        for (JsonElement element : jsonArray) {
+                            JsonObject firstObject = (JsonObject) element;
+                            JsonObject sourceJson = (JsonObject) firstObject.get(PacmanRuleConstants.SOURCE);
+                            if ((null != sourceJson)) {
+                                resourceVerified.add(sourceJson);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("failed to fetch data from ES");
+        }
+        return resourceVerified;
+    }
+
 }
