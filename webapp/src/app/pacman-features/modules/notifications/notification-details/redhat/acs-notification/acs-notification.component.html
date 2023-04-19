@@ -1,1 +1,57 @@
-<p>acs-notification works!</p>
+<table class="acs-table body-1 high-emphasis">
+    <tbody>
+        <tr class="acs-parameter">
+            <td class="acs-name">Severity</td>
+            <td class="acs-value">{{ details.severity }}</td>
+        </tr>
+
+        <tr class="acs-parameter">
+            <td class="acs-name">Last Updated</td>
+            <td class="acs-value">
+                {{ details.lastUpdated | date : 'medium' }}
+            </td>
+        </tr>
+
+        <tr class="acs-parameter">
+            <td class="acs-name">Go To Violation</td>
+
+            <td class="acs-value">
+                <a class="primary-400" target="_blank" [href]="details.goToViolation">
+                    {{ details.goToViolation }}
+                </a>
+            </td>
+        </tr>
+
+        <tr class="acs-parameter">
+            <td class="acs-name">Cluster Name</td>
+
+            <td class="acs-value">
+                {{ details.clusterName }}
+            </td>
+        </tr>
+
+        <tr class="acs-parameter">
+            <td class="acs-name">Namespace</td>
+
+            <td class="acs-value">
+                {{ details.namespace }}
+            </td>
+        </tr>
+
+        <tr class="acs-parameter">
+            <td class="acs-name">Description</td>
+
+            <td class="acs-value">
+                {{ details.description }}
+            </td>
+        </tr>
+
+        <tr class="acs-parameter">
+            <td class="acs-name">Id</td>
+
+            <td class="acs-value">
+                {{ details.id }}
+            </td>
+        </tr>
+    </tbody>
+</table>

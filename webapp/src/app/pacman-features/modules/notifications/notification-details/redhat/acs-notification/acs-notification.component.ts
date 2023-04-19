@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
     selector: 'app-redhat-acs-notification',
@@ -6,6 +6,16 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./acs-notification.component.css'],
 })
 export class RedhatAcsNotificationComponent implements OnInit {
+    @Input() details: {
+        severity: string;
+        lastUpdated: Date;
+        goToViolation: string;
+        clusterName: string;
+        namespace: string;
+        description: string;
+        id: string;
+    };
+
     constructor() {}
 
     ngOnInit(): void {}
