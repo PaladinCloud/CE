@@ -8,22 +8,26 @@ import { KeyvalueNotificationComponent } from './notification-details/keyvalue-n
 import { NotificationDetailsComponent } from './notification-details/notification-details.component';
 import { PaladinCloudViolationNotificationComponent } from './notification-details/paladincloud/violation-notification/violation-notification.component';
 import { RedhatAcsNotificationComponent } from './notification-details/redhat/acs-notification/acs-notification.component';
+import { AcsSeverityComponent } from './notification-details/redhat/acs-notification/acs-severity/acs-severity.component';
 import { NotificationsRoutingModule } from './notifications-routing.module';
 import { NotificationDetailsPipe } from './pipes/notification-details.pipe';
 import { PropTitleCasePipe } from './pipes/prop-title-case.pipe';
+import { SeverityPipe } from './pipes/severity.pipe';
 import { PropValueLinkDirective } from './prop-value-link.directive';
 
 @NgModule({
     declarations: [
+        AcsSeverityComponent,
         AwsIssueNotificationComponent,
         CloudNotificationsComponent,
         KeyvalueNotificationComponent,
         NotificationDetailsComponent,
+        NotificationDetailsPipe,
         PaladinCloudViolationNotificationComponent,
         PropTitleCasePipe,
         PropValueLinkDirective,
         RedhatAcsNotificationComponent,
-        NotificationDetailsPipe,
+        SeverityPipe,
     ],
     imports: [CommonModule, SharedModule, NotificationsRoutingModule, NgxJsonViewerModule],
 })

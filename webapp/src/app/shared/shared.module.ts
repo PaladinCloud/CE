@@ -245,6 +245,7 @@ import { InputFieldComponent } from './input-field/input-field.component';
     MatTooltipModule,
     TitleBurgerHeadComponent,
     MatSelectModule,
+    MatIconModule,
     OverlayComponent,
     InputFieldComponent,
     SearchableDropdownComponent,

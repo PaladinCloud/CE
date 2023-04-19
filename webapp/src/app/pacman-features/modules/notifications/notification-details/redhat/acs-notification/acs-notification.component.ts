@@ -16,6 +16,8 @@ export class RedhatAcsNotificationComponent implements OnInit {
         id: string;
     };
 
+    @Input() title = '';
+
     constructor() {}
 
     ngOnInit(): void {}

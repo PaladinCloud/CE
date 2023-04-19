@@ -12,6 +12,7 @@ export class AwsIssueNotificationComponent implements OnInit {
         discoverydate: string;
         latestdescription: string;
     };
+    @Input() title = '';
 
     constructor() {}
 
