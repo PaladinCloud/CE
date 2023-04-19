@@ -24,16 +24,18 @@ class InvokeNotificationFunction(LambdaFunctionResource):
     function_name = INVOKE_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.SendNotification::handleRequest"
+    memory_size = 512
+    timeout = 180
     runtime = "java11"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX + "/" +  INVOKE_NOTIFICATION + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX +   "/" + INVOKE_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'SNS_TOPIC_ARN': NotificationSNS.get_output_attr('arn')
         }
     }
     DEPENDS_ON = [NotificationSNS,BuildUiAndApis]
-
+    
 class SendNotificationFunctionUrl(LambdaFunctionUrl):
     function_name = InvokeNotificationFunction.get_output_attr('function_name')
     authorization_type = "NONE"
@@ -41,30 +43,37 @@ class SendNotificationFunctionUrl(LambdaFunctionUrl):
 class SendNotificationFunction(LambdaFunctionResource):
     function_name = SEND_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
-    handler =  "com.paladincloud.FetchNotificationSettings::handleRequest"
+    handler =  "com.paladincloud.InvokeNotificationsApi::handleRequest"
     runtime = "java11"
+    memory_size = 512
+    timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key =  Settings.RESOURCE_NAME_PREFIX + "/" +  SEND_NOTIFICATION + ".jar"
+    s3_key =  Settings.RESOURCE_NAME_PREFIX +  "/" + SEND_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
             'CONFIG_SERVER_CREDENTIALS' : "dXNlcjpwYWNtYW4=",
             'CONFIG_SERVER_URL'	: ApplicationLoadBalancer.get_api_base_url() + "/config/application/prd/latest",
-            'NOTIFICATION_SETTINGS_URL' : ApplicationLoadBalancer.get_api_base_url()+ "/api/admin/notifications/preferences"     
+            'INVOKE_NOTIFICATION_URL' : ApplicationLoadBalancer.get_api_base_url()+ "/notifications/send-plain-text-mail"     
         }
     }
     DEPENDS_ON = [BuildUiAndApis]
+
 class TemplateFormatterFunction(LambdaFunctionResource):
     function_name = TEMPLATE_NOTIFICATION
     role = LambdaRole.get_output_attr('arn')
-    handler =  "com.paladincloud.InvokeNotificationsApi::handleRequest"
+    handler =  "com.paladincloud.FetchNotificationSettings::handleRequest"
     runtime = "java11"
+    memory_size = 512
+    timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX  + "/" +  TEMPLATE_NOTIFICATION + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX  +  "/" + TEMPLATE_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
-            'INVOKE_NOTIFICATION_URL' :  ApplicationLoadBalancer.get_api_base_url ()+ "/api/notifications/send-plain-text-mail"
+            'CONFIG_SERVER_CREDENTIALS' : "dXNlcjpwYWNtYW4=",
+            'CONFIG_SERVER_URL'	: ApplicationLoadBalancer.get_api_base_url() + "/config/application/prd/latest",
+            'NOTIFICATION_SETTINGS_URL'	: ApplicationLoadBalancer.get_api_base_url()+ "/admin/notifications/preferences-and-configs"
         }
     }
     DEPENDS_ON = [BuildUiAndApis]
@@ -72,8 +81,10 @@ class TemplateFormatterFunction(LambdaFunctionResource):
 class InAppNotificationFunction(LambdaFunctionResource):
     function_name = INAPP_NOTIFICATION_FILE_NAME
     role = LambdaRole.get_output_attr('arn')
-    handler =  INAPP_NOTIFICATION_FILE_NAME  + ".lambda_handler"
+    handler =  INAPP_NOTIFICATION_FILE_NAME + ".lambda_handler"
     runtime = "python3.8"
+    memory_size = 512
+    timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = UploadLambdaInappFile.get_output_attr('id')
     environment = {
@@ -83,12 +94,15 @@ class InAppNotificationFunction(LambdaFunctionResource):
         }
     }
     DEPENDS_ON = [AppSyncNotification,BuildUiAndApis]
+    
 
 class LogEsNotificationFunction(LambdaFunctionResource):
     function_name = NOTIFICATION_LOG_TO_ES
     role = LambdaRole.get_output_attr('arn')
     handler =  "com.paladincloud.notification_log.LogNotificationToOpenSearch::handleRequest"
     runtime = "java8"
+    memory_size = 512
+    timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
     s3_key = Settings.RESOURCE_NAME_PREFIX + "/"+ NOTIFICATION_LOG_TO_ES + ".jar"
     subnet_ids = Settings.get('VPC')['SUBNETS']
@@ -97,7 +111,7 @@ class LogEsNotificationFunction(LambdaFunctionResource):
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
             'CONFIG_SERVER_CREDENTIALS' : "dXNlcjpwYWNtYW4=",
-            'CONFIG_SERVICE_URL'	: ApplicationLoadBalancer.get_api_base_url() + "/api/config/rule/prd/latest",
+            'CONFIG_SERVICE_URL'	: ApplicationLoadBalancer.get_api_base_url() + "/config/rule/prd/latest",
             'ES_URI' : ESDomain.get_http_url_with_port()
         }
     }
