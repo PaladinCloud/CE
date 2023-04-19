@@ -1,3 +1,12 @@
+.header {
+    margin-bottom: 18px;
+    gap: 8px;
+}
+
+.header-icon {
+    width: 24px;
+}
+
 .issue-table {
     border-radius: 4px;
     box-shadow: 0 0 0 1px var(--border-200);
