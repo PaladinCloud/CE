@@ -77,7 +77,7 @@ public class NotificationUtils {
         request.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(RESOURCE_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
-                PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+                PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.NOTIFICATION_EMAIL_DATE_FORMAT));
 
         //populate tags information into additionalInfo field.
         Map<String,String> tagsKeyAndValueMap = new HashMap<>();
