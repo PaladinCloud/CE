@@ -43,6 +43,7 @@ class Buildpacbot(object):
         self.appsyncapikey = appsyncapikey
         self.region = region
         self.appsync_url = appsync_url
+        self.lambda_path = lambda_path
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -128,6 +129,7 @@ class Buildpacbot(object):
         self.build_api_job_jars(self.codebase_root_dir)
         self._replace_webapp_new_config_with_original(webapp_dir)
         self.upload_jar_files(self.codebase_root_dir, bucket, s3_key_prefix)
+        self.update_lambda_jar_files(self.codebase_root_dir, bucket, s3_key_prefix)
 
     def build_api_job_jars(self, working_dir):
         print("Started building the jar...............\n")
@@ -151,6 +153,21 @@ class Buildpacbot(object):
                 for jarfile in files:
                     copy_file_from = os.path.join(folder, jarfile)
                     s3_jar_file_key = str(os.path.join(s3_key_prefix, jarfile))
+                    self.write_to_debug_log("JAR File: %s, Uploading to S3..." % s3_jar_file_key)
+                    self.s3_client.upload_file(copy_file_from, bucket, s3_jar_file_key)
+                    self.write_to_debug_log("JAR File: %s, Uploaded to S3" % s3_jar_file_key)
+
+    def update_lambda_jar_files(self, working_dir, bucket, s3_key_prefix):
+        folders = [
+            os.path.join(working_dir, "dist", "lambda")
+        ]
+
+        for folder in folders:
+            if os.path.exists(folder):
+                files = os.walk(folder).__next__()[2]
+                for jarfile in files:
+                    copy_file_from = os.path.join(folder, jarfile)
+                    s3_jar_file_key = str(os.path.join(s3_key_prefix, self.lambda_path ,jarfile))
                     self.write_to_debug_log("JAR File: %s, Uploading to S3..." % s3_jar_file_key)
                     self.s3_client.upload_file(copy_file_from, bucket, s3_jar_file_key)
                     self.write_to_debug_log("JAR File: %s, Uploaded to S3" % s3_jar_file_key)
@@ -280,6 +297,7 @@ if __name__ == "__main__":
     appsync_url =  os.getenv('APPSYNC_URL')
     region =  os.getenv('AWS_REGION')
     appsyncapikey =  os.getenv('APPSYNC_API_KEY')
+    lambda_path = os.getenv('LAMBDA_PATH')
     Buildpacbot(
         aws_details,
         api_domain_url,
