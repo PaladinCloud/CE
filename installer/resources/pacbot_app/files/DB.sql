@@ -163,6 +163,8 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupDetails` (
   PRIMARY KEY (`groupId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+/*Table structure for table `cf_AssetGroupException` */
+
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   `id_` bigint(20) NOT NULL AUTO_INCREMENT,
   `groupName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
@@ -179,7 +181,6 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   `modifiedOn` DATE NULL AFTER `modifiedBy`,
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_assetGroupException_table $$
@@ -208,7 +209,6 @@ END IF;
 END $$
 DELIMITER ;
 CALL alter_cf_assetGroupException_table();
-/*Table structure for table `cf_AssetGroupException` */
 
 /* Procedure to change column names for cf_AssetGroupException*/
 DELIMITER $$
