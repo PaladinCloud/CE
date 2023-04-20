@@ -163,7 +163,17 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupDetails` (
   PRIMARY KEY (`groupId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-`createdBy` VARCHAR(100) NULL AFTER `dataSource`,
+CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
+  `id_` bigint(20) NOT NULL AUTO_INCREMENT,
+  `groupName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `targetType` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `policyName` varchar(200) COLLATE utf8_bin DEFAULT NULL,
+  `policyId` varchar(200) COLLATE utf8_bin DEFAULT NULL,
+  `expiryDate` date DEFAULT NULL,
+  `exceptionName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `exceptionReason` varchar(2000) COLLATE utf8_bin DEFAULT NULL,
+  `dataSource` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
   `createdOn` DATE NULL AFTER `createdBy`,
   `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
   `modifiedOn` DATE NULL AFTER `modifiedBy`,
@@ -199,23 +209,6 @@ END $$
 DELIMITER ;
 CALL alter_cf_assetGroupException_table();
 /*Table structure for table `cf_AssetGroupException` */
-
-CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
-  `id_` bigint(20) NOT NULL AUTO_INCREMENT,
-  `groupName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `targetType` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `policyName` varchar(200) COLLATE utf8_bin DEFAULT NULL,
-  `policyId` varchar(200) COLLATE utf8_bin DEFAULT NULL,
-  `expiryDate` date DEFAULT NULL,
-  `exceptionName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `exceptionReason` varchar(2000) COLLATE utf8_bin DEFAULT NULL,
-  `dataSource` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
-  `createdOn` DATE NULL AFTER `createdBy`,
-  `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
-  `modifiedOn` DATE NULL AFTER `modifiedBy`,
-  PRIMARY KEY (`id_`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 /* Procedure to change column names for cf_AssetGroupException*/
 DELIMITER $$
