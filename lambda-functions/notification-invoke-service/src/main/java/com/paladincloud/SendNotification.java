@@ -40,6 +40,26 @@ public class SendNotification implements RequestHandler<Map<String,Object>, Stri
                 System.out.println("bodyJson--"+bodyJson.toString());
                 payloadString = bodyJson.getAsJsonObject().get("Sns").getAsJsonObject().get("Message").getAsString();
             }
+
+            Object payloadObj = gson.fromJson(payloadString,Object.class);
+            if(payloadObj instanceof List){
+                List<Object> notificationRequestList = gson.fromJson(payloadString,List.class);
+                notificationRequestList.stream().forEach(obj -> {
+                    String notificationRequestStr = gson.toJson(obj);
+                    System.out.println("notificationsrequeststr for list---"+notificationRequestStr);
+                    PublishRequest request = new PublishRequest(snsTopicArn,notificationRequestStr);
+                    PublishResult result = client.publish(request);
+                    logger.log("message sent with id "+result.getMessageId());
+                });
+            }
+            else{
+                System.out.println("notificationsrequeststr for single event---"+payloadObj.toString());
+                PublishRequest request = new PublishRequest(snsTopicArn,payloadObj.toString());
+                PublishResult result = client.publish(request);
+                logger.log("message sent with id "+result.getMessageId());
+            }
+
+
             List<Object> notificationRequestList = gson.fromJson(payloadString,List.class);
             notificationRequestList.stream().forEach(obj -> {
                 String notificationRequestStr = gson.toJson(obj);
