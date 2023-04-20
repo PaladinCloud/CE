@@ -163,6 +163,41 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupDetails` (
   PRIMARY KEY (`groupId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+`createdBy` VARCHAR(100) NULL AFTER `dataSource`,
+  `createdOn` DATE NULL AFTER `createdBy`,
+  `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
+  `modifiedOn` DATE NULL AFTER `modifiedBy`,
+  PRIMARY KEY (`id_`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_assetGroupException_table $$
+CREATE PROCEDURE alter_cf_assetGroupException_table()
+BEGIN
+IF  EXISTS( SELECT NULL
+            FROM INFORMATION_SCHEMA.COLUMNS
+           WHERE table_name = 'cf_AssetGroupException'
+             AND table_schema = 'pacmandata'
+             AND column_name = 'createdBy'
+			 AND column_name = 'createdOn'
+			 AND column_name = 'modifiedBy'
+			 AND column_name = 'modifiedOn')  THEN
+
+
+
+ALTER TABLE `pacmandata`.`cf_AssetGroupException` 
+ADD COLUMN `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
+ADD COLUMN `createdOn` DATE NULL AFTER `createdBy`,
+ADD COLUMN `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
+ADD COLUMN `modifiedOn` DATE NULL AFTER `modifiedBy`;
+
+
+
+END IF;
+END $$
+DELIMITER ;
+CALL alter_cf_assetGroupException_table();
 /*Table structure for table `cf_AssetGroupException` */
 
 CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
@@ -175,6 +210,10 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   `exceptionName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `exceptionReason` varchar(2000) COLLATE utf8_bin DEFAULT NULL,
   `dataSource` varchar(75) COLLATE utf8_bin DEFAULT NULL,
+  `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
+  `createdOn` DATE NULL AFTER `createdBy`,
+  `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
+  `modifiedOn` DATE NULL AFTER `modifiedBy`,
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
