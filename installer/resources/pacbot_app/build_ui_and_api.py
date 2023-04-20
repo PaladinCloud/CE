@@ -41,7 +41,8 @@ class BuildUiAndApis(NullResource):
                     'COGNITO_DOMAIN': Settings.COGNITO_DOMAIN,
                     'AWS_REGION': Settings.AWS_REGION,
                     'APPSYNC_URL': AppSyncNotification.get_output_attr('uris["GRAPHQL"]'),
-                    'APPSYNC_API_KEY': ApiSyncIdKey.get_output_attr('key')
+                    'APPSYNC_API_KEY': ApiSyncIdKey.get_output_attr('key'),
+                    'LAMBDA_PATH' : Settings.LAMBDA_PATH
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }

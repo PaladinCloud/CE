@@ -14,6 +14,7 @@ INVOKE_NOTIFICATION = "notification-invoke-service"
 TEMPLATE_NOTIFICATION= "notification-template-formatter-service"
 NOTIFICATION_LOG_TO_ES = "notification-es-logging-service"
 SEND_NOTIFICATION = "notification-send-email-service"
+PATH = "/"+Settings.LAMBDA_PATH+"/"
 
 class NotificationSNS(SNSResources):
     name = "notification-event"
@@ -26,9 +27,11 @@ class InvokeNotificationFunction(LambdaFunctionResource):
     handler =  "com.paladincloud.SendNotification::handleRequest"
     memory_size = 512
     timeout = 180
+    memory_size = 512
+    timeout = 180
     runtime = "java11"
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX +   "/" + INVOKE_NOTIFICATION + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX + PATH + INVOKE_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'SNS_TOPIC_ARN': NotificationSNS.get_output_attr('arn')
@@ -48,7 +51,7 @@ class SendNotificationFunction(LambdaFunctionResource):
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key =  Settings.RESOURCE_NAME_PREFIX +  "/" + SEND_NOTIFICATION + ".jar"
+    s3_key =  Settings.RESOURCE_NAME_PREFIX +  PATH + SEND_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
@@ -67,7 +70,7 @@ class TemplateFormatterFunction(LambdaFunctionResource):
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX  +  "/" + TEMPLATE_NOTIFICATION + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX  +  PATH + TEMPLATE_NOTIFICATION + ".jar"
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
@@ -104,7 +107,7 @@ class LogEsNotificationFunction(LambdaFunctionResource):
     memory_size = 512
     timeout = 180
     s3_bucket = BucketStorage.get_output_attr('bucket')
-    s3_key = Settings.RESOURCE_NAME_PREFIX + "/"+ NOTIFICATION_LOG_TO_ES + ".jar"
+    s3_key = Settings.RESOURCE_NAME_PREFIX + PATH + NOTIFICATION_LOG_TO_ES + ".jar"
     subnet_ids = Settings.get('VPC')['SUBNETS']
     security_group_ids = [InfraSecurityGroupResource.get_output_attr('id')]
     environment = {
