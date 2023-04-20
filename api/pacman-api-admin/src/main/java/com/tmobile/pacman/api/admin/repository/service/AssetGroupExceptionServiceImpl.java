@@ -253,7 +253,7 @@ public class AssetGroupExceptionServiceImpl implements AssetGroupExceptionServic
 							for (AssetGroupException assetGroupException : assetGroupExceptions) {
 								assetGroupExceptionRepository.delete(assetGroupException);
 								if("delete".equalsIgnoreCase(action)){
-									notificationService.triggerNotificationForDelStickyException(assetGroupException, userId, DELETE_STICKY_EXCEPTION_SUBJECT);
+									notificationService.triggerNotificationForDelStickyException(assetGroupException, userId, DELETE_STICKY_EXCEPTION_SUBJECT, assetGroupExceptionRequest.getDeletedBy());
 								}
 							}
 						} catch (Exception exception) {

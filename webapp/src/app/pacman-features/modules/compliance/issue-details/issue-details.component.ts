@@ -839,13 +839,14 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
         try {
             const Url = environment.revokeIssueException.url;
             const Method = environment.revokeIssueException.method;
-            const payload = {
-                issueIds: [this.policyViolationId]
-            };
             const email = this.dataStore.getUserDetailsValue().getEmail();
+            const payload = {
+                issueIds: [this.policyViolationId],
+                revokedBy: email
+            };
+            
             const queryParams = {
-              ag: this.selectedAssetGroup,
-              revokedBy: email
+              ag: this.selectedAssetGroup
             }
             this.getRevokeSubscription = this.commonResponseService
                 .getData(Url, Method, payload, queryParams)
@@ -957,7 +958,7 @@ export class IssueDetailsComponent implements OnInit, OnDestroy {
             const endDateValue = this.utilityService.getUTCDate(this.endDate);
             const grantedDateValue = this.utilityService.getUTCDate(date);
             const payload = {
-                createdBy: this.dataStore.getUserDetailsValue().getUserId(),
+                createdBy: this.dataStore.getUserDetailsValue().getEmail(),
                 exceptionEndDate: endDateValue,
                 exceptionGrantedDate: grantedDateValue,
                 exceptionReason: value.name,

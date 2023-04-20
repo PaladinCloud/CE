@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -26,6 +26,7 @@ import { WorkflowService } from '../../../../../core/services/workflow.service';
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
 import { UploadFileService } from '../../../../services/upload-file-service';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 @Component({
   selector: 'app-admin-delete-sticky-exceptions',
@@ -82,6 +83,7 @@ export class DeleteStickyExceptionsComponent implements OnInit, OnDestroy {
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
+    private dataCacheService: DataCacheService,
     private adminService: AdminService
   ) {
 
@@ -91,8 +93,8 @@ export class DeleteStickyExceptionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -102,13 +104,15 @@ export class DeleteStickyExceptionsComponent implements OnInit, OnDestroy {
       this.pageLevel
     );
   }
-  
+
   deleteException() {
     this.hideContent = true;
     this.exceptionLoader = true;
-    let url = environment.deleteStickyException.url; 
-    let method = environment.deleteStickyException.method; 
-    this.adminService.executeHttpAction(url, method, {exceptionName: this.exceptionName, groupName: this.groupName}, {}).subscribe(reponse => {
+    let url = environment.deleteStickyException.url;
+    let method = environment.deleteStickyException.method;
+    const userDetails = this.dataCacheService.getUserDetailsValue();
+    let userId = userDetails.getEmail();
+    this.adminService.executeHttpAction(url, method, {exceptionName: this.exceptionName, groupName: this.groupName, deletedBy : userId}, {}).subscribe(reponse => {
       this.exceptionLoader = false;
       this.isExceptionDeletionSuccess = true;
     },
@@ -123,7 +127,7 @@ export class DeleteStickyExceptionsComponent implements OnInit, OnDestroy {
     this.hideContent = false;
   }
   /*
-    * This function gets the urlparameter and queryObj 
+    * This function gets the urlparameter and queryObj
     *based on that different apis are being hit with different queryparams
     */
   routerParam() {
