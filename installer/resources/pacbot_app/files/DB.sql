@@ -175,10 +175,10 @@ CREATE TABLE IF NOT EXISTS `cf_AssetGroupException` (
   `exceptionName` varchar(75) COLLATE utf8_bin DEFAULT NULL,
   `exceptionReason` varchar(2000) COLLATE utf8_bin DEFAULT NULL,
   `dataSource` varchar(75) COLLATE utf8_bin DEFAULT NULL,
-  `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
-  `createdOn` DATE NULL AFTER `createdBy`,
-  `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
-  `modifiedOn` DATE NULL AFTER `modifiedBy`,
+  `createdBy` VARCHAR(100) NULL,
+  `createdOn` DATE NULL ,
+  `modifiedBy` VARCHAR(100) NULL,
+  `modifiedOn` DATE NULL,
   PRIMARY KEY (`id_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -194,17 +194,11 @@ IF  EXISTS( SELECT NULL
 			 AND column_name = 'createdOn'
 			 AND column_name = 'modifiedBy'
 			 AND column_name = 'modifiedOn')  THEN
-
-
-
-ALTER TABLE `cf_AssetGroupException` 
-ADD COLUMN `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
-ADD COLUMN `createdOn` DATE NULL AFTER `createdBy`,
-ADD COLUMN `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
-ADD COLUMN `modifiedOn` DATE NULL AFTER `modifiedBy`;
-
-
-
+ALTER TABLE `cf_AssetGroupException`  
+ADD COLUMN `createdBy` VARCHAR(100) NULL,
+ADD COLUMN `createdOn` DATE NULL,
+ADD COLUMN `modifiedBy` VARCHAR(100) NULL,
+ADD COLUMN `modifiedOn` DATE NULL;
 END IF;
 END $$
 DELIMITER ;
