@@ -197,7 +197,7 @@ IF  EXISTS( SELECT NULL
 
 
 
-ALTER TABLE `pacmandata`.`cf_AssetGroupException` 
+ALTER TABLE `cf_AssetGroupException` 
 ADD COLUMN `createdBy` VARCHAR(100) NULL AFTER `dataSource`,
 ADD COLUMN `createdOn` DATE NULL AFTER `createdBy`,
 ADD COLUMN `modifiedBy` VARCHAR(100) NULL AFTER `createdOn`,
