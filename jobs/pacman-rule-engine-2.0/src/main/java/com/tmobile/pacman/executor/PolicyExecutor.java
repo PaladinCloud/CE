@@ -135,6 +135,11 @@ public class PolicyExecutor {
         System.setProperty(Constants.RDS_DB_URL,CommonUtils.getPropValue(Constants.RDS_DB_URL));
         System.setProperty(Constants.RDS_USER,CommonUtils.getPropValue(Constants.RDS_USER));
         System.setProperty(Constants.RDS_PWD,CommonUtils.getPropValue(Constants.RDS_PWD));
+        System.setProperty(Constants.BASE_ACCOUNT,CommonUtils.getPropValue(Constants.BASE_ACCOUNT));
+        System.setProperty(Constants.BASE_REGION,CommonUtils.getPropValue(Constants.BASE_REGION));
+        System.setProperty(Constants.BASE_ROLE,CommonUtils.getPropValue(Constants.BASE_ROLE));
+        System.setProperty(Constants.SECRET_MANAGER_PATH,CommonUtils.getPropValue(Constants.SECRET_MANAGER_PATH));
+
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
             String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
