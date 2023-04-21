@@ -3011,3 +3011,5 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSource
 
 
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('recommendation.categories','fault_tolerance, cost_optimizing, security, performance','application','prd','latest','admin@pacbot.org','09/06/2019 06:07:43','','');
+
+update cf_pac_updatable_fields  set displayFields ='_resourceid,tags.Application,tags.Environment,_entitytype,subscriptionName,subscription,projectName,projectId' where resourceType ='all_list';
