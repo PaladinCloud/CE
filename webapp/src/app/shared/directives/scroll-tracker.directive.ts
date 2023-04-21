@@ -1,7 +1,7 @@
 import { AfterViewInit, Directive, ElementRef, Input, NgZone, OnDestroy } from '@angular/core';
 import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { filter, map, pairwise, takeUntil, tap } from 'rxjs/operators';
+import { delayWhen, filter, map, pairwise, takeUntil, tap } from 'rxjs/operators';
 import { ScrollTrackerService } from '../services/scroll-tracker.service';
 
 @Directive({
@@ -15,6 +15,7 @@ export class ScrollTrackerDirective implements AfterViewInit, OnDestroy {
     private el: HTMLElement;
     private scrollAttempts = 0;
     private intervalId: ReturnType<typeof setInterval>;
+    private afterViewInit$ = new Subject<void>();
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -25,6 +26,7 @@ export class ScrollTrackerDirective implements AfterViewInit, OnDestroy {
     ) {
         this.router.events
             .pipe(
+                delayWhen(() => this.afterViewInit$),
                 pairwise(),
                 filter(
                     ([prevRouteEvent, curRouteEvent]) =>
@@ -46,6 +48,7 @@ export class ScrollTrackerDirective implements AfterViewInit, OnDestroy {
 
         this.router.events
             .pipe(
+                delayWhen(() => this.afterViewInit$),
                 filter((event) => event instanceof NavigationEnd),
                 map((event) => this.scrollTrackerService.getUrlForRouteEvent(event)),
                 map((url) => this.scrollTrackerService.getScrollPosition(url)),
@@ -60,6 +63,8 @@ export class ScrollTrackerDirective implements AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         this.el = this.elementRef.nativeElement;
+        this.afterViewInit$.next();
+        this.afterViewInit$.complete();
     }
 
     prepareScroll(position: number) {
