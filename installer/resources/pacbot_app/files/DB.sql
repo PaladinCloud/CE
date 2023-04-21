@@ -3011,3 +3011,11 @@ INSERT IGNORE INTO `cf_Target` (`targetName`,`targetDesc`,`category`,`dataSource
 
 
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('recommendation.categories','fault_tolerance, cost_optimizing, security, performance','application','prd','latest','admin@pacbot.org','09/06/2019 06:07:43','','');
+
+
+
+
+update cf_AssetGroupDetails set groupType = "System" where groupId in ('201','cdffb9cd-71de-4e29-9cae-783c2aa211ac','e0008397-f74e-4deb-9066-10bdf11202ae');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected AWS Accounts." where groupId in ('201');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected Azure Subscriptions." where groupId in ('cdffb9cd-71de-4e29-9cae-783c2aa211ac');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected GCP Projects." where groupId in ('e0008397-f74e-4deb-9066-10bdf11202ae');
