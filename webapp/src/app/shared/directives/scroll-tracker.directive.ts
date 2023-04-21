@@ -82,7 +82,10 @@ export class ScrollTrackerDirective implements AfterViewInit, OnDestroy {
         }
 
         if (this.el.scrollHeight >= position) {
-            this.el.scrollTop = position;
+            this.el.scrollTo({
+                top: position,
+                behavior: 'smooth',
+            });
             return this.clearScrollSchecker();
         }
 
