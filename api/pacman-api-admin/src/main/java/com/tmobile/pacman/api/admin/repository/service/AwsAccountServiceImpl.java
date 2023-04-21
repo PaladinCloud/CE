@@ -51,7 +51,7 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
             return validateResponse;
         }
         String accountId=accountData.getAccountId();
-        String roleName=accountData.getRoleName();
+        String roleName="PaladinCloudIntegrationRole";
         String baseAccount=System.getenv(COGNITO_ACCOUNT);
         String paladinRole=System.getenv(PALADINCLOUD_RO);
         BasicSessionCredentials baseSessioncreds =null;
