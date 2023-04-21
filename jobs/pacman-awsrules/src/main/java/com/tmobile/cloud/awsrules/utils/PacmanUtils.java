@@ -4013,7 +4013,7 @@ public class PacmanUtils {
         Map<String, Object> mustTermsFilter = new HashMap<>();
         mustFilter.put(convertAttributetoKeyword(attributeName), imageId);
         if(null!=severityVulnValue)
-            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.SEVERITY), severityVulnValue);
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.AQUA_SEVERITY_KEY), severityVulnValue);
 
         try {
 
