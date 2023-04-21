@@ -2498,7 +2498,8 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (19,1,'Status','issueStatus.keyword','/compliance/v1/filters/issuestatus?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (20,10,'Type','eventCategoryName','/compliance/v1/filters/eventtype');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (21,10,'Source','eventSourceName','/compliance/v1/filters/eventsource');
-
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (22,8,'Tagged','tagged','/compliance/v1/filters/taggedStatus?ag=aws');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (23,8,'Exempted','exempted','/compliance/v1/filters/taggedStatus?ag=aws');
 
 /* UI Widgets */
 INSERT IGNORE INTO pac_v2_ui_widgets (widgetId,pageName,widgetName) VALUES (1,'Tagging','TaggingSummary');
