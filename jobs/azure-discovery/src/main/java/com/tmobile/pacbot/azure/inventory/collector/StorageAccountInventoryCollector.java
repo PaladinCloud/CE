@@ -44,6 +44,7 @@ public class StorageAccountInventoryCollector {
 			storageAccountVH.setAzureFilesAadIntegrationEnabled(storageAccount.isAzureFilesAadIntegrationEnabled());
 			storageAccountVH.setHnsEnabled(storageAccount.isHnsEnabled());
 			storageAccountVH.setName(storageAccount.name());
+			storageAccountVH.setRegion(subscription.getRegion());
 			storageAccountVH.setRegionName(storageAccount.regionName());
 			storageAccountVH.setNetworkSubnetsWithAccess(storageAccount.networkSubnetsWithAccess());
 			storageAccountVH.setSystemAssignedManagedServiceIdentityPrincipalId(

@@ -51,6 +51,8 @@ public class SubnetInventoryCollector {
 					SubnetVH subnetVH = new SubnetVH();
 					subnetVH.setSubscription(subscription.getSubscriptionId());
 					subnetVH.setSubscriptionName(subscription.getSubscriptionName());
+					subnetVH.setRegion(subscription.getRegion());
+					subnetVH.setResourceGroupName(subscription.getResourceGroupName());
 					JsonObject subnetObject = subnetElement.getAsJsonObject();
 					JsonObject properties = subnetObject.getAsJsonObject("properties");
 					subnetVH.setId(subnetObject.get("id").getAsString());

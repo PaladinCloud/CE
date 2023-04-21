@@ -30,6 +30,8 @@ public class RedisCacheInventoryCollector {
             redisCacheVH.setNonSslPort(redisCache.nonSslPort());
             redisCacheVH.setSubscription(subscription.getSubscriptionId());
             redisCacheVH.setSubscriptionName(subscription.getSubscriptionName());
+            redisCacheVH.setRegion(subscription.getRegion());
+            redisCacheVH.setResourceGroupName(subscription.getResourceGroupName());
             redisCacheVH.setName(redisCache.name());
             redisCacheVH.setPort(redisCache.port());
             redisCacheVH.setId(redisCache.id());

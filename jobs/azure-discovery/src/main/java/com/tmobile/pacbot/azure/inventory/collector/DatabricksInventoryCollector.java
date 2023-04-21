@@ -50,6 +50,8 @@ public class DatabricksInventoryCollector {
 				databricksVH.setType(databricksObject.get("type").getAsString());
 				databricksVH.setSubscription(subscription.getSubscriptionId());
 				databricksVH.setSubscriptionName(subscription.getSubscriptionName());
+				databricksVH.setRegion(subscription.getRegion());
+				databricksVH.setResourceGroupName(subscription.getResourceGroupName());
 				if (sku!=null) {
 					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
 					databricksVH.setSkuMap(skuMap);

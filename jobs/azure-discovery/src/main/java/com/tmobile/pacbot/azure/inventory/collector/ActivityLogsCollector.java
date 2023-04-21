@@ -68,6 +68,7 @@ public final class ActivityLogsCollector {
                                                 activityLogObject.get("location").getAsString());
                                         activityLogVH.setSubscription(subscription.getSubscriptionId());
                                         activityLogVH.setSubscriptionName(subscription.getSubscriptionName());
+                                        activityLogVH.setRegion(subscription.getRegion());
                                         activityLogVH.setResourceGroupName(
                                                 activityLogAlert.resourceGroupName());
                                         JsonObject properties = activityLogObject.getAsJsonObject("properties");

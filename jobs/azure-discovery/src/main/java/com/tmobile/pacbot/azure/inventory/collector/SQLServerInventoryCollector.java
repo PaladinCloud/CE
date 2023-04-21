@@ -41,6 +41,8 @@ public class SQLServerInventoryCollector {
 			SQLServerVH sqlServerVH = new SQLServerVH();
 			sqlServerVH.setSubscription(subscription.getSubscriptionId());
 			sqlServerVH.setSubscriptionName(subscription.getSubscriptionName());
+			sqlServerVH.setRegion(subscription.getRegion());
+			sqlServerVH.setResourceGroupName(subscription.getResourceGroupName());
 			sqlServerVH.setId(sqlServer.id());
 			sqlServerVH.setKind(sqlServer.kind());
 			sqlServerVH.setName(sqlServer.name());

@@ -75,6 +75,8 @@ public class SCRecommendationsCollector {
 						RecommendationVH recommendation = new RecommendationVH();
 						recommendation.setSubscription(subscription.getSubscriptionId());
 						recommendation.setSubscriptionName(subscription.getSubscriptionName());
+						recommendation.setRegion(subscription.getRegion());
+						recommendation.setResourceGroupName(subscription.getResourceGroupName());
 						recommendationMap.put("resourceId",Util.removeFirstSlash(resourceId.toString()));
 						recommendationMap.put("_resourceIdLower",Util.removeFirstSlash(resourceId.toString()).toLowerCase());
 						recommendation.setId(id);

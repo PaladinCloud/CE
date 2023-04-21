@@ -47,6 +47,8 @@ public class BatchAccountInventoryCollector {
 					JsonObject batchAccountObject = batchAccountElement.getAsJsonObject();
 					batchAccountVH.setSubscription(subscription.getSubscriptionId());
 					batchAccountVH.setSubscriptionName(subscription.getSubscriptionName());
+					batchAccountVH.setRegion(subscription.getRegion());
+					batchAccountVH.setResourceGroupName(subscription.getResourceGroupName());
 					batchAccountVH.setId(batchAccountObject.get("id").getAsString());
 					batchAccountVH.setLocation(batchAccountObject.get("location").getAsString());
 					batchAccountVH.setName(batchAccountObject.get("name").getAsString());

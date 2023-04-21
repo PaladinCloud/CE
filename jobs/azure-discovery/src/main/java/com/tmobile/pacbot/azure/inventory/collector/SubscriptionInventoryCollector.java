@@ -23,6 +23,8 @@ public class SubscriptionInventoryCollector {
         subscriptionVH.setId(subscription.getSubscriptionId());
         subscriptionVH.setSubscriptionName(subscription.getSubscriptionName());
         subscriptionVH.setSubscription(subscription.getSubscriptionId());
+        subscriptionVH.setRegion(subscription.getRegion());
+        subscriptionVH.setResourceGroupName(subscription.getResourceGroupName());
         subscriptionList.add(subscriptionVH);
 
         log.info("Size of subscriptions: {}", subscriptionList.size());

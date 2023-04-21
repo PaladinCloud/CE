@@ -44,6 +44,8 @@ public class MySQLInventoryCollector {
 				MySQLServerVH mySQLServerVH = new MySQLServerVH();
 				mySQLServerVH.setSubscription(subscription.getSubscriptionId());
 				mySQLServerVH.setSubscriptionName(subscription.getSubscriptionName());
+				mySQLServerVH.setRegion(subscription.getRegion());
+				mySQLServerVH.setResourceGroupName(subscription.getResourceGroupName());
 				JsonObject sqlServerObject = sqlServerObjectElement.getAsJsonObject();
 				JsonObject properties = sqlServerObject.getAsJsonObject("properties");
 				JsonObject sku = sqlServerObject.getAsJsonObject("sku");

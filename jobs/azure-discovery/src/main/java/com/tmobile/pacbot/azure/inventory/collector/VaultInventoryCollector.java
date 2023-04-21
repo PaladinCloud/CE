@@ -47,6 +47,8 @@ public class VaultInventoryCollector {
 					JsonObject vaultObject = vaultElement.getAsJsonObject();
 					vaultVH.setSubscription(subscription.getSubscriptionId());
 					vaultVH.setSubscriptionName(subscription.getSubscriptionName());
+					vaultVH.setRegion(subscription.getRegion());
+					vaultVH.setResourceGroupName(subscription.getResourceGroupName());
 					vaultVH.setId(vaultObject.get("id").getAsString());
 					vaultVH.setLocation(vaultObject.get("location").getAsString());
 					vaultVH.setName(vaultObject.get("name").getAsString());

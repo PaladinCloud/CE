@@ -45,6 +45,8 @@ public class SearchServiceInventoryCollector {
 					JsonObject searchServiceObject = searchServiceElement.getAsJsonObject();
 					searchServiceVH.setSubscription(subscription.getSubscriptionId());
 					searchServiceVH.setSubscriptionName(subscription.getSubscriptionName());
+					searchServiceVH.setRegion(subscription.getRegion());
+					searchServiceVH.setResourceGroupName(subscription.getResourceGroupName());
 					searchServiceVH.setId(searchServiceObject.get("id").getAsString());
 					searchServiceVH.setLocation(searchServiceObject.get("location").getAsString());
 					searchServiceVH.setName(searchServiceObject.get("name").getAsString());

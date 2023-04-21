@@ -50,6 +50,8 @@ public class MariaDBInventoryCollector {
 				mariaDBVH.setType(mariaDBObject.get("type").getAsString());
 				mariaDBVH.setSubscription(subscription.getSubscriptionId());
 				mariaDBVH.setSubscriptionName(subscription.getSubscriptionName());
+				mariaDBVH.setRegion(subscription.getRegion());
+				mariaDBVH.setResourceGroupName(subscription.getResourceGroupName());
 				if (sku!=null) {
 					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
 					mariaDBVH.setSkuMap(skuMap);

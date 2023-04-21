@@ -46,6 +46,8 @@ public class SitesInventoryCollector {
 					JsonObject sitesObject = sitesElement.getAsJsonObject();
 					sitesVH.setSubscription(subscription.getSubscriptionId());
 					sitesVH.setSubscriptionName(subscription.getSubscriptionName());
+					sitesVH.setRegion(subscription.getRegion());
+					sitesVH.setResourceGroupName(subscription.getResourceGroupName());
 					sitesVH.setId(sitesObject.get("id").getAsString());
 					sitesVH.setEtag(sitesObject.get("etag").getAsString());
 					sitesVH.setLocation(sitesObject.get("location").getAsString());

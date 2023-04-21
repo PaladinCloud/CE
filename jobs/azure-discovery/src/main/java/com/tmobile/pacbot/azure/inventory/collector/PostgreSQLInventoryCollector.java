@@ -44,6 +44,8 @@ public class PostgreSQLInventoryCollector {
 				PostgreSQLServerVH postgreSQLServerVH = new PostgreSQLServerVH();
 				postgreSQLServerVH.setSubscription(subscription.getSubscriptionId());
 				postgreSQLServerVH.setSubscriptionName(subscription.getSubscriptionName());
+				postgreSQLServerVH.setRegion(subscription.getRegion());
+				postgreSQLServerVH.setResourceGroupName(subscription.getResourceGroupName());
 				JsonObject postgreSQLServerObject = postgreSQLServerObjectElement.getAsJsonObject();
 				JsonObject properties = postgreSQLServerObject.getAsJsonObject("properties");
 				JsonObject sku = postgreSQLServerObject.getAsJsonObject("sku");

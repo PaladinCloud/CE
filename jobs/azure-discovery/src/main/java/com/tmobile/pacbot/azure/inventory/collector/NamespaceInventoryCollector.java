@@ -46,6 +46,8 @@ public class NamespaceInventoryCollector {
 					JsonObject namespaceObject = namespaceElement.getAsJsonObject();
 					namespaceVH.setSubscription(subscription.getSubscriptionId());
 					namespaceVH.setSubscriptionName(subscription.getSubscriptionName());
+					namespaceVH.setRegion(subscription.getRegion());
+					namespaceVH.setResourceGroupName(subscription.getResourceGroupName());
 					namespaceVH.setId(namespaceObject.get("id").getAsString());
 					namespaceVH.setLocation(namespaceObject.get("location").getAsString());
 					namespaceVH.setName(namespaceObject.get("name").getAsString());

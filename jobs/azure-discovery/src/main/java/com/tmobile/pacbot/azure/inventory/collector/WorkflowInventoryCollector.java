@@ -46,6 +46,8 @@ public class WorkflowInventoryCollector {
 					JsonObject workflowObject = workflowElement.getAsJsonObject();
 					workflowVH.setSubscription(subscription.getSubscriptionId());
 					workflowVH.setSubscriptionName(subscription.getSubscriptionName());
+					workflowVH.setRegion(subscription.getRegion());
+					workflowVH.setResourceGroupName(subscription.getResourceGroupName());
 					workflowVH.setId(workflowObject.get("id").getAsString());
 					workflowVH.setLocation(workflowObject.get("location").getAsString());
 					workflowVH.setName(workflowObject.get("name").getAsString());

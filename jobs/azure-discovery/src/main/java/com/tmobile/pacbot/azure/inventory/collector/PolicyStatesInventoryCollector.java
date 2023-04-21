@@ -91,7 +91,8 @@ public class PolicyStatesInventoryCollector {
 
 				policyStatesVH.setSubscription(subscription.getSubscriptionId());
 				policyStatesVH.setSubscriptionName(subscription.getSubscriptionName());
-
+				policyStatesVH.setRegion(subscription.getRegion());
+				policyStatesVH.setResourceGroupName(subscription.getResourceGroupName());
 				policyStatesList.add(policyStatesVH);
 			}
 		} catch (Exception e) {

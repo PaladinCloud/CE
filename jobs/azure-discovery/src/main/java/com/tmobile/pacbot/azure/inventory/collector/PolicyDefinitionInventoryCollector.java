@@ -37,6 +37,8 @@ public class PolicyDefinitionInventoryCollector {
 			policyDefinitionVH.setPolicyRule(policyDefinition.policyRule().toString());
 			policyDefinitionVH.setSubscription(subscription.getSubscriptionId());
 			policyDefinitionVH.setSubscriptionName(subscription.getSubscriptionName());
+			policyDefinitionVH.setRegion(subscription.getRegion());
+			policyDefinitionVH.setResourceGroupName(subscription.getResourceGroupName());
 			policyDefinitionList.add(policyDefinitionVH);
 		}
 		log.info("Target Type : {}  Total: {} ","Policy Defintion",policyDefinitionList.size());

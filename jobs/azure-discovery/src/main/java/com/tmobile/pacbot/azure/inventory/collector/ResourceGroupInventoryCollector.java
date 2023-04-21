@@ -31,6 +31,7 @@ public class ResourceGroupInventoryCollector {
 			ResourceGroupVH resourceGroupVH = new ResourceGroupVH();
 			resourceGroupVH.setSubscription(subscription.getSubscriptionId());
 			resourceGroupVH.setSubscriptionName(subscription.getSubscriptionName());
+			resourceGroupVH.setRegion(subscription.getRegion());
 			resourceGroupVH.setId(resourceGroup.id());
 			resourceGroupVH.setResourceGroupName(resourceGroup.name());
 			resourceGroupVH.setKey(resourceGroup.key());

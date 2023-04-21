@@ -48,6 +48,8 @@ public class SecurityAlertsInventoryCollector {
 				securityAlertsVH.setType(databricksObject.get("type").getAsString());
 				securityAlertsVH.setSubscription(subscription.getSubscriptionId());
 				securityAlertsVH.setSubscriptionName(subscription.getSubscriptionName());
+				securityAlertsVH.setRegion(subscription.getRegion());
+				securityAlertsVH.setResourceGroupName(subscription.getResourceGroupName());
 
 				if (properties != null) {
 					HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);

@@ -65,6 +65,7 @@ public class SQLDatabaseInventoryCollector {
 					sqlDatabaseVH.setSubscriptionName(subscription.getSubscriptionName());
 					sqlDatabaseVH.setServerName(sqlDatabase.sqlServerName());
 					sqlDatabaseVH.setResourceGroupName(sqlDatabase.resourceGroupName());
+					sqlDatabaseVH.setRegion(subscription.getRegion());
 					if (sqlDatabase.getThreatDetectionPolicy() != null) {
 						sqlDatabaseVH.setNotificationRecipientsEmails(
 								sqlDatabase.getThreatDetectionPolicy().emailAddresses());

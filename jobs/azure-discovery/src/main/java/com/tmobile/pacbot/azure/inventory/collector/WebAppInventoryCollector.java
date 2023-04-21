@@ -41,6 +41,8 @@ public class WebAppInventoryCollector {
                 webAppVH.setResourceGroupName(webApp.resourceGroupName());
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
+                webAppVH.setRegion(subscription.getRegion());
+                webAppVH.setResourceGroupName(subscription.getResourceGroupName());
                 webAppList.add(webAppVH);
             }catch (Exception e)
             {

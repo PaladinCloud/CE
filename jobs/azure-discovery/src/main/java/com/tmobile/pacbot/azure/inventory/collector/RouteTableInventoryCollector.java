@@ -41,6 +41,7 @@ public class RouteTableInventoryCollector {
 			routeTableVH.setKey(routTable.key());
 			routeTableVH.setName(routTable.name());
 			routeTableVH.setRegionName(routTable.regionName());
+			routeTableVH.setRegion(subscription.getRegion());
 			routeTableVH.setResourceGroupName(routTable.resourceGroupName());
 			routeTableVH.setTags(Util.tagsList(tagMap, routTable.resourceGroupName(), routTable.tags()));
 			routeTableVH.setSubnetList(getNetworkSecuritySubnetDetails(routTable.listAssociatedSubnets()));
