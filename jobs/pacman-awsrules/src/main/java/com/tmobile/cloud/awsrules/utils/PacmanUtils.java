@@ -32,17 +32,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HostnameVerifier;
@@ -52,6 +43,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -4040,5 +4032,16 @@ public class PacmanUtils {
             logger.error("failed to fetch data from ES");
         }
         return resourceVerified;
+    }
+    public static Map<String,String> getJsonData(String jsonString){
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> map= Collections.emptyMap();
+        try {
+            // convert JSON string to Map
+            map = mapper.readValue(jsonString, Map.class);
+        } catch (IOException e) {
+            logger.error("Error in parsing json data",e);
+        }
+        return map;
     }
 }

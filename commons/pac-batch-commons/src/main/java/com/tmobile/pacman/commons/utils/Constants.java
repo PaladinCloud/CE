@@ -11,6 +11,10 @@ public interface Constants {
 
     /** The rds pwd. */
     String RDS_PWD = "spring.datasource.password";
+    String BASE_ACCOUNT = "base.account";
+    String BASE_REGION = "base.region";
+    String BASE_ROLE = "s3.role";
+    String SECRET_MANAGER_PATH = "secret.manager.path";
 
 
     /** The target type info. */
