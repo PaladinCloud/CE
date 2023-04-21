@@ -44,6 +44,7 @@ class Buildpacbot(object):
         self.region = region
         self.appsync_url = appsync_url
         self.lambda_path = lambda_path
+        self.google_analytics = google_analytics
 
     def _clean_up_all(self):
         os.chdir(self.cwd)
@@ -206,6 +207,11 @@ class Buildpacbot(object):
                 lines[idx] = lines[idx].replace("apiKey: ''",
                                                 "apiKey: '" + self.appsyncapikey + "'")
             
+            if "gaKey: ''" in line:
+                lines[idx] = lines[idx].replace("gaKey: ''",
+                                                "gaKey: '" + self.google_analytics + "'")
+            
+            
             if self.auth_type == "AZURE_AD":
                 if "AUTH_TYPE: DB" in line:
                     lines[idx] = lines[idx].replace("AUTH_TYPE: DB", "AUTH_TYPE: AZURE_SSO")
@@ -298,6 +304,7 @@ if __name__ == "__main__":
     region =  os.getenv('AWS_REGION')
     appsyncapikey =  os.getenv('APPSYNC_API_KEY')
     lambda_path = os.getenv('LAMBDA_PATH')
+    google_analytics = os.getenv('GOOGLE_ANALYTICS')
     Buildpacbot(
         aws_details,
         api_domain_url,
