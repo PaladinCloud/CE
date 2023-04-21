@@ -14,62 +14,62 @@ import org.springframework.stereotype.Component;
 @Component
 public class CredentialProvider {
 
-    String baseAccount= System.getenv("COGNITO_ACCOUNT");
-    String baseRegion= System.getenv("REGION");
-    String roleName= System.getenv("PALADINCLOUD_RO");
+    String baseaccount = System.getenv("COGNITO_ACCOUNT");
+    String baseregion = System.getenv("REGION");
+    String rolename = System.getenv("PALADINCLOUD_RO");
 
-	private static boolean devMode = System.getProperty("PIC_DEV_MODE")!=null;
+	private static final boolean devmode = System.getProperty("PIC_DEV_MODE")!=null;
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    public  BasicSessionCredentials getCredentials(String account,String role){
+    public  BasicSessionCredentials getCredentials(String accountId,String role){
 
-        BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(baseAccount,baseRegion,roleName);
-        if(baseAccount.equals(account)){
-            return baseAccntCreds;
+        BasicSessionCredentials baseAccountCredentials = getBaseAccountCredentials(baseaccount, baseregion, rolename);
+        if(baseaccount.equals(accountId)){
+            return baseAccountCredentials;
         }
-        AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials( new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
-        AWSSecurityTokenService stsClient = stsBuilder.build();
-        AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account,role)).withRoleSessionName("pic-ro-"+account);
-        AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
+        AWSSecurityTokenServiceClientBuilder awsSecurityTokenServiceClientBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials( new AWSStaticCredentialsProvider(baseAccountCredentials)).withRegion(baseregion);
+        AWSSecurityTokenService stsClient = awsSecurityTokenServiceClientBuilder.build();
+        AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(accountId,role)).withRoleSessionName("pic-ro-"+accountId);
+        AssumeRoleResult assumeRoleResult = stsClient.assumeRole(assumeRoleRequest);
         return  new BasicSessionCredentials(
-                assumeResult.getCredentials()
-                        .getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-                assumeResult.getCredentials().getSessionToken());
+                assumeRoleResult.getCredentials()
+                        .getAccessKeyId(), assumeRoleResult.getCredentials().getSecretAccessKey(),
+                assumeRoleResult.getCredentials().getSessionToken());
     }
 
     public BasicSessionCredentials getBaseAccCredentials(){
 
-        logger.info("Fetching base account session credentials. Base Account: {}, Base Region: {}, Role:{}",
-                baseAccount,baseRegion,roleName);
-        return getBaseAccountCredentials(baseAccount, baseRegion, roleName);
+        LOGGER.info("Fetching base account session credentials. Base Account: {}, Base Region: {}, Role:{}",
+                baseaccount, baseregion, rolename);
+        return getBaseAccountCredentials(baseaccount, baseregion, rolename);
     }
 
 
-    public BasicSessionCredentials getBaseAccountCredentials (String baseAccount, String baseRegion,String roleName) {
-        if (devMode) {
-            String accessKey = System.getProperty("ACCESS_KEY");
+    public BasicSessionCredentials getBaseAccountCredentials (String baseAccountId, String region,String roleName) {
+        if (devmode) {
+            String accessKeyId = System.getProperty("ACCESS_KEY");
             String secretKey = System.getProperty("SECRET_KEY");
-            BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKey, secretKey);
-            AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).withRegion(baseRegion);
-            AWSSecurityTokenService sts = stsBuilder.build();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro");
-            AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
+            BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKeyId, secretKey);
+            AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials)).withRegion(region);
+            AWSSecurityTokenService awsSecurityTokenService = stsBuilder.build();
+            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccountId, roleName)).withRoleSessionName("pic-base-ro");
+            AssumeRoleResult assumeRoleResult = awsSecurityTokenService.assumeRole(assumeRequest);
             return new BasicSessionCredentials(
-                    assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-                    assumeResult.getCredentials().getSessionToken());
+                    assumeRoleResult.getCredentials().getAccessKeyId(), assumeRoleResult.getCredentials().getSecretAccessKey(),
+                    assumeRoleResult.getCredentials().getSessionToken());
 
         } else {
-            AWSSecurityTokenService sts = AWSSecurityTokenServiceClientBuilder.defaultClient();
-            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccount, roleName)).withRoleSessionName("pic-base-ro");
-            AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
+            AWSSecurityTokenService awsSecurityTokenService = AWSSecurityTokenServiceClientBuilder.defaultClient();
+            AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(baseAccountId, roleName)).withRoleSessionName("pic-base-ro");
+            AssumeRoleResult assumeRoleResult = awsSecurityTokenService.assumeRole(assumeRequest);
             return new BasicSessionCredentials(
-                    assumeResult.getCredentials().getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-                    assumeResult.getCredentials().getSessionToken());
+                    assumeRoleResult.getCredentials().getAccessKeyId(), assumeRoleResult.getCredentials().getSecretAccessKey(),
+                    assumeRoleResult.getCredentials().getSessionToken());
         }
     }
 
-    private String getRoleArn(String account, String role){
-        return "arn:aws:iam::"+account+":role/"+role;
+    private String getRoleArn(String accountId, String role){
+        return "arn:aws:iam::"+accountId+":role/"+role;
     }
 }
