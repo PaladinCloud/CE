@@ -409,7 +409,7 @@ public interface Constants {
         }
     }
     String EVENT_SOURCE = "paladinCloud";
-    String EVENT_SOURCE_NAME = "PaladinCloud";
+    String EVENT_SOURCE_NAME = "Paladin Cloud";
     String CLOUD_TYPE = "cloudType";
     String TAG_DETAILS = "tagDetails";
     String NOTIFICATION_INDEX = "notification";

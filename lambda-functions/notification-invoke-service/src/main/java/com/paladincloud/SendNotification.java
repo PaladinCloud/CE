@@ -59,15 +59,6 @@ public class SendNotification implements RequestHandler<Map<String,Object>, Stri
                 logger.log("message sent with id "+result.getMessageId());
             }
 
-
-            List<Object> notificationRequestList = gson.fromJson(payloadString,List.class);
-            notificationRequestList.stream().forEach(obj -> {
-                String notificationRequestStr = gson.toJson(obj);
-                System.out.println("notificationsrequeststr---"+notificationRequestStr);
-                PublishRequest request = new PublishRequest(snsTopicArn,notificationRequestStr);
-                PublishResult result = client.publish(request);
-                logger.log("message sent with id "+result.getMessageId());
-            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
