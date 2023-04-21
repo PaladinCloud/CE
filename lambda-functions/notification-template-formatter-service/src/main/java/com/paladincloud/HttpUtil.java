@@ -190,8 +190,6 @@ public class HttpUtil {
                     JsonObject sourceJson = configJson.getAsJsonArray("propertySources").get(0).getAsJsonObject().getAsJsonObject("source");
 
                     topicArnDetailsMap.put("email", sourceJson.get(mailTopicArn).getAsString());
-                    topicArnDetailsMap.put("slack", sourceJson.get(slackTopicArn).getAsString());
-                    topicArnDetailsMap.put("jira", sourceJson.get(jiraTopicArn).getAsString());
                     topicArnDetailsMap.put(apiauthinfo, sourceJson.get(apiauthinfo).getAsString());
                     System.out.println(result);
                 }

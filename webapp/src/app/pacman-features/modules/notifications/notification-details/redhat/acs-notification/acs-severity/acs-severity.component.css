@@ -1,0 +1,20 @@
+.severity {
+    padding: 1px 5px 0;
+    border-radius: 8px;
+}
+
+.severity.critical {
+    background-color: #d14938;
+}
+
+.severity.high {
+    background-color: #f58f6f;
+}
+
+.severity.medium {
+    background-color: #f5b66f;
+}
+
+.severity.low {
+    background-color: #ffeb3b;
+}

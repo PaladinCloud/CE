@@ -363,16 +363,8 @@ tr.mat-header-row{
   font: var(--text-body-2);
 }
 
-.table-wrapper ::ng-deep .mat-sort-header-arrow{
-  display: none;
-}
-
 .table-wrapper ::ng-deep .mat-sort-header-content{
   gap: 11px;
-}
-
-.rotate-180{
-  transform: rotate(180deg);
 }
 
 .menu-btn{

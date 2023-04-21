@@ -2138,8 +2138,22 @@ public class PacmanUtils {
     }
 
     public static List<String> getSeverityVulnerabilitiesByInstanceId(String instanceId, String ec2WithVulnUrl,
-            String severityVulnValue) throws Exception {
+                                                                      String severityVulnValue) throws Exception {
         List<String> severityList = new ArrayList<>();
+        JsonArray hitsArray = getSeverityVulnerabilitiesArray(instanceId,ec2WithVulnUrl,severityVulnValue);
+        if(hitsArray!=null){
+            for (int i = 0; i < hitsArray.size(); i++) {
+                JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
+                        .getAsJsonObject();
+                severityList.add(source.get("title").getAsString());
+            }
+        }
+
+        return severityList;
+    }
+
+    public static JsonArray getSeverityVulnerabilitiesArray(String instanceId, String ec2WithVulnUrl,
+                                                            String severityVulnValue) throws Exception {
         JsonParser jsonParser = new JsonParser();
         Map<String, Object> mustFilter = new HashMap<>();
         Map<String, Object> mustNotFilter = new HashMap<>();
@@ -2153,15 +2167,9 @@ public class PacmanUtils {
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get(PacmanRuleConstants.HITS).toString());
 
-            JsonArray hitsArray = hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
-            for (int i = 0; i < hitsArray.size(); i++) {
-                JsonObject source = hitsArray.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
-                        .getAsJsonObject();
-                severityList.add(source.get("title").getAsString());
-            }
-
+           return  hitsJson.getAsJsonArray(PacmanRuleConstants.HITS);
         }
-        return severityList;
+        return null;
     }
 
     public static boolean checkACLAccess(AmazonS3Client awsS3Client, String s3BucketName, String accessType) {

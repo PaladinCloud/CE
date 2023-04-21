@@ -1,0 +1,12 @@
+<div
+    *ngIf="severity | severity as lowCaseSeverity"
+    class="severity"
+    [ngClass]="{
+        low: lowCaseSeverity === 'LOW',
+        medium: lowCaseSeverity === 'MEDIUM',
+        high: lowCaseSeverity === 'HIGH',
+        critical: lowCaseSeverity === 'CRITICAL'
+    }"
+>
+    {{ lowCaseSeverity }}
+</div>

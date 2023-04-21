@@ -21,6 +21,7 @@ package com.tmobile.pacman.api.admin.domain;
 public class DeleteAssetGroupExceptionRequest {
 	private String exceptionName;
 	private String groupName;
+	private String deletedBy;
 
 	public DeleteAssetGroupExceptionRequest() {
 	}
@@ -44,5 +45,13 @@ public class DeleteAssetGroupExceptionRequest {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public String getDeletedBy() {
+		return deletedBy;
+	}
+
+	public void setDeletedBy(String deletedBy) {
+		this.deletedBy = deletedBy;
 	}
 }

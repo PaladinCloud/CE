@@ -14,13 +14,35 @@ class AppSync(TerraformResource):
     available_args = {
         'name': {'required': True, 'prefix': True, 'sep': '-'},
         'authentication_type':{'required': True},
-        'schema' : {'required':True}
+        'schema' : {'required':True},
+        'tags': {'required': False},
     }
     description = Settings.RESOURCE_DESCRIPTION
 
 
-class ApiSyncId(TerraformResource):
+class AppSyncId(TerraformResource):
     resource_instance_name = "aws_appsync_api_key"
     available_args = {
         'api_id': {'required': True},
+        'expires' : {'required': False}
+    }
+
+class AppSyncDataSource(TerraformResource):
+    resource_instance_name = "aws_appsync_datasource"
+    available_args = {
+        'api_id': {'required': True},
+        'name'   :{'required': True},
+        'description' : {'required': True},
+        'type'  : {'required': True}
+    }
+
+class AppSyncResolvers(TerraformResource):
+    resource_instance_name = "aws_appsync_resolver"
+    available_args = {
+        'api_id': {'required': True},
+        'type'   :{'required': True},
+        'field' : {'required': True},
+        'data_source'  : {'required': True},
+        'request_template': {'required':True},
+        'response_template' :{'required':True},
     }

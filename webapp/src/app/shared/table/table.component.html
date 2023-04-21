@@ -133,15 +133,6 @@
                         <span>
                             {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
                         </span>
-                        <img
-                            *ngIf="column !== 'Actions'"
-                            [class.rotate-180]="headerColName === column && direction === 'asc'"
-                            height="12"
-                            width="12"
-                            style="padding: 2px"
-                            src="/assets/icons/arrow-down-2.svg"
-                            alt=""
-                        />
                     </th>
                 <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="centeredColumns[column]">
                     <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">

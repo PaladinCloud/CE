@@ -3,16 +3,13 @@
 <head>
     <style>
 
-.a {
+.rowkey {
   font-family: Courier, Arial;
   font-weight: bold;
+  width: 250px;
 }
 
-.leftWidth {
-	width: 150px;
-}
-
-.b {
+.summary {
   font-family: Calibri, Verdana;
   font-size: 15px;
 }
@@ -40,26 +37,26 @@ text-decoration : none;
 
 <br>
 
-<div class="b">Policy ID <a href="${policyNameLink}">${policyName}</a> got violated.</div>
+<div class="summary">Policy ID <a href="${policyNameLink}">${policyName}</a> got violated.</div>
 
 <br><br>
 
-<table style="width:500px">
+<table style="width:800px">
     <tr>
-        <td class="a leftWidth">Resource ID</td>
+        <td class="rowkey">Resource ID</td>
         <td><a href="${resourceIdLink}">${resourceId}</a></td>
     </tr>
     <tr>
-        <td class="a">Issue ID</td>
+        <td class="rowkey">Issue ID</td>
         <td><a href="${issueIdLink}">${issueId}</a></td>
     </tr>
     <tr>
-        <td class="a">Scan Time</td>
+        <td class="rowkey">Scan Time</td>
         <td>${scanTime}</td>
     </tr>
     <tr>
-        <td class="a">Policy Description</td>
-        <td>${description}</td>
+        <td class="rowkey">Source</td>
+        <td>${source}</td>
     </tr>
 </table>
 

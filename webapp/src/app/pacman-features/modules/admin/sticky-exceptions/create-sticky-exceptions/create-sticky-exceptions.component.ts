@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -31,6 +31,7 @@ import { AdminService } from '../../../../services/all-admin.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { DataCacheService } from 'src/app/core/services/data-cache.service';
 
 @Component({
   selector: 'app-admin-create-sticky-exceptions',
@@ -194,7 +195,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     private errorHandling: ErrorHandlingService,
     private workflowService: WorkflowService,
     private routerUtilityService: RouterUtilityService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private dataCacheService: DataCacheService
   ) {
 
     this.routerParam();
@@ -203,8 +205,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.urlToRedirect = this.router.routerState.snapshot.url;
-    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];    
-    
+    const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
+
     if(breadcrumbInfo){
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
@@ -481,7 +483,9 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
     let url = environment.configureStickyException.url;
     let method = environment.configureStickyException.method;
-    this.adminService.executeHttpAction(url, method, exceptionDetails, {}).subscribe(reponse => {
+    const userDetails = this.dataCacheService.getUserDetailsValue();
+    let userId = userDetails.getEmail();
+    this.adminService.executeHttpAction(url, method, { ...exceptionDetails, createdBy : userId }, {}).subscribe(reponse => {
       this.successTitle = 'Exception Created';
       this.isAssetGroupExceptionCreationUpdationSuccess = true;
       this.assetGroupExceptionLoader = false;
@@ -539,7 +543,9 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
     //this.highlightName = assetGroupExceptionDetails.assetGroupExceptionName;
     let url = environment.configureStickyException.url;
     let method = environment.configureStickyException.method;
-    this.adminService.executeHttpAction(url, method, exceptionDetails, {}).subscribe(reponse => {
+    const userDetails = this.dataCacheService.getUserDetailsValue();
+    let userId = userDetails.getEmail();
+    this.adminService.executeHttpAction(url, method, { ...exceptionDetails, createdBy : userId }, {}).subscribe(reponse => {
       this.successTitle = 'Exception Updated';
       this.isAssetGroupExceptionCreationUpdationSuccess = true;
       this.assetGroupExceptionLoader = false;
@@ -604,7 +610,7 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   }
 
   /*
-    * This function gets the urlparameter and queryObj 
+    * This function gets the urlparameter and queryObj
     *based on that different apis are being hit with different queryparams
     */
   routerParam() {
