@@ -1,4 +1,4 @@
-package com.tmobile.pacman.commons.config;
+package com.tmobile.pacman.commons.aws;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class CredentialProvider {
 
     String baseaccount = System.getenv("COGNITO_ACCOUNT");
