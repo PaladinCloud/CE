@@ -3868,3 +3868,9 @@ update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionNa
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
 
 update pac_v2_ui_options set optionName='Asset Type' where optionName='Resource Type';
+
+
+update cf_AssetGroupDetails set groupType = "System" where groupId in ('201','cdffb9cd-71de-4e29-9cae-783c2aa211ac','e0008397-f74e-4deb-9066-10bdf11202ae');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected AWS Accounts." where groupId in ('201');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected Azure Subscriptions." where groupId in ('cdffb9cd-71de-4e29-9cae-783c2aa211ac');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected GCP Projects." where groupId in ('e0008397-f74e-4deb-9066-10bdf11202ae');
