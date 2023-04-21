@@ -3875,3 +3875,48 @@ update cf_AssetGroupDetails set groupType = "System" where groupId in ('201','cd
 update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected AWS Accounts." where groupId in ('201');
 update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected Azure Subscriptions." where groupId in ('cdffb9cd-71de-4e29-9cae-783c2aa211ac');
 update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected GCP Projects." where groupId in ('e0008397-f74e-4deb-9066-10bdf11202ae');
+
+
+/* Procedure to update account id and account name for azure and gcp */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `update_displayFields_for_azure_gcp` $$
+CREATE PROCEDURE `update_displayFields_for_azure_gcp`(mandatoryTags MEDIUMTEXT)
+BEGIN
+DECLARE tag TEXT DEFAULT NULL;
+DECLARE tagLength INT DEFAULT NULL;
+DECLARE _value TEXT DEFAULT NULL;
+DECLARE _displayMandatory TEXT default "";
+DECLARE _temp TEXT DEFAULT NULL;
+
+iterator:
+LOOP
+
+  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
+    LEAVE iterator;
+  END IF;
+
+  -- fetch the next value from the mandatoryTags list
+  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
+  SET tagLength = CHAR_LENGTH(tag);
+
+  -- trim the value of leading and trailing spaces
+  SET _value = TRIM(tag);
+
+
+  SET _temp = concat('tags.',_value);
+  SET _displayMandatory = concat(_displayMandatory,_temp,",");
+  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
+
+
+
+END LOOP;
+
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId") where resourceType='all_list';
+
+END $$
+
+DELIMITER ;
+
+CALL update_displayFields_for_azure_gcp(@MANDATORY_TAGS);
+
