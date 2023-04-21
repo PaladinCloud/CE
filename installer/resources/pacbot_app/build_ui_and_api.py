@@ -42,7 +42,8 @@ class BuildUiAndApis(NullResource):
                     'AWS_REGION': Settings.AWS_REGION,
                     'APPSYNC_URL': AppSyncNotification.get_output_attr('uris["GRAPHQL"]'),
                     'APPSYNC_API_KEY': AppSyncIdKey.get_output_attr('key'),
-                    'LAMBDA_PATH' : Settings.LAMBDA_PATH
+                    'LAMBDA_PATH' : Settings.LAMBDA_PATH,
+                    'GOOGLE_ANALYTICS' : Settings.GOOGLE_ANALYTICS
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }
