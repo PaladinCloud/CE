@@ -98,6 +98,6 @@ public interface Constants {
         }
     }
     String EVENT_SOURCE = "paladinCloud";
-    String EVENT_SOURCE_NAME = "PaladinCloud";
+    String EVENT_SOURCE_NAME = "Paladin Cloud";
 
 }
