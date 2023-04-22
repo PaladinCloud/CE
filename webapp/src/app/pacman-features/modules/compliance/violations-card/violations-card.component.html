@@ -11,7 +11,7 @@
                 {{ card.name }} Violations
             </div>
             <div class="violations-count" (click)="redirect()">
-                {{ card.totalViolations }}
+                {{ card.totalViolations | number }}
                 <img src="/assets/icons/Path.svg" alt="go to violation" />
             </div>
         </div>
@@ -20,7 +20,7 @@
     <div class="violations-info-container flex flex-row">
         <div class="violations-info-item flex flex-col" *ngFor="let item of getKeys(card.subInfo)">
             <div class="name nowrap-ellipsis">{{ item }}</div>
-            <div class="count center">{{ card.subInfo[item] }}</div>
+            <div class="count center">{{ card.subInfo[item] | number }}</div>
         </div>
     </div>
 </div>
