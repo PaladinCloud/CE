@@ -530,12 +530,11 @@ public class PolicyExecutor {
                             policyParam.get(PacmanSdkConstants.TARGET_TYPE), null, null));
         }
         annotationPublisher.publish();
-         metrics.put("total-issues-found", issueFoundCounter);
+        metrics.put("total-issues-found", issueFoundCounter);
         List<Annotation> closedIssues = annotationPublisher.processClosureEx();
-        ExecutorService threadpool = Executors.newCachedThreadPool();
-        threadpool.submit(() -> NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true));
-        threadpool.submit(() -> NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false));
-        threadpool.shutdown();
+        NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
+        NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
+
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);
