@@ -13,11 +13,9 @@
  */
 
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { moduleTransition } from "./common/animations/animations";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AssetGroupObservableService } from "../core/services/asset-group-observable.service";
 import { Subscription } from "rxjs";
-import { MainRoutingAnimationEventService } from "../shared/services/main-routing-animation-event.service";
 import { LoggerService } from "../shared/services/logger.service";
 import { DataCacheService } from "../core/services/data-cache.service";
 import { DownloadService } from "../shared/services/download.service";
@@ -36,7 +34,6 @@ declare var Offline: any;
   selector: "app-post-login-app",
   templateUrl: "./post-login-app.component.html",
   styleUrls: ["./post-login-app.component.css"],
-  animations: [moduleTransition()],
 })
 export class PostLoginAppComponent implements OnInit, OnDestroy {
   navigationDetails: any;
@@ -50,13 +47,12 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
   private themeSubscription: Subscription;
   private activatedRouteSubscription: Subscription;
   private downloadSubscription: Subscription;
-  private previousRouteSequence;
   public theme;
   private pageReloadInterval; // Default time is 30 minutes in miliseconds
   private reloadTimeout;
   isOffline = false;
   isExpanded = true;
-  mode: String = 'side';
+  mode = 'side';
   sidenavExpanderLeft = 250;
   rotationVar = 'rotate(180deg)';
 
@@ -101,7 +97,6 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     private dataStore: DataCacheService,
     private logger: LoggerService,
     private workflowService: WorkflowService,
-    private mainRoutingAnimationEventService: MainRoutingAnimationEventService,
     private downloadService: DownloadService,
     private domainTypeObservableService: DomainTypeObservableService,
     private themeObservableService: ThemeObservableService,
@@ -220,10 +215,6 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
     return reloadTimeout;
   }
 
-  getState(outlet) {
-    return outlet.activatedRouteData.sequence;
-  }
-
   updateAssetGroup(assetGroupName) {
     if (assetGroupName) {
       this.assetGroupObservableService.updateAssetGroup(assetGroupName);
@@ -260,14 +251,14 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
 
           // this.updateAssetGroup(this.queryParameters["ag"]);
           // this.updateDomainName(this.queryParameters["domain"]);
-          
+
           if(params["ag"] && params["ag"]!=this.queryParameters["ag"]){
             this.queryParameters["ag"] = params["ag"];
-            this.updateAssetGroup(this.queryParameters["ag"]);            
+            this.updateAssetGroup(this.queryParameters["ag"]);
           }
           if(params["domain"] && params["domain"]!=this.queryParameters["domain"]){
             this.queryParameters["domain"] = params["domain"];
-            this.updateDomainName(this.queryParameters["domain"]);            
+            this.updateDomainName(this.queryParameters["domain"]);
           }
         }
         /* User will enter it in minutes */
@@ -280,24 +271,6 @@ export class PostLoginAppComponent implements OnInit, OnDestroy {
         }
       }
     );
-  }
-
-  routerTransitionStart() {
-    this.mainRoutingAnimationEventService.updateAnimationStatus(false);
-  }
-
-  routerTransitionDone() {
-    this.mainRoutingAnimationEventService.updateAnimationStatus(true);
-  }
-
-  onDeactivate(event) {
-    try {
-      event.activatedRoute.data.subscribe((data) => {
-        if (data) {
-          this.previousRouteSequence = data.sequence;
-        }
-      });
-    } catch (e) { }
   }
 
   ngOnDestroy() {
