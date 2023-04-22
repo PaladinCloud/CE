@@ -103,7 +103,6 @@ import { FilterManagementService } from './services/filter-management.service';
 import { FormService } from './services/form.service';
 import { HttpService } from './services/http-response.service';
 import { LoggerService } from './services/logger.service';
-import { MainRoutingAnimationEventService } from './services/main-routing-animation-event.service';
 import { RefactorFieldsService } from './services/refactor-fields.service';
 import { RouterUtilityService } from './services/router-utility.service';
 import { ScrollTrackerService } from './services/scroll-tracker.service';
@@ -303,7 +302,6 @@ import { WidgetSectionStarterComponent } from './widget-section-starter/widget-s
         FormService,
         HttpService,
         LoggerService,
-        MainRoutingAnimationEventService,
         OrderByPipe,
         RefactorFieldsService,
         RouterUtilityService,

@@ -17,7 +17,7 @@
     [class.is-offine]="isOffline"
     [ngStyle]="theme !== undefined && { 'background-image': 'url(' + theme.bg + ')' }"
 >
-    <section class="post-login-body" [@mainRouterTransition]="getState(o)">
+    <section class="post-login-body">
         <app-header></app-header>
         <button
             class="sidenav-expander flex flex-center"
@@ -47,7 +47,7 @@
             </mat-sidenav>
             <mat-sidenav-content>
                 <div class="contextual-content-container" [appScrollTracker]="'main-sidenav'">
-                    <router-outlet #o="outlet" (deactivate)="onDeactivate($event)"></router-outlet>
+                    <router-outlet></router-outlet>
                 </div>
             </mat-sidenav-content>
         </mat-sidenav-container>
