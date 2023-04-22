@@ -41,6 +41,7 @@ public class CloudAssetInventoryCollector {
         if(responseObj!=null){
             cloudAssetVH.setName(responseObj.get("name").getAsString());
             cloudAssetVH.setState(responseObj.get("state").getAsString());
+            cloudAssetVH.setRegion(projectVH.getRegion());
 
             if(responseObj.get("config")!=null){
                 JsonObject config=responseObj.getAsJsonObject("config");

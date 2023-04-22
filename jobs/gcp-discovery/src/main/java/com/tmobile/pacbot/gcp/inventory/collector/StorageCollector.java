@@ -49,6 +49,7 @@ public class StorageCollector {
             storageVH.setId(bucket.getGeneratedId());
             storageVH.setProjectName(project.getProjectName());
             storageVH.setProjectId(project.getProjectId());
+            storageVH.setRegion(bucket.getLocation());
             storageList.add(storageVH);
 
         }

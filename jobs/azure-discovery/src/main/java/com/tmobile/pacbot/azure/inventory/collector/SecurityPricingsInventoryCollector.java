@@ -48,6 +48,8 @@ public class SecurityPricingsInventoryCollector {
 				securityPricingsVH.setType(securityPricingsObject.get("type").getAsString());
 				securityPricingsVH.setSubscription(subscription.getSubscriptionId());
 				securityPricingsVH.setSubscriptionName(subscription.getSubscriptionName());
+				securityPricingsVH.setRegion(securityPricingsObject.get("location").getAsString());
+				securityPricingsVH.setResourceGroupName(Util.getResourceGroupNameFromId(securityPricingsObject.get("id").getAsString()));
 
 				if (properties != null) {
 					HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);

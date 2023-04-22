@@ -42,20 +42,22 @@ public class NamespaceInventoryCollector {
 			JsonArray namespaceObjects = responseObj.getAsJsonArray("value");
 			if (namespaceObjects != null) {
 				for (JsonElement namespaceElement : namespaceObjects) {
-					NamespaceVH namespaceVH = new NamespaceVH();
-					JsonObject namespaceObject = namespaceElement.getAsJsonObject();
-					namespaceVH.setSubscription(subscription.getSubscriptionId());
-					namespaceVH.setSubscriptionName(subscription.getSubscriptionName());
-					namespaceVH.setId(namespaceObject.get("id").getAsString());
-					namespaceVH.setLocation(namespaceObject.get("location").getAsString());
-					namespaceVH.setName(namespaceObject.get("name").getAsString());
-					namespaceVH.setType(namespaceObject.get("type").getAsString());
-					JsonObject properties = namespaceObject.getAsJsonObject("properties");
-					JsonObject tags = namespaceObject.getAsJsonObject("tags");
-					JsonObject sku = namespaceObject.getAsJsonObject("sku");
-					if (properties != null) {
-						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
-								HashMap.class);
+                    NamespaceVH namespaceVH = new NamespaceVH();
+                    JsonObject namespaceObject = namespaceElement.getAsJsonObject();
+                    namespaceVH.setSubscription(subscription.getSubscriptionId());
+                    namespaceVH.setSubscriptionName(subscription.getSubscriptionName());
+                    namespaceVH.setRegion(namespaceObject.get("location").getAsString());
+                    namespaceVH.setResourceGroupName(Util.getResourceGroupNameFromId(namespaceObject.get("id").getAsString()));
+                    namespaceVH.setId(namespaceObject.get("id").getAsString());
+                    namespaceVH.setLocation(namespaceObject.get("location").getAsString());
+                    namespaceVH.setName(namespaceObject.get("name").getAsString());
+                    namespaceVH.setType(namespaceObject.get("type").getAsString());
+                    JsonObject properties = namespaceObject.getAsJsonObject("properties");
+                    JsonObject tags = namespaceObject.getAsJsonObject("tags");
+                    JsonObject sku = namespaceObject.getAsJsonObject("sku");
+                    if (properties != null) {
+                        HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(),
+                                HashMap.class);
 						namespaceVH.setProperties(propertiesMap);
 					}
 					if (tags != null) {
