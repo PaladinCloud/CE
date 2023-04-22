@@ -12,7 +12,7 @@ import {
   NgZone,
   AfterViewInit,
 } from "@angular/core";
-// import { AutorefreshService } from './pacman-features/services/autorefresh.service';
+import { DecimalPipe } from "@angular/common";
 import * as d3 from "d3-selection";
 import * as d3Shape from "d3-shape";
 import * as d3Scale from "d3-scale";
@@ -28,6 +28,7 @@ import { WindowExpansionService } from "src/app/core/services/window-expansion.s
   selector: "app-multiline-zoom-graph",
   templateUrl: "./multiline-zoom-graph.component.html",
   styleUrls: ["./multiline-zoom-graph.component.css"],
+  providers: [DecimalPipe],
 })
 export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   @Input() id: any;
@@ -134,8 +135,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
   constructor(private loggerService: LoggerService,
     private windowExpansionService: WindowExpansionService,
-    private ngZone: NgZone
-  ) 
+    private ngZone: NgZone,
+    private numbersPipe: DecimalPipe,
+  )
   {
     window.onresize = (e) => {
       // ngZone.run will help to run change detection
@@ -147,11 +149,11 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
 
   @HostListener("window:resize", ["$event"]) onSizeChanges() {
     this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;    
+    // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10)-70;
     this.init();
   }
 
-  plotGraph() {    
+  plotGraph() {
     try {
       this.removeZeroValues();
       this.initSvg();
@@ -205,7 +207,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         this.interval = this.graphData[0].values.length;
 
         // Set dimensions for the graph and timeline axis
-        
+
         this.width = this.graphWidth - this.margin.left - this.margin.right;
         this.timeLineWidth = this.width * 1;
         this.height =
@@ -267,7 +269,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     }
   }
 
-  ngAfterViewInit(): void {    
+  ngAfterViewInit(): void {
     setTimeout(() => {
       this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
       // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
@@ -275,9 +277,9 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     }, 500);
 
     this.windowExpansionService.getExpansionStatus().subscribe((countMap: any) => {
-      setTimeout(() => {      
+      setTimeout(() => {
       this.graphWidth = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('width'), 10);
-      // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;      
+      // this.graphHeight = parseInt(window.getComputedStyle(this.graphContainer.nativeElement, null).getPropertyValue('height'), 10) - 70;
       this.init();
       }, 500)
     });
@@ -290,11 +292,11 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     return elm.clientHeight - padding
   }
 
-  ngOnInit() {    
+  ngOnInit() {
     this.axisMinValue = Infinity;
     this.axisMaxValue = 0;
     for(let i=0; i<this.graphLinesData.length; i++){
-      this.graphLinesData[i].values.forEach(element => {      
+      this.graphLinesData[i].values.forEach(element => {
       if(element.value<this.axisMinValue){
         this.axisMinValue = element.value;
       }
@@ -316,7 +318,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
   // rounds off to nearest multiple of roundOffToVal bounding up to valToRoundOff
   roundOff(valToRoundOff, roundOffToVal){
     if(roundOffToVal>0){
-      return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal; 
+      return Math.ceil(valToRoundOff/roundOffToVal)*roundOffToVal;
     }else{
       return 0;
     }
@@ -342,7 +344,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
     let graphTickValues = [];
     // we need floor of val to get tickVal below minVal, minval should be rounded off to nearest roundOffToVal
     const yMin = this.roundOff(this.axisMinValue-roundOffToVal, roundOffToVal) // we remove roundOffToVal from axisMinValue to get floor value since roundOff function returns ceil val
-    const yMax = this.roundOff(this.axisMaxValue, roundOffToVal); 
+    const yMax = this.roundOff(this.axisMaxValue, roundOffToVal);
     let y = this.roundOff(Math.ceil((yMax - yMin)/(maxNumberOfTickValues - 1)),roundOffToVal);
     let x = yMin;
     for(let i=0; i<maxNumberOfTickValues; i++){
@@ -1343,17 +1345,17 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
       let count= 0;
       tickGroups.forEach((item, i) => {
         // TO DO : need to write more logic here to cut down extra tick lines when logscale is used.
-        if((tickGroups[i-1] && parseFloat(tickGroups[i-1].textContent)<=this.axisMaxValue && parseFloat(tickGroups[i-1].textContent)>=this.axisMinValue) || 
+        if((tickGroups[i-1] && parseFloat(tickGroups[i-1].textContent)<=this.axisMaxValue && parseFloat(tickGroups[i-1].textContent)>=this.axisMinValue) ||
         (tickGroups[i+1] && parseFloat(tickGroups[i+1].textContent)>=this.axisMinValue && parseFloat(tickGroups[i+1].textContent)<=this.axisMaxValue)){
           tickGroups[i].style["display"] = "block";
           grids.forEach((grid) => {
             grid[i].style["display"] = "block";
-          }); 
+          });
         }else if(parseFloat(tickGroups[i])<=this.axisMaxValue && parseFloat(tickGroups[i])>=this.axisMinValue){
           tickGroups[i].style["display"] = "block";
           grids.forEach((grid) => {
             grid[i].style["display"] = "block";
-          }); 
+          });
         }
         else{
           tickGroups[i].style["display"] = "none";
@@ -1444,7 +1446,6 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           )
           .attr("x", -110)
           .attr("y", -7);
-        
       }
 
       this.focus
@@ -1504,7 +1505,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
               valueDate.setHours(0, 0, 0, 0);
               hoverDate.setHours(0, 0, 0, 0);
               if (valueDate.toString() === hoverDate.toString()) {
-                dobj["value" + i] = currentLineValues[j].value;
+                dobj["value" + i] = self.numbersPipe.transform(currentLineValues[j].value);
                 break;
               }
             }
@@ -1526,7 +1527,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
         const rectData = {};
         const dateData = {};
         const yearData = {};
-        
+
         rectText["dx"] =
           mousePosition < axisRange / 4
             ? "4em"
@@ -1606,7 +1607,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
             .attr("dy", dateData["dy"]);
         });
 
-          self.graphLinesData.forEach((eachline, m) => {            
+          self.graphLinesData.forEach((eachline, m) => {
             self.focus
               .select(".valueData" + m)
               .attr(
@@ -1630,7 +1631,7 @@ export class MultilineZoomGraphComponent implements OnInit, AfterViewInit {
           });
 
           self.graphLinesData.forEach((eachline, m) => {
-            const legend = self.graphLinesData[numOfLines - m].key;            
+            const legend = self.graphLinesData[numOfLines - m].key;
             self.focus
               .select(".rectText" + m)
               .attr(
