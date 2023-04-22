@@ -83,11 +83,9 @@
             </div>
             <div class="table-count-info" style="margin-left: 20px;">
                 <!-- <span *ngIf="isDataLoading">Loading...</span> -->
-                <span >{{totalRows}} Results</span>
+                <span>{{ totalRows | number }} Results</span>
             </div>
             <div class="header-right flex flex-row">
-
-
                 <div *ngIf="showMoreMenu" class="more-wrapper">
                     <img mat-button [matMenuTriggerFor]="menu" src="/assets/icons/three-dots.svg" alt="">
                     <mat-menu #menu="matMenu">
