@@ -31,7 +31,9 @@ public class NotificationUtils {
             String hostName = CommonUtils.getPropValue(HOSTNAME);
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
 
+
             for (Annotation annotation : annotations) {
+                LOGGER.info("annotation policy id--"+annotation.get(POLICY_NAME)+" issueid -- "+annotation.get(PacmanSdkConstants.ANNOTATION_PK));
                 String annotationId = CommonUtils.getUniqueAnnotationId(annotation);
                 annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
