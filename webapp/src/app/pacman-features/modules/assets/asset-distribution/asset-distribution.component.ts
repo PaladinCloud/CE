@@ -12,6 +12,7 @@
  * limitations under the License.
  */
 
+import { DecimalPipe } from '@angular/common';
 import {
     AfterViewInit,
     Component,
@@ -20,7 +21,7 @@ import {
     NgZone,
     OnDestroy,
     OnInit,
-    ViewChild,
+    ViewChild
 } from '@angular/core';
 import { Router } from '@angular/router';
 import * as d3 from 'd3';
@@ -56,7 +57,7 @@ export type ColorOptions = {
     selector: 'app-asset-distribution',
     templateUrl: './asset-distribution.component.html',
     styleUrls: ['./asset-distribution.component.css'],
-    providers: [LoggerService, ErrorHandlingService],
+    providers: [LoggerService, ErrorHandlingService, DecimalPipe],
 })
 export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewInit {
     resourceTypeSelectionSubscription: Subscription;
@@ -129,9 +130,10 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
     }
 
     constructor(
-        private ngZone: NgZone,
         private awsResourceTypeSelectionService: AwsResourceTypeSelectionService,
         private logger: LoggerService,
+        private ngZone: NgZone,
+        private numbersPipe: DecimalPipe,
         private router: Router,
         private windowExpansionService: WindowExpansionService,
         private workflowService: WorkflowService,
@@ -263,7 +265,7 @@ export class AssetDistributionComponent implements OnInit, OnDestroy, AfterViewI
                         '</span>' +
                         '</div>' +
                         '<span class="tooltip-assetCount">' +
-                        AssetCount +
+                        this.numbersPipe.transform(AssetCount) +
                         '</span>' +
                         '</div>'
                     );
