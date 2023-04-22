@@ -41,22 +41,24 @@ public class MySQLInventoryCollector {
 			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
 			JsonArray sqlServerObjects = responseObj.getAsJsonArray("value");
 			for (JsonElement sqlServerObjectElement : sqlServerObjects) {
-				MySQLServerVH mySQLServerVH = new MySQLServerVH();
-				mySQLServerVH.setSubscription(subscription.getSubscriptionId());
-				mySQLServerVH.setSubscriptionName(subscription.getSubscriptionName());
-				JsonObject sqlServerObject = sqlServerObjectElement.getAsJsonObject();
-				JsonObject properties = sqlServerObject.getAsJsonObject("properties");
-				JsonObject sku = sqlServerObject.getAsJsonObject("sku");
-				mySQLServerVH.setId(sqlServerObject.get("id").getAsString());
-				mySQLServerVH.setLocation(sqlServerObject.get("location").getAsString());
-				mySQLServerVH.setName(sqlServerObject.get("name").getAsString());
-				mySQLServerVH.setType(sqlServerObject.get("type").getAsString());
-				if (sku!=null) {
-					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
-					mySQLServerVH.setSkuMap(skuMap);
-				}
-				if (properties!=null) {
-					HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
+                MySQLServerVH mySQLServerVH = new MySQLServerVH();
+                mySQLServerVH.setSubscription(subscription.getSubscriptionId());
+                mySQLServerVH.setSubscriptionName(subscription.getSubscriptionName());
+                JsonObject sqlServerObject = sqlServerObjectElement.getAsJsonObject();
+                JsonObject properties = sqlServerObject.getAsJsonObject("properties");
+                JsonObject sku = sqlServerObject.getAsJsonObject("sku");
+                mySQLServerVH.setRegion(sqlServerObject.get("location").getAsString());
+                mySQLServerVH.setResourceGroupName(Util.getResourceGroupNameFromId(sqlServerObject.get("id").getAsString()));
+                mySQLServerVH.setId(sqlServerObject.get("id").getAsString());
+                mySQLServerVH.setLocation(sqlServerObject.get("location").getAsString());
+                mySQLServerVH.setName(sqlServerObject.get("name").getAsString());
+                mySQLServerVH.setType(sqlServerObject.get("type").getAsString());
+                if (sku != null) {
+                    HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
+                    mySQLServerVH.setSkuMap(skuMap);
+                }
+                if (properties != null) {
+                    HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
 					mySQLServerVH.setPropertiesMap(propertiesMap);
 				}
 

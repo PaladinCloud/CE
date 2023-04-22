@@ -5,7 +5,9 @@ import java.util.HashMap;
 public class CloudAssetVH {
     String name;
     String state;
-    HashMap<String, Object>config;
+
+    String region;
+    HashMap<String, Object> config;
 
     public HashMap<String, Object> getConfig() {
         return config;
@@ -29,5 +31,13 @@ public class CloudAssetVH {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 }

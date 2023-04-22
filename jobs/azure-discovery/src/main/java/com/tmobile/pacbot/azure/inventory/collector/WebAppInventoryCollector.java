@@ -38,14 +38,16 @@ public class WebAppInventoryCollector {
                 webAppVH.setSubscription(subscription.getSubscriptionId());
                 webAppVH.setSubscriptionName(subscription.getSubscriptionName());
                 webAppVH.setRegion(webApp.regionName());
-                if(webApp.ftpsState()!=null){
-                   webAppVH.setFtpsState(webApp.ftpsState());
-                   log.info("ftpsState {}",webApp.ftpsState());
+                webAppVH.setResourceGroupName(webApp.resourceGroupName());
+
+                if (webApp.ftpsState() != null) {
+                    webAppVH.setFtpsState(webApp.ftpsState());
+                    log.info("ftpsState {}", webApp.ftpsState());
                 }
 
-                if(webApp.minTlsVersion()!=null){
+                if (webApp.minTlsVersion() != null) {
                     webAppVH.setMinTlsVersion(webApp.minTlsVersion().toString());
-                    log.info("minTlsVersion {}",webApp.minTlsVersion());
+                    log.info("minTlsVersion {}", webApp.minTlsVersion());
                 }
 
                 webAppVH.setAuthEnabled(webApp.getAuthenticationConfig().inner().enabled());

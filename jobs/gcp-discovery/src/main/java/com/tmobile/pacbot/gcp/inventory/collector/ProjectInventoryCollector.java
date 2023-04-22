@@ -32,7 +32,8 @@ public class ProjectInventoryCollector {
         projectMetadataVH.setProjectId(project.getProjectId());
         projectMetadataVH.setId(project.getProjectId());
         projectMetadataVH.setProjectNumber(project.getProjectNumber());
-        this.fetchComputeEngineMetadata(project.getProjectId().toString(),projectMetadataVH);
+        projectMetadataVH.setRegion(project.getRegion());
+        this.fetchComputeEngineMetadata(project.getProjectId().toString(), projectMetadataVH);
         projectMetadataVH.setCloudAsset(cloudAssetInventoryCollector.fetchCloudAssetDetails(project));
         projectMetadataVHList.add(projectMetadataVH);
 

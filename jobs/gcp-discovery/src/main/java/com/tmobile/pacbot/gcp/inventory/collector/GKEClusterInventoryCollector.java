@@ -66,6 +66,7 @@ public class GKEClusterInventoryCollector {
                     gkeClusterVH.setName(cluster.getName());
                     gkeClusterVH.setProjectName(project.getProjectName());
                     gkeClusterVH.setProjectId(project.getProjectId());
+                    gkeClusterVH.setRegion(cluster.getLocation());
                     gkeClusterVH.set_cloudType(InventoryConstants.CLOUD_TYPE_GCP);
                     gkeClusterVH.setIPAlias(cluster.getIpAllocationPolicy().getUseIpAliases());
                     gkeClusterVH.setCloudLogging(cluster.getLoggingService());

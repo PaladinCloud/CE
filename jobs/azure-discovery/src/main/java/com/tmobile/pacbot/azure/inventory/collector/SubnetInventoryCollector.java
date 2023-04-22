@@ -55,6 +55,7 @@ public class SubnetInventoryCollector {
 					JsonObject subnetObject = subnetElement.getAsJsonObject();
 					JsonObject properties = subnetObject.getAsJsonObject("properties");
 					subnetVH.setId(subnetObject.get("id").getAsString());
+					subnetVH.setRegion(subnetObject.get("location").getAsString());
 					subnetVH.setResourceGroupName(getResourceGroupNameFromId(subnetVH.getId()));
 					subnetVH.setName(subnetObject.get("name").getAsString());
 					subnetVH.setType(subnetObject.get("type").getAsString());

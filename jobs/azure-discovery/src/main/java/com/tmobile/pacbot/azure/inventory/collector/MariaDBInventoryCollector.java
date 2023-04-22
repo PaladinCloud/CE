@@ -40,26 +40,28 @@ public class MariaDBInventoryCollector {
 			JsonObject responseObj = new JsonParser().parse(response).getAsJsonObject();
 			JsonArray mariaDBObjects = responseObj.getAsJsonArray("value");
 			for (JsonElement mariaDBElement : mariaDBObjects) {
-				MariaDBVH mariaDBVH = new MariaDBVH();
-				JsonObject mariaDBObject = mariaDBElement.getAsJsonObject();
-				JsonObject properties = mariaDBObject.getAsJsonObject("properties");
-				JsonObject sku = mariaDBObject.getAsJsonObject("sku");
-				mariaDBVH.setId(mariaDBObject.get("id").getAsString());
-				mariaDBVH.setLocation(mariaDBObject.get("location").getAsString());
-				mariaDBVH.setName(mariaDBObject.get("name").getAsString());
-				mariaDBVH.setType(mariaDBObject.get("type").getAsString());
-				mariaDBVH.setSubscription(subscription.getSubscriptionId());
-				mariaDBVH.setSubscriptionName(subscription.getSubscriptionName());
-				if (sku!=null) {
-					HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
-					mariaDBVH.setSkuMap(skuMap);
-				}
-				if (properties!=null) {
-					HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
-					mariaDBVH.setPropertiesMap(propertiesMap);
-				}
-				mariaDBList.add(mariaDBVH);
-			}
+                MariaDBVH mariaDBVH = new MariaDBVH();
+                JsonObject mariaDBObject = mariaDBElement.getAsJsonObject();
+                JsonObject properties = mariaDBObject.getAsJsonObject("properties");
+                JsonObject sku = mariaDBObject.getAsJsonObject("sku");
+                mariaDBVH.setId(mariaDBObject.get("id").getAsString());
+                mariaDBVH.setLocation(mariaDBObject.get("location").getAsString());
+                mariaDBVH.setName(mariaDBObject.get("name").getAsString());
+                mariaDBVH.setType(mariaDBObject.get("type").getAsString());
+                mariaDBVH.setSubscription(subscription.getSubscriptionId());
+                mariaDBVH.setSubscriptionName(subscription.getSubscriptionName());
+                mariaDBVH.setRegion(mariaDBObject.get("location").getAsString());
+                mariaDBVH.setResourceGroupName(Util.getResourceGroupNameFromId(mariaDBObject.get("id").getAsString()));
+                if (sku != null) {
+                    HashMap<String, Object> skuMap = new Gson().fromJson(sku.toString(), HashMap.class);
+                    mariaDBVH.setSkuMap(skuMap);
+                }
+                if (properties != null) {
+                    HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
+                    mariaDBVH.setPropertiesMap(propertiesMap);
+                }
+                mariaDBList.add(mariaDBVH);
+            }
 		} catch (Exception e) {
 			log.error("Error Collecting MariaDB",e);
 		}
