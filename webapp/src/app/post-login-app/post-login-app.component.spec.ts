@@ -3,9 +3,9 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); You may not use
  * this file except in compliance with the License. A copy of the License is located at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * or in the "license" file accompanying this file. This file is distributed on
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or
  * implied. See the License for the specific language governing permissions and
@@ -47,7 +47,6 @@ import { ToastObservableService as SharedToasObservableService } from '../shared
 
 import { PostLoginAppComponent } from './post-login-app.component';
 import { AssetSwitcherComponent } from './common/asset-switcher/asset-switcher.component';
-import { TreeModule } from '@circlon/angular-tree-component';
 import { RecentlyViewedObservableService } from '../core/services/recently-viewed-observable.service';
 import { DefaultAssetGroupComponent } from './default-asset-group/default-asset-group.component';
 import { AwsResourceTypeSelectionService } from '../pacman-features/services/aws-resource-type-selection.service';
@@ -69,7 +68,6 @@ describe('PostLoginAppComponent', () => {
         MatSidenavModule,
         NoopAnimationsModule,
         RouterTestingModule,
-        TreeModule,
       ],
       declarations: [
         AssetSwitcherComponent,
