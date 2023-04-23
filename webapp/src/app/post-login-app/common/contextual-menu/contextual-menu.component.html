@@ -48,28 +48,6 @@
                     </span>
                 </div>
             </cdk-nested-tree-node>
-            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: isChild">
-                <div
-                    *ngIf="
-                        hasRequiredPermission(node) &&
-                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
-                    "
-                    class="tree-child-item"
-                    [routerLink]="
-                        !node.children
-                            ? node.overlay
-                                ? [{ outlets: { modalBGMenu: [node.route] } }]
-                                : [node.route]
-                            : null
-                    "
-                    routerLinkActive="node-wrapper-active"
-                    [queryParams]="agAndDomain"
-                >
-                    <span>
-                        {{ node.name }}
-                    </span>
-                </div>
-            </cdk-nested-tree-node>
             <!--./PARENT NODE -->
 
             <!-- PARENT NODE WITH CHILDREN -->
@@ -102,6 +80,35 @@
                 <!--./CHILD NODES -->
             </cdk-nested-tree-node>
             <!--./PARENT NODE WITH CHILDREN -->
+
+            <!-- CHILD NODE -->
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: isChild">
+                <div
+                    class="tree-child-wrapper"
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                >
+                    <div
+                        class="tree-child-item"
+                        [routerLink]="
+                            !node.children
+                                ? node.overlay
+                                    ? [{ outlets: { modalBGMenu: [node.route] } }]
+                                    : [node.route]
+                                : null
+                        "
+                        routerLinkActive="node-wrapper-active"
+                        [queryParams]="agAndDomain"
+                    >
+                        <span>
+                            {{ node.name }}
+                        </span>
+                    </div>
+                </div>
+            </cdk-nested-tree-node>
+            <!--./CHILD NODE -->
         </cdk-tree>
     </nav>
     <div

@@ -127,20 +127,20 @@ nav {
     color: var(--text-medium-emphasis);
 }
 
-.tree-item {
+.tree-item,
+.tree-child-item {
     font-family: var(--text-medium-font-family);
     border-radius: 4px;
 }
 
-.tree-child-item {
+.tree-child-wrapper {
     margin-left: 22px;
-    padding: 14px 16px;
     border-left: 2px solid var(--border-200);
 }
 
-.tree-child-item::before {
-    content: '';
-    padding-left: 20px;
+.tree-child-item {
+    margin-left: 25px;
+    padding: 17px 16px 17px 0;
 }
 
 .tree-child-item:hover,
