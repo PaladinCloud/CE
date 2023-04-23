@@ -502,7 +502,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                             isLink: true,
                         };
                     } else if (col.toLowerCase() === 'created') {
-                        const createdDate = this.datePipe.transform(cellData, 'medium');
+                        const createdDate = this.datePipe.transform(cellData, 'MMM d, y, h:mm a');
                         cellObj = {
                             ...cellObj,
                             text: createdDate,
