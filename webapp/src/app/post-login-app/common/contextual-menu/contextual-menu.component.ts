@@ -14,16 +14,14 @@
 
 import { ArrayDataSource } from '@angular/cdk/collections';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { TreeComponent, TreeNode } from '@circlon/angular-tree-component';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { AssetTypeMapService } from 'src/app/core/services/asset-type-map.service';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { ThemeObservableService } from 'src/app/core/services/theme-observable.service';
-import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
 import { LoggerService } from 'src/app/shared/services/logger.service';
@@ -38,12 +36,10 @@ import { MenuItem, MenuItemChild, MENU_NODES } from './contextual-menu-nodes';
 export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     @Input() haveAdminPageAccess: boolean;
     @Input() expanded: boolean;
-    @ViewChild('treeMenu') tree: TreeComponent;
     treeControl = new NestedTreeControl<MenuItem>((node) => node.children);
     dataSource = new ArrayDataSource(MENU_NODES);
 
-    currentParentId = '';
-    currentNodeId = '';
+    currentNode: MenuItem;
     current_version = '';
     agAndDomain = {};
     theme: string;
@@ -67,18 +63,11 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
         private logger: LoggerService,
         private router: Router,
         private themeObservableService: ThemeObservableService,
-        private workflowService: WorkflowService,
     ) {
         this.assetTypeMapService.fetchAssetTypes();
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
-                const currentRoute = this.router.url
-                    .split('?')[0]
-                    .replace('(', '')
-                    .replace(')', '');
-                const currNodes = this.getCurrentNodesFromRoute(currentRoute);
-                this.currentNodeId = currNodes[0];
-                this.currentParentId = currNodes[1];
+                this.currentNode = this.getCurrentParentNodeFromRoute();
                 this.selectCurrentNode();
             }
         });
@@ -103,78 +92,51 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
                 this.showPacLoader.pop();
             }
         });
-        const currentRoute = this.router.url.split('?')[0].replace('(', '').replace(')', '');
-
-        const currNodes = this.getCurrentNodesFromRoute(currentRoute);
-        this.currentNodeId = currNodes[0];
-        this.currentParentId = currNodes[1];
+        this.currentNode = this.getCurrentParentNodeFromRoute();
     }
 
     ngAfterViewInit() {
         this.selectCurrentNode();
-        console.log(this.treeControl.dataNodes, this.treeControl.getDescendants(this.nodes[2]));
     }
 
     private selectCurrentNode() {
-        const node: TreeNode | null = this.tree?.treeModel.getNodeById(this.currentNodeId);
-        if (node?.parent?.data?.name) {
-            node.parent.expand();
+        if (!this.treeControl.isExpanded(this.currentNode)) {
+            this.treeControl.expand(this.currentNode);
         }
     }
 
-    hasRequiredPermission(node: TreeNode) {
-        if (node.data.name === 'Admin') {
+    hasRequiredPermission(node: MenuItem | MenuItemChild) {
+        if (node.name === 'Admin') {
             const isAdmin = this.dataCacheService.isAdminCapability();
             return isAdmin;
         }
-        const roleCapabilities = this.dataCacheService.getRoleCapabilities();
-        if (
-            node.data === undefined ||
-            node.data.permissions === undefined ||
-            node.data.permissions.length == 0
-        ) {
-            //default permission, no specific role capability is required
-            return true;
-        } else {
-            const isAccessible = node.data.permissions.some((role) =>
-                roleCapabilities.includes(role),
-            );
-            //console.log('Component is accessible?', isAccessible)
-            return isAccessible;
+        if (this.isChildMenuItem(node)) {
+            if (!node.permissions || node.permissions?.length === 0) {
+                return true;
+            }
+            const roleCapabilities = this.dataCacheService.getRoleCapabilities();
+            return node.permissions.some((role) => roleCapabilities.includes(role));
         }
+        return true;
     }
 
-    getCurrentNodesFromRoute(currentRoute: string) {
-        let currNodeParentId: string;
-        let currNodeId: string;
+    private isChildMenuItem(node): node is MenuItemChild {
+        return node.permissions !== undefined;
+    }
 
+    getCurrentParentNodeFromRoute() {
+        const currentRoute = this.router.url.split('?')[0].replace('(', '').replace(')', '');
         for (const parent of this.nodes) {
-            currNodeParentId = parent.id;
             if (parent.children != undefined) {
                 for (const child of parent.children) {
                     if (currentRoute.includes(child.route)) {
-                        currNodeId = child.id;
-                        return [currNodeId, currNodeParentId];
+                        return parent;
                     }
                 }
             } else if (currentRoute.includes(parent.route)) {
-                currNodeId = parent.id;
-                currNodeParentId = parent.id;
-                return [currNodeId, currNodeParentId];
+                return parent;
             }
         }
-        return ['', ''];
-    }
-
-    selectNode(node: TreeNode, event: Event) {
-        this.workflowService.clearAllLevels();
-        node.toggleExpanded();
-        this.currentNodeId = node.id;
-        this.currentParentId = node.parent.id;
-        if (node.hasChildren) {
-            this.currentParentId = node.id;
-        }
-        node.mouseAction('click', event);
     }
 
     getProvider() {
