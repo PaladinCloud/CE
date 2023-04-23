@@ -17,68 +17,26 @@
     <div class="asset-switcher-container">
         <app-asset-switcher [isExpanded]="expanded"></app-asset-switcher>
     </div>
-    <!-- <div class="tree-component">
-        <tree-root [nodes]="nodes" class="tree" #treeMenu>
-            <ng-template #treeNodeWrapperTemplate let-node let-index="index">
-                <div *ngIf="hasRequiredPermission(node)">
-                    <div
-                        *ngIf="!(node.data.notDisplayIfAzure && agAndDomain.ag === 'azure')"
-                        class="node-wrapper"
-                        [class.wrapper]="currentParentId === node.id && node.hasChildren"
-                        [class.node-wrapper-active]="node.id === currentNodeId && !node.hasChildren"
-                        [class.wrapper-collapsed]="!expanded"
-                        [style.padding-left]="node.getNodePadding()"
-                    >
-                        <div *ngIf="node.data?.image" class="icon">
-                            <img
-                                class="node-img"
-                                src="/assets/icons/{{ node.data?.image }}.svg"
-                                alt=""
-                            />
-                        </div>
-                        <div
-                            class="node-content-wrapper"
-                            [class.node-content-wrapper-focused]="node.isFocused"
-                            [class.isCollapsed]="!expanded"
-                            (click)="selectNode(node, $event)"
-                            (dblclick)="node.mouseAction('dblClick', $event)"
-                            (contextmenu)="node.mouseAction('contextMenu', $event)"
-                            (treeDrop)="node.onDrop($event)"
-                            [treeAllowDrop]="node.allowDrop"
-                            [treeDrag]="node"
-                            [treeDragEnabled]="node.allowDrag()"
-                            [class.node-content-wrapper-expanded]="node.isExpanded"
-                            [routerLink]="
-                                !node.hasChildren
-                                    ? node.data?.overlay
-                                        ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
-                                        : [node.data?.route]
-                                    : null
-                            "
-                            [queryParams]="agAndDomain"
-                        >
-                            <tree-node-content
-                                [class]="node.data.name"
-                                [node]="node"
-                                [index]="index"
-                                [title]="node.data.name"
-                            >
-                            </tree-node-content>
-                            <tree-node-expander
-                                (click)="node.toggleExpanded()"
-                                [node]="node"
-                            ></tree-node-expander>
-                        </div>
-                    </div>
-                </div>
-            </ng-template>
-        </tree-root>
-    </div> -->
     <nav>
         <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
             <!-- PARENT NODE -->
             <cdk-nested-tree-node *cdkTreeNodeDef="let node">
-                <div class="tree-item flex flex-align-center">
+                <div
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                    class="tree-item flex flex-align-center"
+                    [routerLink]="
+                        !node.children
+                            ? node.overlay
+                                ? [{ outlets: { modalBGMenu: [node.route] } }]
+                                : [node.route]
+                            : null
+                    "
+                    [queryParams]="agAndDomain"
+                    routerLinkActive="node-wrapper-active"
+                >
                     <img
                         *ngIf="node.image"
                         class="node-img"
@@ -91,7 +49,22 @@
                 </div>
             </cdk-nested-tree-node>
             <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: isChild">
-                <div class="tree-child-item">
+                <div
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                    class="tree-child-item"
+                    [routerLink]="
+                        !node.children
+                            ? node.overlay
+                                ? [{ outlets: { modalBGMenu: [node.route] } }]
+                                : [node.route]
+                            : null
+                    "
+                    routerLinkActive="node-wrapper-active"
+                    [queryParams]="agAndDomain"
+                >
                     <span>
                         {{ node.name }}
                     </span>
@@ -101,7 +74,14 @@
 
             <!-- PARENT NODE WITH CHILDREN -->
             <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild">
-                <div class="tree-item flex flex flex-align-center" cdkTreeNodeToggle>
+                <div
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                    class="tree-item flex flex flex-align-center"
+                    cdkTreeNodeToggle
+                >
                     <img
                         *ngIf="node.image"
                         class="node-img"
