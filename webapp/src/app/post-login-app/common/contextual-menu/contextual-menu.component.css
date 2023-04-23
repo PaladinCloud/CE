@@ -18,7 +18,6 @@
     border-right: 1px solid var(--border-200);
 }
 
-::ng-deep tree-node-content,
 .know-your-app-content {
     display: ruby !important;
     font-family: var(--text-medium-font-family);
@@ -29,7 +28,7 @@
     color: var(--text-medium-emphasis);
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0px 16px 0px 12px !important;
+    padding: 0 16px 0 12px;
 }
 
 .icon {
@@ -57,21 +56,8 @@
     filter: invert(24%) sepia(73%) saturate(2569%) hue-rotate(186deg) brightness(78%) contrast(111%);
 }
 
-::ng-deep .tree-children .node-wrapper-active .node-content-wrapper {
-    background-color: var(--primary-100) !important;
-}
-
-::ng-deep tree-viewport {
-    height: calc(100vh - 245px) !important;
-    overflow-x: hidden;
-}
-
-.wrapper-collapsed {
-    width: fit-content !important;
-}
-
-::ng-deep .isCollapsed {
-    display: none !important;
+.is-collapsed {
+    display: none;
 }
 
 .know-your-app-wrapper {
