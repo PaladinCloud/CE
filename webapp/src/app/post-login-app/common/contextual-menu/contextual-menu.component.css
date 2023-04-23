@@ -106,7 +106,8 @@
 nav {
     height: calc(100vh - 245px);
     overflow-y: auto;
-    margin: 0 16px;
+    margin-left: 16px;
+    padding-right: 16px;
     font-family: var(--text-medium-font-family);
     font-size: var(--text-body-2-font-size);
     font-weight: var(--text-font-weight);
