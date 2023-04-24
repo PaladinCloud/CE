@@ -106,6 +106,7 @@
 nav {
     height: calc(100vh - 245px);
     overflow-y: auto;
+    overflow-x: hidden;
     margin-left: 16px;
     padding-right: 16px;
     font-family: var(--text-medium-font-family);
@@ -139,6 +140,10 @@ nav {
 .tree-child-item span,
 .tree-item span {
     padding: 17px 0 17px 12px;
+}
+
+.tree-item.collapsed span {
+    padding-left: 17px;
 }
 
 .tree-expand-icon {

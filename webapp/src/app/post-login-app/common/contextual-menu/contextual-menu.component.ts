@@ -14,7 +14,15 @@
 
 import { ArrayDataSource } from '@angular/cdk/collections';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
+    SimpleChanges,
+} from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
@@ -33,7 +41,7 @@ import { MenuItem, MenuItemChild, MENU_NODES } from './contextual-menu-nodes';
     templateUrl: './contextual-menu.component.html',
     styleUrls: ['./contextual-menu.component.css'],
 })
-export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() haveAdminPageAccess: boolean;
     @Input() expanded: boolean;
     treeControl = new NestedTreeControl<MenuItem>((node) => node.children);
@@ -80,6 +88,17 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnDestroy
         this.commonResponseService.getData(url, urlMethod, '', queryParam).subscribe((response) => {
             this.current_version = response[0].value.substring(1);
         });
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.expanded.firstChange) {
+            return;
+        }
+        if (changes.expanded.currentValue) {
+            this.selectCurrentNode();
+        } else {
+            this.treeControl.collapseAll();
+        }
     }
 
     ngOnInit() {

@@ -27,6 +27,7 @@
                         !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
                     "
                     class="tree-item flex flex-align-center"
+                    [class.collapsed]="!expanded"
                     [routerLink]="
                         !node.children
                             ? node.overlay
@@ -58,6 +59,7 @@
                         !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
                     "
                     class="tree-item flex flex flex-align-center"
+                    [class.collapsed]="!expanded"
                     cdkTreeNodeToggle
                 >
                     <img
