@@ -43,7 +43,14 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tmobile.cloud.awsrules.ec2.model.CveDetails;
+import com.tmobile.cloud.awsrules.ec2.model.QualysVulnerabilityinfo;
+import com.tmobile.pacman.commons.aws.CredentialProvider;
+import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
+import com.tmobile.pacman.commons.utils.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -95,6 +102,9 @@ import com.tmobile.pacman.commons.policy.Annotation;
 
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
+    public static final String NIST_VULN_DETAILS_URL = "https://nvd.nist.gov/vuln/detail/";
+    AwsSecretManagerUtil awsSecretManagerUtil=new AwsSecretManagerUtil();
+    CredentialProvider credentialProvider=new CredentialProvider();
 
     private PacmanUtils() {
 
@@ -4044,4 +4054,64 @@ public class PacmanUtils {
         }
         return map;
     }
+
+    public static String getQualysVulnerabilitiesDetails(JsonArray vulnerabilities) {
+
+        List<QualysVulnerabilityinfo> vulnerabilityList=new ArrayList<>();
+        if(vulnerabilities!=null){
+            String vulnerabityDetailurl=new PacmanUtils().getVulDetailUrl();
+            for (int i = 0; i < vulnerabilities.size(); i++) {
+                JsonObject source = vulnerabilities.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
+                        .getAsJsonObject();
+                QualysVulnerabilityinfo vulnerabilityinfo=new QualysVulnerabilityinfo();
+                String title=source.get("title").getAsString();
+                vulnerabilityinfo.setTitle(title);
+                String hostInstanceVulnId=source.get("hostInstanceVulnId").getAsBigDecimal().toPlainString();
+                vulnerabilityinfo.setVulnerabilityUrl(vulnerabityDetailurl+hostInstanceVulnId);
+
+                JsonObject cveList = source.get("cvelist").getAsJsonObject();
+                List<CveDetails> cveDeytailsList=new ArrayList<>();
+                if(cveList!=null){
+                    populateCveList(cveList, cveDeytailsList);
+                }
+                vulnerabilityinfo.setCveList(cveDeytailsList);
+                vulnerabilityList.add(vulnerabilityinfo);
+            }
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(vulnerabilityList);
+        } catch (JsonProcessingException e) {
+            throw new RuleExecutionFailedExeption(e.getMessage());
+        }
+
+    }
+
+    private static void populateCveList(JsonObject cveList, List<CveDetails> cveDeytailsList) {
+        JsonArray cveArray= cveList.get("cve").getAsJsonArray();
+        if(cveArray!=null){
+            for (int j = 0; j < cveArray.size(); j++) {
+                String id = cveArray.get(j).getAsJsonObject().get(PacmanRuleConstants.ID).getAsString();
+                String url = NIST_VULN_DETAILS_URL +id;
+                CveDetails cveDetails=new CveDetails(id,url);
+                cveDeytailsList.add(cveDetails);
+            }
+        }
+    }
+
+    private String getVulDetailUrl() {
+        String baseAccount=System.getProperty(Constants.BASE_ACCOUNT);
+        String baseRegion=System.getProperty(Constants.BASE_REGION);
+        String baseRole=System.getProperty(Constants.BASE_ROLE);
+        String secretManagerPrefix=System.getProperty(Constants.SECRET_MANAGER_PATH);
+
+        BasicSessionCredentials credential = credentialProvider.getBaseAccountCredentials(baseAccount,baseRegion, baseRole);
+        String secretData=awsSecretManagerUtil.fetchSecret(secretManagerPrefix+"/"+baseRole+"/qualys",credential,baseRegion);
+        Map<String, String> dataMap = PacmanUtils.getJsonData(secretData);
+        String baseUri=dataMap.get("qualysApiUrl");
+        baseUri=baseUri.replace("qualysapi","qualysguard")+"/vm/#/vulndetails/";
+        logger.info("Qualys base url for vulnerability details: {} ",baseUri);
+        return baseUri;
+    }
+
 }
