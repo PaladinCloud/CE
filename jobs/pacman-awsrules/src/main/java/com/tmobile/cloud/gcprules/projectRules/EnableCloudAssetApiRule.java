@@ -40,7 +40,7 @@ public class EnableCloudAssetApiRule extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_project/project/_search";
+            vmEsURL = vmEsURL + "/gcp_project/_search";
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
 
@@ -52,6 +52,7 @@ public class EnableCloudAssetApiRule extends BasePolicy {
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
             Map<String, Object> mustFilter = new HashMap<>();
+            mustFilter.put("docType","project");
 
             try {
                 isCloudAssetApiEnabled = checkCloudAssetApiEnabled(vmEsURL, mustFilter);
@@ -88,7 +89,7 @@ public class EnableCloudAssetApiRule extends BasePolicy {
             JsonObject ProjectdataJson = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", ProjectdataJson.toString());
+            logger.debug("Validating the data item: {}", ProjectdataJson);
 
             JsonObject cloudAssetJSON = null;
 
