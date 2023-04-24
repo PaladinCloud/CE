@@ -2,7 +2,6 @@ package com.tmobile.cloud.gcprules.projectRules;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -42,7 +41,7 @@ public class EnableOSLoginProjectLevelRule extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_project/project/_search";
+            vmEsURL = vmEsURL + "/gcp_project/_search";
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
 
@@ -54,6 +53,7 @@ public class EnableOSLoginProjectLevelRule extends BasePolicy {
         if (!StringUtils.isNullOrEmpty(resourceId)) {
 
             Map<String, Object> mustFilter = new HashMap<>();
+            mustFilter.put("docType","project");
 
             try {
                 isOsLoginEnabled = checkOSLoginEnabled(vmEsURL, mustFilter);
@@ -90,7 +90,7 @@ public class EnableOSLoginProjectLevelRule extends BasePolicy {
             JsonObject vmInstanceObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", vmInstanceObject.toString());
+            logger.debug("Validating the data item: {}", vmInstanceObject);
             JsonObject metadataObj = vmInstanceObject.getAsJsonObject()
                     .get(PacmanRuleConstants.COMPUTE_INSTANCE_METADATA).getAsJsonObject();
 
@@ -99,7 +99,7 @@ public class EnableOSLoginProjectLevelRule extends BasePolicy {
                 logger.info("login data --> {}",metadataObj);
 
                 if(metadataObj.get(PacmanRuleConstants.ENABLE_OS_LOGIN)!=null){
-                    if(metadataObj.get(PacmanRuleConstants.ENABLE_OS_LOGIN).getAsBoolean()==true){
+                    if(metadataObj.get(PacmanRuleConstants.ENABLE_OS_LOGIN).getAsBoolean()){
                         validationResult=true;
                     }
 
