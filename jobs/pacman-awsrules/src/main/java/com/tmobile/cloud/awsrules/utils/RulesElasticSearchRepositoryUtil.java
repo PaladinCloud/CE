@@ -397,8 +397,8 @@ public class RulesElasticSearchRepositoryUtil {
         } else {
             String extractIndex=urlToQuery.substring(urlToQuery.indexOf(".com")+5,urlToQuery.indexOf("/_search"));
             String extractType=extractIndex.substring(extractIndex.indexOf("/")+1);
-            urlToQuery=urlToQuery.replace("/"+extractType,"");
             if (extractIndex.contains(AWS_STRING)) {
+                urlToQuery=urlToQuery.replace("/"+extractType,"");
                 mustFilter.put(DOC_TYPE, extractType);
             }
             matchFilters.putAll(mustFilter);
