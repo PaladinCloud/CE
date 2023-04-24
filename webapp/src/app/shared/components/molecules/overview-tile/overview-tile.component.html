@@ -5,7 +5,7 @@
             <div class="tile-header-title capitalize">{{ tile.mainContent.title }}</div>
             <div class="tile-header-count" (click)="redirectTo(tile.mainContent.title)">
                 <app-text-with-icon
-                    [text]="tile.mainContent.count"
+                    [text]="tile.mainContent.count | number"
                     textVariant="subtitle-1 primary-400"
                     postImagePath="/assets/icons/Path.svg"
                     gap="8"
@@ -15,6 +15,6 @@
     </div>
     <div class="tile-details flex gap-8">
         <div class="tile-details-name">{{ tile.subContent.title }}</div>
-        <div class="tile-details-count">{{ tile.subContent.count }}</div>
+        <div class="tile-details-count">{{ tile.subContent.count | number }}</div>
     </div>
 </div>

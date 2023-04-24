@@ -67,7 +67,7 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
     @Override
     public List<Map<String, Object>> fetchRuleDetails(String targetType) {
 
-        String query = "SELECT  policyId ,policyDisplayName,policyFrequency,policyParams  FROM cf_PolicyTable where status ='ENABLED' and  targetType ='"
+        String query = "SELECT  policyId ,policyDisplayName,policyFrequency,policyParams,category  FROM cf_PolicyTable where status ='ENABLED' and  targetType ='"
                 + targetType + "' order by policyId";
         return rdsepository.getDataFromPacman(query);
     }
@@ -99,8 +99,6 @@ public class PolicyAssetRepositoryImpl implements PolicyAssetRepository,
             return elasticSearchRepository.getSortedDataFromES(ag, "issue_"
                     + resourceType, mustFilter, null, null, fields, mustTermsFilter, null);
         } catch (Exception e) {
-            LOGGER.error("Error fetching issue from ES for ", resourceId);
-            LOGGER.error("Error fetching issue from ES", e);
             throw new DataException("Error fetching issue from ES for "+resourceId,e);
         }
     }

@@ -135,6 +135,11 @@ public class PolicyExecutor {
         System.setProperty(Constants.RDS_DB_URL,CommonUtils.getPropValue(Constants.RDS_DB_URL));
         System.setProperty(Constants.RDS_USER,CommonUtils.getPropValue(Constants.RDS_USER));
         System.setProperty(Constants.RDS_PWD,CommonUtils.getPropValue(Constants.RDS_PWD));
+        System.setProperty(Constants.BASE_ACCOUNT,CommonUtils.getPropValue(Constants.BASE_ACCOUNT));
+        System.setProperty(Constants.BASE_REGION,CommonUtils.getPropValue(Constants.BASE_REGION));
+        System.setProperty(Constants.BASE_ROLE,CommonUtils.getPropValue(Constants.BASE_ROLE));
+        System.setProperty(Constants.SECRET_MANAGER_PATH,CommonUtils.getPropValue(Constants.SECRET_MANAGER_PATH));
+
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
             String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
@@ -525,12 +530,11 @@ public class PolicyExecutor {
                             policyParam.get(PacmanSdkConstants.TARGET_TYPE), null, null));
         }
         annotationPublisher.publish();
-         metrics.put("total-issues-found", issueFoundCounter);
+        metrics.put("total-issues-found", issueFoundCounter);
         List<Annotation> closedIssues = annotationPublisher.processClosureEx();
-        ExecutorService threadpool = Executors.newCachedThreadPool();
-        threadpool.submit(() -> NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true));
-        threadpool.submit(() -> NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false));
-        threadpool.shutdown();
+        NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getBulkUploadBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), true);
+        NotificationUtils.triggerNotificationsForViolations(annotationPublisher.getClouserBucket(), annotationPublisher.getExistingIssuesMapWithAnnotationIdAsKey(), false);
+
         Integer danglisngIssues = annotationPublisher.closeDanglingIssues(annotation);
         metrics.put("dangling-issues-closed", danglisngIssues);
         metrics.put("total-issues-closed", closedIssues.size() + danglisngIssues);

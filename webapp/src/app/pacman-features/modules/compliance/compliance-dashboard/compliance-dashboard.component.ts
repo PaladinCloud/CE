@@ -13,6 +13,7 @@
  */
 
 import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
+import { DecimalPipe } from "@angular/common";
 import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
 import { SelectComplianceDropdown } from "./../../../services/select-compliance-dropdown.service";
 import { CommonResponseService } from "../../../../shared/services/common-response.service";
@@ -46,7 +47,8 @@ import { RouterUtilityService } from "src/app/shared/services/router-utility.ser
     LoggerService,
     ErrorHandlingService,
     OverallComplianceService,
-    MultilineChartService
+    MultilineChartService,
+    DecimalPipe,
   ],
 })
 export class ComplianceDashboardComponent implements OnInit {
@@ -319,6 +321,7 @@ export class ComplianceDashboardComponent implements OnInit {
     private tableStateService: TableStateService,
     private multilineChartService: MultilineChartService,
     private routerUtilityService: RouterUtilityService,
+    private numbersPipe: DecimalPipe,
   ) {}
 
   handleHeaderColNameSelection(event) {
@@ -870,6 +873,12 @@ export class ComplianceDashboardComponent implements OnInit {
             isMenuBtn: false,
             properties: "",
             isLink: isPolicyCol
+          }
+          if (col.toLowerCase() === "violations") {
+            cellObj = {
+                ...cellObj,
+                text: this.numbersPipe.transform(cellData),
+            }
           }
           innerArr[col] = cellObj;
           totalVariablesObj[col] = "";

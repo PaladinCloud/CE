@@ -186,14 +186,11 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_assetGroupException_table $$
 CREATE PROCEDURE alter_cf_assetGroupException_table()
 BEGIN
-IF  EXISTS( SELECT NULL
+IF NOT EXISTS( SELECT NULL
             FROM INFORMATION_SCHEMA.COLUMNS
            WHERE table_name = 'cf_AssetGroupException'
              AND table_schema = 'pacmandata'
-             AND column_name = 'createdBy'
-			 AND column_name = 'createdOn'
-			 AND column_name = 'modifiedBy'
-			 AND column_name = 'modifiedOn')  THEN
+             AND column_name = 'createdBy')  THEN
 ALTER TABLE `cf_AssetGroupException`  
 ADD COLUMN `createdBy` VARCHAR(100) NULL,
 ADD COLUMN `createdOn` DATE NULL,
@@ -2498,7 +2495,8 @@ INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,o
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (19,1,'Status','issueStatus.keyword','/compliance/v1/filters/issuestatus?ag=aws');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (20,10,'Type','eventCategoryName','/compliance/v1/filters/eventtype');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (21,10,'Source','eventSourceName','/compliance/v1/filters/eventsource');
-
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (22,8,'Tagged','tagged','/compliance/v1/filters/taggedStatus?ag=aws');
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (23,8,'Exempted','exempted','/compliance/v1/filters/taggedStatus?ag=aws');
 
 /* UI Widgets */
 INSERT IGNORE INTO pac_v2_ui_widgets (widgetId,pageName,widgetName) VALUES (1,'Tagging','TaggingSummary');
@@ -2916,6 +2914,7 @@ DELETE IGNORE FROM pac_config_properties where cfkey  in ('apiauthinfo');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('qualys_info', 'qualys_api_url');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('aqua_client_domain_url', 'aqua_api_url','aqua_username','aqua_password','default_page_size','aqua_image_vul_query_params');
 DELETE IGNORE FROM pac_config_properties where cfkey in ('notification.lambda.function.url','notification.topic.arn','notification.email.topic.arn','notification.to.emailid');
+DELETE IGNORE FROM pac_config_properties where cfkey  in ('pacman.auto.fix.role.name','pacman.auto.fix.mail.cc.to','pacman.auto.fix.orphan.resource.owner');
 
 
 INSERT IGNORE INTO pac_config_properties (`cfkey`,`value`,`application`,`profile`,`label`,`createdBy`,`createdDate`,`modifiedBy`,`modifiedDate`) VALUES ('notification.lambda.function.url',concat(@NOTIFICATION_FUNCTION_URL,''),'application','prd','latest',NULL,NULL,NULL,NULL);
@@ -3092,9 +3091,9 @@ INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `pr
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('heimdall-host',concat(@ES_HEIMDALL_HOST_NAME,''),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('heimdall-port',concat(@ES_HEIMDALL_PORT,''),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.host',concat(@PACMAN_HOST_NAME,''),'rule','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.mail.cc.to','mail@pacbot.com','rule','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.orphan.resource.owner','mail@pacbot.com','rule','prd','latest',NULL,NULL,NULL,NULL);
-INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.role.name','role/pacbot','rule','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.mail.cc.to','mail@paladincloud.io','rule','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.orphan.resource.owner','mail@paladincloud.io','rule','prd','latest',NULL,NULL,NULL,NULL);
+INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.auto.fix.role.name',concat('role/',@EVENT_BRIDGE_PREFIX),'rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.integrations.slack.webhook.url','','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('pacman.target.type.alias','account=iam,volume=ec2,snapshot=ec2,rdsdb=rds,dynamodb=dyndb,appelb=elb_app,classicelb=elb_classic,sg=ec2,elasticip=ec2,iamuser=iam,iamrole=iam','rule','prd','latest',NULL,NULL,NULL,NULL);
 INSERT IGNORE INTO `pac_config_properties` (`cfkey`, `value`, `application`, `profile`, `label`, `createdBy`, `createdDate`, `modifiedBy`, `modifiedDate`) values('autofix.allowlist.accounts.S3GlobalAccess_version-1_S3BucketShouldnotpubliclyaccessble_s3','','rule','prd','latest',NULL,NULL,NULL,NULL);
@@ -3870,3 +3869,54 @@ update pac_v2_ui_options set optionValue='policyCategory.keyword' where optionNa
 update pac_config_properties set value = concat(@EVENT_BRIDGE_PREFIX,'') where cfkey = 'application.prefix';
 
 update pac_v2_ui_options set optionName='Asset Type' where optionName='Resource Type';
+
+
+update cf_AssetGroupDetails set groupType = "System" where groupId in ('201','cdffb9cd-71de-4e29-9cae-783c2aa211ac','e0008397-f74e-4deb-9066-10bdf11202ae');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected AWS Accounts." where groupId in ('201');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected Azure Subscriptions." where groupId in ('cdffb9cd-71de-4e29-9cae-783c2aa211ac');
+update cf_AssetGroupDetails set description = "Cyber asset inventory in your connected GCP Projects." where groupId in ('e0008397-f74e-4deb-9066-10bdf11202ae');
+
+
+/* Procedure to update account id and account name for azure and gcp */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `update_displayFields_for_azure_gcp` $$
+CREATE PROCEDURE `update_displayFields_for_azure_gcp`(mandatoryTags MEDIUMTEXT)
+BEGIN
+DECLARE tag TEXT DEFAULT NULL;
+DECLARE tagLength INT DEFAULT NULL;
+DECLARE _value TEXT DEFAULT NULL;
+DECLARE _displayMandatory TEXT default "";
+DECLARE _temp TEXT DEFAULT NULL;
+
+iterator:
+LOOP
+
+  IF CHAR_LENGTH(TRIM(mandatoryTags)) = 0 OR mandatoryTags IS NULL THEN
+    LEAVE iterator;
+  END IF;
+
+  -- fetch the next value from the mandatoryTags list
+  SET tag = SUBSTRING_INDEX(mandatoryTags,',',1);
+  SET tagLength = CHAR_LENGTH(tag);
+
+  -- trim the value of leading and trailing spaces
+  SET _value = TRIM(tag);
+
+
+  SET _temp = concat('tags.',_value);
+  SET _displayMandatory = concat(_displayMandatory,_temp,",");
+  SET mandatoryTags = INSERT(mandatoryTags,1,tagLength + 1,'');
+
+
+
+END LOOP;
+
+update cf_pac_updatable_fields set displayFields=concat(_displayMandatory,"_resourceid,_entitytype,accountid,accountname,region,_cloudType,subscriptionName,subscription,projectName,projectId") where resourceType='all_list';
+
+END $$
+
+DELIMITER ;
+
+CALL update_displayFields_for_azure_gcp(@MANDATORY_TAGS);
+
