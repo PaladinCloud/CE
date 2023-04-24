@@ -134,7 +134,7 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
                 return true;
             }
             const roleCapabilities = this.dataCacheService.getRoleCapabilities();
-            return node.permissions.some((role) => roleCapabilities.includes(role));
+            return node.permissions.some((role) => roleCapabilities?.includes(role));
         }
         return true;
     }
