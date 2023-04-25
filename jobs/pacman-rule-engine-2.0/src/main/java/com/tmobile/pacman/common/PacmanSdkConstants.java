@@ -651,4 +651,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String NOTIFICATION_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
     String CLOUD_TYPE = "cloudType";
     String TAG_DETAILS = "tagDetails";
+    String APPLICATION_PREFIX = "application.prefix";
+    String ROLE_PREFIX = "role/";
+    String ROLE_SUFFIX = "_ro";
 }
