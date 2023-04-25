@@ -27,6 +27,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() showFilterBtn;
   @Input() showMoreMenu = true;
   @Input() rowClickable = true;
+  @Input() selectedRowIndex: number;
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
@@ -237,17 +238,18 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.getWidthFactor();
   }
 
-  handleClick(row, col){
-    if(row[col].isMenuBtn){
+  handleClick(row, col, i: number) {
+    if (row[col].isMenuBtn) {
       return;
     }
-    let event = {
+    const event = {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
       data: this.data,
-      col: col,
+      col,
       filters: this.filteredArray,
-      searchTxt: this.searchQuery
+      searchTxt: this.searchQuery,
+      selectedRowIndex: i,
     }
     this.rowSelectEventEmitter.emit(event);
   }
