@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
-import com.tmobile.cloud.gcprules.projectRules.EnableOSLoginProjectLevelRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
@@ -43,7 +42,7 @@ public class DeleteUserManagedServiceAccountKeys extends BasePolicy {
         }
 
         if (!StringUtils.isNullOrEmpty(vmEsURL)) {
-            vmEsURL = vmEsURL + "/gcp_serviceaccounts/serviceaccounts/_search";
+            vmEsURL = vmEsURL + "/gcp_serviceaccounts/_search";
         }
         logger.debug("========vmEsURL URL after concatenation param {}  =========", vmEsURL);
 
@@ -57,7 +56,7 @@ public class DeleteUserManagedServiceAccountKeys extends BasePolicy {
             Map<String, Object> mustFilter = new HashMap<>();
             mustFilter.put(PacmanUtils.convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), resourceId);
             mustFilter.put(PacmanRuleConstants.LATEST, true);
-
+            mustFilter.put("docType","serviceaccounts");
             try {
                 isUserManagedKeysDeleted = checkUserManagedKeysDeleted(vmEsURL, mustFilter);
                 if (isUserManagedKeysDeleted) {
@@ -93,7 +92,7 @@ public class DeleteUserManagedServiceAccountKeys extends BasePolicy {
             JsonObject vmInstanceObject = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", vmInstanceObject.toString());
+            logger.debug("Validating the data item: {}", vmInstanceObject);
             JsonArray keysList = vmInstanceObject.getAsJsonObject()
                     .get(PacmanRuleConstants.SERVICE_ACCOUNT_MANAGED_KEY).getAsJsonArray();
 
