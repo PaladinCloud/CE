@@ -116,6 +116,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   displayedColumns;
   tableData = [];
   isStatePreserved = false;
+  selectedRowIndex: number;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -172,6 +173,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
+        this.selectedRowIndex = state.selectedRowIndex;
       }else{
         this.isStatePreserved = false;
       }
@@ -655,8 +657,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       whiteListColumns: this.whiteListColumns,
       bucketNumber: this.bucketNumber,
       searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop
-      // filterText: this.filterText
+      tableScrollTop: event.tableScrollTop,
+      selectedRowIndex: event.selectedRowIndex,
     }
     this.storeState(state);
     try {
