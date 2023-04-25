@@ -132,7 +132,14 @@
                             {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}
                         </span>
                     </th>
-                <td [style.width]="columnWidths[column]*screenWidthFactor+'px'" (click)="handleClick(element, column)" class="capitalize" mat-cell *matCellDef="let element" [class.center]="centeredColumns[column]">
+                    <td
+                        [class.center]="centeredColumns[column]"
+                        [style.width]="columnWidths[column] * screenWidthFactor + 'px'"
+                        *matCellDef="let element; let i = index"
+                        class="capitalize"
+                        mat-cell
+                        (click)="handleClick(element, column, i)"
+                    >
                     <div *ngIf="element[column] && element[column].isMenuBtn; else clickable" style="text-align: center;">
                         <img class="pointer menu-btn" *ngIf="element[column].menuItems.length>0" mat-button [matMenuTriggerFor]="actionMenu" src="/assets/icons/three-dots.svg" alt="">
                         <mat-menu #actionMenu="matMenu">
@@ -170,11 +177,12 @@
             <tr mat-header-row *matHeaderRowDef="whiteListColumns; sticky: true"></tr>
                 <tr
                     [class.row-hover]="rowClickable"
+                    [class.row-selected]="i === selectedRowIndex"
                     [class.md]="rowSize === 'MD'"
                     [class.sm]="rowSize === 'SM'"
                     [class.lg]="rowSize === 'LG'"
                     mat-row
-                    *matRowDef="let row; columns: whiteListColumns"
+                    *matRowDef="let row; columns: whiteListColumns; let i = index"
                 ></tr>
         </table>
     </div>

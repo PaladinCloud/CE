@@ -268,8 +268,12 @@ th.mat-sort-header-sorted {
   color: var(--primary-400);
 }
 
-.row-hover:hover{
+.row-selected,
+.row-hover:hover {
   background-color: var(--background-grey);
+}
+
+.row-hover:hover {
   cursor: pointer;
 }
 
