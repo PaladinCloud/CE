@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
 import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { MultilineChartService } from 'src/app/pacman-features/services/multilinechart.service';
@@ -39,6 +40,7 @@ import {
     DasbhoardCollapsedDict,
     DashboardArrangementItems,
     DashboardArrangementService,
+    DashboardContainerIndex,
 } from '../services/dashboard-arrangement.service';
 
 @Component({
@@ -250,10 +252,11 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     dashcobardCollapsedContainers: DasbhoardCollapsedDict;
 
     readonly dashcobardCollapsedContainersTitles: { [key: number]: string } = {
-        0: 'Violations by Severity',
-        1: 'Category Compliance & Violations by Severity',
-        2: 'Asset Graph',
-        3: 'Policy Compliance Overview',
+        [DashboardContainerIndex.VIOLATION_SEVERITY]: 'Violations by Severity',
+        [DashboardContainerIndex.CATEGORY_COMPLIANCE]:
+            'Category Compliance & Violations by Severity',
+        [DashboardContainerIndex.ASSET_GRAPH]: 'Asset Graph',
+        [DashboardContainerIndex.POLICY_OVERVIEW]: 'Policy Compliance Overview',
     };
 
     constructor(
@@ -275,6 +278,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private routerUtilityService: RouterUtilityService,
         private tableStateService: TableStateService,
         private utils: UtilsService,
+        private windowExpansionService: WindowExpansionService,
         private workflowService: WorkflowService,
     ) {}
 
@@ -1265,6 +1269,10 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
 
     toggleContainer(index: number) {
+        if (index === DashboardContainerIndex.ASSET_GRAPH && this.isCollapsedContainer(index)) {
+            this.windowExpansionService.status.next(true);
+        }
+
         this.dashcobardCollapsedContainers = {
             ...this.dashcobardCollapsedContainers,
             ...{ [index]: !this.isCollapsedContainer(index) },
