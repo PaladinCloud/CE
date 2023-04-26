@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.gcprules.GKEClusterRule.GkeEnablePrivateClusterNodesRule;
 import com.tmobile.cloud.gcprules.GKEClusterRule.GkeEnablePrivateEndPtsRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
