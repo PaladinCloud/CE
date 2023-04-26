@@ -31,6 +31,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
@@ -121,6 +122,7 @@ import { WidgetSectionStarterComponent } from './widget-section-starter/widget-s
     imports: [
         AgGridModule,
         CommonModule,
+        DragDropModule,
         FormsModule,
         MatButtonModule,
         MatCardModule,
@@ -239,6 +241,7 @@ import { WidgetSectionStarterComponent } from './widget-section-starter/widget-s
         DialogBoxComponent,
         DoughnutChartComponent,
         DoughnutChartComponent,
+        DragDropModule,
         DropdownComponent,
         ErrorMessageComponent,
         FilteredSelectorComponent,
