@@ -192,5 +192,9 @@
 	"aws_image_aqua_scanned_rule",
 	"aws_image_critical_vulnerabilities_aqua_scanned_rule",
 	"aws_image_high_vulnerabilities_aqua_scanned_rule",
-	"aws_image_medium_vulnerabilities_aqua_scanned_rule"
+	"aws_image_medium_vulnerabilities_aqua_scanned_rule",
+	"aws_vm_tenable_scanned_rule",
+	"aws_vm_high_vulnerabilities_tenable_scanned_rule",
+	"aws_vm_critical_vulnerabilities_tenable_scanned_rule",
+	"aws_vm_medium_vulnerabilities_tenable_scanned_rule"
 ]
