@@ -84,14 +84,16 @@ mat-grid-tile {
 }
 
 .container {
+    transition: height 250ms cubic-bezier(0, 0, 0.2, 1);
     position: relative;
 }
 
 .container.collapsed {
     background: white;
-    height: auto;
+    height: 52px;
     border-radius: 16px;
     border: 1px solid var(--border-200);
+    transition: height 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .container.collapsed .mat-grid-list {
