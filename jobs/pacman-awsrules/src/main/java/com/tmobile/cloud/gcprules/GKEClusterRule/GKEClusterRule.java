@@ -95,14 +95,15 @@ public class GKEClusterRule extends BasePolicy {
             JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", gkeCluster.toString());
+            logger.debug("Validating the data item: {}", gkeCluster);
 
-            JsonObject masterAuthorizedNetworksConfig = gkeCluster.getAsJsonObject()
-                    .get(PacmanRuleConstants.MASTRERAUTHORRIZEDNETWORKCONFIG).getAsJsonObject();
-            if (masterAuthorizedNetworksConfig == null) {
+            boolean isMasterAuthorizedNetworksConfig = gkeCluster.getAsJsonObject()
+                    .get(PacmanRuleConstants.MASTRERAUTHORRIZEDNETWORKCONFIG).isJsonNull();
+            if (isMasterAuthorizedNetworksConfig) {
 
                 validationResult = false;
-            } else if (masterAuthorizedNetworksConfig.get("enable") == null) {
+            } else if (gkeCluster.getAsJsonObject()
+                    .get(PacmanRuleConstants.MASTRERAUTHORRIZEDNETWORKCONFIG).getAsJsonObject().get("enabled") == null) {
                 validationResult = false;
 
             }

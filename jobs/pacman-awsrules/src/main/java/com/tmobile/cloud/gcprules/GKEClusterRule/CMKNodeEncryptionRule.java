@@ -82,11 +82,11 @@ public class CMKNodeEncryptionRule extends BasePolicy {
         if (hitsJsonArray.size() > 0) {
             JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
-            logger.debug("Validating the data item: {}", gkeCluster.toString());
+            logger.debug("Validating the data item: {}", gkeCluster);
 
-            String bootDiskKmsKey = gkeCluster.getAsJsonObject()
-                    .get(PacmanRuleConstants.BOOTDISKKMSKEY).getAsJsonObject().toString();
-            if (bootDiskKmsKey!=null) {
+            boolean isBootDiskKmsKeyNull = gkeCluster.getAsJsonObject()
+                    .get(PacmanRuleConstants.BOOTDISKKMSKEY).isJsonNull();
+            if (!isBootDiskKmsKeyNull) {
                 validationResult = true;
             }
         }
