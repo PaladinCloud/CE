@@ -89,7 +89,7 @@ mat-grid-tile {
 }
 
 .container.collapsed {
-    background: white;
+    background: var(--background-white);
     height: 52px;
     border-radius: 16px;
     border: 1px solid var(--border-200);
@@ -98,10 +98,6 @@ mat-grid-tile {
 
 .container.collapsed .mat-grid-list {
     display: none;
-}
-
-.container.collapsed .collapse-btn {
-    right: 50%;
 }
 
 .container-title-collapsed {
@@ -120,9 +116,13 @@ mat-grid-tile {
     border: none;
     font-size: 24px;
     background: transparent;
-    color: var(--text-medium-emphasis);
+    color: var(--text-low-emphasis);
 }
 
 .collapse-btn:hover {
     cursor: pointer;
+}
+
+.container.collapsed .collapse-btn {
+    right: 50%;
 }
