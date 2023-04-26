@@ -14,7 +14,7 @@
 
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DecimalPipe } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as _ from 'lodash';
 import { Subscription } from 'rxjs';
@@ -35,6 +35,10 @@ import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
 import { IssueFilterService } from '../../../services/issue-filter.service';
 import { PacmanIssuesService } from '../../../services/pacman-issues.service';
+import {
+    DashboardArrangementItems,
+    DashboardArrangementService,
+} from '../services/dashboard-arrangement.service';
 
 @Component({
     selector: 'app-compliance-dashboard',
@@ -43,15 +47,16 @@ import { PacmanIssuesService } from '../../../services/pacman-issues.service';
     animations: [],
     providers: [
         CommonResponseService,
+        DashboardArrangementService,
+        DecimalPipe,
+        ErrorHandlingService,
         IssueFilterService,
         LoggerService,
-        ErrorHandlingService,
-        OverallComplianceService,
         MultilineChartService,
-        DecimalPipe,
+        OverallComplianceService,
     ],
 })
-export class ComplianceDashboardComponent implements OnInit {
+export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     @ViewChild('widget') widgetContainer: ElementRef;
 
     pageTitle = 'Overview';
@@ -240,7 +245,86 @@ export class ComplianceDashboardComponent implements OnInit {
     graphFromDate: Date = new Date(2022, 0, 1);
     graphToDate: Date = new Date();
 
-    dashboardContainers = [0, 1, 2, 3];
+    dashboardContainers: DashboardArrangementItems;
+
+    constructor(
+        private activatedRoute: ActivatedRoute,
+        private assetGroupObservableService: AssetGroupObservableService,
+        private commonResponseService: CommonResponseService,
+        private dashboardArrangementService: DashboardArrangementService,
+        private domainObservableService: DomainTypeObservableService,
+        private downloadService: DownloadService,
+        private errorHandling: ErrorHandlingService,
+        private issueFilterService: IssueFilterService,
+        private logger: LoggerService,
+        private multilineChartService: MultilineChartService,
+        private numbersPipe: DecimalPipe,
+        private overallComplianceService: OverallComplianceService,
+        private pacmanIssuesService: PacmanIssuesService,
+        private refactorFieldsService: RefactorFieldsService,
+        private router: Router,
+        private routerUtilityService: RouterUtilityService,
+        private tableStateService: TableStateService,
+        private utils: UtilsService,
+        private workflowService: WorkflowService,
+    ) {}
+
+    ngOnInit() {
+        const state = this.tableStateService.getState('dashboard') || {};
+
+        this.headerColName = state.headerColName || 'Severity';
+        this.direction = state.direction || 'asc';
+        // this.bucketNumber = state.bucketNumber || 0;
+
+        this.displayedColumns = Object.keys(this.columnWidths);
+        this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+        this.complianceTableData = state?.data || [];
+        this.tableDataLoaded = true;
+        this.searchTxt = state?.searchTxt || '';
+        this.tableScrollTop = state?.tableScrollTop;
+        this.totalRows = state.totalRows || 0;
+        this.filters = state?.filters || [];
+
+        if (this.filters) {
+            this.getFiltersData(this.complianceTableData);
+        }
+
+        if (this.complianceTableData && this.complianceTableData.length > 0) {
+            this.isStatePreserved = true;
+        } else {
+            this.isStatePreserved = false;
+        }
+
+        this.assetGroupSubscription = this.subscriptionToAssetGroup =
+            this.assetGroupObservableService.getAssetGroup().subscribe((assetGroupName) => {
+                this.selectedAssetGroup = assetGroupName;
+                this.updateComponent();
+            });
+
+        this.subscriptionDomain = this.domainObservableService
+            .getDomainType()
+            .subscribe((domain) => {
+                this.selectedDomain = domain;
+                if (this.selectedAssetGroup) {
+                    this.updateComponent();
+                }
+            });
+
+        const breadcrumbInfo = this.workflowService.getDetailsFromStorage()['level0'];
+
+        if (breadcrumbInfo) {
+            this.breadcrumbArray = breadcrumbInfo.map((item) => item.title);
+            this.breadcrumbLinks = breadcrumbInfo.map((item) => item.url);
+        }
+
+        this.breadcrumbPresent = 'Dashboard';
+
+        this.breakpoint1 = window.innerWidth <= 800 ? 2 : 4;
+        this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
+        this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
+        this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
+        this.dashboardContainers = this.dashboardArrangementService.get();
+    }
 
     massageAssetTrendGraphData(graphData) {
         const data = [];
@@ -268,6 +352,7 @@ export class ComplianceDashboardComponent implements OnInit {
 
         return data;
     }
+
     openOverAllComplianceTrendModal = () => {
         this.router.navigate(['/pl', { outlets: { modal: ['overall-compliance-trend'] } }], {
             queryParamsHandling: 'merge',
@@ -338,27 +423,6 @@ export class ComplianceDashboardComponent implements OnInit {
             cardButtonAction: this.navigateToAssetDistribution,
         },
     ];
-
-    constructor(
-        private activatedRoute: ActivatedRoute,
-        private assetGroupObservableService: AssetGroupObservableService,
-        private commonResponseService: CommonResponseService,
-        private domainObservableService: DomainTypeObservableService,
-        private downloadService: DownloadService,
-        private errorHandling: ErrorHandlingService,
-        private issueFilterService: IssueFilterService,
-        private logger: LoggerService,
-        private multilineChartService: MultilineChartService,
-        private numbersPipe: DecimalPipe,
-        private overallComplianceService: OverallComplianceService,
-        private pacmanIssuesService: PacmanIssuesService,
-        private refactorFieldsService: RefactorFieldsService,
-        private router: Router,
-        private routerUtilityService: RouterUtilityService,
-        private tableStateService: TableStateService,
-        private utils: UtilsService,
-        private workflowService: WorkflowService,
-    ) {}
 
     handleHeaderColNameSelection(event) {
         this.headerColName = event.headerColName;
@@ -496,62 +560,6 @@ export class ComplianceDashboardComponent implements OnInit {
     getErrorValues(): void {
         this.loaded = true;
         this.error = true;
-    }
-
-    ngOnInit() {
-        const state = this.tableStateService.getState('dashboard') || {};
-
-        this.headerColName = state.headerColName || 'Severity';
-        this.direction = state.direction || 'asc';
-        // this.bucketNumber = state.bucketNumber || 0;
-
-        this.displayedColumns = Object.keys(this.columnWidths);
-        this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-        this.complianceTableData = state?.data || [];
-        this.tableDataLoaded = true;
-        this.searchTxt = state?.searchTxt || '';
-        this.tableScrollTop = state?.tableScrollTop;
-        this.totalRows = state.totalRows || 0;
-        this.filters = state?.filters || [];
-
-        if (this.filters) {
-            this.getFiltersData(this.complianceTableData);
-        }
-
-        if (this.complianceTableData && this.complianceTableData.length > 0) {
-            this.isStatePreserved = true;
-        } else {
-            this.isStatePreserved = false;
-        }
-
-        this.assetGroupSubscription = this.subscriptionToAssetGroup =
-            this.assetGroupObservableService.getAssetGroup().subscribe((assetGroupName) => {
-                this.selectedAssetGroup = assetGroupName;
-                this.updateComponent();
-            });
-
-        this.subscriptionDomain = this.domainObservableService
-            .getDomainType()
-            .subscribe((domain) => {
-                this.selectedDomain = domain;
-                if (this.selectedAssetGroup) {
-                    this.updateComponent();
-                }
-            });
-
-        const breadcrumbInfo = this.workflowService.getDetailsFromStorage()['level0'];
-
-        if (breadcrumbInfo) {
-            this.breadcrumbArray = breadcrumbInfo.map((item) => item.title);
-            this.breadcrumbLinks = breadcrumbInfo.map((item) => item.url);
-        }
-
-        this.breadcrumbPresent = 'Dashboard';
-
-        this.breakpoint1 = window.innerWidth <= 800 ? 2 : 4;
-        this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
-        this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
-        this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
     }
 
     /*
@@ -1237,25 +1245,14 @@ export class ComplianceDashboardComponent implements OnInit {
         }
     }
 
-    dropDashboardItem({ container, previousIndex, currentIndex }: CdkDragDrop<number[]>) {
+    dropDashboardItem({
+        container,
+        previousIndex,
+        currentIndex,
+    }: CdkDragDrop<DashboardArrangementItems>) {
         moveItemInArray(container.data, previousIndex, currentIndex);
-        // this.moveWithinContainer(container, previousIndex, currentIndex);
+        this.dashboardArrangementService.save(this.dashboardContainers);
     }
-
-    // private moveWithinContainer(container: CdkDropList<any[]>, fromIndex: number, toIndex: number) {
-    //     if (fromIndex === toIndex) {
-    //         return;
-    //     }
-
-    //     const nodeToMove = container.children[fromIndex];
-    //     const targetNode = container.children[toIndex];
-
-    //     if (fromIndex < toIndex) {
-    //         targetNode.parentNode.insertBefore(nodeToMove, targetNode.nextSibling);
-    //     } else {
-    //         targetNode.parentNode.insertBefore(nodeToMove, targetNode);
-    //     }
-    // }
 
     ngOnDestroy() {
         try {
