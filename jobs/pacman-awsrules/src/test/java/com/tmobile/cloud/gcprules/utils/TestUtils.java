@@ -811,7 +811,54 @@ public class TestUtils {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", gson.fromJson(
-                "{\"_cloudType\":\"gcp\",\"region\":null,\"id\":\"test123\",\"projectName\":\"cool-bay-349411\",\"tableId\":\"test123\",\"description\":null,\"friendlyName\":null,\"generatedId\":\"cool-bay-349411:tesing_dataset.test123\",\"labels\":{},\"masterAuthorizedNetworksConfig\":{\"enable\":\"true\"},\"dataSetId\":\"tesing_dataset\",\"iamResourceName\":\"projects/cool-bay-349411/datasets/tesing_dataset/tables/test123\",\"expirationTime\":null,\"creationTime\":1655789087444,\"lastModifiedTime\":null,\"etag\":null,\"requirePartitionFilter\":false,\"discoverydate\":\"2022-06-23 10:00:00+0000\",\"_resourceid\":\"test123\",\"_docid\":\"test123\",\"_entity\":\"true\",\"_entitytype\":\"bigquerytable\",\"firstdiscoveredon\":\"2022-06-23 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-06-23 10:59:00+0000\"}\n",
+                "{\n" +
+                        "          \"_cloudType\" : \"gcp\",\n" +
+                        "          \"region\" : \"us-central1-a\",\n" +
+                        "          \"id\" : \"d3b517c68dce42f6bd3a693d3e54be7596c51aabdf73449aaf274975e21a19db\",\n" +
+                        "          \"projectName\" : \"Paladin Cloud\",\n" +
+                        "          \"projectId\" : \"central-run-349616\",\n" +
+                        "          \"tags\" : { },\n" +
+                        "          \"masterAuthorizedNetworksConfig\" : {\n" +
+                        "            \"cidr_blocks\" : \"[display_name: newnetwork \n" +
+                        "cidr_block: 192.24.12.0/22\n" +
+                        "]\",\n" +
+                        "            \"enabled\" : \"true\"\n" +
+                        "          },\n" +
+                        "          \"bootDiskKmsKey\" : null,\n" +
+                        "          \"keyName\" : null,\n" +
+                        "          \"name\" : \"cluster-1\",\n" +
+                        "          \"username\" : \"\",\n" +
+                        "          \"password\" : \"\",\n" +
+                        "          \"nodePools\" : [\n" +
+                        "            {\n" +
+                        "              \"autoUpgrade\" : true,\n" +
+                        "              \"enableIntegrityMonitoring\" : true,\n" +
+                        "              \"enableSecureBoot\" : true,\n" +
+                        "              \"autoRepair\" : true\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"intraNodeVisibility\" : false,\n" +
+                        "          \"enableKubernetesAlpha\" : false,\n" +
+                        "          \"enablePrivateEndPoints\" : false,\n" +
+                        "          \"enablePrivateNodes\" : false,\n" +
+                        "          \"legacyAuthorization\" : false,\n" +
+                        "          \"version\" : \"1.24.10-gke.2300\",\n" +
+                        "          \"disableKubernetesDashBoard\" : true,\n" +
+                        "          \"cloudLogging\" : \"none\",\n" +
+                        "          \"cloudMonitoring\" : \"monitoring.googleapis.com/kubernetes\",\n" +
+                        "          \"clientKey\" : \"\",\n" +
+                        "          \"ipalias\" : true,\n" +
+                        "          \"discoverydate\" : \"2023-04-25 11:00:00+0000\",\n" +
+                        "          \"_resourceid\" : \"d3b517c68dce42f6bd3a693d3e54be7596c51aabdf73449aaf274975e21a19db\",\n" +
+                        "          \"_docid\" : \"d3b517c68dce42f6bd3a693d3e54be7596c51aabdf73449aaf274975e21a19db\",\n" +
+                        "          \"_entity\" : \"true\",\n" +
+                        "          \"_entitytype\" : \"gkecluster\",\n" +
+                        "          \"docType\" : \"gkecluster\",\n" +
+                        "          \"gkecluster_relations\" : \"gkecluster\",\n" +
+                        "          \"firstdiscoveredon\" : \"2023-04-25 11:00:00+0000\",\n" +
+                        "          \"latest\" : true,\n" +
+                        "          \"_loaddate\" : \"2023-04-25 12:06:00+0000\"\n" +
+                        "        }",
                 JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);
@@ -822,7 +869,42 @@ public class TestUtils {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", gson.fromJson(
-                "{\"_cloudType\":\"gcp\",\"region\":null,\"id\":\"test123\",\"projectName\":\"cool-bay-349411\",\"tableId\":\"test123\",\"description\":null,\"friendlyName\":null,\"generatedId\":\"cool-bay-349411:tesing_dataset.test123\",\"labels\":{},\"masterAuthorizedNetworksConfig\":{},\"dataSetId\":\"tesing_dataset\",\"iamResourceName\":\"projects/cool-bay-349411/datasets/tesing_dataset/tables/test123\",\"expirationTime\":null,\"creationTime\":1655789087444,\"lastModifiedTime\":null,\"etag\":null,\"requirePartitionFilter\":false,\"discoverydate\":\"2022-06-23 10:00:00+0000\",\"_resourceid\":\"test123\",\"_docid\":\"test123\",\"_entity\":\"true\",\"_entitytype\":\"bigquerytable\",\"firstdiscoveredon\":\"2022-06-23 10:00:00+0000\",\"latest\":true,\"_loaddate\":\"2022-06-23 10:59:00+0000\"}\n",
+                "{\n" +
+                        "          \"_cloudType\" : \"gcp\",\n" +
+                        "          \"region\" : \"us-central1\",\n" +
+                        "          \"id\" : \"9fb374ed1e5a4bbfa1c78bfeae2c99766536dfb0671d4b4c807bd689be3ca5fc\",\n" +
+                        "          \"projectName\" : \"Paladin Cloud\",\n" +
+                        "          \"projectId\" : \"central-run-349616\",\n" +
+                        "          \"tags\" : { },\n" +
+                        "          \"masterAuthorizedNetworksConfig\" : null,\n" +
+                        "          \"bootDiskKmsKey\" : \"DummyData\",\n" +
+                        "          \"keyName\" : null,\n" +
+                        "          \"name\" : \"autopilot-cluster-2\",\n" +
+                        "          \"username\" : \"\",\n" +
+                        "          \"password\" : \"\",\n" +
+                        "          \"nodePools\" : [ ],\n" +
+                        "          \"intraNodeVisibility\" : true,\n" +
+                        "          \"enableKubernetesAlpha\" : false,\n" +
+                        "          \"enablePrivateEndPoints\" : false,\n" +
+                        "          \"enablePrivateNodes\" : true,\n" +
+                        "          \"legacyAuthorization\" : false,\n" +
+                        "          \"version\" : \"1.24.10-gke.2300\",\n" +
+                        "          \"disableKubernetesDashBoard\" : true,\n" +
+                        "          \"cloudLogging\" : \"logging.googleapis.com/kubernetes\",\n" +
+                        "          \"cloudMonitoring\" : \"monitoring.googleapis.com/kubernetes\",\n" +
+                        "          \"clientKey\" : \"\",\n" +
+                        "          \"ipalias\" : true,\n" +
+                        "          \"discoverydate\" : \"2023-04-25 11:00:00+0000\",\n" +
+                        "          \"_resourceid\" : \"9fb374ed1e5a4bbfa1c78bfeae2c99766536dfb0671d4b4c807bd689be3ca5fc\",\n" +
+                        "          \"_docid\" : \"9fb374ed1e5a4bbfa1c78bfeae2c99766536dfb0671d4b4c807bd689be3ca5fc\",\n" +
+                        "          \"_entity\" : \"true\",\n" +
+                        "          \"_entitytype\" : \"gkecluster\",\n" +
+                        "          \"docType\" : \"gkecluster\",\n" +
+                        "          \"gkecluster_relations\" : \"gkecluster\",\n" +
+                        "          \"firstdiscoveredon\" : \"2023-04-25 11:00:00+0000\",\n" +
+                        "          \"latest\" : true,\n" +
+                        "          \"_loaddate\" : \"2023-04-25 12:06:00+0000\"\n" +
+                        "        }",
                 JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);

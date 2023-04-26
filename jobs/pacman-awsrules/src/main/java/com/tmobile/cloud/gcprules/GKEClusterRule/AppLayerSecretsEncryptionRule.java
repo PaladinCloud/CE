@@ -97,16 +97,12 @@ public class AppLayerSecretsEncryptionRule extends BasePolicy {
             JsonObject gkeCluster = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                     .get(PacmanRuleConstants.SOURCE);
 
-            logger.debug("Validating the data item: {}", gkeCluster.toString());
+            logger.debug("Validating the data item: {}", gkeCluster);
 
+            boolean isKeyNameNull=gkeCluster.getAsJsonObject().
+                    get(PacmanRuleConstants.KEYNAME).isJsonNull();
 
-            JsonObject diskEncryption= gkeCluster.getAsJsonObject().
-                    get(PacmanRuleConstants.DISKENCRYPTION).getAsJsonObject();
-
-            String keyName=diskEncryption.getAsJsonObject().
-                    get(PacmanRuleConstants.KEYNAME).getAsJsonObject().toString();
-
-            if (keyName == null) {
+            if (isKeyNameNull) {
                 validationResult = false;
             }
         }
