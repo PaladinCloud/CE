@@ -1,77 +1,76 @@
 .container-wrapper {
-  display: flex;
-  flex-direction: column;
-  padding: 28px;
-  width: 100%;
-  min-width: 550px;
-  background-color: var(--background-grey);
+    padding: 28px;
+    width: 100%;
+    min-width: 550px;
+    background-color: var(--background-grey);
 }
-.container-1{
-  height: 186px;
-  margin-bottom: 20px;
+
+.container-1 {
+    height: 186px;
 }
-.container-2{
-  height: 396px;
-  margin-bottom: 20px;
+
+.container-2 {
+    height: 396px;
 }
-.container-3{
-  height: 530px;
-  margin-bottom: 20px;
+
+.container-3 {
+    height: 530px;
 }
+
 .container-4 {
-  height: 504px;
+    height: 504px;
 }
 
-.container-3 ::ng-deep .mat-form-field-infix{
-  width: 150px;
+.container-3 ::ng-deep .mat-form-field-infix {
+    width: 150px;
 }
 
-.container-3 ::ng-deep .mat-form-field.mat-focused.mat-primary .mat-select-arrow{
-  color: #687780;
+.container-3 ::ng-deep .mat-form-field.mat-focused.mat-primary .mat-select-arrow {
+    color: #687780;
 }
 
 mat-grid-tile {
-  width: 100%;
-  height: 100%;
-  border-radius: 16px;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
 }
 
-.violation-tile{
-  border: 1px solid var(--border-200);
+.violation-tile {
+    border: 1px solid var(--border-200);
 }
 
-@media (max-width:800px){
-  .container-1 {
-      height: auto;
-  }
-  .container-2 {
-      height: auto;
-  }
-  .container-3 {
-    height: auto;
-}
-  .container-4 {
-      height: auto;
-  }
+@media (max-width: 800px) {
+    .container-1 {
+        height: auto;
+    }
+
+    .container-2 {
+        height: auto;
+    }
+
+    .container-3 {
+        height: auto;
+    }
+
+    .container-4 {
+        height: auto;
+    }
 }
 
-@media (max-width:1000px){
-  .container-1 {
-      height: auto;
-  }
-  .container-2 {
-      height: auto;
-  }
-  .container-3 {
-    height: auto;
-}
-  .container-4 {
-      height: auto;
-  }
-}
+@media (max-width: 1000px) {
+    .container-1 {
+        height: auto;
+    }
 
+    .container-2 {
+        height: auto;
+    }
 
-app-data-table{
-  height: 100%;
-  width: 100%;
+    .container-3 {
+        height: auto;
+    }
+
+    .container-4 {
+        height: auto;
+    }
 }
