@@ -19,8 +19,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.gcprules.VPCNetwork.VPCNetworkRule;
-import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
