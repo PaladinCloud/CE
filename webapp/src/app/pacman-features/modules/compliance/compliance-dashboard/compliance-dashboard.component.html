@@ -32,6 +32,7 @@
         >
             <mat-grid-tile>
                 <app-card
+                    [breadcrumbPresent]="breadcrumbPresent"
                     [card]="cards[0]"
                     [data]="complianceData"
                     [dataError]="complianceDataError"

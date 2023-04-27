@@ -1,17 +1,17 @@
 <div *ngFor="let bar of bars">
-  <div class="label">
-    <div class="label-name flex"> 
-      <img src="/assets/icons/category-{{bar.title.toLowerCase()}}.svg" alt="">
-      <div class="capitalize">
-        {{ bar.title }}
-      </div>
+    <div class="label">
+        <div class="label-name flex">
+            <img src="/assets/icons/category-{{ bar.title.toLowerCase() }}.svg" alt="" />
+            <div class="capitalize">
+                {{ bar.title }}
+            </div>
+        </div>
+        <div class="label-percent">{{ bar.val === 'NR' ? 'NR' : bar.val + '%' }}</div>
     </div>
-    <div class="label-percent">{{ bar.val=="NR"?"NR":bar.val+"%" }}</div>
-  </div>
-  <div class="{{ bar.class }}">
-    <mat-progress-bar
-      mode="determinate"
-      value="{{ bar.val }}"
-    ></mat-progress-bar>
-  </div>
+    <div [class]="'flex ' + bar.class">
+        <mat-progress-bar mode="determinate" value="{{ bar.val }}"></mat-progress-bar>
+        <mat-icon class="navigate-to-icon" (click)="navigateTo.emit(bar.title)">
+            chevron_right
+        </mat-icon>
+    </div>
 </div>
