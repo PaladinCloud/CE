@@ -136,7 +136,7 @@
                         [class.center]="centeredColumns[column]"
                         [style.width]="columnWidths[column] * screenWidthFactor + 'px'"
                         *matCellDef="let element; let i = index"
-                        class="capitalize"
+                        class="capitalize table-cell"
                         mat-cell
                         (click)="handleClick(element, column, i)"
                     >
@@ -158,7 +158,7 @@
                             </div>
                             <ng-template #textImageData>
                                 <div *ngIf="element[column] && (element[column].valueText || element[column].valueText===0); else noData" [class.row-title]="element[column].isLink" class="nowrap-ellipsis gap-4" [class.pointer]="element[column].link" [title]="element[column].titleText">
-                                    <img *ngIf="element[column].imgSrc" [class.noImg]="element[column].imgSrc=='noImg'" style="vertical-align: text-bottom; padding-right: 8px; height: 16px"
+                                    <img *ngIf="element[column].imgSrc" [title]="element[column].imageTitleText??element[column].titleText" [class.noImg]="element[column].imgSrc=='noImg'" style="vertical-align: text-bottom; padding-right: 8px; height: 16px"
                                          src="/assets/icons/{{element[column].imgSrc}}.svg">
                                     <span *ngIf="element[column].text || element[column].text==0">{{ element[column].text }} </span>
                                     <div *ngIf="element[column].symbol" class="symbol" [class]="element[column].symbol.type" [style.background-color]="element[column].symbol.type!='triangle'?element[column].symbol.color:''" [style.border-bottom-color]="element[column].symbol.type=='triangle'?element[column].symbol.color:''"></div>
