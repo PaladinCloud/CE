@@ -319,9 +319,9 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell{
   border:none;
 }
 
-::ng-deep th.mat-header-cell.centered > .mat-sort-header-container {
+/* ::ng-deep th.mat-header-cell.centered > .mat-sort-header-container {
     justify-content: center;
-}
+} */
 
 tr.mat-header-row{
   height: 52px;
@@ -415,4 +415,11 @@ tr.mat-header-row{
 
 .disabled-option ::ng-deep .mat-pseudo-checkbox{
   display: none;
+}
+
+.copy-icon{
+  display: none;
+}
+.table-cell:hover .copy-icon{
+  display: block;
 }

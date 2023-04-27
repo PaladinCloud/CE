@@ -149,7 +149,7 @@
                         </mat-menu>
                     </div>
                     <ng-template #clickable>
-                        <div class="clickable">
+                        <div class="clickable" [ngClass]="{'flex': true||element[column]?.haveCopyElement, 'flex-align-center': true||element[column]?.haveCopyElement}" style="min-width: 0;">
                             <div class="chip-wrapper" *ngIf="element[column] && element[column].isChip; else textImageData" [title]="element[column].titleText">
                                 <app-chip [variant]="element[column].chipVariant" [maxChips]="maxChips"
                                 [backgroundColor]="element[column].chipBackgroundColor"
@@ -169,6 +169,7 @@
                                     <span>No Data</span>
                                 </div>
                             </ng-template>
+                            <div class="copy-icon" *ngIf="true||element[column]?.haveCopyElement"><app-copy-element [CopyElement]="element[column].valueText" [iconSize]="'10px'"></app-copy-element></div>
                         </div>
                     </ng-template>
 
