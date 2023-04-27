@@ -61,7 +61,7 @@ public class VPCFirewallRuleTest {
 
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
-                .thenReturn(getHitsJsonArrayForVPCFIreWall());
+                .thenReturn(getHitsJsonArrayForVPCFIreWallFailure());
 
         when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
@@ -91,7 +91,7 @@ public class VPCFirewallRuleTest {
         commonMap.put("severity", "high");
         commonMap.put("ruleCategory", "security");
         commonMap.put("accountid", "12345");
-
+        commonMap.put("port","tcp:1521,tcp:0-65535");
         return commonMap;
     }
 
