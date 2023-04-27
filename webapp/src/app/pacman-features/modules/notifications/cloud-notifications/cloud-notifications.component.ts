@@ -136,7 +136,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const state = this.tableStateService.getState('issueListing') || {};
+        const state = this.tableStateService.getState(this.pageTitle) || {};
         if (state) {
             this.headerColName = state.headerColName || '';
             this.direction = state.direction || '';
@@ -297,6 +297,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                 .subscribe((response) => {
                     this.filterTypeLabels = _.map(response[0].response, 'optionName');
                     this.filterTypeOptions = response[0].response;
+                    this.filterTypeLabels.sort();
 
                     this.routerParam();
                     // this.deleteFilters();
@@ -387,12 +388,17 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         }
     }
 
+    handleHeaderColNameSelection(event){
+        this.headerColName = event.headerColName;
+        this.direction = event.direction;
+    }
+
     storeState(state) {
-        this.tableStateService.setState('issueListing', state);
+        this.tableStateService.setState(this.pageTitle, state);
     }
 
     clearState() {
-        this.tableStateService.clearState('issueListing');
+        this.tableStateService.clearState(this.pageTitle);
         this.isTableStatePreserved = false;
     }
 
