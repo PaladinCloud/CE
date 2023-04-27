@@ -80,5 +80,49 @@ mat-grid-tile {
 }
 
 .cdk-drop-list-dragging .cdk-drag {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.container {
+    transition: height 250ms cubic-bezier(0, 0, 0.2, 1);
+    position: relative;
+}
+
+.container.collapsed {
+    background: var(--background-white);
+    height: 52px;
+    border-radius: 16px;
+    border: 1px solid var(--border-200);
+    transition: height 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.container.collapsed .mat-grid-list {
+    display: none;
+}
+
+.container-title-collapsed {
+    font: var(--text-body-2);
+    padding: 16px 24px;
+}
+
+.collapse-btn {
+    position: absolute;
+    right: 0;
+    top: -1;
+    z-index: 1;
+    padding: 0;
+    height: 24px;
+    width: 24px;
+    border: none;
+    font-size: 24px;
+    background: transparent;
+    color: var(--text-low-emphasis);
+}
+
+.collapse-btn:hover {
+    cursor: pointer;
+}
+
+.container.collapsed .collapse-btn {
+    right: 50%;
 }

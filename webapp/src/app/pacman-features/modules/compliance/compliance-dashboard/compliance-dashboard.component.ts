@@ -21,9 +21,12 @@ import { Subscription } from 'rxjs';
 import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
 import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
 import { TableStateService } from 'src/app/core/services/table-state.service';
+import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { WorkflowService } from 'src/app/core/services/workflow.service';
+import { IssueFilterService } from 'src/app/pacman-features/services/issue-filter.service';
 import { MultilineChartService } from 'src/app/pacman-features/services/multilinechart.service';
 import { OverallComplianceService } from 'src/app/pacman-features/services/overall-compliance.service';
+import { PacmanIssuesService } from 'src/app/pacman-features/services/pacman-issues.service';
 import { DATA_MAPPING } from 'src/app/shared/constants/data-mapping';
 import { CommonResponseService } from 'src/app/shared/services/common-response.service';
 import { DownloadService } from 'src/app/shared/services/download.service';
@@ -33,11 +36,11 @@ import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.s
 import { RouterUtilityService } from 'src/app/shared/services/router-utility.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
-import { IssueFilterService } from '../../../services/issue-filter.service';
-import { PacmanIssuesService } from '../../../services/pacman-issues.service';
 import {
+    DasbhoardCollapsedDict,
     DashboardArrangementItems,
     DashboardArrangementService,
+    DashboardContainerIndex,
 } from '../services/dashboard-arrangement.service';
 
 @Component({
@@ -246,6 +249,15 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     graphToDate: Date = new Date();
 
     dashboardContainers: DashboardArrangementItems;
+    dashcobardCollapsedContainers: DasbhoardCollapsedDict;
+
+    readonly dashcobardCollapsedContainersTitles: { [key: number]: string } = {
+        [DashboardContainerIndex.VIOLATION_SEVERITY]: 'Violations by Severity',
+        [DashboardContainerIndex.CATEGORY_COMPLIANCE]:
+            'Category Compliance & Violations by Severity',
+        [DashboardContainerIndex.ASSET_GRAPH]: 'Asset Graph',
+        [DashboardContainerIndex.POLICY_OVERVIEW]: 'Policy Compliance Overview',
+    };
 
     constructor(
         private activatedRoute: ActivatedRoute,
@@ -266,6 +278,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         private routerUtilityService: RouterUtilityService,
         private tableStateService: TableStateService,
         private utils: UtilsService,
+        private windowExpansionService: WindowExpansionService,
         private workflowService: WorkflowService,
     ) {}
 
@@ -323,7 +336,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         this.breakpoint2 = window.innerWidth <= 800 ? 1 : 2;
         this.breakpoint3 = window.innerWidth <= 400 ? 1 : 1;
         this.breakpoint4 = window.innerWidth <= 400 ? 1 : 1;
-        this.dashboardContainers = this.dashboardArrangementService.get();
+        this.dashboardContainers = this.dashboardArrangementService.getArrangement();
+        this.dashcobardCollapsedContainers = this.dashboardArrangementService.getCollapsed();
     }
 
     massageAssetTrendGraphData(graphData) {
@@ -1251,7 +1265,27 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
         currentIndex,
     }: CdkDragDrop<DashboardArrangementItems>) {
         moveItemInArray(container.data, previousIndex, currentIndex);
-        this.dashboardArrangementService.save(this.dashboardContainers);
+        this.dashboardArrangementService.saveArrangement(this.dashboardContainers);
+    }
+
+    toggleContainer(index: number) {
+        if (index === DashboardContainerIndex.ASSET_GRAPH && this.isCollapsedContainer(index)) {
+            this.windowExpansionService.status.next(true);
+        }
+
+        this.dashcobardCollapsedContainers = {
+            ...this.dashcobardCollapsedContainers,
+            ...{ [index]: !this.isCollapsedContainer(index) },
+        };
+        this.dashboardArrangementService.saveCollapsed(this.dashcobardCollapsedContainers);
+    }
+
+    isCollapsedContainer(index: number) {
+        return this.dashcobardCollapsedContainers[index];
+    }
+
+    collapsedContainerTitle(index: number) {
+        return this.dashcobardCollapsedContainersTitles[index];
     }
 
     ngOnDestroy() {

@@ -4,7 +4,19 @@
     [cdkDropListData]="dashboardContainers"
     (cdkDropListDropped)="dropDashboardItem($event)"
 >
-    <div [class]="'container-' + (item + 1)" *ngFor="let item of dashboardContainers" cdkDrag>
+    <div
+        [class]="'container container-' + (item + 1)"
+        [class.collapsed]="isCollapsedContainer(item)"
+        *ngFor="let item of dashboardContainers"
+        cdkDrag
+    >
+        <button class="collapse-btn" type="button" (click)="toggleContainer(item)">
+            <mat-icon>{{ isCollapsedContainer(item) ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+
+        <div class="container-title-collapsed" *ngIf="isCollapsedContainer(item)">
+            {{ collapsedContainerTitle(item) }}
+        </div>
         <!-- Violation Tiles -->
         <mat-grid-list
             *ngIf="item === 0"
