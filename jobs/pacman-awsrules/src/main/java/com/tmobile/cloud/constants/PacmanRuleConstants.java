@@ -547,7 +547,7 @@ public class PacmanRuleConstants {
     public static final String ACL = "acl";
     public static final String KMS_KEY_NAME = "kmsKeyName";
     public static final String DESTINATIONRANGE = "destinationRanges";
-    public static final String EGRESS = "egress";
+    public static final String EGRESS = "EGRESS";
     public static final String HTTP20ENABLED = "http20Enabled";
     public static final String MASTRERAUTHORRIZEDNETWORKCONFIG = "masterAuthorizedNetworksConfig";
     public static final String DISKENCRYPTION = "diskEncryption";

@@ -19,7 +19,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.gcprules.VPCNetwork.VPCNetworkOutboundRule;
-import com.tmobile.cloud.gcprules.VPCNetwork.VPCNetworkRule;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
@@ -67,7 +66,7 @@ public class VPCFireWallEgressTest {
         when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
-        assertThat(vPCNetworkOutboundRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
+        assertThat(vPCNetworkOutboundRule.execute(getMapStringForFailure("r_123 "), getMapStringForFailure("r_123 ")).getStatus(),
                 is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
@@ -92,10 +91,19 @@ public class VPCFireWallEgressTest {
         commonMap.put("severity", "high");
         commonMap.put("ruleCategory", "security");
         commonMap.put("accountid", "12345");
-
+        commonMap.put("port","udp:0-65535,tcp:0-65535");
         return commonMap;
     }
-
+    public static Map<String, String> getMapStringForFailure(String passRuleResourceId) {
+        Map<String, String> commonMap = new HashMap<>();
+        commonMap.put("executionId", "1234");
+        commonMap.put("_resourceid", passRuleResourceId);
+        commonMap.put("severity", "high");
+        commonMap.put("ruleCategory", "security");
+        commonMap.put("accountid", "12345");
+        commonMap.put("port","icmp:80");
+        return commonMap;
+    }
     @Test
     public void getHelpTextTest() {
         assertThat(vPCNetworkOutboundRule.getHelpText(), is(notNullValue()));
