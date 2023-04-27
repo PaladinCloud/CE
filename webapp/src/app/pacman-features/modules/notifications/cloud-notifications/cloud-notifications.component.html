@@ -40,6 +40,7 @@
                                [tableScrollTop]="tableScrollTop"
                                [totalRows]="totalRows"
                                [whiteListColumns]="whiteListColumns"
+                               (headerColNameSelected)="handleHeaderColNameSelection($event)"
                                style="height: 100%; width: 100%;">
                     </app-table>
                 </div>

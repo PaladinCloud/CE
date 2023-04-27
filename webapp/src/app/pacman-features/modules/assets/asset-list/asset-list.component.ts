@@ -36,7 +36,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectedAssetGroup: string;
   breadcrumbArray: any = [];
   breadcrumbLinks: any = [];
-  breadcrumbPresent: any;
   errorMessage: any;
   allColumns: any = [];
   totalRows = 0;
@@ -73,8 +72,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Resource ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
-  columnNamesMap = {};
+  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
+  columnNamesMap = {"_resourceid": "Asset ID"};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
@@ -123,6 +122,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
   tableData = [];
   isStatePreserved = false;
 
+  assetTypeMap: any;
+  selectedOrder: any = 'asc';
+  sortOrder: any ;
+  fieldName: string = '_resourceid.keyword';
+  fieldType: string = 'string';
+
   private assetGroupSubscription: Subscription;
   private routeSubscription: Subscription;
   private complianceDropdownSubscription: Subscription;
@@ -130,7 +135,6 @@ export class AssetListComponent implements OnInit, OnDestroy {
   private issueFilterSubscription: Subscription;
   private previousUrlSubscription: Subscription;
   private subscriptionDomain: Subscription;
-  assetTypeMap: any;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -170,10 +174,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    const state = this.tableStateService.getState("assetList") || {};
+    const state = this.tableStateService.getState(this.pageTitle) || {};
     if(state){
-      this.headerColName = state.headerColName || '';
-      this.direction = state.direction || '';
+      this.headerColName = state.headerColName || 'Asset ID';
+      this.direction = state.direction || 'asc';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
@@ -198,14 +202,37 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.breadcrumbArray = breadcrumbInfo.map(item => item.title);
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
-    this.breadcrumbPresent = "Asset List";
   }
 
   handleAddFilterClick(e){}
 
-  handleHeaderColNameSelection(event){
+  handleHeaderColNameSelection(event: any) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.selectedOrder = this.direction;
+    this.bucketNumber = 0;
+    const sortColName = this.headerColName.toLowerCase();
+    this.sortOrder = null;
+    if (sortColName === "asset id") {
+      this.fieldName = "_resourceid.keyword";
+      this.fieldType = "string";
+    } else if (sortColName === "asset type") {
+      this.fieldName = "_entitytype.keyword";
+      this.fieldType = "string";
+    } else if (sortColName === "account id") {
+      this.fieldName = "_resourceid.keyword";
+      this.fieldType = "string";
+    } else if (sortColName === "account name") {
+      this.fieldName = "accountname.keyword";
+      this.fieldType = "string";
+    } else if (sortColName === "region") {
+      this.fieldType = "string";
+      this.fieldName = "region.keyword";
+    }else if(sortColName === "cloud type"){
+      this.fieldType = "string";
+      this.fieldName = "_cloudType.keyword";
+    }
+    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
@@ -213,11 +240,11 @@ export class AssetListComponent implements OnInit, OnDestroy {
   }
 
   storeState(state){
-    this.tableStateService.setState("assetList", state);
+    this.tableStateService.setState(this.pageTitle, state);
   }
 
   clearState(){
-    this.tableStateService.clearState("assetList");
+    this.tableStateService.clearState(this.pageTitle);
     this.isStatePreserved = false;
   }
 
@@ -456,9 +483,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
         this.filterText["domain"] = this.selectedDomain;
       }
 
+      const sortFilter = {
+        fieldName: this.fieldName,
+        fieldType: this.fieldType,
+        order: this.selectedOrder,
+        sortOrder: this.sortOrder
+      }
+
       queryParams = {
         ag: this.selectedAssetGroup,
         filter: this.filterText,
+        sortFilter: sortFilter,
         from: this.bucketNumber * this.paginatorSize,
         searchtext: this.searchTxt,
         size: this.paginatorSize,
@@ -502,7 +537,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
             properties: "",
             isLink: false
           }
-          if(col.toLowerCase()=="resource id"){
+          if(col.toLowerCase()=="asset id"){
             cellObj = {
               ...cellObj,
               isLink: true
@@ -628,11 +663,14 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.storeState(state);
     try {
       this.workflowService.addRouterSnapshotToLevel(
-        this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
+        this.router.routerState.snapshot.root, 0, this.pageTitle
       );
       let resourceType;
-      if (row["Asset Type"].valueText) {
-        resourceType = row["Asset Type"].valueText;
+      for (const [key, value] of this.assetTypeMap) {
+        if(row["Asset Type"].valueText == value){
+          resourceType = key;
+          break;
+        }
       }
 
       if (
@@ -643,7 +681,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
       ) {
         resourceType = this.filterText.resourceType;
       }
-      const resourceID = encodeURIComponent(row["Resource ID"].valueText);
+      const resourceID = encodeURIComponent(row["Asset ID"].valueText);
       let updatedQueryParams = {...this.activatedRoute.snapshot.queryParams};
       // updatedQueryParams["searchValue"] = undefined;
       this.router.navigate([resourceType, resourceID], {
@@ -773,6 +811,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.trimStringsInArrayOfObjs(this.filterTypeOptions);
           this.filterTypeLabels = _.map(this.filterTypeOptions, "optionName");
 
+          this.filterTypeLabels.sort();
+          
           this.routerParam();
           // this.deleteFilters();
           this.getFilterArray();
@@ -792,15 +832,16 @@ export class AssetListComponent implements OnInit, OnDestroy {
       });
       const urlObj = this.utils.getParamsFromUrlSnippet(this.currentFilterType.optionURL);
       const queryParams = {
-            ...urlObj.params,
-            ag: this.selectedAssetGroup,
-            domain: this.selectedDomain,
-          }
+        ...urlObj.params,
+        ag: this.selectedAssetGroup,
+        domain: this.selectedDomain,
+      }
       if(!this.filterTagOptions[value] || !this.filterTagLabels[value]){
         this.issueFilterSubscription = this.issueFilterService
         .getFilters(
-          queryParams,
-          environment.base + urlObj.url,
+          urlObj.params,
+          environment.base +
+          urlObj.url,
           "GET"
         )
         .subscribe((response) => {

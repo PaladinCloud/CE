@@ -74,10 +74,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   };
   columnWidths = {'Policy': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID"};
-  fieldName: string = "policyId.keyword";
+  fieldName: string = "severity.keyword";
   fieldType: string = "number";
-  selectedOrder: string = "asc";
-  sortOrder: string[];
+  selectedOrder: string = "desc";
+  sortOrder: string[] = ["low", "medium", "high", "critical"];
   tableImageDataMap = {
       security:{
           image: "category-security",
@@ -158,8 +158,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const state = this.tableStateService.getState("issueListing") || {};
     if(state){
-      this.headerColName = state.headerColName || '';
-      this.direction = state.direction || '';
+      this.headerColName = state.headerColName || 'Severity';
+      this.direction = state.direction || 'desc';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';

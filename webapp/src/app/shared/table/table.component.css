@@ -4,6 +4,7 @@
   background-color: var(--background-white);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-100);
+  position: relative;
 }
 
 .table-content-container{
@@ -13,6 +14,8 @@
 }
 
 .noImg{
+  height: 16px;
+  width: 24px;
   opacity: 0;
 }
 
@@ -242,16 +245,16 @@
     background-repeat: no-repeat;
 }
 
-::ng-deep .mat-option-text{
+:host::ng-deep .mat-option-text{
     font: var(--text-body-2) !important;
     color: var(--text-high-emphasis) !important;
 }
 
-::ng-deep .mat-option{
+:host::ng-deep .mat-option{
     flex-direction: row-reverse !important;
 }
 
-::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
+:host::ng-deep .mat-option:first-child .mat-pseudo-checkbox{
     display: none;
 }
 
@@ -330,6 +333,7 @@ tr.mat-header-row{
 }
 
 .download-btn{
+  justify-content: center;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -380,4 +384,35 @@ tr.mat-header-row{
 .menu-btn:hover{
   border-radius: 50%;
   background: var(--primary-100);
+}
+
+.symbol{
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.triangle {
+  width: 0; 
+  height: 0; 
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 12px solid;
+}
+
+.circle {
+  height: 12px;
+  width: 12px;
+  /* background-color: #CC6262; */
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.square {
+  height: 12px;
+  width: 12px;
+  /* background-color: #6AAA75; */
+}
+
+.disabled-option ::ng-deep .mat-pseudo-checkbox{
+  display: none;
 }

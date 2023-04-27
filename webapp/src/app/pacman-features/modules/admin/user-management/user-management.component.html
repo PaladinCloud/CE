@@ -11,12 +11,12 @@
                 <li class="widget-wrapper relative">
                     <div class="relative">
                         <app-table style="height: 100%; width: 100%;" [data]="tableData" [columnWidths]="columnWidths"
-                            [headerColName]="headerColName" [direction]="direction"
+                            [headerColName]="headerColName" [direction]="direction" (headerColNameSelected)="handleHeaderColNameSelection($event)"
                             (actionSelected)="onSelectAction($event)" [doLocalSearch]="true"
                             [whiteListColumns]="whiteListColumns" (searchCalledEventEmitter)="callNewSearch($event)"
                             [searchQuery]="searchTxt" [showSearchBar]="true" [showMoreMenu]="true"
                             [showDownloadBtn]="false" [showFilterBtn]="false"
-                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="true"
+                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded"
                             [rowClickable]="false">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>

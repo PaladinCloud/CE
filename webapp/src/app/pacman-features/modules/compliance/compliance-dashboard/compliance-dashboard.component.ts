@@ -1028,6 +1028,7 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
             }
             this.filterTagLabels[column] = filterTags;
         });
+        this.filterTypeLabels.sort();
     }
 
     sortFilters(array, column) {
