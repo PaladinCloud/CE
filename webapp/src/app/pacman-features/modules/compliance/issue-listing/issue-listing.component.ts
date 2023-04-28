@@ -73,7 +73,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     Category: true,
   };
   columnWidths = {'Policy': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
-  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID"};
+  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID", "Asset Type":"resourcetype", };
   fieldName: string = "severity.keyword";
   fieldType: string = "number";
   selectedOrder: string = "desc";
@@ -222,6 +222,12 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     } else if (sortColName === "policy") {
       this.fieldType = "number";
       this.fieldName = "policyId.keyword";
+    }else if (sortColName === "asset type") {
+      this.fieldType = "string";
+      this.fieldName = "resourcetType.keyword";
+    }else if (sortColName === "age") {
+      this.fieldType = "number";
+      this.fieldName = "createdDate";
     }
     this.updateComponent();
   }
@@ -640,6 +646,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         // change data value
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
+      
       newData.push(newObj);
     });
     return newData;
