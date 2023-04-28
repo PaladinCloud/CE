@@ -191,7 +191,7 @@ IF NOT EXISTS( SELECT NULL
            WHERE table_name = 'cf_AssetGroupException'
              AND table_schema = 'pacmandata'
              AND column_name = 'createdBy')  THEN
-ALTER TABLE `cf_AssetGroupException`  
+ALTER TABLE `cf_AssetGroupException`
 ADD COLUMN `createdBy` VARCHAR(100) NULL,
 ADD COLUMN `createdOn` DATE NULL,
 ADD COLUMN `modifiedBy` VARCHAR(100) NULL,
@@ -1397,6 +1397,9 @@ INSERT IGNORE INTO `oauth_user_credentials` (`id`, `password`, `type`) values('1
 INSERT IGNORE INTO `oauth_user_credentials` (`id`, `password`, `type`) values('2','$2a$10$Q4VelltsKsp9Owq9Nf8SgO.csoLBIsQhdvK7VX4obEtEULIXcyUn2','db');
 INSERT IGNORE INTO `oauth_user_roles`(`roleId`,`roleName`,`roleDesc`,`writePermission`,`owner`,`client`,`createdDate`,`modifiedDate`) values ('1','ROLE_USER','ROLE_USER',0,'asgc','22e14922-87d7-4ee4-a470-da0bb10d45d3','2018-01-23 00:00:00','2018-01-23 00:00:00'),('703','ROLE_ADMIN','ROLE_ADMIN',1,'asgc','22e14922-87d7-4ee4-a470-da0bb10d45d3','2018-03-13 17:26:58','2018-03-13 17:26:58');
 INSERT IGNORE INTO `oauth_user_role_mapping`(`userRoleId`,`userId`,`roleId`,`clientId`,`allocator`,`createdDate`,`modifiedDate`) values ('4747c0cf-63cc-4829-a1e8-f1e957ec5dd6','user@paladincloud.io','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('4747c0cf-63cc-4829-a1e8-f1e957ec5dd7','admin@paladincloud.io','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('f5b2a689-c185-11e8-9c73-12d01119b604','admin@paladincloud.io','703','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47');
+
+/*deleting old data*/
+TRUNCATE TABLE cf_pac_updatable_fields;
 
 /* Display and Update Fields */
 INSERT IGNORE INTO cf_pac_updatable_fields  (resourceType,displayFields,updatableFields) VALUES

@@ -156,4 +156,5 @@ public interface FilterService {
      */
     public List<Map<String, Object>> getNotificationSource() throws ServiceException;
 
+    List<Map<String, Object>> getTaggedStatusForAssetGroup(String assetGroup, String domain);
 }
