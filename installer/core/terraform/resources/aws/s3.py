@@ -16,8 +16,40 @@ class S3Bucket(TerraformResource):
         'bucket': {'required': True, 'prefix': True, 'sep': '-'},
         'policy': {'required': False},
         'force_destroy': {'required': False},
-        'tags': {'required': False},
+        'tags': {'required': False}
     }
+    
+class S3PolicyControl(TerraformResource):
+    """
+    Base resource class for Terraform AWS S3 bucket resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_s3_bucket_public_access_block"
+    available_args = {
+        'bucket' :{'required': True},
+        'block_public_acls'       : {'required': True},
+        'block_public_policy'     : {'required': False},
+        'ignore_public_acls'      : {'required': False},
+        'restrict_public_buckets' : {'required': False}
+    }
+
+class S3OwnershipControl(TerraformResource):
+    """
+    Base resource class for Terraform AWS S3 bucket resource
+
+    Attributes:
+        resource_instance_name (str): Type of resource instance
+        available_args (dict): Instance configurations
+    """
+    resource_instance_name = "aws_s3_bucket_ownership_controls"
+    available_args = {
+        'bucket' : {'required':False},
+        'rule' : {'required':False}
+    }
+
 
 class S3Acl(TerraformResource):
     """
