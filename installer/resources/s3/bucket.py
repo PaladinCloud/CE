@@ -1,4 +1,4 @@
-from core.terraform.resources.aws.s3 import S3Bucket, S3Acl,AwsS3Encryption, S3BucketPolicy
+from core.terraform.resources.aws.s3 import S3Bucket, S3Acl,AwsS3Encryption, S3BucketPolicy, S3OwnershipControl, S3PolicyControl
 from core.terraform.resources.aws import iam
 from core.config import Settings
 from resources.iam.base_role import BaseRole
@@ -8,12 +8,23 @@ from resources.iam.ecs_role import ECSRole
 class BucketStorage(S3Bucket):
     bucket = "data-" + Settings.AWS_REGION + "-" + Settings.AWS_ACCOUNT_ID
     force_destroy = True
+    
 
+class BucketOwnershipControl(S3OwnershipControl):
+    bucket = BucketStorage.get_output_attr('id')
+    rule = {
+        'object_ownership' : "ObjectWriter"
+    }
+    
 class BucketAcl(S3Acl):
     bucket = BucketStorage.get_output_attr('id')
     acl = "private"
-
-
+    DEPENDS_ON = [BucketOwnershipControl]
+    
+class BucketPolicyBlock(S3PolicyControl):
+    bucket = BucketStorage.get_output_attr('id')
+    block_public_acls = False
+    
 class BucketEncryption(AwsS3Encryption):
     bucket = BucketStorage.get_output_attr('id')
     rule = {
