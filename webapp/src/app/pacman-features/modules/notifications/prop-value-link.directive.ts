@@ -13,7 +13,7 @@ import {
     selector: '[appPropValueLink]',
 })
 export class PropValueLinkDirective implements OnInit {
-    @Input() appPropValueLink = '';
+    @Input() appPropValueLink: unknown;
     @Output() innerNavigate = new EventEmitter<string>();
 
     @HostListener('click', ['$event'])
@@ -30,6 +30,9 @@ export class PropValueLinkDirective implements OnInit {
     constructor(private el: ElementRef<HTMLElement>, private renderer: Renderer2) {}
 
     ngOnInit(): void {
+        if (typeof this.appPropValueLink !== 'string') {
+            return;
+        }
         const el = this.el.nativeElement;
         const prop = 'innerHTML';
         if (this.appPropValueLink.match(this.LINK_REGEX)) {
