@@ -2,9 +2,9 @@ security:
   oauth2:
     resource:
       jwk:
-        key-set-uri: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_fzF7DLUkO/.well-known/jwks.json
+        key-set-uri: https://cognito-idp.${AWS_USERPOOL_REGION}.amazonaws.com/${USERPOOL_ID}/.well-known/jwks.json
       client:
-        clientId: 1tt4q1vkgf2buhq1gv614nosqs
+        clientId: ${CLIENT_ID}
 spring:
   application:
     name: admin-service
@@ -12,11 +12,11 @@ spring:
     description: Pacman Admin API provides admin capabilities
   cloud:
     config:
-      uri: https://dev.paladincloud.io/api/config
+      uri: ${CONFIG_SERVER_URL:http://localhost:8888/api/config/}
       enabled: true
       fail-fast: true
       name: api,admin-service,job-scheduler,batch
-      password: pacman
+      password: ${CONFIG_PASSWORD}
       username: user
       label: latest
   jpa: 
