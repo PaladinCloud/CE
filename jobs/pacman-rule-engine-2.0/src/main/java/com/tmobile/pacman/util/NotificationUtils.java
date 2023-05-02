@@ -31,7 +31,9 @@ public class NotificationUtils {
             String hostName = CommonUtils.getPropValue(HOSTNAME);
             List<NotificationBaseRequest> notificationDetailsList = new ArrayList<>();
 
+
             for (Annotation annotation : annotations) {
+                LOGGER.info("annotation policy id--"+annotation.get(POLICY_NAME)+" issueid -- "+annotation.get(PacmanSdkConstants.ANNOTATION_PK));
                 String annotationId = CommonUtils.getUniqueAnnotationId(annotation);
                 annotation.put(PacmanSdkConstants.ANNOTATION_PK, annotationId);
                 Map<String, String> issueAttributes = existingIssuesMap.get(annotationId);
@@ -77,7 +79,7 @@ public class NotificationUtils {
         request.setResourceIdLink(hostName + ASSET_DETAILS_UI_PATH + annotation.get(TARGET_TYPE) + "/" + annotation.get(RESOURCE_ID) + "?ag=" + annotation.get(PacmanSdkConstants.DATA_SOURCE_KEY));
         request.setDescription(annotation.get(PacmanSdkConstants.DESCRIPTION));
         request.setScanTime(CommonUtils.getCurrentDateStringWithFormat(
-                PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.DATE_FORMAT));
+                PacmanSdkConstants.PAC_TIME_ZONE, PacmanSdkConstants.NOTIFICATION_EMAIL_DATE_FORMAT));
 
         //populate tags information into additionalInfo field.
         Map<String,String> tagsKeyAndValueMap = new HashMap<>();

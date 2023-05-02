@@ -92,7 +92,16 @@ export class UserManagementComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.updateComponent();
+  }
+
+  updateComponent(){
     this.getUserList();
+  }
+
+  handleHeaderColNameSelection(event){
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
   }
 
   createEditUser(currentRow:any) {
@@ -136,7 +145,6 @@ export class UserManagementComponent implements OnInit {
     }
 
     this.adminService.executeHttpAction(url,method,payload,{}).subscribe(response=>{
-      console.log(response,"response");
       if(response){
         this.updateUserRoles();
       }
@@ -264,7 +272,6 @@ export class UserManagementComponent implements OnInit {
   }
 
   callNewSearch(event: any) {
-    console.log(event, "event");
   }
 
   onSelectAction(event:any){

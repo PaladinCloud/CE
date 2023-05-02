@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.JsonArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -111,25 +112,26 @@ public class Ec2PublicAccessPortWithS5vulnerabilitiesRule extends BasePolicy {
 			try {
 				isInstanceExists = PacmanUtils.checkInstanceIdForPortRuleInES(instanceId,ec2PubAccessPortUrl,ec2PortRuleId,"");
 				if (isInstanceExists) {
-					List<String> severityList = PacmanUtils.getSeverityVulnerabilitiesByInstanceId(instanceId,ec2WithVulnInfoForS5Url,severityVulnValue);
-					if(!severityList.isEmpty()){
-					annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
-					annotation.put(PacmanSdkConstants.DESCRIPTION,"An Ec2 instance with remotely exploitable vulnerability (S5) is open to internet found!");
-					annotation.put(PacmanRuleConstants.SEVERITY, severity);
-					annotation.put(PacmanRuleConstants.CATEGORY, category);
-					issue.put(PacmanRuleConstants.VIOLATION_REASON, "ResourceId " + instanceId + " remotely exploitable vulnerability (S5) is open to internet found");
-					if(!org.apache.commons.lang.StringUtils.isEmpty(publicIp)){
-						issue.put("public_ip", publicIp);
-					}else{
-						issue.put("public_ip", "Not found");	
+					JsonArray severityList = PacmanUtils.getSeverityVulnerabilitiesArray(instanceId,ec2WithVulnInfoForS5Url, severityVulnValue);
+					if (severityList!=null && !severityList.isEmpty()) {
+						String severityDetails = PacmanUtils.getQualysVulnerabilitiesDetails(severityList);
+						annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
+						annotation.put(PacmanSdkConstants.DESCRIPTION,"An Ec2 instance with remotely exploitable vulnerability (S5) is open to internet found!");
+						annotation.put(PacmanRuleConstants.SEVERITY, severity);
+						annotation.put(PacmanRuleConstants.CATEGORY, category);
+						annotation.put("vulnerabilityDetails", severityDetails);
+						issue.put(PacmanRuleConstants.VIOLATION_REASON, "ResourceId " + instanceId + " remotely exploitable vulnerability (S5) is open to internet found");
+						if(!org.apache.commons.lang.StringUtils.isEmpty(publicIp)){
+							issue.put("public_ip", publicIp);
+						}else{
+							issue.put("public_ip", "Not found");
+						}
+						issueList.add(issue);
+						annotation.put("issueDetails",issueList.toString());
+						logger.debug("========Ec2PublicAccessPortWithS5vulnerabilitiesRule ended with an annotation {} : =========",annotation);
+						return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
+
 					}
-					issue.put("voilation_title", String.join(",", severityList));
-					issueList.add(issue);
-					annotation.put("issueDetails",issueList.toString());
-					logger.debug("========Ec2PublicAccessPortWithS5vulnerabilitiesRule ended with an annotation {} : =========",annotation);
-					return new PolicyResult(PacmanSdkConstants.STATUS_FAILURE,PacmanRuleConstants.FAILURE_MESSAGE, annotation);
-					
-				}
 			}
 			} catch (Exception e) {
 				logger.error("error", e);

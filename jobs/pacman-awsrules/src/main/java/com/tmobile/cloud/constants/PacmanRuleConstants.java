@@ -654,4 +654,5 @@ public class PacmanRuleConstants {
     public static final String PERSISTENT = "PERSISTENT";
 
     public static final String AUTO_DELETE = "autoDelete";
+    public static final String ID = "id";
 }

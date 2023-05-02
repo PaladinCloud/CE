@@ -46,6 +46,8 @@ public class SitesInventoryCollector {
 					JsonObject sitesObject = sitesElement.getAsJsonObject();
 					sitesVH.setSubscription(subscription.getSubscriptionId());
 					sitesVH.setSubscriptionName(subscription.getSubscriptionName());
+					sitesVH.setRegion(sitesObject.get("location").getAsString());
+					sitesVH.setResourceGroupName(Util.getResourceGroupNameFromId(sitesObject.get("id").getAsString()));
 					sitesVH.setId(sitesObject.get("id").getAsString());
 					sitesVH.setEtag(sitesObject.get("etag").getAsString());
 					sitesVH.setLocation(sitesObject.get("location").getAsString());
@@ -53,7 +55,7 @@ public class SitesInventoryCollector {
 					sitesVH.setType(sitesObject.get("type").getAsString());
 					JsonObject properties = sitesObject.getAsJsonObject("properties");
 					JsonObject tags = sitesObject.getAsJsonObject("tags");
-					if (properties!=null) {
+					if (properties != null) {
 						HashMap<String, Object> propertiesMap = new Gson().fromJson(properties.toString(), HashMap.class);
 						sitesVH.setProperties(propertiesMap);
 					}

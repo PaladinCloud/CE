@@ -1,42 +1,59 @@
 <div class="notification-details component-wrapper flex flex-col gap-20 padding-28">
     <div class="header flex flex-col gap-24">
-        <div *ngIf="backButtonRequired" class="breadcrumb-container" style="padding-bottom: 18px;">
-            <app-breadcrumb *ngIf="breadcrumbLinks.length>0" [breadcrumbArray]="breadcrumbArray"
-                            [breadcrumbLinks]="breadcrumbLinks"
-                            [breadcrumbPresent]="breadcrumbPresent"></app-breadcrumb>
+        <div *ngIf="backButtonRequired" class="breadcrumb-container">
+            <app-breadcrumb
+                *ngIf="breadcrumbLinks.length"
+                [breadcrumbArray]="breadcrumbArray"
+                [breadcrumbLinks]="breadcrumbLinks"
+                [breadcrumbPresent]="breadcrumbPresent"
+            ></app-breadcrumb>
         </div>
     </div>
     <div class="content-wrapper padding-24 flex flex-col gap-24">
-        <div class="header flex flex-col gap-8">
-            <app-text text="Summary" classNames="body-2 low-emphasis"></app-text>
-            <div class="flex">
-                <app-text [text]="summaryTitle" classNames="body-1 high-emphasis"></app-text>
-            </div>
+        <!-- NOTIFICATION SWITCH -->
+        <div [ngSwitch]="notificationlayoutType">
+            <!-- REDHAT ACS -->
+            <app-redhat-acs-notification
+                *ngSwitchCase="LAYOUTTYPE.REDHAT_ACS"
+                [title]="eventName"
+                [details]="notificationDetails"
+            ></app-redhat-acs-notification>
+            <!--./REDHAT ACS -->
+
+            <!-- AWS ISSUE -->
+            <app-aws-issue-notification
+                *ngSwitchCase="LAYOUTTYPE.AWS_ISSUE"
+                [details]="notificationDetails"
+                [title]="eventName"
+            ></app-aws-issue-notification>
+            <!--./AWS ISSUE -->
+
+            <!-- VIOLATION -->
+            <app-paladincloud-violation-notification
+                *ngSwitchCase="LAYOUTTYPE.PALADINCLOUD_VIOLATION"
+                [details]="notificationDetails"
+                [title]="eventName"
+                (navigateTo)="navigateTo($event)"
+            >
+            </app-paladincloud-violation-notification>
+            <!--./VIOLATION -->
+
+            <!-- KEY VALUE -->
+            <app-keyvalue-notification
+                *ngSwitchCase="LAYOUTTYPE.KEYVALUE"
+                [details]="notificationDetails"
+                [title]="eventName"
+            ></app-keyvalue-notification>
+
+            <!-- JSON -->
+            <app-json-notification
+                *ngSwitchDefault
+                [details]="notificationDetails"
+                [title]="eventName"
+            >
+            </app-json-notification>
+            <!-- JSON -->
         </div>
-        <div *ngIf="hasDetails" class="details-list grid-table">
-            <div class="row" *ngFor="let detail of eventDetails">
-                <div class="row-wrapper border-bottom" *ngIf="detail.name && detail.value">
-                    <app-text class="cell" [text]="detail.name" classNames="body-1 low-emphasis"></app-text>
-                    <div class="cell">
-                        <div class="description" *ngIf="detail.name=='Description'; else nonHTMLValue">
-                            <div [innerHTML]="detail.value"></div>
-                        </div>
-                        <ng-template #nonHTMLValue>
-                            <app-text-with-icon *ngIf="detail.preImgSrc" [preImagePath]="detail.preImgSrc"
-                                        [textVariant]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"
-                                        [text]="detail.value"
-                                        ></app-text-with-icon>
-                            <app-text (click)="navigateTo(detail.link)" *ngIf="!detail.preImgSrc" [class.pointer]="detail.link"
-                                        [classNames]="'body-1 ' + (detail.link?'primary-400':'high-emphasis')"
-                                        [text]="detail.value"
-                                        ></app-text>
-                        </ng-template>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="!hasDetails" class="details-list grid-table">
-            <ngx-json-viewer [json]="notificationDetails"></ngx-json-viewer>
-        </div>
+        <!--./NOTIFICATION SWITCH -->
     </div>
 </div>

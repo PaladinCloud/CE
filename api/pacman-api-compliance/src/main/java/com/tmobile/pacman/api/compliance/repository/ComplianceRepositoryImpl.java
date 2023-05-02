@@ -33,7 +33,14 @@ import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
 import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,6 +60,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.tmobile.pacman.api.compliance.domain.*;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -73,12 +81,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.commons.exception.DataException;
+import com.tmobile.pacman.api.commons.repo.ElasticSearchRepository;
+import com.tmobile.pacman.api.commons.repo.HeimdallElasticSearchRepository;
+import com.tmobile.pacman.api.commons.repo.PacmanRdsRepository;
+import com.tmobile.pacman.api.commons.utils.CommonUtils;
+import com.tmobile.pacman.api.commons.utils.PacHttpUtils;
+import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
 import com.tmobile.pacman.api.compliance.domain.AssetApi;
 import com.tmobile.pacman.api.compliance.domain.AssetApiData;
 import com.tmobile.pacman.api.compliance.domain.AssetCount;
@@ -95,6 +118,7 @@ import com.tmobile.pacman.api.compliance.domain.KernelVersion;
 import com.tmobile.pacman.api.compliance.domain.Request;
 import com.tmobile.pacman.api.compliance.domain.ResponseWithOrder;
 import com.tmobile.pacman.api.compliance.domain.PolicyDetails;
+import com.tmobile.pacman.api.compliance.repository.model.RhnSystemDetails;
 import com.tmobile.pacman.api.compliance.service.NotificationService;
 
 import static com.tmobile.pacman.api.compliance.util.Constants.*;
@@ -105,6 +129,7 @@ import static com.tmobile.pacman.api.compliance.util.Constants.*;
 @Repository
 public class ComplianceRepositoryImpl implements ComplianceRepository, Constants {
 
+   public static final String YYYY_MM_DD = "yyyy-MM-dd";
     /**
      * The Constant PROTOCOL.
      */
@@ -171,7 +196,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
      */
     @Autowired
     private HeimdallElasticSearchRepository heimdallElasticSearchRepository;
-
+    private List<String> rdsAttributeList=Arrays.asList(Constants.RESOURCE_TYPE);
     /**
      * Gets the untagged count.
      *
@@ -493,9 +518,25 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                 }
             } else {
                 if (MapUtils.isNotEmpty(filters) || size > 0 || !Strings.isNullOrEmpty(searchText)) {
-
-                    if (null != sortFilters && sortFilters.get("fieldName").equals("policyId.keyword")) {
-                        sortFilters.put("sortOrder", policyIdOrder);
+                    addSortOrderValues(sortFilters, policyIdOrder, targetTypes);
+                    //handling age filter
+                    if(filters.containsKey(CREATED_DATE)){
+                        String age = filters.get(CREATED_DATE);
+                        if(age.equalsIgnoreCase("< 1")){
+                            age="0";
+                        }
+                        LocalDate currentDate = LocalDate.now();
+                        LocalDate startDate = currentDate.minusDays(Integer.parseInt(age));
+                        LocalDate endDate = startDate.plusDays(1);
+                        String gtDate=DateTimeFormatter.ofPattern(YYYY_MM_DD, Locale.ENGLISH).format(startDate);
+                        String lteDate=DateTimeFormatter.ofPattern(YYYY_MM_DD, Locale.ENGLISH).format(endDate);
+                        Map<String, Object> createDateMap=new HashMap<>();
+                        Map<String,Object> condiionMap=new HashMap<>();
+                        condiionMap.put("gte",gtDate);
+                        condiionMap.put("lt",lteDate);
+                        createDateMap.put(CREATED_DATE, condiionMap);
+                        mustFilter.put(RANGE, createDateMap);
+                        mustFilter.remove(CREATED_DATE);
                     }
                     issueDetails = elasticSearchRepository.getSortedDataFromESBySize(assetGroup, null, mustFilter,
                             mustNotFilter, shouldFilter, fields, from, size, searchText, mustTermsFilter, sortFilters);
@@ -505,7 +546,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
 
                 } else {
                     issueDetails = elasticSearchRepository.getSortedDataFromES(assetGroup, null, mustFilter,
-                            mustNotFilter, shouldFilter, fields, mustTermsFilter, null);
+                            mustNotFilter, shouldFilter, fields, mustTermsFilter, sortFilters);
 
                     for (Map<String, Object> issueDetail : issueDetails) {
                         issueList = getIssueList(null, issueDetail, policyIdwithDisplayNameMap, issueList, domain);
@@ -520,7 +561,7 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     totalIssueCount = getUntaggedCount(esUrl, assetGroup, policyId, tagsList);
                 } else {
                     totalIssueCount = elasticSearchRepository.getTotalDocumentCountForIndexAndType(assetGroup, null,
-                            mustFilter, mustNotFilter, null, searchText, mustTermsFilter);
+                            mustFilter, mustNotFilter, shouldFilter, searchText, mustTermsFilter);
                 }
                 response = new ResponseWithOrder(issueList, totalIssueCount);
 
@@ -530,6 +571,23 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             throw new DataException(e);
         }
         return response;
+    }
+
+    private void addSortOrderValues(Map<String, Object> sortFilters, ArrayList<String> policyIdOrder, String targetTypes) {
+        if(sortFilters!=null && sortFilters.get("sortOrder")==null) {
+            String sortBy = ((String) sortFilters.get("fieldName")).replaceAll(".keyword", "");
+            if (sortBy.equals("policyId")) {
+                sortFilters.put("sortOrder", policyIdOrder);
+            } else if(rdsAttributeList.contains(sortBy)) {
+                String sortByAttribute = Constants.RESOURCE_TYPE.equalsIgnoreCase(sortBy) ? Constants.TARGET_TYPE : sortBy;
+                sortFilters.put("fieldName", sortByAttribute + ".keyword");
+                String sortOrder = (String) sortFilters.get("order");
+                List<Map<String, Object>> policyDetails = getPolicyDetailsSortByColumn(targetTypes, sortByAttribute, sortOrder);
+                Set<String> orderList = new LinkedHashSet<>();
+                policyDetails.forEach(policy -> orderList.add((String) policy.get(sortByAttribute)));
+                sortFilters.put("sortOrder", orderList);
+            }
+        }
     }
 
     /*
@@ -1494,12 +1552,50 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
             if (domain.equals(SOX)) {
                 issue.put(ENV, sourceMap.get(ENV));
             }
+            populateViolationAge(sourceMap, issue);
+
+
             nonDisplayable.put(POLICY_DISPLAY_ID, sourceMap.get(POLICYID));
             issue.put("nonDisplayableAttributes", nonDisplayable);
             issueList.add(issue);
         }
         return issueList;
     }
+
+    private void populateViolationAge(Map<String, Object> sourceMap, LinkedHashMap<String, Object> issue) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+        String createdDate=(String) sourceMap.get(CREATED_DATE);
+        try {
+            Date createDateObj=dateFormatter.parse(createdDate);
+            Date current = new Date();
+            long diffInMillies = Math.abs(current.getTime() - createDateObj.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            if (diff>0) {
+                issue.put(AGE, diff+" Days");
+            }else{
+                //Violation age less than a day, send age in hours
+                diff = TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                if(diff>0){
+                    issue.put(AGE,diff+ " Hours");
+                }else{
+                    //Violation age less than an hour, send age in minutes
+                    diff = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                    if(diff>0){
+                        issue.put(AGE,diff+ " Minutes");
+                    }else{
+                        //Violation age less than a minute, send age in seconds
+                        diff = TimeUnit.SECONDS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                        issue.put(AGE,diff+ " Seconds");
+                    }
+                }
+
+            }
+        } catch (ParseException e) {
+            logger.error(e);
+        }
+    }
+
+
 
     /*
      * (non-Javadoc)
@@ -1775,6 +1871,9 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
                     issueDetails.put(ISSUE_REASON, source.get(STATUS_REASON).getAsString());
                 } else {
                     issueDetails.put(ISSUE_REASON, UNABLE_TO_DETERMINE);
+                }
+                if (null != source.get(VULNERABILITY_DETAILS)) {
+                    issueDetails.put(VULNERABILITY_DETAILS, source.get(VULNERABILITY_DETAILS));
                 }
                 if (null != source.get(ISSUE_DETAILS)) {
                     issueDetails.put(ISSUE_DETAILS, source.get(ISSUE_DETAILS).getAsString());
@@ -2622,6 +2721,15 @@ public class ComplianceRepositoryImpl implements ComplianceRepository, Constants
         } catch (Exception e) {
             throw new DataException(e);
         }
+    }
+    public List<Map<String, Object>> getPolicyDetailsSortByColumn(String targetType, String sortByColumn, String sortOrder) {
+        if(sortOrder==null || sortOrder.isEmpty()){
+            //default asc sort order
+            sortOrder="asc";
+        }
+        String policyDetails = "SELECT policyId, policyDisplayName,targetType,severity, category, autoFixEnabled, autoFixAvailable FROM cf_PolicyTable WHERE STATUS = 'ENABLED'AND targetType IN ("
+                + targetType + ")  ORDER BY "+sortByColumn+" "+sortOrder;
+        return rdsepository.getDataFromPacman(policyDetails);
     }
 
 }

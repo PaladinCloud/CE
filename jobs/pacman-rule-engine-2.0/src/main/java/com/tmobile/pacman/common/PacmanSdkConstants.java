@@ -154,6 +154,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     /** The date format. */
     String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+    String NOTIFICATION_EMAIL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
     /** The es uri env var name. */
     String ES_URI_ENV_VAR_NAME = "ES_URI";
 
@@ -649,4 +651,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String NOTIFICATION_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
     String CLOUD_TYPE = "cloudType";
     String TAG_DETAILS = "tagDetails";
+    String APPLICATION_PREFIX = "application.prefix";
+    String ROLE_PREFIX = "role/";
+    String ROLE_SUFFIX = "_ro";
 }

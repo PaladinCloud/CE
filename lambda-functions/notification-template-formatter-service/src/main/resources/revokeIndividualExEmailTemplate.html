@@ -3,15 +3,13 @@
 <head>
     <style>
 
-.a {
+.rowkey {
   font-family: Courier, Arial;
+  font-weight: bold;
+  width: 250px;
 }
 
-.leftWidth {
-	width: 150px;
-}
-
-.b {
+.summary {
   font-family: Calibri, Verdana;
   font-size: 15px;
 }
@@ -39,22 +37,26 @@ text-decoration : none;
 
 <br>
 
-<div class="b">Exemption is revoked for violation with id <a href="${issueIdLink}">"${issueId}"</a>.</div>
+<div class="summary">Exemption is revoked for violation with id <a href="${issueIdLink}">"${issueId}"</a>.</div>
 
 <br><br>
 
-<table style="width:500px">
+<table style="width:800px">
     <tr>
-        <td class="a leftWidth">Resource ID</td>
+        <td class="rowkey">Resource ID</td>
         <td><a href="${resourceIdLink}">${resourceId}</a></td>
     </tr>
     <tr>
-        <td class="a">Policy Name</td>
+        <td class="rowkey">Policy Name</td>
         <td><a href="${policyNameLink}">${policyName}</a></td>
     </tr>
     <tr>
-        <td class="a">Revoked By</td>
+        <td class="rowkey">Revoked By</td>
         <td>${createdBy}</td>
+    </tr>
+    <tr>
+        <td class="rowkey">Source</td>
+        <td>${source}</td>
     </tr>
 </table>
 

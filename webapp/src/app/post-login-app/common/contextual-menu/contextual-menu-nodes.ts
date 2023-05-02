@@ -1,7 +1,7 @@
 export interface MenuItem {
     id: string;
     name: string;
-    image: string;
+    image?: string;
     route?: string;
     children?: MenuItemChild[];
     overlay?: boolean;
@@ -9,6 +9,7 @@ export interface MenuItem {
 export interface MenuItemChild {
     id: string;
     name: string;
+    image?: string;
     parent: string;
     route: string;
     notDisplayIfAzure?: boolean;

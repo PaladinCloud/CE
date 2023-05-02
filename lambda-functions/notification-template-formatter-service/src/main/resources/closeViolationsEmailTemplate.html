@@ -3,19 +3,17 @@
 <head>
   <style>
 
-.a {
+.rowkey {
   font-family: Courier, Arial;
   font-weight: bold;
+  width: 250px;
 }
 
-.leftWidth {
-	width: 150px;
-}
-
-.b {
+.summary {
   font-family: Calibri, Verdana;
   font-size: 15px;
 }
+
 
 td {
   border: 1px solid #ddd;
@@ -38,26 +36,26 @@ text-decoration : none;
 </head>
 <body>
 <br>
-<div class="b">Violation with ID "${issueId}" is closed.</div>
+<div class="summary">Violation with ID "${issueId}" is closed.</div>
 
 <br><br>
 
-<table style="width:500px">
+<table style="width:800px">
   <tr>
-    <td class="a leftWidth">Resource ID</td>
+    <td class="rowkey">Resource ID</td>
     <td><a href="${resourceIdLink}">${resourceId}</a></td>
   </tr>
   <tr>
-    <td class="a">Policy Name</td>
+    <td class="rowkey">Policy Name</td>
     <td><a href="${policyNameLink}">${policyName}</a></td>
   </tr>
   <tr>
-    <td class="a">Policy Description</td>
-    <td>${description}</td>
+    <td class="rowkey">Scan Time</td>
+    <td>${scanTime}</td>
   </tr>
   <tr>
-    <td class="a">Scan Time</td>
-    <td>${scanTime}</td>
+    <td class="rowkey">Source</td>
+    <td>${source}</td>
   </tr>
 </table>
 

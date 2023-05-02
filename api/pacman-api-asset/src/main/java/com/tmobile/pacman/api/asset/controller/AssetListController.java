@@ -84,8 +84,9 @@ public class AssetListController {
             filter = new HashMap<>();
         }
 
-        List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_DOMAIN));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_DOMAIN));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
+        acceptedFilterKeys.addAll(assetService.getSupportedFilters(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -97,7 +98,7 @@ public class AssetListController {
         try {
             long count = assetService.getAssetCount(assetGroup, filter, searchText);
             List<Map<String, Object>> masterDetailList = assetService.getListAssets(assetGroup, filter, from, size,
-                    searchText);
+                    searchText, request.getSortFilter());
             response = new ResponseWithCount(masterDetailList, count);
 
         } catch (Exception e) {
@@ -137,7 +138,7 @@ public class AssetListController {
             filter = new HashMap<>();
         }
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_EXEMPTED));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -157,7 +158,7 @@ public class AssetListController {
 
     /**
      * Fetches the taggable assets for the given assetgroup.If tagged filter is false it returns the untagged assets
-     * and if tagged is true returns the tagged assets.It also filters the list based on resource type passed in filter
+     * and if tagged is true returns the tagged assets.It also filters the the list based on resource type passed in filter 
      * else returns all the assets of the asset group
      *
      * @param request This request expects assetGroup as mandatory and
@@ -193,7 +194,7 @@ public class AssetListController {
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_TAGGED,
                 AssetConstants.FILTER_TAGNAME));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -255,7 +256,7 @@ public class AssetListController {
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_PATCHED,
                 AssetConstants.FILTER_EXEC_SPONSOR, AssetConstants.FILTER_DIRECTOR));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -315,7 +316,7 @@ public class AssetListController {
         }
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE, "qid"));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -376,7 +377,7 @@ public class AssetListController {
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE, AssetConstants.FILTER_POLICYID,
                 AssetConstants.FILTER_COMPLIANT));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS
@@ -438,7 +439,7 @@ public class AssetListController {
         String searchText = request.getSearchtext();
 
         List<String> acceptedFilterKeys = new ArrayList<>(Arrays.asList(AssetConstants.FILTER_RES_TYPE));
-        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSET));
+        acceptedFilterKeys.addAll(assetService.getMandatoryTags(AssetConstants.ASSETLISTING));
         for (Map.Entry<String, String> entry : filter.entrySet()) {
             if (!acceptedFilterKeys.contains(entry.getKey())) {
                 return ResponseUtils.buildFailureResponse(new Exception(AssetConstants.ERROR_FILTER_ACCEPTS

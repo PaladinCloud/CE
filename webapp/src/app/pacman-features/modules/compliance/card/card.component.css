@@ -1,118 +1,125 @@
 ::ng-deep app-card {
-  width: 100%;
-  height: 100%;
-  border-radius: var(--border-radius);
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius);
 }
 
 ::ng-deep app-chart {
-  width: 100%;
+    width: 100%;
 }
 
 .panel {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0px;
-  box-sizing: border-box;
-  background: var(--background-white);
-  border: 1px solid var(--border-100);
-  border-radius: 16px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    box-sizing: border-box;
+    background: var(--background-white);
+    border: 1px solid var(--border-100);
+    border-radius: 16px;
 }
 
 ::ng-deep .mat-card-header-text {
-  margin: 0px !important;
+    margin: 0 !important;
 }
 
 mat-card-header {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 16px 24px;
-  width: 100%;
-  height: 58px;
-  margin: 0;
-  background: var(--background-white);
-  border-bottom: 2px solid var(--border-100);
-  border-radius: 16px 16px 0px 0px;
-  font: var(--text-body-2);
-  color: var(--text-high-emphasis);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 24px;
+    width: 100%;
+    height: 58px;
+    margin: 0;
+    background: var(--background-white);
+    border-bottom: 2px solid var(--border-100);
+    border-radius: 16px 16px 0 0;
+    font: var(--text-body-2);
+    color: var(--text-high-emphasis);
 }
 
 mat-card-content {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px 24px 0px 24px;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background: var(--background-white);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 24px 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: var(--background-white);
 }
 
 mat-card-actions {
-  margin-bottom: 0 !important;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 16px 24px !important;
-  width: 100%;
-  height: 52px;
-  margin: 0;
-  background: var(--background-white);
-  border-top: 2px solid var(--border-100);
-  border-radius: 0px 0px 16px 16px;
+    margin-bottom: 0 !important;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 24px !important;
+    width: 100%;
+    height: 52px;
+    margin: 0;
+    background: var(--background-white);
+    border-top: 2px solid var(--border-100);
+    border-radius: 0 0 16px 16px;
 }
 
 mat-card-actions button {
-  border: none;
-  background: var(--background-white);
-  cursor: pointer;
-  height: 17px;
-  font-family: var(--text-medium-font-family);
-  font-style: var(--text-font-style);
-  font-weight: var(--text-font-weight);
-  font-size: var(--text-body-2-font-size);
-  display: flex;
-  letter-spacing: -0.005em;
-  color: var(--primary-500);
+    border: none;
+    background: var(--background-white);
+    cursor: pointer;
+    height: 17px;
+    font-family: var(--text-medium-font-family);
+    font-style: var(--text-font-style);
+    font-weight: var(--text-font-weight);
+    font-size: var(--text-body-2-font-size);
+    display: flex;
+    letter-spacing: -0.005em;
+    color: var(--primary-500);
 }
 
 .chart {
-  height: 100%;
-  width: 100%;
+    height: 100%;
+    width: 100%;
+    overflow-y: scroll;
+}
+
+.chart-wrapper {
+    height: 100%;
+    width: 100%;
+    background-color: var(--background-white);
 }
 
 mat-card-actions img {
-  margin-left: 9px;
-  height: 17px;
-  width: 10px;
+    margin-left: 9px;
+    height: 17px;
+    width: 10px;
 }
 
-#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .horizontal .tick line{
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .horizontal .tick line {
     stroke-dasharray: 3;
     stroke: var(--gamma-grey-600);
 }
 
-#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .vertical .tick line{
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .vertical .tick line {
     display: none;
 }
 
-#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .focus .axis .domain{
-  display: none;
+#TotalAssetsCountTrend ::ng-deep .multiline-graph-container .focus .axis .domain {
+    display: none;
 }
 
-.graph-dropdown-container{
-  margin-left: auto;
+.graph-dropdown-container {
+    margin-left: auto;
 }
 
-.date-selection-modal{
-  background-color: var(--background-white);
-  position: absolute;
-  right: 20px;
-  z-index: 99;
+.date-selection-modal {
+    background-color: var(--background-white);
+    position: absolute;
+    right: 20px;
+    z-index: 99;
 }
 
 .date-selection-trigger {

@@ -477,7 +477,46 @@ public class FilterServiceImpl implements FilterService, Constants {
 			throw new ServiceException(NO_DATA_FOUND);
 		}
 		return map;
-	}   
+	}
+
+    public List<Map<String, Object>> getAttributeValuesForAssetGroup(
+            String assetGroup, String domain, String attributeName, String entityType) throws ServiceException {
+        Map<String, Long> valueMap;
+        List<Map<String, Object>> valueList = new ArrayList<>();
+        try {
+            valueMap = repository.getAttributeValuesFromES(assetGroup,attributeName, entityType);
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        if (valueMap.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        valueMap.entrySet().parallelStream().forEach(dataValue -> {
+            Map<String, Object> values = new HashMap<>();
+            if (StringUtils.isNotBlank(dataValue.getKey())) {
+                values.put(NAME, dataValue.getKey());
+                values.put(ID, dataValue.getKey());
+                synchronized (valueList) {
+                    valueList.add(values);
+                }
+            }
+        });
+        if (valueList.isEmpty()) {
+            throw new ServiceException(NO_DATA_FOUND);
+        }
+        return valueList;
+    }
+
+    public List<Map<String, Object>> getNotificationEventName() throws ServiceException {
+        Map<String, Long> sourceMap;
+        try {
+            sourceMap = repository.getNotificationEventNamesFromES();
+        } catch (DataException e) {
+            throw new ServiceException(e);
+        }
+        return convertESResponseToMap(sourceMap);
+
+    }
     
 
 }

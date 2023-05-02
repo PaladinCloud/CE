@@ -206,7 +206,7 @@ public interface AssetRepository {
      * @return list of assets and its some details.
      */
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
-            String searchText);
+            String searchText, Map<String, Object> sortFilter);
 
     /**
      * Fetches the total asset count for the given asset group.
@@ -579,5 +579,8 @@ public interface AssetRepository {
 
     public Set<String> getMandatoryTags(String serviceName);
 
+    public Set<String> getMandatoryTagsNames(String serviceName);
+
     List<String> getValuesListForTag(String aseetGroupName, String tagName,String type) throws DataException;
+    public Set<String> getSupportedFilters(String serviceName);
 }

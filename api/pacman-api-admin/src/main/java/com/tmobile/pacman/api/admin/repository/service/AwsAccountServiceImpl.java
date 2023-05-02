@@ -51,13 +51,14 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
             return validateResponse;
         }
         String accountId=accountData.getAccountId();
-        String roleName=accountData.getRoleName();
+        String roleName="PaladinCloudIntegrationRole";
         String baseAccount=System.getenv(COGNITO_ACCOUNT);
         String paladinRole=System.getenv(PALADINCLOUD_RO);
         BasicSessionCredentials baseSessioncreds =null;
         boolean isPolicyUpdated=false;
         try {
             isPolicyUpdated=updatePolicy(accountId, baseAccount, paladinRole,"add");
+            delayForCompletion();
             baseSessioncreds = credentialProvider.getCredentials(accountId, roleName);
 
         } catch (Exception e) {
@@ -208,5 +209,13 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
         }
         return response;
 
+    }
+    private static void delayForCompletion() {
+        try{
+            Thread.sleep(8000);
+        }catch(InterruptedException e){
+            LOGGER.error("Error in uploadAllFiles",e);
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -443,12 +443,12 @@ public class AssetRepositoryTest {
                 anyObject(), anyObject(), anyInt(), anyInt(), anyObject(), anyObject())).thenReturn(assetList);
         ReflectionTestUtils.setField(repository, "esRepository", elasticSearchRepository);
 
-        List<Map<String, Object>> aList1 = repository.getListAssets("aws-all", filter, 0, 2, null);
+        List<Map<String, Object>> aList1 = repository.getListAssets("aws-all", filter, 0, 2, null,null);
         assertTrue(aList1.get(0).get("_resourceid") != null);
         assertTrue(aList1.size() == 2);
 
         when(pacmanRdsRepository.queryForString(anyString())).thenReturn(null);
-        List<Map<String, Object>> aList2 = repository.getListAssets("aws-all", filter, 0, 2, null);
+        List<Map<String, Object>> aList2 = repository.getListAssets("aws-all", filter, 0, 2, null,null);
         assertTrue(aList2.get(0).get("_resourceid") != null);
         assertTrue(aList2.size() == 2);
         filter.put("resourceType", "ec2");
@@ -456,7 +456,7 @@ public class AssetRepositoryTest {
         filter.put("application", "pacman");
 
         when(pacmanRdsRepository.queryForString(anyString())).thenReturn("_resourceid");
-        List<Map<String, Object>> aList3 = repository.getListAssets("aws-all", filter, 0, 2, null);
+        List<Map<String, Object>> aList3 = repository.getListAssets("aws-all", filter, 0, 2, null,null);
         assertTrue(aList3.get(0).get("_resourceid") != null);
         assertTrue(aList3.size() == 2);
     }

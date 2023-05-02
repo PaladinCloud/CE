@@ -32,7 +32,8 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
  */
 @Component
 public class CredentialProvider {
-	
+	public static final String PALADIN_CLOUD_INTEGRATION_ROLE = "PaladinCloudIntegrationRole";
+
 	/** The base account. */
 	@Value("${base.account}")
 	private String baseAccount ;
@@ -58,7 +59,7 @@ public class CredentialProvider {
 		}
 		AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials( new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
 		AWSSecurityTokenService stsClient = stsBuilder.build();
-	    AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account,roleName)).withRoleSessionName("pic-ro-"+account);
+	    AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account,PALADIN_CLOUD_INTEGRATION_ROLE)).withRoleSessionName("pic-ro-"+account);
 	    AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
 	    return  new BasicSessionCredentials(
 	            assumeResult.getCredentials()

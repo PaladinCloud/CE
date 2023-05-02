@@ -1,0 +1,22 @@
+<div class="header flex gap-8 body-1 high-emphasis">
+    <mat-icon class="header-icon material-icons-outlined">notifications</mat-icon>
+    <div class="header-text">
+        {{ title }}
+    </div>
+</div>
+<table class="keyvalue-table body-1 high-emphasis">
+    <tbody>
+        <tr class="keyvalue-parameter" *ngFor="let item of details | keyvalue">
+            <td class="keyvalue-name">
+                {{ item.key | proptitlecase }}
+            </td>
+            <td
+                class="keyvalue-value"
+                [appPropValueLink]="item.value"
+                (innerNavigate)="navigateTo($event)"
+            >
+                {{ item.value }}
+            </td>
+        </tr>
+    </tbody>
+</table>

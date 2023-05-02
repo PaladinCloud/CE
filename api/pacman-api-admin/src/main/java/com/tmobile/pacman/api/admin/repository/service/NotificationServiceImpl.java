@@ -53,7 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
                 stickyExNotificationRequest.setAssetGroup(assetGroupExceptionDetails.getAssetGroup().trim());
                 stickyExNotificationRequest.setExceptionReason(assetGroupExceptionDetails.getExceptionReason().trim());
                 stickyExNotificationRequest.setExpiringOn(assetGroupExceptionDetails.getExpiryDate());
-                stickyExNotificationRequest.setUserId(userId);
+                stickyExNotificationRequest.setUserId(assetGroupExceptionDetails.getCreatedBy());
                 stickyExNotificationRequest.setPolicyNames(combinedPolicyNameStr);
                 stickyExNotificationRequest.setType("sticky");
                 stickyExNotificationRequest.setAction(action);
@@ -77,14 +77,14 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Async
-    public void triggerNotificationForDelStickyException(AssetGroupException assetGroupException, String userId, String subject){
+    public void triggerNotificationForDelStickyException(AssetGroupException assetGroupException, String userId, String subject, String deletedBy){
         try {
             Gson gson = new Gson();
             List<NotificationBaseRequest> notificationBaseRequestList = new ArrayList<>();
             NotificationBaseRequest notificationBaseRequest = getNotificationBaseRequestObj( String.format(DELETE_EXCEPTION_EVENT_NAME,assetGroupException.getExceptionName().trim()), DELETE_STICKY_EXCEPTION_SUBJECT);
             StickyExNotificationRequest stickyExNotificationRequest = new StickyExNotificationRequest();
             stickyExNotificationRequest.setExceptionName(assetGroupException.getExceptionName().trim());
-            stickyExNotificationRequest.setUserId(userId);
+            stickyExNotificationRequest.setUserId(deletedBy);
             stickyExNotificationRequest.setType("sticky");
             stickyExNotificationRequest.setAction(Actions.DELETE);
             notificationBaseRequest.setPayload(stickyExNotificationRequest);

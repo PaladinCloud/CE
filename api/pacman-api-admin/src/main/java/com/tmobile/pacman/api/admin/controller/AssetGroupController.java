@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.admin.controller;
 
+import static com.tmobile.pacman.api.admin.common.AdminConstants.ASSET_GROUP_DELETE_SUCCESS;
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.security.Principal;
@@ -222,7 +223,11 @@ public class AssetGroupController {
 	public ResponseEntity<Object> deleteAssetGroup(@AuthenticationPrincipal Principal user,
 			@RequestBody DeleteAssetGroupRequest assetGroupDetails) {
 		try {
-			return ResponseUtils.buildSucessResponse(assetGroupService.deleteAssetGroup(assetGroupDetails, user.getName()));
+			String message=assetGroupService.deleteAssetGroup(assetGroupDetails, user.getName());
+			if(message.equals(ASSET_GROUP_DELETE_SUCCESS))
+				return ResponseUtils.buildSucessResponse(message);
+
+			return ResponseUtils.buildFailureResponse(new Exception(message),message);
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

@@ -1,0 +1,26 @@
+.header {
+    margin-bottom: 18px;
+}
+
+.header-icon {
+    width: 24px;
+}
+
+.violation-table {
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border-200);
+    width: 800px;
+}
+
+.violation-table tr {
+    border-bottom: 1px solid var(--border-100);
+}
+
+.violation-table td {
+    padding: 20px;
+}
+
+.violation-name {
+    width: 20%;
+    color: var(--text-low-emphasis);
+}

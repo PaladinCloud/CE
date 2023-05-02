@@ -1,5 +1,5 @@
 from core.terraform.resources.misc import NullResource
-from resources.notification.appsync import ApiSyncIdKey, AppSyncNotification
+from resources.notification.appsync import AppSyncIdKey, AppSyncNotification
 from resources.cognito.userpool import AppCLient
 from resources.s3.bucket import BucketStorage
 from resources.pacbot_app.alb import ApplicationLoadBalancer
@@ -41,7 +41,9 @@ class BuildUiAndApis(NullResource):
                     'COGNITO_DOMAIN': Settings.COGNITO_DOMAIN,
                     'AWS_REGION': Settings.AWS_REGION,
                     'APPSYNC_URL': AppSyncNotification.get_output_attr('uris["GRAPHQL"]'),
-                    'APPSYNC_API_KEY': ApiSyncIdKey.get_output_attr('key')
+                    'APPSYNC_API_KEY': AppSyncIdKey.get_output_attr('key'),
+                    'LAMBDA_PATH' : Settings.LAMBDA_PATH,
+                    'GOOGLE_ANALYTICS' : Settings.GOOGLE_ANALYTICS
                 },
                 'interpreter': [Settings.PYTHON_INTERPRETER]
             }

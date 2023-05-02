@@ -155,5 +155,7 @@ public interface FilterService {
      * @throws ServiceException the service exception
      */
     public List<Map<String, Object>> getNotificationSource() throws ServiceException;
+    public List<Map<String, Object>> getNotificationEventName() throws ServiceException;
 
+    List<Map<String, Object>> getAttributeValuesForAssetGroup(String assetGroup, String domain, String attributeName, String entityType) throws ServiceException;
 }

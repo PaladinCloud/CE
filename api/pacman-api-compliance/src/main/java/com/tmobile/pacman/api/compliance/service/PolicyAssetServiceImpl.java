@@ -96,6 +96,7 @@ public class PolicyAssetServiceImpl implements PolicyAssetService, Constants {
                         "policyFrequency").toString()));
                 scanInfo.setSeverity(CommonUtil.getPolicySeverityFromParms(policy
                         .get("policyParams").toString()));
+                scanInfo.setCategory(policy.get("category").toString());
                 scanInfo.setScanHistory(new ArrayList<>());
                 // Need additional data source to find if the asset is scanned.
                 // As we only capture issue aduti which is not truley scan

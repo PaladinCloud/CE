@@ -16,8 +16,8 @@
                             [showDownloadBtn]="false" [showFilterBtn]="true" (selectedFilterType)='changeFilterType($event)'
                             (selectedFilter)="changeFilterTags($event)" [filteredArray]="filters" [filterTypeLabels]="filterTypeLabels"
                              [filterTagLabels]="filterTagLabels" (deleteFilters)="deleteFilters($event)" [filterTypeOptions]="filterTypeOptions"
-                            [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="true"
-                            [rowClickable]="false">
+                             [totalRows]="totalRows" [tableScrollTop]="tableScrollTop" [tableDataLoaded]="true" [tableErrorMessage]="errorMessage"
+                            [rowClickable]="false" [rowSize]="'SM'" (headerColNameSelected)="handleHeaderColNameSelection($event)">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

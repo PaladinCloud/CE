@@ -1,0 +1,55 @@
+<div class="acs-notification-container body-1 high-emphasis">
+    <div class="header flex gap-8">
+        <img class="header-icon" src="/assets/icons/redhat-color.svg" />
+        <div class="header-text">
+            {{ title }}
+        </div>
+        <a class="acs-console-link" target="_blank" [href]="details.goToViolation">
+            <mat-icon>open_in_new</mat-icon>
+        </a>
+        <div class="header-severity">
+            <app-acs-severity [severity]="details.severity"></app-acs-severity>
+        </div>
+    </div>
+
+    <div class="acs-description">
+        {{ details.description }}
+    </div>
+
+    <table class="acs-table">
+        <tbody>
+            <tr class="acs-parameter">
+                <td class="acs-name">Id</td>
+
+                <td class="acs-value">
+                    <a class="primary-400" [href]="details.goToViolation" target="_blank">
+                        {{ details.id }}
+                    </a>
+                </td>
+            </tr>
+
+            <tr class="acs-parameter">
+                <td class="acs-name">Cluster Name</td>
+
+                <td class="acs-value">
+                    {{ details.clusterName }}
+                </td>
+            </tr>
+
+            <tr class="acs-parameter">
+                <td class="acs-name">Namespace</td>
+
+                <td class="acs-value">
+                    {{ details.namespace }}
+                </td>
+            </tr>
+
+            <tr class="acs-parameter">
+                <td class="acs-name">Last Updated</td>
+                <td class="acs-value">
+                    {{ details.lastUpdated | date : 'medium' }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

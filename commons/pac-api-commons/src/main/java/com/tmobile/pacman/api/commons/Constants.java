@@ -78,9 +78,11 @@ public interface Constants {
     String POLICY_PARAMS = "policyParams";
     String TARGET_TYPE = "targetType";
     String RESOURCE_TYPE = "resourcetType";
+    String ANNOTATIONID = "annotationid";
     String POLICY_DESC = "policyDesc";
     String TITLE = "title";
     String DESCRIPTION = "description";
+    String AGE = "Age";
     String METRIC_NAME = "metricName";
     String METRIC_VALUE = "metricValue";
     String COUNT = "count";
@@ -180,6 +182,8 @@ public interface Constants {
     String VALID_TO = "validto";
     String UNDERSCORE_COUNT = "_count";
     String ISSUE_DETAILS = "issueDetails";
+    String VULNERABILITY_DETAILS = "vulnerabilityDetails";
+    String ERROR_READING_VULNERABILITY = "Error in parsing vulnerability details";
     String QUALYS_ISSUE_DETAILS = "qualysIssueDetails";
     String QUALYS_VIOLATION_DETAILS = "qualysViolationDetails";
     String VIOLATION_REASON = "violationReason";
@@ -407,11 +411,12 @@ public interface Constants {
         }
     }
     String EVENT_SOURCE = "paladinCloud";
-    String EVENT_SOURCE_NAME = "PaladinCloud";
+    String EVENT_SOURCE_NAME = "Paladin Cloud";
     String CLOUD_TYPE = "cloudType";
     String TAG_DETAILS = "tagDetails";
     String NOTIFICATION_INDEX = "notification";
     String NOTIFICATION_INDEX_TYPE = "notification";
     String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
     String NOTIFICATION_SOURCE_NAME = "eventSourceName";
+    String NOTIFICATION_EVENT_NAME = "eventName";
 }

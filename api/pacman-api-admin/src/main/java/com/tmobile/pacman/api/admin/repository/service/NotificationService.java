@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface NotificationService {
     void triggerNotificationForCreateStickyEx(AssetGroupExceptionDetailsRequest assetGroupExceptionDetails, String userId, String subject, List<String> policyIds, Actions action);
-    void triggerNotificationForDelStickyException(AssetGroupException assetGroupException, String userId, String subject);
+    void triggerNotificationForDelStickyException(AssetGroupException assetGroupException, String userId, String subject, String deletedBy);
 }

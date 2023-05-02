@@ -27,6 +27,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() showFilterBtn;
   @Input() showMoreMenu = true;
   @Input() rowClickable = true;
+  @Input() selectedRowIndex: number;
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
@@ -39,7 +40,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() doLocalSort = true;
   @Input() doLocalFilter = false;
   @Input() tableDataLoaded;
-  @Input() rowSize: 'SM' | 'MD' | 'LG' = 'LG';
+  @Input() doNotSort = false;
+  @Input() rowSize: 'SM' | 'MD' | 'LG' = 'SM';
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() actionSelected = new EventEmitter();
   @Output() headerColNameSelected = new EventEmitter<any>();
@@ -55,7 +57,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   mainDataSource;
   dataSource;
 
-  @Input() displayedColumns;
+  displayedColumns;
   @Input() whiteListColumns = [];
   searchInColumns = new FormControl();
 
@@ -88,8 +90,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
 
   ngOnInit(): void {
-    this.mainDataSource = new MatTableDataSource(this.data);
-    this.dataSource = new MatTableDataSource(this.data);
     if(this.columnWidths){
       this.displayedColumns = Object.keys(this.columnWidths);
     }
@@ -101,7 +101,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
       this.displayedColumns.pop();
     }
-    if(this.onScrollDataLoader){
+
+    this.displayedColumns.sort();
+    
+    if (this.onScrollDataLoader) {
       this.onScrollDataLoader.subscribe(data => {
       this.isDataLoading = false;
         if(data && data.length>0){
@@ -115,43 +118,37 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    if(this.customTable && changes.tableScrollTop && changes.tableScrollTop.currentValue!=undefined){
-      this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
-    }
-    if(!this.tableDataLoaded && this.customTable){
-       this.tableScrollTop = 0;
-      this.customTable.first.nativeElement.scrollTop = 0;
-      this.data = [];
-      this.dataSource = new MatTableDataSource(this.data);
-      this.mainDataSource = new MatTableDataSource(this.data);
-
-      this.waitAndResizeTable();
-    }
-    if(!this.doLocalSearch || (changes.data && changes.data.currentValue && changes.data.currentValue.length>0)){
-      this.mainDataSource = new MatTableDataSource(this.data);
-      this.dataSource = new MatTableDataSource(this.data);
-
-      this.waitAndResizeTable();
-      // handles when pagesize is small and screen height is large
-      // if(window.innerHeight>1800 && this.data.length>0){
-      //   this.nextPageCalled.emit();
-      //   this.isDataLoading = true;
-      // }
-    }
-    this.filteredArray.forEach((item, i) => {
-      if(item.filterValue.length==0){
-        this.filteredArray.splice(i, 1);
+    if(this.customTable){
+      if(changes.tableScrollTop && changes.tableScrollTop.currentValue!=undefined){
+        this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
       }
-    })
-
-      if(this.doLocalSearch && this.dataSource?.data?.length){
+      if(!this.tableDataLoaded){
+        this.customTable.first.nativeElement.scrollTop = 0;
+        this.mainDataSource = new MatTableDataSource([]);
+        this.dataSource = new MatTableDataSource([]);
+      }
+    }
+    if((changes.data || changes.filteredArray)){
+      if(changes.data){
+        this.mainDataSource = new MatTableDataSource(this.data);
+        this.dataSource = new MatTableDataSource(this.data);
+  
+        this.waitAndResizeTable();
+      }    
+      this.filteredArray.forEach((item, i) => {
+        if(item.filterValue.length==0){
+          this.filteredArray.splice(i, 1);
+        }
+      })
+      if(!this.doLocalFilter){
+        this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
+        this.chips.splice(2);
+        this.totalChips = this.filteredArray.length;
+        this.addFilter();
+      }
+    }
+    if((this.doLocalSearch || this.doLocalSort) && this.tableDataLoaded){
       this.filterAndSort();
-    }else{
-
-    this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
-      this.chips.splice(2);
-      this.totalChips = this.filteredArray.length;
-      this.addFilter();
     }
   }
 
@@ -218,36 +215,36 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   handleSearchInColumnsChange(){
     this.searchInColumnsChanged.emit(this.searchInColumns.value);
   }
-
-  toggleAllSelection() {
-    this.whiteListColumns = [];
+  
+  toggleAllSelection() {  
+    this.whiteListColumns = Object.keys(this.columnWidths);
     this.allSelected = !this.allSelected;
     if (this.allSelected) {
-      this.select.options.forEach((item: MatOption) => {
-        if(item.value!="selectAll" && item.value!="disabled"){
-          this.whiteListColumns.push(item.value);
-        }
-      });
       this.select.options.forEach((item: MatOption) => item.select());
     } else {
       this.whiteListColumns = [];
       this.select.options.forEach((item: MatOption) => item.deselect());
     }
-    this.whitelistColumnsChanged.emit(this.whiteListColumns);
+    this.whiteListColumnsChanged();
     this.getWidthFactor();
   }
 
-  handleClick(row, col){
-    if(row[col].isMenuBtn){
+  whiteListColumnsChanged(){
+    this.whitelistColumnsChanged.emit(this.whiteListColumns);
+  }
+
+  handleClick(row, col, i: number) {
+    if (row[col].isMenuBtn) {
       return;
     }
-    let event = {
+    const event = {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
       data: this.data,
-      col: col,
+      col,
       filters: this.filteredArray,
-      searchTxt: this.searchQuery
+      searchTxt: this.searchQuery,
+      selectedRowIndex: i,
     }
     this.rowSelectEventEmitter.emit(event);
   }
@@ -261,14 +258,15 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
    optionClick() {
-    this.whiteListColumns = [];
+    const shouldIncludeActions = this.whiteListColumns.includes("Actions");
+    this.whiteListColumns = Object.keys(this.columnWidths);
     let newStatus = true;
-    this.select.options.forEach((item: MatOption) => {
+    this.select.options.forEach((item) => {
       if(item.value!="selectAll" && item.value!="disabled"){
         if (!item.selected) {
           newStatus = false;
-        }else{
-          this.whiteListColumns.push(item.value);
+          const index = this.whiteListColumns.findIndex((e) => e==item.value);
+          this.whiteListColumns.splice(index, 1);
         }
       }
     });
@@ -278,8 +276,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }else{
       this.allColumnsSelected.deselect();
     }
+    if(shouldIncludeActions) this.whiteListColumns.push("Actions");
     this.getWidthFactor();
-    this.whitelistColumnsChanged.emit(this.whiteListColumns);
+    this.whiteListColumnsChanged();
   }
 
   onSelectFilter(e, i){
@@ -419,25 +418,21 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
   customSearch(){
     const searchTxt = this.searchQuery;
-
-      let columnsToSearchIN = this.searchInColumns.value;
-      if(columnsToSearchIN==null || (columnsToSearchIN as any[]).length==0){
-        columnsToSearchIN = this.whiteListColumns;
-      }
-      // whenever search or filter is called, we perform search first and then filter and thus we take maindatasource here for search
-      this.dataSource.data = this.mainDataSource.data.filter((item) => {
-        for(const i in columnsToSearchIN) {
-          const col = columnsToSearchIN[i];
-          if(String(item[col].valueText).toLowerCase().match(searchTxt)){
-            return true;
-          }
+    // whenever search or filter is called, we perform search first and then filter and thus we take maindatasource here for search
+    this.dataSource.data = this.mainDataSource.data.filter((item) => {
+      const columnsToSearchIN = Object.keys(item);
+      for(const i in columnsToSearchIN) {
+        const col = columnsToSearchIN[i];
+        if(String(item[col].valueText).toLowerCase().match(searchTxt)){
+          return true;
         }
-        return false;
-      })
-      if(this.dataSource.data.length==0){
-        this.tableErrorMessage = 'noDataAvailable';
       }
-      this.totalRows = this.dataSource.data.length;
+      return false;
+    })
+    if(this.dataSource.data.length==0){
+      this.tableErrorMessage = 'noDataAvailable';
+    }
+    this.totalRows = this.dataSource.data.length;
 
     if(this.doLocalFilter){
       this.customFilter();
@@ -472,32 +467,39 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
-  announceSortChange(sort:any) {
+  announceSortChange(sort: any) {
+    if(this.doNotSort){
+      return;
+    }
     this.headerColName = sort.active;
     this.direction = sort.direction;
-    if(this.doLocalSort){
-      this.customSort(this.headerColName, this.direction);
-    }else{
-      this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
-    }
+    this.headerColNameSelected.emit({headerColName:this.headerColName, direction:this.direction});
 
   }
 
-    customSort(columnName, direction){
-    if (!columnName || direction === '') {
+  customSort(columnName, direction) {
+    if (!columnName || direction === '' || this.doNotSort) {
       // this.dataSource.data = this.mainDataSource.data.slice();
       return;
     }
-    const isAsc = this.direction=='asc';
+    const isAsc = this.direction == 'asc';
+ 
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
       if(this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
       }
 
-      let elementA =a[this.headerColName]&&a[this.headerColName].valueText?a[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
-      let elementB =b[this.headerColName]&&b[this.headerColName].valueText?b[this.headerColName].valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+      const elementA =a[this.headerColName];
+      const elementB =b[this.headerColName]
 
-      return (elementA<elementB? -1: 1)*(isAsc ? 1 : -1);
+      if(typeof elementA.valueText=="number" || typeof elementB.valueText=="number"){
+        return (elementA.valueText<elementB.valueText? -1: 1)*(isAsc ? 1 : -1);
+      }
+      
+      let elementAValue =elementA&&elementA.valueText?elementA.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+      let elementBValue =elementB&&elementB.valueText?elementB.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+
+      return (elementAValue<elementBValue? -1: 1)*(isAsc ? 1 : -1);
     });
   }
 

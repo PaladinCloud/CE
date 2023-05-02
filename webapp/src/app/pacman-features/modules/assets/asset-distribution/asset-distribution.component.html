@@ -11,7 +11,7 @@
         <div class="flex">
             <h2 class="page-header-text">{{ pageTitle }}</h2>
             <h3 class="page-header-subtext">
-                ({{ totalAssetTypes }} Asset Types | {{ totalAssetCount }} Assets)
+                ({{ totalAssetTypes | number }} Asset Types | {{ totalAssetCount | number }} Assets)
             </h3>
         </div>
     </div>
@@ -74,7 +74,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="asset-list">
+                    <div class="asset-list" [appScrollTracker]="'asset-list'">
                         <div
                             class="column-wrapper"
                             *ngFor="
@@ -94,7 +94,7 @@
                                 </span>
                             </div>
                             <div class="col">
-                                <span class="asset-count">{{ asset.count }}</span>
+                                <span class="asset-count">{{ asset.count | number }}</span>
                             </div>
                         </div>
                     </div>

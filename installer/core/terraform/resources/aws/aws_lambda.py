@@ -1,3 +1,4 @@
+
 from core.terraform.resources import TerraformResource
 from core.config import Settings
 from core.providers.aws.boto3 import aws_lambda
@@ -22,7 +23,16 @@ class LambdaFunctionResource(TerraformResource):
         's3_key': {'required': True, },
         'environment': {'required': False},
         'description': {'required': False},
-        'tags': {'required': False}
+        'memory_size' : {'required': False},
+        'timeout' : {'required': False},
+        'vpc_config': {
+            'required': False,
+            'inline_args': {
+                'security_group_ids': {'required': False},
+                'subnet_ids': {'required': False}
+            }
+        },
+        'tags': {'required': False},
     }
     description = Settings.RESOURCE_DESCRIPTION
 

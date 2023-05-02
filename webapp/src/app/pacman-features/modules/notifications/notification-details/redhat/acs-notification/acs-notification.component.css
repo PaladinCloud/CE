@@ -1,0 +1,46 @@
+.acs-notification-container {
+    width: 81%;
+}
+
+.acs-table {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px var(--border-200);
+}
+
+.acs-table tr {
+    border-bottom: 1px solid var(--border-100);
+}
+
+.acs-table td {
+    padding: 20px;
+}
+
+.acs-name {
+    width: 20%;
+    color: var(--text-low-emphasis);
+}
+
+.header {
+    margin-bottom: 18px;
+}
+
+.header-icon {
+    width: 24px;
+}
+
+.header-severity {
+    margin-left: auto;
+}
+
+.acs-description {
+    margin-bottom: 10px;
+}
+
+.acs-console-link .mat-icon {
+    color: var(--primary-400);
+    font-size: var(--text-body-1-font-size);
+    height: var(--text-body-1-font-size);
+    width: var(--text-body-1-font-size);
+}

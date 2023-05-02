@@ -747,7 +747,7 @@ public class AssetRepositoryImpl implements AssetRepository {
     @SuppressWarnings("rawtypes")
     @Override
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
-            String searchText) {
+            String searchText, Map<String, Object> sortFilter) {
         LOGGER.info("Inside getListAssets");
         List<Map<String, Object>> assetDetails = new ArrayList<>();
         List<String> fieldNames = new ArrayList<>();
@@ -762,6 +762,10 @@ public class AssetRepositoryImpl implements AssetRepository {
             addTagToFilter(mustFilter, mandatoryTagValues, entry);
             if (entry.getKey().equals(AssetConstants.FILTER_RES_TYPE)) {
                 targetType = entry.getValue().toString();
+            }else{
+                if(!((String) entry.getKey()).equalsIgnoreCase(Constants.DOMAIN)) {
+                    mustFilter.put((String) entry.getKey(), entry.getValue());
+                }
             }
         }
 
@@ -784,7 +788,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     }
                 }
                 assetDetails = getAssetsByAssetGroupBySize(assetGroup, AssetConstants.ALL, mustFilter, validTypes,
-                        fieldNames, from, size, searchText);
+                        fieldNames, from, size, searchText, sortFilter);
             } else {
                 try {
                     fieldNames = getDisplayFieldsForTargetType(targetType);
@@ -792,7 +796,7 @@ public class AssetRepositoryImpl implements AssetRepository {
                     LOGGER.error("Error while fetching field names for " + targetType + " in getListAssets" , e);
                 }
                 assetDetails = getAssetsByAssetGroupBySize(assetGroup, targetType, mustFilter, null, fieldNames, from,
-                        size, searchText);
+                        size, searchText, sortFilter);
             }
 
         } catch (Exception e) {
@@ -1643,7 +1647,7 @@ public class AssetRepositoryImpl implements AssetRepository {
 
     private List<Map<String, Object>> getAssetsByAssetGroupBySize(String assetGroupName, String type,
             Map<String, Object> mustFilter, List<String> targetTypes, List<String> fieldNames, int from, int size,
-            String searchText) {
+            String searchText, Map<String, Object> sortFilter) {
         mustFilter.put(Constants.LATEST, Constants.TRUE);
         mustFilter.put(AssetConstants.UNDERSCORE_ENTITY, Constants.TRUE);
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
@@ -1659,8 +1663,8 @@ public class AssetRepositoryImpl implements AssetRepository {
                 try {
                     Map<String, Object> mustTermsFilter = new HashMap<>();
                     mustTermsFilter.put(AssetConstants.UNDERSCORE_ENTITY_TYPE_KEYWORD, targetTypes);
-                    assets = esRepository.getDataFromESBySize(assetGroupName, null, mustFilter, null, null, fieldNames,
-                            from, size, searchText, mustTermsFilter);
+                    assets = esRepository.getSortedDataFromESBySize(assetGroupName, null, mustFilter, null, null, fieldNames,
+                            from, size, searchText, mustTermsFilter, sortFilter);
                 } catch (Exception e) {
                     LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
                 }
@@ -1669,8 +1673,8 @@ public class AssetRepositoryImpl implements AssetRepository {
                 if (Constants.ONPREMSERVER.equalsIgnoreCase(type)) {
                     fieldNames = getDisplayFieldsForTargetType(type);
                 }
-                assets = esRepository.getDataFromESBySize(assetGroupName, type, mustFilter, null, shouldFilter,
-                        fieldNames, from, size, searchText, null);
+                assets = esRepository.getSortedDataFromESBySize(assetGroupName, type, mustFilter, null, shouldFilter,
+                        fieldNames, from, size, searchText, null, sortFilter);
             }
         } catch (Exception e) {
             LOGGER.error(AssetConstants.ERROR_GETASSETSBYAG, e);
@@ -2810,6 +2814,15 @@ public class AssetRepositoryImpl implements AssetRepository {
                 .collect(Collectors.toSet());
     }
 
+    public Set<String> getMandatoryTagsNames(String filterName) {
+        String query = "select opt.optionName as optionName,opt.optionValue as optionValue\n" +
+                "from pac_v2_ui_options opt join pac_v2_ui_filters fil on opt.filterId= fil.filterId " +
+                "and opt.optionValue like '%tags%' and fil.filterName='"+filterName+"';";
+        return rdsRepository.getDataFromPacman(query).stream().map(item->(String) item.get("optionName"))
+                .collect(Collectors.toSet());
+    }
+
+
     @Override
     public List<String> getValuesListForTag(String aseetGroupName, String tagName, String type) throws DataException {
 
@@ -2832,6 +2845,14 @@ public class AssetRepositoryImpl implements AssetRepository {
             throw new DataException(e);
         }
         return new ArrayList<>(applicationMap.keySet());
+    }
+
+    public Set<String> getSupportedFilters(String filterName) {
+        String query = "select opt.optionName as optionName,opt.optionValue as optionValue\n" +
+                "from pac_v2_ui_options opt join pac_v2_ui_filters fil on opt.filterId= fil.filterId " +
+                "and fil.filterName='"+filterName+"';";
+        return rdsRepository.getDataFromPacman(query).stream().map(item->((String) item.get("optionValue")).trim())
+                .collect(Collectors.toSet());
     }
 
 }

@@ -94,6 +94,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
             return validateResponse;
         }
         String accountId = UUID.randomUUID().toString();
+        String roleName= System.getenv(PALADINCLOUD_RO);
         validateResponse = createAccountInDb(accountId, QUALYS_CONNECTOR, Constants.QUALYS);
         if(validateResponse.getValidationStatus().equalsIgnoreCase(FAILURE)){
             LOGGER.info("Account already exists");
@@ -109,7 +110,7 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
                     .withRegion(region).build();
 
             CreateSecretRequest createRequest = new CreateSecretRequest()
-                    .withName(secretManagerPrefix + "/qualys").withSecretString(getQualysSecret(accountData));
+                    .withName(secretManagerPrefix + "/" + roleName + "/qualys").withSecretString(getQualysSecret(accountData));
 
             CreateSecretResult createResponse = secretClient.createSecret(createRequest);
             LOGGER.info("Create secret response: {}", createResponse);

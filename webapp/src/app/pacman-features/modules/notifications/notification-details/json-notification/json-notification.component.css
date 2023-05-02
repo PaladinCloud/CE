@@ -1,0 +1,5 @@
+.header-icon {
+    font-size: var(--text-headline-5-font-size);
+    height: var(--text-headline-5-font-size);
+    width: var(--text-headline-5-font-size);
+}
