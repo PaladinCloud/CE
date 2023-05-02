@@ -23,6 +23,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
+import com.tmobile.cso.pacman.tenable.Constants;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -66,12 +67,15 @@ public class HttpUtil {
      * @return the string
      * @throws Exception the exception
      */
-    public static String get(String uri ,String apiKeys) throws IOException, UnAuthorisedException {
+    public static String get(String uri ,Map<String,String> input ) throws IOException, UnAuthorisedException {
         HttpGet httpGet = new HttpGet(uri);
         httpGet.addHeader("content-type", "application/json");
         httpGet.addHeader("cache-control", "no-cache");
-        if(!Strings.isNullOrEmpty(apiKeys)){
-            httpGet.addHeader("X-ApiKeys", apiKeys);
+        if(!Strings.isNullOrEmpty(input.get(Constants.TENABLE_API_KEYS))){
+            httpGet.addHeader(Constants.TENABLE_API_KEYS, input.get(Constants.TENABLE_API_KEYS));
+        }
+        if(!Strings.isNullOrEmpty(input.get(Constants.USER_AGENT))){
+            httpGet.addHeader(Constants.USER_AGENT, input.get(Constants.USER_AGENT));
         }
         CloseableHttpClient httpClient = getHttpClient();
         if(httpClient!=null){
@@ -96,14 +100,17 @@ public class HttpUtil {
      * @return the string
      * @throws Exception             the exception
      */
-    public static String post(String url, String requestBody,String apiKeys) throws IOException, UnAuthorisedException {
+    public static String post(String url, String requestBody,Map<String,String>input ) throws IOException, UnAuthorisedException {
 
             CloseableHttpClient httpClient = getHttpClient();
             if(httpClient!=null){
                 HttpPost httppost = new HttpPost(url);
                 httppost.setHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
-                if(!Strings.isNullOrEmpty(apiKeys)){
-                    httppost.addHeader("X-ApiKeys", apiKeys);
+                if(!Strings.isNullOrEmpty(input.get(Constants.TENABLE_API_KEYS))){
+                    httppost.addHeader(Constants.TENABLE_API_KEYS, input.get(Constants.TENABLE_API_KEYS));
+                }
+                if(!Strings.isNullOrEmpty(input.get(Constants.USER_AGENT))){
+                    httppost.addHeader(Constants.USER_AGENT, input.get(Constants.USER_AGENT));
                 }
                 httppost.setEntity(new StringEntity(requestBody));
                 HttpResponse httpresponse = httpClient.execute(httppost);

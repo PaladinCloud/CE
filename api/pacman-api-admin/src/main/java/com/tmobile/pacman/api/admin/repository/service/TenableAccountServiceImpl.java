@@ -36,6 +36,12 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
 
     @Value("${secret.manager.path}")
     private String secretManagerPrefix;
+
+
+    @Value("${tenable.user-agent}")
+    private String tenableUserAgent;
+
+
     @Autowired
     CredentialProvider credentialProvider;
     @Override
@@ -171,7 +177,10 @@ public class TenableAccountServiceImpl extends AbstractAccountServiceImpl implem
     }
 
     private String getTenableSecret(CreateAccountRequest accountRequest){
-        String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\"}";
-        return String.format(template,accountRequest.getTenableAccessKey(),accountRequest.getTenableSecretKey(),accountRequest.getTenableAPIUrl());
+        String template="{\"accessKey\":\"%s\",\"secretKey\":\"%s\",\"apiURL\":\"%s\",\"userAgent\":\"%s\"}";
+        return String.format(template,accountRequest.getTenableAccessKey(),
+                accountRequest.getTenableSecretKey(),
+                accountRequest.getTenableAPIUrl(),
+                tenableUserAgent);
     }
 }

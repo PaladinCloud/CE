@@ -35,4 +35,7 @@ public class Constants {
     /** The config creds. */
     public static final String CONFIG_CREDS = "config_creds";
 
+    public static final String TENABLE_API_KEYS = "X-ApiKeys";
+
+    public static final String USER_AGENT = "User-Agent";
 }
