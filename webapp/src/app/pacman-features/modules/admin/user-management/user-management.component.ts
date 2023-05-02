@@ -9,7 +9,7 @@ import { NotificationObservableService } from 'src/app/shared/services/notificat
 import { RefactorFieldsService } from 'src/app/shared/services/refactor-fields.service';
 import { UtilsService } from 'src/app/shared/services/utils.service';
 import { environment } from 'src/environments/environment';
-import { FormControl, Validators } from '@angular/forms';
+import { UntypedFormControl, Validators } from '@angular/forms';
 
 
 @Component({
@@ -22,7 +22,7 @@ export class UserManagementComponent implements OnInit {
   pageTitle = "User Management";
   dataTableDesc = "";
 
-  emailControl = new FormControl('', [
+  emailControl = new UntypedFormControl('', [
                   Validators.required,
                   Validators.email
                ]);

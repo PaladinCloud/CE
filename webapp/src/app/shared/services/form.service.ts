@@ -1,4 +1,4 @@
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Injectable } from '@angular/core';
 
 @Injectable()
@@ -6,7 +6,7 @@ export class FormService {
 
   // get all values of the formGroup, loop over them
   // then mark each field as touched
-  public markFormGroupTouched(formGroup: FormGroup) {
+  public markFormGroupTouched(formGroup: UntypedFormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();
 
@@ -48,7 +48,7 @@ export class FormService {
   // check_dirty true will only emit errors if the field is touched
   // check_dirty false will check all fields independent of
   // being touched or not. Use this as the last check before submitting
-  public validateForm(formToValidate: FormGroup, formErrors: any, checkDirty?: boolean) {
+  public validateForm(formToValidate: UntypedFormGroup, formErrors: any, checkDirty?: boolean) {
     const form = formToValidate;
     for (const field in formErrors) {
       if (field) {

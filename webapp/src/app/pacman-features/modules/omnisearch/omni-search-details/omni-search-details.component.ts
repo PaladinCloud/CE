@@ -12,21 +12,33 @@
  * limitations under the License.
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { AssetGroupObservableService } from 'src/app/core/services/asset-group-observable.service';
-import { DataCacheService } from 'src/app/core/services/data-cache.service';
-import { DomainTypeObservableService } from 'src/app/core/services/domain-type-observable.service';
-import { WorkflowService } from 'src/app/core/services/workflow.service';
-import { AutorefreshService } from 'src/app/pacman-features/services/autorefresh.service';
-import { OmniSearchDataService } from 'src/app/pacman-features/services/omni-search-data.service';
-import { ICONS } from 'src/app/shared/constants/icons-mapping';
-import { ErrorHandlingService } from 'src/app/shared/services/error-handling.service';
-import { LoggerService } from 'src/app/shared/services/logger.service';
-import { UtilsService } from 'src/app/shared/services/utils.service';
-import { environment } from 'src/environments/environment';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { DataCacheService } from "../../../../core/services/data-cache.service";
+import { Router, ActivatedRoute } from "@angular/router";
+import { AssetGroupObservableService } from "../../../../core/services/asset-group-observable.service";
+import { OmniSearchDataService } from "../../../services/omni-search-data.service";
+import { environment } from ">./../../../../../environments/environment";
+import { Subscription } from "rxjs";
+import { AutorefreshService } from "../../../services/autorefresh.service";
+import { LoggerService } from "../../../../shared/services/logger.service";
+import { ErrorHandlingService } from "../../../../shared/services/error-handling.service";
+import {
+  trigger,
+  state,
+  style,
+  transition,
+  animate,
+} from "@angular/animations";
+import { WorkflowService } from "../../../../core/services/workflow.service";
+import { UtilsService } from "../../../../shared/services/utils.service";
+import { DomainTypeObservableService } from "../../../../core/services/domain-type-observable.service";
+import { ICONS } from "./../../../../shared/constants/icons-mapping";
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  FormBuilder,
+  Validators,
+} from "@angular/forms";
 
 @Component({
     selector: 'app-omni-search-details',
@@ -82,7 +94,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
   pageLoad = false; // -> To know if the page is loaded first time(reqired in cacheinf)
   searchClicked = true; // -> to detect if the search is clicked (based on this resultsDataSubscription is getting called)
   filterDataIsRequested = true; // whenever searchbtn is clicked we pass this variable to main filter to show loader
-  user: FormGroup; // Formgroup added for mandatory fields to be verified.
+  user: UntypedFormGroup; // Formgroup added for mandatory fields to be verified.
 
   constructor(
     private omniSearchDataService: OmniSearchDataService,
@@ -147,8 +159,8 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
           }, this.durationParams);
         }
       }
-      this.user = new FormGroup({
-        name: new FormControl("", [
+      this.user = new UntypedFormGroup({
+        name: new UntypedFormControl("", [
           Validators.required,
           Validators.minLength(1),
         ]),

@@ -15,9 +15,9 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, ElementRef, HostListener } from '@angular/core';
 import { LoggerService } from '../../../shared/services/logger.service';
 import {
-  FormControl,
-  FormGroup,
-  FormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  UntypedFormBuilder,
   Validators
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -44,7 +44,7 @@ export class IssueExceptionComponent implements OnInit, OnDestroy {
   showExceptionModal = false; // Check to show Add Exception modal
   showTransaction = false; // Remains True till exception/revoke api response received which is used to show loader in exception modal
   showLoadComplete = false; // Remains true after exception api response received which is used to success/error check mark in exception modal
-  user: FormGroup; // Formgroup added for mandatory fields to be verified.
+  user: UntypedFormGroup; // Formgroup added for mandatory fields to be verified.
   endDate: any; // To display end date of exception on modal
   actionComplete = false; // to check success/error exception api response.
   search_card: any; // get current search tile object
@@ -60,7 +60,7 @@ export class IssueExceptionComponent implements OnInit, OnDestroy {
   private exceptionSubscription: Subscription;
   constructor(
     private logger: LoggerService,
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private commonResponseService: CommonResponseService,
     private dataCacheService: DataCacheService,
     private copytoClipboardService: CopytoClipboardService,
@@ -71,8 +71,8 @@ export class IssueExceptionComponent implements OnInit, OnDestroy {
    }
 
   ngOnInit() {
-    this.user = new FormGroup({
-      name: new FormControl('', [
+    this.user = new UntypedFormGroup({
+      name: new UntypedFormControl('', [
         Validators.required,
         Validators.minLength(1)
       ])

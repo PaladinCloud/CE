@@ -1,14 +1,12 @@
-import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, AfterViewInit, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatCheckbox } from '@angular/material/checkbox';
-import { MatSelect } from '@angular/material/select';
+import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { UntypedFormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-dropdown',
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.css']
 })
-export class DropdownComponent implements OnChanges {
+export class DropdownComponent implements AfterViewInit, OnChanges {
 
   @Input() items = [];
   @Input() required = false;
@@ -38,7 +36,7 @@ export class DropdownComponent implements OnChanges {
   @ViewChild('selectedAll') selectedAll: MatCheckbox;
   @ViewChild('matSelectRef') matSelectRef: MatSelect;
 
-  listControl = new FormControl([]);
+  listControl = new UntypedFormControl([]);
 
   itemList = [];
   optionList = [];

@@ -13,7 +13,7 @@ import {
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
@@ -113,7 +113,7 @@ export class TableComponent implements OnInit, AfterViewInit, OnChanges, OnDestr
     dataSource;
 
     displayedColumns: string[];
-    searchInColumns = new FormControl();
+    searchInColumns = new UntypedFormControl();
 
     allSelected = true;
     screenWidth: number;

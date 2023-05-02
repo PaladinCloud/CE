@@ -5,7 +5,7 @@ import {LoggerService} from '../../../../shared/services/logger.service';
 import {UtilsService} from '../../../../shared/services/utils.service';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import {RefactorFieldsService} from '../../../../shared/services/refactor-fields.service';
-import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators, NgForm } from '@angular/forms';
 import { FormService } from '../../../../shared/services/form.service';
 import { HttpHeaders } from '@angular/common/http';
 import {WorkflowService} from '../../../../core/services/workflow.service';
@@ -45,7 +45,7 @@ export class ConfigManagementComponent implements OnInit, OnDestroy {
   previousEditedData: any;
   errorValue = 0;
   // Reactive-forms
-  private configManagementForm: FormGroup;
+  private configManagementForm: UntypedFormGroup;
   public overrideFormGroup = {};
   public formErrors = {};
   public formGroup = {};
@@ -362,12 +362,12 @@ pageLevel = 0;
         individualField = Object.assign({'metadata': data[i].description}, individualField);
       }
       this.formData.push(individualField);
-      this.formGroup[data[i].key] = new FormControl(data[i].value, Validators.required);
+      this.formGroup[data[i].key] = new UntypedFormControl(data[i].value, Validators.required);
       this.formErrors[data[i].key] = '';
     }
 
-    this.configManagementForm = new FormGroup ({
-      edit: new FormGroup(this.formGroup)
+    this.configManagementForm = new UntypedFormGroup ({
+      edit: new UntypedFormGroup(this.formGroup)
     });
 
     this.configManagementForm.valueChanges.subscribe(() => {
@@ -379,14 +379,14 @@ pageLevel = 0;
   register(myForm: NgForm) {
     // mark all fields as touched
     if (this.configManagementForm.controls.hasOwnProperty('edit')) {
-      const editFormGroup = this.configManagementForm['controls']['edit'] as FormGroup;
+      const editFormGroup = this.configManagementForm['controls']['edit'] as UntypedFormGroup;
       this.formService.markFormGroupTouched(editFormGroup);
       if (editFormGroup.valid) {
         this.previewEditList(editFormGroup.value);
       }
     }
     if (this.configManagementForm.controls.hasOwnProperty('overidden')) {
-      const overridenFormGroup = this.configManagementForm['controls']['overidden'] as FormGroup;
+      const overridenFormGroup = this.configManagementForm['controls']['overidden'] as UntypedFormGroup;
       this.formService.markFormGroupTouched(overridenFormGroup);
       if (overridenFormGroup.valid) {
         this.previewOverideList(overridenFormGroup.value);
@@ -707,11 +707,11 @@ pageLevel = 0;
         individualField = Object.assign({'metadata': data.description}, individualField);
       }
       this.overrideFormData.push(individualField);
-      this.overrideFormGroup[data.key] = new FormControl(data.value, Validators.required);
+      this.overrideFormGroup[data.key] = new UntypedFormControl(data.value, Validators.required);
       this.formErrors[data.key] = '';
-      this.configManagementForm = new FormGroup ({
-        edit: new FormGroup(this.formGroup),
-        overidden: new FormGroup(this.overrideFormGroup)
+      this.configManagementForm = new UntypedFormGroup ({
+        edit: new UntypedFormGroup(this.formGroup),
+        overidden: new UntypedFormGroup(this.overrideFormGroup)
       });
     this.configManagementForm.valueChanges.subscribe(() => {
       this.formErrors = this.formService.validateForm(this.configManagementForm, this.formErrors, true);
@@ -746,7 +746,7 @@ pageLevel = 0;
 
   onDeleteNotSavedField(fieldType, input) {
     try {
-      const childFormGroup: FormGroup =  <FormGroup>this.configManagementForm.get(fieldType);
+      const childFormGroup: UntypedFormGroup =  <UntypedFormGroup>this.configManagementForm.get(fieldType);
       childFormGroup.removeControl(input.formControlName);
       this.overrideFormData = this.overrideFormData.filter(item => item.formControlName !== input.formControlName);
     } catch (error) {

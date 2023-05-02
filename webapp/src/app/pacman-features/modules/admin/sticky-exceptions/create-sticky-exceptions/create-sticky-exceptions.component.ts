@@ -28,7 +28,7 @@ import { ErrorHandlingService } from '../../../../../shared/services/error-handl
 
 import { RouterUtilityService } from '../../../../../shared/services/router-utility.service';
 import { AdminService } from '../../../../services/all-admin.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { UploadFileService } from '../../../../services/upload-file-service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { DataCacheService } from 'src/app/core/services/data-cache.service';
@@ -80,8 +80,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
   isExceptionNameValid: any = -1;
   allAssetGroupNames: Array<string>;
   selectedAssetGroup: string;
-  dataForm: FormGroup;
-  user: FormGroup;
+  dataForm: UntypedFormGroup;
+  user: UntypedFormGroup;
 
   assetLoaderTitle: string = '';
   assetLoader: boolean = false;
@@ -215,8 +215,8 @@ export class CreateStickyExceptionsComponent implements OnInit, OnDestroy {
       this.pageLevel
     );
     this.expiryDate = moment(new Date()).format('DD/MM/YYYY');
-    this.user = new FormGroup({
-      name: new FormControl(moment('2018-07-14', 'YYYY-MM-DD').toDate(), [Validators.required, Validators.minLength(1)])
+    this.user = new UntypedFormGroup({
+      name: new UntypedFormControl(moment('2018-07-14', 'YYYY-MM-DD').toDate(), [Validators.required, Validators.minLength(1)])
     });
   }
 

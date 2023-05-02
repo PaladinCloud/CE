@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { environment } from './../../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataCacheService } from '../../../../core/services/data-cache.service';
-import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonResponseService } from '../../../../shared/services/common-response.service';
 import { PolicyViolationSummaryService } from '../../../services/policy-violation-summary.service';
 import { CpuUtilizationService } from '../../../services/cpu-utilization.service';
@@ -53,7 +53,7 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
   widgetWidth1 = 120;
   widgetHeight1 = 125;
   graphWidth: any;
-  userEmail: FormGroup;
+  userEmail: UntypedFormGroup;
   public elementRef;
   public queryValue = '';
   public filteredList = [];
@@ -220,8 +220,8 @@ export class AssetDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
       this.breadcrumbLinks = breadcrumbInfo.map(item => item.url);
     }
     this.breadcrumbPresent = 'Asset Details';
-    this.userEmail = new FormGroup({
-      ename: new FormControl('', [Validators.required, Validators.minLength(6)])
+    this.userEmail = new UntypedFormGroup({
+      ename: new UntypedFormControl('', [Validators.required, Validators.minLength(6)])
     });
   }
 
