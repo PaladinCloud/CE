@@ -40,7 +40,7 @@ public class AssetListControllerTest {
         Request request = new Request();
 
         when(service.getAssetCount(anyObject(), anyObject(), anyObject())).thenReturn((long)100);
-        when(service.getListAssets(anyObject(), anyObject(), anyInt(),anyInt(),anyObject())).thenReturn(aList);
+        when(service.getListAssets(anyObject(), anyObject(), anyInt(),anyInt(),anyObject(),anyObject())).thenReturn(aList);
         ReflectionTestUtils.setField(controller, "assetService", service);
 
         ResponseEntity<Object> responseObj0 = controller.listAssets(request, "domain");
@@ -54,14 +54,14 @@ public class AssetListControllerTest {
         Map<String,String> filter = new HashMap<>();
         filter.put("filterKey", "filterValue");
         request.setFilter(filter);
-        when(service.getListAssets(anyObject(), anyObject(), anyInt(),anyInt(),anyObject())).thenReturn(aList);
+        when(service.getListAssets(anyObject(), anyObject(), anyInt(),anyInt(),anyObject(),anyObject())).thenReturn(aList);
         ReflectionTestUtils.setField(controller, "assetService", service);
 
         ResponseEntity<Object> responseObj1 = controller.listAssets(request, "domain");
         assertTrue(responseObj1.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
         
         request.setFilter(null);
-        doThrow(new NullPointerException()).when(service).getListAssets(anyObject(), anyObject(), anyInt(),anyInt(),anyObject());
+        doThrow(new NullPointerException()).when(service).getListAssets(anyObject(), anyObject(), anyInt(),anyInt(),anyObject(),anyObject());
         ResponseEntity<Object> responseObj2 = controller.listAssets(request, "domain");
         assertTrue(responseObj2.getStatusCode() == HttpStatus.EXPECTATION_FAILED);
         
