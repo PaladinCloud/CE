@@ -30,6 +30,8 @@ public abstract class TenableDataImporter {
 
   protected static String SECRET_KEY;
 
+  protected static String USER_AGENT;
+
   protected static String TENABLE_API_URL;
 
   protected static String API_KEYS;
@@ -69,6 +71,7 @@ public abstract class TenableDataImporter {
     ACCESS_KEY = dataMap.get("accessKey");
     SECRET_KEY = dataMap.get("secretKey");
     TENABLE_API_URL = dataMap.get("apiURL");
+    USER_AGENT = dataMap.get("userAgent");
     API_KEYS = "accessKey="+ACCESS_KEY+";secretKey="+SECRET_KEY+";";
   }
 }
