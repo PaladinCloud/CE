@@ -34,6 +34,15 @@ import com.tmobile.pacman.api.compliance.client.AssetServiceClient;
 import com.tmobile.pacman.api.compliance.domain.AssetApi;
 import com.tmobile.pacman.api.compliance.domain.AssetApiData;
 import com.tmobile.pacman.api.compliance.domain.AssetCountDTO;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Class FilterRepositoryImpl.
@@ -54,6 +63,8 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
     private AssetServiceClient assetServiceClient;
 
     protected final Log logger = LogFactory.getLog(getClass());
+
+    private static final String UNDERSCORE_ENTITY="_entity";
 
     /*
      * (non-Javadoc)
@@ -287,7 +298,75 @@ public class FilterRepositoryImpl implements FilterRepository, Constants {
         String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_SOURCE_NAME);
         try {
             return elasticSearchRepository.getTotalDistributionForIndexAndType(
-            		NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
+                    NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
+                    THOUSAND, null);
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, String attributeName, String entityType)
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        if(entityType.equalsIgnoreCase("asset")){
+            mustFilter.put(UNDERSCORE_ENTITY, Constants.TRUE);
+        }else if(entityType.equalsIgnoreCase("issue")){
+            mustFilter.put(Constants.TYPE, "issue");
+        }
+
+        String aggsFilter=attributeName;
+        try {
+            if(attributeName.equalsIgnoreCase(CREATED_DATE)){
+                //for createdDate .keyword doesn't work, pass it as is
+                Map<String, Object> mustTermsFilter=new HashMap<>();
+                if(entityType.equalsIgnoreCase(ISSUE)){
+                        mustTermsFilter.put("issueStatus.keyword", Arrays.asList("open","exempted"));
+                }
+                Map<String, Long> totalDistributionForIndexAndType = elasticSearchRepository.getTotalDistributionForIndexAndType(
+                        assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                        THOUSAND, mustTermsFilter);
+                Map<String, Long> resultMap=new HashMap<>();
+                for (String key : totalDistributionForIndexAndType.keySet()){
+                    Long val=totalDistributionForIndexAndType.get(key);
+                    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+                    BigDecimal bigDecimal = new BigDecimal(key);
+                    Date createdDate = new Date(Long.parseLong(bigDecimal.toPlainString()));
+                    //Format and parse to get only the date part
+                    createdDate=dateFormatter.parse(dateFormatter.format(createdDate));
+                    Date now = dateFormatter.parse(dateFormatter.format(new Date()));
+                    long diffInMillies = Math.abs(now.getTime() - createdDate.getTime());
+                    long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                    if (resultMap.containsKey(Long.toString(diff))) {
+                        val = resultMap.get(Long.toString(diff)) + val;
+                    }
+                    resultMap.put(Long.toString(diff), val);
+                    if(resultMap.containsKey("0")){
+                        Long value = resultMap.get("0");
+                        resultMap.remove("0");
+                        resultMap.put("< 1",value);
+                    }
+
+                }
+                return resultMap;
+            }else{
+                aggsFilter=CommonUtils.convertAttributetoKeyword(attributeName);
+                return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                        assetGroup, null, mustFilter, mustNotFilter, null, aggsFilter,
+                        THOUSAND, null);
+            }
+        } catch (Exception e) {
+            throw new DataException(e);
+        }
+    }
+
+    public Map<String, Long> getNotificationEventNamesFromES()
+            throws DataException {
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        String aggsFilter = CommonUtils.convertAttributetoKeyword(NOTIFICATION_EVENT_NAME);
+        try {
+            return elasticSearchRepository.getTotalDistributionForIndexAndType(
+                    NOTIFICATION_INDEX, NOTIFICATION_INDEX_TYPE, mustFilter, mustNotFilter, null, aggsFilter,
                     THOUSAND, null);
         } catch (Exception e) {
             throw new DataException(e);

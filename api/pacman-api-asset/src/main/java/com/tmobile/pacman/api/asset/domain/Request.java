@@ -32,6 +32,8 @@ public class Request {
     private int size;
     
     private Map<String, String> filter;
+
+    private Map<String, Object> sortFilter;
     
     private String ag;
 
@@ -45,6 +47,14 @@ public class Request {
                 + searchtext
                 + Joiner.on("_").withKeyValueSeparator("-")
                         .join(filter == null ? new HashMap<String, String>() : filter) + from + "" + size;
+    }
+
+    public Map<String, Object> getSortFilter() {
+        return sortFilter;
+    }
+
+    public void setSortFilter(Map<String, Object> sortFilter) {
+        this.sortFilter = sortFilter;
     }
 
     /**

@@ -335,4 +335,52 @@ public class FilterController implements Constants {
         return ResponseUtils.buildSucessResponse(response);
     }
 
+    @GetMapping(value = "/v1/filters/eventname")
+    public ResponseEntity<Object> getEventName() {
+        ResponseData response = null;
+        try {
+            response = new ResponseData(filterService.getNotificationEventName());
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+
+    @GetMapping(value = "/v1/filters/attribute")
+    public ResponseEntity<Object> getListOfCategories(@RequestParam(name = "ag", required = true) String assetGroup,
+                                                      @RequestParam(name = "domain", required = false) String domain,
+                                                      @RequestParam(name = "attribute", required = true) String attribute,
+                                                      @RequestParam(name = "type", required = false, defaultValue = "asset")
+                                                          String entityType) {
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
+        }
+        ResponseData response = null;
+        try {
+            //pass entityType as asset if we want to find attribute value of an asset, for finding attribute value
+            // of issue/violation pass entityType as issue
+            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, attribute, entityType));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+
+    @GetMapping(value = "/v1/filters/violationAge")
+    public ResponseEntity<Object> getViolationAgeList(@RequestParam(name = "ag", required = true) String assetGroup,
+                                                      @RequestParam(name = "domain", required = false) String domain) {
+        if (Strings.isNullOrEmpty(assetGroup)) {
+            return ResponseUtils.buildFailureResponse(new ServiceException(ASSET_MANDATORY));
+        }
+        ResponseData response = null;
+        try {
+            //pass entityType as asset if we want to find attribute value of an asset, for finding attribute value
+            // of issue/violation pass entityType as issue
+            response = new ResponseData(filterService.getAttributeValuesForAssetGroup(assetGroup, domain, CREATED_DATE, ISSUE));
+        } catch (ServiceException e) {
+            return complianceService.formatException(e);
+        }
+        return ResponseUtils.buildSucessResponse(response);
+    }
+
 }

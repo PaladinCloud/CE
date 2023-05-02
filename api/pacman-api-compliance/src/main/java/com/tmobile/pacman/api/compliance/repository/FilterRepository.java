@@ -162,5 +162,9 @@ public interface FilterRepository {
      * @throws DataException the data exception
      */
     public Map<String, Long> getNotificationSourceFromES() throws DataException;
+    public Map<String, Long> getNotificationEventNamesFromES() throws DataException;
+
+
+    public Map<String, Long> getAttributeValuesFromES(String assetGroup, String attributeName, String entityType) throws DataException;
 
 }

@@ -78,9 +78,11 @@ public interface Constants {
     String POLICY_PARAMS = "policyParams";
     String TARGET_TYPE = "targetType";
     String RESOURCE_TYPE = "resourcetType";
+    String ANNOTATIONID = "annotationid";
     String POLICY_DESC = "policyDesc";
     String TITLE = "title";
     String DESCRIPTION = "description";
+    String AGE = "Age";
     String METRIC_NAME = "metricName";
     String METRIC_VALUE = "metricValue";
     String COUNT = "count";
@@ -416,4 +418,5 @@ public interface Constants {
     String NOTIFICATION_INDEX_TYPE = "notification";
     String NOTIFICATION_CATEGEORY_NAME = "eventCategoryName";
     String NOTIFICATION_SOURCE_NAME = "eventSourceName";
+    String NOTIFICATION_EVENT_NAME = "eventName";
 }
