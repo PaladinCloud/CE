@@ -36,6 +36,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   selectedAssetGroup: string;
   breadcrumbArray: any = [];
   breadcrumbLinks: any = [];
+  breadcrumbPresent = "Asset List";
   errorMessage: any;
   allColumns: any = [];
   totalRows = 0;
