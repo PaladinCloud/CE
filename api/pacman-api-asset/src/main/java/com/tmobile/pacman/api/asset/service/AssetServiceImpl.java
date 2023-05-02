@@ -296,8 +296,8 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public List<Map<String, Object>> getListAssets(String assetGroup, Map<String, String> filter, int from, int size,
-                                                   String searchText) {
-        return repository.getListAssets(assetGroup, filter, from, size, searchText);
+                                                   String searchText, Map<String, Object> sortFilter) {
+        return repository.getListAssets(assetGroup, filter, from, size, searchText, sortFilter);
     }
 
     @Override
@@ -1166,6 +1166,15 @@ public class AssetServiceImpl implements AssetService {
     }
     public Set<String> getMandatoryTags(String filterName) {
         return repository.getMandatoryTags(filterName);
+    }
+
+    public Set<String> getSupportedFilters(String filterName) {
+        return repository.getSupportedFilters(filterName);
+    }
+    
+
+    public Set<String> getMandatoryTagsNames(String filterName) {
+        return repository.getMandatoryTagsNames(filterName);
     }
 
     @Override
