@@ -254,7 +254,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   getFiltersData(data){
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
-    const filtersList = [...this.whiteListColumns, "Autofix status"];
+    const filtersList = [...Object.keys(this.columnWidths), "Autofix status"];
     filtersList.forEach(column => {
       if(column.toLowerCase()=='actions'){
         return;

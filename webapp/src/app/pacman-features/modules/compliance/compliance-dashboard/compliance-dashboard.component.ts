@@ -1020,29 +1020,29 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     getFiltersData(data) {
         this.filterTypeLabels = [];
         this.filterTagLabels = {};
-        this.whiteListColumns.forEach((column) => {
-            if (column == 'Violations') {
-                return;
-            }
+        const filtersList = Object.keys(this.columnWidths);
+        filtersList.forEach(column => {
             let filterTags = [];
             this.filterTypeLabels.push(column);
-            if (column == 'Severity') {
-                filterTags = ['low', 'medium', 'high', 'critical'];
-            } else if (column == 'Category') {
-                filterTags = ['security', 'cost', 'operations', 'tagging'];
-            } else if (column == 'Compliance') {
-                filterTags = ['0%-25%', '26%-50%', '51%-75%', '76%-100%'];
-            } else {
-                const set = new Set();
-                data.forEach((row) => {
-                    set.add(row[column].valueText);
-                });
-                filterTags = Array.from(set);
-                this.sortFilters(filterTags, column);
+            if(column=='Severity'){
+              filterTags = ["low", "medium", "high", "critical"];
+            }else if(column=='Category'){
+              filterTags = ["security", "cost", "operations", "tagging"];
+            }
+            else if(column=='Compliance'){
+              filterTags = ["0%-25%","26%-50%","51%-75%","76%-100%"];
+            }
+            else{
+              const set = new Set();
+              data.forEach(row => {
+                set.add(row[column].valueText);
+              });
+              filterTags = Array.from(set);
+              this.sortFilters(filterTags, column);
             }
             this.filterTagLabels[column] = filterTags;
-        });
-        this.filterTypeLabels.sort();
+          });
+          this.filterTypeLabels.sort();
     }
 
     sortFilters(array, column) {

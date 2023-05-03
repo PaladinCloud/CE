@@ -73,8 +73,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
-  columnNamesMap = {"_resourceid": "Asset ID"};
+  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Application': 1, 'Region': 1, 'Environment': 1, 'Cloud Type': 1};
+  columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
       let severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
@@ -185,7 +185,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
       this.tableData = state?.data || [];
       this.tableDataLoaded = true;
-      this.displayedColumns = Object.keys(this.columnWidths);
+      this.displayedColumns = ['Asset ID', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
       this.tableScrollTop = state?.tableScrollTop;
 
@@ -232,6 +232,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }else if(sortColName === "cloud type"){
       this.fieldType = "string";
       this.fieldName = "_cloudType.keyword";
+    }else{
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==event.headerColName);
+      if(!apiColName){
+        apiColName =  _.find(this.filterTypeOptions, {
+          optionName: event.headerColName,
+        })["optionValue"];
+      }
+      this.fieldType = "string";
+      this.fieldName = apiColName;
     }
     this.updateComponent();
   }
