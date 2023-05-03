@@ -73,7 +73,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Application': 1, 'Region': 1, 'Environment': 1, 'Cloud Type': 1};
+  columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
   columnNamesMap = {};
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
@@ -163,7 +163,18 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
       this.selectedAssetGroup = assetGroupName;
       // this.updateComponent();
-      this.getFilters();
+      this.getFilters().then(() => {
+        this.filterTypeLabels.forEach(label => {
+          if(label=="Exempted" || label=="Tagged"){
+            return;
+          }
+          if(!Object.keys(this.columnWidths).includes(label)){
+            this.columnWidths[label] = 0.7;
+          }
+        })
+        this.columnWidths = {...this.columnWidths}
+        
+      });
     });
 
     this.subscriptionDomain = this.domainObservableService
@@ -648,6 +659,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         // change data value
+        const isTag = element.split(".")[0]=="tags";
+        if(isTag){
+          columnNamesMap[element] = element.split(".")[1];
+        }
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newData.push(newObj);
@@ -800,38 +815,42 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
 
   getFilters() {
-    try {
-      let filterId = 8;
-      if (
-        this.urlID &&
-        (this.urlID.toLowerCase() === "pull-request-trend" ||
-          this.urlID.toLowerCase() === "pull-request-age" ||
-          this.urlID.toLowerCase() === "branching-strategy")
-      ) {
-        filterId = 9;
+    return new Promise((resolve) => {
+      try {
+        let filterId = 8;
+        if (
+          this.urlID &&
+          (this.urlID.toLowerCase() === "pull-request-trend" ||
+            this.urlID.toLowerCase() === "pull-request-age" ||
+            this.urlID.toLowerCase() === "branching-strategy")
+        ) {
+          filterId = 9;
+        }
+        this.issueFilterSubscription = this.issueFilterService
+          .getFilters(
+            { filterId: filterId, domain: this.selectedDomain },
+            environment.issueFilter.url,
+            environment.issueFilter.method
+          )
+          .subscribe((response) => {
+            this.filterTypeOptions = response[0].response;
+            resolve(true);
+            this.trimStringsInArrayOfObjs(this.filterTypeOptions);
+            this.filterTypeLabels = _.map(this.filterTypeOptions, "optionName");
+  
+            this.filterTypeLabels.sort();
+            
+            this.routerParam();
+            // this.deleteFilters();
+            this.getFilterArray();
+            this.updateComponent();
+          });
+      } catch (error) {
+        this.errorMessage = this.errorHandling.handleJavascriptError(error);
+        this.logger.log("error", error);
+        resolve(false);
       }
-      this.issueFilterSubscription = this.issueFilterService
-        .getFilters(
-          { filterId: filterId, domain: this.selectedDomain },
-          environment.issueFilter.url,
-          environment.issueFilter.method
-        )
-        .subscribe((response) => {
-          this.filterTypeOptions = response[0].response;
-          this.trimStringsInArrayOfObjs(this.filterTypeOptions);
-          this.filterTypeLabels = _.map(this.filterTypeOptions, "optionName");
-
-          this.filterTypeLabels.sort();
-          
-          this.routerParam();
-          // this.deleteFilters();
-          this.getFilterArray();
-          this.updateComponent();
-        });
-    } catch (error) {
-      this.errorMessage = this.errorHandling.handleJavascriptError(error);
-      this.logger.log("error", error);
-    }
+    })
   }
 
   changeFilterType(value) {
