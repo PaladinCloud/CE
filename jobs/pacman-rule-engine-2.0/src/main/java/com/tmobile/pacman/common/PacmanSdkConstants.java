@@ -203,7 +203,7 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     Integer ES_PAGE_SIZE = 10000;
 
     /** The es page scroll ttl. */
-    String ES_PAGE_SCROLL_TTL = "2m";
+    String ES_PAGE_SCROLL_TTL = "1m";
 
     /** The es source fields key. */
     String ES_SOURCE_FIELDS_KEY = "es_source_fields";

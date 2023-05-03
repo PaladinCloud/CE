@@ -28,6 +28,7 @@ import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opensearch.action.search.ClearScrollRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -483,8 +484,9 @@ public class ESUtils {
                 logger.error("error retrieving inventory from ES", e);
                 throw e;
             }
-
         }
+        ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
+        clearScrollRequest.addScrollId(_scroll_id);
         // checkDups(results);
         return results;
     }
