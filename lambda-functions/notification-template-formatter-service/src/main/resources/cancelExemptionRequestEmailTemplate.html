@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+.rowkey {
+  font-family: Courier, Arial;
+  font-weight: bold;
+  width: 250px;
+}
+
+.summary {
+  font-family: Calibri, Verdana;
+  font-size: 15px;
+}
+
+td {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  padding-top :10px;
+  padding-bottom : 10px;
+  padding-left : 10px;
+}
+
+table {
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+  width: 500px;
+}
+
+a {
+text-decoration : none;
+}
+</style>
+</head>
+<body>
+
+<br>
+
+<div class="summary">Exemption request is cancelled by admin for violation with id <a href="${issueIdLink}">"${issueId}"</a>.</div>
+
+<br><br>
+
+<table style="width:800px">
+    <tr>
+        <td class="rowkey">Resource ID</td>
+        <td><a href="${resourceIdLink}">${resourceId}</a></td>
+    </tr>
+    <tr>
+        <td class="rowkey">Policy Name</td>
+        <td><a href="${policyNameLink}">${policyName}</a></td>
+    </tr>
+    <tr>
+        <td class="rowkey">Cancelled By</td>
+        <td>${createdBy}</td>
+    </tr>
+    <tr>
+        <td class="rowkey">Source</td>
+        <td>${source}</td>
+    </tr>
+</table>
+
+</body>
+</html>
