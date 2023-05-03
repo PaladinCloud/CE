@@ -65,7 +65,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
-  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Account Name': 0.7, 'Application': 0.7, 'Region': 0.7, 'Environment': 0.7, 'Severity': 0.5, 'Category':0.5, 'Age': 0.5, 'Status': 0.5};
+  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Account Name': 0.7, 'Region': 0.7, 'Severity': 0.5, 'Category':0.5, 'Age': 0.5, 'Status': 0.5};
   centeredColumns = {
     Policy: false,
     'Violation ID': false,
@@ -145,7 +145,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
-        this.getFilters();
+        this.getFilters().then(() => {
+          this.filterTypeLabels.forEach(label => {
+            if(label=="Exempted" || label=="Tagged"){
+              return;
+            }
+            if(!Object.keys(this.columnWidths).includes(label)){
+              this.columnWidths[label] = 0.7;
+            }
+          })
+          this.columnWidths = {...this.columnWidths}
+          
+        });
       });
 
     this.domainSubscription = this.domainObservableService
@@ -379,7 +390,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    */
 
   getFilters() {
-    this.filterErrorMessage = '';
+    return new Promise((resolve) => {
+      this.filterErrorMessage = '';
     let isApiError = true;
     try {
       this.issueFilterSubscription = this.issueFilterService
@@ -390,6 +402,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
         )
         .subscribe((response) => {
           this.filterTypeLabels = _.map(response[0].response, "optionName");
+          resolve(true);
           this.filterTypeOptions = response[0].response;
 
           if(this.filterTypeLabels.length==0){
@@ -405,8 +418,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.filterErrorMessage = 'apiResponseError';
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
       this.logger.log("error", error);
+      resolve(false);
     }
     if(isApiError) this.filterErrorMessage = 'apiResponseError';
+    });
   }
 
   changeFilterType(value) {
