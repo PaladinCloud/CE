@@ -65,6 +65,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   direction;
   tableScrollTop=0;
   onScrollDataLoader: Subject<any> = new Subject<any>();
+  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Asset ID': 1, 'Asset Type': 0.5, 'Account Name': 0.7, 'Application': 0.7, 'Region': 0.7, 'Environment': 0.7, 'Severity': 0.5, 'Category':0.5, 'Age': 0.5, 'Status': 0.5};
   centeredColumns = {
     Policy: false,
     'Violation ID': false,
@@ -72,8 +73,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     Severity: true,
     Category: true,
   };
-  columnWidths = {'Policy': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
-  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID", "Asset Type":"resourcetype", };
+  columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID", "Asset Type":"resourcetype", "AccountName": "Account Name"};
   fieldName: string = "severity.keyword";
   fieldType: string = "number";
   selectedOrder: string = "desc";
@@ -228,6 +228,15 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     }else if (sortColName === "age") {
       this.fieldType = "number";
       this.fieldName = "createdDate";
+    }else{
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==event.headerColName);
+      if(!apiColName){
+        apiColName =  _.find(this.filterTypeOptions, {
+          optionName: event.headerColName,
+        })["optionValue"];
+      }
+      this.fieldType = "string";
+      this.fieldName = apiColName;
     }
     this.updateComponent();
   }
