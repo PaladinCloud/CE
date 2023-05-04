@@ -162,11 +162,13 @@ public class QualysAccountServiceImpl extends AbstractAccountServiceImpl impleme
         BasicSessionCredentials credentials = credentialProvider.getBaseAccCredentials();
         String region = System.getenv("REGION");
 
+        String roleName= System.getenv(PALADINCLOUD_RO);
+
         AWSSecretsManager secretClient = AWSSecretsManagerClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(region).build();
-        String secretId=secretManagerPrefix+"/qualys";
+        String secretId=secretManagerPrefix+ "/" + roleName + "/qualys";
         DeleteSecretRequest deleteRequest=new DeleteSecretRequest().withSecretId(secretId).withForceDeleteWithoutRecovery(true);
         DeleteSecretResult deleteResponse = secretClient.deleteSecret(deleteRequest);
         LOGGER.info("Delete secret response: {} ",deleteResponse);
