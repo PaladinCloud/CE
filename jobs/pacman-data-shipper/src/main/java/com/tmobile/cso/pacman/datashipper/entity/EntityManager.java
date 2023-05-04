@@ -188,6 +188,20 @@ public class EntityManager implements Constants {
             entityInfo.put("_docid", docId);
             entityInfo.put("_entity", "true");
             entityInfo.put("_entitytype", _type);
+
+            if(entityInfo.containsKey("subscriptionName")){
+                entityInfo.put("accountname",entityInfo.get("subscriptionName"));
+            }
+            else if(entityInfo.containsKey("projectName")){
+                entityInfo.put("accountname",entityInfo.get("projectName"));
+            }
+            if(entityInfo.containsKey("subscription")){
+                entityInfo.put("accountid",entityInfo.get("subscription"));
+            }
+            else if(entityInfo.containsKey("projectId")){
+                entityInfo.put("accountid",entityInfo.get("projectId"));
+            }
+
             if (currentInfo != null && !currentInfo.isEmpty()) {
                 Map<String, String> _currInfo = currentInfo.get(docId);
                 if (_currInfo != null) {

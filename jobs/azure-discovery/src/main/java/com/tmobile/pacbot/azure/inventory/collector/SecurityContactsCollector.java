@@ -80,7 +80,7 @@ public class SecurityContactsCollector {
 
             for(JsonElement autoProvisioningElement:autoProvisioningObjects){
                 AutoProvisioningSettingsVH autoProvisioningSettingsVH=new AutoProvisioningSettingsVH();
-                autoProvisioningSettingsVH.setSubscription(subscription.toString());
+                autoProvisioningSettingsVH.setSubscription(subscription.getSubscriptionId());
                 autoProvisioningSettingsVH.setSubscriptionName(subscription.getSubscriptionName());
                 JsonObject autoProvisioningObject=autoProvisioningElement.getAsJsonObject();
                 String id=autoProvisioningObject.get(ID).getAsString();
