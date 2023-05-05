@@ -41,10 +41,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.paladincloud.notification_log.common.Constants;
 import com.paladincloud.notification_log.config.AuthManager;
 
@@ -91,6 +87,7 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 				eventMap.put(LOAD_DATE, loaddate);
 				eventMap.put(DOC_ID, strUUID);
 				eventMap.put(LATEST, true);
+				eventMap.put("docType",NOTIFICATION_TYPE);
 				message = objectMapper.writeValueAsString(eventMap);
 				logger.log("message : " + message);
 				boolean status = postJsonDocumentToIndexAndType(NOTIFICATION_INDEX, NOTIFICATION_TYPE, strUUID,
@@ -138,7 +135,7 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 				createMapping(url, indexName, type);
 			}
 			// logger.debug("builidng url");
-			String esUrl = new StringBuilder(url).append("/").append(indexName).append("/").append(type).append("/")
+			String esUrl = new StringBuilder(url).append("/").append(indexName).append("/_doc/")
 					.append(eventID).toString();
 			// logger.debug("uploading to es");
 			doHttpPost(esUrl, postBody, new HashMap<>());
@@ -170,8 +167,7 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 	 * @return true, if is valid type
 	 */
 	public static boolean isValidType(final String url, final String index, final String type) {
-		String esUrl = new StringBuilder(url).append("/").append(index).append("/").append(MAPPING).append("/")
-				.append(type).toString();
+		String esUrl = new StringBuilder(url).append("/").append(index).append("/").append(MAPPING).toString();
 		return isValidResource(esUrl);
 	}
 
@@ -198,8 +194,7 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 	 * @throws Exception the exception
 	 */
 	public static String createMapping(String esUrl, String index, String type) throws Exception {
-		String url = new StringBuilder(esUrl).append("/").append(index).append("/").append(MAPPING).append("/")
-				.append(type).toString();
+		String url = new StringBuilder(esUrl).append("/").append(index).append("/").append(MAPPING).toString();
 		return doHttpPut(url, CREATE_MAPPING_REQUEST_BODY_TEMPLATE.replace(INPUT_TYPE, type));
 	}
 
