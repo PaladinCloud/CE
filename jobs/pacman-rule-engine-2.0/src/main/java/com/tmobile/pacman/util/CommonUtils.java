@@ -138,6 +138,7 @@ public class CommonUtils {
     	Hashtable<String, Object> configMap = ConfigManager.getConfigurationsMap();
     	if (configMap != null && !configMap.isEmpty()) {
     	   prop.putAll(configMap);
+            System.setProperties(prop);
     	}else{
     	          LOGGER.info("unable to load configuration, exiting now");
     	          throw new RuntimeException("unable to load configuration");

@@ -58,25 +58,41 @@ public interface PacmanSdkConstants {
 	/** The region. */
 	String REGION = "region";
 
-	/** The role arn prefix. */
-	String ROLE_ARN_PREFIX="arn:aws:iam::";
+	/**
+	 * The role arn prefix.
+	 */
+	String ROLE_ARN_PREFIX = "arn:aws:iam::";
 
-	/** The resource id. */
+	/**
+	 * The resource id.
+	 */
 	String RESOURCE_ID = "_resourceid";
 
-	/** The rule id. */
-	String POLICY_ID="policyId";
-	/** The policy name. */
-	String POLICY_NAME="policyName";
+	/**
+	 * The rule id.
+	 */
+	String POLICY_ID = "policyId";
+	/**
+	 * The policy name.
+	 */
+	String POLICY_NAME = "policyName";
 
-	/** The policy version. */
-	String POLICY_VERSION="policyVersion";
+	String POLICY_DISPLAY_NAME = "policyDisplayName";
 
-	/** The Role IDENTIFYIN G STRING. */
-	String Role_IDENTIFYING_STRING="roleIdentifyingString";
+	/**
+	 * The policy version.
+	 */
+	String POLICY_VERSION = "policyVersion";
 
-	/** The mendetory tags key. */
-	String MANDATORY_TAGS_KEY="mandatoryTags";
+	/**
+	 * The Role IDENTIFYIN G STRING.
+	 */
+	String Role_IDENTIFYING_STRING = "roleIdentifyingString";
+
+	/**
+	 * The mendetory tags key.
+	 */
+	String MANDATORY_TAGS_KEY = "mandatoryTags";
 
 	/** The splitter char. */
 	String SPLITTER_CHAR="splitterChar";

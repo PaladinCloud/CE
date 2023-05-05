@@ -25,16 +25,29 @@ package com.tmobile.pacman.common;
  */
 public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdkConstants {
 
-    /** The client. */
+    /**
+     * The client.
+     */
     String CLIENT = "client";
 
-    /** The temporary creds valid seconds. */
+    /**
+     * Constant for Integration Role
+     */
+    String INTEGRAION_ROLE = "PaladinCloudIntegrationRole";
+
+    /**
+     * The temporary creds valid seconds.
+     */
     Integer TEMPORARY_CREDS_VALID_SECONDS = 3600;
 
-    /** The default session name. */
+    /**
+     * The default session name.
+     */
     String DEFAULT_SESSION_NAME = "PAC_GET_DATA_SESSION";
 
-    /** The pacman dev profile name. */
+    /**
+     * The pacman dev profile name.
+     */
     String PACMAN_DEV_PROFILE_NAME = "pacman-dev";
 
     /** The pacman dev env variable. */
