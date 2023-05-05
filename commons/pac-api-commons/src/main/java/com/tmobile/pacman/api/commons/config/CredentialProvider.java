@@ -14,25 +14,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class CredentialProvider {
 
-    String baseAccount= System.getenv("COGNITO_ACCOUNT");
-    String baseRegion= System.getenv("REGION");
-    String roleName= System.getenv("PALADINCLOUD_RO");
+    String baseAccount = System.getenv("COGNITO_ACCOUNT");
+    String baseRegion = System.getenv("REGION");
+    String roleName = System.getenv("PALADINCLOUD_RO");
+    String externalId = System.getenv("external.id");
+    boolean isExternalIdIsUsed = Boolean.parseBoolean(System.getenv("enable.external.id"));
 
-	private static boolean devMode = System.getProperty("PIC_DEV_MODE")!=null;
+    private static boolean devMode = System.getProperty("PIC_DEV_MODE") != null;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public  BasicSessionCredentials getCredentials(String account,String role){
+    public BasicSessionCredentials getCredentials(String account, String role) {
 
-        BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(baseAccount,baseRegion,roleName);
-        if(baseAccount.equals(account)){
+        BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(baseAccount, baseRegion, roleName);
+        if (baseAccount.equals(account)) {
             return baseAccntCreds;
         }
-        AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials( new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
+        AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
         AWSSecurityTokenService stsClient = stsBuilder.build();
-        AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account,role)).withRoleSessionName("pic-ro-"+account);
+        AssumeRoleRequest assumeRequest = null;
+        assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, role)).withRoleSessionName("pic-ro-" + account);
+        if (isExternalIdIsUsed) {
+            assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, role)).withRoleSessionName("pic-ro-" + account).withExternalId(externalId);
+        }
         AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
-        return  new BasicSessionCredentials(
+        return new BasicSessionCredentials(
                 assumeResult.getCredentials()
                         .getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
                 assumeResult.getCredentials().getSessionToken());
