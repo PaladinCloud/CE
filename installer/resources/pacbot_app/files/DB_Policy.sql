@@ -106,6 +106,7 @@ INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) 
 INSERT IGNORE INTO cf_PolicyCategoryWeightage (policyCategory,domain,weightage) VALUES ('tagging','Infra & Platforms',10);
 
 DELIMITER $$
+DROP PROCEDURE IF EXISTS alter_cf_policytable_add_columns $$
 CREATE PROCEDURE alter_cf_policytable_add_columns()
 BEGIN
 IF NOT EXISTS( SELECT NULL
