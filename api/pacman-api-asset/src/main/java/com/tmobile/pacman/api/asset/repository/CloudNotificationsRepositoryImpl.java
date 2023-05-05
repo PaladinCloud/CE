@@ -425,7 +425,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 
 			body = "{\"size\":10000,\"_source\":[\"eventId\",\"eventName\",\"eventCategory\",\"eventCategoryName\",\"eventSource\",\"eventSourceName\",\"_loaddate\"],"
 					+ "\"query\":{\"bool\":{\"must\":[{\"terms\":{\"eventId.keyword\":[" + eventArn
-					+ "]}},{\"term\":{\"latest\":\"true\"}}";
+					+ "]}},{\"term\":{\"latest\":\"true\"}},{\"term\":{\"docType\":\"notification\"}}";
 
 			if (!Strings.isNullOrEmpty(eventSource)) {
 				body = body + ",{\"terms\":{\"eventSourceName.keyword\":" + eventSource + "}}";
@@ -437,7 +437,7 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventName + "}}";
 			}
 			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
-			String urlToQuery = esRepository.buildESURL(esUrl, index, type, size, from);
+			String urlToQuery = esRepository.buildESURL(esUrl, index, null, size, from);
 			Gson gson = new GsonBuilder().create();
 			String responseDetails = null;
 			try {
@@ -485,10 +485,14 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 		Gson gson = new GsonBuilder().create();
 		String responseDetails = null;
 		StringBuilder requestBody = null;
-		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index).append("/").append(type)
+		StringBuilder urlToQueryBuffer = new StringBuilder(esUrl).append("/").append(index)
 				.append("/").append(_SEARCH);
 
-		String body = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":true}}]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventId.keyword\",\"size\":1000}}},"
+		String body = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"latest\":true}}, {\n" +
+				"          \"term\": {\n" +
+				"            \"docType\": \""+type+"\"\n" +
+				"          }\n" +
+				"        }]}},\"aggs\":{\"name\":{\"terms\":{\"field\":\"eventId.keyword\",\"size\":1000}}},"
 				+ "\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
 		requestBody = new StringBuilder(body);
 		try {
