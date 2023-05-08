@@ -71,7 +71,8 @@ public class Annotation extends HashMap<String, String> {
 	 */
 	public static Annotation buildAnnotation(Map<String, String> ruleParam,Annotation.Type type){
 		Annotation annotation = new Annotation();
-		annotation.put(PacmanSdkConstants.POLICY_NAME,annotation.getPolicyName(ruleParam.get(PacmanSdkConstants.POLICY_ID)));
+		//annotation.put(PacmanSdkConstants.POLICY_NAME,annotation.getPolicyName(ruleParam.get(PacmanSdkConstants.POLICY_ID)));
+		annotation.put(PacmanSdkConstants.POLICY_NAME, ruleParam.get(PacmanSdkConstants.POLICY_DISPLAY_NAME));
 		annotation.put(PacmanSdkConstants.POLICY_ID, ruleParam.get(PacmanSdkConstants.POLICY_ID));
 		annotation.put(PacmanSdkConstants.POLICY_VERSION, ruleParam.get(PacmanSdkConstants.POLICY_VERSION));
 		annotation.put(PacmanSdkConstants.RESOURCE_ID, ruleParam.get(PacmanSdkConstants.RESOURCE_ID));

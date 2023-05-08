@@ -1,5 +1,12 @@
 package com.paladincloud;
 
+import static com.paladincloud.Constants.APPROVE_EXEMPTION_REQUEST;
+import static com.paladincloud.Constants.CANCEL_EXEMPTION_REQUEST;
+import static com.paladincloud.Constants.CREATE;
+import static com.paladincloud.Constants.CREATE_EXEMPTION_REQUEST;
+import static com.paladincloud.Constants.REVOKE;
+import static com.paladincloud.Constants.REVOKE_EXEMPTION_REQUEST;
+
 public class CommonUtils {
 
     private static String getViolationTemplateName(String channelName, String action){
@@ -32,27 +39,26 @@ public class CommonUtils {
             return getStickyExTemplateName(channelName,action);
         }
         else{
-            return getIndividualExTemplateName(channelName,action);
+            return getIndividualExTemplateName(action);
         }
     }
 
-    private static String getIndividualExTemplateName(String channelName, String action) {
-        String templateName="";
-        if("create".equalsIgnoreCase(action)){
-            switch(channelName){
-                default:
-                    templateName= "createIndividualExEmailTemplate.html";
-                    break;
-            }
+    private static String getIndividualExTemplateName(String action) {
+        switch (action.toLowerCase()) {
+            case CREATE:
+                return "createIndividualExEmailTemplate.html";
+            default:
+            case REVOKE:
+                return "revokeIndividualExEmailTemplate.html";
+            case CREATE_EXEMPTION_REQUEST:
+                return "createExemptionRequestEmailTemplate.html";
+            case REVOKE_EXEMPTION_REQUEST:
+                return "revokeExemptionRequestEmailTemplate.html";
+            case CANCEL_EXEMPTION_REQUEST:
+                return "cancelExemptionRequestEmailTemplate.html";
+            case APPROVE_EXEMPTION_REQUEST:
+                return "approveExemptionRequestEmailTemplate.html";
         }
-        else{
-            switch(channelName){
-                default:
-                    templateName= "revokeIndividualExEmailTemplate.html";
-                    break;
-            }
-        }
-        return templateName;
     }
 
     private static String getStickyExTemplateName(String channelName, String action) {

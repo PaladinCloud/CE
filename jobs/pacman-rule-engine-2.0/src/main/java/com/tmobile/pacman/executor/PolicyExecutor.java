@@ -145,18 +145,20 @@ public class PolicyExecutor {
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
             policyDetailsUrl += policyUUID;
             String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
-            if(Strings.isNullOrEmpty(policyDetails )) {
+            if (Strings.isNullOrEmpty(policyDetails)) {
                 logger.error(
-                        "Policy details for the policyID {} not found ",policyUUID);
+                        "Policy details for the policyID {} not found ", policyUUID);
                 logger.error("exiting now..");
                 ProgramExitUtils.exitWithError();
             }
             policyParam = CommonUtils.createPolicyParamMap(policyDetails);
 
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
-            policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS,mandatoryTags);
+            policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS, mandatoryTags);
+//            policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
+//                    CommonUtils.getPropValue(PacmanSdkConstants.APPLICATION_PREFIX) + PacmanSdkConstants.ROLE_SUFFIX);
             policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
-                    CommonUtils.getPropValue(PacmanSdkConstants.APPLICATION_PREFIX) + PacmanSdkConstants.ROLE_SUFFIX);
+                    PacmanSdkConstants.INTEGRAION_ROLE);
             if (Strings.isNullOrEmpty(policyParam.get(PacmanSdkConstants.DATA_SOURCE_KEY))) {
                 logger.error(
                         "data source is missing, will not be able to figure out the target index to post the policy evaluvation, please check rule configuration");
