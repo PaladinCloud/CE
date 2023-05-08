@@ -25,6 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.common.base.Strings;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
@@ -198,7 +200,8 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
                         policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                 result.getAnnotation().put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                 result.getAnnotation().put(PacmanSdkConstants.EXECUTION_ID, executionId);
-                result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get("accountname"));
+                result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanRuleConstants.ACCOUNTID));
+                result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                 mandatoryTags.forEach(result.getAnnotation()::putIfAbsent);
 
             } else if (PacmanSdkConstants.STATUS_SUCCESS.equalsIgnoreCase(result.getStatus())) {
@@ -228,7 +231,8 @@ public class MultiThreadedPolicyRunner implements PolicyRunner {
 
                     annotation.put(PacmanSdkConstants.RESOURCE_ID,
                             resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                    annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get("accountid"));
+                    annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanRuleConstants.ACCOUNTID));
+                    annotation.put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                     annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                     annotation.put(PacmanSdkConstants.REGION, resource.get("region"));
                     mandatoryTags.forEach(annotation::putIfAbsent);
