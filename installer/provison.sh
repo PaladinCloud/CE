@@ -30,8 +30,23 @@ sudo npm install -g bower
 ## Install openjdk 
 sudo yum -y install java-1.8.0-openjdk
 
-## iNSTALL MAVEN
-sudo yum install -y maven
+# Download and extract Maven 3.6.3 binary distribution
+wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz --no-check-certificate
+tar -xvf apache-maven-3.6.3-bin.tar.gz
+
+# Move Maven to /opt directory
+mv apache-maven-3.6.3 /opt/
+
+# Add Maven to PATH
+echo 'export M2_HOME="/opt/apache-maven-3.6.3"' >> ~/.bash_profile
+echo 'export PATH="$PATH:$M2_HOME/bin"' >> ~/.bash_profile
+
+# Reload environment variables
+source ~/.bash_profile
+
+# Create symlink for mvn executable
+rm /usr/bin/mvn
+ln -s /opt/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
 
 ## Install docker
 sudo yum -y install docker
