@@ -319,7 +319,7 @@ public class PolicyExecutor {
                 resourceIdToResourceMap.values().forEach(obj -> {
                     missingEvaluations.add(new PolicyResult(PacmanSdkConstants.STATUS_UNKNOWN,
                             PacmanSdkConstants.STATUS_UNKNOWN_MESSAGE, PolicyExecutionUtils.buildAnnotation(policyParamCopy,
-                                    obj, executionId, Annotation.Type.ISSUE, policyAnnotation)));
+                                    obj, executionId, Annotation.Type.ISSUE)));
                 });
                 policyEngineStats.put("missingEvaluations", missingEvaluations.size());
                 evaluations.addAll(missingEvaluations);

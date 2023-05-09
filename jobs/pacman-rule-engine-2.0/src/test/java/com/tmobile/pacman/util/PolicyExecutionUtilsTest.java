@@ -110,7 +110,7 @@ public class PolicyExecutionUtilsTest {
 		param.put(PacmanSdkConstants.REGION, "region123");
 		param.put(PacmanSdkConstants.RESOURCE_ID, "resou123");
 		param.put(PacmanSdkConstants.REGION, "region");
-		Map<String, String> response = PolicyExecutionUtils.buildAnnotation(param, param, "executionId123",annotationType, getPacmanRule());
+		Map<String, String> response = PolicyExecutionUtils.buildAnnotation(param, param, "executionId123",annotationType);
 		assertNotNull(response);
 	}
 

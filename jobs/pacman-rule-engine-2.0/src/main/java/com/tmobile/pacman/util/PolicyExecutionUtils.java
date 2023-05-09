@@ -131,7 +131,7 @@ public class PolicyExecutionUtils {
      * @return the annotation
      */
     public static Annotation buildAnnotation(Map<String, String> ruleParam, Map<String, String> resource,
-            String executionId, Type annotationType, PacmanPolicy ruleAnnotation) {
+            String executionId, Type annotationType) {
 
         Annotation annotation = Annotation.buildAnnotation(ruleParam, annotationType);
         annotation.put(PacmanSdkConstants.EXECUTION_ID, executionId);
