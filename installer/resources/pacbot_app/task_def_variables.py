@@ -34,6 +34,9 @@ class ContainerDefinitions:
     PALADINCLOUD_RO = BaseRole.get_output_attr('name')
     DOMAIN_URL = "https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com"
     COGNITO_ACCOUNT = AwsAccount.get_output_attr('account_id')
+    EXTERNAL_ID = "null"
+    EXTERNAL_ID_FLAG = "false"
+    
 
 
 
@@ -128,7 +131,9 @@ class ContainerDefinitions:
             {'name':"AWS_USERPOOL_REGION",'value':self.AWS_REGION},
             {'name':"REGION",'value':self.REGION},
             {'name':"PALADINCLOUD_RO",'value':self.PALADINCLOUD_RO},
-            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT}
+            {'name': "COGNITO_ACCOUNT",'value':self.COGNITO_ACCOUNT},
+            {'name': "EXTERNAL_ID",'value':self.EXTERNAL_ID},
+            {'name': "EXTERNAL_ID_FLAG",'value':self.EXTERNAL_ID_FLAG}
         ]
 
     def get_compliance_container_env_vars(self):
