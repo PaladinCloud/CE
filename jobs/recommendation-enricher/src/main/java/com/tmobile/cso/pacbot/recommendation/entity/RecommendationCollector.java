@@ -188,17 +188,22 @@ public class RecommendationCollector implements Constants {
     private void uploadRecommendationsWithResourceIds(List<Map<String,Object>> recommendationsWithResourceId, Map<String, String> parentInfo, List<String> errors) {
     	
     	LOGGER.info("Started Uploading for recommendations with resource id {} ",recommendationsWithResourceId.size());
-    	String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\", \"_parent\" : \"%s\" } }%n";
+    	String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\", \"routing\" : \"%s\" } }%n";
     	StringBuilder bulkRequest = new StringBuilder();
     	int i=0;
     	for(Map<String,Object> recommendationObj : recommendationsWithResourceId) {
     		String type = recommendationObj.get("type").toString();
     		String parentInfoId = recommendationObj.get("_resourceid")+"_"+recommendationObj.get(Constants.ACCOUNTID);
+			Map<String, Object> relMap = new HashMap<>();
+			relMap.put("name", Constants.RECOMMENDATION);
+			relMap.put("parent", parentInfo.get(parentInfoId));
+			recommendationObj.put(type + "_relations", relMap);
+			recommendationObj.put("docType",Constants.RECOMMENDATION);
     		StringBuilder doc = new StringBuilder(ESManager.createESDoc(recommendationObj));
     		if (doc != null) {
     			if(!StringUtils.isNullOrEmpty(parentInfo.get(parentInfoId))) {
     				ESManager.createType("aws_" + type, Constants.RECOMMENDATION, type);
-                    bulkRequest.append(String.format(createTemplate,"aws_"+type,Constants.RECOMMENDATION,parentInfo.get(parentInfoId)+"_"+recommendationObj.get(Constants.RECOMMENDATION_ID)+"_"+Math.random(),parentInfo.get(parentInfoId)));
+                    bulkRequest.append(String.format(createTemplate,"aws_"+type,parentInfo.get(parentInfoId)+"_"+recommendationObj.get(Constants.RECOMMENDATION_ID)+"_"+Math.random(),parentInfo.get(parentInfoId)));
                     bulkRequest.append(doc + "\n");
     			}
             }
@@ -228,16 +233,17 @@ public class RecommendationCollector implements Constants {
     	
 		LOGGER.info("Started Uploading for recommendations without resource id {} ",recommendationsWithoutResourceId.size());
     	List<Map<String, String>> errorList = new ArrayList<>();
-    	String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\"} }%n";
+    	String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
     	ESManager.createIndex(Constants.GLOBAL_RECOMMENDATIONS, errorList);
-    	ESManager.createType(Constants.GLOBAL_RECOMMENDATIONS, Constants.RECOMMENDATION, errorList);
+//    	ESManager.createType(Constants.GLOBAL_RECOMMENDATIONS, Constants.RECOMMENDATION, errorList);
     	StringBuilder bulkRequest = new StringBuilder();
     	int i=0;
     	for(Map<String,Object> recommendationObj : recommendationsWithoutResourceId) {
     		String id = recommendationObj.get(Constants.ACCOUNTID).toString()+recommendationObj.get(Constants.RECOMMENDATION_ID)+Math.random();
+			recommendationObj.put("docType",Constants.RECOMMENDATION);
     		StringBuilder doc = new StringBuilder(ESManager.createESDoc(recommendationObj));
     		if (doc != null) {
-                bulkRequest.append(String.format(createTemplate,Constants.GLOBAL_RECOMMENDATIONS,Constants.RECOMMENDATION,Util.getUniqueID(id)));
+                bulkRequest.append(String.format(createTemplate,Constants.GLOBAL_RECOMMENDATIONS,Util.getUniqueID(id)));
                 bulkRequest.append(doc + "\n");
             }
     		i++;
