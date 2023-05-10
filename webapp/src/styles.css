@@ -2034,3 +2034,93 @@ g.arc .bubble-text {
   padding: 10px 0px;
   color: red;
 }
+
+.mat-flat-button.mat-primary{
+  background-color: var(--primary-400);
+  pointer-events: all;
+}
+
+.mat-stroked-button.mat-primary{
+  color: var(--primary-400);
+  border-color: var(--primary-400);
+}
+
+.mat-primary .mat-pseudo-checkbox-checked{
+  background-color: var(--primary-400);
+}
+
+.mat-flat-button.mat-primary.mat-button-disabled{
+  background-color: var(--primary-100);
+  pointer-events: none;
+}
+
+.page-layout{
+  padding: 28px;
+  height: 100%;
+}
+
+.page{
+  background-color: var(--background-white);
+  padding: 40px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepper-right-wrapper{
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 200px);
+  padding-left:24px;
+  overflow: scroll;
+  }
+
+.button-wrapper{
+  padding-top: 24px;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.button-wrapper .button {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 16px;
+  font: var(--text-body-2);
+  border-radius: 4px;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.button{
+  cursor: pointer;
+}
+
+.stepper{
+  height: 100%;
+}
+
+.next-btn,.submit-button{
+  color: white; 
+  background: var(--primary-400);
+}
+
+.back-btn{
+  color: var(--primary-400);
+  background-color: var(--background-white);
+}
+
+.x-icon, .delete-icon{
+  /* border: 1px solid #EDF2F7; */
+  border-radius: 4px;
+  padding: 4px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.mat-select-panel-wrap{
+  padding-top: 25px;
+}

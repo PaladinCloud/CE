@@ -376,7 +376,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     }else{
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
-      // this.tableData = [];
+      this.tableData = [];
       this.getData();
     }
   }

@@ -382,6 +382,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.tableDataLoaded = true;
             this.clearState();
         } else {
+            this.tableData = [];
             this.tableDataLoaded = false;
             this.bucketNumber = 0;
             this.getData();
