@@ -220,10 +220,10 @@ public class ESManager implements Constants {
      *            the loaddate
      */
     public static void updateLatestStatus(String index, String type, String field, String value) {
-        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=true\"},\"query\": {\"bool\": {\"must\": [{ \"term\": {\"latest\":false}}, {\"term\": {\""
+        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=true\"},\"query\": {\"bool\": {\"must\": [{\"term\":{\"docType\":\""+type+"\"}},{ \"term\": {\"latest\":false}}, {\"term\": {\""
         		+ field + "\":\"" + value + "\"}}]}}}";
         try {
-            invokeAPI("POST", index + "/" + type + "/" + "_update_by_query", updateJson);
+            invokeAPI("POST", index +"/" + "_update_by_query", updateJson);
         } catch (IOException e) {
             LOGGER.error("Error in updateLatestStatus",e);
         }
@@ -689,9 +689,9 @@ public class ESManager implements Constants {
      */
     public static void deleteOldDocuments(String index, String type, String field, String value) {
         String deleteJson = "{\"query\": {\"bool\": {\"must_not\": [{ \"match\": {\"" + field + "\":\"" + value
-                + "\"}}]}}}";
+                + "\"}}],\"must\": [ { \"term\": { \"docType\": \""+type+"\" } } ]}}}";
         try {
-            invokeAPI("POST", index + "/" + type + "/" + "_delete_by_query", deleteJson);
+            invokeAPI("POST", index  + "/" + "_delete_by_query", deleteJson);
         } catch (IOException e) {
             LOGGER.error("Error deleteOldDocuments ", e);
         }
