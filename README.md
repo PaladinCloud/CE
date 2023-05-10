@@ -3,7 +3,7 @@
 [![GitHub license](https://github.com/PaladinCloud/CE/blob/master/wiki/license_apache.svg)](https://github.com/PaladinCloud/CE/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/badge/chat-chat%20on%20gitter-9cf)](https://gitter.im/PaladinCloud/community)
 [![Slack](https://img.shields.io/badge/chat-chat%20on%20Slack-9cf)](http://paladincloudcommunity.slack.com/)
-[![Community Survey](https://img.shields.io/badge/community-survey-9cf)]([http://paladincloudcommunity.slack.com/](https://paladincloud.io/paladin-cloud-survey/))
+[![Community Survey](https://img.shields.io/badge/community-survey-9cf)](https://paladincloud.io/paladin-cloud-survey/)
 
 ![Paladin Cloud, Inc](https://github.com/PaladinCloud/Rev1/raw/master/wiki/images/banner_paladincloud.png)
 
