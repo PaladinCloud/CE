@@ -121,7 +121,7 @@ public interface Constants {
     String TAGS_APPLICATION = "tags.Application";
     String MISSING_TAGS = "missingTags";
     String ACCOUNT_ID = "accountid";
-    String ACCOUNT_NAME = "accountname";
+    String ACCOUNT_NAME = "account name";
     String REGION = "region";
     String CREATED_DATE = "createdDate";
     String TAGS_ENVIRONMENT = "tags.Environment";
@@ -136,7 +136,7 @@ public interface Constants {
     String SEVERITY_DISPALY_NAME = "Severity";
     String POLICYCATEGORY_DISPALY_NAME = "PolicyCategory";
     String ACCOUNT_DISPLAYI_D = "AccountId";
-    String ACCOUNT_DISPALY_NAME = "AccountName";
+    String ACCOUNT_DISPALY_NAME = "Account Name";
     String CREATED_DISPLAY_DATE = "CreatedOn";
     String MODIFIED_DISPLAY_DATE = "ModifiedOn";
     String STATUS_DISPLAY_NAME = "Status";
