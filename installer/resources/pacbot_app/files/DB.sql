@@ -1447,6 +1447,7 @@ DELETE IGNORE from pac_v2_ui_options where optionId=4;
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (4,1,'Account Name','accountname.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountname&type=issue');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (35,1,'Account ID','accountid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountid&type=issue');
 /* AssetList Filters */
+INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (29,8,'Account ID','accountid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (30,8,'Account Name','accountname.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=accountname&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (31,8,'Asset ID','_resourceid.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_resourceid&type=asset');
 INSERT IGNORE INTO pac_v2_ui_options (optionId,filterId,optionName,optionValue,optionURL) VALUES (32,8,'Cloud Type','_cloudType.keyword','/compliance/v1/filters/attribute?ag=aws&attribute=_cloudType&type=asset');
