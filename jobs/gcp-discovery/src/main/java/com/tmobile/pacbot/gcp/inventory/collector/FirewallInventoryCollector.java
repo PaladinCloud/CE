@@ -43,8 +43,10 @@ public class FirewallInventoryCollector {
             fireWallVH.setDisabled(firewall.getDisabled());
             fireWallVH.setDirection(firewall.getDirection());
             fireWallVH.setSourceRanges(firewall.getSourceRangesList());
-            logger.info("Firewall  source Address logger {}", firewall.getAllowed(0).getIPProtocol());
-            logger.info("Firewall  source Address logger {}", firewall.getAllowed(0).getPortsList());
+            if (!firewall.getAllowedList().isEmpty()) {
+                logger.info("Firewall  source Address logger {}", firewall.getAllowed(0).getIPProtocol());
+                logger.info("Firewall  source Address logger {}", firewall.getAllowed(0).getPortsList());
+            }
             List<AllowedPortsVH> allowedList = new ArrayList<>();
             for (Allowed allowedport : firewall.getAllowedList()) {
                 AllowedPortsVH allowedportsvh = new AllowedPortsVH();
