@@ -272,10 +272,10 @@ public class ESManager implements Constants {
      *            the loaddate
      */
     private static void updateLatestStatus(String index, String type, String loaddate) {
-        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}}], \"must_not\": [{\"match\": {\"_loaddate.keyword\":\""
+        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}},{ \"match\": {\"docType\":\""+type+"\"}}], \"must_not\": [{\"match\": {\"_loaddate.keyword\":\""
                 + loaddate + "\"}}]}}}";
         try {
-            invokeAPI("POST", index + "/" + type + "/" + "_update_by_query", updateJson);
+            invokeAPI("POST", index  + "/" + "_update_by_query", updateJson);
         } catch (IOException e) {
             LOGGER.error("Error in updateLatestStatus",e);
         }
