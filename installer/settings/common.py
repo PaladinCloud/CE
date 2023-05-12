@@ -56,6 +56,7 @@ PROCESS_RESOURCES = {
     'pacbot_app.import_db': {'tags': ["deploy", "app-import-db", "infra"]},
     'pacbot_app.ecs_task_defintions': {'tags': ["deploy", "task-definitions", "infra"]},
     'pacbot_app.ecs_services': {'tags': ["deploy", "ecs-services", "infra"]},
+    'pacbot_app.alb_https_listener' :{'tags': ["deploy"]},
     's3.bucket': {'tags': ["s3"]},
     'batch.env': {'tags': ["batch"]},
     'batch.ecr': {'tags': ["batch", "batch-ecr"]},
@@ -157,8 +158,8 @@ try:
 except:
     pass
 
-if ALB_PROTOCOL == "HTTPS":
-    PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
+# if ALB_PROTOCOL == "HTTPS":
+#     PROCESS_RESOURCES['pacbot_app.alb_https_listener'] = {'tags': ["deploy"]}  # This should not be removed
 
 
 

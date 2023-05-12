@@ -34,7 +34,7 @@ ES_MASTER_NODE_COUNT = 1
 # ALB related configurations
 # False if ALB needs to be public (internet facing) else True
 MAKE_ALB_INTERNAL = True
-ALB_PROTOCOL = "HTTPS"
+ALB_PROTOCOL = "HTTP"
 
 SSL_CERTIFICATE_ARN = ""  # Required only if ALB_PROTOCOL is defined as HTTPS
 PALADINCLOUD_DOMAIN = ""  # Required only if you point a CNAME record to ALB ex: app.paladincloud.com
