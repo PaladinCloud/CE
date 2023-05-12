@@ -370,15 +370,35 @@ public class AssetGroupUtil {
         return assetCounts;
     }
     public static String fetchViolationsCount(String compApiUrl, String token, String platform, String accountId) throws Exception {
-        String issuesCountJson = HttpUtil.get(compApiUrl + "/issues/distribution?ag="+platform+"&accountId="+accountId,token);
+        String uri = compApiUrl + "/issues/distribution?ag=" + platform + "&accountId=" + accountId;
+        LOGGER.info("Fetching violation count for account:{} from compliance API: {}",accountId,uri);
+        String issuesCountJson = HttpUtil.get(uri,token);
+        LOGGER.info("Violation data API response:{}",issuesCountJson);
         JsonObject resultJson = new JsonParser().parse(issuesCountJson).getAsJsonObject();
-        return  resultJson.getAsJsonObject("data").getAsJsonObject("distribution").get("total_issues").getAsString();
+        if(resultJson.getAsJsonObject("data")!=null && resultJson.getAsJsonObject("data").getAsJsonObject("distribution")!=null){
+            JsonElement element = resultJson.getAsJsonObject("data").getAsJsonObject("distribution").get("total_issues");
+            if(element!=null){
+                String violationCount = element.getAsString();
+                LOGGER.info("Violation count for account:{} is {}", accountId,violationCount);
+                return violationCount;
+            }
+        }
+        LOGGER.info("Violation data not found from API, setting count as 0");
+        return "0";
     }
     @SuppressWarnings("unchecked")
     public static String fetchAssetCount(String asstApiUri, String token, String platform, String accountId) throws Exception {
-        String assetCountJson = HttpUtil.get(asstApiUri + "/count?ag="+platform+"&accountId="+accountId,token);
+        String uri = asstApiUri + "/count?ag=" + platform + "&accountId=" + accountId;
+        LOGGER.info("Fetching asset count for account:{} from assets API: {}",accountId,uri);
+        String assetCountJson = HttpUtil.get(uri,token);
+        LOGGER.info("Asset data API response:{}",assetCountJson);
         JsonObject resultJson = new JsonParser().parse(assetCountJson).getAsJsonObject();
-        String assetCount =  resultJson.getAsJsonObject("data").get("totalassets").getAsString();
-        return assetCount;
+        if(resultJson.getAsJsonObject("data")!=null && resultJson.getAsJsonObject("data").get("totalassets")!=null){
+            String assetCount =  resultJson.getAsJsonObject("data").get("totalassets").getAsString();
+            LOGGER.info("Asset count for account:{} is {}", accountId,assetCount);
+            return assetCount;
+        }
+        LOGGER.info("Asset data not found from API, setting count as 0");
+        return "0";
     }
 }

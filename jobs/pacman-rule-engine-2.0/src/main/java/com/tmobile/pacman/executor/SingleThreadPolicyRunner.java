@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Strings;
+import com.tmobile.cloud.constants.PacmanRuleConstants;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.slf4j.Logger;
@@ -131,7 +133,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                             policyParam.get(PacmanSdkConstants.TARGET_TYPE));
                     result.getAnnotation().put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID));
                     result.getAnnotation().put(PacmanSdkConstants.EXECUTION_ID, executionId);
-                    result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get("accountname"));
+                    result.getAnnotation().put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
+                    result.getAnnotation().put(PacmanRuleConstants.ACCOUNTID,resource.get(PacmanRuleConstants.ACCOUNTID));
                     mandatoryTag.forEach(result.getAnnotation()::putIfAbsent);
                 }
                 else {
@@ -149,7 +152,8 @@ public class SingleThreadPolicyRunner implements PolicyRunner {
                             }
                             annotation.put(PacmanSdkConstants.RESOURCE_ID,
                                     resource.get(PacmanSdkConstants.RESOURCE_ID_COL_NAME_FROM_ES));
-                            annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get("accountid"));
+                            annotation.put(PacmanSdkConstants.ACCOUNT_ID, resource.get(PacmanRuleConstants.ACCOUNTID));
+                            annotation.put(PacmanSdkConstants.ACCOUNT_NAME, resource.get(PacmanRuleConstants.ACCOUNT_NAME));
                             annotation.put(PacmanSdkConstants.DOC_ID, resource.get(PacmanSdkConstants.DOC_ID)); // this is important to close the issue
                             mandatoryTag.forEach(annotation::putIfAbsent);
                             if(null!=result){

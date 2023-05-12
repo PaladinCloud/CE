@@ -421,6 +421,8 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 
 			String eventSource = filterkey(filter, AssetConstants.EVENTSOURCE);
 
+			String eventName = filterkey(filter, AssetConstants.EVENTNAME);
+
 			body = "{\"size\":10000,\"_source\":[\"eventId\",\"eventName\",\"eventCategory\",\"eventCategoryName\",\"eventSource\",\"eventSourceName\",\"_loaddate\"],"
 					+ "\"query\":{\"bool\":{\"must\":[{\"terms\":{\"eventId.keyword\":[" + eventArn
 					+ "]}},{\"term\":{\"latest\":\"true\"}}";
@@ -430,6 +432,9 @@ public class CloudNotificationsRepositoryImpl implements CloudNotificationsRepos
 			}
 			if (!Strings.isNullOrEmpty(eventCategory)) {
 				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventCategory + "}}";
+			}
+			if (!Strings.isNullOrEmpty(eventName)) {
+				body = body + ",{\"terms\":{\"eventCategoryName.keyword\":" + eventName + "}}";
 			}
 			body = body + "]}},\"sort\":[{\"_loaddate.keyword\":{\"order\":\"desc\"}}]}";
 			String urlToQuery = esRepository.buildESURL(esUrl, index, type, size, from);

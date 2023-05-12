@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.tmobile.pacman.commons.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -381,18 +382,20 @@ public class AWSClientManagerImpl implements AWSClientManager {
      */
     private BasicSessionCredentials getTempCredentials(String roleArnWithAdequateAccess, Regions region,
 			String roleIdentifierString) throws Exception {
-		logger.debug("roleIdentifierString {}", roleIdentifierString);
-		logger.debug("region {}", region.getName());
-		logger.debug("roleArnWithAdequateAccess {}", roleArnWithAdequateAccess);
+        logger.debug("roleIdentifierString {}", roleIdentifierString);
+        logger.debug("region {}", region.getName());
+        logger.debug("roleArnWithAdequateAccess {}", roleArnWithAdequateAccess);
+        String baseRole = System.getProperty(Constants.BASE_ROLE);
+        logger.debug("Printing Base Role here: {}", baseRole);
 
-		AWSCredentialsProvider acp;
-		try {
+        AWSCredentialsProvider acp;
+        try {
 
-			acp = new ProfileCredentialsProvider(PacmanSdkConstants.PACMAN_DEV_PROFILE_NAME);
+            acp = new ProfileCredentialsProvider(PacmanSdkConstants.PACMAN_DEV_PROFILE_NAME);
 
-			acp.getCredentials();// to make sure profile exists
+            acp.getCredentials();// to make sure profile exists
 
-			logger.info("Dev environment detected, due to presense of aws credentials profile named -- >"+ PacmanSdkConstants.PACMAN_DEV_PROFILE_NAME);
+            logger.info("Dev environment detected, due to presense of aws credentials profile named -- >" + PacmanSdkConstants.PACMAN_DEV_PROFILE_NAME);
 
 		} catch (Exception e) {
 
@@ -403,9 +406,10 @@ public class AWSClientManagerImpl implements AWSClientManager {
 		}
 		logger.debug("base ac#-->"+ CommonUtils.getEnvVariableValue(PacmanSdkConstants.BASE_AWS_ACCOUNT_ENV_VAR_NAME));
 
-		String baseAccountRoleArn = "arn:aws:iam::"+ CommonUtils.getEnvVariableValue(PacmanSdkConstants.BASE_AWS_ACCOUNT_ENV_VAR_NAME)+ ":"
+        String baseAccountRoleArn = "arn:aws:iam::" + CommonUtils.getEnvVariableValue(PacmanSdkConstants.BASE_AWS_ACCOUNT_ENV_VAR_NAME) + ":"
+                + "role/" + baseRole;
 
-				+ roleIdentifierString; // get it from Env. variable
+//				+ roleIdentifierString; // get it from Env. variable
 
 		logger.debug("container role is going to assume " + baseAccountRoleArn);
 
@@ -434,7 +438,7 @@ public class AWSClientManagerImpl implements AWSClientManager {
 
 					PacmanSdkConstants.TEMPORARY_CREDS_VALID_SECONDS - 15);
 
-			logger.debug("now pac ro now going to assume role specific to account success");
+            logger.debug("now pac ro now going to assume role specific to account success using: {}", roleArnWithAdequateAccess);
 
 		} else {
 			logger.debug("role already present for this account, not going to assume again.");
@@ -462,11 +466,21 @@ public class AWSClientManagerImpl implements AWSClientManager {
         if (null == region) { // cloud trail case
             region = Regions.DEFAULT_REGION;
         }
+        String baseRole = System.getProperty(Constants.BASE_ROLE);
+        boolean isExternalIdIsUsed = Boolean.parseBoolean(System.getProperty("enable.external.id"));
+        String externalId = System.getProperty("external.id");
+        logger.debug("Value of external ID flag: {}", isExternalIdIsUsed);
+        logger.debug("Value of external ID value: {}", externalId);
         AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard()
                 .withCredentials(acp).withRegion(region);
         AWSSecurityTokenService sts = stsBuilder.build();
-        AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(roleArnWithAdequateAccess)
+        AssumeRoleRequest assumeRequest = null;
+        assumeRequest = new AssumeRoleRequest().withRoleArn(roleArnWithAdequateAccess)
                 .withDurationSeconds(validForSeconds).withRoleSessionName(PacmanSdkConstants.DEFAULT_SESSION_NAME);
+        if (isExternalIdIsUsed && !roleArnWithAdequateAccess.contains(baseRole)) {
+            assumeRequest = new AssumeRoleRequest().withRoleArn(roleArnWithAdequateAccess)
+                    .withDurationSeconds(validForSeconds).withRoleSessionName(PacmanSdkConstants.DEFAULT_SESSION_NAME).withExternalId(externalId);
+        }
         logger.debug("assume role request " + assumeRequest.toString());
         AssumeRoleResult assumeResult = sts.assumeRole(assumeRequest);
         logger.debug("assume role response " + assumeResult.toString());

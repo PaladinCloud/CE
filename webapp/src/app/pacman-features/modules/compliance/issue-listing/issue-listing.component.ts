@@ -74,10 +74,10 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   };
   columnWidths = {'Policy': 2, 'Violation ID': 1, 'Resource ID': 1, 'Severity': 0.5, 'Category':0.5};
   columnNamesMap = {"PolicyName": "Policy","IssueId":"Violation ID"};
-  fieldName: string = "policyId.keyword";
+  fieldName: string = "severity.keyword";
   fieldType: string = "number";
-  selectedOrder: string = "asc";
-  sortOrder: string[];
+  selectedOrder: string = "desc";
+  sortOrder: string[] = ["low", "medium", "high", "critical"];
   tableImageDataMap = {
       security:{
           image: "category-security",
@@ -116,6 +116,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   displayedColumns;
   tableData = [];
   isStatePreserved = false;
+  selectedRowIndex: number;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -157,8 +158,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const state = this.tableStateService.getState("issueListing") || {};
     if(state){
-      this.headerColName = state.headerColName || '';
-      this.direction = state.direction || '';
+      this.headerColName = state.headerColName || 'Severity';
+      this.direction = state.direction || 'desc';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
@@ -172,6 +173,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
       if(this.tableData && this.tableData.length>0){
         this.isStatePreserved = true;
+        this.selectedRowIndex = state.selectedRowIndex;
       }else{
         this.isStatePreserved = false;
       }
@@ -655,8 +657,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       whiteListColumns: this.whiteListColumns,
       bucketNumber: this.bucketNumber,
       searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop
-      // filterText: this.filterText
+      tableScrollTop: event.tableScrollTop,
+      selectedRowIndex: event.selectedRowIndex,
     }
     this.storeState(state);
     try {

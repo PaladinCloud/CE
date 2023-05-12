@@ -17,63 +17,102 @@
     <div class="asset-switcher-container">
         <app-asset-switcher [isExpanded]="expanded"></app-asset-switcher>
     </div>
-    <div class="tree-component">
-        <tree-root [nodes]="nodes" class="tree" #treeMenu>
-            <ng-template #treeNodeWrapperTemplate let-node let-index="index">
-                <div *ngIf="hasRequiredPermission(node)">
+    <nav>
+        <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+            <!-- PARENT NODE -->
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node">
+                <div
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                    class="tree-item flex flex-align-center"
+                    [class.collapsed]="!expanded"
+                    [routerLink]="
+                        !node.children
+                            ? node.overlay
+                                ? [{ outlets: { modalBGMenu: [node.route] } }]
+                                : [node.route]
+                            : null
+                    "
+                    [queryParams]="agAndDomain"
+                    routerLinkActive="node-wrapper-active"
+                >
+                    <img
+                        *ngIf="node.image"
+                        class="node-img"
+                        src="/assets/icons/{{ node.image }}.svg"
+                        alt=""
+                    />
+                    <span>
+                        {{ node.name }}
+                    </span>
+                </div>
+            </cdk-nested-tree-node>
+            <!--./PARENT NODE -->
+
+            <!-- PARENT NODE WITH CHILDREN -->
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild">
+                <div
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                    class="tree-item flex flex flex-align-center"
+                    [class.collapsed]="!expanded"
+                    cdkTreeNodeToggle
+                >
+                    <img
+                        *ngIf="node.image"
+                        class="node-img"
+                        src="/assets/icons/{{ node.image }}.svg"
+                        alt=""
+                    />
+                    <span>
+                        {{ node.name }}
+                    </span>
+                    <mat-icon class="tree-expand-icon">
+                        {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+                    </mat-icon>
+                </div>
+                <!-- CHILD NODES -->
+                <div [hidden]="!treeControl.isExpanded(node)">
+                    <ng-container *cdkTreeNodeOutlet></ng-container>
+                </div>
+                <!--./CHILD NODES -->
+            </cdk-nested-tree-node>
+            <!--./PARENT NODE WITH CHILDREN -->
+
+            <!-- CHILD NODE -->
+            <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: isChild">
+                <div
+                    class="tree-child-wrapper"
+                    *ngIf="
+                        hasRequiredPermission(node) &&
+                        !(node.notDisplayIfAzure && agAndDomain.ag === 'azure')
+                    "
+                >
                     <div
-                        *ngIf="!(node.data.notDisplayIfAzure && agAndDomain.ag === 'azure')"
-                        class="node-wrapper"
-                        [class.wrapper]="currentParentId === node.id && node.hasChildren"
-                        [class.node-wrapper-active]="node.id === currentNodeId && !node.hasChildren"
-                        [class.wrapper-collapsed]="!expanded"
-                        [style.padding-left]="node.getNodePadding()"
+                        class="tree-child-item"
+                        [routerLink]="
+                            !node.children
+                                ? node.overlay
+                                    ? [{ outlets: { modalBGMenu: [node.route] } }]
+                                    : [node.route]
+                                : null
+                        "
+                        routerLinkActive="node-wrapper-active"
+                        [queryParams]="agAndDomain"
                     >
-                        <div *ngIf="node.data?.image" class="icon">
-                            <img
-                                class="node-img"
-                                src="/assets/icons/{{ node.data?.image }}.svg"
-                                alt=""
-                            />
-                        </div>
-                        <div
-                            class="node-content-wrapper"
-                            [class.node-content-wrapper-focused]="node.isFocused"
-                            [class.isCollapsed]="!expanded"
-                            (click)="selectNode(node, $event)"
-                            (dblclick)="node.mouseAction('dblClick', $event)"
-                            (contextmenu)="node.mouseAction('contextMenu', $event)"
-                            (treeDrop)="node.onDrop($event)"
-                            [treeAllowDrop]="node.allowDrop"
-                            [treeDrag]="node"
-                            [treeDragEnabled]="node.allowDrag()"
-                            [class.node-content-wrapper-expanded]="node.isExpanded"
-                            [routerLink]="
-                                !node.hasChildren
-                                    ? node.data?.overlay
-                                        ? [{ outlets: { modalBGMenu: [node.data?.route] } }]
-                                        : [node.data?.route]
-                                    : null
-                            "
-                            [queryParams]="agAndDomain"
-                        >
-                            <tree-node-content
-                                [class]="node.data.name"
-                                [node]="node"
-                                [index]="index"
-                                [title]="node.data.name"
-                            >
-                            </tree-node-content>
-                            <tree-node-expander
-                                (click)="node.toggleExpanded()"
-                                [node]="node"
-                            ></tree-node-expander>
-                        </div>
+                        <span>
+                            {{ node.name }}
+                        </span>
                     </div>
                 </div>
-            </ng-template>
-        </tree-root>
-    </div>
+            </cdk-nested-tree-node>
+            <!--./CHILD NODE -->
+        </cdk-tree>
+    </nav>
     <div
         class="know-your-app-wrapper"
         [queryParams]="agAndDomain"
@@ -82,7 +121,7 @@
         <div class="icon icon-wrapper">
             <img class="node-img" src="/assets/images/getStarted.svg" alt="" />
         </div>
-        <div class="app-wrapper" [class.isCollapsed]="!expanded">
+        <div class="app-wrapper" [class.is-collapsed]="!expanded">
             <div class="know-your-app-content">Getting Started</div>
         </div>
     </div>

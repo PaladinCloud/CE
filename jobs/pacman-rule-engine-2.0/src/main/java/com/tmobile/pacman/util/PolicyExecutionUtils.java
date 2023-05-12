@@ -131,14 +131,10 @@ public class PolicyExecutionUtils {
      * @return the annotation
      */
     public static Annotation buildAnnotation(Map<String, String> ruleParam, Map<String, String> resource,
-            String executionId, Type annotationType, PacmanPolicy ruleAnnotation) {
+            String executionId, Type annotationType) {
 
         Annotation annotation = Annotation.buildAnnotation(ruleParam, annotationType);
         annotation.put(PacmanSdkConstants.EXECUTION_ID, executionId);
-        if (null != ruleAnnotation) {
-            annotation.put(PacmanSdkConstants.POLICY_CATEGORY, ruleAnnotation.category());
-            annotation.put(PacmanSdkConstants.POLICY_SEVERITY, ruleAnnotation.severity());
-        }
         if (null != ruleParam) {
             annotation.put(PacmanSdkConstants.DATA_SOURCE_KEY, ruleParam.get(PacmanSdkConstants.DATA_SOURCE_KEY));
             annotation.put(PacmanSdkConstants.TARGET_TYPE, ruleParam.get(PacmanSdkConstants.TARGET_TYPE));
@@ -148,6 +144,9 @@ public class PolicyExecutionUtils {
             }
             if (ruleParam.containsKey(PacmanSdkConstants.POLICY_SEVERITY)) {
                 annotation.put(PacmanSdkConstants.POLICY_SEVERITY, ruleParam.get(PacmanSdkConstants.POLICY_SEVERITY));
+            }
+            if (ruleParam.containsKey(PacmanSdkConstants.POLICY_CATEGORY)) {
+                annotation.put(PacmanSdkConstants.POLICY_CATEGORY, ruleParam.get(PacmanSdkConstants.POLICY_CATEGORY));
             }
         }
         if (null != resource) {

@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.tmobile.cso.pacman.inventory.auth;
 
+import com.tmobile.cso.pacman.inventory.file.AssetFileGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -32,39 +35,65 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
  */
 @Component
 public class CredentialProvider {
+
+	private static Logger log = LoggerFactory.getLogger(CredentialProvider.class);
+
 	public static final String PALADIN_CLOUD_INTEGRATION_ROLE = "PaladinCloudIntegrationRole";
 
-	/** The base account. */
+	/**
+	 * The base account.
+	 */
 	@Value("${base.account}")
-	private String baseAccount ;
-	
+	private String baseAccount;
+
 	@Value("${base.region}")
-	private String baseRegion ;
-	
-	/** The dev mode. */
-	private static boolean devMode = System.getProperty("PIC_DEV_MODE")==null?false:true;
-	
+	private String baseRegion;
+
+	@Value("${enable.external.id}")
+	private boolean isExternalIdIsUsed;
+
+	@Value("${external.id}")
+	private String externalId;
+
+	/**
+	 * The dev mode.
+	 */
+	private static boolean devMode = System.getProperty("PIC_DEV_MODE") == null ? false : true;
+
 	/**
 	 * Gets the credentials.
 	 *
-	 * @param account the account
+	 * @param account  the account
 	 * @param roleName the role name
 	 * @return the credentials
 	 */
-	public  BasicSessionCredentials getCredentials(String account,String roleName){
-		
-		BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(baseAccount,baseRegion,roleName);
-		if(baseAccount.equals(account)){
+	public BasicSessionCredentials getCredentials(String account, String roleName) {
+		log.info("Account: {}", account);
+		log.info("roleName: {}", roleName);
+		log.info("isExternalIdIsUsed: {}", isExternalIdIsUsed);
+		log.info("externalId: {}", externalId);
+
+		BasicSessionCredentials baseAccntCreds = getBaseAccountCredentials(baseAccount, baseRegion, roleName);
+
+		if (baseAccount.equals(account)) {
 			return baseAccntCreds;
 		}
-		AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials( new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
+
+		AWSSecurityTokenServiceClientBuilder stsBuilder = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(baseAccntCreds)).withRegion(baseRegion);
 		AWSSecurityTokenService stsClient = stsBuilder.build();
-	    AssumeRoleRequest assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account,PALADIN_CLOUD_INTEGRATION_ROLE)).withRoleSessionName("pic-ro-"+account);
-	    AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
-	    return  new BasicSessionCredentials(
-	            assumeResult.getCredentials()
-	                        .getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
-	            assumeResult.getCredentials().getSessionToken());
+
+		AssumeRoleRequest assumeRequest = null;
+		assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, PALADIN_CLOUD_INTEGRATION_ROLE)).withRoleSessionName("pic-ro-" + account);
+
+		if (isExternalIdIsUsed) {
+			assumeRequest = new AssumeRoleRequest().withRoleArn(getRoleArn(account, PALADIN_CLOUD_INTEGRATION_ROLE)).withRoleSessionName("pic-ro-" + account).withExternalId(externalId);
+		}
+
+		AssumeRoleResult assumeResult = stsClient.assumeRole(assumeRequest);
+		return new BasicSessionCredentials(
+				assumeResult.getCredentials()
+						.getAccessKeyId(), assumeResult.getCredentials().getSecretAccessKey(),
+				assumeResult.getCredentials().getSessionToken());
 	}
 	
 	/**

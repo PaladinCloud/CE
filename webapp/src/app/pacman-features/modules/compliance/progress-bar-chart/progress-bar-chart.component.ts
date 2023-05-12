@@ -1,13 +1,22 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+
+interface BarItem {
+    class: string;
+    title: string;
+    val: number;
+}
+
 @Component({
-  selector: "app-progress-bar-chart",
-  templateUrl: "./progress-bar-chart.component.html",
-  styleUrls: ["./progress-bar-chart.component.css"],
+    selector: 'app-progress-bar-chart',
+    templateUrl: './progress-bar-chart.component.html',
+    styleUrls: ['./progress-bar-chart.component.css'],
 })
 export class ProgressBarChartComponent implements OnInit {
-  @Input() bars = [];
+    @Input() bars: BarItem[] = [];
 
-  constructor() {}
+    @Output() navigateTo = new EventEmitter<BarItem>();
 
-  ngOnInit() {}
+    constructor() {}
+
+    ngOnInit() {}
 }

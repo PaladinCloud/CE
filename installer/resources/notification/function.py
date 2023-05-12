@@ -113,7 +113,7 @@ class LogEsNotificationFunction(LambdaFunctionResource):
     environment = {
         'variables': {
             'AUTH_API_URL' :	"https://"+ Settings.COGNITO_DOMAIN + ".auth." + Settings.AWS_REGION + ".amazoncognito.com",
-            'CONFIG_SERVER_CREDENTIALS' : "dXNlcjpwYWNtYW4=",
+            'CONFIG_CREDENTIALS' : "dXNlcjpwYWNtYW4=",
             'CONFIG_SERVICE_URL'	: ApplicationLoadBalancer.get_api_base_url() + "/config/rule/prd/latest",
             'ES_URI' : ESDomain.get_http_url_with_port()
         }

@@ -1011,24 +1011,36 @@ public class ElasticSearchRepository implements Constants {
 		Map<String, Object> script = new HashMap<>();
 		Map<String, Object> Outerscript = new HashMap<>();
 		if (null != sortFieldMapList && !sortFieldMapList.isEmpty()) {
-			sortScript.put("type", sortFieldMapList.get("fieldType"));
-			String fieldName = (String) sortFieldMapList.get("fieldName");
-			String inlineScript = "doc['%s'].value";
-			if (sortFieldMapList.get("sortOrder") != null) {
+			if(sortFieldMapList.get("sortOrder")!=null) {
+				sortScript.put("type", sortFieldMapList.get("fieldType"));
+				String fieldName = (String) sortFieldMapList.get("fieldName");
+				String inlineScript = "doc['%s'].value";
 				script.put("params", paramsList);
 				inlineScript = "params.sortOrder.indexOf(doc['%s'].value)";
 				paramsList.put("sortOrder", sortFieldMapList.get("sortOrder"));
+
+				if (sortFieldMapList.get("fieldName").equals("_uid")) {
+					inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
+				}
+				String inlineScriptString = String.format(inlineScript, fieldName);
+				script.put("inline", inlineScriptString);
+				sortScript.put("script", script);
+				sortScript.put("order", sortFieldMapList.get("order"));
+				Outerscript.put("_script", sortScript);
+				list.add(Outerscript);
+				requestBody.put(SORT, list);
+			}else{
+				Map<String,Object> sortMap=new HashMap<>();
+				String fieldName=(String) sortFieldMapList.get("fieldName");
+				if(fieldName!=null) {
+					String sortOrder = sortFieldMapList.get("order") != null ? (String) sortFieldMapList.get("order") : "asc";
+					Map<String, Object> sortOrderMap = new HashMap<>();
+					sortOrderMap.put("order", sortOrder);
+					sortMap.put(fieldName, sortOrderMap);
+					list.add(sortMap);
+					requestBody.put(SORT, list);
+				}
 			}
-			if(sortFieldMapList.get("fieldName").equals("_uid")){
-				inlineScript = "doc['_uid'].value.substring(doc['_uid'].value.indexOf('#')+1)";
-			}
-			String inlineScriptString = String.format(inlineScript, fieldName);
-			script.put("inline", inlineScriptString);
-			sortScript.put("script", script);
-			sortScript.put("order", sortFieldMapList.get("order"));
-			Outerscript.put("_script", sortScript);
-			list.add(Outerscript);
-			requestBody.put(SORT, list);
 		}
 		requestBody.put(_SOURCE, fields);
 		Gson serializer = new GsonBuilder().create();

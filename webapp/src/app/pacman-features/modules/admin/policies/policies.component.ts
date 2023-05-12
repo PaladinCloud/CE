@@ -69,7 +69,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      let severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+      let severeness = {"low":0, "medium":1, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
 
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
@@ -176,8 +176,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       state = {};
     }
     if(state){      
-      this.headerColName = state.headerColName || '';
-      this.direction = state.direction || '';
+      this.headerColName = state.headerColName || 'Severity';
+      this.direction = state.direction || 'desc';
       this.bucketNumber = state.bucketNumber || 0;
       this.totalRows = state.totalRows || 0;
       this.searchTxt = state?.searchTxt || '';
@@ -244,6 +244,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newObj["Actions"] = "";
+      newObj["autofix info"] = newObj["autoFixAvailable"]=="true"?(newObj["autoFixEnabled"]=="true"?"autofix enabled":"autofix available"):"not available";
+      newObj["Autofix status"] = newObj["autoFixAvailable"]=="true"?(newObj["autoFixEnabled"]=="true"?"enabled":"available"):"not available";
       newData.push(newObj);
     });
     return newData;
@@ -252,7 +254,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   getFiltersData(data){
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
-    this.whiteListColumns.forEach(column => {
+    const filtersList = [...this.whiteListColumns, "Autofix status"];
+    filtersList.forEach(column => {
       if(column.toLowerCase()=='actions'){
         return;
       }
@@ -260,6 +263,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.filterTypeLabels.push(column);
       if(column=='Severity'){
         filterTags = ["low", "medium", "high", "critical"];
+      }else if(column=='Autofix status'){
+        filterTags = ["available", "enabled", "not available"];
       }else if(column=='Category'){
         filterTags = ["security", "cost", "operations", "tagging"];
       }else{
@@ -273,6 +278,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
 
       this.filterTagLabels[column] = filterTags;
     });
+
+    this.filterTypeLabels.sort();
   }
 
   getPolicyDetails(isNextPageCalled?) {
@@ -434,15 +441,24 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             isChip: "",
             isMenuBtn: false,
             properties: "",
-            isLink: false
+            isLink: false,
+            imageTitleText: "",
             // chipVariant: "", // this value exists if isChip is true,
             // menuItems: [], // add this if isMenuBtn
           }
           if(col.toLowerCase()=="policy"){
+            let imgSrc = 'noImg';
+            let imageTitleText = "";
+            
+            if (autoFixAvailable=="true") {
+              imgSrc = autoFixEnabled=="true" ? 'autofix' : 'no-autofix';
+              imageTitleText = autoFixEnabled=="true" ? 'Autofix Enabled': 'Autofix Available'
+            }
               cellObj = {
               ...cellObj,
-              imgSrc: autoFixAvailable == "true" ?autoFixEnabled == "true" ?"autofix":"no-autofix":"noImg",
-              isLink: true
+              imgSrc: imgSrc,
+              isLink: true,
+              imageTitleText: imageTitleText
             };
           }
           else if(col.toLowerCase()=="asset type"){
@@ -485,7 +501,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
             }
             cellObj = {
               ...cellObj,
-              chipList: [getData[row][col]],
+              chipList: [getData[row][col].toLowerCase()],
               text: getData[row][col].toLowerCase(),
               isChip: true,
               chipBackgroundColor: chipBackgroundColor,

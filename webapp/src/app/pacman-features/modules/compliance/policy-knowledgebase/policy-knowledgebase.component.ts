@@ -73,7 +73,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   columnNamesMap = { name: 'Policy', provider: 'Source' };
   columnsSortFunctionMap = {
     Severity: (a, b, isAsc) => {
-      const severeness = {"low":4, "medium":3, "high":2, "critical":1, "default": 5 * (isAsc ? 1 : -1)}
+      const severeness = {"low":1, "medium":2, "high":3, "critical":4, "default": 5 * (isAsc ? 1 : -1)}
 
       const ASeverity = a["Severity"].valueText??"default";
       const BSeverity = b["Severity"].valueText??"default";
@@ -164,8 +164,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.searchTxt = this.activatedRoute.snapshot.queryParams.searchValue || '';
       this.displayedColumns = Object.keys(this.columnWidths);
 
-      this.headerColName = state?.headerColName || '';
-      this.direction = state?.direction || '';
+      this.headerColName = state?.headerColName || 'Severity';
+      this.direction = state?.direction || 'desc';
       this.displayedColumns = Object.keys(this.columnWidths);
       this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
       this.searchTxt = state?.searchTxt || '';
@@ -335,13 +335,16 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
             const autoFixAvailable = getData[row].autoFixAvailable;
             const autoFixEnabled = getData[row].autoFixEnabled;
             let imgSrc = 'noImg';
+            let imageTitleText = "";
             if (autoFixAvailable) {
                 imgSrc = autoFixEnabled ? 'autofix' : 'no-autofix';
+                imageTitleText = autoFixEnabled ? 'Autofix Enabled': 'Autofix Available'
             }
             cellObj = {
                 ...cellObj,
                 isLink: true,
-                imgSrc,
+                imgSrc: imgSrc,
+                imageTitleText: imageTitleText
             };
           } else if(col.toLowerCase() === 'asset type'){
               const currentAssetType = this.assetTypeMap.get(cellData);
@@ -412,6 +415,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
         // change data value
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
+      newObj["autofix info"] = newObj["autoFixAvailable"]?(newObj["autoFixEnabled"]?"autofix enabled":"autofix available"):"not available";
+      newObj["Autofix status"] = newObj["autoFixAvailable"]?(newObj["autoFixEnabled"]?"enabled":"available"):"not available";
       newData.push(newObj);
     });
     return newData;
@@ -420,14 +425,18 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   getFiltersData(data){
     this.filterTypeLabels = [];
     this.filterTagLabels = {};
-    this.whiteListColumns.forEach(column => {
+    const filtersList = [...this.whiteListColumns, "Autofix status"];
+    filtersList.forEach(column => {
       let filterTags = [];
       this.filterTypeLabels.push(column);
       if(column=='Severity'){
         filterTags = ["low", "medium", "high", "critical"];
       }else if(column=='Category'){
         filterTags = ["security", "cost", "operations", "tagging"];
-      }else{
+      }else if(column=='Autofix status'){
+        filterTags = ["available", "enabled", "not available"];
+      }
+      else{
         const set = new Set();
         data.forEach(row => {
           set.add(row[column].valueText);
@@ -438,6 +447,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
 
       this.filterTagLabels[column] = filterTags;
     });
+
+    this.filterTypeLabels.sort();
   }
 
   getData() {

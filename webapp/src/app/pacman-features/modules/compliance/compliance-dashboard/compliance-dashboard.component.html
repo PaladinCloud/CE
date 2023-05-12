@@ -1,6 +1,25 @@
-<div class="container-wrapper">
-    <div class="container-1">
+<div
+    class="container-wrapper gap-24 flex flex-col"
+    cdkDropList
+    [cdkDropListData]="dashboardContainers"
+    (cdkDropListDropped)="dropDashboardItem($event)"
+>
+    <div
+        [class]="'container container-' + (item + 1)"
+        [class.collapsed]="isCollapsedContainer(item)"
+        *ngFor="let item of dashboardContainers"
+        cdkDrag
+    >
+        <button class="collapse-btn" type="button" (click)="toggleContainer(item)">
+            <mat-icon>{{ isCollapsedContainer(item) ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+
+        <div class="container-title-collapsed" *ngIf="isCollapsedContainer(item)">
+            {{ collapsedContainerTitle(item) }}
+        </div>
+        <!-- Violation Tiles -->
         <mat-grid-list
+            *ngIf="item === 0"
             [cols]="breakpoint1"
             rowHeight="186px"
             gutterSize="20px"
@@ -13,9 +32,11 @@
                 ></app-violations-card>
             </mat-grid-tile>
         </mat-grid-list>
-    </div>
-    <div class="container-2">
+        <!--./Violation Tiles -->
+
+        <!-- Category & Violations by Severity -->
         <mat-grid-list
+            *ngIf="item === 1"
             [cols]="breakpoint2"
             rowHeight="396px"
             gutterSize="20px"
@@ -23,6 +44,7 @@
         >
             <mat-grid-tile>
                 <app-card
+                    [breadcrumbPresent]="breadcrumbPresent"
                     [card]="cards[0]"
                     [data]="complianceData"
                     [dataError]="complianceDataError"
@@ -36,9 +58,11 @@
                 ></app-card>
             </mat-grid-tile>
         </mat-grid-list>
-    </div>
-    <div class="container-3">
+        <!--./Category & Violations by Severity -->
+
+        <!-- Asset Chart -->
         <mat-grid-list
+            *ngIf="item === 2"
             [cols]="breakpoint3"
             rowHeight="530px"
             gutterSize="20px"
@@ -53,9 +77,10 @@
                 ></app-card>
             </mat-grid-tile>
         </mat-grid-list>
-    </div>
-    <div class="container-4" (window:resize)="onresize($event)">
-        <mat-grid-list [cols]="breakpoint4" rowHeight="504px">
+        <!--./Asset Chart -->
+
+        <!-- Compliance Overview Table -->
+        <mat-grid-list *ngIf="item === 3" [cols]="breakpoint4" rowHeight="504px">
             <mat-grid-tile style="background-color: var(--background-white)">
                 <app-table
                     style="height: 100%; width: 100%"
@@ -90,5 +115,6 @@
                 </app-table>
             </mat-grid-tile>
         </mat-grid-list>
+        <!--./Compliance Overview Table -->
     </div>
 </div>

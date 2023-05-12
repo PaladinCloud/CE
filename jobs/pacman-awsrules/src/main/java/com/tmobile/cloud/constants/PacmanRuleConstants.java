@@ -670,4 +670,8 @@ public class PacmanRuleConstants {
 
     public static final String AUTO_DELETE = "autoDelete";
     public static final String ID = "id";
+
+    public static final String PROJECT_ID= "projectId";
+
+    public static final String PROJECT_NAME= "projectName";
 }
