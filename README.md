@@ -71,7 +71,7 @@ A good example is when some teams would like to enforce additional tagging stand
 * AWS Lambda - policy execution
 
 Paladin Cloud installer automatically launches all of these services and configures them. A
-typical [installation](https://github.com/PaladinCloud/Rev1/wiki/Installation) takes about 20 minutes.
+typical [installation](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)) takes about 20 minutes.
 
 # Paladin Cloud User Interface
 
