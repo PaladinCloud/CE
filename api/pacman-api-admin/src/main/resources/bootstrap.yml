@@ -29,3 +29,5 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+tenable:
+  user-agent: Integration/1.0 (Paladin Cloud; Paladin Cloud; Build/1.0)

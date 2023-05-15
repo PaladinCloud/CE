@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -26,6 +27,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -37,7 +40,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class})
+@PrepareForTest({ PacmanUtils.class,PacmanEc2Utils.class, Annotation.class})
 public class RDSDBUnencryptedPublicAcessRuleTest {
 
     @InjectMocks
@@ -48,7 +51,8 @@ public class RDSDBUnencryptedPublicAcessRuleTest {
         mockStatic(PacmanUtils.class);
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString())).thenReturn(
                 true);
-        
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(rdsBbUnencryptedPublicAccessRule.execute(getMapString("r_123 "),getMapString("r_123 ")), is(notNullValue()));
         assertThat(rdsBbUnencryptedPublicAccessRule.execute(getMapStringEncrypted("r_123 "),getMapStringEncrypted("r_123 ")), is(notNullValue()));
         when(PacmanUtils.doesAllHaveValue(anyString(),anyString())).thenReturn(
@@ -93,5 +97,14 @@ public class RDSDBUnencryptedPublicAcessRuleTest {
         commonMap.put("publiclyaccessible", "true");
         commonMap.put("dbinstanceidentifier", "dbinstanceidentifier");
         return commonMap;
+    }
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }

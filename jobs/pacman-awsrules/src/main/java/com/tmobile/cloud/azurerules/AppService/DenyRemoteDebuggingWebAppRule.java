@@ -3,6 +3,7 @@ package com.tmobile.cloud.azurerules.AppService;
 import com.amazonaws.util.StringUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
@@ -98,44 +99,28 @@ public class DenyRemoteDebuggingWebAppRule extends BasePolicy {
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             String hitsString = resultJson.get(PacmanRuleConstants.HITS).toString();
             logger.debug("hit content in result json: {}", hitsString);
-            JsonObject hitsJson = (JsonObject) parser.parse(hitsString);
+            JsonObject hitsJson = JsonParser.parseString(hitsString).getAsJsonObject();
             JsonArray hitsJsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
             if (hitsJsonArray.size() > 0) {
                 JsonObject jsonDataItem = (JsonObject) ((JsonObject) hitsJsonArray.get(0))
                         .get(PacmanRuleConstants.SOURCE);
-                logger.debug("Validating the data item: {}", jsonDataItem.toString());
-                JsonArray remoteDebuggingJsonArray = jsonDataItem.getAsJsonObject()
-                        .get(PacmanRuleConstants.AZURE_REMOTEDEBUGGING).getAsJsonArray();
-                if (remoteDebuggingJsonArray.size() > 0) {
-                    for (int i = 0; i < remoteDebuggingJsonArray.size(); i++) {
-                        JsonObject remoteDeubggingDataItem = ((JsonObject) remoteDebuggingJsonArray
-                                .get(i));
-                        if (remoteDeubggingDataItem.getAsBoolean()) {
-                            logger.info("The remote debugging is enabled for azure app service. Rule is violated !It should be disabled");
-                            validationResult = false;
-                            break;
-                        } else {
-                            logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);
-
-                        }
-
+                logger.debug("Validating the data item: {}", jsonDataItem);
+                JsonElement remoteDebugging=jsonDataItem.getAsJsonObject().get(PacmanRuleConstants.AZURE_REMOTEDEBUGGING);
+                if ( remoteDebugging!= null) {
+                    boolean remoteDebuggingEnabled = remoteDebugging.getAsBoolean();
+                    if (remoteDebuggingEnabled) {
+                        validationResult = false;
                     }
-                    if (validationResult == true) {
-                        logger.info(" Microsoft sql Database has Restricted Access");
-                    }
-
-                } else {
+                } else{
                     logger.info(RESOURCE_NOT_FOUND);
                     validationResult = false;
                 }
-
-            } else {
+            }else {
                 logger.info(RESOURCE_NOT_FOUND);
+                validationResult = false;
             }
         }
-
         return validationResult;
-
     }
 
     @Override

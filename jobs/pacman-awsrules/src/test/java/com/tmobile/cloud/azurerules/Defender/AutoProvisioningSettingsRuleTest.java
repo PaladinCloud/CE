@@ -7,6 +7,7 @@ import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.awsrules.utils.RulesElasticSearchRepositoryUtil;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import com.tmobile.pacman.commons.policy.BasePolicy;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*"})
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class})
+@PrepareForTest({PacmanUtils.class, BasePolicy.class, RulesElasticSearchRepositoryUtil.class,Annotation.class})
 public class AutoProvisioningSettingsRuleTest {
 
     @InjectMocks
@@ -64,13 +65,13 @@ public class AutoProvisioningSettingsRuleTest {
                 "            }\n" +
                 "          },\n" +
                 "          \"autoProvisioningSettingsList\": [\n" +
+                "          {\n" +
                 "          \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/providers/Microsoft.Security/securityContacts/default\",\n" +
                 "          \"name\": \"default\",\n" +
                 "          \"type\": \"Microsoft.Security/securityContacts\",\n" +
-                "          \"properties\": {\n" +
                 "          \"autoProvision\": \"Off\"\n"+
                 "            }\n" +
-                "              ]\n" +
+                "              ],\n" +
                 "          \"etag\": \"b8004fbd\",\n" +
                 "          \"_resourceid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/providers/Microsoft.Security/securityContacts/default\",\n" +
                 "          \"_docid\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/providers/Microsoft.Security/securityContacts/default\",\n" +
@@ -117,13 +118,13 @@ public class AutoProvisioningSettingsRuleTest {
                 "            }\n" +
                 "          },\n" +
                 "          \"autoProvisioningSettingsList\": [\n" +
+                "          {\n" +
                 "          \"id\": \"subscriptions/f4d319d8-7eac-4e15-a561-400f7744aa81/providers/Microsoft.Security/securityContacts/default\",\n" +
                 "          \"name\": \"default\",\n" +
                 "          \"type\": \"Microsoft.Security/securityContacts\",\n" +
-                "          \"properties\": {\n" +
                 "          \"autoProvision\": \"On\"\n"+
                 "            }\n" +
-                "              ]\n" +
+                "              ],\n" +
                 "          \"name\": \"default\",\n" +
                 "          \"type\": \"Microsoft.Security/securityContacts\",\n" +
                 "          \"etag\": \"b8004fbd\",\n" +
@@ -164,10 +165,21 @@ public class AutoProvisioningSettingsRuleTest {
         when(RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(anyString(),anyObject(),
                 anyObject(),
                 anyObject(), anyObject(), anyInt(), anyObject(), anyObject(), anyObject())).thenReturn(getFailureJsonArrayForAutoProvisioning());
+        mockStatic(Annotation.class);
+        when(Annotation.buildAnnotation(anyObject(),anyObject())).thenReturn(getMockAnnotation());
         assertThat(autoProvisioningSettingsRule.execute(CommonTestUtils.getMapString("r_123 "),
                 CommonTestUtils.getMapString("r_123 ")).getStatus(), is(PacmanSdkConstants.STATUS_FAILURE));
     }
 
+    private Annotation getMockAnnotation() {
+        Annotation annotation=new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
+    }
 
     @Test
     public void getHelpTextTest() {

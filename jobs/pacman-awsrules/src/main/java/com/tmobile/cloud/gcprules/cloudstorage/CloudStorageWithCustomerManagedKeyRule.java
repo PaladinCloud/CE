@@ -2,6 +2,7 @@ package com.tmobile.cloud.gcprules.cloudstorage;
 
 import com.amazonaws.util.StringUtils;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.constants.PacmanRuleConstants;
@@ -92,11 +93,11 @@ public class CloudStorageWithCustomerManagedKeyRule extends BasePolicy {
                     .get(PacmanRuleConstants.SOURCE);
 
             logger.debug("Validating the data item: {}", vmInstanceObject);
-            String defaultKmsKeyName = vmInstanceObject.getAsJsonObject()
-                    .get(PacmanRuleConstants.STORAGE_KMS_KEY_NAME).toString();
+            JsonElement defaultKmsKeyName = vmInstanceObject.getAsJsonObject()
+                    .get(PacmanRuleConstants.STORAGE_KMS_KEY_NAME);
             logger.debug("Value of kms key name {}",defaultKmsKeyName);
 
-            if (!defaultKmsKeyName.equalsIgnoreCase( "null")) {
+            if (!defaultKmsKeyName.isJsonNull()) {
                 validationResult = true;
             } else {
                 logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);

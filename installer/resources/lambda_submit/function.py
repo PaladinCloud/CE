@@ -386,6 +386,41 @@ class AquaImageVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTarget
     })
 
 
+class TenableVMVulnerabilityCollectorEventRule(CloudWatchEventRuleResource):
+    name = "tenable-vm-vulnerability-collector"
+    schedule_expression = "cron(0 0 * * ? *)"
+    DEPENDS_ON = [SubmitJobLambdaFunction]
+
+
+
+class TenableVMVulnerabilityCollectorLambdaPermission(LambdaPermission):
+    statement_id = "AllowExecutionFromTenableVMVulnerabilityCollectorEvent"
+    action = "lambda:InvokeFunction"
+    function_name = SubmitJobLambdaFunction.get_output_attr('function_name')
+    principal = "events.amazonaws.com"
+    source_arn = TenableVMVulnerabilityCollectorEventRule.get_output_attr('arn')
+
+
+
+class TenableVMVulnerabilityCollectorCloudWatchEventTarget(CloudWatchEventTargetResource):
+    rule = TenableVMVulnerabilityCollectorEventRule.get_output_attr('name')
+    arn = SubmitJobLambdaFunction.get_output_attr('arn')
+    target_id = 'TenableVMVulnerabilityCollectorTarget'  # Unique identifier
+    target_input = json.dumps({
+        'jobName': "tenable-vm-vulnerability-collector",
+        'jobUuid': "tenable-collector",
+        'jobType': "jar",
+        'jobDesc': "Tenable VM Vulnerability Collector",
+        'environmentVariables': [
+            {'name': "CONFIG_URL", 'value': ApplicationLoadBalancer.get_api_base_url(
+            ) + "/config/batch,tenable-enricher/prd/latest"},
+        ],
+        'params': [
+            {'encrypt': False, 'key': "package_hint", 'value': "com.tmobile"},
+            {'encrypt': False, 'key': "config_creds", 'value': "dXNlcjpwYWNtYW4="},
+            {'encrypt': False, 'key': "job_hint", 'value': "tenable_vm_vulnerability"},
+        ]
+    })
 
 class AzureDataCollectorEventRule(CloudWatchEventRuleResource):
     name = "azure-discovery"

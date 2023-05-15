@@ -16,26 +16,24 @@
 
 package com.tmobile.pacman.util;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tmobile.pacman.common.PacmanSdkConstants;
 import com.tmobile.pacman.commons.policy.Annotation;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -78,7 +76,7 @@ public class ESUtils {
         }
         String url = getEsUrl();
         if (Strings.isNullOrEmpty(url)) {
-            throw new Exception("ES_URI not found in the enviroment variables, do define one end point for ES");
+            throw new Exception("ES_URI not found in the environment variables, do define one end point for ES");
         }
 
         Map<String, Object> effectiveFilter = new HashMap<>();
@@ -126,10 +124,15 @@ public class ESUtils {
 
         Map<String, Object> requestBody = new HashMap<String, Object>();
         Map<String, Object> matchFilters = Maps.newHashMap();
-        if (filter == null) {
-            matchFilters.put("match_all", new HashMap<String, String>());
-        } else {
-            matchFilters.putAll(filter);
+        if (type != null) {
+            if (filter == null) {
+                Map<String, String> typeFilter = new HashMap<String, String>();
+                typeFilter.put(PacmanSdkConstants.DOC_TYPE, type);
+                matchFilters.put("match", typeFilter);
+            } else {
+                filter.put(PacmanSdkConstants.DOC_TYPE, type);
+                matchFilters.putAll(filter);
+            }
         }
         if (null != filter) {
             requestBody.put(QUERY, CommonUtils.buildQuery(matchFilters, mustNotFilter, shouldFilter));
@@ -161,9 +164,9 @@ public class ESUtils {
     private static String buildURL(String url, String index, String type) {
 
         StringBuilder urlToQuery = new StringBuilder(url).append("/").append(index);
-        if (!Strings.isNullOrEmpty(type)) {
-            urlToQuery.append("/").append(type);
-        }
+//        if (!Strings.isNullOrEmpty(type)) {
+//            urlToQuery.append("/").append(type);
+//        }
         urlToQuery.append("/").append(COUNT);
         return urlToQuery.toString();
     }
@@ -194,6 +197,30 @@ public class ESUtils {
         return CommonUtils.isValidResource(esUrl);
     }
 
+    public static boolean isParentChildRelationExists(final String url, String indexName, String parent, String child) throws IOException {
+        // Get the mapping for the index
+        String mappingUrl = url + "/" + indexName + "/_mapping";
+        String mappingResponse = CommonUtils.doHttpGet(mappingUrl);
+        JSONObject mappingObject = new JSONObject(mappingResponse);
+
+        // Get the relations for the index
+        JSONObject indexObject = mappingObject.getJSONObject(indexName);
+        JSONObject relationsObject = indexObject.getJSONObject("relations");
+
+        // Check if a relation exists between the parent and child entities
+        if (relationsObject.has(parent)) {
+            JSONArray childArray = relationsObject.getJSONArray(parent);
+            for (int i = 0; i < childArray.length(); i++) {
+                String relation = childArray.getString(i);
+                if (relation.equals(child)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Gets the es url.
      *
@@ -221,27 +248,88 @@ public class ESUtils {
     /**
      * Creates the mapping with parent.
      *
-     * @param esUrl the es url
-     * @param index the index
-     * @param type the type
-     * @param parentType the parent type
+     * @param esUrl  the es url
+     * @param index  the index
+     * @param type   the type
+     * @param parent the parent type
      * @return the string
      * @throws Exception the exception
      */
-    public static String createMappingWithParent(String esUrl, String index, String type, String parentType)
-            throws Exception {
-        String url = new StringBuilder(esUrl).append("/").append(index).append("/").append(MAPPING).append("/")
-                .append(type).toString();
-        String requestBody = "  {\"_parent\": { \"type\": \"" + parentType + "\"}}";
-        // String requestBody =
-        // "{\"mappings\":{\"input_type\":{\"dynamic_templates\":[{\"notanalyzed\":{\"match\":\"*\",\"match_mapping_type\":\"string\",\"mapping\":{\"type\":\"string\",\"index\":\"not_analyzed\"}}}]}}}";
-        return CommonUtils.doHttpPut(url, requestBody);
+//    public static String createMappingWithParent(String esUrl, String index, String type, String parentType)
+//            throws Exception {
+//        String url = new StringBuilder(esUrl).append("/").append(index).append("/").append(MAPPING).append("/")
+//                .append(type).toString();
+//        String requestBody = "  {\"_parent\": { \"type\": \"" + parentType + "\"}}";
+//        // String requestBody =
+//        // "{\"mappings\":{\"input_type\":{\"dynamic_templates\":[{\"notanalyzed\":{\"match\":\"*\",\"match_mapping_type\":\"string\",\"mapping\":{\"type\":\"string\",\"index\":\"not_analyzed\"}}}]}}}";
+//        return CommonUtils.doHttpPut(url, requestBody);
+//    }
+    public static String createMappingWithParent(String esUrl, String index, String type, String parent) {
+        String endPoint = index + "/_mapping";
+        // Get existing children
+        Map<String, Object> existingChildren = null;
+        try {
+            existingChildren = getChildRelations(index, parent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Check if parent already has existing children
+        List<String> existingChildTypes;
+        if (existingChildren.containsKey(parent)) {
+            Object existingChildObj = existingChildren.get(parent);
+            if (existingChildObj instanceof String) {
+                existingChildTypes = new ArrayList<>();
+                existingChildTypes.add((String) existingChildObj);
+            } else {
+                existingChildTypes = (List<String>) existingChildObj;
+            }
+        } else {
+            existingChildTypes = new ArrayList<>();
+        }
+
+        // Add new child
+        existingChildTypes.add(type);
+        existingChildren.put(parent, existingChildTypes);
+
+        // Create childMap with updated relations
+        Map<String, Object> childMap = new HashMap<>();
+        childMap.put("type", "join");
+        childMap.put("relations", existingChildren);
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(parent + "_relations", childMap);
+
+        Map<String, Object> payloadMap = new HashMap<>();
+        payloadMap.put("properties", properties);
+
+        String payLoad = null;
+        try {
+            payLoad = new ObjectMapper().writeValueAsString(payloadMap);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            return CommonUtils.doHttpPut(endPoint, payLoad);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Helper function to retrieve existing child relations
+    private static Map<String, Object> getChildRelations(String index, String parent) throws IOException {
+        String endPoint = index + "/_mapping";
+        String response = CommonUtils.doHttpGet(endPoint);
+        JsonNode node = new ObjectMapper().readTree(response);
+        JsonNode properties = node.at("/" + index + "/mappings/properties");
+        JsonNode relations = properties.get(parent + "_relations").get("relations");
+        return new ObjectMapper().convertValue(relations, Map.class);
     }
 
     /**
      * Creates the index.
      *
-     * @param url the url
+     * @param url       the url
      * @param indexName the index name
      * @throws Exception the exception
      */
@@ -280,9 +368,9 @@ public class ESUtils {
         }
 
         String parentType, type;
-        if (!Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TARGET_TYPE))
-                && !Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TYPE))) {
-            parentType = annotation.get(PacmanSdkConstants.TARGET_TYPE);
+        if (!Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TARGET_TYPE).toString())
+                && !Strings.isNullOrEmpty(annotation.get(PacmanSdkConstants.TYPE).toString())) {
+            parentType = annotation.get(PacmanSdkConstants.TARGET_TYPE).toString();
             type = getIssueTypeFromAnnotation(annotation);
         } else
             throw new Exception("targetType name cannot be null or blank");
@@ -295,6 +383,7 @@ public class ESUtils {
         }
 
     }
+
 
     /**
      * Builds the index name from annotation.
@@ -314,7 +403,7 @@ public class ESUtils {
      * @return the issue type from annotation
      */
     public static String getIssueTypeFromAnnotation(Annotation annotation) {
-        return new StringBuilder(annotation.get(PacmanSdkConstants.TYPE)).append("_")
+        return new StringBuilder(annotation.get(PacmanSdkConstants.TYPE).toString()).append("_")
                 .append(annotation.get(PacmanSdkConstants.TARGET_TYPE)).toString();
     }
 
@@ -333,6 +422,8 @@ public class ESUtils {
      * @return String
      * @throws Exception the exception
      */
+
+
     @SuppressWarnings("unchecked")
     public static List<Map<String, String>> getDataFromES(final String url, String dataSource, String entityType,
             Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
@@ -346,19 +437,33 @@ public class ESUtils {
             logger.error("url cannot be null / empty");
             throw new Exception("url parameter cannot be empty or null");
         }
-        StringBuilder urlToQueryBuffer = new StringBuilder(url).append("/").append(dataSource);
-        if (!Strings.isNullOrEmpty(entityType)) {
-            urlToQueryBuffer.append("/").append(entityType);
-        }
-        urlToQueryBuffer.append("/").append("_search").append("?scroll=").append(PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
 
-        String urlToQuery = urlToQueryBuffer.toString();
-        String urlToScroll = new StringBuilder(url).append("/").append("_search").append("/scroll").toString();
+        String urlToQuery = url + "/" + dataSource +
+//        if (!Strings.isNullOrEmpty(entityType)) {
+//            urlToQueryBuffer.append("/").append(entityType);
+//        }
+                "/" + "_search" + "?scroll=" + PacmanSdkConstants.ES_PAGE_SCROLL_TTL;
+        logger.info("Querying ES with URL1: {}", urlToQuery);
+        String urlToScroll = url + "/" + "_search" + "/scroll";
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         // paginate for breaking the response into smaller chunks
+
+        // add mapping type in the request body
+        Map<String, Object> matchFilters = Maps.newHashMap();
+        if (entityType != null) {
+            if (mustFilter == null) {
+                Map<String, String> typeFilter = new HashMap<String, String>();
+                typeFilter.put(PacmanSdkConstants.DOC_TYPE, entityType);
+                mustFilter.put("match", typeFilter);
+            } else {
+                mustFilter.put(PacmanSdkConstants.DOC_TYPE, entityType);
+                matchFilters.putAll(mustFilter);
+            }
+        }
+
         Map<String, Object> requestBody = new HashMap<String, Object>();
         requestBody.put("size", PacmanSdkConstants.ES_PAGE_SIZE);
-        requestBody.put(QUERY, CommonUtils.buildQuery(mustFilter, mustNotFilter, shouldFilter));
+        requestBody.put(QUERY, CommonUtils.buildQuery(matchFilters, mustNotFilter, shouldFilter));
         requestBody.put("_source", fields);
         Gson serializer = new GsonBuilder().create();
         String request = serializer.toJson(requestBody);
@@ -371,6 +476,7 @@ public class ESUtils {
                     request = buildScrollRequest(_scroll_id, PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
                     urlToQuery = urlToScroll;
                 }
+                logger.info("Querying ES with URL2: {}", urlToQuery);
                 responseDetails = CommonUtils.doHttpPost(urlToQuery, request,new HashMap<>());
                 _scroll_id = processResponseAndSendTheScrollBack(responseDetails, results);
             } catch (Exception e) {
@@ -428,8 +534,8 @@ public class ESUtils {
                 for (Map<String, Object> hitDetail : hitDetails) {
                     Map<String, Object> sources = (Map<String, Object>) hitDetail.get("_source");
                     sources.put(PacmanSdkConstants.ES_DOC_ID_KEY, hitDetail.get(PacmanSdkConstants.ES_DOC_ID_KEY));
-                    sources.put(PacmanSdkConstants.ES_DOC_PARENT_KEY,
-                            hitDetail.get(PacmanSdkConstants.ES_DOC_PARENT_KEY));
+//                    sources.put(PacmanSdkConstants.ES_DOC_PARENT_KEY,
+//                            hitDetail.get(PacmanSdkConstants.ES_DOC_PARENT_KEY));
                     sources.put(PacmanSdkConstants.ES_DOC_ROUTING_KEY,
                             hitDetail.get(PacmanSdkConstants.ES_DOC_ROUTING_KEY));
                     results.add(CommonUtils.flatNestedMap(null, sources));
@@ -445,7 +551,7 @@ public class ESUtils {
      * @param attributeName the attribute name
      * @return the string
      */
-    public static String convertAttributetoKeyword(String attributeName) {
+    public static String convertAttributeToKeyword(String attributeName) {
         return attributeName + ".keyword";
     }
 
@@ -531,10 +637,9 @@ public class ESUtils {
         String postBody = serializer.toJson(evalResults);
         return postJsonDocumentToIndexAndType(docId,indexName, type,postBody,Boolean.TRUE);
     }
-    
+
     /**
-     * 
-     * @param evalResults
+     * @param executionId
      * @param indexName
      * @param type
      * @param postBody
@@ -551,10 +656,10 @@ public class ESUtils {
             if (!ESUtils.isValidIndex(url, indexName)) {
                 ESUtils.createIndex(url, indexName);
             }
-            if (!ESUtils.isValidType(url, indexName, type)) {
-                ESUtils.createMapping(url, indexName, type);
-            }
-            String esUrl = new StringBuilder(url).append("/").append(indexName).append("/").append(type).append("/")
+//            if (!ESUtils.isValidType(url, indexName, type)) {
+//                ESUtils.createMapping(url, indexName, type);
+//            }
+            String esUrl = new StringBuilder(url).append("/").append(indexName).append("/_doc/")
                     .append(executionId).toString();
             if(isUpdate){
                 esUrl += "/_update";

@@ -9,6 +9,7 @@ import com.tmobile.cloud.awsrules.utils.PacmanUtils;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.InvalidInputException;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 @PowerMockIgnore({"javax.net.ssl.*", "javax.management.*","jdk.internal.reflect.*"})
 public class EnableHttpsRuleTest {
     @InjectMocks
@@ -39,6 +40,7 @@ public class EnableHttpsRuleTest {
     public void setUp() {
         mockStatic(PacmanUtils.class);
         mockStatic(GCPUtils.class);
+        mockStatic(Annotation.class);
     }
 
 
@@ -48,8 +50,7 @@ public class EnableHttpsRuleTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonArrayForEnableHttpsRule());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(enableHttpsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
@@ -68,7 +69,7 @@ public class EnableHttpsRuleTest {
                         "          \"projectName\": null,\n" +
                         "          \"projectId\": null,\n" +
                         "          \"urlMap\": \"new-loadbalancer\",\n" +
-                        "          \"targetHttpProxy\": [\n" +
+                        "          \"targetHttpsProxy\": [\n" +
                         "            \"new-loadbalancer-target-proxy\"\n" +
                         "          ],\n" +
                         "          \"discoverydate\": \"2022-12-08 17:00:00+0530\",\n" +
@@ -93,8 +94,7 @@ public class EnableHttpsRuleTest {
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
                 .thenReturn(getFailureHitsJsonArrayForEnableHttpsRule());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(enableHttpsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
@@ -106,26 +106,51 @@ public class EnableHttpsRuleTest {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("_source", gson.fromJson(
-                " {\n"
-                        + "          \"discoveryDate\": \"2022-12-08 17:00:00+0530\",\n" +
-                        "          \"_cloudType\": \"GCP\",\n" +
-                        "          \"region\": null,\n" +
-                        "          \"id\": \"4432585077905277180\",\n" +
-                        "          \"projectName\": null,\n" +
-                        "          \"projectId\": null,\n" +
-                        "          \"urlMap\": \"loadbalancer2\",\n" +
-                        "          \"targetHttpProxy\": [\n" +
-                        "            \"new-loadbalancer-target-proxy\"\n" +
+                "{\n" +
+                        "          \"_cloudType\" : \"GCP\",\n" +
+                        "          \"region\" : \"\",\n" +
+                        "          \"id\" : \"8754306309307615551\",\n" +
+                        "          \"projectName\" : \"Paladin Cloud\",\n" +
+                        "          \"projectId\" : \"central-run-349616\",\n" +
+                        "          \"tags\" : null,\n" +
+                        "          \"urlMap\" : \"loadbalancer2\",\n" +
+                        "          \"targetHttpsProxy\" : [\n" +
+                        "            \"loadbalancer2-target-proxy-2\",\n" +
+                        "            \"loadbalancer2-target-proxy-4\"\n" +
                         "          ],\n" +
-                        "          \"discoverydate\": \"2022-12-08 17:00:00+0530\",\n" +
-                        "          \"_resourceid\": \"4432585077905277180\",\n" +
-                        "          \"_docid\": \"4432585077905277180\",\n" +
-                        "          \"_entity\": \"true\",\n" +
-                        "          \"_entitytype\": \"gcploadbalancer\",\n" +
-                        "          \"firstdiscoveredon\": \"2022-12-07 17:00:00+0530\",\n" +
-                        "          \"latest\": true,\n" +
-                        "          \"_loaddate\": \"2022-12-08 11:48:00+0000\"\n" +
-                        "      }",
+                        "          \"httpProxyDetailList\" : [\n" +
+                        "            {\n" +
+                        "              \"name\" : \"loadbalancer2-target-proxy-2\",\n" +
+                        "              \"hasCustomPolicy\" : true\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "              \"name\" : \"loadbalancer2-target-proxy-4\",\n" +
+                        "              \"hasCustomPolicy\" : false\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"logConfigEnabled\" : true,\n" +
+                        "          \"quicNegotiation\" : [\n" +
+                        "            true,\n" +
+                        "            false\n" +
+                        "          ],\n" +
+                        "          \"sslPolicyList\" : [\n" +
+                        "            {\n" +
+                        "              \"minTlsVersion\" : \"TLS_1_2\",\n" +
+                        "              \"profile\" : \"MODERN\",\n" +
+                        "              \"enabledFeatures\" : [ ]\n" +
+                        "            }\n" +
+                        "          ],\n" +
+                        "          \"discoverydate\" : \"2023-04-24 11:00:00+0000\",\n" +
+                        "          \"_resourceid\" : \"8754306309307615551\",\n" +
+                        "          \"_docid\" : \"8754306309307615551\",\n" +
+                        "          \"_entity\" : \"true\",\n" +
+                        "          \"_entitytype\" : \"gcploadbalancer\",\n" +
+                        "          \"docType\" : \"gcploadbalancer\",\n" +
+                        "          \"gcploadbalancer_relations\" : \"gcploadbalancer\",\n" +
+                        "          \"firstdiscoveredon\" : \"2023-04-24 11:00:00+0000\",\n" +
+                        "          \"latest\" : true,\n" +
+                        "          \"_loaddate\" : \"2023-04-24 11:14:00+0000\"\n" +
+                        "        }",
                 JsonElement.class));
         JsonArray array = new JsonArray();
         array.add(jsonObject);
@@ -138,7 +163,7 @@ public class EnableHttpsRuleTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getFailureHitsJsonArrayForEnableHttpsRule());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString())).thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 false);
         assertThatThrownBy(() -> enableHttpsRule.execute(getMapString("r_123 "), getMapString("r_123 "))).isInstanceOf(InvalidInputException.class);

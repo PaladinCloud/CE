@@ -179,6 +179,8 @@ public class PacmanRuleConstants {
     public static final String KERNEL_RELEASE = "kernel_release";
     public static final String INSTANCEID = "instanceid";
     public static final String ACCOUNTID = "accountid";
+    public static final String DOC_TYPE = "docType";
+    public static final String FORWARD_SLASH = "/";
     public static final String PUBLIC_IP_ADDR = "publicipaddress";
     public static final String VPC_ID = "vpcid";
     public static final String SUBNETID = "subnetid";
@@ -331,10 +333,16 @@ public class PacmanRuleConstants {
     public static final String CREATED_EVENT_TYPE = "created";
     public static final String SERVICE_LIMIT_STATUS_RED = "status_RED";
     public static final String MATCH_ALL = "match_all";
+    public static final String AWS_STRING = "aws";
+    public static final String MATCH = "match";
     public static final String QUERY = "query";
+    public static final String MUST = "must";
+    public static final String BOOL = "bool";
     public static final String RANGE = "range";
     public static final String ERROR_MESSAGE = "error retrieving inventory from ES";
+    public static final String GET_NO_OF_ACCOUNT_ERROR_MESSAGE = "Exception in getting total number of accounts - ";
     public static final String TERMS = "terms";
+    public static final String TERM = "term";
     public static final String HAS_CHILD = "has_child";
     public static final String HAS_PARENT = "has_parent";
     public static final String RESOURCE_ID = "_resourceid";
@@ -554,7 +562,7 @@ public class PacmanRuleConstants {
     public static final String ACL = "acl";
     public static final String KMS_KEY_NAME = "kmsKeyName";
     public static final String DESTINATIONRANGE = "destinationRanges";
-    public static final String EGRESS = "egress";
+    public static final String EGRESS = "EGRESS";
     public static final String HTTP20ENABLED = "http20Enabled";
     public static final String MASTRERAUTHORRIZEDNETWORKCONFIG = "masterAuthorizedNetworksConfig";
     public static final String DISKENCRYPTION = "diskEncryption";
@@ -569,7 +577,7 @@ public class PacmanRuleConstants {
     public  static  final  String HTTPS_ONLY="httpsOnly";
     public  static  final String FTP_STATE="ftpsState";
     public static  final String DBFLAGNAME="dbFlagName";
-    public  static  final String TLS_VERSION="supportedTlsVersions";
+    public  static  final String TLS_VERSION="tlsVersion";
     public static final String ClientCertEnabled="clientCertEnabled";
     public static final String DATABASE_TYPE="dataBaseType";
     public  static  final  String DATABASE_VERSION="databaseVersion";

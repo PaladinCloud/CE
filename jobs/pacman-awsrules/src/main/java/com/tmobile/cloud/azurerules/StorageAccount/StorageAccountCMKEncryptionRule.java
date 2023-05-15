@@ -86,7 +86,7 @@ public class StorageAccountCMKEncryptionRule extends BasePolicy {
     private boolean checkIsCustomerManagedKeysEncryptionEnabled(String esUrl, Map<String, Object> mustFilter)
             throws Exception {
         logger.info("Validating the resource data from elastic search. ES URL:{}, FilterMap : {}", esUrl, mustFilter);
-        boolean validationResult = true;
+        boolean validationResult = false;
         JsonParser parser = new JsonParser();
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 new HashMap<>(),
@@ -106,11 +106,8 @@ public class StorageAccountCMKEncryptionRule extends BasePolicy {
                     String customerManagedKey = sourceJsonObject.get(PacmanRuleConstants.CUSTOMER_MANAGED_KEY)
                             .getAsString();
                     logger.debug("Validating the data item: {}", customerManagedKey);
-                    if (customerManagedKey.isEmpty()) {
-                        validationResult = false;
-                        logger.debug(
-                                "Selected Microsoft Azure storage account is not encrypted using customer managed keys- Validation Result: "
-                                        + validationResult);
+                    if (customerManagedKey != null) {
+                        validationResult = true;
                     }
                 } else {
                     logger.info(PacmanRuleConstants.RESOURCE_DATA_NOT_FOUND);

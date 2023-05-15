@@ -5,16 +5,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
+import com.tmobile.pacman.commons.policy.Annotation;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,7 +36,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 
 @PowerMockIgnore({ "javax.net.ssl.*", "javax.management.*" })
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ PacmanUtils.class, BasePolicy.class })
+@PrepareForTest({ PacmanUtils.class, BasePolicy.class, Annotation.class })
 public class LogMetricFilterAndAlarmRuleTest {
 
 	@InjectMocks
@@ -40,14 +45,20 @@ public class LogMetricFilterAndAlarmRuleTest {
 	private static final String CLOUD_TRAIL_URL = "/aws/cloudtrail/_search";
 	private static final String CLOUD_WATCH_LOGS_METRIC_URL = "/aws/cloudwatchlogs_metric/_search";
 	private static final String CLOUD_WATCH_ALARM_URL = "/aws/cloudwatchalarm/_search";
-	private static final String CT_CFG_CHANGES_FILTER =
+	private static final String CT_CFGN_CHANGES_FILTER =
 			"{ ($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) "
 					+ "|| ($.eventName = StartLogging) || ($.eventName = StopLogging) }";
+
+	@Before
+	public void setup() throws Exception {
+		mockStatic(Annotation.class);
+		when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
+	}
 	
 	@Test
 	public void executeTest() throws Exception {
 
-		String filterName = "CT_CFG_CHANGES_FILTER";
+		String filterName = "CT_CFGN_CHANGES_FILTER";
 		mockStatic(PacmanUtils.class);
 
 		when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
@@ -62,11 +73,11 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(), any(),
-				any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
+				any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_LOGS_METRIC_URL),
-				any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList(CT_CFG_CHANGES_FILTER)));
+				any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList(CT_CFGN_CHANGES_FILTER)));
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_ALARM_URL), any(),
-				any(), any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
+				any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 
 		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertEquals(PacmanSdkConstants.STATUS_SUCCESS, ruleResult.getStatus());
@@ -89,9 +100,9 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		when(PacmanUtils.getValueFromElasticSearchAsSet(any(), any(), any(), any(), any(), any()))
-				.thenReturn(new HashSet<>(Arrays.asList("test")));
+				.thenReturn(new HashSet<>(Collections.singletonList("test")));
 
-		String expected = "Invalid value for filter, filter: " + filterName;
+		String expected = "Invalid value for filter,filter: " + filterName;
 
 		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
@@ -142,8 +153,8 @@ public class LogMetricFilterAndAlarmRuleTest {
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		when(PacmanUtils.getValueFromElasticSearchAsSet(any(), any(), any(), any(), any(), any())).thenReturn(null);
 
-		String expected = "CloudTrail log with matching conditions does not exists, isMultiRegionTrail: true"
-				+ ", isLogging: true, accountId: " + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
+		String expected = "CloudTrail log with matching conditions does not exists,isMultiRegionTrail: true"
+				+ ",isLogging: true,accountId: " + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
 		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
@@ -153,7 +164,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 	@Test
 	public void cloudTrailMetriclogNotFoundTest() throws Exception {
 
-		String filterName = "CT_CFG_CHANGES_FILTER";
+		String filterName = "CT_CFGN_CHANGES_FILTER";
 		mockStatic(PacmanUtils.class);
 
 		when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
@@ -168,13 +179,13 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(), any(),
-				any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
+				any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_LOGS_METRIC_URL),
 				any(), any(), any(), any(), any())).thenReturn(null);
 
-		String expected = "Cloudwatch logs with matching conditions does not exists, metricname: "
-				+ ruleParam.get(PacmanRuleConstants.METRIC_NAME) + ", metricnamespace: "
-				+ ruleParam.get(PacmanRuleConstants.METRIC_NAMESPACE) + ", filtername: " + filterName + ", accountId: "
+		String expected = "Cloudwatch logs with matching conditions does not exists,metricname: "
+				+ ruleParam.get(PacmanRuleConstants.METRIC_NAME) + ",metricnamespace: "
+				+ ruleParam.get(PacmanRuleConstants.METRIC_NAMESPACE) + ",filtername: " + filterName + ",accountId: "
 				+ resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
 		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
@@ -185,7 +196,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 	@Test
 	public void cloudTrailFilterPatternNotMatchingTest() throws Exception {
 
-		String filterName = "CT_CFG_CHANGES_FILTER";
+		String filterName = "CT_CFGN_CHANGES_FILTER";
 		mockStatic(PacmanUtils.class);
 
 		when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
@@ -200,12 +211,12 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(), any(),
-				any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
+				any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_LOGS_METRIC_URL),
-				any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
+				any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 
-		String expected = "Cloudwatch logs with matching filter patterns does not exists, filtername: " 
-				+ filterName + ", accountId: " + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
+		String expected = "Cloudwatch logs with matching filter patterns does not exists,filtername: "
+				+ filterName + ",accountId: " + resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
 		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);
 		assertTrue(ruleResult.getAnnotation().get("issueDetails").contains(expected));
@@ -215,7 +226,7 @@ public class LogMetricFilterAndAlarmRuleTest {
 	@Test
 	public void cloudWatchAlarmNotFoundTest() throws Exception {
 
-		String filterName = "CT_CFG_CHANGES_FILTER";
+		String filterName = "CT_CFGN_CHANGES_FILTER";
 		mockStatic(PacmanUtils.class);
 
 		when(PacmanUtils.getPacmanHost(PacmanRuleConstants.ES_URI)).thenReturn(PacmanRuleConstants.ES_URI);
@@ -230,15 +241,15 @@ public class LogMetricFilterAndAlarmRuleTest {
 
 		when(PacmanUtils.checkNaclWithInvalidRules(anyString(), anyString(), anyString())).thenReturn(true);
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_TRAIL_URL), any(), any(),
-				any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList("test")));
+				any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList("test")));
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_LOGS_METRIC_URL),
-				any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Arrays.asList(CT_CFG_CHANGES_FILTER)));
+				any(), any(), any(), any(), any())).thenReturn(new HashSet<>(Collections.singletonList(CT_CFGN_CHANGES_FILTER)));
 		when(PacmanUtils.getValueFromElasticSearchAsSet(eq(PacmanRuleConstants.ES_URI + CLOUD_WATCH_ALARM_URL), any(),
 				any(), any(), any(), any())).thenReturn(null);
 
-		String expected = "Cloudwatch alarm with matching conditions does not exists, metricname: "
-				+ ruleParam.get(PacmanRuleConstants.METRIC_NAME) + ", namespace: "
-				+ ruleParam.get(PacmanRuleConstants.METRIC_NAMESPACE) + ", accountId: "
+		String expected = "Cloudwatch alarm with matching conditions does not exists,metricname: "
+				+ ruleParam.get(PacmanRuleConstants.METRIC_NAME) + ",namespace: "
+				+ ruleParam.get(PacmanRuleConstants.METRIC_NAMESPACE) + ",accountId: "
 				+ resourceAttribute.get(PacmanRuleConstants.ACCOUNTID);
 
 		PolicyResult ruleResult = logMetricFilterAndAlarmRule.execute(ruleParam, resourceAttribute);

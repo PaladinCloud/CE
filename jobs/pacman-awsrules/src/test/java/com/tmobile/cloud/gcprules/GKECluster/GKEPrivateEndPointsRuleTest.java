@@ -6,10 +6,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.tmobile.cloud.awsrules.utils.CommonTestUtils;
 import com.tmobile.cloud.awsrules.utils.PacmanUtils;
-import com.tmobile.cloud.gcprules.GKEClusterRule.GkeEnablePrivateClusterNodesRule;
 import com.tmobile.cloud.gcprules.GKEClusterRule.GkeEnablePrivateEndPtsRule;
 import com.tmobile.cloud.gcprules.utils.GCPUtils;
 import com.tmobile.pacman.commons.PacmanSdkConstants;
+import com.tmobile.pacman.commons.policy.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +29,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({PacmanUtils.class, GCPUtils.class})
+@PrepareForTest({PacmanUtils.class, GCPUtils.class, Annotation.class})
 public class GKEPrivateEndPointsRuleTest {
 
     @InjectMocks
@@ -38,6 +38,7 @@ public class GKEPrivateEndPointsRuleTest {
     public void setUp() {
         mockStatic(PacmanUtils.class);
         mockStatic(GCPUtils.class);
+        mockStatic(Annotation.class);
     }
 
     @Test
@@ -46,8 +47,7 @@ public class GKEPrivateEndPointsRuleTest {
         when(PacmanUtils.getPacmanHost(anyString())).thenReturn("host");
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject())).thenReturn(getHitsJsonForGKESecureBootSuccess());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(gkeEnablePrivateEndPtsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),
@@ -106,8 +106,7 @@ public class GKEPrivateEndPointsRuleTest {
         when(GCPUtils.getHitsArrayFromEs(anyObject(), anyObject()))
                 .thenReturn(getHitsJsonForGKESecureBootFailure());
 
-        when(PacmanUtils.createAnnotation(anyString(), anyObject(), anyString(), anyString(), anyString()))
-                .thenReturn(CommonTestUtils.getAnnotation("123"));
+        when(Annotation.buildAnnotation(anyObject(), anyObject())).thenReturn(CommonTestUtils.getMockAnnotation());
         when(PacmanUtils.doesAllHaveValue(anyString(), anyString(), anyString())).thenReturn(
                 true);
         assertThat(gkeEnablePrivateEndPtsRule.execute(getMapString("r_123 "), getMapString("r_123 ")).getStatus(),

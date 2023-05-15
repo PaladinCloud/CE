@@ -187,6 +187,18 @@ public class CommonTestUtils {
         commonMap.put("vpc", "vpc");
         commonMap.put("securitygroups", "securitygroups");
         commonMap.put("minimumTlsVersion", "TLS1_2");
+        commonMap.put("minTlsVersion","1.2");
+        commonMap.put("adminForKeys","Get,Delete");
+        commonMap.put("adminForSecrets","Recover");
+        commonMap.put("adminForCertificates","Recover,GetIssuers");
+        commonMap.put("keyValutName","testing-nsg");
+        commonMap.put("keyVaultKey","Environment");
+        commonMap.put("keyVaultValue","qa");
+        commonMap.put("tlsVersion","TLSV1.2");
+        commonMap.put("protocol","*");
+        commonMap.put("name","VirtualMachines");
+        commonMap.put("pricingTier","Free");
+
         return commonMap;
     }
 
@@ -1191,5 +1203,15 @@ public class CommonTestUtils {
         commonMap.put("_resourceId", "image:latest");
 
         return commonMap;
+    }
+
+    public static Annotation getMockAnnotation() {
+        Annotation annotation = new Annotation();
+        annotation.put(PacmanSdkConstants.POLICY_NAME,"Mock policy name");
+        annotation.put(PacmanSdkConstants.POLICY_ID, "Mock policy id");
+        annotation.put(PacmanSdkConstants.POLICY_VERSION, "Mock policy version");
+        annotation.put(PacmanSdkConstants.RESOURCE_ID, "Mock resource id");
+        annotation.put(PacmanSdkConstants.TYPE, "Mock type");
+        return annotation;
     }
 }

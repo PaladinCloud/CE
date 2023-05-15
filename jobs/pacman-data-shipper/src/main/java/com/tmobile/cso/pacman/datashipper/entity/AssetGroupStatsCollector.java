@@ -78,14 +78,14 @@ public class AssetGroupStatsCollector implements Constants{
         }
 
         ESManager.createIndex(AG_STATS, errorList);
-        ESManager.createType(AG_STATS, "count_type", errorList);
-        ESManager.createType(AG_STATS, "count_asset", errorList);
-        ESManager.createType(AG_STATS, "issuecompliance", errorList);
-        ESManager.createType(AG_STATS, "compliance", errorList);
-        ESManager.createType(AG_STATS, "tagcompliance", errorList);
-        ESManager.createType(AG_STATS, "issues", errorList);
-        if(VULN_API_URL!=null)
-        	ESManager.createType(AG_STATS, "vulncompliance", errorList);
+//        ESManager.createType(AG_STATS, "count_type", errorList);
+//        ESManager.createType(AG_STATS, "count_asset", errorList);
+//        ESManager.createType(AG_STATS, "issuecompliance", errorList);
+//        ESManager.createType(AG_STATS, "compliance", errorList);
+//        ESManager.createType(AG_STATS, "tagcompliance", errorList);
+//        ESManager.createType(AG_STATS, "issues", errorList);
+//        if(VULN_API_URL!=null)
+//        	ESManager.createType(AG_STATS, "vulncompliance", errorList);
 
 
         List<String> assetGroups = new ArrayList<>(assetGroupMap.keySet());
@@ -212,12 +212,10 @@ public class AssetGroupStatsCollector implements Constants{
         log.info("End Collecting asset group stats");
         return errorList;
     }
-    
+
     private String getToken() throws Exception{
         return AuthManager.getToken();
     }
-
- 
 
  
 
@@ -236,7 +234,7 @@ public class AssetGroupStatsCollector implements Constants{
                 if (!doc.isEmpty()) {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE));
+                    doc.put("@id", Util.getUniqueID(ag + "tagcompliance"+CURR_DATE));
                     docs.add(doc);
                 }
             } catch (Exception e) {
@@ -310,7 +308,7 @@ public class AssetGroupStatsCollector implements Constants{
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + doc.get(DOMAIN) + CURR_DATE));
+                    doc.put("@id", Util.getUniqueID(ag + "compliance" + CURR_DATE));
                 });
                 docs.addAll(docList);
             } catch (Exception e) {
@@ -375,7 +373,7 @@ public class AssetGroupStatsCollector implements Constants{
                     doc.put("min", min);
                     doc.put("max", max);
                     doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + type + CURR_DATE));
+                    doc.put("@id", Util.getUniqueID(ag + type + CURR_DATE + "count_type"));
                     docs.add(doc);
                 });
             } catch (Exception e) {
@@ -411,7 +409,7 @@ public class AssetGroupStatsCollector implements Constants{
                 docList.parallelStream().forEach(doc -> {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + doc.get(DOMAIN) + CURR_DATE));
+                    doc.put("@id", Util.getUniqueID(ag + "issues" + CURR_DATE));
                 });
                 docs.addAll(docList);
             } catch (Exception e) {
@@ -446,7 +444,7 @@ public class AssetGroupStatsCollector implements Constants{
                 if (!doc.isEmpty()) {
                     doc.put("ag", ag);
                     doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE));
+                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE + "vulncompliance"));
                     docs.add(doc);
                 }
             } catch (Exception e) {
@@ -481,7 +479,7 @@ public class AssetGroupStatsCollector implements Constants{
                     doc.put("typeCount", typeCount);
                     doc.put("totalassets", totalCount);
                     doc.put("date", CURR_DATE);
-                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE));
+                    doc.put("@id", Util.getUniqueID(ag + CURR_DATE + "count_asset"));
                     docs.add(doc);
             } catch (Exception e) {
                 log.error("Exception in uploadAssetGroupCountStats" , e);

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
@@ -219,10 +220,10 @@ public class ESManager implements Constants {
      *            the loaddate
      */
     public static void updateLatestStatus(String index, String type, String field, String value) {
-        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=true\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":false}}], \"must\": [{\"match\": {\""
+        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=true\"},\"query\": {\"bool\": {\"must\": [{\"term\":{\"docType\":\""+type+"\"}},{ \"term\": {\"latest\":false}}, {\"term\": {\""
         		+ field + "\":\"" + value + "\"}}]}}}";
         try {
-            invokeAPI("POST", index + "/" + type + "/" + "_update_by_query", updateJson);
+            invokeAPI("POST", index +"/" + "_update_by_query", updateJson);
         } catch (IOException e) {
             LOGGER.error("Error in updateLatestStatus",e);
         }
@@ -320,8 +321,8 @@ public class ESManager implements Constants {
      */
     private static int getTypeCount(String indexName, String type) {
         try {
-            Response response = invokeAPI("GET", indexName + "/" + type + "/_count?filter_path=count",
-                "{\"query\":{ \"match\":{\"latest\":true}}}");
+            Response response = invokeAPI("GET", indexName + "/_count?filter_path=count",
+                "{\"query\": { \"bool\": { \"must\": [ { \"term\": { \"docType\": \""+type+"\" } }, { \"term\": { \"latest\": \"true\" } } ] } }}");
             String rspJson = EntityUtils.toString(response.getEntity());
             return new ObjectMapper().readTree(rspJson).at("/count").asInt();
         } catch (IOException e) {
@@ -332,7 +333,8 @@ public class ESManager implements Constants {
     
     private static int getCount(String indexName, String type) {
         try {
-            Response response = invokeAPI("GET", indexName + "/" + type + "/_count?filter_path=count", null);
+            String payload="{\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""+type+"\"}}]}}}";
+            Response response = invokeAPI("GET", indexName  + "/_count?filter_path=count", payload);
             String rspJson = EntityUtils.toString(response.getEntity());
             return new ObjectMapper().readTree(rspJson).at("/count").asInt();
         } catch (IOException e) {
@@ -355,7 +357,7 @@ public class ESManager implements Constants {
     public static Map<String, String> getParentInfo(String type, List<String> resourceIds, String resourceIdKey) {
     	
     	Map<String,String> results = new HashMap<>();
-    	String endPoint = "aws_"+ type + "/" + type + "/_search";
+    	String endPoint = "aws_"+ type  + "/_search";
     	ObjectMapper objMapper = new ObjectMapper();
     	JsonParser parser = new JsonParser();
     	try {
@@ -366,7 +368,7 @@ public class ESManager implements Constants {
 					to = resourceIds.size();
 				}
 				StringBuilder requestBody = new StringBuilder("{\"size\":10000,\"_source\":[\"_docid\",\"accountid\",\"" + resourceIdKey
-						+ "\"],\"query\":{\"bool\":{\"must\":[{\"terms\":{\"" + resourceIdKey + ".keyword\":");
+						+ "\"],\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""+type+"\"}},{\"terms\":{\"" + resourceIdKey + ".keyword\":");
 				requestBody.append(objMapper.writeValueAsString(resourceIds.subList(from, to)));
 				requestBody.append("}},{\"match\":{\"latest\":\"true\"}}]}}}");
 	            String responseJson = EntityUtils.toString(invokeAPI("GET", endPoint, requestBody.toString()).getEntity());
@@ -397,9 +399,10 @@ public class ESManager implements Constants {
         }
 
         StringBuilder filter_path = new StringBuilder("&filter_path=_scroll_id,hits.hits._source");
-        String endPoint = indexName + "/" + type + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
+        String endPoint = indexName + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
+        String payload="{\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""+type+"\"}}]}}}";
         List<Map<String, String>> _data = new ArrayList<>();
-        String scrollId = fetchDataAndScrollId(endPoint, _data, null);
+        String scrollId = fetchDataAndScrollId(endPoint, _data, payload);
 
         if (scroll) {
             count -= 10000;
@@ -428,8 +431,8 @@ public class ESManager implements Constants {
             filter_path.append("hits.hits._source." + _filter + ",");
         }
         filter_path.deleteCharAt(filter_path.length() - 1);
-        String endPoint = indexName + "/" + type + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
-        String payLoad = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}}]}}}";
+        String endPoint = indexName + "/_search?scroll=1m" + filter_path.toString() + "&size=" + _count;
+        String payLoad = "{\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""+type+"\"}},{\"match\":{\"latest\":\"true\"}}]}}}";
         Map<String, Map<String, String>> _data = new HashMap<>();
         String scrollId = fetchDataAndScrollId(endPoint, _data, payLoad);
 
@@ -468,15 +471,17 @@ public class ESManager implements Constants {
             String scrollId = objMapper.readTree(responseJson).at("/_scroll_id").textValue();
             Iterator<JsonNode> it = _info.elements();
             String doc;
-            Map<String, String> docMap;
+            Map<String, Object> docMap;
             while (it.hasNext()) {
                 doc = it.next().fields().next().getValue().toString();
-                docMap = objMapper.readValue(doc, new TypeReference<Map<String, String>>() {
+                docMap = objMapper.readValue(doc, new TypeReference<Map<String, Object>>() {
                 });
                 docMap.remove("discoverydate");
                 docMap.remove("_loaddate");
                 docMap.remove("id");
-                _data.add(docMap);
+                docMap.remove("checks_relations");
+                _data.add(docMap.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> (String)e.getValue())));
             }
             return scrollId;
         } catch (ParseException | IOException e) {
@@ -494,12 +499,14 @@ public class ESManager implements Constants {
             String scrollId = objMapper.readTree(responseJson).at("/_scroll_id").textValue();
             Iterator<JsonNode> it = _info.elements();
             String doc;
-            Map<String, String> docMap;
+            Map<String, Object> docMap;
             while (it.hasNext()) {
                 doc = it.next().fields().next().getValue().toString();
-                docMap = objMapper.readValue(doc, new TypeReference<Map<String, String>>() {
+                docMap = objMapper.readValue(doc, new TypeReference<Map<String, Object>>() {
                 });
-                _data.put(docMap.get("checkid")+"_"+docMap.get("accountid"), docMap);
+                Map<String,String> convertedMap = docMap.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> (String)e.getValue()));
+                _data.put(convertedMap.get("checkid")+"_"+convertedMap.get("accountid"), convertedMap);
             }
             return scrollId;
         } catch (ParseException | IOException e) {
@@ -562,17 +569,80 @@ public class ESManager implements Constants {
      */
     public static void createType(String index, String type, String parent) {
         if (!typeExists(index, type)) {
-            String endPoint = index + "/_mapping/" + type;
-            String payLoad = "{\"_parent\": { \"type\": \"" + parent + "\" } }";
+            String endPoint = index + "/_mapping";
+
+            // Get existing children
+            Map<String, Object> existingChildren = null;
+            try {
+                existingChildren = getChildRelations(index, parent);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Check if parent already has existing children
+            List<String> existingChildTypes;
+            if (existingChildren.containsKey(parent)) {
+                Object existingChildObj = existingChildren.get(parent);
+                if (existingChildObj instanceof String) {
+                    existingChildTypes = new ArrayList<>();
+                    existingChildTypes.add((String) existingChildObj);
+                } else {
+                    existingChildTypes = (List<String>) existingChildObj;
+                }
+            } else {
+                existingChildTypes = new ArrayList<>();
+            }
+
+            // Add new child
+            existingChildTypes.add(type);
+            existingChildren.put(parent, existingChildTypes);
+
+            // Create childMap with updated relations
+            Map<String, Object> childMap = new HashMap<>();
+            childMap.put("type", "join");
+            childMap.put("relations", existingChildren);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(parent + "_relations", childMap);
+
+            Map<String, Object> payloadMap = new HashMap<>();
+            payloadMap.put("properties", properties);
+
+            String payLoad = null;
+            try {
+                payLoad = new ObjectMapper().writeValueAsString(payloadMap);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+            LOGGER.info("creating Type: ");
+            LOGGER.info("Index: {}", index);
+            LOGGER.info("type: {}", type);
+            LOGGER.info("parent: {}", parent);
+            LOGGER.info("payLoad: {}", payLoad);
             try {
                 invokeAPI("PUT", endPoint, payLoad);
             } catch (IOException e) {
                 LOGGER.error("Error createType ", e);
+                LOGGER.error("Index: {}", index);
+                LOGGER.error("type: {}", type);
+                LOGGER.error("parent: {}", parent);
+                LOGGER.error("payLoad: {}", payLoad);
+
             }
         }
     }
-    
-    
+
+    // Helper function to retrieve existing child relations
+    private static Map<String, Object> getChildRelations(String index, String parent) throws IOException {
+        String endPoint = index + "/_mapping";
+        Response response = invokeAPI("GET", endPoint, null);
+        JsonNode node = new ObjectMapper().readTree(EntityUtils.toString(response.getEntity()));
+        JsonNode properties = node.at("/" + index + "/mappings/properties");
+        JsonNode relations = properties.get(parent + "_relations").get("relations");
+        LOGGER.info("Printing relations here: {}", relations.toString());
+        LOGGER.info("Printing relations JSON here: {}", new ObjectMapper().convertValue(relations, Map.class));
+        return new ObjectMapper().convertValue(relations, Map.class);
+    }
     /**
      * added for uploading Child docs where parent id could be dervied from
      * child.
@@ -619,9 +689,9 @@ public class ESManager implements Constants {
      */
     public static void deleteOldDocuments(String index, String type, String field, String value) {
         String deleteJson = "{\"query\": {\"bool\": {\"must_not\": [{ \"match\": {\"" + field + "\":\"" + value
-                + "\"}}]}}}";
+                + "\"}}],\"must\": [ { \"term\": { \"docType\": \""+type+"\" } } ]}}}";
         try {
-            invokeAPI("POST", index + "/" + type + "/" + "_delete_by_query", deleteJson);
+            invokeAPI("POST", index  + "/" + "_delete_by_query", deleteJson);
         } catch (IOException e) {
             LOGGER.error("Error deleteOldDocuments ", e);
         }

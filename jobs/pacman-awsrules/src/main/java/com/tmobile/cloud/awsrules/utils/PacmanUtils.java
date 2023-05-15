@@ -100,11 +100,28 @@ import com.tmobile.pacman.commons.PacmanSdkConstants;
 import com.tmobile.pacman.commons.exception.RuleExecutionFailedExeption;
 import com.tmobile.pacman.commons.policy.Annotation;
 
+import static com.tmobile.cloud.constants.PacmanRuleConstants.BOOL;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.DOC_TYPE;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.FORWARD_SLASH;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.GET_NO_OF_ACCOUNT_ERROR_MESSAGE;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.MATCH;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.MUST;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.TERM;
+import static com.tmobile.cloud.constants.PacmanRuleConstants.TERMS;
+
 public class PacmanUtils {
     private static final Logger logger = LoggerFactory.getLogger(PacmanUtils.class);
     public static final String NIST_VULN_DETAILS_URL = "https://nvd.nist.gov/vuln/detail/";
     AwsSecretManagerUtil awsSecretManagerUtil=new AwsSecretManagerUtil();
     CredentialProvider credentialProvider=new CredentialProvider();
+
+    private static final String ES_GET_ACCOUNTS = "{\"query\":{\"bool\":{\"should\":[{\"bool\":{\"must\":[" +
+            "{\"term\":{\"accountid.keyword\":\"%s\"}},{\"term\":{\"docType\":\"account\"}}," +
+            "{\"term\":{\"latest\":true}}]}},{\"bool\":{\"must\":[" +
+            "{\"term\":{\"accountid.keyword\":\"%s\"}},{\"term\":{\"docType\":\"account\"}}," +
+            "{\"term\":{\"latest\":true}}]}}]}}}";
+
+    public static final String AWS_SEARCH_INDEX = "/aws/_search";
 
     private PacmanUtils() {
 
@@ -433,6 +450,28 @@ public class PacmanUtils {
         return false;
     }
 
+    private static JsonObject getQueryForMustByMap(HashMap<String, String> mustMap) {
+
+        JsonObject mustObj = new JsonObject();
+        JsonArray mustArray = new JsonArray();
+        JsonObject bool = new JsonObject();
+        JsonObject query = new JsonObject();
+        mustMap.forEach((key, value) -> {
+            JsonObject innerJson = new JsonObject();
+            JsonObject matchPhrase = new JsonObject();
+            innerJson.addProperty(key, value);
+            if(key.equalsIgnoreCase(DOC_TYPE)) {
+                matchPhrase.add(TERM, innerJson);
+            } else {
+                matchPhrase.add(MATCH, innerJson);
+            }
+            mustArray.add(matchPhrase);
+        });
+        mustObj.add(MUST, mustArray);
+        bool.add(BOOL, mustObj);
+        query.add(PacmanRuleConstants.QUERY, bool);
+        return query;
+    }
     public static Map<String, String> getSeviceLimit(String id, String accountId, String esUrl) {
         JsonParser jsonParser = new JsonParser();
         JsonArray jsonArray = new JsonArray();
@@ -441,29 +480,17 @@ public class PacmanUtils {
             HttpClient client = HttpClientBuilder.create().build();
 
             URL url = new URL(esUrl);
-            URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
+            String[] urlPaths = url.getPath().split(FORWARD_SLASH);
+            URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), AWS_SEARCH_INDEX,
                     url.getQuery(), url.getRef());
 
             // prepare Json pay load for GET query.
-            JsonObject innerJson = new JsonObject();
-            JsonObject innerJson1 = new JsonObject();
-            JsonObject matchPhrase = new JsonObject();
-            JsonObject matchPhrase1 = new JsonObject();
-            JsonObject mustObj = new JsonObject();
-            JsonArray mustArray = new JsonArray();
-            JsonObject bool = new JsonObject();
-            JsonObject query = new JsonObject();
+            HashMap<String, String> mustMap = new HashMap<>();
+            mustMap.put(PacmanRuleConstants.CHECK_ID_KEYWORD, id);
+            mustMap.put(PacmanRuleConstants.ACCOUNTID, accountId);
+            mustMap.put(DOC_TYPE, urlPaths[2]);
 
-            innerJson.addProperty(PacmanRuleConstants.CHECK_ID_KEYWORD, id);
-            innerJson1.addProperty(PacmanRuleConstants.ACCOUNTID, accountId);
-            matchPhrase.add("match", innerJson);
-            matchPhrase1.add("match", innerJson1);
-            mustArray.add(matchPhrase);
-            mustArray.add(matchPhrase1);
-            mustObj.add("must", mustArray);
-            bool.add("bool", mustObj);
-            query.add(PacmanRuleConstants.QUERY, bool);
-            StringEntity strjson = new StringEntity(query.toString());
+            StringEntity strjson = new StringEntity(getQueryForMustByMap(mustMap).toString());
 
             // Qurying the ES
             HttpPost httpPost = new HttpPost();
@@ -2030,17 +2057,29 @@ public class PacmanUtils {
         return list;
     }
 
-    public static int getCountOfAccountIds(String esUrl, String requesterOwnerId, String accepterOwnerId) throws Exception {
-        String requestBody = "{\"query\":{\"bool\":{\"should\":[{\"bool\":{\"must\":[{\"term\":{\"accountid.keyword\":\"" + requesterOwnerId +
-                "\"}},{\"term\":{\"latest\":true}}]}},{\"bool\":{\"must\":[{\"term\":{\"accountid.keyword\":\"" + accepterOwnerId +
-                "\"}},{\"term\":{\"latest\":true}}]}}]}}}";
-        String totalStr = "0";
+    public static int getCountOfAccountIds(String esUrl, String requesterOwnerId, String acceptorOwnerId) throws Exception {
+        String requestBody = String.format(ES_GET_ACCOUNTS, requesterOwnerId, acceptorOwnerId);
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getResponse(esUrl, requestBody);
-        if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
-            JsonObject hitsJson = (JsonObject) JsonParser.parseString(resultJson.get(PacmanRuleConstants.HITS).toString());
-            totalStr = hitsJson.has(PacmanRuleConstants.TOTAL) ? hitsJson.get(PacmanRuleConstants.TOTAL).toString() : "0";
+        if (resultJson == null || !resultJson.has(PacmanRuleConstants.HITS)
+                || !resultJson.getAsJsonObject(PacmanRuleConstants.HITS).has(PacmanRuleConstants.TOTAL)) {
+            return 0;
         }
-        return Integer.parseInt(totalStr);
+        try {
+            if (resultJson.getAsJsonObject(PacmanRuleConstants.HITS).get(PacmanRuleConstants.TOTAL).isJsonPrimitive()) {
+                return Integer.parseInt(resultJson.getAsJsonObject(PacmanRuleConstants.HITS)
+                        .get(PacmanRuleConstants.TOTAL).toString());
+            }
+            resultJson = resultJson.getAsJsonObject(PacmanRuleConstants.HITS)
+                    .getAsJsonObject(PacmanRuleConstants.TOTAL);
+            if (resultJson.has(PacmanRuleConstants.VALUE)
+                    && resultJson.get(PacmanRuleConstants.VALUE).isJsonPrimitive()) {
+                return Integer.parseInt(resultJson.get(PacmanRuleConstants.VALUE).toString());
+            }
+        } catch (Exception e) {
+            logger.error(GET_NO_OF_ACCOUNT_ERROR_MESSAGE, e);
+            return 0;
+        }
+        return 0;
     }
 
     public static Set<String> getRouteTableId(String subnetId, String vpcId, String routetableEsURL, String type)
@@ -2350,7 +2389,7 @@ public class PacmanUtils {
 
         if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
             JsonObject hitsJson = (JsonObject) jsonParser.parse(resultJson.get(PacmanRuleConstants.HITS).toString());
-            Long total = hitsJson.get(PacmanRuleConstants.TOTAL).getAsLong();
+            Long total = hitsJson.get(PacmanRuleConstants.TOTAL).getAsJsonObject().get(PacmanRuleConstants.VALUE).getAsLong();
             if (total > 0) {
                 return true;
             }
