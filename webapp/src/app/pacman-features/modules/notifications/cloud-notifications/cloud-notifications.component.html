@@ -42,7 +42,8 @@
                                [whiteListColumns]="whiteListColumns"
                                (headerColNameSelected)="handleHeaderColNameSelection($event)"
                                style="height: 100%; width: 100%;"
-                               (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)">
+                               (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                               [selectedRowIndex]="selectedRowIndex">
                     </app-table>
                 </div>
             </div>

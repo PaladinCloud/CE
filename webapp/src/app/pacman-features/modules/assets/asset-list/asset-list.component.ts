@@ -72,6 +72,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   headerColName;
   direction;
   tableScrollTop=0;
+  selectedRowIndex;
   onScrollDataLoader: Subject<any> = new Subject<any>();
   columnWidths = {'Asset ID': 2, 'Asset Type': 1, 'Account ID':1, 'Account Name': 1, 'Region': 1, 'Cloud Type': 1};
   columnNamesMap = {};
@@ -192,6 +193,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     this.bucketNumber = state.bucketNumber ?? 0;
     this.totalRows = state.totalRows ?? 0;
     this.searchTxt = state?.searchTxt ?? '';
+    this.selectedRowIndex = state?.selectedRowIndex;
 
     this.tableData = state?.data ?? [];
     this.tableDataLoaded = true;
@@ -276,7 +278,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
-      filterText: this.filterText
+      filterText: this.filterText,
+      selectedRowIndex: this.selectedRowIndex
     }
     this.tableStateService.setState(this.pageTitle, state);
   }
@@ -726,6 +729,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
     const row = event.rowSelected;
     this.tableScrollTop = event.tableScrollTop;
+    this.selectedRowIndex = event.selectedRowIndex;
     this.storeState(event.data);
     try {
       this.workflowService.addRouterSnapshotToLevel(
