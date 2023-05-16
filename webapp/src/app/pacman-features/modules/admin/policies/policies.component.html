@@ -36,7 +36,8 @@
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
                             (selectedFilter)="handleFilterSelection()"
                             (selectedFilterType)="handleFilterTypeSelection()"
-                            (deleteFilters)="deleteFilters($event)">
+                            (deleteFilters)="deleteFilters($event)"
+                            [selectedRowIndex]="selectedRowIndex">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

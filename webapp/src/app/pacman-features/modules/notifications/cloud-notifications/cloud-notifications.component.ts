@@ -86,6 +86,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     tableData: any = [];
     displayedColumns: string[] = [];
     whiteListColumns: any = [];
+    selectedRowIndex;
     tableScrollTop: any;
     isTableStatePreserved = false;
 
@@ -143,6 +144,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             this.bucketNumber = state.bucketNumber || 0;
             this.totalRows = state.totalRows || 0;
             this.searchTxt = state?.searchTxt || '';
+            this.selectedRowIndex = state?.selectedRowIndex;
 
             this.tableDataLoaded = true;
 
@@ -451,7 +453,8 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
             searchTxt: this.searchTxt,
             tableScrollTop: this.tableScrollTop,
             filters: this.filters,
-            filterText: this.filterText
+            filterText: this.filterText,
+            selectedRowIndex: this.selectedRowIndex
         }
         this.tableStateService.setState(this.pageTitle, state);
     }
@@ -596,6 +599,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     goToDetails(event) {
         const rowSelected = event.rowSelected;
         const data = event.data;
+        this.selectedRowIndex = event.selectedRowIndex;
         this.tableScrollTop = event.tableScrollTop;
 
         this.storeState(data);

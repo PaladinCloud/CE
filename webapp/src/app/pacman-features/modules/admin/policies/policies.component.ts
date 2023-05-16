@@ -125,6 +125,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   pageNumber: number = 0;
 
   searchTxt: String = "";
+  selectedRowIndex;
   tableData: any = [];
   tableDataLoaded: boolean = false;
   filters: any = [];
@@ -174,7 +175,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     if(stateUpdated){
       // this.clearState();
       state.data = [];
-      state = {};
+      // state = {};
     }
     if(state){      
       this.headerColName = state.headerColName || 'Severity';
@@ -189,6 +190,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       this.whiteListColumns = state?.whiteListColumns || Object.keys(this.columnWidths);
       this.tableScrollTop = state?.tableScrollTop;
       this.filters = state?.filters || [];
+      this.selectedRowIndex = state?.selectedRowIndex;
 
       if(this.filters){
         this.getFiltersData(this.tableData);
@@ -429,7 +431,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
       bucketNumber: this.bucketNumber,
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
-      filters: this.filters
+      filters: this.filters,
+      selectedRowIndex: this.selectedRowIndex
     }
     this.tableStateService.setState("adminPolicies", state);
   }
@@ -649,6 +652,7 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     const data = event.data;
     const policyId = event.rowSelected["Policy ID"].text;
     this.tableScrollTop = event.tableScrollTop;
+    this.selectedRowIndex = event.selectedRowIndex;
     this.storeState(data);
     try {
       this.workflowService.addRouterSnapshotToLevel(

@@ -127,6 +127,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
   state: any = {};
   whiteListColumns;
+  selectedRowIndex;
   displayedColumns;
   tableScrollTop = 0;
   tableData = [];
@@ -174,6 +175,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.tableScrollTop = state?.tableScrollTop;
       this.filters = state?.filters || [];
       this.totalRows = this.tableData.length;
+      this.selectedRowIndex = state?.selectedRowIndex;
 
       if(this.tableData && this.tableData.length>0){
         this.getFiltersData(this.tableData);
@@ -266,6 +268,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       searchTxt: this.searchTxt,
       tableScrollTop: this.tableScrollTop,
       filters: this.filters,
+      selectedRowIndex: this.selectedRowIndex
     }
     this.tableStateService.setState("policyKnowledgebase", state);
   }
@@ -511,6 +514,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     // store in this function
     const tileData = event.rowSelected;
     const data = event.data;
+    this.selectedRowIndex = event.selectedRowIndex;
     this.tableScrollTop = event.tableScrollTop;
     this.storeState(data);
    let autofixEnabled = false;

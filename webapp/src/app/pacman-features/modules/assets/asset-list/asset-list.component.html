@@ -50,6 +50,8 @@
                             (selectedFilter)="changeFilterTags($event)"
                             (selectedFilterType)="changeFilterType($event)"
                             (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                            [doLocalSort]="false"
+                            [selectedRowIndex]="selectedRowIndex"
                         ></app-table>
                         <div class="data-table-desc">{{ dataTableDesc }}</div>
                     </div>
