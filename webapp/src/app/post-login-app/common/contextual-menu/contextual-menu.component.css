@@ -12,9 +12,20 @@
  * limitations under the License.
  */
 
+:host {
+    --header-height: 69px;
+    --app-switcher-height: 81px;
+    --know-your-app-height: 52px;
+    --version-height: 37px;
+    --nav-height: calc(
+        100dvh - var(--header-height) - var(--app-switcher-height) - var(--know-your-app-height) -
+            var(--version-height)
+    );
+}
+
 .contextual-menu-wrapper {
     background-color: var(--background-white);
-    height: 100vh;
+    height: calc(100vh - var(--header-height));
     border-right: 1px solid var(--border-200);
 }
 
@@ -61,6 +72,7 @@
 }
 
 .know-your-app-wrapper {
+    height: var(--know-your-app-height);
     background-color: var(--background-white);
     cursor: pointer;
     padding: 0 16px;
@@ -73,6 +85,7 @@
 }
 
 .version-wrapper {
+    height: var(--version-height);
     padding: 8px 0;
     display: flex;
     flex-direction: row;
@@ -104,7 +117,7 @@
 }
 
 nav {
-    height: calc(100vh - 245px);
+    height: var(--nav-height);
     overflow-y: auto;
     overflow-x: hidden;
     margin-left: 16px;
