@@ -223,12 +223,17 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         try {
             if (!event) {
                 this.filters = [];
-            } else {
+                this.storeState();
+            } else if(!this.filters[event.index].filterValue){
+                this.filters.splice(event.index, 1);
+                this.storeState();
+              }else {
                 if (event.clearAll) {
                     this.filters = [];
                 } else {
                     this.filters.splice(event.index, 1);
                 }
+                this.storeState();
                 this.getUpdatedUrl();
                 this.updateComponent();
             }
@@ -244,43 +249,71 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
      */
     getFilterArray() {
         try {
-            const filterObjKeys = Object.keys(this.filterText);
-            const dataArray = [];
-            for (let i = 0; i < filterObjKeys.length; i++) {
-                let obj = {};
-                obj = {
-                    name: filterObjKeys[i],
-                };
-                dataArray.push(obj);
-            }
-
-            const formattedFilters = dataArray;
-            for (let i = 0; i < formattedFilters.length; i++) {
-                const keyValue = _.find(this.filterTypeOptions, {
-                    optionValue: formattedFilters[i].name,
-                })['optionName'];
-
-                this.changeFilterType(keyValue).then(() => {
-                    const filterValue = _.find(this.filterTagOptions[keyValue], {
-                        id: this.filterText[filterObjKeys[i]],
-                    })['name'];
-                    const eachObj = {
-                        keyDisplayValue: keyValue,
-                        filterValue: filterValue,
-                        key: keyValue, // <-- displayKey-- Resource Type
-                        value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-                        filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-                        compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-                    };
-                    this.filters.push(eachObj);
-                    this.filters = [...this.filters];
+          const filterObjKeys = Object.keys(this.filterText);      
+          const dataArray = [];
+          for (let i = 0; i < filterObjKeys.length; i++) {
+            let obj = {};
+            const keyDisplayValue = _.find(this.filterTypeOptions, {
+              optionValue: filterObjKeys[i],
+            })["optionName"];
+            obj = {
+              keyDisplayValue,
+              filterkey: filterObjKeys[i],
+            };
+            dataArray.push(obj);
+          }      
+          
+          const state = this.tableStateService.getState(this.pageTitle) ?? {};
+          const filters = state?.filters;
+          
+          if(filters){
+            const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
+            filters.forEach(filter => {
+              if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
+                dataArray.push({
+                  filterkey: filter.filterkey,
+                  keyDisplayValue: filter.key
                 });
+              }
+            });
+          }
+    
+          const formattedFilters = dataArray;
+          for (let i = 0; i < formattedFilters.length; i++) {
+    
+            let keyDisplayValue = formattedFilters[i].keyDisplayValue;
+            if(!keyDisplayValue){
+              keyDisplayValue = _.find(this.filterTypeOptions, {
+                optionValue: formattedFilters[i].filterKey,
+              })["optionName"];
             }
+    
+            this.changeFilterType(keyDisplayValue).then(() => {
+              let filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
+                id: this.filterText[formattedFilters[i].filterkey],
+              });
+    
+              let filterKey = dataArray[i].filterkey;
+              
+              if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
+                const eachObj = {
+                  keyDisplayValue: keyDisplayValue,
+                  filterValue: filterValueObj?filterValueObj["name"]:undefined,
+                  key: keyDisplayValue, // <-- displayKey-- Resource Type
+                  value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+                  filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+                  compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+                };
+                this.filters.push(eachObj);
+                this.filters = [...this.filters];
+                this.storeState();            
+              }
+            })
+          }
         } catch (error) {
-            this.errorMessage = this.errorHandler.handleJavascriptError(error);
-            this.logger.log('error', error);
+          this.logger.log("error", error);
         }
-    }
+      }
 
     /**
      * This function get calls the keyword service before initializing
@@ -325,14 +358,20 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
 
                 if (!this.filterTagOptions[value] || !this.filterTagLabels[value]) {
                     this.filterSubscription = this.filterService
-                        .getFilters(queryParams, environment.base + urlObj.url, 'GET')
-                        .subscribe((response) => {
-                            this.filterTagOptions[value] = response[0].response;
-                            this.filterTagLabels[value] = _.map(response[0].response, 'name');
-                            this.filterTagLabels[value].sort((a, b) => a.localeCompare(b));
+                    .getFilters(
+                    queryParams,
+                    environment.base +
+                    urlObj.url,
+                    "GET"
+                    )
+                    .subscribe((response) => {
+                    this.filterTagOptions[value] = response[0].response;
+                    this.filterTagLabels[value] = _.map(response[0].response, "name");
+                    this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
 
-                            resolve(this.filterTagOptions[value]);
-                        });
+                    resolve(this.filterTagOptions[value]);
+                    this.storeState();
+                    });
                 }
             } catch (error) {
                 this.errorMessage = this.errorHandler.handleJavascriptError(error);
@@ -369,6 +408,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
                     },
                 );
             }
+            this.storeState();
             this.getUpdatedUrl();
             this.updateComponent();
         } catch (error) {
@@ -392,14 +432,32 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     handleHeaderColNameSelection(event){
         this.headerColName = event.headerColName;
         this.direction = event.direction;
+        this.storeState();
     }
 
-    storeState(state) {
+    handleWhitelistColumnsChange(event){
+        this.whiteListColumns = event;
+        this.storeState();
+    }
+
+    storeState(data?) {
+        const state = {
+            totalRows: this.totalRows,
+            data: data,
+            headerColName: this.headerColName,
+            direction: this.direction,
+            whiteListColumns: this.whiteListColumns,
+            bucketNumber: this.bucketNumber,
+            searchTxt: this.searchTxt,
+            tableScrollTop: this.tableScrollTop,
+            filters: this.filters,
+            filterText: this.filterText
+        }
         this.tableStateService.setState(this.pageTitle, state);
     }
 
     clearState() {
-        this.tableStateService.clearState(this.pageTitle);
+        // this.tableStateService.clearState(this.pageTitle);
         this.isTableStatePreserved = false;
     }
 
@@ -538,18 +596,9 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     goToDetails(event) {
         const rowSelected = event.rowSelected;
         const data = event.data;
-        const state = {
-            totalRows: this.totalRows,
-            data: data,
-            headerColName: this.headerColName,
-            direction: this.direction,
-            whiteListColumns: this.whiteListColumns,
-            bucketNumber: this.bucketNumber,
-            searchTxt: this.searchTxt,
-            tableScrollTop: event.tableScrollTop,
-        };
+        this.tableScrollTop = event.tableScrollTop;
 
-        this.storeState(state);
+        this.storeState(data);
         try {
             const eventId = encodeURIComponent(rowSelected['eventId'].valueText);
             this.workflowService.addRouterSnapshotToLevel(
@@ -577,6 +626,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
         try {
             this.tableScrollTop = e;
             this.bucketNumber++;
+            this.storeState();
             this.getData(true);
         } catch (error) {
             this.logger.log('error', error);
@@ -620,6 +670,7 @@ export class CloudNotificationsComponent implements OnInit, OnDestroy {
     callNewSearch(searchVal) {
         this.searchTxt = searchVal;
         this.isTableStatePreserved = false;
+        this.storeState();
         this.updateComponent();
     }
 

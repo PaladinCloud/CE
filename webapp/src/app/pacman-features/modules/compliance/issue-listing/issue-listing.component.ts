@@ -48,6 +48,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   adminAccess = false; // check for admin access
   showDownloadBtn = true;
   showFilterBtn = true;
+  selectedRowIndex;
   private assetGroupSubscription: Subscription;
   private domainSubscription: Subscription;
   private routeSubscription: Subscription;
@@ -116,7 +117,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   displayedColumns;
   tableData = [];
   isStatePreserved = false;
-  selectedRowIndex: number;
 
   constructor(
     private assetGroupObservableService: AssetGroupObservableService,
@@ -141,7 +141,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       .getAssetGroup()
       .subscribe((assetGroupName) => {
         this.tableScrollTop = 0;
-        this.searchTxt = "";
         this.backButtonRequired =
           this.workflowService.checkIfFlowExistsCurrently(this.pageLevel);
         this.selectedAssetGroup = assetGroupName;
@@ -154,7 +153,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
               this.columnWidths[label] = 0.7;
             }
           })
-          this.columnWidths = {...this.columnWidths}
+          this.columnWidths = {...this.columnWidths};
           
         });
       });
@@ -166,30 +165,47 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnInit() {
-    const state = this.tableStateService.getState("issueListing") || {};
+  getDataFromPreservedState(){
+    const state = this.tableStateService.getState(this.pageTitle) ?? {};
     if(state){
-      this.headerColName = state.headerColName || 'Severity';
-      this.direction = state.direction || 'desc';
-      this.bucketNumber = state.bucketNumber || 0;
-      this.totalRows = state.totalRows || 0;
-      this.searchTxt = state?.searchTxt || '';
-
+      this.headerColName = state.headerColName ?? 'Severity';
+      this.direction = state.direction ?? 'desc';
+      this.bucketNumber = state.bucketNumber ?? 0;
+      this.totalRows = state.totalRows ?? 0;
+      this.searchTxt = state?.searchTxt ?? '';
+      
       this.tableDataLoaded = true;
 
-      this.tableData = state?.data || [];
-      this.displayedColumns = Object.keys(this.columnWidths);
-      this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
+      this.tableData = state?.data ?? [];
+      this.displayedColumns = ['Policy', 'Asset ID', 'Severity', 'Category', 'Age'];
+      this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
       this.tableScrollTop = state?.tableScrollTop;
+      this.selectedRowIndex = state?.selectedRowIndex;
 
-      if(this.tableData && this.tableData.length>0){
+      if(this.tableData && this.tableData.length>0){        
         this.isStatePreserved = true;
         this.selectedRowIndex = state.selectedRowIndex;
       }else{
         this.isStatePreserved = false;
       }
-    }
 
+      // if(filter){
+      //   console.log("chose to navigate: ", filter);
+        
+      //   this.router.navigate(["./"], {
+      //     relativeTo: this.activatedRoute,
+      //     queryParams: {filter: filter},
+      //     queryParamsHandling: "merge"
+      //   }).catch(e => {
+      //     console.log("error navigating: ", e);
+      //   })
+      // }
+    }
+  }
+
+  ngOnInit() {
+    
+    this.getDataFromPreservedState();
     const breadcrumbInfo = this.workflowService.getDetailsFromStorage()["level0"];
 
     if(breadcrumbInfo){
@@ -207,14 +223,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     this.getData();
   }
 
-  handleAddFilterClick(e){}
-
-  handleHeaderColNameSelection(event: any) {
-    this.headerColName = event.headerColName;
-    const sortColName = this.headerColName?.toLowerCase();
-    this.direction = event.direction;
+  updateSortFieldName(){
+    const sortColName = this.headerColName.toLowerCase();
     this.selectedOrder = this.direction;
-    this.bucketNumber = 0;
     this.sortOrder = null;
     if (sortColName === "severity") {
       this.fieldName = "severity.keyword";
@@ -240,28 +251,51 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       this.fieldType = "number";
       this.fieldName = "createdDate";
     }else{
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==event.headerColName);
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
       if(!apiColName){
         apiColName =  _.find(this.filterTypeOptions, {
-          optionName: event.headerColName,
+          optionName: this.headerColName,
         })["optionValue"];
       }
       this.fieldType = "string";
       this.fieldName = apiColName;
     }
+  }
+
+  handleHeaderColNameSelection(event: any) {    
+    this.headerColName = event.headerColName;
+    this.direction = event.direction;
+    
+    this.bucketNumber = 0;
+    
+    this.storeState();
     this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
+    this.storeState();
   }
 
-  storeState(state){
-    this.tableStateService.setState("issueListing", state);
+  storeState(data?){
+    const state = {
+        totalRows: this.totalRows,
+        data: data,
+        headerColName: this.headerColName,
+        direction: this.direction,
+        whiteListColumns: this.whiteListColumns,
+        bucketNumber: this.bucketNumber,
+        searchTxt: this.searchTxt,
+        tableScrollTop: this.tableScrollTop,
+        filters: this.filters,
+        selectedRowIndex: this.selectedRowIndex
+        // filterText: this.filterText
+      }
+    this.tableStateService.setState(this.pageTitle, state);
   }
 
   clearState(){
-    this.tableStateService.clearState("issueListing");
+    // this.tableStateService.clearState(this.pageTitle);
     this.isStatePreserved = false;
   }
 
@@ -329,12 +363,18 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     try {
       if (!event) {
         this.filters = [];
-      } else {
+        this.storeState();
+      }else if(!this.filters[event.index].filterValue){
+        this.filters.splice(event.index, 1);
+        this.storeState();
+      }
+      else {
         if (event.clearAll) {
           this.filters = [];
         } else {
           this.filters.splice(event.index, 1);
         }
+        this.storeState();
         this.getUpdatedUrl();
         this.updateComponent();
       }
@@ -346,36 +386,65 @@ export class IssueListingComponent implements OnInit, OnDestroy {
    */
   getFilterArray() {
     try {
-      // let labelsKey = Object.keys(this.labels);
-      const filterObjKeys = Object.keys(this.filterText);
+      const filterObjKeys = Object.keys(this.filterText);      
       const dataArray = [];
       for (let i = 0; i < filterObjKeys.length; i++) {
         let obj = {};
+        const keyDisplayValue = _.find(this.filterTypeOptions, {
+          optionValue: filterObjKeys[i],
+        })["optionName"];
         obj = {
-          name: filterObjKeys[i],
+          keyDisplayValue,
+          filterkey: filterObjKeys[i],
         };
         dataArray.push(obj);
+      }      
+      
+      const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      const filters = state?.filters;
+      
+      if(filters){
+        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
+        filters.forEach(filter => {
+          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
+            dataArray.push({
+              filterkey: filter.filterkey,
+              keyDisplayValue: filter.key
+            });
+          }
+        });
       }
+
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
 
-        let keyValue = _.find(this.filterTypeOptions, {
-          optionValue: formattedFilters[i].name,
-        })["optionName"];
-        this.changeFilterType(keyValue).then(() => {
-            let filterValue = _.find(this.filterTagOptions[keyValue], {
-              id: this.filterText[filterObjKeys[i]],
-            })["name"];
-          const eachObj = {
-            keyDisplayValue: keyValue,
-            filterValue: filterValue,
-            key: keyValue, // <-- displayKey-- Resource Type
-            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-          };
-          this.filters.push(eachObj);
-          this.filters = [...this.filters];
+        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
+        if(!keyDisplayValue){
+          keyDisplayValue = _.find(this.filterTypeOptions, {
+            optionValue: formattedFilters[i].filterKey,
+          })["optionName"];
+        }
+
+        this.changeFilterType(keyDisplayValue).then(() => {
+          let filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
+            id: this.filterText[formattedFilters[i].filterkey],
+          });
+
+          let filterKey = dataArray[i].filterkey;
+          
+          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
+            const eachObj = {
+              keyDisplayValue: keyDisplayValue,
+              filterValue: filterValueObj?filterValueObj["name"]:undefined,
+              key: keyDisplayValue, // <-- displayKey-- Resource Type
+              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+            };
+            this.filters.push(eachObj);
+            this.filters = [...this.filters];
+            this.storeState();            
+          }
         })
       }
     } catch (error) {
@@ -452,6 +521,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
           if(this.filterTagLabels[value].length==0) this.filterErrorMessage = 'noDataAvailable';
           resolve(this.filterTagOptions[value]);
+          this.storeState();
         });
       }
     } catch (error) {
@@ -464,6 +534,9 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   changeFilterTags(event) {
     let value = event.filterValue;
+    if(!value){
+      return;
+    }
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
       });
@@ -489,6 +562,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
           }
         );
       }
+      this.storeState();
       this.getUpdatedUrl();
       this.utils.clickClearDropdown();
       this.updateComponent();
@@ -499,6 +573,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   updateComponent() {
+    this.updateSortFieldName();
     if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
@@ -623,7 +698,6 @@ export class IssueListingComponent implements OnInit, OnDestroy {
                 }else{
                   this.tableData = processData;
                 }
-
               }
             } catch (e) {
               this.tableErrorMessage = 'apiResponseError';
@@ -677,21 +751,11 @@ export class IssueListingComponent implements OnInit, OnDestroy {
   }
 
   goToDetails(event) {
-    // store in this function
     const row = event.rowSelected;
-    const data = event.data;
-    const state = {
-      totalRows: this.totalRows,
-      data: data,
-      headerColName: this.headerColName,
-      direction: this.direction,
-      whiteListColumns: this.whiteListColumns,
-      bucketNumber: this.bucketNumber,
-      searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop,
-      selectedRowIndex: event.selectedRowIndex,
-    }
-    this.storeState(state);
+    this.tableScrollTop = event.tableScrollTop;
+    this.selectedRowIndex = event.selectedRowIndex;
+    this.storeState(event.data);
+
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.breadcrumbPresent
@@ -783,6 +847,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
     try {
       this.tableScrollTop = e;
         this.bucketNumber++;
+        this.storeState();
         this.getData(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -792,7 +857,8 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
   callNewSearch(searchVal){
     this.searchTxt = searchVal;
-    // this.state.searchValue = searchVal;
+    // this.searchValue = searchVal;
+    this.storeState();
     this.isStatePreserved = false;
     this.updateComponent();
     // this.getUpdatedUrl();
@@ -800,6 +866,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
+    // this.storeState();
     try {
       if (this.assetGroupSubscription) {
         this.assetGroupSubscription.unsubscribe();

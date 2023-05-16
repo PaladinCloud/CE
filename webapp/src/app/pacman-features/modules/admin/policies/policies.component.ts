@@ -172,7 +172,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     );
     let state = this.tableStateService.getState("adminPolicies") || {};
     if(stateUpdated){
-      this.clearState();
+      // this.clearState();
+      state.data = [];
       state = {};
     }
     if(state){      
@@ -206,12 +207,38 @@ export class PoliciesComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.storeState();
+  }
+
+  handleWhitelistColumnsChange(event){
+    this.whiteListColumns = event;
+    this.storeState();
+  }
+
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+      } else if (event.clearAll) {
+        this.filters = [];
+      }
+      this.storeState();
+    } catch (error) { }
+  }
+
+  handleFilterSelection(){    
+    this.storeState();
+  }
+
+  handleFilterTypeSelection(){    
+    this.storeState();
   }
 
   nextPage(e) {
     try {
         this.pageNumber++;
         this.showLoader = true;
+        this.storeState();
         this.getPolicyDetails(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -387,17 +414,28 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     }else{
       this.tableDataLoaded = false;
       this.bucketNumber = 0;
-      // this.tableData = [];
+      this.tableData = [];
       this.getPolicyDetails();
     }
   }
 
-  storeState(state){
+  storeState(data?){
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      bucketNumber: this.bucketNumber,
+      searchTxt: this.searchTxt,
+      tableScrollTop: this.tableScrollTop,
+      filters: this.filters
+    }
     this.tableStateService.setState("adminPolicies", state);
   }
 
   clearState(){
-    this.tableStateService.clearState("adminPolicies");
+    // this.tableStateService.clearState("adminPolicies");
     this.isStatePreserved = false;
   }
 
@@ -610,19 +648,8 @@ export class PoliciesComponent implements OnInit, OnDestroy {
     const row = event.rowSelected;
     const data = event.data;
     const policyId = event.rowSelected["Policy ID"].text;
-    const state = {
-      totalRows: this.totalRows,
-      data: data,
-      headerColName: this.headerColName,
-      direction: this.direction,
-      whiteListColumns: this.whiteListColumns,
-      bucketNumber: this.bucketNumber,
-      searchTxt: event.searchTxt,
-      tableScrollTop: event.tableScrollTop,
-      filters: event.filters
-      // filterText: this.filterText
-    }
-    this.storeState(state);
+    this.tableScrollTop = event.tableScrollTop;
+    this.storeState(data);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle

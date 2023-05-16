@@ -65,6 +65,10 @@
                 (searchInColumnsChanged)="handleSearchInColumnsChange($event)"
                 (headerColNameSelected)="handleHeaderColNameSelection($event)"
                 gapBetweenFilterAndTable="0px"
+                (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                (selectedFilter)="handleFilterSelection()"
+                (selectedFilterType)="handleFilterTypeSelection()"
+                (deleteFilters)="deleteFilters($event)"
             >
             </app-table>
         </div>

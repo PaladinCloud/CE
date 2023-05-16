@@ -187,24 +187,22 @@ export class AssetListComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     const state = this.tableStateService.getState(this.pageTitle) || {};
-    if(state){
-      this.headerColName = state.headerColName || 'Asset ID';
-      this.direction = state.direction || 'asc';
-      this.bucketNumber = state.bucketNumber || 0;
-      this.totalRows = state.totalRows || 0;
-      this.searchTxt = state?.searchTxt || '';
+    this.headerColName = state.headerColName ?? 'Asset ID';
+    this.direction = state.direction ?? 'asc';
+    this.bucketNumber = state.bucketNumber ?? 0;
+    this.totalRows = state.totalRows ?? 0;
+    this.searchTxt = state?.searchTxt ?? '';
 
-      this.tableData = state?.data || [];
-      this.tableDataLoaded = true;
-      this.displayedColumns = ['Asset ID', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
-      this.whiteListColumns = state?.whiteListColumns || this.displayedColumns;
-      this.tableScrollTop = state?.tableScrollTop;
+    this.tableData = state?.data ?? [];
+    this.tableDataLoaded = true;
+    this.displayedColumns = ['Asset ID', 'Asset Type', 'Account ID', 'Account Name', 'Region', 'Cloud Type'];
+    this.whiteListColumns = state?.whiteListColumns ?? this.displayedColumns;
+    this.tableScrollTop = state?.tableScrollTop;
 
-      if(this.tableData && this.tableData.length>0){
-        this.isStatePreserved = true;
-      }else{
-        this.isStatePreserved = false;
-      }
+    if(this.tableData && this.tableData.length>0){
+      this.isStatePreserved = true;
+    }else{
+      this.isStatePreserved = false;
     }
 
     this.urlToRedirect = this.router.routerState.snapshot.url;
@@ -221,8 +219,15 @@ export class AssetListComponent implements OnInit, OnDestroy {
   handleHeaderColNameSelection(event: any) {
     this.headerColName = event.headerColName;
     this.direction = event.direction;
-    this.selectedOrder = this.direction;
+    
     this.bucketNumber = 0;
+    
+    this.storeState();
+    this.updateComponent();
+  }
+
+  updateSortFieldName() {
+    this.selectedOrder = this.direction;
     const sortColName = this.headerColName.toLowerCase();
     this.sortOrder = null;
     if (sortColName === "asset id") {
@@ -244,28 +249,40 @@ export class AssetListComponent implements OnInit, OnDestroy {
       this.fieldType = "string";
       this.fieldName = "_cloudType.keyword";
     }else{
-      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==event.headerColName);
+      let apiColName:any = Object.keys(this.columnNamesMap).find(col => col==this.headerColName);
       if(!apiColName){
         apiColName =  _.find(this.filterTypeOptions, {
-          optionName: event.headerColName,
+          optionName: this.headerColName,
         })["optionValue"];
       }
       this.fieldType = "string";
       this.fieldName = apiColName;
     }
-    this.updateComponent();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
+    this.storeState();
   }
 
-  storeState(state){
+  storeState(data?){
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      bucketNumber: this.bucketNumber,
+      searchTxt: this.searchTxt,
+      tableScrollTop: this.tableScrollTop,
+      filters: this.filters,
+      filterText: this.filterText
+    }
     this.tableStateService.setState(this.pageTitle, state);
   }
 
   clearState(){
-    this.tableStateService.clearState(this.pageTitle);
+    // this.tableStateService.clearState(this.pageTitle);
     this.isStatePreserved = false;
   }
 
@@ -308,12 +325,17 @@ export class AssetListComponent implements OnInit, OnDestroy {
     try {
       if (!event) {
         this.filters = [];
+        this.storeState();
+      } else if(!this.filters[event.index].filterValue){
+        this.filters.splice(event.index, 1);
+        this.storeState();
       } else {
         if (event.clearAll) {
           this.filters = [];
         } else {
           this.filters.splice(event.index, 1);
         }
+        this.storeState();
         this.getUpdatedUrl();
         this.updateComponent();
       }
@@ -326,36 +348,65 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
   getFilterArray() {
     try {
-      // let labelsKey = Object.keys(this.labels);
-      const filterObjKeys = Object.keys(this.filterText);
+      const filterObjKeys = Object.keys(this.filterText);      
       const dataArray = [];
       for (let i = 0; i < filterObjKeys.length; i++) {
         let obj = {};
+        const keyDisplayValue = _.find(this.filterTypeOptions, {
+          optionValue: filterObjKeys[i],
+        })["optionName"];
         obj = {
-          name: filterObjKeys[i],
+          keyDisplayValue,
+          filterkey: filterObjKeys[i],
         };
         dataArray.push(obj);
+      }      
+      
+      const state = this.tableStateService.getState(this.pageTitle) ?? {};
+      const filters = state?.filters;
+      
+      if(filters){
+        const dataArrayFilterKeys = dataArray.map(obj => obj.keyDisplayValue);
+        filters.forEach(filter => {
+          if(!dataArrayFilterKeys.includes(filter.keyDisplayValue)){
+            dataArray.push({
+              filterkey: filter.filterkey,
+              keyDisplayValue: filter.key
+            });
+          }
+        });
       }
+
       const formattedFilters = dataArray;
       for (let i = 0; i < formattedFilters.length; i++) {
 
-        let keyValue = _.find(this.filterTypeOptions, {
-          optionValue: formattedFilters[i].name,
-        })["optionName"];
-        this.changeFilterType(keyValue).then(() => {
-            let filterValue = _.find(this.filterTagOptions[keyValue], {
-              id: this.filterText[filterObjKeys[i]],
-            })["name"];
-          const eachObj = {
-            keyDisplayValue: keyValue,
-            filterValue: filterValue,
-            key: keyValue, // <-- displayKey-- Resource Type
-            value: this.filterText[filterObjKeys[i]], // <<-- value to be shown in the filter UI-- S2
-            filterkey: filterObjKeys[i].trim(), // <<-- filter key that to be passed -- "resourceType "
-            compareKey: filterObjKeys[i].toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
-          };
-          this.filters.push(eachObj);
-          this.filters = [...this.filters];
+        let keyDisplayValue = formattedFilters[i].keyDisplayValue;
+        if(!keyDisplayValue){
+          keyDisplayValue = _.find(this.filterTypeOptions, {
+            optionValue: formattedFilters[i].filterKey,
+          })["optionName"];
+        }
+        
+        this.changeFilterType(keyDisplayValue).then(() => {
+          let filterValueObj = _.find(this.filterTagOptions[keyDisplayValue], {
+            id: this.filterText[formattedFilters[i].filterkey],
+          });
+
+          let filterKey = dataArray[i].filterkey;
+          
+          if(!this.filters.find(filter => filter.keyDisplayValue==keyDisplayValue)){
+            const eachObj = {
+              keyDisplayValue: keyDisplayValue,
+              filterValue: filterValueObj?filterValueObj["name"]:undefined,
+              key: keyDisplayValue, // <-- displayKey-- Resource Type
+              value: this.filterText[filterKey], // <<-- value to be shown in the filter UI-- S2
+              filterkey: filterKey?.trim(), // <<-- filter key that to be passed -- "resourceType "
+              compareKey: filterKey?.toLowerCase().trim(), // <<-- key to compare whether a key is already present -- "resourcetype"
+            };
+            this.filters.push(eachObj);
+            this.filters = [...this.filters];
+            this.storeState();            
+          }
         })
       }
     } catch (error) {
@@ -370,6 +421,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
    */
 
   updateComponent() {
+    this.updateSortFieldName();
     if(this.isStatePreserved){
       this.tableDataLoaded = true;
       this.clearState();
@@ -673,19 +725,8 @@ export class AssetListComponent implements OnInit, OnDestroy {
   goToDetails(event) {
 
     const row = event.rowSelected;
-    const data = event.data;
-    const state = {
-      totalRows: this.totalRows,
-      data: data,
-      headerColName: this.headerColName,
-      direction: this.direction,
-      whiteListColumns: this.whiteListColumns,
-      bucketNumber: this.bucketNumber,
-      searchTxt: this.searchTxt,
-      tableScrollTop: event.tableScrollTop
-      // filterText: this.filterText
-    }
-    this.storeState(state);
+    this.tableScrollTop = event.tableScrollTop;
+    this.storeState(event.data);
     try {
       this.workflowService.addRouterSnapshotToLevel(
         this.router.routerState.snapshot.root, 0, this.pageTitle
@@ -735,6 +776,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
     try {
       this.tableScrollTop = e;
         this.bucketNumber++;
+        this.storeState();
         this.getData(true);
     } catch (error) {
       this.errorMessage = this.errorHandling.handleJavascriptError(error);
@@ -795,7 +837,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
   callNewSearch(searchVal){
     this.searchTxt = searchVal;
     // this.state.searchValue = searchVal;
-    this.isStatePreserved = false;
+    this.storeState();
     this.updateComponent();
     // this.getUpdatedUrl();
   }
@@ -878,6 +920,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           this.filterTagLabels[value] = _.map(response[0].response, "name");
           this.filterTagLabels[value].sort((a,b)=>a.localeCompare(b));
           resolve(this.filterTagOptions[value]);
+          this.storeState();
         });
       }
 
@@ -890,6 +933,9 @@ export class AssetListComponent implements OnInit, OnDestroy {
 
   changeFilterTags(event) {
     let value = event.filterValue;
+    if(!value){
+      return;
+    }
     this.currentFilterType =  _.find(this.filterTypeOptions, {
         optionName: event.filterKeyDisplayValue,
       });
@@ -914,6 +960,7 @@ export class AssetListComponent implements OnInit, OnDestroy {
           }
         );
       }
+      this.storeState();
       this.getUpdatedUrl();
       this.utils.clickClearDropdown();
       this.updateComponent();
