@@ -364,7 +364,7 @@ export class IssueListingComponent implements OnInit, OnDestroy {
       if (!event) {
         this.filters = [];
         this.storeState();
-      }else if(!this.filters[event.index].filterValue){
+      }else if(event.index && !this.filters[event.index].filterValue){
         this.filters.splice(event.index, 1);
         this.storeState();
       }
