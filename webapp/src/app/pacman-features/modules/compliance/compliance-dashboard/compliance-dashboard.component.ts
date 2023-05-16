@@ -441,16 +441,41 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     handleHeaderColNameSelection(event) {
         this.headerColName = event.headerColName;
         this.direction = event.direction;
+        this.storeState();
+    }
+
+    handleWhitelistColumnsChange(event){
+        this.whiteListColumns = event;
+        this.storeState();
+    }
+
+    handleFilterTypeSelection(){    
+        this.storeState();
+    }
+
+    handleFilterSelection(){    
+        this.storeState();
     }
 
     clearState() {
-        this.tableStateService.clearState('dashboard');
+        // this.tableStateService.clearState('dashboard');
         this.isStatePreserved = false;
     }
 
-    storeState(state) {
-        this.tableStateService.setState('dashboard', state);
-    }
+    storeState(data?){
+        const state = {
+         totalRows: this.totalRows,
+         data: data,
+         headerColName: this.headerColName,
+         direction: this.direction,
+         whiteListColumns: this.whiteListColumns,
+         bucketNumber: this.bucketNumber,
+         searchTxt: this.searchTxt,
+         tableScrollTop: this.tableScrollTop,
+         filters: this.filters,
+       }
+       this.tableStateService.setState("dashboard", state);
+     }
 
     getDistributionBySeverity() {
         const distributionBySeverityUrl = environment.distributionBySeverity.url;
@@ -629,20 +654,14 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     }
     deleteFilters(event?) {
         try {
-            if (!event) {
-                this.filters = [];
-            } else {
-                if (event.clearAll) {
-                    this.filters = [];
-                } else {
-                    this.filters.splice(event.index, 1);
-                }
-                this.getUpdatedUrl();
-                this.updateComponent();
-            }
-        } catch (error) {}
-        /* TODO: Aditya: Why are we not calling any updateCompliance function in observable to update the filters */
-    }
+          if (!event) {
+            this.filters = [];
+          } else if (event.clearAll) {
+            this.filters = [];
+          }
+          this.storeState();
+        } catch (error) { }
+      }
     /*
      * this functin passes query params to filter component to show filter
      */
@@ -1162,19 +1181,8 @@ export class ComplianceDashboardComponent implements OnInit, OnDestroy {
     goToDetails(event) {
         const selectedRow = event.rowSelected;
         const data = event.data;
-        const state = {
-            totalRows: this.totalRows,
-            data: data,
-            headerColName: this.headerColName,
-            direction: this.direction,
-            whiteListColumns: this.whiteListColumns,
-            bucketNumber: this.bucketNumber,
-            searchTxt: event.searchTxt,
-            tableScrollTop: event.tableScrollTop,
-            filters: event.filters,
-            // filterText: this.filterText
-        };
-        this.storeState(state);
+        this.tableScrollTop = event.tableScrollTop;
+        this.storeState(data);
         try {
             this.workflowService.addRouterSnapshotToLevel(
                 this.router.routerState.snapshot.root,

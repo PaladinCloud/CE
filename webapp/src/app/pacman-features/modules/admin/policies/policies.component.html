@@ -32,7 +32,11 @@
                             [showSearchBar]="true" [showAddRemoveCol]="true" [showFilterBtn]="true" [onScrollDataLoader]="onScrollDataLoader" [totalRows]="totalRows"
                             [tableScrollTop]="tableScrollTop" [tableDataLoaded]="tableDataLoaded" [columnsSortFunctionMap]="columnsSortFunctionMap"
                             [rowClickable]="true" [doLocalFilter]="true" [doLocalSearch]="true"
-                            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters">
+                            [filterTypeLabels]="filterTypeLabels" [filterTagLabels]="filterTagLabels" [filteredArray]="filters"
+                            (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                            (selectedFilter)="handleFilterSelection()"
+                            (selectedFilterType)="handleFilterTypeSelection()"
+                            (deleteFilters)="deleteFilters($event)">
                         </app-table>
                         <div class="data-table-desc">{{dataTableDesc}}</div>
                     </div>

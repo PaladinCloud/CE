@@ -75,7 +75,7 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
         this.assetTypeMapService.fetchAssetTypes();
         this.router.events.subscribe((val) => {
             if (val instanceof NavigationEnd) {
-                this.currentNode = this.getCurrentParentNodeFromRoute();
+                // this.currentNode = this.getCurrentParentNodeFromRoute();
                 this.selectCurrentNode();
             }
         });
@@ -111,7 +111,7 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
                 this.showPacLoader.pop();
             }
         });
-        this.currentNode = this.getCurrentParentNodeFromRoute();
+        // this.currentNode = this.getCurrentParentNodeFromRoute();
     }
 
     ngAfterViewInit() {
@@ -156,7 +156,21 @@ export class ContextualMenuComponent implements OnInit, AfterViewInit, OnChanges
                 return parent;
             }
         }
+        return ['', ''];
     }
+
+    // selectNode(node: TreeNode, event: Event) {
+    //     this.workflowService.clearAllLevels();
+    //     node.toggleExpanded();
+    //     this.currentNodeId = node.id;
+    //     this.currentParentId = node.parent.id;
+    //     if (node.hasChildren) {
+    //         this.currentParentId = node.id;
+    //     }else{
+    //         this.tableStateService.clearAll();
+    //     }
+    //     node.mouseAction('click', event);
+    // }
 
     getProvider() {
         /* Store the recently viewed asset list in stringify format */

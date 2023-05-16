@@ -348,20 +348,6 @@ describe('ComplianceDashboardComponent', () => {
     expect(component.breakpoint2).toBe(1);
   })
 
-
-
-  it('should get date', () => {
-    const date = "2022-09-15T16:27:12.574Z";
-    const expectedDate = "09-15-2022";
-    const returnedDate = component.calculateDate(date);
-    expect(returnedDate).toBe(expectedDate);
-    const date2 = "2022-11-01T16:27:12.574Z";
-    const expectedDate2 = "11-01-2022";
-    const returnedDate2 = component.calculateDate(date2);
-    expect(returnedDate2).toBe(expectedDate2);
-  })
-
-
   it('should get filtersType and filterLabels', () => {
     spyOn(fakeIssueFilterService, 'getFilters').and.returnValue(of(issueFilterResponse));
     component.getFilters();

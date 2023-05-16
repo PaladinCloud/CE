@@ -175,10 +175,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
       this.filters = state?.filters || [];
       this.totalRows = this.tableData.length;
 
-      if(this.filters){
-        this.getFiltersData(this.tableData);
-      }
       if(this.tableData && this.tableData.length>0){
+        this.getFiltersData(this.tableData);
         this.isStatePreserved = true;
       }else{
         this.isStatePreserved = false;
@@ -203,10 +201,12 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   handleHeaderColNameSelection(event){
     this.headerColName = event.headerColName;
     this.direction = event.direction;
+    this.storeState();
   }
 
   handleWhitelistColumnsChange(event){
     this.whiteListColumns = event;
+    this.storeState();
   }
 
   handleSearchInColumnsChange(event){
@@ -252,11 +252,21 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
   }
 
   clearState(){
-    this.tableStateService.clearState("policyKnowledgebase");
+    // this.tableStateService.clearState("policyKnowledgebase");
     this.isStatePreserved = false;
   }
 
-  storeState(state){
+  storeState(data?){
+    const state = {
+      totalRows: this.totalRows,
+      data: data,
+      headerColName: this.headerColName,
+      direction: this.direction,
+      whiteListColumns: this.whiteListColumns,
+      searchTxt: this.searchTxt,
+      tableScrollTop: this.tableScrollTop,
+      filters: this.filters,
+    }
     this.tableStateService.setState("policyKnowledgebase", state);
   }
 
@@ -281,6 +291,7 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }else{
       this.searchTxt = searchVal;
     }
+    this.storeState();
     // this.getUpdatedUrl();
   }
 
@@ -500,17 +511,8 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     // store in this function
     const tileData = event.rowSelected;
     const data = event.data;
-    const state = {
-      data: data,
-      headerColName: this.headerColName,
-      direction: this.direction,
-      whiteListColumns: this.whiteListColumns,
-      searchTxt: event.searchTxt,
-      tableScrollTop: event.tableScrollTop,
-      filters: event.filters
-      // filterText: this.filterText
-    }
-    this.storeState(state);
+    this.tableScrollTop = event.tableScrollTop;
+    this.storeState(data);
    let autofixEnabled = false;
     if ( tileData.autoFixEnabled) {
       autofixEnabled = true;
@@ -530,19 +532,39 @@ export class PolicyKnowledgebaseComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-    applyFilterByCategory(policyCategory: PolicyCategory) {
-        const key = 'Category';
-        const newFilters = this.filters.filter((f) => f.key !== key);
-        if (policyCategory !== PolicyCategory.ALL_POLICIES) {
-            newFilters.push({
-                key,
-                keyDisplayValue: key,
-                filterValue: policyCategory,
-                value: policyCategory,
-            });
-        }
-        this.filters = newFilters;
-    }
+  deleteFilters(event?) {
+    try {
+      if (!event) {
+        this.filters = [];
+      } else if (event.clearAll) {
+        this.filters = [];
+      }
+      this.storeState();
+    } catch (error) { }
+  }
+
+  handleFilterSelection(){    
+    this.storeState();
+  }
+
+  handleFilterTypeSelection(){    
+    this.storeState();
+  }
+
+  applyFilterByCategory(policyCategory: PolicyCategory) {
+      const key = 'Category';
+      const newFilters = this.filters.filter((f) => f.key !== key);
+      if (policyCategory !== PolicyCategory.ALL_POLICIES) {
+          newFilters.push({
+              key,
+              keyDisplayValue: key,
+              filterValue: policyCategory,
+              value: policyCategory,
+          });
+      }
+      this.filters = newFilters;
+      this.storeState();
+  }
 
   ngOnDestroy() {
     try {

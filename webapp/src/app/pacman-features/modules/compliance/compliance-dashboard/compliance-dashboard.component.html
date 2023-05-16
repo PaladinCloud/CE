@@ -111,6 +111,10 @@
                     [filterTagLabels]="filterTagLabels"
                     [filteredArray]="filters"
                     [rowSize]="'SM'"
+                    (whitelistColumnsChanged)="handleWhitelistColumnsChange($event)"
+                    (selectedFilter)="handleFilterSelection()"
+                    (selectedFilterType)="handleFilterTypeSelection()"
+                    (deleteFilters)="deleteFilters($event)"
                 >
                 </app-table>
             </mat-grid-tile>
