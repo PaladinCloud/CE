@@ -17,8 +17,8 @@
     --app-switcher-height: 81px;
     --know-your-app-height: 52px;
     --version-height: 37px;
-    --nav-height: calc(
-        100dvh - var(--header-height) - var(--app-switcher-height) - var(--know-your-app-height) -
+    --nav-subel-sum-height: calc(
+        var(--header-height) + var(--app-switcher-height) + var(--know-your-app-height) +
             var(--version-height)
     );
 }
@@ -117,7 +117,7 @@
 }
 
 nav {
-    height: var(--nav-height);
+    height: calc(100vh - var(--nav-subel-sum-height));
     overflow-y: auto;
     overflow-x: hidden;
     margin-left: 16px;
@@ -126,6 +126,12 @@ nav {
     font-size: var(--text-body-2-font-size);
     font-weight: var(--text-font-weight);
     color: var(--text-medium-emphasis);
+}
+
+@supports (height: 100dvh) {
+    nav {
+        height: calc(100dvh - var(--nav-subel-sum-height));
+    }
 }
 
 .tree-item,
