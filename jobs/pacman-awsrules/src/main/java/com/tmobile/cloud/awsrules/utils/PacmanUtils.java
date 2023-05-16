@@ -47,7 +47,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tmobile.cloud.awsrules.ec2.model.CveDetails;
-import com.tmobile.cloud.awsrules.ec2.model.QualysVulnerabilityinfo;
+import com.tmobile.cloud.awsrules.ec2.model.VulnerabilityInfo;
 import com.tmobile.pacman.commons.aws.CredentialProvider;
 import com.tmobile.pacman.commons.secrets.AwsSecretManagerUtil;
 import com.tmobile.pacman.commons.utils.Constants;
@@ -4082,6 +4082,46 @@ public class PacmanUtils {
         }
         return resourceVerified;
     }
+
+    public static List<JsonObject> checkInstanceIdFromElasticSearchForTenable(String instanceId,
+                                                                           String tenableEsAPI,
+                                                                           String attributeName,
+                                                                           String severityVulnValue) {
+        JsonParser jsonParser = new JsonParser();
+        List<JsonObject> resourceVerified = new ArrayList<>();
+        Map<String, Object> mustFilter = new HashMap<>();
+        Map<String, Object> mustNotFilter = new HashMap<>();
+        HashMultimap<String, Object> shouldFilter = HashMultimap.create();
+        Map<String, Object> mustTermsFilter = new HashMap<>();
+        mustFilter.put(convertAttributetoKeyword(attributeName), instanceId);
+        if(null!=severityVulnValue)
+            mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.TENABLE_SEVERITY_KEY), severityVulnValue);
+
+        try {
+
+            JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(tenableEsAPI+"?size=10000", mustFilter,
+                    mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);
+            if (resultJson != null && resultJson.has(PacmanRuleConstants.HITS)) {
+                {
+                    String hitsJsonString = resultJson.get(PacmanRuleConstants.HITS).toString();
+                    JsonObject hitsJson = (JsonObject) jsonParser.parse(hitsJsonString);
+                    JsonArray jsonArray = hitsJson.getAsJsonObject().get(PacmanRuleConstants.HITS).getAsJsonArray();
+                    if (jsonArray.size() > 0) {
+                        for (JsonElement element : jsonArray) {
+                            JsonObject firstObject = (JsonObject) element;
+                            JsonObject sourceJson = (JsonObject) firstObject.get(PacmanRuleConstants.SOURCE);
+                            if ((null != sourceJson)) {
+                                resourceVerified.add(sourceJson);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("failed to fetch data from ES");
+        }
+        return resourceVerified;
+    }
     public static Map<String,String> getJsonData(String jsonString){
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> map= Collections.emptyMap();
@@ -4096,13 +4136,13 @@ public class PacmanUtils {
 
     public static String getQualysVulnerabilitiesDetails(JsonArray vulnerabilities) {
 
-        List<QualysVulnerabilityinfo> vulnerabilityList=new ArrayList<>();
+        List<VulnerabilityInfo> vulnerabilityList=new ArrayList<>();
         if(vulnerabilities!=null){
             String vulnerabityDetailurl=new PacmanUtils().getVulDetailUrl();
             for (int i = 0; i < vulnerabilities.size(); i++) {
                 JsonObject source = vulnerabilities.get(i).getAsJsonObject().get(PacmanRuleConstants.SOURCE)
                         .getAsJsonObject();
-                QualysVulnerabilityinfo vulnerabilityinfo=new QualysVulnerabilityinfo();
+                VulnerabilityInfo vulnerabilityinfo=new VulnerabilityInfo();
                 String title=source.get("title").getAsString();
                 vulnerabilityinfo.setTitle(title);
                 String hostInstanceVulnId=source.get("hostInstanceVulnId").getAsBigDecimal().toPlainString();
