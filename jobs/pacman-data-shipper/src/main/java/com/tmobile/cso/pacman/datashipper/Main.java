@@ -66,8 +66,8 @@ public class Main implements Constants {
         ESManager.configureIndexAndTypes(ds,errorList);
         errorList.addAll(new EntityManager().uploadEntityData(ds));
         errorList.addAll(new AssetGroupStatsCollector().collectAssetGroupStats());
-        //errorList.addAll(new IssueCountManager().populateViolationsCount());
-        //errorList.addAll(new AssetsCountManager().populateAssetCount());
+        errorList.addAll(new IssueCountManager().populateViolationsCount());
+        errorList.addAll(new AssetsCountManager().populateAssetCount());
         Map<String, Object> status = ErrorManageUtil.formErrorCode(jobName, errorList);
         LOGGER.info("Job Return Status {} ",status);
         return status;
