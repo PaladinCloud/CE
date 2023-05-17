@@ -403,10 +403,10 @@ public class ESManager implements Constants {
                 StringBuilder payLoad = new StringBuilder(_payLoad);
                 payLoad.append("\"dynamic\": true,");
                 payLoad.append("\"properties\": {");
-                payLoad.append("\"docType\": {");
-                payLoad.append("\"type\": \"keyword\",");
-                payLoad.append("\"index\": true");
-                payLoad.append("},");
+//                payLoad.append("\"docType\": {");
+//                payLoad.append("\"type\": \"keyword\",");
+//                payLoad.append("\"index\": true");
+//                payLoad.append("},");
                 payLoad.append("\"" + _type + "_relations" + "\": {");
                 payLoad.append("\"type\": \"join\",");
                 payLoad.append("\"relations\": {");

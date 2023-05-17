@@ -1,12 +1,10 @@
 package com.tmobile.cso.pacman.qualys.util;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.tmobile.cso.pacman.qualys.Constants;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -29,16 +27,16 @@ import com.google.gson.Gson;
  * The Class ElasticSearchManager.
  */
 public class ElasticSearchManager {
-    
+
     /** The Constant LOGGER. */
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchManager.class);
 
     /** The Constant ES_HOST_KEY_NAME. */
     private static final String ES_HOST_KEY_NAME = System.getProperty("elastic-search.host");
-    
+
     /** The Constant ES_HTTP_PORT. */
     private static final Integer ES_HTTP_PORT = Integer.parseInt(System.getProperty("elastic-search.port"));
-    
+
     /** The rest client. */
     private static RestClient restClient;
 
@@ -66,16 +64,121 @@ public class ElasticSearchManager {
      *
      * @param indexName the index name
      */
-    public static void createIndex(String index) {
-    	String indexName = "/"+index;
+    public static void createIndex(String index, String type) {
+        String indexName = "/"+index;
         if (!indexExists(indexName)) {
-            String payLoad = "{\"settings\": { \"number_of_shards\" : 1,\"number_of_replicas\" : 1,\"index.mapping.ignore_malformed\": true }}";
+            String _payLoad = "{\"settings\" : { \"number_of_shards\" : 1,\"number_of_replicas\" : 1 },\"mappings\": {";
+
+            StringBuilder payLoad = new StringBuilder(_payLoad);
+            payLoad.append("\"dynamic\": true,");
+            payLoad.append("\"properties\": {");
+            //payLoad.append("\"docType\": {");
+            //payLoad.append("\"type\": \"keyword\",");
+            //payLoad.append("\"index\": true");
+            //payLoad.append("},");
+            payLoad.append("\"" + type + "_relations" + "\": {");
+            payLoad.append("\"type\": \"join\",");
+            payLoad.append("\"relations\": {");
+            payLoad.append("\"" + type + "\"" + ":" + "[\"issue_" + type + "\"],");
+            payLoad.append("\"issue_" + type + "\"" + ":" + "[\"issue_" + type + "_audit\",");
+            payLoad.append("\"issue_" + type + "_comment\",");
+            payLoad.append("\"issue_" + type + "_exception\"]");
+            payLoad.append("}}");
+            payLoad.append("}}}");
+
+            LOGGER.info("Creating index with payload: {}", payLoad);
             try {
-                invokeAPI("PUT", indexName, payLoad);
+                invokeAPI("PUT", indexName, payLoad.toString());
             } catch (IOException e) {
                 LOGGER.error("Error createIndex ", e);
             }
         }
+    }
+    public static void createTypeWithParent(String index, String type, String parent) throws IOException {
+//        if (!typeExists(index, type)) {
+        String endPoint = "/"+index + "/_mapping";
+
+        // Get existing children
+        Map<String, Object> existingChildren = getChildRelations(index, parent);
+        if(!isTypeExists(existingChildren,index,parent,type)){
+
+            // Check if parent already has existing children
+            List<String> existingChildTypes;
+            if (existingChildren.containsKey(parent)) {
+                Object existingChildObj = existingChildren.get(parent);
+                if (existingChildObj instanceof String) {
+                    existingChildTypes = new ArrayList<>();
+                    existingChildTypes.add((String) existingChildObj);
+                } else {
+                    existingChildTypes = (List<String>) existingChildObj;
+                }
+            } else {
+                existingChildTypes = new ArrayList<>();
+            }
+
+            // Add new child
+            existingChildTypes.add(type);
+            existingChildren.put(parent, existingChildTypes);
+
+            // Create childMap with updated relations
+            Map<String, Object> childMap = new HashMap<>();
+            childMap.put("type", "join");
+            childMap.put("relations", existingChildren);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(parent + "_relations", childMap);
+
+            Map<String, Object> payloadMap = new HashMap<>();
+            payloadMap.put("properties", properties);
+
+            String payLoad = new ObjectMapper().writeValueAsString(payloadMap);
+            LOGGER.info("creating Type: ");
+            LOGGER.info("Index: {}", index);
+            LOGGER.info("type: {}", type);
+            LOGGER.info("parent: {}", parent);
+            LOGGER.info("payLoad: {}", payLoad);
+            try {
+                invokeAPI("PUT", endPoint, payLoad);
+            } catch (IOException e) {
+                LOGGER.error("Error createType ", e);
+                LOGGER.error("Index: {}", index);
+                LOGGER.error("type: {}", type);
+                LOGGER.error("parent: {}", parent);
+                LOGGER.error("payLoad: {}", payLoad);
+
+            }
+        }
+    }
+
+    private static boolean isTypeExists(Map<String, Object> existingChildren, String index, String parent, String type) {
+
+        boolean isExists=false;
+        List<String> existingChildTypes;
+        if (existingChildren.containsKey(parent)) {
+            Object existingChildObj = existingChildren.get(parent);
+            if (existingChildObj instanceof String) {
+                if(type.equalsIgnoreCase((String) existingChildObj)){
+                    isExists= true;
+                }
+            } else {
+                existingChildTypes = (List<String>) existingChildObj;
+                String matchingChild = existingChildTypes.stream().filter(ch -> ch.equalsIgnoreCase(type)).findAny().orElse(null);
+                isExists= matchingChild!=null;
+            }
+        }
+        LOGGER.info("Index Exists: {}",isExists);
+        return isExists;
+    }
+
+    private static Map<String, Object> getChildRelations(String index, String parent) throws IOException {
+        String endPoint = "/"+index + "/_mapping";
+        Response response = invokeAPI("GET", endPoint, null);
+        JsonNode node = new ObjectMapper().readTree(EntityUtils.toString(response.getEntity()));
+        JsonNode properties = node.at("/" + index + "/mappings/properties");
+        JsonNode relations = properties.get(parent + "_relations").get("relations");
+        LOGGER.info("Printing relations here: {}", relations.toString());
+        LOGGER.info("Printing relations JSON here: {}", new ObjectMapper().convertValue(relations, Map.class));
+        return new ObjectMapper().convertValue(relations, Map.class);
     }
 
     /**
@@ -85,7 +188,7 @@ public class ElasticSearchManager {
      * @param typename the typename
      */
     public static void createType(String index, String typename) {
-    	String indexName = "/"+index;
+        String indexName = "/"+index;
         if (!typeExists(indexName, typename)) {
             String endPoint = indexName + "/_mapping/" + typename;
             try {
@@ -155,16 +258,18 @@ public class ElasticSearchManager {
      * @param idKey the id key
      */
     public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey) {
-        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\"} }%n";
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\",\"_id\" : \"%s\"} }%n";
 
         LOGGER.info("*********UPLOADING*** {}", type);
         if (null != docs && !docs.isEmpty()) {
             StringBuilder bulkRequest = new StringBuilder();
             int i = 0;
             for (Map<String, Object> doc : docs) {
+                doc.put(Constants.DOC_TYPE, type);
+                doc.put(type + "_relations", type);
                 String id = doc.get(idKey).toString();
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
-                bulkRequest.append(String.format(actionTemplate, index, type, id));
+                bulkRequest.append(String.format(actionTemplate, index, id));
                 bulkRequest.append(_doc + "\n");
                 i++;
                 if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
@@ -179,9 +284,9 @@ public class ElasticSearchManager {
             }
             refresh(index);
         }
-      
+
     }
-    
+
     /**
      * added for uploading Child docs where parent id could be dervied from
      * child.
@@ -200,7 +305,7 @@ public class ElasticSearchManager {
             int i = 0;
             for (Map<String, Object> doc : docs) {
 
-                
+
                 String parent = doc.get(parentKey).toString();
                 String id =  doc.get(idKey).toString();
                 if(removeIdKey){
@@ -230,7 +335,7 @@ public class ElasticSearchManager {
      * @param index the index
      */
     public static void refresh(String index) {
-    	String indexName = "/"+index;
+        String indexName = "/"+index;
         try {
             Response refrehsResponse = invokeAPI("POST", indexName + "/" + "_refresh", null);
             if (refrehsResponse != null && HttpStatus.SC_OK != refrehsResponse.getStatusLine().getStatusCode()) {
@@ -250,6 +355,17 @@ public class ElasticSearchManager {
      */
     public static String createESDoc(Map<String, Object> doc) {
         return new Gson().toJson(doc);
+    }
+
+    public static String createESStatsDoc(Map<String, ?> doc) {
+        ObjectMapper objMapper = new ObjectMapper();
+        String docJson = "{}";
+        try {
+            docJson = objMapper.writeValueAsString(doc);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Error createESDoc",e);
+        }
+        return docJson;
     }
 
     /**
@@ -296,9 +412,10 @@ public class ElasticSearchManager {
      * @return true, if successful
      */
     private static boolean typeExists(String indexName, String type) {
-
+        String payload="{\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""+type+"\"}}]}}}";
+        LOGGER.info("Checking if the index type exists. Endpoint:{}/_search, payload:{}",indexName,payload);
         try {
-            Response response = invokeAPI("HEAD", indexName + "/_mapping/" + type, null);
+            Response response = invokeAPI("GET", "/"+indexName + "/_search/", payload);
             if (response != null) {
                 return response.getStatusLine().getStatusCode() == 200 ? true : false;
             }
@@ -317,10 +434,10 @@ public class ElasticSearchManager {
      * @return the type count
      */
     private static int getTypeCount(String indexName, String type) {
-
+        String countPayload="{\"query\":{\"bool\":{\"must\":[{\"term\":{\"docType\":\""+type+"\"}}]}}}";
         try {
-            LOGGER.debug("Fetching type count with endpoint:{} ",indexName + "/" + type + "/_count?filter_path=count");
-            Response response = invokeAPI("GET", indexName + "/" + type + "/_count?filter_path=count", null);
+            LOGGER.debug("Fetching type count with endpoint:{}/_count?filter_path=count, Payload:{} ",indexName,countPayload);
+            Response response = invokeAPI("GET", indexName + "/_count?filter_path=count", countPayload);
             String rspJson = EntityUtils.toString(response.getEntity());
             return new ObjectMapper().readTree(rspJson).at("/count").asInt();
         } catch (IOException e) {
@@ -337,7 +454,7 @@ public class ElasticSearchManager {
      * @param parent the parent
      */
     public static void createType(String index, String type, String parent) {
-    	String indexName = "/"+index;
+        String indexName = "/"+index;
         if (!typeExists(indexName, type)) {
             String endPoint = indexName + "/_mapping/" + type;
             String payLoad = "{\"_parent\": { \"type\": \"" + parent + "\" } }";
@@ -360,7 +477,7 @@ public class ElasticSearchManager {
      */
     public static Map<String, Map<String, Object>> getExistingInfo(String index, String type, List<String> filters,
                                                                    boolean latest) {
-    	String indexName = "/"+index;
+        String indexName = "/"+index;
         LOGGER.info("Fetching existing info from indexName: {}",indexName);
         int count = getTypeCount(indexName, type);
         int _count = count;
@@ -379,12 +496,14 @@ public class ElasticSearchManager {
             payLoad.append("\"" + _filter + "\",");
         }
         payLoad.deleteCharAt(payLoad.length() - 1);
-        if (latest)
-            payLoad.append("],\"query\": { \"match\": {\"latest\": true}}}");
-        else
-            payLoad.append("]}");
+        payLoad.append("],");
+        payLoad.append("\"query\": {\n \"bool\": {\n \"must\": [{\n \"term\": {\n \"docType\": \""+type+"\"\n }\n }");
+        if (latest) {
+            payLoad.append(",{\n  \"term\": {\n  \"latest\": \"true\"\n  }\n }");
+        }
+        payLoad.append("]\n }\n }\n }");
 
-        String endPoint = indexName + "/" + type + "/_search?scroll=5m" + filter_path + "&size=" + _count;
+        String endPoint = indexName + "/_search?scroll=5m" + filter_path + "&size=" + _count;
 
         LOGGER.info("getExistingInfo endpoint: {}",endPoint);
         Map<String, Map<String, Object>> _data = new HashMap<>();
@@ -418,7 +537,7 @@ public class ElasticSearchManager {
      * @return the string
      */
     private static String fetchDataAndScrollId(String endPoint, Map<String, Map<String, Object>> _data, String keyField,
-            String payLoad) {
+                                               String payLoad) {
         LOGGER.debug("fetchDataAndScrollId >> endpoint :{}, payload: {} ", endPoint,payLoad);
         try {
             ObjectMapper objMapper = new ObjectMapper();
@@ -444,7 +563,7 @@ public class ElasticSearchManager {
     }
 
     private static String fetchScrollPost(String endPoint, Map<String, Map<String, Object>> _data, String keyField,
-                                               String payLoad) {
+                                          String payLoad) {
         LOGGER.debug("fetchScrollPost >> endpoint :{}, payload: {} ", endPoint,payLoad);
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -483,11 +602,11 @@ public class ElasticSearchManager {
      * @param discoveryDate the discovery date
      */
     public static void updateLatestStatus(String index, String type, String discoveryDate) {
-    	String indexName = "/"+index;
-        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}}], \"must_not\": [{\"match\": {\"discoverydate.keyword\":\""
+        String indexName = "/"+index;
+        String updateJson = "{\"script\":{\"inline\": \"ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}},{ \"match\": {\"docType.keyword\":\""+type+"\"}}], \"must_not\": [{\"match\": {\"discoverydate.keyword\":\""
                 + discoveryDate + "\"}}]}}}";
         try {
-            invokeAPI("POST", indexName + "/" + type + "/" + "_update_by_query", updateJson);
+            invokeAPI("POST", indexName +  "/_update_by_query", updateJson);
         } catch (IOException e) {
             LOGGER.error("Error updateLatestStatus ", e);
         }
@@ -502,7 +621,7 @@ public class ElasticSearchManager {
      * @param value the value
      */
     public static void deleteOldDocuments(String index, String type, String field, String value) {
-    	String indexName = "/"+index;
+        String indexName = "/"+index;
         String deleteJson = "{\"query\": {\"bool\": {\"must_not\": [{ \"match\": {\"" + field + "\":\"" + value
                 + "\"}}]}}}";
         try {

@@ -32,26 +32,26 @@ public class KBDataImporter extends QualysDataImporter implements Constants{
 
     /** The log. */
     private static Logger log = LoggerFactory.getLogger(QualysDataImporter.class);
-    
+
     /** The Constant index. */
     private final static String index = "qualys-kb";
-    
+
     /** The Constant type. */
     private final static String type = "kb";
-    
+
     /** The Constant docid. */
     private final static String docid = "qid";
-    
+
     private static List<Map<String,String>> errorList = new ArrayList<>();
 
     /**
      * Execute.
-     * @return 
+     * @return
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> execute() {
 
-       // long DAY_IN_MS = 1000 * 60 * 60 * 24l;
+        // long DAY_IN_MS = 1000 * 60 * 60 * 24l;
         String kbGetUri = BASE_API_URL + apiMap.get("listKnowledgebase") ;
         /*"&last_modified_after="
                 + new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -115,10 +115,9 @@ public class KBDataImporter extends QualysDataImporter implements Constants{
             errorMap.put(EXCEPTION, e.getMessage());
             errorList.add(errorMap);
         }
-        ElasticSearchManager.createIndex(index);
-        ElasticSearchManager.createType(index, type);
+        ElasticSearchManager.createIndex(index,type);
         ElasticSearchManager.uploadData(index, type, vulnDetails, docid);
-        
+
         return ErrorManageUtil.formErrorCode(errorList);
     }
 }

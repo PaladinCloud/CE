@@ -2201,6 +2201,7 @@ public class PacmanUtils {
         HashMultimap<String, Object> shouldFilter = HashMultimap.create();
         Map<String, Object> mustTermsFilter = new HashMap<>();
         mustFilter.put(PacmanRuleConstants.LATEST, PacmanRuleConstants.TRUE_VAL);
+        mustFilter.put(DOC_TYPE,"vulninfo");
         mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.SEVERITY), severityVulnValue);
         mustFilter.put(convertAttributetoKeyword(PacmanRuleConstants.RESOURCE_ID), instanceId);
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2WithVulnUrl, mustFilter,
@@ -2535,6 +2536,7 @@ public class PacmanUtils {
         Map<String, Object> mustTermsFilter = new HashMap<>();
         mustFilter.put(convertAttributetoKeyword(attributeName), id);
         mustFilter.put(PacmanRuleConstants.LATEST, true);
+        mustFilter.put(DOC_TYPE,"qualysinfo");
 
         JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(esUrl, mustFilter,
                 mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null,null);
@@ -3930,6 +3932,7 @@ public class PacmanUtils {
 
 		mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.POLICY_ID), ruleId);
 		mustFilter.put(convertAttributetoKeyword(PacmanSdkConstants.RESOURCE_ID), instanceId);
+        mustFilter.put(DOC_TYPE,"issue_ec2");
 
 		JsonObject resultJson = RulesElasticSearchRepositoryUtil.getQueryDetailsFromES(ec2PortUrl, mustFilter,
 				mustNotFilter, shouldFilter, null, 0, mustTermsFilter, null, null);

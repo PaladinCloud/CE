@@ -37,7 +37,7 @@ public class Util {
     private static final String SOURCE = "_source";
     private static final String SCROLL_URI = "/_search/scroll?scroll=2m&scroll_id=";
     private static final String LAST_VULN_SCAN = "lastVulnScan";
-    
+
     /**
      * Process and transform.
      *
@@ -210,7 +210,7 @@ public class Util {
             }
 
         } catch (Exception e) {
-           LOGGER.error("Error in fetchVPCtoNatIPInfo",e);
+            LOGGER.error("Error in fetchVPCtoNatIPInfo",e);
         }
         LOGGER.info("fetchVPCtoNatIPInfo >> VpcPublicIpInfo size :{}", VpcPublicIpInfo.size());
         return VpcPublicIpInfo;
@@ -253,7 +253,7 @@ public class Util {
             }
 
         } catch (ParseException | IOException e) {
-           LOGGER.error("Error in fetchDataAndScrollId",e);
+            LOGGER.error("Error in fetchDataAndScrollId",e);
         }
         return null;
     }
@@ -292,10 +292,10 @@ public class Util {
         List<Map<String, Object>> respData = resp.stream().filter(host -> host.get(LAST_VULN_SCAN) != null)
                 .collect(Collectors.toList());
         if (!CollectionUtils.isNullOrEmpty(respData)) {
-            respData.sort((obj1, obj2) -> 
-                 LocalDateTime.parse(obj2.get(LAST_VULN_SCAN).toString(), DateTimeFormatter.ISO_DATE_TIME)
-                        .compareTo(LocalDateTime.parse(obj1.get(LAST_VULN_SCAN).toString(),
-                                DateTimeFormatter.ISO_DATE_TIME))
+            respData.sort((obj1, obj2) ->
+                    LocalDateTime.parse(obj2.get(LAST_VULN_SCAN).toString(), DateTimeFormatter.ISO_DATE_TIME)
+                            .compareTo(LocalDateTime.parse(obj1.get(LAST_VULN_SCAN).toString(),
+                                    DateTimeFormatter.ISO_DATE_TIME))
             );
 
         }
@@ -364,7 +364,7 @@ public class Util {
         if (host != null) {
             return (host.get(LAST_VULN_SCAN) != null
                     && LocalDateTime.parse(host.get(LAST_VULN_SCAN).toString(), DateTimeFormatter.ISO_DATE_TIME)
-                            .isAfter(LocalDateTime.now().minusDays(scanThreshold)));
+                    .isAfter(LocalDateTime.now().minusDays(scanThreshold)));
         }
         return false;
     }
@@ -399,9 +399,10 @@ public class Util {
      */
     public static Map<String, Object> fetchCurretQualysInfo(String type, String resourceId)
             throws IOException {
-        String endPoint = "/aws_" + type + "/qualysinfo/_search";
+        String endPoint = "/aws_" + type + "/_search";
         String payLoad = "{\"query\":{\"bool\":{\"must\":[{\"match\":{\"latest\":\"true\"}},{\"match\":{\"_resourceid.keyword\":\""
-                + resourceId + "\"}},{\"exists\":{\"field\":\"vuln\"}}]}}}";
+                + resourceId + "\"}},{\"match\":{\"docType.keyword\":\"qualysinfo\"}}" +
+                ",{\"exists\":{\"field\":\"vuln\"}}]}}}";
         LOGGER.debug("fetchCurretQualysInfo, endpoint:{}, payLoad:{}",endPoint,payLoad);
         Response response = ElasticSearchManager.invokeAPI("GET", endPoint, payLoad);
         LOGGER.debug("fetchCurretQualysInfo, response JSON:{}", response);
@@ -422,10 +423,10 @@ public class Util {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param assetMap
-     * 
+     *
      * Convert the manifestVersion in agentInfo to a String to make the qualysinfo ingest working.
      * manifestVersion is changed from string to object and es type is created as string
      */
