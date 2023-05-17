@@ -50,4 +50,6 @@ public interface Constants {
     
     /** The config creds. */
     String CONFIG_CREDS = "config_creds";
+
+    String DOC_TYPE="docType";
 }

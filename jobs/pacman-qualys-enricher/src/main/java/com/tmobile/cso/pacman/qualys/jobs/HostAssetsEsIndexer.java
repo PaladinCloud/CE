@@ -48,13 +48,13 @@ public class HostAssetsEsIndexer implements Constants {
      * @param qualysInfo the qualys info
      * @param type the type
      */
-    public void postHostAssetToES(Map<String, Map<String, Object>> qualysInfo, String ds,String type,List<Map<String,String>> errorList) {
+    public void postHostAssetToES(Map<String, Map<String, Object>> qualysInfo, String ds,String type,List<Map<String,String>> errorList) throws IOException {
         LOGGER.info("Uploading");
         String index = ds+"_" + type;
-        ElasticSearchManager.createType(index, "qualysinfo", type);
-        ElasticSearchManager.createType(index, "vulninfo", type);
+        ElasticSearchManager.createTypeWithParent(index, "qualysinfo", type);
+        ElasticSearchManager.createTypeWithParent(index, "vulninfo", type);
 
-        String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\", \"_parent\" : \"%s\" } }%n";
+        String createTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\", \"routing\" : \"%s\" } }%n";
 
         Iterator<Entry<String, Map<String, Object>>> it = qualysInfo.entrySet().iterator();
         int i = 0;
@@ -64,16 +64,31 @@ public class HostAssetsEsIndexer implements Constants {
         while (it.hasNext()) {
             Entry<String, Map<String, Object>> entry = it.next();
             String parent = entry.getKey();
+            String loaddate = new SimpleDateFormat("yyyy-MM-dd HH:mm:00Z").format(new java.util.Date());
             Map<String, Object> asset = entry.getValue();
+            asset.put("_loaddate", loaddate);
+            asset.put(Constants.DOC_TYPE,"qualysinfo");
+            Map<String, Object> relMap = new HashMap<>();
+            relMap.put("name", "qualysinfo");
+            relMap.put("parent", parent);
+            asset.put(type + "_relations", relMap);
+
             String assetDoc = createESDoc(asset,errorList);
-            createRequest.append(String.format(createTemplate, index, "qualysinfo", asset.get(DOC_ID), parent));
+            //Need to differentiate id as same id is present at parent
+            createRequest.append(String.format(createTemplate, index, asset.get(DOC_ID)+"-"+asset.get("id"),parent));
             createRequest.append(assetDoc + "\n");
             List<Map<String, Object>> vulnInfo = fetchVulnInfo(asset,errorList);
             if (!CollectionUtils.isNullOrEmpty(vulnInfo)) {
                 for (Map<String, Object> vuln : vulnInfo) {
                     vulnRequest
-                            .append(String.format(createTemplate, index, "vulninfo", vuln.get("@id"), parent));
+                            .append(String.format(createTemplate, index, vuln.get("@id"), parent));
                     vuln.remove("@id");
+                    vuln.put("_loaddate", loaddate);
+                    vuln.put(Constants.DOC_TYPE,"vulninfo");
+                    Map<String, Object> vulnRelMap = new HashMap<>();
+                    vulnRelMap.put("name", "vulninfo");
+                    vulnRelMap.put("parent", parent);
+                    vuln.put(type + "_relations", vulnRelMap);
                     vulnRequest.append(createESDoc(vuln,errorList) + "\n");
                 }
             }
@@ -88,7 +103,7 @@ public class HostAssetsEsIndexer implements Constants {
         }
 
         if (createRequest.length() > 0) {
-           
+
             bulkUpload(createRequest.toString(),errorList);
         }
         if (vulnRequest.length() > 0) {
@@ -217,7 +232,7 @@ public class HostAssetsEsIndexer implements Constants {
                                 vulnInfoList.add(vuln);
                             }
                         }
-                    }    
+                    }
                 }
             }
             String id=(String) asset.get("_resourceid");
@@ -316,10 +331,10 @@ public class HostAssetsEsIndexer implements Constants {
         ElasticSearchManager.refresh(index);
         String closeQidsJson = "{\"script\":{\"inline\": \"ctx._source._status='Closed';ctx._source._closedate='"
                 + CURR_DATE
-                + "';ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}}], \"must_not\": [{\"match\": {\"discoverydate.keyword\":\""
+                + "';ctx._source.latest=false\"},\"query\": {\"bool\": {\"must\": [{ \"match\": {\"latest\":true}},{ \"match\": {\"docType.keyword\":\"vulninfo\"}}], \"must_not\": [{\"match\": {\"discoverydate.keyword\":\""
                 + CURR_DATE + "\"}}]}}}";
         try {
-            ElasticSearchManager.invokeAPI("POST", "/"+index + "/vulninfo/" + "_update_by_query", closeQidsJson);
+            ElasticSearchManager.invokeAPI("POST", "/"+index + "/_update_by_query", closeQidsJson);
         } catch (IOException e) {
             LOGGER.error("wrapUp Failed", e);
             Map<String,String> errorMap = new HashMap<>();
