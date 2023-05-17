@@ -118,7 +118,7 @@ public class ElasticSearchManager {
      * @param idKey the id key
      */
     public static void uploadData(String index, String type, List<Map<String, Object>> docs, String idKey) {
-        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_type\" : \"%s\", \"_id\" : \"%s\"} }%n";
+        String actionTemplate = "{ \"index\" : { \"_index\" : \"%s\", \"_id\" : \"%s\"} }%n";
 
         LOGGER.info("*********UPLOADING*** {}", type);
         if (null != docs && !docs.isEmpty()) {
@@ -126,8 +126,9 @@ public class ElasticSearchManager {
             int i = 0;
             for (Map<String, Object> doc : docs) {
                 String id = doc.get(idKey).toString();
+                doc.put("docType",type);
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
-                bulkRequest.append(String.format(actionTemplate, index, type, id));
+                bulkRequest.append(String.format(actionTemplate, index, id));
                 bulkRequest.append(_doc + "\n");
                 i++;
                 if (i % 1000 == 0 || bulkRequest.toString().getBytes().length / (1024 * 1024) > 5) {
