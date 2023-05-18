@@ -6,6 +6,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.*;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.microsoft.azure.AzureEnvironment;
 import com.microsoft.azure.PagedList;
 import com.microsoft.azure.credentials.ApplicationTokenCredentials;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 @Service
 public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implements AccountsService{
+
 
     private static final Logger LOGGER= LoggerFactory.getLogger(AzureAccountServiceImpl.class);
     public static final String MISSING_MANDATORY_PARAMETER = "Missing mandatory parameter: ";
@@ -136,6 +138,13 @@ public class AzureAccountServiceImpl extends AbstractAccountServiceImpl implemen
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
             validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            //Delete the entry from DB
+            deleteAccountFromDB(tenantId);
+        }catch (AWSSecurityTokenServiceException e){
+            LOGGER.error(ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage(ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
             //Delete the entry from DB
             deleteAccountFromDB(tenantId);
         }

@@ -30,6 +30,7 @@ public abstract class AbstractAccountServiceImpl implements AccountsService{
     public static final String SUCCESS = "Success";
     public static final String SECRET_ALREADY_EXIST_FOR_ACCOUNT = "Secret already exist for account";
     public static final String PALADINCLOUD_RO = "PALADINCLOUD_RO";
+    public static final String ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE = "Error in assuming sts role, check permission configured for base account role";
 
     private static final Logger logger=LoggerFactory.getLogger(AbstractAccountServiceImpl.class);
     @Override

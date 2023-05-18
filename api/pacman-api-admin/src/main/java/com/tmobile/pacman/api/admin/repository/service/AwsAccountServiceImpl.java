@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
 import com.amazonaws.services.identitymanagement.model.*;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.tmobile.pacman.api.admin.domain.AccountValidationResponse;
 import com.tmobile.pacman.api.admin.domain.CreateAccountRequest;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
@@ -120,6 +121,13 @@ public class AwsAccountServiceImpl extends AbstractAccountServiceImpl implements
             response.setErrorDetails(e.getMessage());
             response.setValidationStatus(FAILURE);
             response.setMessage("Failed to add account.");
+            deleteAccountFromDB(accountData.getAccountId());
+        }catch (AWSSecurityTokenServiceException e){
+            LOGGER.error(ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            response.setValidationStatus(FAILURE);
+            response.setMessage(ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            response.setErrorDetails(e.getMessage()!=null?e.getMessage(): ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            //Delete the entry from DB
             deleteAccountFromDB(accountData.getAccountId());
         }
         return response;
