@@ -515,8 +515,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       const elementA =a[this.headerColName];
       const elementB =b[this.headerColName]
 
-      if(typeof elementA.valueText=="number" || typeof elementB.valueText=="number"){
-        return (elementA.valueText<elementB.valueText? -1: 1)*(isAsc ? 1 : -1);
+      if(!isNaN(parseFloat(elementA.valueText)) || !isNaN(parseFloat(elementB.valueText))){
+        if(typeof elementA.valueText=="number" || typeof elementB.valueText=="number"){
+          return (elementA.valueText-elementB.valueText)*(isAsc ? 1 : -1);
+        }
+
+        return (parseFloat(elementA.valueText)-parseFloat(elementB.valueText))*(isAsc ? 1 : -1);
       }
       
       let elementAValue =elementA&&elementA.valueText?elementA.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
