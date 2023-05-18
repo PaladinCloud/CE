@@ -576,6 +576,7 @@ export class OmniSearchDetailsComponent implements OnInit, OnDestroy {
       this.filterDataIsRequested = false;
       if (!this.utils.isObjectEmpty(data)) {
         this.filterPresent = true;
+        if(data?.groupBy?.values) data.groupBy.values.splice(2, 1);
         this.filterData = data;
         /**
          *  save the Filter Obj to seesion storage to load first next time
