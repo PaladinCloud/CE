@@ -12,6 +12,7 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.*;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.compute.v1.*;
@@ -160,6 +161,13 @@ public class GcpAccountServiceImpl extends AbstractAccountServiceImpl implements
             validateResponse.setValidationStatus(FAILURE);
             validateResponse.setMessage(SECRET_ALREADY_EXIST_FOR_ACCOUNT);
             validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): SECRET_ALREADY_EXIST_FOR_ACCOUNT);
+            //Delete the entry from DB
+            deleteAccountFromDB(projectId);
+        }catch (AWSSecurityTokenServiceException e){
+            LOGGER.error(ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            validateResponse.setValidationStatus(FAILURE);
+            validateResponse.setMessage(ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
+            validateResponse.setErrorDetails(e.getMessage()!=null?e.getMessage(): ERROR_IN_ASSUMING_STS_FOR_BASE_ACCOUNT_ROLE);
             //Delete the entry from DB
             deleteAccountFromDB(projectId);
         }
