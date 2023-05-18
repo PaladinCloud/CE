@@ -1,39 +1,52 @@
-<div class="dropdown-wrapper">
-    <mat-form-field>
-        <mat-label>{{placeholder}}</mat-label>
-        <mat-select [disabled]="isDisabled" disableOptionCentering (closed)="onClose()" [required]="required"
-            (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption"
-             [formControl]="listControl" [multiple]="isChipListEnabled">
-            <mat-select-trigger>
-                <div *ngIf="optionImage" [class.optionImage]="optionImage">
-                    <img src="{{selectedOptionImage}}">
-                    <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>
-                    <ng-template #isNotNumber>
-                        <span>{{capitalizeFirstLetter(selectedOption)}}</span>
-                    </ng-template>
-                </div>
-                <div *ngIf="isChipListEnabled">
-                <app-chip [chipsList]="listControl.value" [backgroundColor]="'#F1F6FF'" [color]="'#336CC9'" (updatedChipsList)="updateChipsList($event)"
-                 [isRemovable]="true"></app-chip>
-                </div>
-                <div *ngIf="!optionImage && !isChipListEnabled">
-                    <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>
-                    <ng-template #isNotNumber>
-                        <span>{{capitalizeFirstLetter(selectedOption)}}</span>
-                    </ng-template>
-                </div>
-            </mat-select-trigger>
-            <mat-option [class.optionImage]="optionImage" *ngFor="let item of optionList" [value]="item.text">
-                <div [class.optionImage]="optionImage">
-                    <img *ngIf="optionImage" src="{{item.img}}">
-                    <span *ngIf="isFirstCharNumber(item.text); else isNotNumber;">{{item.text}}</span>
-                    <ng-template #isNotNumber>
-                        <span>{{capitalizeFirstLetter(item.text)}}</span>
-                    </ng-template>
+<div>
+    <div class="dropdown-wrapper" [class.button]="isButton" (click)="matSelectRef.open()">
+        <mat-form-field>
+            <mat-label>{{placeholder}}</mat-label>
+            <mat-select #matSelectRef panelClass="mat-select-panel-class" [disabled]="isDisabled" disableOptionCentering (closed)="onClose()" (opened)="onOpen()" [required]="required"
+                (selectionChange)="selectedValue($event.value)" [(ngModel)]="selectedOption"
+                 [formControl]="listControl" [multiple]="isChipListEnabled || isMultiSelect">
+                 <div class="dropdown-title" *ngIf="dropdownTitle">{{ dropdownTitle }}</div>
+                 <mat-checkbox #selectedAll *ngIf="selectAll.length>0" [disableRipple]="true" (change)="toggleAllSelection($event)">{{selectAll}}</mat-checkbox>
+                <mat-select-trigger>
+                    <div *ngIf="customLabel?.length>0" class="flex-align-center" [class.optionImage]="customLabel">
+                        <span>{{customLabel}}</span>
+                            <app-chip [style.width]="'55%'" chipVariant="customVariant" class="not-selected-list" *ngIf="selectedItem" [chipsList]="[selectedOption]" [backgroundColor]="'#F1F6FF'" [color]="'#336CC9'" (updatedChipsList)="updateSingleChip($event)"
+                     [isRemovable]="true"></app-chip>
                     </div>
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+                    <div *ngIf="optionImage" [class.optionImage]="optionImage">
+                        <img src="{{selectedOptionImage}}">
+                        <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>
+                        <ng-template #isNotNumber>
+                            <span>{{capitalizeFirstLetter(selectedOption)}}</span>
+                        </ng-template>
+                    </div>
+                    <div *ngIf="isChipListEnabled">
+                    <app-chip [chipsList]="listControl.value" [backgroundColor]="'#F1F6FF'" [color]="'#336CC9'" (updatedChipsList)="updateChipsList($event, true)"
+                     [isRemovable]="true"></app-chip>
+                    </div>
+                    <div *ngIf="!optionImage && !isChipListEnabled && !customLabel">
+                        <span *ngIf="isFirstCharNumber(selectedOption); else isNotNumber;">{{selectedOption}}</span>
+                        <ng-template #isNotNumber>
+                            <span>{{capitalizeFirstLetter(selectedOption)}}</span>
+                        </ng-template>
+                    </div>
+                </mat-select-trigger>
+                <mat-option (click)="optionClick(item.text)" [class.optionImage]="optionImage" *ngFor="let item of optionList" [value]="item.text" [disabled]="disableOptions && disableOption(item.text)">
+                    <div [class.optionImage]="optionImage">
+                        <img *ngIf="optionImage" src="{{item.img}}">
+                        <span *ngIf="isFirstCharNumber(item.text); else isNotNumber;">{{item.text}}</span>
+                        <ng-template #isNotNumber>
+                            <span>{{capitalizeFirstLetter(item.text)}}</span>
+                        </ng-template>
+                        </div>
+                </mat-option>
+                <div class="apply-btn" *ngIf="showApplyButton">
+                    <app-custom-button style="float: right;" [disabled]="listControl.value.length==0" (onclick)="handleSelection($event)" buttonType="flat" label="Apply"></app-custom-button>
+                </div>
+            </mat-select>
+        </mat-form-field>
+        <div class="body-2 dropdown-button-label" *ngIf="isButton">{{ buttonLabel }}</div>
+    </div>
     <div *ngIf="requiredInfo">
         <img src="../../../assets/icons/info-circle.svg">
     </div>

@@ -27,7 +27,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() showFilterBtn;
   @Input() showMoreMenu = true;
   @Input() rowClickable = true;
-  @Input() selectedRowIndex: number;
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
@@ -42,10 +41,14 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() tableDataLoaded;
   @Input() doNotSort = false;
   @Input() rowSize: 'SM' | 'MD' | 'LG' = 'SM';
+  @Input() gapBetweenFilterAndTable;
+  @Input() showCopyButton = true;
+  @Input() selectedRowIndex;
   @Output() rowSelectEventEmitter = new EventEmitter<any>();
   @Output() actionSelected = new EventEmitter();
   @Output() headerColNameSelected = new EventEmitter<any>();
   @Output() searchCalledEventEmitter = new EventEmitter<string>();
+  @Output() searchEventEmitter = new EventEmitter<string>();
   @Output() whitelistColumnsChanged = new EventEmitter<any>();
   @Output() searchInColumnsChanged = new EventEmitter<any>();
   @Output() nextPageCalled = new EventEmitter<any>();
@@ -79,6 +82,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() filterTypeOptions;
   totalChips;
   chips;
+  selectedFiltersList = [];
 
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
@@ -90,19 +94,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
 
   ngOnInit(): void {
-    if(this.columnWidths){
-      this.displayedColumns = Object.keys(this.columnWidths);
-    }
-    if(this.displayedColumns.length == this.whiteListColumns.length){
-      this.allSelected=true;
-    }else{
-      this.allSelected=false;
-    }
-    if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
-      this.displayedColumns.pop();
-    }
-
-    this.displayedColumns.sort();
     
     if (this.onScrollDataLoader) {
       this.onScrollDataLoader.subscribe(data => {
@@ -123,9 +114,36 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
       }
       if(!this.tableDataLoaded){
+        this.tableScrollTop = 0;
+        // this.data = []; in a race condition, this may empty data after data is loaded
         this.customTable.first.nativeElement.scrollTop = 0;
         this.mainDataSource = new MatTableDataSource([]);
         this.dataSource = new MatTableDataSource([]);
+      }
+    }
+    if(changes.columnWidths){
+      if(this.columnWidths){
+        this.displayedColumns = Object.keys(this.columnWidths);  
+      }    
+      if(this.displayedColumns.length == this.whiteListColumns.length){
+        this.allSelected=true;
+      }else{
+        this.allSelected=false;
+      }
+      // if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
+      //   this.displayedColumns.pop();
+      // }
+  
+      this.displayedColumns.sort();
+
+      if(this.select){
+        this.select.options.forEach((item: MatOption) => {
+          if(this.allSelected || this.whiteListColumns.includes(item.value)){
+            item.select();
+          }else{
+            item.deselect();
+          }
+        });
       }
     }
     if((changes.data || changes.filteredArray)){
@@ -135,11 +153,12 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   
         this.waitAndResizeTable();
       }    
-      this.filteredArray.forEach((item, i) => {
-        if(item.filterValue.length==0){
-          this.filteredArray.splice(i, 1);
-        }
-      })
+      // this.filteredArray.forEach((item, i) => {
+      //   if(item.filterValue.length==0){
+      //     this.filteredArray.splice(i, 1);
+      //   }
+      // })
+      this.selectedFiltersList = this.filteredArray.map(item => item.keyDisplayValue);
       if(!this.doLocalFilter){
         this.chips = this.filteredArray.map(obj => {return {...obj}}); // cloning filteredArray
         this.chips.splice(2);
@@ -155,15 +174,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   ngAfterViewInit(): void {
     this.customTable.first.nativeElement.scrollTop = this.tableScrollTop;
     this.waitAndResizeTable();
-
-    if(this.select){
-      this.select.options.forEach((item: MatOption) => {
-        if((item.value == "selectAll" && this.allSelected) || this.whiteListColumns.includes(item.value)){
-          item.select();
-        }
-      });
-      this.changeDetectorRef.detectChanges();
-    }
   }
 
   filterAndSort(){
@@ -215,73 +225,85 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   handleSearchInColumnsChange(){
     this.searchInColumnsChanged.emit(this.searchInColumns.value);
   }
-  
-  toggleAllSelection() {  
-    this.whiteListColumns = Object.keys(this.columnWidths);
-    this.allSelected = !this.allSelected;
-    if (this.allSelected) {
-      this.select.options.forEach((item: MatOption) => item.select());
-    } else {
-      this.whiteListColumns = [];
-      this.select.options.forEach((item: MatOption) => item.deselect());
-    }
-    this.whiteListColumnsChanged();
-    this.getWidthFactor();
-  }
 
   whiteListColumnsChanged(){
     this.whitelistColumnsChanged.emit(this.whiteListColumns);
   }
 
-  handleClick(row, col, i: number) {
-    if (row[col].isMenuBtn) {
+  handleClick(row, col, i){
+    if(row[col].isMenuBtn){
       return;
     }
-    const event = {
+    let event = {
       tableScrollTop : this.customTable.first.nativeElement.scrollTop,
       rowSelected: row,
       data: this.data,
-      col,
+      col: col,
       filters: this.filteredArray,
       searchTxt: this.searchQuery,
-      selectedRowIndex: i,
+      selectedRowIndex: i
     }
     this.rowSelectEventEmitter.emit(event);
   }
 
-  handleAction(element, action){
+  handleAction(element, action, i){
     let event = {
       action: action,
       rowSelected: element,
+      selectedRowIndex: i
     }
     this.actionSelected.emit(event);
   }
 
-   optionClick() {
+  handleColumnSelection(e){
+    const cols = [];
     const shouldIncludeActions = this.whiteListColumns.includes("Actions");
-    this.whiteListColumns = Object.keys(this.columnWidths);
-    let newStatus = true;
-    this.select.options.forEach((item) => {
-      if(item.value!="selectAll" && item.value!="disabled"){
-        if (!item.selected) {
-          newStatus = false;
-          const index = this.whiteListColumns.findIndex((e) => e==item.value);
-          this.whiteListColumns.splice(index, 1);
-        }
+    const allCols = Object.keys(this.columnWidths);
+    allCols.forEach(col => {
+      if(e.includes(col)){
+        cols.push(col);
       }
-    });
-    this.allSelected = newStatus;
-    if(this.allSelected){
-      this.allColumnsSelected.select();
-    }else{
-      this.allColumnsSelected.deselect();
-    }
-    if(shouldIncludeActions) this.whiteListColumns.push("Actions");
+    })
+    this.whiteListColumns = cols;
+    // if(shouldIncludeActions) this.whiteListColumns.push("Actions");
     this.getWidthFactor();
+    this.waitAndResizeTable();
     this.whiteListColumnsChanged();
   }
 
+  handleFilterDropdownOpen(){
+    this.selectedFiltersList = [];
+    this.filteredArray.forEach(filter => {
+      this.selectedFiltersList.push(filter.keyDisplayValue);
+    })
+  }
+
+  filterOptionClick(e){
+    const filteredArrayKeys = this.filteredArray.map(item => item.keyDisplayValue);
+
+    if(!filteredArrayKeys.includes(e)){
+      // add to filteredArray
+      this.selectedFiltersList.push(e);
+      this.filteredArray.push({
+        keyDisplayValue: e,
+        filterValue: undefined
+      })
+      this.onSelectFilterType(e, this.filteredArray.length-1);
+    }else{
+      // remove from filteredArray
+      const filterIdx = this.selectedFiltersList.indexOf(e);
+      // warning: this may give wierd results if filteredArray keys and selectedFiltersList are not in sync
+      this.removeFilter(filterIdx);
+    }
+  }
+
   onSelectFilter(e, i){
+    if(!e){
+      this.selectedFiltersList.splice(i, 1);
+      this.removeFilter(i);
+      return;
+    }
+    
     let filterIndex = _.findIndex(this.filteredArray, (el, j) => {
       return (
         el["keyDisplayValue"] ===
@@ -306,14 +328,13 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(this.doLocalFilter){
       this.filterAndSort();
     }else{
-      let event = {
-        index: currIdx,
-        filterKeyDisplayValue: this.filteredArray[currIdx].keyDisplayValue,
-        filterValue: this.filteredArray[currIdx].filterValue
-      }
-
-      this.selectedFilter.emit(event);
     }
+    let event = {
+      index: currIdx,
+      filterKeyDisplayValue: this.filteredArray[currIdx].keyDisplayValue,
+      filterValue: this.filteredArray[currIdx].filterValue
+    }
+    this.selectedFilter.emit(event);
   }
 
   onSelectFilterType(e, i){
@@ -330,30 +351,31 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     this.filteredArray[i].key = e;
     this.filteredArray[i].keyDisplayValue = e;
     this.filteredArray[i].value = undefined;
-    this.filteredArray[i].filterValue = "";
-    this.selectedFilterType.emit(e);
-    }
+    this.filteredArray[i].filterValue = undefined;
+  }
+  this.selectedFilterType.emit(e);
   }
 
   addFilter(){
-      let obj = {
-        keyDisplayValue: "",
-        filterValue: ""
-      };
-      this.filteredArray.push(obj);
-      setTimeout(() => this.scrollFilterModalToBottom(true), 1);
+      // let obj = {
+      //   keyDisplayValue: "",
+      //   filterValue: ""
+      // };
+      // this.filteredArray.push(obj);
+      // setTimeout(() => this.scrollFilterModalToBottom(true), 1);
   }
 
   removeFilter(i){
-    if(this.filteredArray[i].value==undefined){
-      this.filteredArray.splice(i, 1);
-      return;
-    }
+    this.selectedFiltersList.splice(i, 1);
+    // if(this.filteredArray[i].value==undefined){
+    //   this.filteredArray.splice(i, 1);
+    //   return;
+    // }
 
     if(this.doLocalFilter){
       this.filteredArray.splice(i, 1);
       this.filterAndSort();
-      return;
+      // return;
     }
     let event = {
       index: i,
@@ -362,10 +384,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   }
 
   removeAllFilters(){
+    this.selectedFiltersList = [];
     if(this.doLocalFilter){
       this.filteredArray = [];
       this.filterAndSort();
-      return;
     }
     let event = {
       clearAll: true,
@@ -382,6 +404,10 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         const filterKey = filterObj.keyDisplayValue;
         const filterValue = String(filterObj.filterValue);
 
+        if(filterValue=="undefined"){
+          continue;
+        }
+
         if(filterKey && filterValue){
           const cellValue = item[filterKey].valueText;
           if(filterValue=="0%-25%" || filterValue=="26%-50%" || filterValue=="51%-75%" || filterValue=="76%-100%"){
@@ -397,7 +423,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
             return false;
           }
         }else{
-          this.filteredArray.splice(i, 1);
+          // this.filteredArray.splice(i, 1);
         }
       }
       return true;
@@ -437,8 +463,6 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     if(this.doLocalFilter){
       this.customFilter();
     }
-
-
   }
 
   handleSearch(event){
@@ -450,9 +474,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.tableErrorMessage = '';
       if(this.doLocalSearch){
         this.filterAndSort();
-      }else{
-        this.searchCalledEventEmitter.emit(searchTxt);
       }
+      this.searchCalledEventEmitter.emit(searchTxt);
     }
   }
 
