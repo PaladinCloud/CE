@@ -230,7 +230,7 @@ export class AuthService {
     get redirectUrl(): string {
         let redirectUrl = '';
 
-        redirectUrl = this.dataStore.getRedirectUrl() || redirectUrl;
+        redirectUrl = localStorage.getItem("redirectUrl");
         return redirectUrl;
     }
 
@@ -328,13 +328,13 @@ export class AuthService {
 
                         this.fetchRolePermissionMapping().subscribe(result => {
                             this.logger.log('info', '**Successfully set user role capabilities mapping Fetched information**');
-
+                            observer.next('success');
+                            observer.complete();
                         },
                             error => {
                                 this.logger.log('info', '**Error in setting user role capabilities information**');
+                                 observer.error(error);
                             });
-                        observer.next('success');
-                        observer.complete();
                     } else {
                         const errorMessage = response.message || 'Error authenticating the id_token';
                         this.logger.log('error ', errorMessage);

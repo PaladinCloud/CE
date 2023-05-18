@@ -38,6 +38,9 @@ export class PermissionGuardService implements CanActivate {
             this.router.navigate(['/home']);
             return false;
         }
+        const redirectUrl = location.origin + state.url;
+        if(!redirectUrl.includes("home"))
+        localStorage.setItem("redirectUrl",redirectUrl);
         return true;
     }
 
