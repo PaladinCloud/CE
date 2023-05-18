@@ -1,13 +1,13 @@
 .table-container{
   height: 100%;
   width: 100%;
-  background-color: var(--background-white);
   border-radius: var(--border-radius);
   border: 1px solid var(--border-100);
   position: relative;
 }
 
 .table-content-container{
+    background-color: var(--background-white);
     width: 100%;
     height: calc(100% - 70px);
     overflow-y: scroll;
@@ -26,6 +26,7 @@
 }
 
 .table-header {
+  background-color: var(--background-white);
   border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
@@ -50,6 +51,7 @@
 }
 
 .table-header .header-left{
+  display: none;
     height: 40px;
     max-width: 543px;
     flex: 3;
@@ -74,18 +76,20 @@
 }
 
 .table-header .header-right{
-    flex: 5;
-    padding: 5px;
+    margin-left: auto;
+}
+
+.add-remove-columns-wrapper ::ng-deep .button{
+  padding: 0 16px 0 7px;
+}
+
+.add-remove-columns-wrapper ::ng-deep .dropdown-button-label{
+  font: var(--text-caption);
 }
 
 .add-remove-columns-wrapper{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-    border: 1px solid var(--border-200);
-    padding: 0px 16px;
-    font: var(--text-caption);
-    color: var(--text-medium-emphasis);
+  width: 115px;
+  padding: 0px 3px
 }
 
 .filter-wrapper{
@@ -201,6 +205,15 @@
     display: none;
 }
 
+.table-header ::ng-deep .mat-form-field-wrapper{
+  padding-bottom: 0.25em;
+}
+
+::ng-deep .mat-primary .mat-option.mat-selected:not(.mat-option-disabled){
+  color: var(--text-low-emphasis);
+  font: var(--text-body-2);
+}
+
 .add-remove-columns-wrapper ::ng-deep .mat-select-value,
 .table-header .search-in-columns ::ng-deep .mat-select-value{
     display: none;
@@ -237,12 +250,50 @@
     cursor: text;
 }
 
-.add-remove-columns-wrapper ::ng-deep .mat-select-arrow {
+.add-remove-columns-wrapper ::ng-deep .mat-select-arrow{
+    margin: 0 0 0 10px;
     width: 10px !important;
     height: 10px !important;
     border: none !important;
     background-image: url(/assets/icons/columns.svg);
     background-repeat: no-repeat;
+}
+
+.filters-button-wrapper ::ng-deep .mat-select-arrow{
+  margin: 6px 0 0 10px;
+  width: 16px !important;
+  height: 16px !important;
+  border: none !important;
+  background-image: url(/assets/icons/plus-black.svg);
+  background-repeat: no-repeat;
+}
+
+/* .filters-button-wrapper{
+  position: absolute;
+  right: 0;
+  top: 0;
+} */
+
+.filters-section{
+  position: relative;
+  background-color: white; 
+  padding: 12px 16px; 
+  align-items: baseline;
+}
+
+.menu-wrapper ::ng-deep .mat-form-field-infix {
+  border-radius: 4px;
+  background: white;
+  min-width: 280px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-wrapper ::ng-deep .dropdown-wrapper .mat-select,
+.menu-wrapper ::ng-deep .dropdown-wrapper .mat-form-field-label{
+  padding: 6px 12px 5px 12px;
 }
 
 :host::ng-deep .mat-option-text{
@@ -311,7 +362,7 @@ tr.mat-row.sm > td {
 }
 
 th.mat-header-cell, td.mat-cell, td.mat-footer-cell{
-  padding: 0 24px;
+  padding: 0 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -422,4 +473,9 @@ tr.mat-header-row{
 }
 .table-cell:hover .copy-icon{
   display: block;
+}
+
+.new-filter-wrapper app-dropdown ::ng-deep .button{
+  padding: 0 16px 0px 0px;
+  border: none;
 }
