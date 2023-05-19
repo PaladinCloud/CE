@@ -152,7 +152,7 @@ public class AnnotationPublisher {
                 shouldFilter);
         // get all the issues for this ruleId
         List<Map<String, String>> existingIssues = ESUtils.getDataFromES(esUrl, indexName.toLowerCase(), null,
-                mustFilter, mustNotFilter, shouldFilter, fields, 0, totalDocs);
+                mustFilter, mustNotFilter, shouldFilter, fields, 0, totalDocs, "_docid");
         existingIssues.stream().forEach(obj -> {
             existingIssuesMapWithAnnotationIdAsKey.put(obj.get(PacmanSdkConstants.ES_DOC_ID_KEY), obj);
         });

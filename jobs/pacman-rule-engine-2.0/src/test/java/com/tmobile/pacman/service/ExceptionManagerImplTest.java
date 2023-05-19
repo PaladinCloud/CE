@@ -67,7 +67,7 @@ public class ExceptionManagerImplTest {
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
         try {
 
-                PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong())).thenReturn(new ArrayList());
+                PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong(), anyString())).thenReturn(new ArrayList());
         } catch (Exception e) {
         }
 
@@ -84,7 +84,7 @@ public class ExceptionManagerImplTest {
         PowerMockito.mockStatic(ESUtils.class);
         PowerMockito.when(ESUtils.getEsUrl()).thenReturn("");
         try {
-                PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong())).thenReturn(new ArrayList());
+            PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong(), anyString())).thenReturn(new ArrayList());
         } catch (Exception e) {
         }
 
