@@ -71,7 +71,7 @@ A good example is when some teams would like to enforce additional tagging stand
 * AWS Lambda - policy execution
 
 Paladin Cloud installer automatically launches all of these services and configures them. A
-typical [installation](https://github.com/PaladinCloud/Rev1/wiki/Installation) takes about 20 minutes.
+typical [installation](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)) takes about 20 minutes.
 
 # Paladin Cloud User Interface
 
@@ -95,19 +95,19 @@ typical [installation](https://github.com/PaladinCloud/Rev1/wiki/Installation) t
 
 # Installation
 
-Detailed installation instructions are available [here](https://github.com/PaladinCloud/CE/wiki/Installation)
+Detailed installation instructions are available [here](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud))
 
 # Usage
 
 The installer will launch required AWS services listed in
-the [installation instructions](https://github.com/PaladinCloud/CE/wiki/Installation). After successful installation hit
+the [installation instructions](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)). After successful installation hit
 the UI load balancer URL. Log into the application using the credentials supplied during the installation. The results
 from the policy evaluation will start getting populated within 30 minutes. Trend line widgets will be populated when
 there are at least two data points.
 
 When you install Paladin Cloud, the AWS account where you install is the **source** account. Paladin Cloud can then
 monitor other **target** AWS accounts. Refer to the
-instructions [here](https://github.com/PaladinCloud/CE/wiki/Installation) to add new accounts to Paladin Cloud. By
+instructions [here](https://github.com/PaladinCloud/CE/wiki/Paladin-Cloud-Installation-(On-AWS-Cloud)) to add new accounts to Paladin Cloud. By
 default the **source** account will be monitored by Paladin Cloud.
 
 Login as Admin user and go to the Admin page from the top menu. In the Admin section, you can
