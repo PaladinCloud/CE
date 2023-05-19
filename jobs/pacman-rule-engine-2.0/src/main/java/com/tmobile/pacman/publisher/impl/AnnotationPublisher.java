@@ -205,6 +205,9 @@ public class AnnotationPublisher {
                 issueAttributes.remove(PARENT);
                 issueAttributes.remove(ID);
                 issueAttributes.remove(_annotation.get(TARGET_TYPE) + "_relations");
+                //Removing the relations as its being added through annotation
+                issueAttributes.remove(_annotation.get(TARGET_TYPE) + "_relations.parent");
+                issueAttributes.remove(_annotation.get(TARGET_TYPE) + "_relations.name");
                 issueAttributes.remove(DOC_TYPE);
                 actualCreatedDate = issueAttributes.get(PacmanSdkConstants.CREATED_DATE);
                 currentIssueStatus = issueAttributes.get(PacmanSdkConstants.ISSUE_STATUS_KEY);
@@ -223,6 +226,7 @@ public class AnnotationPublisher {
             }
             bulkRequestBody.append(String.format(BULK_INDEX_REQUEST_TEMPLATE, indexName,
                     _annotation.get(PacmanSdkConstants.DOC_ID), annotationId));
+
             // covert relations object to json
             // Your input JSON string
             String inputStr = serializer.toJson(issueAttributes);
