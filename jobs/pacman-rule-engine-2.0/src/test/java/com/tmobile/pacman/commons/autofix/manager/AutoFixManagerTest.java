@@ -87,7 +87,7 @@ public class AutoFixManagerTest {
             PowerMockito.when(ReflectionUtils.findFixClass(anyString())).thenReturn(cl);
             PowerMockito.when(ReflectionUtils.findAssociatedMethod(anyObject(), anyString())).thenReturn(method);
             PowerMockito.when(ESUtils.getTotalDocumentCountForIndexAndType(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class))).thenReturn(10L);
-            PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong())).thenReturn(new ArrayList());
+			PowerMockito.when(ESUtils.getDataFromES(anyString(), anyString(), anyString(), anyMap(), anyMap(), any(HashMultimap.class), anyList(), anyLong(), anyLong(), anyString())).thenReturn(new ArrayList());
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

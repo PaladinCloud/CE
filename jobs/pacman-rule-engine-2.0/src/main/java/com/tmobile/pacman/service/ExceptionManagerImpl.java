@@ -88,8 +88,9 @@ public class ExceptionManagerImpl implements ExceptionManager {
 
         mustFilter.put("range", dateRangeMap);
 
+        // TODO: Not querying entire exceptions here. Need to update. For now putting 10k
         List<Map<String, String>> exceptions = ESUtils.getDataFromES(ESUtils.getEsUrl(), indexName, type, mustFilter,
-                null, null, null, 0, 20);
+                null, null, null, 0, 10000, "issueId");
         Map<String, IssueException> individualExceptions = exceptions.stream()
                 .map(obj -> new IssueException(obj, ExceptionType.INDIVIDUAL))
                 .collect(Collectors.toMap(IssueException::getIssueId, obj -> obj, (oldval, newval) -> {
@@ -126,8 +127,9 @@ public class ExceptionManagerImpl implements ExceptionManager {
         Map<String, Object> dateRangeMap = new HashMap<String, Object>();
         dateRangeMap.put("expiryDate", rangeMap);
         mustFilter.put("range", dateRangeMap);
+        // TODO: not getting entire data here, putting 10K
         List<Map<String, String>> exceptions = ESUtils.getDataFromES(ESUtils.getEsUrl(), INDEX_FOR_EXCEPTIONS,
-                TYPE_FOR_STICKY_EXCEPTIONS, mustFilter, null, null, null, 0, 20);
+                TYPE_FOR_STICKY_EXCEPTIONS, mustFilter, null, null, null, 0, 10000, null);
         List<IssueException> stickyExceptions = exceptions.stream()
                 .map(obj -> new IssueException(obj, ExceptionType.STICKY)).collect(Collectors.toList());
         // clear the must filter
@@ -138,9 +140,10 @@ public class ExceptionManagerImpl implements ExceptionManager {
         Map<String, List<IssueException>> exceptionResourceSetMap = new HashMap<>();
         stickyExceptions.forEach(obj -> {
             try {
+                // TODO: not getting entire data here, putting 10K
                 exemptedResources.put(obj,
                         ESUtils.getDataFromES(ESUtils.getEsUrl(), obj.getAssetGroup(), resourceType, mustFilter, null,
-                                null, null, 0, 20).stream().map(resource -> resource.get(RESOURCE_ID))
+                                        null, null, 0, 10000, null).stream().map(resource -> resource.get(RESOURCE_ID))
                                 .collect(Collectors.toList()));
             } catch (Exception e) {
             }

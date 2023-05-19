@@ -88,7 +88,7 @@ public class ESUtils {
         Long totalDocs = getTotalDocumentCountForIndexAndType(url, index, targetType, effectiveFilter, null, null);
         logger.debug("total resource count" + totalDocs);
         List<Map<String, String>> details = getDataFromES(url, index.toLowerCase(), targetType.toLowerCase(),
-                effectiveFilter, null, null, fields, 0, totalDocs);
+                effectiveFilter, null, null, fields, 0, totalDocs, "_docid");
         return details;
     }
 
@@ -426,8 +426,8 @@ public class ESUtils {
 
     @SuppressWarnings("unchecked")
     public static List<Map<String, String>> getDataFromES(final String url, String dataSource, String entityType,
-            Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
-            final HashMultimap<String, Object> shouldFilter, List<String> fields, long from, long size)
+                                                          Map<String, Object> mustFilter, final Map<String, Object> mustNotFilter,
+                                                          final HashMultimap<String, Object> shouldFilter, List<String> fields, long from, long size, String uniqueColumn)
             throws Exception {
 
         // if filter is not null apply filter, this can be a multi value filter
@@ -439,12 +439,9 @@ public class ESUtils {
         }
 
         String urlToQuery = url + "/" + dataSource +
-//        if (!Strings.isNullOrEmpty(entityType)) {
-//            urlToQueryBuffer.append("/").append(entityType);
-//        }
-                "/" + "_search" + "?scroll=" + PacmanSdkConstants.ES_PAGE_SCROLL_TTL;
+                "/" + "_search";
         logger.info("Querying ES with URL1: {}", urlToQuery);
-        String urlToScroll = url + "/" + "_search" + "/scroll";
+        String urlToPIT = url + "/" + "_search";
         List<Map<String, String>> results = new ArrayList<Map<String, String>>();
         // paginate for breaking the response into smaller chunks
 
@@ -461,32 +458,54 @@ public class ESUtils {
             }
         }
 
-        Map<String, Object> requestBody = new HashMap<String, Object>();
+        Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("size", PacmanSdkConstants.ES_PAGE_SIZE);
         requestBody.put(QUERY, CommonUtils.buildQuery(matchFilters, mustNotFilter, shouldFilter));
         requestBody.put("_source", fields);
-        Gson serializer = new GsonBuilder().create();
-        String request = serializer.toJson(requestBody);
-        logger.debug("inventory query" + request);
-        String _scroll_id = null;
-        for (int index = 0; index <= (size / PacmanSdkConstants.ES_PAGE_SIZE); index++) {
-            String responseDetails = null;
-            try {
-                if (!Strings.isNullOrEmpty(_scroll_id)) {
-                    request = buildScrollRequest(_scroll_id, PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
-                    urlToQuery = urlToScroll;
-                }
-                logger.info("Querying ES with URL2: {}", urlToQuery);
-                responseDetails = CommonUtils.doHttpPost(urlToQuery, request,new HashMap<>());
-                _scroll_id = processResponseAndSendTheScrollBack(responseDetails, results);
-            } catch (Exception e) {
-                logger.error("error retrieving inventory from ES", e);
-                throw e;
-            }
+        List<Map<String, Object>> sortList = new ArrayList<>();
+        Map<String, Object> sortKey = new HashMap<>();
+        Map<String, Object> orderMap = new HashMap<>();
+        orderMap.put("order", "desc");
+        /**
+         *  Add unmapped_type to ignore error in case of no data available in the index
+         *         This would also swallow error if the field also not available in the index.
+         *         So be very careful that this uniqueColumn exists in the index
+         */
+        orderMap.put("unmapped_type", "string");
+        String sortColumn = uniqueColumn == null ? "_id" : uniqueColumn + ".keyword";
+        sortKey.put(sortColumn, orderMap);
+        sortList.add(sortKey);
+        requestBody.put("sort", sortList);
+        Gson serializer = new GsonBuilder().disableHtmlEscaping().create();
+        try {
+            for (int index = 0; index <= (size / PacmanSdkConstants.ES_PAGE_SIZE); index++) {
+                String responseDetails;
+                try {
+                    String request = serializer.toJson(requestBody);
+                    logger.info("Querying ES with URL2: {}", urlToQuery);
+                    logger.debug("inventory query" + request);
+                    responseDetails = CommonUtils.doHttpPost(urlToQuery, request, new HashMap<>());
+                    Map<String, Object> returnObj = processResponseAndSendTheSortObjBack(responseDetails, results);
+                    requestBody.put("search_after", returnObj.get("sortArray"));
 
+                } catch (Exception e) {
+                    logger.error("error retrieving inventory from ES", e);
+                    throw e;
+                }
+            }
+        } finally {
+            // TODO: Delete the PIT
         }
         // checkDups(results);
         return results;
+    }
+
+    private static String getPitId(String urlToQuery) {
+        String response = null;
+        response = CommonUtils.doHttpPost(urlToQuery, "", new HashMap<>());
+        Gson serializer = new GsonBuilder().create();
+        Map<String, Object> responseDetails = (Map<String, Object>) serializer.fromJson(response, Object.class);
+        return (String) responseDetails.get("pit_id");
     }
 
     /**
@@ -504,14 +523,18 @@ public class ESUtils {
     /**
      * Builds the scroll request.
      *
-     * @param _scroll_id the scroll id
-     * @param esPageScrollTtl the es page scroll ttl
+     * @param _pitId      the scroll id
+     * @param requestBody
      * @return the string
      */
-    private static String buildScrollRequest(String _scroll_id, String esPageScrollTtl) {
-        Map<String, Object> requestBody = new HashMap<String, Object>();
-        requestBody.put("scroll", PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
-        requestBody.put("scroll_id", _scroll_id);
+    private static String buildPITRequest(String _pitId, Map<String, Object> requestBody) {
+
+        if (_pitId != null) {
+            HashMap<String, String> pitBody = new HashMap<>();
+            pitBody.put("keep_alive", PacmanSdkConstants.ES_PAGE_SCROLL_TTL);
+            pitBody.put("id", _pitId);
+            requestBody.put("pit", pitBody);
+        }
         Gson serializer = new GsonBuilder().disableHtmlEscaping().create();
         return serializer.toJson(requestBody);
     }
@@ -520,13 +543,14 @@ public class ESUtils {
      * Process response and send the scroll back.
      *
      * @param responseDetails the response details
-     * @param results the results
+     * @param results         the results
      * @return the string
      */
-    private static String processResponseAndSendTheScrollBack(String responseDetails,
-            List<Map<String, String>> results) {
+    private static Map<String, Object> processResponseAndSendTheSortObjBack(String responseDetails,
+                                                                            List<Map<String, String>> results) {
         Gson serializer = new GsonBuilder().create();
         Map<String, Object> response = (Map<String, Object>) serializer.fromJson(responseDetails, Object.class);
+        Map<String, Object> lastHitDetail = new HashMap<>();
         if (response.containsKey("hits")) {
             Map<String, Object> hits = (Map<String, Object>) response.get("hits");
             if (hits.containsKey("hits")) {
@@ -539,10 +563,16 @@ public class ESUtils {
                     sources.put(PacmanSdkConstants.ES_DOC_ROUTING_KEY,
                             hitDetail.get(PacmanSdkConstants.ES_DOC_ROUTING_KEY));
                     results.add(CommonUtils.flatNestedMap(null, sources));
+                    lastHitDetail = hitDetail;
                 }
             }
         }
-        return (String) response.get("_scroll_id");
+        // extract the sort array from the last hitDetail object
+        List<String> sortArray = (List<String>) lastHitDetail.get("sort");
+        Map<String, Object> returnObject = new HashMap<>();
+        returnObject.put("sortArray", sortArray);
+//        returnObject.put("pit_id", response.get("pit_id"));
+        return returnObject;
     }
 
     /**
@@ -570,7 +600,7 @@ public class ESUtils {
         filter.put("_id", _id);
         List<String> fields = new ArrayList<String>();
         List<Map<String, String>> details = getDataFromES(url, index.toLowerCase(), targetType.toLowerCase(), filter,
-                null, null, fields, 0, 100);
+                null, null, fields, 0, 100, null);
         if (details != null && !details.isEmpty()) {
             return details.get(0);
         } else {

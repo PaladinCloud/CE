@@ -783,7 +783,7 @@ private String normalizeResourceId(String resourceId, AWSService serviceType, Ma
                 shouldFilter);
         // get all the issues for this ruleId
         return ESUtils.getDataFromES(esUrl, indexName.toLowerCase(), null,
-                mustFilter, null, shouldFilter, fields, 0, totalDocs);
+                mustFilter, null, shouldFilter, fields, 0, totalDocs, "_docid");
     }
 
     /**
