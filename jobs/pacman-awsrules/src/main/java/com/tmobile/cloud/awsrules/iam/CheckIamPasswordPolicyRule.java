@@ -151,57 +151,53 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		Integer maxPasswordAge = Integer.parseInt(ruleParam.get("maxPasswordAge"));
 		Integer minpasswordLength = Integer.parseInt(ruleParam.get("minPasswordLength"));
 		Integer lastPasswordtoRemem = Integer.parseInt(ruleParam.get("lastPasswordsToRemember"));
-		
-
-		
 		Boolean complianceStatus = Boolean.TRUE;
-		if (maxPasswordAge > 0 && (passwordPolicy.getMaxPasswordAge()==null || passwordPolicy.getMaxPasswordAge() > maxPasswordAge)) {
-			policyIssues.append("The standard max password age is "+ruleParam.get("maxPasswordAge")+" days but the found password age is "+passwordPolicy.getMaxPasswordAge()+" days\n");
+		if (maxPasswordAge > 0 && (passwordPolicy.getMaxPasswordAge() == null
+				|| passwordPolicy.getMaxPasswordAge() > maxPasswordAge)) {
+			policyIssues.append("The standard max password age is " + ruleParam.get("maxPasswordAge")
+					+ " days but the found password age is " + passwordPolicy.getMaxPasswordAge() + " days\n");
 			complianceStatus = Boolean.FALSE;
 		}
-		
-		if (minpasswordLength > 0 && (passwordPolicy.getMinimumPasswordLength()==null || !passwordPolicy.getMinimumPasswordLength().equals(minpasswordLength))) {
+		if (minpasswordLength > 0 && (passwordPolicy.getMinimumPasswordLength() == null
+				|| !passwordPolicy.getMinimumPasswordLength().equals(minpasswordLength))) {
 			policyIssues.append("Min password length do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
-
-		
-		if (lastPasswordtoRemem > 0 && (passwordPolicy.getPasswordReusePrevention()==null || !passwordPolicy.getPasswordReusePrevention().equals(lastPasswordtoRemem))) {
+		if (lastPasswordtoRemem > 0 && (passwordPolicy.getPasswordReusePrevention() == null
+				|| !passwordPolicy.getPasswordReusePrevention().equals(lastPasswordtoRemem))) {
 			policyIssues.append("Password reuse prevention number do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
-
-		if (isAllowUsersToChangePassword && (passwordPolicy.getAllowUsersToChangePassword()==null || !passwordPolicy.getAllowUsersToChangePassword())) {
+		if (isAllowUsersToChangePassword && (passwordPolicy.getAllowUsersToChangePassword() == null
+				|| !passwordPolicy.getAllowUsersToChangePassword())) {
 			policyIssues.append("Allow users to change passwords do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
-
-		if (isHardExpiry && (passwordPolicy.getHardExpiry()==null || !passwordPolicy.getHardExpiry())) {
+		if (isHardExpiry && (passwordPolicy.getHardExpiry() == null || !passwordPolicy.getHardExpiry())) {
 			policyIssues.append("Hard expiry do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
-
-		if (isRequireLowercaseCharacters && (passwordPolicy.getRequireLowercaseCharacters()==null || !passwordPolicy.getRequireLowercaseCharacters())) {
+		if (isRequireLowercaseCharacters && (passwordPolicy.getRequireLowercaseCharacters() == null
+				|| !passwordPolicy.getRequireLowercaseCharacters())) {
 			policyIssues.append("Require at least one lowercase letter \n");
 			complianceStatus = Boolean.FALSE;
 		}
-		
-		if (isRequireUppercaseCharacters && (passwordPolicy.getRequireUppercaseCharacters()==null || !passwordPolicy.getRequireUppercaseCharacters())) {
+		if (isRequireUppercaseCharacters && (passwordPolicy.getRequireUppercaseCharacters() == null
+				|| !passwordPolicy.getRequireUppercaseCharacters())) {
 			policyIssues.append("Require at least one uppercase letter \n");
 			complianceStatus = Boolean.FALSE;
 		}
-
-		if (isExpirePasswords && (passwordPolicy.getExpirePasswords()==null || !passwordPolicy.getExpirePasswords())) {
+		if (isExpirePasswords
+				&& (passwordPolicy.getExpirePasswords() == null || !passwordPolicy.getExpirePasswords())) {
 			policyIssues.append("Expire passwords do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
-
-		if (isRequireSymbols && (passwordPolicy.getRequireSymbols()==null || !passwordPolicy.getRequireSymbols())) {
+		if (isRequireSymbols && (passwordPolicy.getRequireSymbols() == null || !passwordPolicy.getRequireSymbols())) {
 			policyIssues.append("Require at least one non-alpanumeric character \n");
 			complianceStatus = Boolean.FALSE;
 		}
-		
-		if (isRequireNumbers && (passwordPolicy.getRequireNumbers()==null || !passwordPolicy.getRequireNumbers())) {
+
+		if (isRequireNumbers && (passwordPolicy.getRequireNumbers() == null || !passwordPolicy.getRequireNumbers())) {
 			policyIssues.append("Require at least one number \n");
 			complianceStatus = Boolean.FALSE;
 		}
