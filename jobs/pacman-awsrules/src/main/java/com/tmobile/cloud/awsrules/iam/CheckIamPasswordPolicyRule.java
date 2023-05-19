@@ -47,7 +47,7 @@ import com.tmobile.pacman.commons.policy.PolicyResult;
 public class CheckIamPasswordPolicyRule extends BasePolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger(CheckIamPasswordPolicyRule.class);
-	private StringBuilder policyIssues;
+	
 	
 	/**
 	 * The method will get triggered from Rule Engine with following parameters
@@ -78,6 +78,7 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		Annotation annotation = null;
 		AmazonIdentityManagementClient iamClient = null;
 		String roleIdentifyingString = ruleParam.get(PacmanSdkConstants.Role_IDENTIFYING_STRING);
+		StringBuilder policyIssues = new StringBuilder();
 		
 		logger.info(resourceAttributes.get("accountid"));
 		logger.info(resourceAttributes.get("accountname"));
@@ -108,7 +109,7 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		PasswordPolicy passwordPolicy = result.getPasswordPolicy();
 
 		if (null != passwordPolicy) {
-			if (!isPasswordPolicyCompliant(passwordPolicy, ruleParam)) {
+			if (!isPasswordPolicyCompliant(passwordPolicy, ruleParam, policyIssues)) {
 
 				logger.warn("Password Policy not compliant");
 				annotation = Annotation.buildAnnotation(ruleParam,Annotation.Type.ISSUE);
@@ -132,7 +133,7 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		return new PolicyResult(PacmanSdkConstants.STATUS_SUCCESS,PacmanRuleConstants.SUCCESS_MESSAGE);
 	}
 
-	private boolean isPasswordPolicyCompliant(PasswordPolicy passwordPolicy,Map<String, String> ruleParam) {
+	private boolean isPasswordPolicyCompliant(PasswordPolicy passwordPolicy,Map<String, String> ruleParam, StringBuilder policyIssues) {
 		String requireSymbols = ruleParam.get("requireSymbols");
 		Boolean isRequireSymbols = Boolean.parseBoolean(requireSymbols);
 		String requireNumbers = ruleParam.get("requireNumbers");
@@ -147,56 +148,60 @@ public class CheckIamPasswordPolicyRule extends BasePolicy {
 		Boolean isExpirePasswords = Boolean.parseBoolean(expirePasswords);
 		String hardExpiry = ruleParam.get("hardExpiry"); 
 		Boolean isHardExpiry = Boolean.parseBoolean(hardExpiry);
+		Integer maxPasswordAge = Integer.parseInt(ruleParam.get("maxPasswordAge"));
+		Integer minpasswordLength = Integer.parseInt(ruleParam.get("minPasswordLength"));
+		Integer lastPasswordtoRemem = Integer.parseInt(ruleParam.get("lastPasswordsToRemember"));
+		
 
-		policyIssues = new StringBuilder();
+		
 		Boolean complianceStatus = Boolean.TRUE;
-		if (passwordPolicy.getMaxPasswordAge()==null || passwordPolicy.getMaxPasswordAge() > Integer.parseInt(ruleParam.get("maxPasswordAge"))) {
+		if (maxPasswordAge > 0 && (passwordPolicy.getMaxPasswordAge()==null || passwordPolicy.getMaxPasswordAge() > maxPasswordAge)) {
 			policyIssues.append("The standard max password age is "+ruleParam.get("maxPasswordAge")+" days but the found password age is "+passwordPolicy.getMaxPasswordAge()+" days\n");
 			complianceStatus = Boolean.FALSE;
 		}
 		
-		if (passwordPolicy.getMinimumPasswordLength()==null || passwordPolicy.getMinimumPasswordLength() != Integer.parseInt(ruleParam.get("minPasswordLength"))) {
+		if (minpasswordLength > 0 && (passwordPolicy.getMinimumPasswordLength()==null || !passwordPolicy.getMinimumPasswordLength().equals(minpasswordLength))) {
 			policyIssues.append("Min password length do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
 
 		
-		if (passwordPolicy.getPasswordReusePrevention()==null || passwordPolicy.getPasswordReusePrevention() != Integer.parseInt(ruleParam.get("lastPasswordsToRemember"))) {
+		if (lastPasswordtoRemem > 0 && (passwordPolicy.getPasswordReusePrevention()==null || !passwordPolicy.getPasswordReusePrevention().equals(lastPasswordtoRemem))) {
 			policyIssues.append("Password reuse prevention number do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
 
-		if (passwordPolicy.getAllowUsersToChangePassword()==null || !passwordPolicy.getAllowUsersToChangePassword().equals(isAllowUsersToChangePassword)) {
+		if (isAllowUsersToChangePassword && (passwordPolicy.getAllowUsersToChangePassword()==null || !passwordPolicy.getAllowUsersToChangePassword())) {
 			policyIssues.append("Allow users to change passwords do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
 
-		if (passwordPolicy.getHardExpiry()==null || !passwordPolicy.getHardExpiry().equals(isHardExpiry)) {
+		if (isHardExpiry && (passwordPolicy.getHardExpiry()==null || !passwordPolicy.getHardExpiry())) {
 			policyIssues.append("Hard expiry do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
 
-		if (passwordPolicy.getRequireLowercaseCharacters()==null || !passwordPolicy.getRequireLowercaseCharacters().equals(isRequireLowercaseCharacters)) {
+		if (isRequireLowercaseCharacters && (passwordPolicy.getRequireLowercaseCharacters()==null || !passwordPolicy.getRequireLowercaseCharacters())) {
 			policyIssues.append("Require at least one lowercase letter \n");
 			complianceStatus = Boolean.FALSE;
 		}
 		
-		if (passwordPolicy.getRequireUppercaseCharacters()==null || !passwordPolicy.getRequireUppercaseCharacters().equals(isRequireUppercaseCharacters)) {
+		if (isRequireUppercaseCharacters && (passwordPolicy.getRequireUppercaseCharacters()==null || !passwordPolicy.getRequireUppercaseCharacters())) {
 			policyIssues.append("Require at least one uppercase letter \n");
 			complianceStatus = Boolean.FALSE;
 		}
 
-		if (passwordPolicy.getExpirePasswords()==null || !passwordPolicy.getExpirePasswords().equals(isExpirePasswords)) {
+		if (isExpirePasswords && (passwordPolicy.getExpirePasswords()==null || !passwordPolicy.getExpirePasswords())) {
 			policyIssues.append("Expire passwords do not matched the standards \n");
 			complianceStatus = Boolean.FALSE;
 		}
 
-		if (passwordPolicy.getRequireSymbols()==null || !passwordPolicy.getRequireSymbols().equals(isRequireSymbols)) {
+		if (isRequireSymbols && (passwordPolicy.getRequireSymbols()==null || !passwordPolicy.getRequireSymbols())) {
 			policyIssues.append("Require at least one non-alpanumeric character \n");
 			complianceStatus = Boolean.FALSE;
 		}
 		
-		if (passwordPolicy.getRequireNumbers()==null || !passwordPolicy.getRequireNumbers().equals(isRequireNumbers)) {
+		if (isRequireNumbers && (passwordPolicy.getRequireNumbers()==null || !passwordPolicy.getRequireNumbers())) {
 			policyIssues.append("Require at least one number \n");
 			complianceStatus = Boolean.FALSE;
 		}
