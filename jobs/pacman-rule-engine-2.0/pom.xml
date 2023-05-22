@@ -21,7 +21,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <artifact.name>policy-engine</artifact.name>
     </properties>
 
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-rest-high-level-client</artifactId>
-            <version>1.3.9</version>
+            <version>2.6.0</version>
         </dependency>
 
 
