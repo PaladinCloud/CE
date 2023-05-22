@@ -246,8 +246,10 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
               if (data.length > 0) {
                 data = this.massageData(data);
                 this.tableData = this.processData(data);
+                this.getFiltersData(this.tableData);
               }
             } catch (e) {
+              this.logger.log("jsError", e);
               this.errorMessage = 'jsError';
             }
           },
@@ -257,6 +259,28 @@ export class AccountManagementComponent implements OnInit, OnDestroy {
         );
     } catch (error) {
       this.logger.log('error', error);
+    }
+  }
+
+  getFiltersData(data){
+    const filterCol = "Platform";
+    if(!this.filterTagOptions[filterCol] || !this.filterTagLabels[filterCol]){
+      const set = new Set();
+      let filterTags = [], filterTagOptions = {};
+      filterTagOptions[filterCol] = [];
+      data.forEach(row => {
+        set.add(row[filterCol].valueText);
+      })
+      filterTags = Array.from(set);
+      filterTags.sort();
+      filterTags.forEach(tag => {
+        filterTagOptions[filterCol].push({
+          id: tag,
+          name: tag
+        });
+      })
+      this.filterTagLabels[filterCol] = filterTags;
+      this.filterTagOptions = filterTagOptions;
     }
   }
 
