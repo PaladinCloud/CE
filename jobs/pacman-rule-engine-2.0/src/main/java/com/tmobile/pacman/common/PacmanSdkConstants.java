@@ -620,6 +620,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String PROJECT_NAME = "projectName";
     /** Compliance API to get Policy Details using UUID */
     String POLICY_DETAILS_URL = "POLICY_DETAILS_URL";
+    /** Admin API to get close all expired exemptions = using UUID */
+    String CLOSE_EXPIRED_EXEMPTION_URL = "api.close-expired-exemptions";
 
     /** AutoFix Properties*/
     String AUTOFIX_POLICY_ALLOWLIST = "allowList";
@@ -634,6 +636,8 @@ public interface PacmanSdkConstants extends com.tmobile.pacman.commons.PacmanSdk
     String AUTOFIX_POLICY_FIX_MESSAGE = "fixMessage";
     String AUTOFIX_POLICY_VIOLATION_MESSAGE = "violationMessage";
     String POLICY_STATUS_ENABLED = "ENABLED";
+    String POLICY_STATUS_DISABLED = "DISABLED";
+
     String AUTOFIX_POLICY_ELAPSED_TIME = "elapsedTime";
 
     String NOTIFICATION_URL  = "notification.lambda.function.url";

@@ -142,17 +142,30 @@ public class PolicyExecutor {
 
         if (args.length > 0 && CommonUtils.buildPolicyUUIDFromJson(args[0]) != null) {
             String policyUUID = CommonUtils.buildPolicyUUIDFromJson(args[0]);
+            String exemptionExpiredUrl = CommonUtils.getPropValue(PacmanSdkConstants.CLOSE_EXPIRED_EXEMPTION_URL);
+            exemptionExpiredUrl += policyUUID;
+            try {
+				CommonUtils.doHttpPost(exemptionExpiredUrl, "{}");
+			} catch (Exception e) {
+				logger.error(
+                        "failed in closing expired exemption for policyUUID {}", policyUUID);
+			}
             String policyDetailsUrl = CommonUtils.getEnvVariableValue(PacmanSdkConstants.POLICY_DETAILS_URL);
             policyDetailsUrl += policyUUID;
             String policyDetails = CommonUtils.doHttpGet(policyDetailsUrl);
+            policyParam = CommonUtils.createPolicyParamMap(policyDetails);
+            String policyStatus = policyParam.get(PacmanSdkConstants.STATUS_KEY);
+            if(policyStatus == null || PacmanSdkConstants.POLICY_STATUS_DISABLED.equalsIgnoreCase(policyStatus))
+            {
+            	logger.info("policy {} is disabled", policyUUID);
+            	return ;
+            }
             if (Strings.isNullOrEmpty(policyDetails)) {
                 logger.error(
                         "Policy details for the policyID {} not found ", policyUUID);
                 logger.error("exiting now..");
                 ProgramExitUtils.exitWithError();
             }
-            policyParam = CommonUtils.createPolicyParamMap(policyDetails);
-
             policyParam.put(PacmanSdkConstants.EXECUTION_ID, executionId);
             policyParam.put(PacmanSdkConstants.TAGGING_MANDATORY_TAGS, mandatoryTags);
 //            policyParam.put(PacmanSdkConstants.Role_IDENTIFYING_STRING, PacmanSdkConstants.ROLE_PREFIX +
