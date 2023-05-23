@@ -297,10 +297,23 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
   }
 
+  removeOnlyFilterValue(index){
+    this.filteredArray[index].value = undefined;
+    this.filteredArray[index].filterValue = undefined;
+    let event = {
+      index,
+      removeOnlyFilterValue: true,
+    }
+    if(this.doLocalFilter){
+      this.filterAndSort();
+    }
+    this.deleteFilters.emit(event);
+  }
+
   onSelectFilter(e, i){
     if(!e){
-      this.selectedFiltersList.splice(i, 1);
-      this.removeFilter(i);
+      // this.selectedFiltersList.splice(i, 1);
+      this.removeOnlyFilterValue(i);
       return;
     }
     
