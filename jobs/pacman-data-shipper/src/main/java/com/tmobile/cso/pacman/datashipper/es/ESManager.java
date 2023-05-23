@@ -221,6 +221,7 @@ public class ESManager implements Constants {
             for (Map<String, Object> doc : docs) {
                 String id = doc.get(idKey).toString();
                 doc.put(Constants.DOC_TYPE, type);
+                doc.put("_docid",id);
                 StringBuilder _doc = new StringBuilder(createESDoc(doc));
 
                 if (_doc != null) {
