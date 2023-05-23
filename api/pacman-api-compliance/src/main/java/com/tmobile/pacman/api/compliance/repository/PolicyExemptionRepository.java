@@ -17,5 +17,8 @@ public interface PolicyExemptionRepository extends JpaRepository<PolicyExemption
 	
 	@Query("SELECT pe FROM PolicyExemption pe WHERE pe.policyID = :policyID AND pe.expireDate >= :expireDate AND pe.status = 'open'")
 	public List<PolicyExemption> findByPolicyIDAndExpireDate(@Param("policyID") String policyID, @Param("expireDate")  Date expireDate);
+	
+	@Query("SELECT pe FROM PolicyExemption pe WHERE pe.policyID = :policyID order by pe.ceatedOn desc" )
+	public List<PolicyExemption> findByPolicyID(@Param("policyID") String policyID);
 
 }

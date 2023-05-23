@@ -123,12 +123,9 @@ public class PolicyServiceImpl implements PolicyService {
 	@Override
 	public Policy getByPolicyId(String policyId) {
 		Policy policy = policyRepository.findByPolicyId(policyId);
-		List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policyId,
-				new Date());
-		if (policyExemptionList != null && policyExemptionList.size() > 0) {
-			policy.setPolicyExemption(policyExemptionList.get(0));
-		}
-		 return policy;
+		List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyID(policyId);
+		policy.setPolicyExemption(policyExemptionList);
+		return policy;
 	}
 
 	@Override
