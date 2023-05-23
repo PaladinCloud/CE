@@ -1,6 +1,7 @@
 package com.tmobile.pacman.api.compliance.repository.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -58,7 +59,7 @@ public class PolicyTable {
 	private Integer elapsedTime;
 	
 	@Transient
-	private PolicyExemption policyExemption;
+	private List<PolicyExemption> policyExemption;
 	
 	public String getPolicyId() {
 		return policyId;
@@ -276,10 +277,10 @@ public class PolicyTable {
 	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
-	public PolicyExemption getPolicyExemption() {
+	public List<PolicyExemption> getPolicyExemption() {
 		return policyExemption;
 	}
-	public void setPolicyExemption(PolicyExemption policyExemption) {
+	public void setPolicyExemption(List<PolicyExemption> policyExemption) {
 		this.policyExemption = policyExemption;
 	}
 	

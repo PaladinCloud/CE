@@ -57,7 +57,7 @@ public class Policy {
 	private Integer elapsedTime;
 	
 	@Transient
-	private PolicyExemption policyExemption;
+	private List<PolicyExemption> policyExemption;
 	
 	
 	public String getPolicyId() {
@@ -276,10 +276,10 @@ public class Policy {
 	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
-	public PolicyExemption getPolicyExemption() {
+	public List<PolicyExemption> getPolicyExemption() {
 		return policyExemption;
 	}
-	public void setPolicyExemption(PolicyExemption policyExemption) {
+	public void setPolicyExemption(List<PolicyExemption> policyExemption) {
 		this.policyExemption = policyExemption;
 	}
 	

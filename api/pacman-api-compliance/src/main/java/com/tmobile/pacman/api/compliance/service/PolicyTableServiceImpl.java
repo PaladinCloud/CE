@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,22 +44,16 @@ public class PolicyTableServiceImpl implements PolicyTableService, Constants {
     @Override
     public PolicyTable getPolicyTableByPolicyId(String policyId) {
     	PolicyTable policy = policyTableRepository.findPoicyTableByPolicyId(policyId);
-    	List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policyId,
-				new Date());
-		if (policyExemptionList != null && policyExemptionList.size() > 0) {
-			policy.setPolicyExemption(policyExemptionList.get(0));
-		}
+    	List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyID(policyId);
+			policy.setPolicyExemption(policyExemptionList);
          return policy;
     }
     
     @Override
     public PolicyTable getPolicyTableByPolicyUUID(String policyUUID) {
     	PolicyTable policy = policyTableRepository.findPoicyTableByPolicyUUID(policyUUID);
-        List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policy.getPolicyId(),
-				new Date());
-		if (policyExemptionList != null && policyExemptionList.size() > 0) {
-			policy.setPolicyExemption(policyExemptionList.get(0));
-		}
+        List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyID(policy.getPolicyId());
+			policy.setPolicyExemption(policyExemptionList);
          return policy;
     }
 
