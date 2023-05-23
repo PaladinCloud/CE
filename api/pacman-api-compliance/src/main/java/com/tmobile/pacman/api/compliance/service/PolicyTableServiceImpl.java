@@ -15,11 +15,15 @@
  ******************************************************************************/
 package com.tmobile.pacman.api.compliance.service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.tmobile.pacman.api.commons.Constants;
+import com.tmobile.pacman.api.compliance.repository.PolicyExemptionRepository;
 import com.tmobile.pacman.api.compliance.repository.PolicyTableRepository;
+import com.tmobile.pacman.api.compliance.repository.model.PolicyExemption;
 import com.tmobile.pacman.api.compliance.repository.model.PolicyTable;
 
 /**
@@ -31,18 +35,33 @@ public class PolicyTableServiceImpl implements PolicyTableService, Constants {
     /** The PolicyTable repository. */
     @Autowired
     private PolicyTableRepository policyTableRepository;
+    
+    @Autowired
+	private PolicyExemptionRepository policyExempRepository;
 
     /* (non-Javadoc)
      * @see com.tmobile.pacman.api.compliance.service.PolicyTableServiceImpl#getPolicyTableByPolicyId(java.lang.String)
      */
     @Override
     public PolicyTable getPolicyTableByPolicyId(String policyId) {
-        return policyTableRepository.findPoicyTableByPolicyId(policyId);
+    	PolicyTable policy = policyTableRepository.findPoicyTableByPolicyId(policyId);
+    	List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policyId,
+				new Date());
+		if (policyExemptionList != null && policyExemptionList.size() > 0) {
+			policy.setPolicyExemption(policyExemptionList.get(0));
+		}
+         return policy;
     }
     
     @Override
     public PolicyTable getPolicyTableByPolicyUUID(String policyUUID) {
-        return policyTableRepository.findPoicyTableByPolicyUUID(policyUUID);
+    	PolicyTable policy = policyTableRepository.findPoicyTableByPolicyUUID(policyUUID);
+        List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policy.getPolicyId(),
+				new Date());
+		if (policyExemptionList != null && policyExemptionList.size() > 0) {
+			policy.setPolicyExemption(policyExemptionList.get(0));
+		}
+         return policy;
     }
 
 }

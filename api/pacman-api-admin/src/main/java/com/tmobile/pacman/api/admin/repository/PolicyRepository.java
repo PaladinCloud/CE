@@ -85,4 +85,12 @@ public interface PolicyRepository extends JpaRepository<Policy, String> {
 
 	@Query("SELECT policyId FROM Policy WHERE policyId != '' AND policyId != null GROUP BY policyId")
 	public Collection<String> getAllPolicyIds();
+	
+	 /**
+     * Find PolicyTable by policy UUID.
+     *
+     * @param policyUUID the policy UUID
+     * @return PolicyTable
+     */
+    public Policy findPoicyTableByPolicyUUID(final String policyUUID);
 }

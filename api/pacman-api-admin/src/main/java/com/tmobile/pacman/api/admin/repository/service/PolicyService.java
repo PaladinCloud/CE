@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
 import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.model.Policy;
@@ -90,7 +91,7 @@ public interface PolicyService {
      * @return Success or Failure response
      * @throws PacManException
      */
-	public String enableDisablePolicy(final String policyId, final String action, final String userId) throws PacManException;
+	public String enableDisablePolicy(final EnableDisablePolicy enableDisablePolicy, final String userId) throws PacManException;
 
 	/**
      * Service to get all policy by targetType
@@ -165,6 +166,17 @@ public interface PolicyService {
      * @throws PacManException
      */
 	public String enableDisableAutofix(final String policyId, final String action, final String userId) throws PacManException;
+	
+	
+	/**
+     * Service to enable disable AutoFix
+     *
+     * @author 
+     * @param policyId - valid policy ID
+     * @return Success or Failure response
+     * @throws PacManException
+     */
+	public String enablePolicyForExpiredExemption( final String policyId)throws PacManException;
 
 	
 }

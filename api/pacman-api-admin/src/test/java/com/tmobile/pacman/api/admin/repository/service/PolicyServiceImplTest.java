@@ -244,7 +244,7 @@ public class PolicyServiceImplTest {
 		String action = "disable";
 		mockStatic(RuleState.class);
 		when(policyRepository.findById(anyString())).thenThrow(PacManException.class);
-	    assertThatThrownBy(() -> policyService.enableDisablePolicy("policyId123", action, "userId123")).isInstanceOf(PacManException.class);
+	    assertThatThrownBy(() -> policyService.enableDisablePolicy(any(), "userId123")).isInstanceOf(PacManException.class);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -259,7 +259,7 @@ public class PolicyServiceImplTest {
 	    RuleProperty policyProperty = buildRuleProperty();
         when(config.getRule()).thenReturn(policyProperty);
 	    when(policyRepository.save(policy.get())).thenReturn(policy.get()); 
-	    assertThatThrownBy(() -> policyService.enableDisablePolicy("policyId123", action, "userId123")).isInstanceOf(PacManException.class);
+	    assertThatThrownBy(() -> policyService.enableDisablePolicy(any(),"userId123")).isInstanceOf(PacManException.class);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -278,7 +278,7 @@ public class PolicyServiceImplTest {
 	    RuleProperty policyProperty = buildRuleProperty();
         when(config.getRule()).thenReturn(policyProperty);
 	    when(policyRepository.save(policy.get())).thenReturn(policy.get());
-	    assertThatThrownBy(() -> policyService.enableDisablePolicy("policyId123", action, "userId123")).isInstanceOf(PacManException.class);
+	    assertThatThrownBy(() -> policyService.enableDisablePolicy(any(),"userId123")).isInstanceOf(PacManException.class);
 	}
 
 	

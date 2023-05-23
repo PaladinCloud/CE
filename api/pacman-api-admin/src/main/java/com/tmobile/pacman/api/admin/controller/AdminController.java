@@ -79,9 +79,11 @@ public class AdminController {
 			@ApiParam(value = "provide valid action", required = true) @RequestParam(name = "action", required = true) String action) {
 		try {
 			
-			if (!StringUtils.isBlank(policyId)) {
-				return ResponseUtils.buildSucessResponse(ruleService.enableDisablePolicy(policyId, action, user.getName()));
-			} else if (!StringUtils.isBlank(jobId)) {
+			/*
+			 * if (!StringUtils.isBlank(policyId)) { return
+			 * ResponseUtils.buildSucessResponse(ruleService.enableDisablePolicy(policyId,
+			 * action, user.getName())); } else
+			 */ if (!StringUtils.isBlank(jobId)) {
 				return ResponseUtils.buildSucessResponse(jobService.enableDisableJob(jobId, action, user.getName()));
 			} else {
 				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), JOBID_OR_POLICYID_NOT_EMPTY);

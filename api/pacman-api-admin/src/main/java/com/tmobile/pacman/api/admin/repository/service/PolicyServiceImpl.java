@@ -5,6 +5,7 @@ import static com.tmobile.pacman.api.admin.common.AdminConstants.CLOUDWATCH_RULE
 import static com.tmobile.pacman.api.admin.common.AdminConstants.UNEXPECTED_ERROR_OCCURRED;
 
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,12 +53,15 @@ import com.google.gson.JsonObject;
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.config.PacmanConfiguration;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
 import com.tmobile.pacman.api.admin.domain.PolicyProjection;
 import com.tmobile.pacman.api.admin.exceptions.PacManException;
 import com.tmobile.pacman.api.admin.repository.PolicyCategoryRepository;
+import com.tmobile.pacman.api.admin.repository.PolicyExemptionRepository;
 import com.tmobile.pacman.api.admin.repository.PolicyRepository;
 import com.tmobile.pacman.api.admin.repository.model.Policy;
 import com.tmobile.pacman.api.admin.repository.model.PolicyCategory;
+import com.tmobile.pacman.api.admin.repository.model.PolicyExemption;
 import com.tmobile.pacman.api.admin.service.AmazonClientBuilderService;
 import com.tmobile.pacman.api.admin.service.AwsS3BucketService;
 import com.tmobile.pacman.api.admin.util.AdminUtils;
@@ -79,6 +85,9 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Autowired
 	private PolicyRepository policyRepository;
+
+	@Autowired
+	private PolicyExemptionRepository policyExempRepository;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -113,7 +122,13 @@ public class PolicyServiceImpl implements PolicyService {
 
 	@Override
 	public Policy getByPolicyId(String policyId) {
-		return policyRepository.findByPolicyId(policyId);
+		Policy policy = policyRepository.findByPolicyId(policyId);
+		List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policyId,
+				new Date());
+		if (policyExemptionList != null && policyExemptionList.size() > 0) {
+			policy.setPolicyExemption(policyExemptionList.get(0));
+		}
+		 return policy;
 	}
 
 	@Override
@@ -159,90 +174,78 @@ public class PolicyServiceImpl implements PolicyService {
 	}
 
 	@Override
-	public String enableDisablePolicy(final String policyId, final String action, final String userId)
+	public String enableDisablePolicy(final EnableDisablePolicy enableDisablePolicy, final String userId)
 			throws PacManException {
+		String policyId = enableDisablePolicy.getPolicyId();
 		if (policyRepository.existsById(policyId)) {
 			Policy existingPolicy = policyRepository.findById(policyId).get();
-			if (action.equalsIgnoreCase("enable")) {
-				return enableCloudWatchRule(existingPolicy, userId, RuleState.ENABLED);
+			PolicyExemption policyExemption = null;
+			if (enableDisablePolicy.getAction().equalsIgnoreCase(AdminConstants.ENABLED_CAPS)) {
+				List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndExpireDate(policyId,
+						new Date());
+				if (policyExemptionList != null && policyExemptionList.size() > 0) {
+					policyExemption = policyExemptionList.get(0);
+					policyExemption.setModifiedBy(userId);
+					policyExemption.setModifiedOn(new Date());
+					policyExemption.setStatus(AdminConstants.STATUS_CLOSE);
+					existingPolicy.setStatus(AdminConstants.ENABLED_CAPS);
+				} else {
+					existingPolicy.setStatus(AdminConstants.ENABLED_CAPS);
+				}
 			} else {
-				return disableCloudWatchRule(existingPolicy, userId, RuleState.DISABLED);
+				policyExemption = new PolicyExemption();
+				try {
+					policyExemption.setExpireDate(AdminUtils.getFormatedDate(AdminConstants.DEFAULT_DATE_FORMAT, enableDisablePolicy.getExpireDate()));
+				} catch (ParseException e) {
+					return AdminConstants.EXPIRE_DATE_FORMAT_EXCEPTION;
+				}
+				policyExemption.setId(UUID.randomUUID().toString());
+				policyExemption.setPolicyID(policyId);
+				policyExemption.setExemptionDesc(enableDisablePolicy.getDescription());
+				policyExemption.setCreatedBy(userId);
+				policyExemption.setCeatedOn(new Date());
+				policyExemption.setStatus(AdminConstants.STATUS_OPEN);
+				existingPolicy.setStatus(AdminConstants.DISABLED_CAPS);
 			}
+			updatePolicyStatus(existingPolicy, policyExemption);
+			return String.format(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS, enableDisablePolicy.getAction());
+
 		} else {
 			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyId));
 		}
 	}
-
-	private String getEventBus(String assetGroup) {
-		String eventBus = "default";
-		switch (assetGroup.toLowerCase()) {
-		case "azure":
-			String azureBusDetails = config.getAzure().getEventbridge().getBus().getDetails();
-			eventBus = azureBusDetails.split(":")[0];
-			break;
-		case "gcp":
-			String gcpBusDetails = config.getGcp().getEventbridge().getBus().getDetails();
-			eventBus = gcpBusDetails.split(":")[0];
-			break;
-		case "aws":
-			String awsBusDetails = config.getAws().getEventbridge().getBus().getDetails();
-			eventBus = awsBusDetails.split(":")[0];
-			break;
-		default:
-			eventBus = "default";
-		}
-		log.info("Event bridge bus : {} ", eventBus);
-		return eventBus;
-	}
-
-	private String disableCloudWatchRule(Policy existingPolicy, String userId, RuleState ruleState)
-			throws PacManException {
-		String eventBusName = getEventBus(existingPolicy.getAssetGroup());
-		DisableRuleRequest disableRuleRequest = new DisableRuleRequest().withName(existingPolicy.getPolicyUUID());
-		disableRuleRequest.setEventBusName(eventBusName);
-		DisableRuleResult disableRuleResult = amazonClient
-				.getAmazonCloudWatchEvents(config.getRule().getLambda().getRegion()).disableRule(disableRuleRequest);
-		if (disableRuleResult.getSdkHttpMetadata() != null) {
-			if (disableRuleResult.getSdkHttpMetadata().getHttpStatusCode() == 200) {
-				existingPolicy.setUserId(userId);
-				existingPolicy.setModifiedDate(new Date());
-				existingPolicy.setStatus(ruleState.name());
-				policyRepository.save(existingPolicy);
-				return String.format(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS, ruleState.name().toLowerCase());
-			} else {
-				throw new PacManException(CLOUDWATCH_RULE_DISABLE_FAILURE);
-			}
+	
+	
+	@Override
+	public String enablePolicyForExpiredExemption(String policyUUID) throws PacManException {
+		Policy existingPolicy = policyRepository.findPoicyTableByPolicyUUID(policyUUID);
+		if (existingPolicy != null) {
+			String policyId = existingPolicy.getPolicyId();
+			existingPolicy.setStatus(AdminConstants.ENABLED_CAPS);
+			PolicyExemption policyExemption = null;
+				List<PolicyExemption> policyExemptionList = policyExempRepository.findByPolicyIDAndStatusOpen(existingPolicy.getPolicyId(), new Date());
+				if (policyExemptionList != null && policyExemptionList.size() > 0) {
+					policyExemption = policyExemptionList.get(0);
+					policyExemption.setStatus(AdminConstants.STATUS_CLOSE);
+					updatePolicyStatus(existingPolicy,policyExemption);
+					return String.format(AdminConstants.POLICY_ENABLE_SUCCESS, policyId);
+				}
+				return String.format(AdminConstants.POLICY_EXEMPTION_ID_NOT_EXITS, policyId);
+			
 		} else {
-			throw new PacManException(CLOUDWATCH_RULE_DISABLE_FAILURE);
+			throw new PacManException(String.format(AdminConstants.POLICY_ID_NOT_EXITS, policyUUID));
 		}
 	}
 
-	private String enableCloudWatchRule(Policy existingPolicy, String userId, RuleState ruleState)
-			throws PacManException {
-		AWSLambda awsLambdaClient = amazonClient.getAWSLambdaClient(config.getRule().getLambda().getRegion());
-		if (!checkIfPolicyAvailableForLambda(config.getRule().getLambda().getFunctionName(), awsLambdaClient)) {
-			createPolicyForLambda(config.getRule().getLambda().getFunctionName(), awsLambdaClient);
+	
+	
+	@Transactional
+	private boolean updatePolicyStatus(Policy policy, PolicyExemption exemption) {
+		policyRepository.save(policy);
+		if(exemption != null) {
+			policyExempRepository.save(exemption);
 		}
-		String eventBusName = getEventBus(existingPolicy.getAssetGroup());
-
-		EnableRuleRequest enableRuleRequest = new EnableRuleRequest().withName(existingPolicy.getPolicyUUID());
-		enableRuleRequest.setEventBusName(eventBusName);
-		EnableRuleResult enableRuleResult = amazonClient
-				.getAmazonCloudWatchEvents(config.getRule().getLambda().getRegion()).enableRule(enableRuleRequest);
-		if (enableRuleResult.getSdkHttpMetadata() != null) {
-			if (enableRuleResult.getSdkHttpMetadata().getHttpStatusCode() == 200) {
-				existingPolicy.setUserId(userId);
-				existingPolicy.setModifiedDate(new Date());
-				existingPolicy.setStatus(ruleState.name());
-				policyRepository.save(existingPolicy);
-				invokePolicy(awsLambdaClient, existingPolicy, null, null);
-				return String.format(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS, ruleState.name().toLowerCase());
-			} else {
-				throw new PacManException(CLOUDWATCH_RULE_ENABLE_FAILURE);
-			}
-		} else {
-			throw new PacManException(CLOUDWATCH_RULE_ENABLE_FAILURE);
-		}
+		return true;
 	}
 
 	private void checkPolicyTypeNotServerlessOrManaged(CreateUpdatePolicyDetails policyDetails,
