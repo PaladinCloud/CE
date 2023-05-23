@@ -1347,6 +1347,7 @@ INSERT IGNORE INTO `oauth_user_roles`(`roleId`,`roleName`,`roleDesc`,`writePermi
 INSERT IGNORE INTO `oauth_user_role_mapping`(`userRoleId`,`userId`,`roleId`,`clientId`,`allocator`,`createdDate`,`modifiedDate`) values ('4747c0cf-63cc-4829-a1e8-f1e957ec5dd6','user@paladincloud.io','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('4747c0cf-63cc-4829-a1e8-f1e957ec5dd7','admin@paladincloud.io','1','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47'),('f5b2a689-c185-11e8-9c73-12d01119b604','admin@paladincloud.io','703','22e14922-87d7-4ee4-a470-da0bb10d45d3','user123','2018-01-09 16:11:47','2018-01-09 16:11:47');
 
 /* Display and Update Fields */
+TRUNCATE TABLE cf_pac_updatable_fields;
 INSERT IGNORE INTO cf_pac_updatable_fields  (resourceType,displayFields,updatableFields) VALUES
  ('all_list','_resourceid,tags.Application,tags.Environment,_entitytype',null),
  ('all_taggable','_resourceid,tags.Application,tags.Environment,_entitytype,targetType,accountid,accountname,region',null),
