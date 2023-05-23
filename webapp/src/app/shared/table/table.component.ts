@@ -523,8 +523,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
         return (parseFloat(elementA.valueText)-parseFloat(elementB.valueText))*(isAsc ? 1 : -1);
       }
       
-      let elementAValue =elementA&&elementA.valueText?elementA.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
-      let elementBValue =elementB&&elementB.valueText?elementB.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
+      let elementAValue =elementA&&elementA.valueText?elementA.valueText.trim().toLowerCase():isAsc?'zzzzzz':'000000';
+      let elementBValue =elementB&&elementB.valueText?elementB.valueText.trim().toLowerCase():isAsc?'zzzzzz':'000000';
 
       return (elementAValue<elementBValue? -1: 1)*(isAsc ? 1 : -1);
     });

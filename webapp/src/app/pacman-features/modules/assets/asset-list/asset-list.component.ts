@@ -702,6 +702,10 @@ export class AssetListComponent implements OnInit, OnDestroy {
       let newObj = {};
       KeysTobeChanged.forEach((element) => {
         let elementnew;
+        const isTag = element.split(".")[0]=="tags";
+        if(isTag){
+          columnNamesMap[element] = element.split(".")[1];
+        }
         if(columnNamesMap[element]) {
           elementnew = columnNamesMap[element];
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
@@ -714,14 +718,12 @@ export class AssetListComponent implements OnInit, OnDestroy {
           newObj = Object.assign(newObj, { [elementnew]: row[element] });
         }
         // change data value
-        const isTag = element.split(".")[0]=="tags";
-        if(isTag){
-          columnNamesMap[element] = element.split(".")[1];
-        }
         newObj[elementnew] = DATA_MAPPING[typeof newObj[elementnew]=="string"?newObj[elementnew].toLowerCase():newObj[elementnew]]?DATA_MAPPING[newObj[elementnew].toLowerCase()]: newObj[elementnew];
       });
       newData.push(newObj);
     });
+
+    this.columnNamesMap = columnNamesMap;
     return newData;
   }
 
