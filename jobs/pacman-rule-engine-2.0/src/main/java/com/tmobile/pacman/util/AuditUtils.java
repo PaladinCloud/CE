@@ -102,13 +102,13 @@ public class AuditUtils {
         String _type = "issue_" + type + "_audit";
         String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
-        Map<String, String> auditTrail = new LinkedHashMap<>();
+        Map<String, Object> auditTrail = new LinkedHashMap<>();
         auditTrail.put(PacmanSdkConstants.TYPE,_type);
         // add relations to annotation
         Map<String, Object> relMap = new HashMap<>();
         relMap.put("name",_type);
         relMap.put("parent", id);
-        auditTrail.put( type + "_relations", new Gson().toJson(relMap));
+        auditTrail.put( type + "_relations", relMap);
         auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, ds);
         auditTrail.put(TARGET_TYPE, type);
         auditTrail.put(PacmanSdkConstants.ANNOTATION_PK, id);
