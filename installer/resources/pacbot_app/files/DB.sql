@@ -114,7 +114,7 @@ SET @NOTIFICATION_FUNCTION_URL='$NOTIFICATION_FUNCTION_URL';
 SET @TOPIC_ARN='$TOPIC_ARN';
 SET @EMAIL_TOPIC_ARN='$EMAIL_TOPIC_ARN';
 SET @NOTIFICATION_EMAIL_ID='$NOTIFICATION_EMAIL_ID';
-
+SET @CUSTOMER_NAME='$CUSTOMER_NAME';
 
 CREATE TABLE IF NOT EXISTS `OmniSearch_Config` (
   `SEARCH_CATEGORY` varchar(100) COLLATE utf8_bin NOT NULL,
@@ -473,7 +473,7 @@ CALL alter_cf_Accounts_table_add_createdBy_createdTime_if_not_exists();
 
 /* Insert one account */
 
-insert ignore into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),'system','dateTime');
+insert ignore into cf_Accounts values(concat(@ACCOUNT_NAME,''),concat(@ACCOUNT_ID,''),0,0,'configured',concat(@ACCOUNT_PLATFORM,''),concat(@CUSTOMER_NAME,''),'dateTime');
 
 DELIMITER $$
 DROP PROCEDURE IF EXISTS alter_cf_target_table_add_display_name_if_not_exists $$
