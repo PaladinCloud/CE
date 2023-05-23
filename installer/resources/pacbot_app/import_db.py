@@ -176,8 +176,8 @@ class ReplaceSQLPlaceHolder(NullResource):
                         'ENV_NOTIFICATION_FUNCTION_URL' : SendNotificationFunctionUrl.get_output_attr('function_url'),
                         'ENV_TOPIC_ARN' : NotificationSNS.get_output_attr('arn'),
                         'ENV_EMAIL_TOPIC_ARN' : EmailSNS.get_output_attr('arn'),
-                        'ENV_NOTIFICATION_EMAIL_ID' : Settings.COGNITO_ADMIN_EMAIL_ID
-
+                        'ENV_NOTIFICATION_EMAIL_ID' : Settings.COGNITO_ADMIN_EMAIL_ID,
+                        'ENV_CUSTOMER_NAME' : Settings.CUSTOMER_NAME
                     },
                     'interpreter': [Settings.PYTHON_INTERPRETER]
                 }

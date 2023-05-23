@@ -158,7 +158,7 @@ MANDATORY_TAGS = "Application,Environment"
 ACCOUNT_ID = ""
 ACCOUNT_NAME = ""
 ACCOUNT_PLATFORM = ""
-
+CUSTOMER_NAME = "system"
 # These settings are for the enabling and using Aqua Vulnerability feature and service
 ENABLE_AQUA_VULNERABILITY_FEATURE = False
 AQUA_API_URL="" # Aqua API Url without trailing slash
