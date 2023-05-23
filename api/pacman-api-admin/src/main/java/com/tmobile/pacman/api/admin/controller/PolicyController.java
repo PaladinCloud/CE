@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tmobile.pacman.api.admin.common.AdminConstants;
 import com.tmobile.pacman.api.admin.domain.CreateUpdatePolicyDetails;
+import com.tmobile.pacman.api.admin.domain.EnableDisablePolicy;
 import com.tmobile.pacman.api.admin.domain.Response;
 import com.tmobile.pacman.api.admin.repository.service.PolicyService;
 import com.tmobile.pacman.api.commons.utils.ResponseUtils;
@@ -192,18 +193,49 @@ public class PolicyController {
      * API to enable disable policy
      *
      * @author 
-     * @param policyId - valid policy Id
-     * @param user - userId who performs the action
-     * @param action - valid action (disable/ enable)
+     * @param RequestBody - valid EnableDisablePolicy 
      * @return Success or Failure response
      */
 	@ApiOperation(httpMethod = "POST", value = "API to enable disable policy", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@RequestMapping(path = "/enable-disable", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> enableDisablePolicy(@AuthenticationPrincipal Principal user,
-			@ApiParam(value = "provide valid policy id", required = true) @RequestParam("policyId") String policyId,
-			@ApiParam(value = "provide valid action", required = true) @RequestParam("action") String action) {
+			@ApiParam(value = "provide valid policy details", required = true) @RequestBody(required = true)EnableDisablePolicy enableDisablePolicy) {
 		try {
-			return ResponseUtils.buildSucessResponse(policyService.enableDisablePolicy(policyId, action, user.getName()));
+			if (enableDisablePolicy == null) {
+				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
+						AdminConstants.MISSING_PARAMETERS);
+			} else if (enableDisablePolicy.getAction() != null && "disabled".equals(enableDisablePolicy.getAction())
+					&& enableDisablePolicy.getExpireDate() == null) {
+				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
+						AdminConstants.EXPIRE_DATE_CAN_NOT_BE_NULL);
+			}
+			return ResponseUtils
+					.buildSucessResponse(policyService.enableDisablePolicy(enableDisablePolicy, user.getName()));
+		} catch (Exception exception) {
+			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
+			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());
+		}
+	}
+	
+	
+	/**
+     * API to enable disable policy
+     *
+     * @author 
+     * @param RequestBody - valid EnableDisablePolicy 
+     * @return Success or Failure response
+     */
+	@ApiOperation(httpMethod = "POST", value = "API to enable disable policy", response = Response.class, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(path = "/close-expired-exemption", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Object> enablePolicyForExpiredExemption(
+			@ApiParam(value = "provide valid policy id", required = true) @RequestParam("policyUUID") String policyUUD) {
+		try {
+			if (policyUUD == null) {
+				return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED),
+						AdminConstants.MISSING_PARAMETERS);
+			}
+			return ResponseUtils
+					.buildSucessResponse(policyService.enablePolicyForExpiredExemption(policyUUD));
 		} catch (Exception exception) {
 			log.error(UNEXPECTED_ERROR_OCCURRED, exception);
 			return ResponseUtils.buildFailureResponse(new Exception(UNEXPECTED_ERROR_OCCURRED), exception.getMessage());

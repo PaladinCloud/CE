@@ -6,7 +6,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+
+
 
 /**
  * Policy Model Class
@@ -53,6 +56,9 @@ public class PolicyTable {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
+	
+	@Transient
+	private PolicyExemption policyExemption;
 	
 	public String getPolicyId() {
 		return policyId;
@@ -269,6 +275,12 @@ public class PolicyTable {
 	}
 	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
+	}
+	public PolicyExemption getPolicyExemption() {
+		return policyExemption;
+	}
+	public void setPolicyExemption(PolicyExemption policyExemption) {
+		this.policyExemption = policyExemption;
 	}
 	
 

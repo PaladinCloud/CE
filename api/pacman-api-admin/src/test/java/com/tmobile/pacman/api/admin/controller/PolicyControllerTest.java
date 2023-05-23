@@ -151,7 +151,7 @@ public class PolicyControllerTest {
 
 	@Test
 	public void enableDisablePolicyTest() throws Exception {
-		when(policyService.enableDisablePolicy(anyString(), anyString(), anyString()))
+		when(policyService.enableDisablePolicy(any(), anyString()))
 				.thenReturn(AdminConstants.POLICY_DISABLE_ENABLE_SUCCESS);
 		mockMvc.perform(post("/policy/enable-disable").principal(principal).param("policyId", "policyId123")
 				.param("action", "action123").contentType(MediaType.APPLICATION_JSON)
@@ -163,7 +163,7 @@ public class PolicyControllerTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void enableDisablePolicyExceptionTest() throws Exception {
-		when(policyService.enableDisablePolicy(any(), any(), any())).thenThrow(Exception.class);
+		when(policyService.enableDisablePolicy(any(), any())).thenThrow(Exception.class);
 		mockMvc.perform(post("/policy/enable-disable").principal(principal).param("policyId", "policyId123")
 				.param("action", "action123").contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isExpectationFailed()).andDo(print())

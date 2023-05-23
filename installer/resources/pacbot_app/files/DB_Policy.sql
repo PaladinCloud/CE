@@ -86,6 +86,19 @@ CREATE TABLE IF NOT EXISTS cf_NotificationTypeChannelMapping (
   constraint notification_channel_id_fkey FOREIGN KEY (notificationChannelId) REFERENCES cf_NotificationChannels (notificationChannelId) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `cf_PolicyExemption` (
+  `id` VARCHAR(50) NOT NULL,
+  `policyID` VARCHAR(250) NOT NULL,
+  `exemptionDesc` VARCHAR(1000) NULL,
+  `expireDate` DATE NOT NULL,
+  `filter` VARCHAR(1000) NULL,
+  `createdBy` VARCHAR(45) NULL,
+  `ceatedOn` DATETIME NULL,
+  `modifiedBy` VARCHAR(45) NULL,
+  `modifiedOn` DATETIME NULL,
+  `status` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
 
 insert ignore into cf_NotificationChannels values ('6a7e6590-bd06-11ed-afa1-0242ac120002','email','admin@paladincloud.io',current_timestamp());
 

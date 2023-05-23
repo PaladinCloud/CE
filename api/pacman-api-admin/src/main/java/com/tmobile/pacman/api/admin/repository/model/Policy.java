@@ -1,11 +1,13 @@
 package com.tmobile.pacman.api.admin.repository.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 /**
@@ -53,6 +55,9 @@ public class Policy {
 	private String fixMessage;
 	private String violationMessage;
 	private Integer elapsedTime;
+	
+	@Transient
+	private PolicyExemption policyExemption;
 	
 	
 	public String getPolicyId() {
@@ -271,6 +276,12 @@ public class Policy {
 	public void setElapsedTime(Integer elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
-
+	public PolicyExemption getPolicyExemption() {
+		return policyExemption;
+	}
+	public void setPolicyExemption(PolicyExemption policyExemption) {
+		this.policyExemption = policyExemption;
+	}
+	
 	
 }

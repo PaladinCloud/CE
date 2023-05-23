@@ -31,6 +31,9 @@ public final class AdminConstants {
 	public static final String RESOURCE_ACCESS_DENIED				=	"You don't have sufficient privileges to access this resource";
 	public static final String FAILED								=	"failed";
 	public static final String ENABLED_CAPS							=	"ENABLED";
+	public static final String DISABLED_CAPS						=	"DISABLED";
+	public static final String STATUS_OPEN							=	"open";
+	public static final String STATUS_CLOSE							=	"close";
 	public static final String RULE									=	"rule";
 	public static final String JOB									=	"job";
 	public static final String ENABLE								=	"enable";
@@ -41,6 +44,8 @@ public final class AdminConstants {
 	public static final String POLICY_DISABLE_ENABLE_SUCCESS		=	"Policy has been successfully %s !!";
 	public static final String POLICY_ID_EXITS 						= 	"Policy id %s already exists!!";
 	public static final String POLICY_ID_NOT_EXITS 					= 	"Policy id %s does not exists!!";
+	public static final String POLICY_EXEMPTION_ID_NOT_EXITS 		= 	"EXCEMPTION does not exists for Policy uuid %s !!";
+	public static final String POLICY_ENABLE_SUCCESS				=	"Policy id %s has been successfully enabled !!";
 	public static final String JOB_DISABLE_ENABLE_SUCCESS           =   "Job has been successfully %s !!";
 
 	public static final String JOB_CREATION_SUCCESS					=	"Job has been successfully created";
@@ -132,6 +137,11 @@ public final class AdminConstants {
 	public static final String DELETE_STICKY_EXCEPTION_SUBJECT  		= "Sticky Exception Deleted";
 
 	public static final String UPDATE_STICKY_EXCEPTION_SUBJECT  		= "Sticky Exception Updated";
+	
+	public static final String EXPIRE_DATE_CAN_NOT_BE_NULL 			= 	"Expire date can't be null !!";
+	public static final String DEFAULT_DATE_FORMAT					= 	"dd/MM/yyyy";
+	public static final String EXPIRE_DATE_FORMAT_EXCEPTION			= 	"ExpireDate format expection";
+	public static final String MISSING_PARAMETERS 			= 	"Missing parameters  !!";
 
 
 }
