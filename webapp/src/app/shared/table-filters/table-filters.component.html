@@ -1,6 +1,9 @@
 <div class="flex applied-filters-container">
-    <div *ngFor="let item of appliedFilters | keyvalue">
-        {{ item.key }}
+    <div *ngFor="let item of appliedFilters">
+        <app-table-filter-item
+            [name]="item"
+            [filterValues]="appliedFiltersDict[item]"
+        ></app-table-filter-item>
     </div>
 </div>
 
@@ -33,10 +36,11 @@
         <ng-container *ngIf="isFilterSubCategoryOpen">
             <li *ngFor="let filter of selectedFilterCategory?.children">
                 <mat-checkbox
-                    [checked]="appliedFilters[selectedFilterCategory.name][filter]"
+                    [checked]="appliedFiltersDict[selectedFilterCategory.name][filter]"
                     (change)="applyFilter(filter, $event)"
-                    >{{ filter }}</mat-checkbox
                 >
+                    {{ filter }}
+                </mat-checkbox>
             </li>
         </ng-container>
     </ul>
