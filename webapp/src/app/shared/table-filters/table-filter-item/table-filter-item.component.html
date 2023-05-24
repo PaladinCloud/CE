@@ -1,13 +1,31 @@
 <div class="flex flex-align-center table-filter-item">
-    <span class="tfi-name"> {{ name }}:&nbsp;</span>
+    <div (click)="toggleFilterMenu()" cdkOverlayOrigin #filterMenu="cdkOverlayOrigin">
+        <span class="tfi-name"> {{ category }}:&nbsp;</span>
 
-    <span class="tfi-value">
-        <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-            {{ appliedFilters[0] }}
-        </ng-container>
+        <span class="tfi-value">
+            <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
+                {{ appliedFilters[0] }}
+            </ng-container>
 
-        <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
-    </span>
-
-    <mat-icon class="tfi-close-icon" (click)="clearFilter.emit(name)">close</mat-icon>
+            <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
+        </span>
+    </div>
+    <mat-icon class="tfi-close-icon" (click)="clearFilter.emit(category)">close</mat-icon>
 </div>
+
+<ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="filterMenu"
+    [cdkConnectedOverlayOpen]="isFilterMenuShown"
+>
+    <ul class="filter-item-menu mat-elevation-z4">
+        <li>
+            <input type="text" placeholder="Search" />
+        </li>
+        <li *ngFor="let item of filterValues | keyvalue">
+            <mat-checkbox [checked]="item.value" (change)="updateFilterCategory(item.key, $event)">
+                {{ item.key }}
+            </mat-checkbox>
+        </li>
+    </ul>
+</ng-template>

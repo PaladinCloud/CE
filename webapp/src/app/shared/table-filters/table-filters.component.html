@@ -1,9 +1,10 @@
 <div class="flex applied-filters-container">
-    <div *ngFor="let item of appliedFilters">
+    <div *ngFor="let category of appliedFilters">
         <app-table-filter-item
-            [name]="item"
-            [filterValues]="appliedFiltersDict[item]"
+            [category]="category"
+            [filterValues]="appliedFiltersDict[category]"
             (clearFilter)="clearFilter($event)"
+            (updateFilter)="updateFilter($event)"
         ></app-table-filter-item>
     </div>
 </div>
