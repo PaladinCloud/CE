@@ -1,12 +1,11 @@
-<div class="flex applied-filters-container">
-    <div *ngFor="let category of appliedFilters">
-        <app-table-filter-item
-            [category]="category"
-            [filterValues]="appliedFiltersDict[category]"
-            (clearFilter)="clearFilter($event)"
-            (updateFilter)="updateFilter($event)"
-        ></app-table-filter-item>
-    </div>
+<div class="flex applied-filters-container gap-16">
+    <app-table-filter-item
+        *ngFor="let category of appliedFilters"
+        [category]="category"
+        [filterValues]="appliedFiltersDict[category]"
+        (clearFilter)="clearFilter($event)"
+        (updateFilter)="updateFilter($event)"
+    ></app-table-filter-item>
 </div>
 
 <button
