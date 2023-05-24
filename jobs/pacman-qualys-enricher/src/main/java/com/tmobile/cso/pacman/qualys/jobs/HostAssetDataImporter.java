@@ -551,7 +551,7 @@ public class HostAssetDataImporter extends QualysDataImporter implements Constan
     private void updateStas(Map<String, Object> stats) {
         String statsJson = ElasticSearchManager.createESStatsDoc(stats);
         try {
-            ElasticSearchManager.invokeAPI("POST", "/datashipper/stats", statsJson);
+            ElasticSearchManager.invokeAPI("POST", "/datashipper/_doc", statsJson);
         } catch (IOException e) {
             LOGGER.error("Error in updateStas", e);
             Map<String,String> errorMap = new HashMap<>();
