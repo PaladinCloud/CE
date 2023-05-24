@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The Class ESManager.
@@ -879,6 +880,58 @@ public class ESManager implements Constants {
                 errorMap.put(EXCEPTION, e.getMessage());
                 errorList.add(errorMap);
             }
+        }
+    }
+
+    /**
+     * Below method deletes violation records for resources which are deleted.
+     * @param entities
+     * @param index
+     */
+    public static void removeViolationForDeletedAssets(List<Map<String, Object>> entities, String index) {
+        try{
+            if(entities!=null && !entities.isEmpty()) {
+                String combinedResourceIdString = entities.stream().map(entity -> "\"" + entity.get("_resourceid") + "\"").collect(Collectors.joining(","));
+                String requestBody = "{\n" +
+                        "    \"script\": {\n" +
+                        "    \"inline\": \"ctx._source.issueStatus = 'deleted'\",\n" +
+                        "    \"lang\": \"painless\"\n" +
+                        "  }," +
+                        "  \"query\": {\n" +
+                        "    \"bool\": {\n" +
+                        "      \"must\": [\n" +
+                        "        {\n" +
+                        "          \"term\": {\n" +
+                        "            \"issueStatus.keyword\": \"open\"\n" +
+                        "          }\n" +
+                        "        },\n" +
+                        "        {\n" +
+                        "          \"term\": {\n" +
+                        "            \"type.keyword\": \"issue\"\n" +
+                        "          }\n" +
+                        "        },\n" +
+                        "        {\n" +
+                        "          \"bool\": {\n" +
+                        "            \"must_not\": [\n" +
+                        "              {\n" +
+                        "                \"terms\": {\n" +
+                        "                  \"_resourceid.keyword\": [ %s ]\n" +
+                        "                }\n" +
+                        "              }\n" +
+                        "            ]\n" +
+                        "          }\n" +
+                        "        }\n" +
+                        "      ]\n" +
+                        "    }\n" +
+                        "  }\n" +
+                        "}";
+
+                requestBody = String.format(requestBody, combinedResourceIdString);
+                invokeAPI("POST","/"+index+"/_update_by_query",requestBody);
+            }
+        }
+        catch(Exception exception){
+            LOGGER.info("Failed to delete violation records of deleted asssets of index "+index+". Error Message - "+exception.getMessage());
         }
     }
 }
