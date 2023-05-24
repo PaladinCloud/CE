@@ -22,11 +22,14 @@
 >
     <ul class="filter-item-menu mat-elevation-z4">
         <li>
-            <input type="text" placeholder="Search" />
+            <app-table-filter-search [(text)]="filterOptionQuery"></app-table-filter-search>
         </li>
-        <li *ngFor="let item of filterValues | keyvalue">
-            <mat-checkbox [checked]="item.value" (change)="updateFilterCategory(item.key, $event)">
-                {{ item.key }}
+        <li *ngFor="let option of filterOptionsByQuery()">
+            <mat-checkbox
+                [checked]="option.value"
+                (change)="updateFilterOption(option.name, $event.checked)"
+            >
+                {{ option.name }}
             </mat-checkbox>
         </li>
     </ul>

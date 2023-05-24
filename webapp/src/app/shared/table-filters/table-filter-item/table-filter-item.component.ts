@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 
 export interface FilterChipUpdateEvent {
     category: string;
@@ -19,19 +18,24 @@ export class TableFilterItemComponent implements OnInit {
             .filter(([, v]) => v)
             .map(([n]) => n);
 
-        this._filterValues = values;
+        this._filterItems = Object.entries(values).map(([name, value]) => ({
+            name,
+            value,
+        }));
     }
-    get filterValues() {
-        return this._filterValues;
-    }
+
     @Output() clearFilter = new EventEmitter<string>();
     @Output() updateFilter = new EventEmitter<FilterChipUpdateEvent>();
 
     isFilterMenuShown = false;
 
     appliedFilters: string[] = [];
+    filterOptionQuery = '';
 
-    private _filterValues: { [key: string]: boolean } = {};
+    get filterItems() {
+        return this._filterItems;
+    }
+    private _filterItems: { name: string; value: boolean }[] = [];
 
     constructor() {}
 
@@ -41,11 +45,11 @@ export class TableFilterItemComponent implements OnInit {
         this.isFilterMenuShown = !this.isFilterMenuShown;
     }
 
-    updateFilterCategory(filterName: string, event: MatCheckboxChange) {
+    updateFilterOption(filterName: string, filterValue: boolean) {
         this.updateFilter.next({
             category: this.category,
             filterName,
-            filterValue: event.checked,
+            filterValue,
         });
     }
 
@@ -53,5 +57,11 @@ export class TableFilterItemComponent implements OnInit {
         if (event.key === 'Escape') {
             this.isFilterMenuShown = false;
         }
+    }
+
+    filterOptionsByQuery() {
+        return this.filterItems.filter((f) =>
+            f.name.toLowerCase().includes(this.filterOptionQuery.toLowerCase()),
+        );
     }
 }
