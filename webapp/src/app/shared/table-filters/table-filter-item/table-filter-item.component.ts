@@ -48,4 +48,10 @@ export class TableFilterItemComponent implements OnInit {
             filterValue: event.checked,
         });
     }
+
+    overlayKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            this.isFilterMenuShown = false;
+        }
+    }
 }

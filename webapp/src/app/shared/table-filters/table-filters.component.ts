@@ -14,7 +14,6 @@ interface AppliedFilter {
     };
 }
 
-// TODO: ESCAPE bug
 @Component({
     selector: 'app-table-filters',
     templateUrl: './table-filters.component.html',
@@ -106,5 +105,11 @@ export class TableFiltersComponent implements OnInit {
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
             [filterCategory]: updatedFilter,
         });
+    }
+
+    overlayKeyDown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            this.isFilterMenuOpen = false;
+        }
     }
 }

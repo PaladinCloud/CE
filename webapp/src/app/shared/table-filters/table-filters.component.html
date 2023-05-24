@@ -25,6 +25,7 @@
     [cdkConnectedOverlayOrigin]="filterMenuBtn"
     [cdkConnectedOverlayOpen]="isFilterMenuOpen"
     (overlayOutsideClick)="isFilterMenuOpen = false"
+    (overlayKeydown)="overlayKeyDown($event)"
 >
     <ul class="filters-category-menu mat-elevation-z4">
         <li>
