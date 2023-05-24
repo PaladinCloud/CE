@@ -1,0 +1,25 @@
+.filters-menu-btn {
+    border: 1px dashed gray;
+    background: transparent;
+    color: gray;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.filters-menu-btn:hover {
+    cursor: pointer;
+}
+
+.filters-category-menu {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.filters-category-menu > li {
+    font-size: 16px;
+}
+
+.filters-category-menu > li:not(:last-of-type) {
+    margin-bottom: 16px;
+}

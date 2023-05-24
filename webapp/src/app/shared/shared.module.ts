@@ -12,11 +12,14 @@
  * limitations under the License.
  */
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -31,7 +34,6 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { RouterModule } from '@angular/router';
 import { AgGridModule } from 'ag-grid-angular';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
@@ -111,13 +113,13 @@ import { ToastObservableService } from './services/toast-observable.service';
 import { UtilsService } from './services/utils.service';
 import { StepperComponent } from './stepper/stepper.component';
 import { SubFooterComponent } from './sub-footer/sub-footer.component';
+import { TableFiltersComponent } from './table-filters/table-filters.component';
 import { TableListComponent } from './table-list/table-list.component';
 import { TableTabsComponent } from './table-tabs/table-tabs.component';
 import { TableComponent } from './table/table.component';
 import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.component';
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
     imports: [
@@ -143,6 +145,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         MatTableModule,
         MatTooltipModule,
         MatTooltipModule,
+        OverlayModule,
         ReactiveFormsModule,
         RouterModule,
         SelectDropDownModule,
@@ -217,6 +220,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
         TitleBurgerHeadComponent,
         ToastNotificationComponent,
         WidgetSectionStarterComponent,
+        TableFiltersComponent,
     ],
     exports: [
         AgGridTableComponent,

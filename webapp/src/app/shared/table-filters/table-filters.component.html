@@ -1,0 +1,43 @@
+<div class="flex applied-filters-container">
+    <div *ngFor="let item of appliedFilters | keyvalue">
+        {{ item.key }}
+    </div>
+</div>
+
+<button
+    type="button"
+    class="filters-menu-btn flex flex-align-center"
+    (click)="openMenu()"
+    cdkOverlayOrigin
+    #filterMenuBtn="cdkOverlayOrigin"
+>
+    <mat-icon>add</mat-icon>
+    &nbsp;Filters
+</button>
+
+<ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="filterMenuBtn"
+    [cdkConnectedOverlayOpen]="isFilterMenuOpen"
+>
+    <ul class="filters-category-menu mat-elevation-z4">
+        <li>
+            <input type="text" placeholder="Search" />
+        </li>
+        <ng-container *ngIf="!isFilterSubCategoryOpen">
+            <li *ngFor="let filter of filters" (click)="openFilterCategory(filter)">
+                {{ filter.name }}
+            </li>
+        </ng-container>
+
+        <ng-container *ngIf="isFilterSubCategoryOpen">
+            <li *ngFor="let filter of selectedFilterCategory?.children">
+                <mat-checkbox
+                    [checked]="appliedFilters[selectedFilterCategory.name][filter]"
+                    (change)="applyFilter(filter, $event)"
+                    >{{ filter }}</mat-checkbox
+                >
+            </li>
+        </ng-container>
+    </ul>
+</ng-template>
