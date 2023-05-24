@@ -1,0 +1,13 @@
+<div class="flex flex-align-center table-filter-item">
+    <span class="tfi-name"> {{ name }}:&nbsp;</span>
+
+    <span class="tfi-value">
+        <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
+            {{ appliedFilters[0] }}
+        </ng-container>
+
+        <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
+    </span>
+
+    <mat-icon class="tfi-close-icon" (click)="clearFilter.emit(name)">close</mat-icon>
+</div>

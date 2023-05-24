@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { merge } from 'lodash';
 
 export interface TableFilter {
     name: string;
@@ -12,6 +13,7 @@ interface AppliedFilter {
     };
 }
 
+// TODO: ESCAPE bug
 @Component({
     selector: 'app-table-filters',
     templateUrl: './table-filters.component.html',
@@ -19,7 +21,7 @@ interface AppliedFilter {
 })
 export class TableFiltersComponent implements OnInit {
     @Input() set filters(values: TableFilter[]) {
-        this.appliedFilters = values.reduce(
+        this.appliedFiltersDict = values.reduce(
             (acc, next) => ({
                 ...acc,
                 [next.name]: next.children.reduce((prev, child) => {
@@ -37,7 +39,8 @@ export class TableFiltersComponent implements OnInit {
         return this._filters;
     }
 
-    appliedFilters: AppliedFilter = {};
+    appliedFiltersDict: AppliedFilter = {};
+    appliedFilters: string[] = [];
 
     selectedFilterCategory: TableFilter = null;
 
@@ -61,6 +64,20 @@ export class TableFiltersComponent implements OnInit {
     }
 
     applyFilter(filterChild: string, event: MatCheckboxChange) {
-        this.appliedFilters[this.selectedFilterCategory.name][filterChild] = event.checked;
+        const filterCatName = this.selectedFilterCategory.name;
+
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
+            [filterCatName]: {
+                [filterChild]: event.checked,
+            },
+        });
+
+        if (this.appliedFilters.includes(filterCatName)) {
+            if (Object.values(this.appliedFiltersDict[filterCatName]).every((i) => !i)) {
+                this.appliedFilters = this.appliedFilters.filter((f) => f !== filterCatName);
+            }
+        } else {
+            this.appliedFilters = this.appliedFilters.concat(filterCatName);
+        }
     }
 }
