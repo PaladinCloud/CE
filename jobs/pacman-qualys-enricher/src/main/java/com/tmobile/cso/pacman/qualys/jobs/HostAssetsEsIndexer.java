@@ -5,6 +5,7 @@ import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.tmobile.cso.pacman.qualys.dto.KNOWLEDGEBASEVULNLISTOUTPUT;
 import com.tmobile.cso.pacman.qualys.dto.Vuln;
@@ -79,6 +80,7 @@ public class HostAssetsEsIndexer implements Constants {
             createRequest.append(assetDoc + "\n");
             List<Map<String, Object>> vulnInfo = fetchVulnInfo(asset,errorList);
             if (!CollectionUtils.isNullOrEmpty(vulnInfo)) {
+                vulnInfo.stream().map(x -> x.put("_docid", asset.get(DOC_ID))).collect(Collectors.toList());
                 for (Map<String, Object> vuln : vulnInfo) {
                     vulnRequest
                             .append(String.format(createTemplate, index, vuln.get("@id"), parent));

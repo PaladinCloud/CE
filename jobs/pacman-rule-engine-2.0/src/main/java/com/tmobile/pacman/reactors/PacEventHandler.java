@@ -201,7 +201,7 @@ public class PacEventHandler {
         eventDoc.put(PacmanSdkConstants.EVENT_DATA_KEY, eventDataMap);
         eventDoc.put(PacmanSdkConstants.EVENT_NAME, event.getEventName());
         eventDoc.put(PacmanSdkConstants.EXECUTION_ID, eventId);
-        eventDoc.put("_docId", eventId);
+        eventDoc.put("_docid", eventId);
         eventDoc.put(PacmanSdkConstants.EVENT_RECEIVE_TIME, CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
         return ESUtils.doESPublish(eventDoc, indexName, CommonUtils.getPropValue(PacmanSdkConstants.EVENTS_REGISTRY_KEY));
