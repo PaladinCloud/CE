@@ -3,6 +3,7 @@
         <app-table-filter-item
             [name]="item"
             [filterValues]="appliedFiltersDict[item]"
+            (clearFilter)="clearFilter($event)"
         ></app-table-filter-item>
     </div>
 </div>

@@ -80,4 +80,19 @@ export class TableFiltersComponent implements OnInit {
             this.appliedFilters = this.appliedFilters.concat(filterCatName);
         }
     }
+
+    clearFilter(filterCategory: string) {
+        this.appliedFilters = this.appliedFilters.filter((f) => f !== filterCategory);
+        const resettedFilter = Object.keys(this.appliedFiltersDict[filterCategory]).reduce(
+            (acc, next) => {
+                acc[next] = false;
+                return acc;
+            },
+            {},
+        );
+
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
+            [filterCategory]: resettedFilter,
+        });
+    }
 }
