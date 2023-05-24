@@ -309,8 +309,8 @@ public class Util {
      */
     public static Map<String, List<String>> fetchEc2EniInfo() {
 
-        String endPoint = "/aws_ec2/ec2_nwinterfaces/_search?scroll=2m&size=10000";
-        String payLoad = "{\"_source\":[\"instanceid\",\"networkinterfaceid\"],\"query\":{\"has_parent\":{\"parent_type\":\"ec2\",\"query\":{\"match\":{\"latest\":\"true\"}}}}}";
+        String endPoint = "/aws_ec2/_search?scroll=2m&size=10000";
+        String payLoad = "{\"_source\":[\"instanceid\",\"networkinterfaceid\"],\"query\":{\"has_parent\":{\"parent_type\":\"ec2\",\"query\": {\"bool\":{\"must\":[{\"match\":{\"docType.keyword\":\"ec2_nwinterfaces\"}},{\"match\":{\"latest\": \"true\"}}]}}}}}";
         LOGGER.info("fetchEc2EniInfo endpoint: {}",endPoint);
         LOGGER.info("fetchEc2EniInfo payLoad: {}",payLoad);
         List<Map<String, String>> data = new ArrayList<>();
