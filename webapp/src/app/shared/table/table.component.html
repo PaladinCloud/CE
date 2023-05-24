@@ -97,6 +97,7 @@
                         [mat-sort-header]="
                             column !== 'Actions' && column !== 'DetailsBtn' ? column : false
                         "
+                        [class.hide-sort-arrow-wrapper]="doNotSort || column == 'Actions' || column == 'DetailsBtn'"
                     >
                         <span>
                             {{ column !== 'Actions' && column !== 'DetailsBtn' ? column : '' }}

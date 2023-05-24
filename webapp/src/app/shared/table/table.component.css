@@ -19,6 +19,10 @@
   opacity: 0;
 }
 
+.hide-sort-arrow-wrapper ::ng-deep .mat-sort-header-arrow{
+  display: none;
+}
+
 .table-wrapper{
   height: 100%;
   width: 100%;
