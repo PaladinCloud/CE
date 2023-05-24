@@ -125,7 +125,7 @@ export class TableFiltersComponent implements OnInit {
     filterSelectedCategoryChildrenByQuery() {
         return (
             this.selectedFilterCategory?.children.filter((c) =>
-                c.toLowerCase().includes(this.categoryChildFilterQuery.toLowerCase()),
+                c?.toLowerCase().includes(this.categoryChildFilterQuery.toLowerCase()),
             ) || []
         );
     }

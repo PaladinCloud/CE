@@ -2,10 +2,11 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { FormControl } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
-import {MatTableDataSource} from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
+import { TableFilter } from '../table-filters/table-filters.component';
 
 @Component({
   selector: 'app-table',
@@ -30,7 +31,19 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   @Input() tableTitle;
   @Input() imageDataMap = {};
   @Input() filterTypeLabels = [];
-  @Input() filterTagLabels= {};
+  @Input() set filterTagLabels(values: {[key: string]: string[]}) {
+    this._filterTagLabels = values;
+    this.tableFilters = Object.keys(values).reduce((acc, key) => {
+        acc.push({
+            name: key,
+            children: values[key],
+        })
+        return acc;
+    }, [] as TableFilter[])
+  };
+  get filterTagLabels(): {[key: string]: string[]} {
+    return this._filterTagLabels;
+  }
   @Input() tableErrorMessage = '';
   @Input() onScrollDataLoader: Subject<any>;
   @Input() totalRows = 0;
@@ -60,6 +73,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   mainDataSource;
   dataSource;
 
+  tableFilters: TableFilter[] = [];
+
   displayedColumns;
   @Input() whiteListColumns = [];
   searchInColumns = new FormControl();
@@ -84,6 +99,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
   chips;
   selectedFiltersList = [];
 
+  private _filterTagLabels = {}
 
   constructor(private readonly changeDetectorRef: ChangeDetectorRef,
     private windowExpansionService: WindowExpansionService,
@@ -94,7 +110,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
 
   ngOnInit(): void {
-    
+
     if (this.onScrollDataLoader) {
       this.onScrollDataLoader.subscribe(data => {
       this.isDataLoading = false;
@@ -123,8 +139,8 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
     }
     if(changes.columnWidths){
       if(this.columnWidths){
-        this.displayedColumns = Object.keys(this.columnWidths);  
-      }    
+        this.displayedColumns = Object.keys(this.columnWidths);
+      }
       if(this.displayedColumns.length == this.whiteListColumns.length){
         this.allSelected=true;
       }else{
@@ -133,7 +149,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       // if(this.displayedColumns[this.displayedColumns.length-1].toLowerCase() == 'actions'){
       //   this.displayedColumns.pop();
       // }
-  
+
       this.displayedColumns.sort();
 
       if(this.select){
@@ -150,9 +166,9 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       if(changes.data){
         this.mainDataSource = new MatTableDataSource(this.data);
         this.dataSource = new MatTableDataSource(this.data);
-  
+
         this.waitAndResizeTable();
-      }    
+      }
       // this.filteredArray.forEach((item, i) => {
       //   if(item.filterValue.length==0){
       //     this.filteredArray.splice(i, 1);
@@ -303,7 +319,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       this.removeFilter(i);
       return;
     }
-    
+
     let filterIndex = _.findIndex(this.filteredArray, (el, j) => {
       return (
         el["keyDisplayValue"] ===
@@ -506,7 +522,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
       return;
     }
     const isAsc = this.direction == 'asc';
- 
+
     this.dataSource.data = this.dataSource.data.sort((a, b) => {
       if(this.columnsSortFunctionMap && this.columnsSortFunctionMap[this.headerColName]){
         return this.columnsSortFunctionMap[this.headerColName](a, b, isAsc);
@@ -522,7 +538,7 @@ export class TableComponent implements OnInit,AfterViewInit, OnChanges {
 
         return (parseFloat(elementA.valueText)-parseFloat(elementB.valueText))*(isAsc ? 1 : -1);
       }
-      
+
       let elementAValue =elementA&&elementA.valueText?elementA.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
       let elementBValue =elementB&&elementB.valueText?elementB.valueText.toLowerCase():isAsc?'zzzzzz':'000000';
 

@@ -8,6 +8,7 @@
     color: gray;
     border-radius: 4px;
     font-weight: bold;
+    align-self: flex-start;
 }
 
 .filters-menu-btn:hover {
