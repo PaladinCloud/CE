@@ -190,6 +190,7 @@ public class PolicyExecutor {
         policyEngineStats.put(PacmanSdkConstants.EXECUTION_ID, executionId);
         policyEngineStats.put(PacmanSdkConstants.POLICY_ID, policyParam.get(PacmanSdkConstants.POLICY_ID));
         policyEngineStats.put(PacmanSdkConstants.DOC_TYPE, type);
+        policyEngineStats.put("_docid", executionId);
         long startTime = resetStartTime();
         policyEngineStats.put("startTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
@@ -367,6 +368,7 @@ public class PolicyExecutor {
         policyEngineStats.put("endTime", CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT));
         policyEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
+        policyEngineStats.put("_docid", executionId);
         try{
                 ESUtils.publishMetrics(policyEngineStats,type);
         }catch(Exception e) {

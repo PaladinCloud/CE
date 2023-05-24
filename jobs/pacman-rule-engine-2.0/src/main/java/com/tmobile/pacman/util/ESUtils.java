@@ -600,7 +600,7 @@ public class ESUtils {
         filter.put("_id", _id);
         List<String> fields = new ArrayList<String>();
         List<Map<String, String>> details = getDataFromES(url, index.toLowerCase(), targetType.toLowerCase(), filter,
-                null, null, fields, 0, 100, null);
+                null, null, fields, 0, 100, "_docid");
         if (details != null && !details.isEmpty()) {
             return details.get(0);
         } else {

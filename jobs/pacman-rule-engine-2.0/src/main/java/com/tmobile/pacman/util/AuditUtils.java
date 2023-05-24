@@ -16,12 +16,8 @@
 package com.tmobile.pacman.util;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +107,7 @@ public class AuditUtils {
         auditTrail.put( type + "_relations", relMap);
         auditTrail.put(PacmanSdkConstants.DATA_SOURCE_ATTR, ds);
         auditTrail.put(TARGET_TYPE, type);
+        auditTrail.put("_docid",id);
         auditTrail.put(PacmanSdkConstants.ANNOTATION_PK, id);
         auditTrail.put(PacmanSdkConstants.STATUS_KEY, status);
         auditTrail.put(PacmanSdkConstants.AUDIT_DATE, date);
