@@ -86,7 +86,7 @@ public class VMsScannedByTenableRule extends BasePolicy {
           } else {
             Optional<String> foundAny = vulnerabilityInfoList
                 .stream()
-                .map(elem -> elem.get("last_found_date").getAsString()+"T00:00:00Z")
+                .map(elem -> elem.get("last_found").getAsString())
                 .filter(lastVulnScan -> {
                   try {
                     return PacmanUtils.calculateDuration(lastVulnScan) < Long.parseLong(target);
