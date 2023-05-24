@@ -99,7 +99,7 @@ public class AuditUtils {
         String date = CommonUtils.getCurrentDateStringWithFormat(PacmanSdkConstants.PAC_TIME_ZONE,
                 PacmanSdkConstants.DATE_FORMAT);
         Map<String, Object> auditTrail = new LinkedHashMap<>();
-        auditTrail.put(PacmanSdkConstants.TYPE,_type);
+        auditTrail.put(PacmanSdkConstants.DOC_TYPE,_type);
         // add relations to annotation
         Map<String, Object> relMap = new HashMap<>();
         relMap.put("name",_type);
