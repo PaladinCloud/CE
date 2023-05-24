@@ -129,7 +129,7 @@ public class ExceptionManagerImpl implements ExceptionManager {
         mustFilter.put("range", dateRangeMap);
         // TODO: not getting entire data here, putting 10K
         List<Map<String, String>> exceptions = ESUtils.getDataFromES(ESUtils.getEsUrl(), INDEX_FOR_EXCEPTIONS,
-                TYPE_FOR_STICKY_EXCEPTIONS, mustFilter, null, null, null, 0, 10000, null);
+                TYPE_FOR_STICKY_EXCEPTIONS, mustFilter, null, null, null, 0, 10000, "_docid");
         List<IssueException> stickyExceptions = exceptions.stream()
                 .map(obj -> new IssueException(obj, ExceptionType.STICKY)).collect(Collectors.toList());
         // clear the must filter
@@ -143,7 +143,7 @@ public class ExceptionManagerImpl implements ExceptionManager {
                 // TODO: not getting entire data here, putting 10K
                 exemptedResources.put(obj,
                         ESUtils.getDataFromES(ESUtils.getEsUrl(), obj.getAssetGroup(), resourceType, mustFilter, null,
-                                        null, null, 0, 10000, null).stream().map(resource -> resource.get(RESOURCE_ID))
+                                        null, null, 0, 10000, "_docid").stream().map(resource -> resource.get(RESOURCE_ID))
                                 .collect(Collectors.toList()));
             } catch (Exception e) {
             }

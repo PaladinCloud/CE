@@ -86,6 +86,7 @@ public class LogNotificationToOpenSearch implements RequestHandler<SNSEvent, Voi
 				String strUUID = uuid.toString();
 				eventMap.put(LOAD_DATE, loaddate);
 				eventMap.put(DOC_ID, strUUID);
+				eventMap.put("_docid", strUUID);
 				eventMap.put(LATEST, true);
 				eventMap.put("docType",NOTIFICATION_TYPE);
 				message = objectMapper.writeValueAsString(eventMap);

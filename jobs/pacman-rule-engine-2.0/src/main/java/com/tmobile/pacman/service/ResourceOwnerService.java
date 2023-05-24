@@ -93,7 +93,7 @@ public class ResourceOwnerService {
         HashMultimap<String, Object> shouldFilter = null;
         try{
         resourceDetails = ESUtils.getDataFromES(heimdallUrl, HEIMDALL_RESOURCE_INDEX, "",
-                mustFilter, Maps.newHashMap(), shouldFilter, fields, 0, 10, null);
+                mustFilter, Maps.newHashMap(), shouldFilter, fields, 0, 10, "_docid");
         
         if (resourceDetails.size() > 0) {
             resourceOwner.setEmailId(findEmail(resourceDetails));

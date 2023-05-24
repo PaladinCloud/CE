@@ -59,6 +59,8 @@ public class ShutDownHook implements Runnable {
                 PacmanSdkConstants.DATE_FORMAT));
         ruleEngineStats.put(PacmanSdkConstants.STATUS_REASON, "SIGTERM"); 
         ruleEngineStats.put(PacmanSdkConstants.STATUS_KEY, PacmanSdkConstants.STATUS_FINISHED);
+        ruleEngineStats.put("_docid", "executionId");
+
         ESUtils.publishMetrics(ruleEngineStats,CommonUtils.getPropValue(PacmanSdkConstants.STATS_TYPE_NAME_KEY));
     }
 
