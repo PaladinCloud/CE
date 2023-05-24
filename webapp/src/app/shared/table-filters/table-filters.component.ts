@@ -47,6 +47,9 @@ export class TableFiltersComponent implements OnInit {
     isFilterMenuOpen = false;
     isFilterSubCategoryOpen = false;
 
+    categoryFilterQuery = '';
+    categoryChildFilterQuery = '';
+
     private _filters: TableFilter[] = [];
 
     constructor() {}
@@ -111,5 +114,19 @@ export class TableFiltersComponent implements OnInit {
         if (event.key === 'Escape') {
             this.isFilterMenuOpen = false;
         }
+    }
+
+    filterCategoryByQuery() {
+        return this.filters.filter((f) =>
+            f.name.toLowerCase().includes(this.categoryFilterQuery.toLowerCase()),
+        );
+    }
+
+    filterSelectedCategoryChildrenByQuery() {
+        return (
+            this.selectedFilterCategory?.children.filter((c) =>
+                c.toLowerCase().includes(this.categoryChildFilterQuery.toLowerCase()),
+            ) || []
+        );
     }
 }
