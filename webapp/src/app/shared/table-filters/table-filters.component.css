@@ -1,3 +1,7 @@
+:host {
+    display: flex;
+}
+
 .filters-menu-btn {
     border: 1px dashed gray;
     background: transparent;

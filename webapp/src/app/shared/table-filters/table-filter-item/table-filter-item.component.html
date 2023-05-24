@@ -1,5 +1,9 @@
-<div class="flex flex-align-center table-filter-item">
-    <div (click)="toggleFilterMenu()" cdkOverlayOrigin #filterMenu="cdkOverlayOrigin">
+<div
+    class="flex flex-align-center table-filter-item"
+    cdkOverlayOrigin
+    #filterMenu="cdkOverlayOrigin"
+>
+    <div (click)="toggleFilterMenu()">
         <span class="tfi-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfi-value">
