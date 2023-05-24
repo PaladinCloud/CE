@@ -121,6 +121,7 @@ import { TitleBurgerHeadComponent } from './title-burger-head/title-burger-head.
 import { ToastNotificationComponent } from './toast-notification/toast-notification.component';
 import { WidgetSectionStarterComponent } from './widget-section-starter/widget-section-starter.component';
 import { TableFilterItemComponent } from './table-filters/table-filter-item/table-filter-item.component';
+import { TableFilterSearchComponent } from './table-filters/table-filter-search/table-filter-search.component';
 
 @NgModule({
     imports: [
@@ -223,6 +224,7 @@ import { TableFilterItemComponent } from './table-filters/table-filter-item/tabl
         WidgetSectionStarterComponent,
         TableFiltersComponent,
         TableFilterItemComponent,
+        TableFilterSearchComponent,
     ],
     exports: [
         AgGridTableComponent,
