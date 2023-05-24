@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { merge } from 'lodash';
+import { FilterChipUpdateEvent } from './table-filter-item/table-filter-item.component';
 
 export interface TableFilter {
     name: string;
@@ -93,6 +94,17 @@ export class TableFiltersComponent implements OnInit {
 
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
             [filterCategory]: resettedFilter,
+        });
+    }
+
+    updateFilter(event: FilterChipUpdateEvent) {
+        const filterCategory = event.category;
+        const updatedFilter = merge({}, this.appliedFiltersDict[filterCategory], {
+            [event.filterName]: event.filterValue,
+        });
+
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
+            [filterCategory]: updatedFilter,
         });
     }
 }

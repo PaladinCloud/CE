@@ -20,3 +20,7 @@
 .table-filter-item .tfi-close-icon:hover {
     cursor: pointer;
 }
+
+.filter-item-menu {
+    background: white;
+}
