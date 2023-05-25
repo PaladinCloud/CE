@@ -69,13 +69,13 @@ export class TableFiltersComponent implements OnInit {
         this.filterCategorySelected.emit(filterCategory);
     }
 
-    applyFilter(filterChild: string, event: MatCheckboxChange) {
+    applyFilter(filterOption: string, event: MatCheckboxChange) {
         const filterCatName = this.selectedFilterCategory;
 
         // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
         const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCatName]).reduce(
             (prev, [name]) => {
-                if (name !== filterChild) {
+                if (name !== filterOption) {
                     prev[name] = false;
                 }
                 return prev;
@@ -85,7 +85,7 @@ export class TableFiltersComponent implements OnInit {
 
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
             [filterCatName]: merge({}, uncheckedOptionsDict, {
-                [filterChild]: event.checked,
+                [filterOption]: event.checked,
             }),
         });
 
@@ -100,19 +100,28 @@ export class TableFiltersComponent implements OnInit {
         }
         this.filterOptionSelected.emit({
             category: filterCatName,
-            option: filterChild,
+            option: filterOption,
             value: event.checked,
         });
     }
 
     updateFilter(event: FilterChipUpdateEvent) {
         const filterCategory = event.category;
-        const updatedFilter = merge({}, this.appliedFiltersDict[filterCategory], {
-            [event.filterName]: event.filterValue,
-        });
+        // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
+        const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCategory]).reduce(
+            (prev, [name]) => {
+                if (name !== event.filterName) {
+                    prev[name] = false;
+                }
+                return prev;
+            },
+            {},
+        );
 
         this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
-            [filterCategory]: updatedFilter,
+            [filterCategory]: merge({}, uncheckedOptionsDict, {
+                [event.filterName]: event.filterValue,
+            }),
         });
 
         this.filterOptionSelected.emit({

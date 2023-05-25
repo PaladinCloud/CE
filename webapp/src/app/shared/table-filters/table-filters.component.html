@@ -2,7 +2,8 @@
     <app-table-filter-item
         *ngFor="let appliedFilter of appliedFilters"
         [category]="appliedFilter"
-        [filterValues]="appliedFiltersDict[appliedFilter]"
+        [appliedFilters]="appliedFiltersDict[appliedFilter]"
+        [filterValues]="categoryOptions[appliedFilter]"
         (clearFilter)="clearFilter($event)"
         (updateFilter)="updateFilter($event)"
     ></app-table-filter-item>

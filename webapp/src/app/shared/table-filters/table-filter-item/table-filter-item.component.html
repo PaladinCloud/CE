@@ -7,11 +7,11 @@
         <span class="tfi-name"> {{ category }}:&nbsp;</span>
 
         <span class="tfi-value">
-            <ng-container *ngIf="appliedFilters.length === 1; else moreFilters">
-                {{ appliedFilters[0] }}
+            <ng-container *ngIf="appliedItems.length === 1; else moreFilters">
+                {{ appliedItems[0].name }}
             </ng-container>
 
-            <ng-template #moreFilters> {{ appliedFilters.length }} Selected </ng-template>
+            <ng-template #moreFilters> {{ appliedItems.length }} Selected </ng-template>
         </span>
     </div>
     <mat-icon class="tfi-close-icon" (click)="clearFilter.emit(category)">close</mat-icon>
@@ -30,10 +30,10 @@
         </li>
         <li *ngFor="let option of filterOptionsByQuery()">
             <mat-checkbox
-                [checked]="option.value"
-                (change)="updateFilterOption(option.name, $event.checked)"
+                [checked]="appliedFilters[option]"
+                (change)="updateFilterOption(option, $event.checked)"
             >
-                {{ option.name }}
+                {{ option }}
             </mat-checkbox>
         </li>
     </ul>
