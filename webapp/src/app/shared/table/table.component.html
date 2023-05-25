@@ -26,6 +26,7 @@
                 <app-table-filters
                     *ngIf="showFilterBtn"
                     style="flex: 1"
+                    [appliedFilters]="filteredArray"
                     [categories]="filterTypeLabels"
                     [categoryOptions]="filterTagLabels"
                     (filterCategorySelected)="filterOptionClick($event)"

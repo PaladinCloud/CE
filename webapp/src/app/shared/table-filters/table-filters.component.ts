@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { merge } from 'lodash';
+import { FilterItem } from '../table/table.component';
 import { FilterChipUpdateEvent } from './table-filter-item/table-filter-item.component';
 
 interface AppliedFilter {
@@ -21,14 +22,38 @@ export interface FilterOptionChange {
     styleUrls: ['./table-filters.component.css'],
 })
 export class TableFiltersComponent implements OnInit {
+    @Input() set appliedFilters(filters) {
+        this._appliedFilters = filters;
+        const optionDict = filters.reduce((prev, next) => {
+            if (!next.value) {
+                return prev;
+            }
+            prev = merge({}, prev, {
+                [next.key]: {
+                    [next.value]: true,
+                },
+            });
+            return prev;
+        }, {});
+
+        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, optionDict);
+    }
+    get appliedFilters() {
+        return this._appliedFilters;
+    }
+
     @Input() set categories(values) {
         this._categories = values;
-        this.appliedFiltersDict = values.reduce(
-            (acc, next) => ({
-                ...acc,
-                [next]: {},
-            }),
-            {} as AppliedFilter,
+        this.appliedFiltersDict = merge(
+            {},
+            this.appliedFiltersDict,
+            values.reduce(
+                (acc, next) => ({
+                    ...acc,
+                    [next]: {},
+                }),
+                {},
+            ),
         );
     }
     get categories() {
@@ -42,7 +67,6 @@ export class TableFiltersComponent implements OnInit {
     @Output() filterOptionSelected = new EventEmitter<FilterOptionChange>();
 
     appliedFiltersDict: AppliedFilter = {};
-    appliedFilters: string[] = [];
 
     selectedFilterCategory: string = null;
 
@@ -52,6 +76,7 @@ export class TableFiltersComponent implements OnInit {
     categoryFilterQuery = '';
     categoryChildFilterQuery = '';
 
+    private _appliedFilters: FilterItem[] = [];
     private _categories: string[] = [];
 
     constructor() {}
@@ -70,38 +95,10 @@ export class TableFiltersComponent implements OnInit {
     }
 
     applyFilter(filterOption: string, event: MatCheckboxChange) {
-        const filterCatName = this.selectedFilterCategory;
-
-        // TODO: REMOVE WHEN API WILL SUPPORT MULTI FILTER VALUE SELECTION
-        const uncheckedOptionsDict = Object.entries(this.appliedFiltersDict[filterCatName]).reduce(
-            (prev, [name]) => {
-                if (name !== filterOption) {
-                    prev[name] = false;
-                }
-                return prev;
-            },
-            {},
-        );
-
-        this.appliedFiltersDict = merge({}, this.appliedFiltersDict, {
-            [filterCatName]: merge({}, uncheckedOptionsDict, {
-                [filterOption]: event.checked,
-            }),
-        });
-
-        if (this.appliedFilters.includes(filterCatName)) {
-            if (Object.values(this.appliedFiltersDict[filterCatName]).every((i) => !i)) {
-                this.appliedFilters = this.appliedFilters.filter((f) => f !== filterCatName);
-                this.filterCategoryRemoved.emit(filterCatName);
-                return;
-            }
-        } else {
-            this.appliedFilters = this.appliedFilters.concat(filterCatName);
-        }
-        this.filterOptionSelected.emit({
-            category: filterCatName,
-            option: filterOption,
-            value: event.checked,
+        this.updateFilter({
+            category: this.selectedFilterCategory,
+            filterName: filterOption,
+            filterValue: event.checked,
         });
     }
 
@@ -132,7 +129,6 @@ export class TableFiltersComponent implements OnInit {
     }
 
     clearFilter(filterCategory: string) {
-        this.appliedFilters = this.appliedFilters.filter((f) => f !== filterCategory);
         const resettedFilter = Object.keys(this.appliedFiltersDict[filterCategory]).reduce(
             (acc, next) => {
                 acc[next] = false;
