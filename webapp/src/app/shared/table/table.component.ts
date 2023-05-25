@@ -21,7 +21,7 @@ import { Subject } from 'rxjs';
 import { WindowExpansionService } from 'src/app/core/services/window-expansion.service';
 import { FilterOptionChange } from '../table-filters/table-filters.component';
 
-interface FilterItem {
+export interface FilterItem {
     filterValue?: string | undefined;
     key?: string;
     keyDisplayValue: string;

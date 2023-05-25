@@ -1,9 +1,9 @@
 <div class="applied-filters-container flex flex-wrap gap-16">
     <app-table-filter-item
         *ngFor="let appliedFilter of appliedFilters"
-        [category]="appliedFilter"
-        [appliedFilters]="appliedFiltersDict[appliedFilter]"
-        [filterValues]="categoryOptions[appliedFilter]"
+        [category]="appliedFilter.keyDisplayValue"
+        [appliedFilters]="appliedFiltersDict[appliedFilter.keyDisplayValue]"
+        [filterValues]="categoryOptions[appliedFilter.keyDisplayValue]"
         (clearFilter)="clearFilter($event)"
         (updateFilter)="updateFilter($event)"
     ></app-table-filter-item>
